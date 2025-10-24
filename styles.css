@@ -1,0 +1,32 @@
+
+/* Minimaler, druckfreundlicher Stil – keine Frameworks nötig */
+:root { --accent: #c91414; --ink:#111; --bg:#fff; --muted:#6b7280; }
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,Segoe UI,Roboto,Arial,sans-serif}
+.container{max-width:960px;margin:0 auto;padding:24px}
+.header{display:flex;gap:20px;align-items:center;justify-content:space-between;padding:24px 0;border-bottom:1px solid #eee}
+.logo{display:flex;gap:12px;align-items:center;text-decoration:none;color:inherit}
+.logo-badge{width:40px;height:40px;border-radius:12px;background:var(--ink);display:grid;place-items:center;color:#fff;font-weight:700}
+h1{margin:0;font-size:clamp(20px,3vw,28px)}
+.tagline{color:var(--muted);font-size:14px;margin-top:4px}
+.actions a{display:inline-block;padding:10px 16px;border-radius:12px;border:1px solid #ddd;text-decoration:none}
+.actions a.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.section{padding:28px 0;border-bottom:1px solid #eee}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.card{border:1px solid #eee;border-radius:16px;padding:16px}
+.card h3{margin:0 0 8px 0}
+.footer{padding:24px 0;color:var(--muted);font-size:14px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#f5f5f5;border:1px solid #eee;font-size:12px}
+address{font-style:normal}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#0b0b0c; --ink:#f5f5f6; --muted:#9aa3af}
+  .card{border-color:#333}
+  .header, .section{border-color:#1f2937}
+  .badge{background:#111;border-color:#222}
+}
+/* Druckansicht vereinfachen */
+@media print{
+  .actions, .cta { display:none !important; }
+  .card{break-inside:avoid}
+}
