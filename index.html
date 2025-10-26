@@ -19,8 +19,50 @@
   <script type="application/ld+json">
   {"@context": "https://schema.org", "@type": "Person", "name": "Marco Hoffmann", "url": "https://www.warenschmiede.com/", "image": "https://www.warenschmiede.com/assets/img/avatar-placeholder.svg", "description": "3D-Druck aus Donaueschingen – handwerklich, ehrlich, individuell.", "email": "info@warenschmiede.com", "sameAs": []}
   </script>
+  <script>
+    (function () {
+      var doc = document.documentElement;
+      doc.classList.add('has-js');
+      var supportsSvg = false;
+      try {
+        supportsSvg = !!document.createElementNS && !!document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect;
+      } catch (error) {
+        supportsSvg = false;
+      }
+      doc.classList.add(supportsSvg ? 'has-inline-svg' : 'no-inline-svg');
+    })();
+  </script>
 </head>
 <body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true" focusable="false">
+    <symbol id="icon-cube" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3.25 4.5 7.25v9.5L12 20.75l7.5-4v-9.5L12 3.25z" />
+      <path d="M12 3.25v8" />
+      <path d="M4.5 7.25 12 11.25" />
+      <path d="M19.5 7.25 12 11.25" />
+      <path d="M12 20.75v-9.5" />
+    </symbol>
+    <symbol id="icon-ruler" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6.25 4.75h11.5a1.5 1.5 0 0 1 1.5 1.5v11a1.5 1.5 0 0 1-1.5 1.5H6.25a1.5 1.5 0 0 1-1.5-1.5v-11a1.5 1.5 0 0 1 1.5-1.5z" />
+      <path d="M9 8.25v2" />
+      <path d="M12 8.25v1.75" />
+      <path d="M15 8.25v2.5" />
+      <path d="M9 13.25v2" />
+      <path d="M12 13.25v1.75" />
+      <path d="M15 13.25v2.5" />
+    </symbol>
+    <symbol id="icon-laptop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6.75 5.25h10.5a1.5 1.5 0 0 1 1.5 1.5v7.75a1.5 1.5 0 0 1-1.5 1.5H6.75a1.5 1.5 0 0 1-1.5-1.5V6.75a1.5 1.5 0 0 1 1.5-1.5z" />
+      <path d="M4.25 17.75h15.5" />
+      <path d="M3.5 18.75h17" />
+    </symbol>
+  </svg>
+  <noscript>
+    <style>
+      .card__icon--svg { display: none !important; }
+      .card__icon--fallback { display: inline-flex !important; }
+    </style>
+  </noscript>
   <header class="site-header" data-header>
     <nav class="site-nav" aria-label="Hauptnavigation">
       <div class="nav-container">
@@ -110,22 +152,55 @@
           <p>Von der ersten Idee bis zum ersten funktionierenden Teil: FDM-3D-Druck mit ehrlicher Einschätzung, welche Schritte sinnvoll sind.</p>
         </div>
         <div class="grid">
-          <div class="card">
-            <h3>3D-Druck &amp; Prototyping</h3>
+          <div class="card card--service">
+            <div class="card__header">
+              <span class="card__icon-group">
+                <span class="card__icon card__icon--svg">
+                  <svg aria-hidden="true" focusable="false">
+                    <use href="#icon-cube"></use>
+                  </svg>
+                </span>
+                <span class="card__icon card__icon--fallback" aria-hidden="true">🧊</span>
+                <span class="sr-only">Icon 3D-Druck &amp; Prototyping</span>
+              </span>
+              <h3 class="card__title">3D-Druck &amp; Prototyping</h3>
+            </div>
             <p>• FDM‑3D‑Druck (Bambu Lab A1, X1C)<br>• Auswahl passender Kunststoffe<br>• Kleine Stückzahlen oder Einzelteile</p>
-          <div class="cta">
-            <span class="badge">Fein abgestimmt</span>
-            <span class="badge">Kurze Wege</span>
-            <span class="badge">Aus Donaueschingen</span>
+            <div class="cta">
+              <span class="badge">Fein abgestimmt</span>
+              <span class="badge">Kurze Wege</span>
+              <span class="badge">Aus Donaueschingen</span>
+            </div>
           </div>
-          </div>
-          <div class="card">
-            <h3>CAD &amp; Prototyping</h3>
+          <div class="card card--service">
+            <div class="card__header">
+              <span class="card__icon-group">
+                <span class="card__icon card__icon--svg">
+                  <svg aria-hidden="true" focusable="false">
+                    <use href="#icon-ruler"></use>
+                  </svg>
+                </span>
+                <span class="card__icon card__icon--fallback" aria-hidden="true">📐</span>
+                <span class="sr-only">Icon CAD &amp; Prototyping</span>
+              </span>
+              <h3 class="card__title">CAD &amp; Prototyping</h3>
+            </div>
             <p>• Anpassung bestehender CAD-Daten<br>• Erstellung einfacher Funktionsmodelle<br>• Vorbereitung für einen sauberen FDM-Druck</p>
             <p>Ich bleibe dran, bis deine Idee Form annimmt und passt.</p>
           </div>
-          <div class="card card--pc-help">
-            <h3><span aria-hidden="true">💻</span> PC-Hilfe (Einsteiger)</h3>
+          <div class="card card--service card--pc-help">
+            <div class="card__header">
+              <span class="card__icon-group">
+                <span class="card__icon card__icon--svg">
+                  <svg aria-hidden="true" focusable="false">
+                    <use href="#icon-laptop"></use>
+                  </svg>
+                </span>
+                <span class="card__icon card__icon--fallback" aria-hidden="true">💻</span>
+                <span class="sr-only">Icon PC-Hilfe (Einsteiger)</span>
+              </span>
+              <h3 class="card__title">PC-Hilfe (Einsteiger)</h3>
+            </div>
             <ul class="card-list">
               <li>Drucker &amp; Scanner einrichten</li>
               <li>Windows-Grundlagen &amp; Updates</li>
