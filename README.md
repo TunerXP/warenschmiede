@@ -8,3 +8,7 @@ Dies ist eine minimalistische Visitenkarten‑Website für GitHub Pages.
 3. In den Repository‑Settings unter **Pages** `Deploy from branch` wählen und `main / root` einstellen.
 4. Unter **Custom domain** `www.warenschmiede.com` eintragen. GitHub erzeugt/aktualisiert die Datei `CNAME` automatisch.
 5. Bei IONOS DNS: `www` als **CNAME** auf `<username>.github.io` setzen. Root‑Domain `warenschmiede.com` per Weiterleitung auf `https://www.warenschmiede.com` zeigen lassen.
+
+## Profilfoto nachreichen
+
+Lade das echte Profilfoto nach dem Merge direkt auf `main` hoch (`/assets/img/marco.jpg`). Dafür in GitHub auf **Add file → Upload files** gehen und das Bild in den Ordner `assets/img/` legen.
