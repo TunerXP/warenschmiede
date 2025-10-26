@@ -12,3 +12,9 @@ Dies ist eine minimalistische Visitenkarten‑Website für GitHub Pages.
 ## Profilfoto nachreichen
 
 Lade das echte Profilfoto nach dem Merge direkt auf `main` hoch (`/assets/img/marco.jpg`). Dafür in GitHub auf **Add file → Upload files** gehen und das Bild in den Ordner `assets/img/` legen.
+
+## Service-Icons anpassen
+
+Die Leistungskacheln auf der Startseite nutzen inline eingebettete SVG-Icons. Die jeweiligen Quelldateien liegen im Ordner `assets/icons/` (`cube.svg`, `ruler.svg`, `laptop.svg`).
+
+Um ein Icon auszutauschen, die gewünschte Datei dort ersetzen und den Dateinamen unverändert lassen. Die Icons werden mit `currentColor` gezeichnet und übernehmen dadurch die Farben aus den CSS-Regeln.
