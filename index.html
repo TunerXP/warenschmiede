@@ -142,16 +142,32 @@
           <h2>Kontakt</h2>
           <p>Schnelle Rückmeldung garantiert: Wir melden uns werktags innerhalb von 24 Stunden.</p>
         </div>
-        <div class="card">
-          <address>
+        <div class="card contact-card">
+          <address class="contact-card__block">
             <strong>E-Mail</strong><br>
             <a href="mailto:info@warenschmiede.com">info@warenschmiede.com</a>
           </address>
-          <p>Oder direkt einen Rückruf vereinbaren – einfach Nachricht mit Wunschzeit senden. Rückmeldung meist nach 18 Uhr oder am Wochenende.</p>
-          <a class="btn btn-primary" href="mailto:info@warenschmiede.com?subject=Anfrage%20Warenschmiede&amp;body=Hallo%20Warenschmiede,%0A%0Aich%20habe%20eine%20Anfrage%20zu%20%E2%80%A6%0A%0ABeste%20Gr%C3%BC%C3%9Fe%0A" rel="noopener">Kontakt aufnehmen</a>
+          <p class="contact-card__text">Oder direkt einen Rückruf vereinbaren – einfach Nachricht mit Wunschzeit senden. Rückmeldung meist nach 18 Uhr oder am Wochenende.</p>
+          <div class="contact-card__actions">
+            <a class="btn btn-primary contact-card__cta" href="mailto:info@warenschmiede.com?subject=Anfrage%20Warenschmiede&amp;body=Hallo%20Warenschmiede,%0A%0Aich%20habe%20eine%20Anfrage%20zu%20%E2%80%A6%0A%0ABeste%20Gr%C3%BC%C3%9Fe%0A" rel="noopener">Kontakt aufnehmen</a>
+            <a class="btn btn-primary contact-card__cta contact-card__cta--whatsapp" href="https://wa.me/4917647113560?text=Hallo%20Marco,%20ich%20habe%20eine%20Anfrage%20zur%203D-Druck-Projektidee." data-wa-link rel="noopener" aria-label="Per WhatsApp schreiben">WhatsApp schreiben</a>
+            <button class="btn btn-outline contact-card__cta contact-card__cta--qr" type="button" data-wa-trigger aria-haspopup="dialog" aria-controls="whatsapp-qr-modal">QR-Code anzeigen</button>
+          </div>
+          <p class="contact-card__footnote">WhatsApp öffnet eine Verbindung zu WhatsApp-Servern. Es gelten die Datenschutzrichtlinien von WhatsApp.</p>
         </div>
       </div>
     </section>
+
+    <div class="qr-modal" data-wa-modal hidden>
+      <div class="qr-modal__backdrop" data-wa-close></div>
+      <div class="qr-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="whatsapp-qr-title" aria-describedby="whatsapp-qr-description" tabindex="-1" data-wa-dialog id="whatsapp-qr-modal">
+        <button class="qr-modal__close" type="button" aria-label="Schließen" data-wa-close></button>
+        <h3 class="qr-modal__title" id="whatsapp-qr-title">Per WhatsApp mit dem Smartphone scannen</h3>
+        <p class="qr-modal__description" id="whatsapp-qr-description">Scanne den QR-Code mit deinem Smartphone, um die WhatsApp-Nachricht zu öffnen.</p>
+        <img class="qr-modal__image" data-wa-qr-image src="assets/img/wa-qr.svg" alt="QR-Code für WhatsApp-Kontakt" width="200" height="200" loading="lazy">
+        <a class="qr-modal__download" data-wa-download href="assets/img/wa-qr.svg" download="warenschmiede-whatsapp.svg">QR-Code speichern</a>
+      </div>
+    </div>
 
     <section id="impressum" class="section">
       <div class="container">
@@ -169,5 +185,6 @@
     </div>
   </footer>
   <script src="assets/js/header.js" defer></script>
+  <script src="assets/js/whatsapp.js" defer></script>
 </body>
 </html>

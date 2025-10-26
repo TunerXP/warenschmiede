@@ -522,6 +522,140 @@ img {
   margin: 0;
 }
 
+.contact-card {
+  gap: var(--space-4);
+}
+
+.contact-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.contact-card__cta {
+  width: 100%;
+  justify-content: center;
+}
+
+.contact-card__cta--qr {
+  display: none;
+}
+
+.contact-card__footnote {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: var(--space-2);
+}
+
+.about-cta__whatsapp {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--accent);
+  padding: 0.35rem 0;
+}
+
+.about-cta__whatsapp:hover,
+.about-cta__whatsapp:focus-visible {
+  text-decoration: underline;
+}
+
+.qr-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  background: rgba(17, 17, 17, 0.55);
+  z-index: 200;
+}
+
+.qr-modal[hidden] {
+  display: none;
+}
+
+.qr-modal__backdrop {
+  position: absolute;
+  inset: 0;
+}
+
+.qr-modal__dialog {
+  position: relative;
+  max-width: 320px;
+  width: 100%;
+  padding: var(--space-5);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.qr-modal__title {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.qr-modal__description {
+  margin: 0;
+  color: rgba(17, 17, 17, 0.75);
+}
+
+.qr-modal__image {
+  width: 200px;
+  height: auto;
+  align-self: center;
+}
+
+.qr-modal__download {
+  align-self: center;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.qr-modal__download:hover,
+.qr-modal__download:focus-visible {
+  text-decoration: underline;
+}
+
+.qr-modal__close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.qr-modal__close::before,
+.qr-modal__close::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 2px;
+  background: currentColor;
+  transform-origin: center;
+}
+
+.qr-modal__close::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.qr-modal__close::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
 .card-inline {
   max-width: 640px;
 }
@@ -612,6 +746,27 @@ address {
 
   .timeline__year {
     justify-self: center;
+  }
+}
+
+@media (min-width: 640px) {
+  .contact-card__actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .contact-card__cta {
+    flex: 1;
+  }
+}
+
+@media (min-width: 768px) {
+  .contact-card__cta {
+    max-width: 260px;
+  }
+
+  .contact-card__cta--qr {
+    display: inline-flex;
   }
 }
 
