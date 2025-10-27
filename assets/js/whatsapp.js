@@ -1,8 +1,9 @@
 (() => {
-  const WA_PHONE = '4917647113560';
+  const WA_PHONE = '4915141382732';
   const WA_MESSAGE = 'Hallo Marco, ich habe eine Anfrage zur 3D-Druck-Projektidee.';
   const WA_URL = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(WA_MESSAGE)}`;
-  const WA_QR_SRC = 'assets/img/wa-qr.svg';
+  const WA_QR_TARGET = `https://wa.me/${WA_PHONE}`;
+  const WA_QR_SRC = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(WA_QR_TARGET)}&format=svg&size=200x200`;
 
   const whatsappLinks = document.querySelectorAll('[data-wa-link]');
   whatsappLinks.forEach((link) => {
