@@ -7,10 +7,32 @@
   <meta name="description" content="Übersicht über 3D-Druck-Portale: MakerWorld, Printables, Thingiverse, Cults3D. Kurz erklärt – kostenlos &amp; bezahlt. In meinen Worten, verständlich und praxisnah.">
   <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="../assets/logo.svg">
+  <script>
+    (function () {
+      var storageKey = 'theme-preference';
+      var preference = 'system';
+      try {
+        var stored = localStorage.getItem(storageKey);
+        if (stored === 'light' || stored === 'dark' || stored === 'system') {
+          preference = stored;
+        }
+      } catch (error) {}
+      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+      var resolved = preference === 'dark'
+        ? 'dark'
+        : preference === 'light'
+          ? 'light'
+          : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
+      var root = document.documentElement;
+      root.dataset.theme = resolved;
+      root.dataset.themePreference = preference;
+    })();
+  </script>
   <link rel="stylesheet" href="../styles.css">
   <meta name="robots" content="index,follow">
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0b0c">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8fafc">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0f17">
+  <meta name="color-scheme" content="light dark">
   <link rel="canonical" href="https://www.warenschmiede.com/ideen/">
   <meta property="og:title" content="Nützliche Portale &amp; Ideenquellen – 3D-Druck">
   <meta property="og:description" content="Übersicht über 3D-Druck-Portale: MakerWorld, Printables, Thingiverse, Cults3D. Kurz erklärt – kostenlos &amp; bezahlt. In meinen Worten, verständlich und praxisnah.">
@@ -33,12 +55,19 @@
           </div>
         </a>
 
-        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
-          <span class="sr-only">Menü öffnen</span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-        </button>
+        <div class="nav-actions">
+          <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Theme wechseln" title="Theme wechseln">
+            <span id="themeIcon" aria-hidden="true">🖥️</span>
+            <span class="sr-only theme-toggle__label">Aktuelles Theme: Systemeinstellung</span>
+          </button>
+
+          <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
+            <span class="sr-only">Menü öffnen</span>
+            <span class="nav-toggle-bar" aria-hidden="true"></span>
+            <span class="nav-toggle-bar" aria-hidden="true"></span>
+            <span class="nav-toggle-bar" aria-hidden="true"></span>
+          </button>
+        </div>
 
         <div class="nav-menu" id="primary-navigation" data-nav-menu>
           <ul class="nav-list" role="menu">
@@ -87,22 +116,22 @@
         <h2 id="ideas-resources-heading">Empfehlenswerte Plattformen</h2>
         <ul class="platform-list">
           <li>
-            <span class="platform-badge" aria-hidden="true">MW</span>
+            <span class="platform-badge badge badge-mw" aria-hidden="true" title="MakerWorld">MW</span>
             <a href="https://makerworld.com" target="_blank" rel="noopener noreferrer">MakerWorld</a>
             – viele Bambu-Lab-kompatible Modelle (kostenlos)
           </li>
           <li>
-            <span class="platform-badge" aria-hidden="true">PR</span>
+            <span class="platform-badge badge badge-pr" aria-hidden="true" title="Printables">PR</span>
             <a href="https://www.printables.com" target="_blank" rel="noopener noreferrer">Printables</a>
             – große Auswahl, Community-Projekte (kostenlos)
           </li>
           <li>
-            <span class="platform-badge" aria-hidden="true">TH</span>
+            <span class="platform-badge badge badge-th" aria-hidden="true" title="Thingiverse">TH</span>
             <a href="https://www.thingiverse.com" target="_blank" rel="noopener noreferrer">Thingiverse</a>
             – Klassiker mit sehr vielen Vorlagen (kostenlos)
           </li>
           <li>
-            <span class="platform-badge" aria-hidden="true">CU</span>
+            <span class="platform-badge badge badge-cu" aria-hidden="true" title="Cults3D">CU</span>
             <a href="https://cults3d.com" target="_blank" rel="noopener noreferrer">Cults3D</a>
             – kostenlose &amp; bezahlte Modelle, viele Designideen
           </li>
@@ -130,6 +159,7 @@
       © 2025 Warenschmiede · Alle Rechte vorbehalten.
     </div>
   </footer>
+  <script src="../assets/js/theme.js" defer></script>
   <script src="../assets/js/header.js" defer></script>
   <script src="../assets/js/whatsapp.js" defer></script>
 </body>
