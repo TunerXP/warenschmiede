@@ -3,27 +3,72 @@
   const toggle = document.querySelector('[data-nav-toggle]');
   const menu = document.querySelector('[data-nav-menu]');
   const navLinks = menu ? Array.from(menu.querySelectorAll('[data-nav-link]')) : [];
+  const navMore = document.getElementById('navMore');
+  const navMoreMenu = document.getElementById('navMoreMenu');
+  const navMoreBtn = navMore ? navMore.querySelector('.nav-more-btn') : null;
+
+  const updateMoreButtonState = () => {
+    if (!navMoreBtn || !navMoreMenu) {
+      return;
+    }
+    const hasActiveLink = !!navMoreMenu.querySelector(
+      '[data-nav-link].active, [data-nav-link].is-active, [data-nav-link][aria-current="page"]'
+    );
+    navMoreBtn.classList.toggle('active', hasActiveLink);
+  };
 
   const setLinkState = (link, isActive) => {
     link.classList.toggle('is-active', isActive);
     link.classList.toggle('active', isActive);
   };
 
-  if (!header || !menu || !toggle) {
+  if (!header || !menu) {
     return;
   }
 
+  const closeMoreMenu = () => {
+    if (!navMoreBtn || !navMoreMenu) {
+      return;
+    }
+    navMoreBtn.setAttribute('aria-expanded', 'false');
+    navMoreMenu.hidden = true;
+  };
+
+  const openMoreMenu = () => {
+    if (!navMoreBtn || !navMoreMenu) {
+      return;
+    }
+    navMoreBtn.setAttribute('aria-expanded', 'true');
+    navMoreMenu.hidden = false;
+  };
+
+  const toggleMoreMenu = () => {
+    if (!navMoreBtn) {
+      return;
+    }
+    const isExpanded = navMoreBtn.getAttribute('aria-expanded') === 'true';
+    if (isExpanded) {
+      closeMoreMenu();
+    } else {
+      openMoreMenu();
+    }
+  };
+
   const closeMenu = () => {
     menu.classList.remove('is-open');
-    toggle.setAttribute('aria-expanded', 'false');
+    toggle?.setAttribute('aria-expanded', 'false');
+    closeMoreMenu();
   };
 
   const openMenu = () => {
     menu.classList.add('is-open');
-    toggle.setAttribute('aria-expanded', 'true');
+    toggle?.setAttribute('aria-expanded', 'true');
   };
 
   const toggleMenu = () => {
+    if (!toggle) {
+      return;
+    }
     const expanded = toggle.getAttribute('aria-expanded') === 'true';
     if (expanded) {
       closeMenu();
@@ -32,7 +77,10 @@
     }
   };
 
-  toggle.addEventListener('click', toggleMenu);
+  if (toggle) {
+    toggle.addEventListener('click', toggleMenu);
+    toggle.addEventListener('click', closeMoreMenu);
+  }
 
   menu.addEventListener('click', (event) => {
     const target = event.target;
@@ -47,6 +95,9 @@
   });
 
   window.addEventListener('keydown', (event) => {
+    if (!toggle) {
+      return;
+    }
     if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
       closeMenu();
       toggle.focus();
@@ -82,6 +133,7 @@
         setLinkState(link, false);
       }
     });
+    updateMoreButtonState();
     return updated;
   };
 
@@ -134,6 +186,9 @@
       }
     });
 
+    if (matched) {
+      updateMoreButtonState();
+    }
     return matched;
   };
 
@@ -153,6 +208,44 @@
   };
 
   initializeActiveState();
+
+  if (navMoreBtn && navMoreMenu) {
+    navMoreBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      toggleMoreMenu();
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!(event.target instanceof Element)) {
+        return;
+      }
+      if (navMore && navMore.contains(event.target)) {
+        return;
+      }
+      closeMoreMenu();
+    });
+
+    navMoreMenu.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      if (target.closest('a')) {
+        closeMoreMenu();
+      }
+    });
+
+    const handleMoreMenuEscape = (event) => {
+      if (event.key === 'Escape') {
+        closeMoreMenu();
+        navMoreBtn.focus();
+      }
+    };
+
+    navMoreBtn.addEventListener('keydown', handleMoreMenuEscape);
+    navMoreMenu.addEventListener('keydown', handleMoreMenuEscape);
+  }
 
   const sections = document.querySelectorAll('[data-section-target]');
   if (sections.length && 'IntersectionObserver' in window) {
