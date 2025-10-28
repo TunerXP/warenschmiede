@@ -10,10 +10,34 @@
 
   const navToggle = document.querySelector('[data-nav-toggle]');
   const mqDesktop = window.matchMedia('(min-width: 1024px)');
+  const COLLAPSE_SPACING = 8;
 
-  const isStaticItem = (item) => item.hasAttribute('data-nav-static');
+  const isStaticMenuItem = (item) => item.hasAttribute('data-nav-static');
+  const isDynamicMenuItem = (item) => item.dataset.navDynamic === 'true';
 
-  const getDynamicItems = () => Array.from(navMoreMenu.children).filter((child) => !isStaticItem(child));
+  const collapsibleItems = () =>
+    Array.from(navList.children).filter((item) => !item.classList.contains('nav-fixed') && item !== navMore);
+
+  const dynamicMenuItems = () => Array.from(navMoreMenu.children).filter(isDynamicMenuItem);
+
+  const syncOrders = () => {
+    Array.from(navList.children).forEach((item, index) => {
+      if (item === navMore) {
+        return;
+      }
+      if (!item.dataset.navOrder) {
+        item.dataset.navOrder = String(index);
+      }
+    });
+
+    Array.from(navMoreMenu.children)
+      .filter((item) => !isStaticMenuItem(item))
+      .forEach((item, index) => {
+        if (!item.dataset.navOrder) {
+          item.dataset.navOrder = String(navList.children.length + index);
+        }
+      });
+  };
 
   const closeDropdown = () => {
     navMoreBtn.setAttribute('aria-expanded', 'false');
@@ -26,67 +50,68 @@
   };
 
   const updateMoreActiveState = () => {
-    const hasActiveLink = !!navMoreMenu.querySelector('.nav-link.active, .nav-link.is-active');
+    const hasActiveLink = !!navMoreMenu.querySelector(
+      '.nav-link.active, .nav-link.is-active, .nav-link[aria-current="page"]'
+    );
     navMoreBtn.classList.toggle('active', hasActiveLink);
   };
 
-  const restoreItems = () => {
-    getDynamicItems().forEach((item) => {
-      navList.insertBefore(item, navMore);
-    });
+  const updateMoreVisibility = () => {
+    navMore.style.display = navMoreMenu.children.length > 0 ? 'block' : 'none';
+  };
+
+  const restoreDynamicItems = () => {
+    const items = dynamicMenuItems();
+    if (!items.length) {
+      return;
+    }
+
+    items
+      .sort((a, b) => {
+        const orderA = Number(a.dataset.navOrder ?? Number.MAX_SAFE_INTEGER);
+        const orderB = Number(b.dataset.navOrder ?? Number.MAX_SAFE_INTEGER);
+        return orderA - orderB;
+      })
+      .forEach((item) => {
+        item.removeAttribute('data-nav-dynamic');
+        navList.insertBefore(item, navMore);
+      });
   };
 
   const collapse = () => {
-    restoreItems();
     closeDropdown();
-
-    navMore.style.display = 'none';
-    navMore.style.visibility = '';
+    syncOrders();
+    restoreDynamicItems();
+    updateMoreVisibility();
 
     if (!mqDesktop.matches) {
       updateMoreActiveState();
       return;
     }
 
-    navMore.style.display = 'block';
-    navMore.style.visibility = 'hidden';
+    let candidates = collapsibleItems();
+    if (!candidates.length) {
+      updateMoreActiveState();
+      return;
+    }
 
-    const computeAvailable = () => navList.clientWidth - navMore.offsetWidth - 8;
+    const computeAvailable = () => navList.clientWidth - navMore.offsetWidth - COLLAPSE_SPACING;
 
-    const getLastVisible = () => {
-      const items = Array.from(navList.children);
-      const moreIndex = items.indexOf(navMore);
-      if (moreIndex <= 0) {
-        return null;
-      }
-      return items[moreIndex - 1];
-    };
-
-    let available = computeAvailable();
-
-    while (navList.scrollWidth > available && navList.children.length > 1) {
-      const lastVisible = getLastVisible();
-      if (!lastVisible || lastVisible === navMore) {
+    while (navList.scrollWidth > computeAvailable() && candidates.length) {
+      const last = candidates[candidates.length - 1];
+      if (!last || last === navMore) {
         break;
       }
 
-      const firstDynamic = getDynamicItems()[0] || null;
-      if (firstDynamic) {
-        navMoreMenu.insertBefore(lastVisible, firstDynamic);
-      } else {
-        navMoreMenu.appendChild(lastVisible);
-      }
-      available = computeAvailable();
+      last.dataset.navDynamic = 'true';
+
+      const firstStatic = Array.from(navMoreMenu.children).find(isStaticMenuItem);
+      navMoreMenu.insertBefore(last, firstStatic ?? null);
+
+      candidates = collapsibleItems();
     }
 
-    const hasOverflow = navMoreMenu.children.length > 0;
-    navMore.style.visibility = '';
-    navMore.style.display = hasOverflow ? 'block' : 'none';
-
-    if (!hasOverflow) {
-      closeDropdown();
-    }
-
+    updateMoreVisibility();
     updateMoreActiveState();
   };
 
@@ -152,8 +177,10 @@
     updateMoreActiveState();
   });
 
-  observer.observe(navList, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
-  observer.observe(navMoreMenu, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+  const observerConfig = { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'aria-current'] };
+
+  observer.observe(navList, observerConfig);
+  observer.observe(navMoreMenu, observerConfig);
 
   scheduleCollapse();
 })();
