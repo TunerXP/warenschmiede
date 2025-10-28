@@ -454,16 +454,31 @@ img {
     grid-template-columns: max-content 1fr max-content;
     align-items: center;
     gap: 12px;
-    flex-wrap: nowrap;
+  }
+
+  .brand {
+    min-width: 220px;
   }
 
   .header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
     flex-wrap: nowrap;
   }
 
   .header-actions .btn-cta {
     order: 0;
     flex: 0 0 auto;
+  }
+
+  .main-nav {
+    position: relative;
+    padding: 6px 8px;
+    border-radius: 14px;
+    background: var(--bg-elev);
+    background: color-mix(in oklab, var(--bg-elev) 80%, transparent);
+    border: 1px solid var(--border);
   }
 
   .nav-menu {
@@ -478,7 +493,7 @@ img {
   .nav-list {
     flex-direction: row;
     align-items: center;
-    gap: 12px;
+    gap: 6px;
     white-space: nowrap;
     flex-wrap: nowrap;
   }
@@ -487,13 +502,84 @@ img {
     list-style: none;
   }
 
-  .nav-link {
-    display: inline-block;
-    padding: 10px 12px;
+  .nav-list > li > .nav-link {
+    padding: 8px 12px;
   }
 
-  .nav-link::after {
-    bottom: 6px;
+  .nav-list > li > .nav-link::after {
+    display: none;
+  }
+
+  .nav-list > li > a,
+  .nav-more-btn {
+    display: inline-block;
+    padding: 8px 12px;
+    line-height: 1;
+    border-radius: 999px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    background: transparent;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    white-space: nowrap;
+  }
+
+  .nav-list > li > a:hover,
+  .nav-more-btn:hover {
+    background: var(--bg-elev);
+    border-color: var(--border);
+  }
+
+  .nav-list > li > a.active {
+    background: var(--bg-elev);
+    background: color-mix(in oklab, var(--bg-elev) 92%, transparent);
+    border-color: var(--border);
+    border-color: color-mix(in oklab, var(--border) 120%, transparent);
+    box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.3) inset;
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--border) 70%, transparent) inset;
+  }
+
+  .nav-more {
+    position: relative;
+    display: none;
+  }
+
+  .nav-more-btn {
+    background: transparent;
+    border-color: transparent;
+  }
+
+  .nav-more-btn[aria-expanded="true"],
+  .nav-more-btn.active {
+    background: var(--bg-elev);
+    background: color-mix(in oklab, var(--bg-elev) 92%, transparent);
+    border-color: var(--border);
+    border-color: color-mix(in oklab, var(--border) 120%, transparent);
+    box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.3) inset;
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--border) 70%, transparent) inset;
+  }
+
+  .nav-more-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    margin: 0;
+    padding: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+    min-width: 220px;
+  }
+
+  .nav-more-menu a {
+    display: block;
+    padding: 8px 10px;
+    border-radius: 8px;
+  }
+
+  .nav-more-menu a:hover,
+  .nav-more-menu a:focus-visible {
+    background: var(--bg-elev);
   }
 
   .nav-toggle {
