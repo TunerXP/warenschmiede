@@ -4,6 +4,11 @@
   const menu = document.querySelector('[data-nav-menu]');
   const navLinks = menu ? Array.from(menu.querySelectorAll('[data-nav-link]')) : [];
 
+  const setLinkState = (link, isActive) => {
+    link.classList.toggle('is-active', isActive);
+    link.classList.toggle('active', isActive);
+  };
+
   if (!header || !menu || !toggle) {
     return;
   }
@@ -71,10 +76,10 @@
     let updated = false;
     navLinks.forEach((link) => {
       if (link.dataset.section === sectionId) {
-        link.classList.add('is-active');
+        setLinkState(link, true);
         updated = true;
       } else {
-        link.classList.remove('is-active');
+        setLinkState(link, false);
       }
     });
     return updated;
@@ -123,7 +128,7 @@
 
       if (candidates.some((candidate) => matchesPathname(candidate, pathname))) {
         navLinks.forEach((innerLink) => {
-          innerLink.classList.toggle('is-active', innerLink === link);
+          setLinkState(innerLink, innerLink === link);
         });
         matched = true;
       }
