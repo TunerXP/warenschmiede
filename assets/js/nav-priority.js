@@ -11,6 +11,10 @@
   const navToggle = document.querySelector('[data-nav-toggle]');
   const mqDesktop = window.matchMedia('(min-width: 1024px)');
 
+  const isStaticItem = (item) => item.hasAttribute('data-nav-static');
+
+  const getDynamicItems = () => Array.from(navMoreMenu.children).filter((child) => !isStaticItem(child));
+
   const closeDropdown = () => {
     navMoreBtn.setAttribute('aria-expanded', 'false');
     navMoreMenu.hidden = true;
@@ -27,9 +31,9 @@
   };
 
   const restoreItems = () => {
-    while (navMoreMenu.firstChild) {
-      navList.insertBefore(navMoreMenu.firstChild, navMore);
-    }
+    getDynamicItems().forEach((item) => {
+      navList.insertBefore(item, navMore);
+    });
   };
 
   const collapse = () => {
@@ -66,7 +70,12 @@
         break;
       }
 
-      navMoreMenu.insertBefore(lastVisible, navMoreMenu.firstChild);
+      const firstDynamic = getDynamicItems()[0] || null;
+      if (firstDynamic) {
+        navMoreMenu.insertBefore(lastVisible, firstDynamic);
+      } else {
+        navMoreMenu.appendChild(lastVisible);
+      }
       available = computeAvailable();
     }
 
