@@ -48,60 +48,64 @@
 </head>
 <body>
   <header class="site-header" data-header>
-    <nav class="site-nav" aria-label="Hauptnavigation">
-      <div class="nav-container">
-        <a class="brand" href="index.html#start">
+    <div class="container header-grid">
+      <div class="brand">
+        <a class="brand-link" href="index.html#start">
           <img src="assets/images/warenschmiede_logo.png" alt="Warenschmiede Logo" class="brand-logo" />
           <div class="brand-text">
             <span class="brand-name">Warenschmiede</span>
             <span class="brand-tagline">3D-Druck · Made in Germany</span>
           </div>
         </a>
+      </div>
 
-        <div class="nav-actions">
-          <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Theme wechseln" title="Theme wechseln">
-            <span id="themeIcon" aria-hidden="true">🖥️</span>
-            <span class="sr-only theme-toggle__label">Aktuelles Theme: Systemeinstellung</span>
-          </button>
-
-          <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
-            <span class="sr-only">Menü öffnen</span>
-            <span class="nav-toggle-bar" aria-hidden="true"></span>
-            <span class="nav-toggle-bar" aria-hidden="true"></span>
-            <span class="nav-toggle-bar" aria-hidden="true"></span>
-          </button>
-        </div>
-
+      <nav class="main-nav" aria-label="Hauptnavigation">
         <div class="nav-menu" id="primary-navigation" data-nav-menu>
-          <ul class="nav-list" role="menu">
-            <li class="nav-item" role="none">
-              <a class="nav-link" href="index.html#start" role="menuitem" data-nav-link data-section="start" data-path="/ , /warenschmiede/ , /index.html">Start</a>
+          <ul class="nav-list" id="navList">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#start" data-nav-link data-section="start" data-path="/ , /warenschmiede/ , /index.html">Start</a>
             </li>
-            <li class="nav-item" role="none">
-              <a class="nav-link" href="about.html" role="menuitem" data-nav-link data-path="/about , /about.html , /warenschmiede/about.html">Über mich</a>
+            <li class="nav-item">
+              <a class="nav-link" href="about.html" data-nav-link data-path="/about , /about.html , /warenschmiede/about.html">Über mich</a>
             </li>
-            <li class="nav-item" role="none">
-              <a class="nav-link" href="index.html#leistungen" role="menuitem" data-nav-link data-section="leistungen">Leistungen</a>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#leistungen" data-nav-link data-section="leistungen">Leistungen</a>
             </li>
-            <li class="nav-item" role="none">
-              <a class="nav-link" href="ideen/index.html" role="menuitem" data-nav-link data-path="/ideen , /ideen/ , /ideen/index.html">Ideenquellen</a>
+            <li class="nav-item">
+              <a class="nav-link" href="ideen/index.html" data-nav-link data-path="/ideen , /ideen/ , /ideen/index.html">Ideenquellen</a>
             </li>
-            <li class="nav-item" role="none">
-              <a class="nav-link" href="materials/index.html" role="menuitem" data-nav-link data-path="/materials , /materials/ , /materials/index.html">Materialübersicht</a>
+            <li class="nav-item">
+              <a class="nav-link" href="materials/index.html" data-nav-link data-path="/materials , /materials/ , /materials/index.html">Materialübersicht</a>
             </li>
-            <li class="nav-item" role="none">
-              <a class="nav-link" href="pc-hilfe/index.html" role="menuitem" data-nav-link data-path="/pc-hilfe , /pc-hilfe/ , /pc-hilfe/index.html">PC-Hilfe</a>
+            <li class="nav-item">
+              <a class="nav-link" href="pc-hilfe/index.html" data-nav-link data-path="/pc-hilfe , /pc-hilfe/ , /pc-hilfe/index.html">PC-Hilfe</a>
             </li>
-            <li class="nav-item" role="none">
-              <a class="nav-link" href="index.html#kontakt" role="menuitem" data-nav-link data-section="kontakt">Kontakt</a>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#kontakt" data-nav-link data-section="kontakt">Kontakt</a>
             </li>
-            <li class="nav-item nav-item--cta" role="none">
-              <a class="btn btn-primary nav-cta" href="mailto:info@warenschmiede.com?subject=Anfrage%20an%20Marco" role="menuitem">Angebot erhalten</a>
+            <li class="nav-more" id="navMore">
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">Mehr ▾</button>
+              <ul class="nav-more-menu" id="navMoreMenu" hidden></ul>
             </li>
           </ul>
         </div>
+      </nav>
+
+      <div class="header-actions">
+        <a class="btn btn-primary btn-cta" href="mailto:info@warenschmiede.com?subject=Anfrage%20an%20Marco">Angebot erhalten</a>
+        <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Theme wechseln" title="Theme wechseln">
+          <span id="themeIcon" aria-hidden="true">🖥️</span>
+          <span class="sr-only theme-toggle__label">Aktuelles Theme: Systemeinstellung</span>
+        </button>
+
+        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
+          <span class="sr-only">Menü öffnen</span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+        </button>
       </div>
-    </nav>
+    </div>
   </header>
 
   <main id="inhalt" class="site-main" tabindex="-1">
@@ -172,6 +176,7 @@
     </div>
   </footer>
   <script src="assets/js/theme.js" defer></script>
+  <script src="assets/js/nav-priority.js" defer></script>
   <script src="assets/js/header.js" defer></script>
   <script src="assets/js/whatsapp.js" defer></script>
 </body>
