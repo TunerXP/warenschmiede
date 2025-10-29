@@ -863,6 +863,42 @@ img {
   color: var(--text-muted);
 }
 
+.callout {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--card);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.callout h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.callout p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.callout ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--text-muted);
+}
+
+.callout ul li + li {
+  margin-top: 0.35rem;
+}
+
+.callout.warn {
+  border-color: #e7b14a;
+  background: color-mix(in oklab, #e7b14a 12%, var(--card));
+}
+
 .materials-teaser {
   margin-top: var(--space-6);
   padding: var(--space-6);
@@ -1142,6 +1178,154 @@ img {
   font-size: 0.95rem;
   color: var(--muted);
   line-height: 1.7;
+}
+
+/* KI Page */
+.ki-hero__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 720px;
+}
+
+.ki-hero__lede {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+}
+
+.ki-toc__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.ki-toc__nav h2 {
+  margin: 0;
+  font-size: clamp(1.2rem, 2.8vw, 1.5rem);
+}
+
+.ki-toc__list {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.ki-toc__list li {
+  line-height: 1.5;
+}
+
+.ki-toc__list li + li {
+  margin-top: 0.35rem;
+}
+
+.ki-toc__list a {
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ki-toc__list a:hover,
+.ki-toc__list a:focus-visible {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.ki-section__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 760px;
+}
+
+.ki-section__inner > p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.ki-section__inner > p + p {
+  margin-top: 0.5rem;
+}
+
+.ki-tips {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.ki-tips li {
+  margin-bottom: var(--space-4);
+}
+
+.ki-tips li::marker {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.ki-tips li:last-child {
+  margin-bottom: 0;
+}
+
+.ki-tip-card {
+  margin-top: var(--space-2);
+}
+
+.ki-tip-card h3 {
+  font-size: 1.2rem;
+}
+
+.ki-tip-card p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.ki-uses {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.ki-uses li {
+  color: var(--text-muted);
+}
+
+.ki-uses li + li {
+  margin-top: 0.4rem;
+}
+
+.ki-faq {
+  margin: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.ki-faq > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.ki-faq dt {
+  margin: 0;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ki-faq dd {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.ki-cta .hero-actions {
+  margin-top: 0;
+}
+
+@media (max-width: 640px) {
+  .ki-toc__nav {
+    padding: var(--space-4);
+  }
 }
 
 /* Plattformliste mit textbasierten Badges (statt PNG-Logos) */
