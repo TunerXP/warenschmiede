@@ -1692,6 +1692,184 @@ address {
   gap: var(--space-3);
 }
 
+.mat-quick {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  gap: var(--space-4);
+}
+
+.mat-quick h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.mat-quick p {
+  margin: 0;
+}
+
+.mat-table {
+  overflow-x: auto;
+}
+
+.mat-table table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 560px;
+}
+
+.mat-table th,
+.mat-table td {
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--border);
+  text-align: left;
+  line-height: 1.2;
+  font-size: 0.95rem;
+}
+
+.mat-table th {
+  background: var(--surface-muted);
+  font-weight: 600;
+}
+
+.mat-table tbody tr:nth-child(even) {
+  background: rgba(148, 163, 184, 0.08);
+  background: color-mix(in srgb, var(--surface-muted) 45%, transparent);
+}
+
+.mat-table tbody tr:hover {
+  background: rgba(148, 163, 184, 0.12);
+  background: color-mix(in srgb, var(--surface-muted) 65%, transparent);
+}
+
+.mat-notes {
+  display: grid;
+  gap: 0.5rem;
+  padding: var(--space-3);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.mat-notes p {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .mat-quick {
+    padding: var(--space-3);
+  }
+
+  .mat-table table {
+    min-width: 100%;
+    font-size: 0.9rem;
+  }
+}
+
+/* KI Lexikon */
+.lex-list {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+.lex-item {
+  padding: var(--space-4);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.lex-item h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.lex-item p {
+  margin: 0;
+}
+
+.lex-item details {
+  margin-top: 0.5rem;
+}
+
+.lex-item details summary {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  background: var(--control-bg);
+  color: var(--text);
+  font-weight: 600;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  list-style: none;
+}
+
+.lex-item details summary::-webkit-details-marker {
+  display: none;
+}
+
+.lex-item details summary::before {
+  content: '\25B8';
+  font-size: 0.95rem;
+  color: var(--accent);
+  transition: transform 0.2s ease;
+}
+
+.lex-item details[open] summary::before {
+  content: '\25BE';
+}
+
+.lex-item details summary:hover {
+  background: var(--control-hover-bg);
+}
+
+.lex-item details summary:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.lex-item details p {
+  margin-top: 0.75rem;
+  line-height: 1.5;
+}
+
+.lex-contact {
+  margin-top: var(--space-6);
+  padding: var(--space-4);
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  text-align: center;
+  font-size: 1.05rem;
+}
+
+.lex-contact a {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .lex-item {
+    padding: var(--space-3);
+  }
+
+  .lex-item h2 {
+    font-size: 1.2rem;
+  }
+}
+
 .materials-list {
   padding-top: 0;
 }
