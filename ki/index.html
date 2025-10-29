@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="de" class="ki-page">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>KI – einfach erklärt | Warenschmiede</title>
+  <meta name="description" content="KI kurz erklärt: So funktionieren Sprachmodelle, fünf Einstiegs-Tipps, Datenschutz-Hinweise und praktische Einsatzideen. Verständlich, greifbar, verantwortungsbewusst.">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="preload" as="image" href="../assets/logo.svg">
+  <script>
+    (function () {
+      var storageKey = 'theme-preference';
+      var preference = 'system';
+      try {
+        var stored = localStorage.getItem(storageKey);
+        if (stored === 'light' || stored === 'dark' || stored === 'system') {
+          preference = stored;
+        }
+      } catch (error) {}
+      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+      var resolved = preference === 'dark'
+        ? 'dark'
+        : preference === 'light'
+          ? 'light'
+          : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
+      var root = document.documentElement;
+      root.dataset.theme = resolved;
+      root.dataset.themePreference = preference;
+    })();
+  </script>
+  <link rel="stylesheet" href="../styles.css">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8fafc">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0f17">
+  <meta name="color-scheme" content="light dark">
+  <link rel="canonical" href="https://www.warenschmiede.com/ki/">
+  <meta property="og:title" content="KI – einfach erklärt | Warenschmiede">
+  <meta property="og:description" content="KI kurz erklärt: Funktionsweise, wichtigste Tipps, Datenschutz-Hinweise und sinnvolle Einsätze. Verständlich und verantwortungsbewusst.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.warenschmiede.com/ki/">
+  <meta property="og:image" content="https://www.warenschmiede.com/assets/img/og-warenschmiede.svg">
+  <meta property="og:site_name" content="Warenschmiede">
+  <meta property="og:locale" content="de_DE">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body class="ki-page">
+  <header class="site-header" data-header>
+    <div class="container header-grid">
+      <div class="brand">
+        <a class="brand-link" href="/index.html#start">
+          <img src="../assets/images/warenschmiede_logo.png" alt="Warenschmiede Logo" class="brand-logo" />
+          <div class="brand-text">
+            <span class="brand-name">Warenschmiede</span>
+            <span class="brand-tagline">3D-Druck · Made in Germany</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="main-nav" aria-label="Hauptnavigation">
+        <div class="nav-menu" id="primary-navigation" data-nav-menu>
+          <ul class="nav-list" id="navList">
+            <li class="nav-item nav-fixed">
+              <a class="nav-link" href="/index.html#start" data-nav-link data-section="start" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html">Start</a>
+            </li>
+            <li class="nav-item nav-fixed">
+              <a class="nav-link" href="/index.html#leistungen" data-nav-link data-section="leistungen" data-path="/leistungen , /leistungen.html">Leistungen</a>
+            </li>
+            <li class="nav-item nav-fixed">
+              <a class="nav-link" href="/pc-hilfe/index.html" data-nav-link data-path="/pc-hilfe , /pc-hilfe/ , /pc-hilfe/index.html">PC-Hilfe</a>
+            </li>
+            <li class="nav-item nav-fixed">
+              <a class="nav-link" href="/index.html#kontakt" data-nav-link data-section="kontakt" data-path="/kontakt , /kontakt.html">Kontakt</a>
+            </li>
+
+            <li class="nav-more" id="navMore">
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">Mehr ▾</button>
+              <ul class="nav-more-menu" id="navMoreMenu" hidden>
+                <li>
+                  <a class="nav-link" href="/about.html" data-nav-link data-path="/about , /about.html , /warenschmiede/about.html">Über mich</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ideen/index.html" data-nav-link data-path="/ideen , /ideen/ , /ideen/index.html">Ideenquellen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/materials/index.html" data-nav-link data-path="/materials , /materials/ , /materials/index.html">Materialübersicht</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/index.html" data-nav-link data-path="/ki , /ki/ , /ki/index.html">KI</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="header-actions">
+        <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Theme wechseln" title="Theme wechseln">
+          <span id="themeIcon" aria-hidden="true">🖥️</span>
+          <span class="sr-only theme-toggle__label">Aktuelles Theme: Systemeinstellung</span>
+        </button>
+
+        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
+          <span class="sr-only">Menü öffnen</span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="ki" class="site-main" tabindex="-1">
+    <section class="section ki-hero" aria-labelledby="ki-hero-heading">
+      <div class="container ki-hero__inner">
+        <p class="section-eyebrow">Grundlagen &amp; Praxis</p>
+        <h1 id="ki-hero-heading">KI – einfach erklärt</h1>
+        <p class="ki-hero__lede">Was KI kann, wo ihre Grenzen sind und wie du sie sinnvoll nutzt.</p>
+      </div>
+    </section>
+
+    <section class="section ki-toc" aria-labelledby="ki-toc-heading">
+      <div class="container">
+        <nav class="ki-toc__nav" aria-labelledby="ki-toc-heading">
+          <h2 id="ki-toc-heading">Inhalt</h2>
+          <ol class="ki-toc__list">
+            <li><a href="#was-ist-ki">Was ist KI – ganz einfach?</a></li>
+            <li><a href="#ki-tipps">Die 5 wichtigsten Tipps für Anfänger</a></li>
+            <li><a href="#datenschutz">Datenschutz &amp; Vorsicht</a></li>
+            <li><a href="#praktisch">Wofür KI praktisch ist</a></li>
+            <li><a href="#chef">Du bleibst der Chef</a></li>
+          </ol>
+        </nav>
+      </div>
+    </section>
+
+    <section class="section ki-section" id="was-ist-ki" aria-labelledby="ki-definition-heading">
+      <div class="container ki-section__inner">
+        <div class="section-heading">
+          <h2 id="ki-definition-heading">Was ist KI – ganz einfach?</h2>
+        </div>
+        <p>Künstliche Intelligenz ist kein denkender Mensch. Sie analysiert riesige Mengen an Beispielen, erkennt darin Muster und sagt voraus, welches Wort, welche Zahl oder welches Bild als Nächstes passt.</p>
+        <p>Du kannst dir ein Sprachmodell wie einen sehr schnellen, fleißigen Schüler vorstellen, der unzählige Texte gelesen hat. Es wiederholt, kombiniert und fasst Informationen zusammen – aber nur auf Basis dessen, was es vorher gesehen hat.</p>
+      </div>
+    </section>
+
+    <section class="section ki-section" id="ki-tipps" aria-labelledby="ki-tips-heading">
+      <div class="container ki-section__inner">
+        <div class="section-heading">
+          <h2 id="ki-tips-heading">Die 5 wichtigsten Tipps für Anfänger</h2>
+        </div>
+        <ol class="ki-tips">
+          <li>
+            <div class="card ki-tip-card">
+              <h3>Sei konkret</h3>
+              <p>Beschreibe genau, was du brauchst: „Schreibe eine freundliche Antwort auf eine Lieferverzögerung für Kunde Max Mustermann“ funktioniert besser als „Formuliere eine E-Mail“.</p>
+            </div>
+          </li>
+          <li>
+            <div class="card ki-tip-card">
+              <h3>Glaube nicht alles</h3>
+              <p>KI klingt überzeugend, kann aber Fakten erfinden. Prüfe Namen, Zahlen oder Quellen nach – besonders bei wichtigen Entscheidungen.</p>
+            </div>
+          </li>
+          <li>
+            <div class="card ki-tip-card">
+              <h3>Schütze deine Daten</h3>
+              <p>Gib keine Passwörter, Bank- oder Gesundheitsdaten ein. Nutze nur Informationen, die du auch auf einer Postkarte verschicken würdest.</p>
+            </div>
+          </li>
+          <li>
+            <div class="card ki-tip-card">
+              <h3>Starthilfe statt Fertiglösung</h3>
+              <p>KI ist ideal für erste Entwürfe, schnelle Erklärungen oder Ideenlisten. Den Feinschliff machst du danach selbst.</p>
+            </div>
+          </li>
+          <li>
+            <div class="card ki-tip-card">
+              <h3>Du bist der Chef</h3>
+              <p>Gib Feedback, bitte um Beispiele oder lass Formulierungen vereinfachen. So entsteht Schritt für Schritt ein Ergebnis, das zu dir passt.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section ki-section" id="datenschutz" aria-labelledby="ki-safety-heading">
+      <div class="container ki-section__inner">
+        <div class="section-heading">
+          <h2 id="ki-safety-heading">Datenschutz &amp; Vorsicht</h2>
+        </div>
+        <div class="callout warn">
+          <h3>Die Postkarten-Regel</h3>
+          <p>Alles, was du in ein KI-Feld schreibst, könnte bei Anbieter:innen gespeichert oder von Mitarbeitenden geprüft werden. Teile nur Inhalte, die auch auf einer Postkarte stehen dürften.</p>
+          <ul>
+            <li>Keine Passwörter, TANs oder Bankdaten.</li>
+            <li>Keine vertraulichen Kund:innen- oder Gesundheitsinfos.</li>
+            <li>Keine unveröffentlichten Geschäftsgeheimnisse oder Verträge.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section ki-section" id="praktisch" aria-labelledby="ki-usecases-heading">
+      <div class="container ki-section__inner">
+        <div class="section-heading">
+          <h2 id="ki-usecases-heading">Wofür KI praktisch ist</h2>
+        </div>
+        <ul class="ki-uses">
+          <li>E-Mails, Antworten oder Texte freundlich formulieren.</li>
+          <li>Begriffe und Abläufe kurz und verständlich erklären lassen.</li>
+          <li>Ideenlisten für Projekte, Geschenke oder Inhalte sammeln.</li>
+          <li>Rezepte, Wochenpläne oder Checklisten strukturieren.</li>
+          <li>Feedback zu eigenen Texten einholen und verbessern lassen.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section ki-section" id="chef" aria-labelledby="ki-control-heading">
+      <div class="container ki-section__inner">
+        <div class="section-heading">
+          <h2 id="ki-control-heading">Du bleibst der Chef</h2>
+        </div>
+        <p>Bewerte jedes Ergebnis mit deinem Wissen. Wenn etwas fehlt, unklar oder zu kompliziert ist, frag nach, lass umschreiben oder fordere Beispiele an. Du entscheidest, was übernommen wird.</p>
+      </div>
+    </section>
+
+    <section class="section ki-section" aria-labelledby="ki-faq-heading">
+      <div class="container ki-section__inner">
+        <div class="section-heading">
+          <h2 id="ki-faq-heading">Kurz gefragt</h2>
+        </div>
+        <dl class="ki-faq">
+          <div>
+            <dt>Macht KI Fehler?</dt>
+            <dd>Ja. Modelle können Halluzinationen produzieren. Prüfe wichtige Fakten immer nach – siehe Tipp 2.</dd>
+          </div>
+          <div>
+            <dt>Brauche ich spezielles Vorwissen?</dt>
+            <dd>Nein. Schreibe klar, gib Beispiele und erkläre dein Ziel. Je konkreter der Prompt, desto besser das Ergebnis.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="section ki-section" aria-labelledby="ki-cta-heading">
+      <div class="container ki-section__inner ki-cta">
+        <div class="section-heading">
+          <h2 id="ki-cta-heading">Lust auf ein Projekt?</h2>
+        </div>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="/index.html#kontakt">Schnellanfrage</a>
+          <a class="btn btn-outline" href="/index.html#leistungen">Mehr über Leistungen</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      © 2025 Warenschmiede · Alle Rechte vorbehalten.
+    </div>
+  </footer>
+  <script src="../assets/js/theme.js" defer></script>
+  <script src="../assets/js/header.js" defer></script>
+  <script src="../assets/js/whatsapp.js" defer></script>
+</body>
+</html>
