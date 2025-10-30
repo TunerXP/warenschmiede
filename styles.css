@@ -1500,6 +1500,73 @@ img {
   grid-column: 1 / -1;
 }
 
+.route-section {
+  margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.map-container {
+  position: relative;
+  width: 100%;
+  height: clamp(280px, 52vw, 340px);
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  background: color-mix(in srgb, var(--surface-muted) 70%, #9ca3af 30%);
+  box-shadow: 0 24px 48px -32px rgba(15, 23, 42, 0.45);
+  overflow: hidden;
+}
+
+.map-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  text-align: center;
+  padding: var(--space-4);
+  color: var(--text-subtle);
+  background: var(--surface-muted);
+  background: color-mix(in srgb, var(--surface-muted) 85%, var(--border) 15%);
+}
+
+.map-placeholder__text {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-subtle);
+}
+
+.map-placeholder__hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  max-width: 380px;
+}
+
+.map-canvas {
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+
+.map-canvas.is-active {
+  display: block;
+}
+
+.route-buttons {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.route-buttons .btn {
+  width: 100%;
+}
+
 @media (min-width: 640px) {
   .quick-contact__actions {
     max-width: 420px;

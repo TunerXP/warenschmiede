@@ -185,6 +185,25 @@
           <p><strong>E-Mail:</strong> <a href="mailto:info@warenschmiede.com">info@warenschmiede.com</a></p>
           <p><strong>Telefon / WhatsApp:</strong> <a href="https://wa.me/4915141382732" data-wa-link rel="noopener">+49 151 41382732</a></p>
           <p><strong>Adresse:</strong> Marco Hoffmann &ndash; Warenschmiede<br>Im Bohrer 7<br>78166 Donaueschingen, Deutschland</p>
+
+          <div class="route-section" aria-labelledby="wegbeschreibung-heading">
+            <h3 id="wegbeschreibung-heading">Wegbeschreibung</h3>
+            <p>Du findest mich in Donaueschingen. Parken in der Straße ist möglich &ndash; bitte melde dich kurz vorab per Telefon oder WhatsApp.</p>
+
+            <div class="map-container" data-map-container>
+              <div class="map-placeholder" data-map-placeholder>
+                <p class="map-placeholder__text">Karte aus Datenschutzgründen erst nach Klick laden.</p>
+                <button type="button" class="btn btn-primary" data-map-trigger aria-label="Karte mit Anfahrtsbeschreibung anzeigen">Karte anzeigen</button>
+                <p class="map-placeholder__hint" data-map-notice>Mit Klick auf &bdquo;Karte anzeigen&ldquo; werden Kartenkacheln von Drittanbietern geladen.</p>
+              </div>
+              <div class="map-canvas" data-map role="region" aria-label="Karte: Warenschmiede, Im Bohrer 7, 78166 Donaueschingen" tabindex="0"></div>
+            </div>
+
+            <div class="route-buttons">
+              <a class="btn btn-outline" href="https://www.google.com/maps/dir/?api=1&amp;destination=Im+Bohrer+7%2C+78166+Donaueschingen%2C+Deutschland" target="_blank" rel="noopener">Route in Google Maps öffnen</a>
+              <a class="btn btn-outline" href="https://maps.apple.com/?daddr=Im+Bohrer+7,+78166+Donaueschingen,+Deutschland" target="_blank" rel="noopener">Route in Apple Karten öffnen</a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -209,6 +228,118 @@
       © 2025 Warenschmiede · Alle Rechte vorbehalten.
     </div>
   </footer>
+  <script>
+    (function () {
+      const trigger = document.querySelector('[data-map-trigger]');
+      const placeholder = document.querySelector('[data-map-placeholder]');
+      const mapCanvas = document.querySelector('[data-map]');
+      if (!trigger || !placeholder || !mapCanvas) {
+        return;
+      }
+
+      const leafletCss = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      const leafletJs = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      let leafletPromise;
+      let isLoading = false;
+      let isInitialized = false;
+      const buttonLabel = trigger.textContent;
+
+      const loadStylesheet = (href) => {
+        return new Promise((resolve, reject) => {
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = href;
+          link.onload = resolve;
+          link.onerror = reject;
+          document.head.appendChild(link);
+        });
+      };
+
+      const loadScript = (src) => {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = src;
+          script.async = true;
+          script.onload = resolve;
+          script.onerror = reject;
+          document.body.appendChild(script);
+        });
+      };
+
+      const loadLeafletAssets = () => {
+        if (window.L && typeof window.L.map === 'function') {
+          return Promise.resolve();
+        }
+        if (!leafletPromise) {
+          leafletPromise = Promise.all([
+            loadStylesheet(leafletCss),
+            loadScript(leafletJs)
+          ]);
+        }
+        return leafletPromise;
+      };
+
+      const initialiseMap = () => {
+        const coordinates = [47.953, 8.499];
+        mapCanvas.classList.add('is-active');
+
+        const map = window.L.map(mapCanvas, {
+          center: coordinates,
+          zoom: 16,
+          scrollWheelZoom: false
+        });
+
+        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende'
+        }).addTo(map);
+
+        const marker = window.L.marker(coordinates)
+          .addTo(map)
+          .bindPopup('<strong>Warenschmiede</strong><br>Im Bohrer 7, 78166 Donaueschingen');
+
+        placeholder.setAttribute('hidden', 'hidden');
+        setTimeout(() => {
+          map.invalidateSize();
+          marker.openPopup();
+          if (typeof mapCanvas.focus === 'function') {
+            try {
+              mapCanvas.focus({ preventScroll: true });
+            } catch (error) {
+              mapCanvas.focus();
+            }
+          }
+        }, 150);
+
+        trigger.textContent = buttonLabel;
+        isInitialized = true;
+        isLoading = false;
+      };
+
+      trigger.addEventListener('click', () => {
+        if (isInitialized || isLoading) {
+          return;
+        }
+
+        isLoading = true;
+        trigger.disabled = true;
+        trigger.setAttribute('aria-disabled', 'true');
+        trigger.textContent = 'Karte wird geladen…';
+
+        loadLeafletAssets()
+          .then(() => {
+            initialiseMap();
+          })
+          .catch(() => {
+            isLoading = false;
+            leafletPromise = undefined;
+            trigger.disabled = false;
+            trigger.removeAttribute('aria-disabled');
+            trigger.textContent = buttonLabel;
+          });
+      });
+    })();
+  </script>
   <script src="assets/js/theme.js" defer></script>
   <script src="assets/js/header.js" defer></script>
   <script src="assets/js/whatsapp.js" defer></script>
