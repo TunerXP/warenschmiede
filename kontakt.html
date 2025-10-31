@@ -185,20 +185,20 @@
             </div>
           </div>
           <div class="quick-contact__actions">
-            <a class="btn btn-primary quick-contact__cta" href="mailto:info@warenschmiede.com?subject=Anfrage%20an%20die%20Warenschmiede" aria-label="Jetzt anfragen per E-Mail (öffnet dein Mailprogramm)">
+            <a class="btn btn-primary quick-contact__cta" href="mailto:info@warenschmiede.com?subject=Anfrage%20an%20die%20Warenschmiede" data-label="fixed" aria-label="E-Mail schreiben an info@warenschmiede.com (öffnet dein Mailprogramm)">
               <span class="quick-contact__icon" aria-hidden="true">✉️</span>
-              <span class="quick-contact__label">Jetzt anfragen</span>
-              <span class="sr-only"> per E-Mail</span>
+              <span class="quick-contact__label">E-Mail schreiben</span>
+              <span class="sr-only"> an info@warenschmiede.com</span>
             </a>
-            <a class="btn btn-primary quick-contact__cta quick-contact__cta--whatsapp" href="https://wa.me/4915141382732" data-wa-link rel="noopener" aria-label="Jetzt anfragen per WhatsApp (öffnet Chat)">
+            <a class="btn btn-primary quick-contact__cta quick-contact__cta--whatsapp" href="https://wa.me/4915141382732" data-wa-link rel="noopener noreferrer" data-label="fixed" aria-label="Per WhatsApp schreiben (öffnet Chat)">
               <span class="quick-contact__icon" aria-hidden="true">💬</span>
-              <span class="quick-contact__label">Jetzt anfragen</span>
+              <span class="quick-contact__label">Per WhatsApp schreiben</span>
               <span class="sr-only"> per WhatsApp</span>
             </a>
-            <a class="btn btn-primary quick-contact__cta quick-contact__cta--call" href="tel:+4915141382732" aria-label="Jetzt anfragen per Telefon: 015141382732">
+            <a class="btn btn-primary quick-contact__cta quick-contact__cta--call" href="tel:+4915141382732" data-label="fixed" aria-label="Jetzt anrufen: 015141382732">
               <span class="quick-contact__icon" aria-hidden="true">📞</span>
-              <span class="quick-contact__label">Jetzt anfragen</span>
-              <span class="sr-only"> per Telefon</span>
+              <span class="quick-contact__label">Jetzt anrufen</span>
+              <span class="sr-only"> unter 015141382732</span>
             </a>
             <p class="quick-contact__phone">015141382732</p>
             <p class="quick-contact__availability">Telefonisch erreichbar Montag–Freitag, 19–21 Uhr. Ich rufe zurück, wenn die Nummer nicht anonym und seriös ist.</p>
@@ -226,15 +226,15 @@
             <div class="map-container" data-map-container>
               <div class="map-placeholder" data-map-placeholder>
                 <p class="map-placeholder__text">Karte aus Datenschutzgründen erst nach Klick laden.</p>
-                <button type="button" class="btn btn-primary" data-map-trigger aria-label="Mehr erfahren zur Anfahrtskarte">Mehr erfahren<span class="sr-only"> zur Anfahrtskarte</span></button>
-                <p class="map-placeholder__hint" data-map-notice>Mit Klick auf &bdquo;Karte anzeigen&ldquo; werden Kartenkacheln von Drittanbietern geladen.</p>
+                <button type="button" class="btn btn-primary" data-map-trigger data-label="fixed" aria-label="Karte öffnen (Anfahrtskarte laden)" title="Karte öffnen">Karte öffnen<span class="sr-only"> zur Anfahrtskarte</span></button>
+                <p class="map-placeholder__hint" data-map-notice>Mit Klick auf &bdquo;Karte öffnen&ldquo; werden Kartenkacheln von Drittanbietern geladen.</p>
               </div>
               <div class="map-canvas" data-map role="region" aria-label="Karte: Warenschmiede, Im Bohrer 7, 78166 Donaueschingen" tabindex="0"></div>
             </div>
 
             <div class="route-buttons">
-              <a class="btn btn-outline" href="https://www.google.com/maps/dir/?api=1&amp;destination=Im+Bohrer+7%2C+78166+Donaueschingen%2C+Deutschland" target="_blank" rel="noopener">Mehr erfahren<span class="sr-only"> in Google Maps</span></a>
-              <a class="btn btn-outline" href="https://maps.apple.com/?daddr=Im+Bohrer+7,+78166+Donaueschingen,+Deutschland" target="_blank" rel="noopener">Mehr erfahren<span class="sr-only"> in Apple Karten</span></a>
+              <a class="btn btn-outline" href="https://www.google.com/maps/search/?api=1&amp;query=Im+Bohrer+7,+78166+Donaueschingen" target="_blank" rel="noopener noreferrer" data-label="fixed">In Google Maps öffnen</a>
+              <a class="btn btn-outline" href="https://maps.apple.com/?q=Im+Bohrer+7,+78166+Donaueschingen" target="_blank" rel="noopener noreferrer" data-label="fixed">In Apple Karten öffnen</a>
             </div>
           </div>
         </div>
@@ -286,7 +286,7 @@
       let leafletPromise;
       let isLoading = false;
       let isInitialized = false;
-      const buttonLabel = trigger.textContent;
+      const buttonMarkup = trigger.innerHTML;
 
       const loadStylesheet = (href) => {
         return new Promise((resolve, reject) => {
@@ -355,7 +355,7 @@
           }
         }, 150);
 
-        trigger.textContent = buttonLabel;
+        trigger.innerHTML = buttonMarkup;
         isInitialized = true;
         isLoading = false;
       };
@@ -379,7 +379,7 @@
             leafletPromise = undefined;
             trigger.disabled = false;
             trigger.removeAttribute('aria-disabled');
-            trigger.textContent = buttonLabel;
+            trigger.innerHTML = buttonMarkup;
           });
       });
     })();
