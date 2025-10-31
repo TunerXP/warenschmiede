@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kosten &amp; Kalkulation – 3D-Druck-Rechner | Warenschmiede</title>
+  <meta name="description" content="Rechne Material- und Energiekosten für deinen 3D-Druck: Filamentgewicht oder -länge eingeben, Stromverbrauch berücksichtigen und optional MwSt. berechnen.">
+  <meta name="geo.region" content="DE-BW">
+  <meta name="geo.placename" content="Donaueschingen">
+  <meta name="geo.position" content="47.953;8.499">
+  <meta name="ICBM" content="47.953,8.499">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="preload" as="image" href="assets/logo.svg">
+  <script>
+    (function () {
+      var storageKey = 'theme-preference';
+      var preference = 'system';
+      try {
+        var stored = localStorage.getItem(storageKey);
+        if (stored === 'light' || stored === 'dark' || stored === 'system') {
+          preference = stored;
+        }
+      } catch (error) {}
+      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+      var resolved = preference === 'dark'
+        ? 'dark'
+        : preference === 'light'
+          ? 'light'
+          : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
+      var root = document.documentElement;
+      root.dataset.theme = resolved;
+      root.dataset.themePreference = preference;
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8fafc">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0f17">
+  <meta name="color-scheme" content="light dark">
+  <link rel="canonical" href="https://warenschmiede.com/druck-kosten.html">
+  <meta property="og:title" content="Kosten &amp; Kalkulation – 3D-Druck-Rechner | Warenschmiede">
+  <meta property="og:description" content="Rechne Material- und Energiekosten für deinen 3D-Druck: Filamentgewicht oder -länge eingeben, Stromverbrauch berücksichtigen und optional MwSt. berechnen.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://warenschmiede.com/druck-kosten.html">
+  <meta property="og:image" content="/assets/og/og-default.jpg">
+  <meta property="og:site_name" content="Warenschmiede">
+  <meta property="og:locale" content="de_DE">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+  <header class="site-header" data-header>
+    <div class="container header-grid">
+      <div class="brand">
+        <a class="brand-link" href="/index.html#start">
+          <img src="assets/images/warenschmiede_logo.png" alt="Warenschmiede Logo" class="brand-logo" />
+          <div class="brand-text">
+            <span class="brand-name">Warenschmiede</span>
+            <span class="brand-tagline">3D-Druck · Made in Germany</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="main-nav" aria-label="Hauptnavigation">
+        <div class="nav-menu" id="primary-navigation" data-nav-menu>
+          <ul class="nav-list" id="navList">
+            <li class="nav-item nav-fixed">
+              <a class="nav-link" href="/index.html#start" data-nav-link data-section="start" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html">Start</a>
+            </li>
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">Leistungen ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/leistungen/3d-druck.html" data-nav-link data-path="/leistungen/3d-druck , /leistungen/3d-druck.html">3D-Druck</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/leistungen/cad-prototyping.html" data-nav-link data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html">CAD &amp; Prototyping</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/leistungen/pc-hilfe.html" data-nav-link data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html">PC-Hilfe</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">Über KI ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/ki/index.html" data-nav-link data-path="/ki , /ki/ , /ki/index.html">Einführung &amp; Grundlagen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/prompts.html" data-nav-link data-path="/ki/prompts , /ki/prompts.html">Prompts für den Alltag</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/tools.html" data-nav-link data-path="/ki/tools , /ki/tools.html">KI-Werkzeuge</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/faq.html" data-nav-link data-path="/ki/faq , /ki/faq.html">KI-FAQ &amp; Sicherheit</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/lexikon.html" data-nav-link data-path="/ki/lexikon , /ki/lexikon.html">KI-Lexikon</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">Kontakt ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/kontakt.html" data-nav-link data-path="/kontakt , /kontakt.html , /warenschmiede/kontakt , /warenschmiede/kontakt.html">Kontakt aufnehmen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ueber-mich.html" data-nav-link data-path="/ueber-mich , /ueber-mich.html , /warenschmiede/ueber-mich.html , /about , /about.html , /warenschmiede/about.html">Über mich</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">3D-Druck ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/ideen/index.html" data-nav-link data-path="/ideen , /ideen/ , /ideen/index.html">Ideenquellen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/material/index.html" data-nav-link data-path="/material , /material/ , /material/index.html , /materials , /materials/ , /materials/index.html">Materialübersicht</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/druck-tipps.html" data-nav-link data-path="/druck-tipps , /druck-tipps.html">Druck-Tipps &amp; Fehler</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ablauf-anfrage.html" data-nav-link data-path="/ablauf-anfrage , /ablauf-anfrage.html">Ablauf &amp; Anfrage</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/druck-kosten.html" data-nav-link data-path="/druck-kosten , /druck-kosten.html">Kosten &amp; Kalkulation</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="header-actions">
+        <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Theme wechseln" title="Theme wechseln">
+          <span id="themeIcon" aria-hidden="true">🖥️</span>
+          <span class="sr-only theme-toggle__label">Aktuelles Theme: Systemeinstellung</span>
+        </button>
+
+        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
+          <span class="sr-only">Menü öffnen</span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="druck-kosten" class="site-main" tabindex="-1">
+    <section class="section about-hero" aria-labelledby="kosten-heading">
+      <div class="container about-hero__grid">
+        <div class="about-hero__content">
+          <p class="section-eyebrow">Kosten &amp; Kalkulation</p>
+          <h1 id="kosten-heading">3D-Druck-Kosten grob einschätzen</h1>
+          <p>Mit diesem Rechner bekommst du eine unverbindliche Hausnummer für Material- und Energiekosten – ideal für die erste Planung vor dem Angebot.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="/ablauf-anfrage.html">Ablauf &amp; Anfrage ansehen</a>
+            <a class="btn btn-outline" href="/kontakt.html#kontakt-heading">Frage stellen</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="rechner-heading">
+      <div class="container">
+        <div class="section-heading">
+          <h2 id="rechner-heading">Kostenrechner für Filamentdruck</h2>
+          <p>Wähle Material, gib Gewicht oder Länge ein und ergänze Laufzeit sowie Stromkosten – der Rest passiert automatisch.</p>
+        </div>
+        <div class="cost-layout">
+          <div class="card" id="calculatorCard">
+            <form class="calc-form" id="calcForm" novalidate>
+              <div class="calc-field">
+                <label for="materialSelect">Material</label>
+                <select id="materialSelect" name="material">
+                  <option value="PLA">PLA</option>
+                  <option value="PETG">PETG</option>
+                  <option value="ASA">ASA</option>
+                  <option value="TPU">TPU</option>
+                </select>
+              </div>
+
+              <div class="calc-field">
+                <label for="pricePerKg">Materialpreis in €/kg</label>
+                <input type="number" id="pricePerKg" name="pricePerKg" min="0" step="0.10" inputmode="decimal" />
+              </div>
+
+              <fieldset class="calc-fieldset">
+                <legend class="sr-only">Berechnungsgrundlage</legend>
+                <div class="calc-mode" role="group" aria-label="Berechnungsgrundlage wählen">
+                  <div>
+                    <input class="calc-mode__input" type="radio" id="modeWeight" name="mode" value="weight" checked>
+                    <label class="calc-mode__label" for="modeWeight">Bauteilgewicht</label>
+                  </div>
+                  <div>
+                    <input class="calc-mode__input" type="radio" id="modeLength" name="mode" value="length">
+                    <label class="calc-mode__label" for="modeLength">Filamentlänge</label>
+                  </div>
+                </div>
+                <div class="calc-field" data-field="weight">
+                  <label for="partWeight">Gewicht in Gramm</label>
+                  <input type="number" id="partWeight" name="partWeight" min="0" step="1" inputmode="decimal" placeholder="z. B. 120">
+                </div>
+                <div class="calc-field" data-field="length" hidden>
+                  <label for="filamentLength">Filamentlänge in Metern</label>
+                  <input type="number" id="filamentLength" name="filamentLength" min="0" step="0.1" inputmode="decimal" placeholder="z. B. 32">
+                </div>
+              </fieldset>
+
+              <div class="calc-inline">
+                <div class="calc-field">
+                  <label for="printTime">Druckzeit (hh:mm)</label>
+                  <input type="time" id="printTime" name="printTime" step="60" value="01:00">
+                </div>
+                <div class="calc-field">
+                  <label for="powerDraw">Leistung in Watt</label>
+                  <input type="number" id="powerDraw" name="powerDraw" min="0" step="10" value="150">
+                </div>
+                <div class="calc-field">
+                  <label for="energyPrice">Strompreis in €/kWh</label>
+                  <input type="number" id="energyPrice" name="energyPrice" min="0" step="0.01" inputmode="decimal" value="0.30">
+                </div>
+                <div class="calc-field">
+                  <label for="loadFactor">Lastfaktor in %</label>
+                  <input type="number" id="loadFactor" name="loadFactor" min="0" max="100" step="1" value="60">
+                </div>
+              </div>
+
+              <label class="calc-checkbox">
+                <input type="checkbox" id="includeVat" name="includeVat" value="true">
+                <span>+ MwSt. anwenden (19&nbsp;%)</span>
+              </label>
+            </form>
+          </div>
+
+          <div class="card calc-results" aria-live="polite">
+            <div>
+              <h3>Ergebnis</h3>
+              <p class="calc-meta" id="calcMeta">Gewicht: 0&nbsp;g · Länge: 0,00&nbsp;m</p>
+            </div>
+            <ul class="calc-results__list">
+              <li class="calc-results__item">
+                <span class="calc-results__label">Materialkosten</span>
+                <span class="calc-results__value" id="materialCost">0,00&nbsp;€</span>
+              </li>
+              <li class="calc-results__item">
+                <span class="calc-results__label">Energiekosten</span>
+                <span class="calc-results__value" id="energyCost">0,00&nbsp;€</span>
+              </li>
+              <li class="calc-results__item">
+                <span class="calc-results__label">Gesamtkosten (netto)</span>
+                <span class="calc-results__value calc-results__value--accent" id="totalNet">0,00&nbsp;€</span>
+              </li>
+              <li class="calc-results__item">
+                <span class="calc-results__label">Gesamtkosten (brutto)</span>
+                <span class="calc-results__value" id="totalGross">0,00&nbsp;€</span>
+              </li>
+            </ul>
+            <p class="calc-note">Unverbindliche Orientierung ohne Design- oder Nachbearbeitungskosten. Tatsächliche Kosten können abweichen.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="hinweise-heading">
+      <div class="container">
+        <div class="card">
+          <h2 id="hinweise-heading">So nutzt du den Rechner sinnvoll</h2>
+          <ul>
+            <li>Nutze das Ergebnis als Gesprächsgrundlage – verbindliche Angebote gibt es nach Sichtung von Modell oder Skizze.</li>
+            <li>Bauteilgröße, Supportanteil und gewünschte Oberfläche beeinflussen Materialbedarf und Laufzeit deutlich.</li>
+            <li>Bei ASA/ABS empfehle ich den Druck im geschlossenen Gehäuse, damit Energieverluste gering bleiben.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="cta-kosten-heading">
+      <div class="container">
+        <div class="card">
+          <h2 id="cta-kosten-heading">Weiter planen &amp; anfragen</h2>
+          <p><a href="/ablauf-anfrage.html">Zum Ablauf &amp; Anfrage</a></p>
+          <p><a href="/material/index.html">Materialübersicht ansehen</a></p>
+          <p><a href="/kontakt.html#kontakt-heading">Direkt Kontakt aufnehmen</a></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      © 2025 Warenschmiede · Alle Rechte vorbehalten.
+    </div>
+  </footer>
+
+  <script src="assets/js/theme.js" defer></script>
+  <script src="assets/js/header.js" defer></script>
+  <script src="assets/js/whatsapp.js" defer></script>
+  <script>
+    (function () {
+      var materialSelect = document.getElementById('materialSelect');
+      var pricePerKgInput = document.getElementById('pricePerKg');
+      var weightInput = document.getElementById('partWeight');
+      var lengthInput = document.getElementById('filamentLength');
+      var weightMode = document.getElementById('modeWeight');
+      var lengthMode = document.getElementById('modeLength');
+      var weightField = document.querySelector('[data-field="weight"]');
+      var lengthField = document.querySelector('[data-field="length"]');
+      var timeInput = document.getElementById('printTime');
+      var powerInput = document.getElementById('powerDraw');
+      var energyPriceInput = document.getElementById('energyPrice');
+      var loadFactorInput = document.getElementById('loadFactor');
+      var vatCheckbox = document.getElementById('includeVat');
+      var materialCostOutput = document.getElementById('materialCost');
+      var energyCostOutput = document.getElementById('energyCost');
+      var totalNetOutput = document.getElementById('totalNet');
+      var totalGrossOutput = document.getElementById('totalGross');
+      var metaOutput = document.getElementById('calcMeta');
+
+      var formatter = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' });
+      var decimalFormatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      var integerFormatter = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 });
+      var materialData = {
+        'PLA': { price: 20, gramsPerMeter: 2.98 },
+        'PETG': { price: 25, gramsPerMeter: 3.05 },
+        'ASA': { price: 35, gramsPerMeter: 2.57 },
+        'TPU': { price: 30, gramsPerMeter: 2.91 }
+      };
+
+      function setMaterialDefaults() {
+        var selected = materialSelect.value;
+        var defaults = materialData[selected];
+        if (defaults) {
+          pricePerKgInput.value = defaults.price.toFixed(2);
+          if (!weightInput.value && !lengthInput.value) {
+            weightInput.value = '';
+            lengthInput.value = '';
+          }
+        }
+        recalc();
+      }
+
+      function parseHours(value) {
+        if (!value) return 0;
+        if (value instanceof Date) {
+          return value.getHours() + value.getMinutes() / 60;
+        }
+        var parts = value.split(':');
+        var hours = parseFloat(parts[0]) || 0;
+        var minutes = parseFloat(parts[1]) || 0;
+        return hours + minutes / 60;
+      }
+
+      function readNumber(input) {
+        var raw = (input.value || '').toString().replace(',', '.');
+        var val = parseFloat(raw);
+        if (!isFinite(val) || val < 0) {
+          return 0;
+        }
+        return val;
+      }
+
+      function updateModeVisibility() {
+        var useWeight = weightMode.checked;
+        weightField.hidden = !useWeight;
+        lengthField.hidden = useWeight;
+        recalc();
+      }
+
+      function recalc() {
+        var selected = materialSelect.value;
+        var defaults = materialData[selected];
+        var gramsPerMeter = defaults ? defaults.gramsPerMeter : 0;
+
+        var pricePerKg = parseFloat(pricePerKgInput.value.replace(',', '.'));
+        if (!isFinite(pricePerKg)) pricePerKg = 0;
+
+        var weight = readNumber(weightInput);
+        var length = readNumber(lengthInput);
+
+        if (weightMode.checked) {
+          if (gramsPerMeter > 0) {
+            length = weight / gramsPerMeter;
+            lengthInput.value = length ? length.toFixed(2) : '';
+          } else {
+            length = 0;
+          }
+        } else {
+          if (gramsPerMeter > 0) {
+            weight = length * gramsPerMeter;
+            weightInput.value = weight ? weight.toFixed(0) : '';
+          } else {
+            weight = 0;
+          }
+        }
+
+        var hours = parseHours(timeInput.value || '0:00');
+        var power = readNumber(powerInput);
+        var energyPrice = parseFloat(energyPriceInput.value.replace(',', '.'));
+        if (!isFinite(energyPrice)) energyPrice = 0;
+        var loadFactor = readNumber(loadFactorInput);
+        loadFactor = Math.min(Math.max(loadFactor, 0), 100);
+        loadFactorInput.value = loadFactor.toString();
+
+        var materialCost = (weight / 1000) * pricePerKg;
+        var energyCost = (power / 1000) * hours * energyPrice * (loadFactor / 100);
+        var net = materialCost + energyCost;
+        var gross = vatCheckbox.checked ? net * 1.19 : net;
+
+        materialCostOutput.textContent = formatter.format(materialCost);
+        energyCostOutput.textContent = formatter.format(energyCost);
+        totalNetOutput.textContent = formatter.format(net);
+        totalGrossOutput.textContent = formatter.format(gross);
+
+        var weightText = integerFormatter.format(weight) + '\u00A0g';
+        var lengthText = decimalFormatter.format(length) + '\u00A0m';
+        metaOutput.textContent = 'Gewicht: ' + weightText + ' · Länge: ' + lengthText;
+      }
+
+      materialSelect.addEventListener('change', setMaterialDefaults);
+      weightMode.addEventListener('change', updateModeVisibility);
+      lengthMode.addEventListener('change', updateModeVisibility);
+
+      [pricePerKgInput, weightInput, lengthInput, timeInput, powerInput, energyPriceInput, loadFactorInput].forEach(function (el) {
+        el.addEventListener('input', recalc);
+      });
+
+      vatCheckbox.addEventListener('change', recalc);
+
+      setMaterialDefaults();
+      updateModeVisibility();
+    })();
+  </script>
+</body>
+</html>
