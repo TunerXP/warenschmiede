@@ -1,0 +1,42 @@
+Geänderte Dateien:
+- 3ddruck-faq.html
+- 404.html
+- ablauf-anfrage.html
+- about.html
+- assets/js/header.js
+- assets/js/materials.js
+- assets/js/theme.js
+- assets/js/whatsapp.js
+- druck-kosten.html
+- druck-tipps.html
+- ideen/index.html
+- ideenquellen.html
+- index.html
+- ki/faq.html
+- ki/index.html
+- ki/lexikon.html
+- ki/prompts.html
+- ki/tools.html
+- kontakt.html
+- leistungen.html
+- leistungen/3d-druck.html
+- leistungen/cad-prototyping.html
+- leistungen/pc-hilfe.html
+- material.html
+- material/index.html
+- materials/index.html
+- pc-hilfe/index.html
+- slicer-einstellungen.html
+- styles.css
+- ueber-mich.html
+- wartung-reinigung.html
+- perf-report.txt
+
+Checkliste „manuelle Messung“:
+- [ ] Startseite im privaten Fenster geöffnet, Navigation/Dropdown getestet, Scroll oben/unten ohne Layout-Sprünge
+- [ ] DevTools Network-Filter „Img“ geprüft, Lazy Loading der Bilder unterhalb des Folds bestätigt
+- [ ] Lighthouse (Desktop) auf Startseite ausgeführt, Zielwerte Performance ≥ 90, Best Practices ≥ 95, SEO ≥ 95
+
+Notizen zu Render-Blockern (vor/nach):
+- Vorher: Header-/Theme-/WhatsApp-Skripte liefen sofort nach Parsen und initialisierten DOM-Elemente direkt. Bilder ohne feste Abmessungen verursachten Layout-Verschiebungen.
+- Nachher: Skripte initialisieren nun erst nach DOMContentLoaded und bleiben dank `defer` nicht-blockierend; alle Bilder besitzen feste width/height und Lazy Loading für Inhalte unterhalb des Folds, wodurch Render-Blocking und CLS reduziert werden.

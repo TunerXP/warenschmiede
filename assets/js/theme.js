@@ -14,8 +14,8 @@
 
   var root = document.documentElement;
   var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-  var button = document.getElementById('themeToggleBtn');
-  var iconSpan = document.getElementById('themeIcon');
+  var button = null;
+  var iconSpan = null;
 
   var readStoredPreference = function () {
     try {
@@ -82,29 +82,40 @@
     }
   };
 
-  var storedPreference = readStoredPreference();
-  if (storedPreference) {
-    currentPreference = storedPreference;
-  }
+  var initialize = function () {
+    button = document.getElementById('themeToggleBtn');
+    iconSpan = document.getElementById('themeIcon');
 
-  applyPreference(currentPreference, { persist: false });
+    var storedPreference = readStoredPreference();
+    if (storedPreference) {
+      currentPreference = storedPreference;
+    }
 
-  if (button) {
-    button.addEventListener('click', function () {
-      var index = preferenceOrder.indexOf(currentPreference);
-      if (index === -1) {
-        index = preferenceOrder.length - 1;
-      }
-      var nextPreference = preferenceOrder[(index + 1) % preferenceOrder.length];
-      applyPreference(nextPreference);
-    });
-  }
+    applyPreference(currentPreference, { persist: false });
+
+    if (button) {
+      button.addEventListener('click', function () {
+        var index = preferenceOrder.indexOf(currentPreference);
+        if (index === -1) {
+          index = preferenceOrder.length - 1;
+        }
+        var nextPreference = preferenceOrder[(index + 1) % preferenceOrder.length];
+        applyPreference(nextPreference);
+      });
+    }
+  };
 
   var handleSystemChange = function () {
     if (currentPreference === 'system') {
       applyPreference('system', { persist: false });
     }
   };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initialize, { once: true });
+  } else {
+    initialize();
+  }
 
   if (mediaQuery) {
     if (typeof mediaQuery.addEventListener === 'function') {
