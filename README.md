@@ -19,6 +19,14 @@ Die Leistungskacheln auf der Startseite nutzen inline eingebettete SVG-Icons. Di
 
 Um ein Icon auszutauschen, die gewünschte Datei dort ersetzen und den Dateinamen unverändert lassen. Die Icons werden mit `currentColor` gezeichnet und übernehmen dadurch die Farben aus den CSS-Regeln.
 
-## Sitemap & robots.txt pflegen
+## SEO-Monitoring & Sitemap
 
-Öffentliche Seiten erscheinen in der `sitemap.xml` im Projektroot. Für neue Seiten einfach einen weiteren `<url>`-Block ergänzen und `loc`, `changefreq` sowie `priority` passend setzen. Nach dem Deployment die `sitemap.xml` in der Google Search Console im Bereich **Sitemaps** erneut einreichen, damit Google die Änderungen schnell verarbeitet.
+Für einen schnellen lokalen Check steht das Skript `seo_monitor.py` im Projektroot bereit. Es sammelt alle HTML-Dateien, erzeugt daraus automatisch eine aktuelle `sitemap.xml` und schreibt die Ergebnisse der Title/Description-Prüfung sowie optionaler Link-Checks in `seo-report.txt`.
+
+**Ausführen:**
+
+```bash
+python seo_monitor.py
+```
+
+Die Ausgabe bestätigt die Anzahl der gefundenen Seiten. Die erzeugte `sitemap.xml` kann anschließend wie gewohnt in der Google Search Console eingereicht werden.

@@ -216,6 +216,139 @@
 
   initializeActiveState();
 
+  const normalizeText = (value) =>
+    (value || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+  const createBreadcrumbItem = (label, href, isCurrent) => {
+    const item = document.createElement('li');
+    item.className = 'breadcrumbs__item';
+
+    if (isCurrent || !href) {
+      item.setAttribute('aria-current', 'page');
+      item.textContent = label;
+      return item;
+    }
+
+    const link = document.createElement('a');
+    link.href = href;
+    link.textContent = label;
+    item.appendChild(link);
+    return item;
+  };
+
+  const extractPageName = (list, fallbackTitle) => {
+    const currentItem = list?.querySelector('[aria-current="page"]');
+    if (currentItem) {
+      const text = currentItem.textContent?.trim();
+      if (text) {
+        return text;
+      }
+    }
+
+    const heading = document.querySelector('main h1');
+    if (heading?.textContent?.trim()) {
+      return heading.textContent.trim();
+    }
+
+    if (!fallbackTitle) {
+      return null;
+    }
+
+    const separators = ['–', '-', '|', '·'];
+    let candidate = fallbackTitle.trim();
+
+    separators.some((separator) => {
+      if (candidate.includes(separator)) {
+        candidate = candidate.split(separator)[0].trim();
+        return true;
+      }
+      return false;
+    });
+
+    return candidate || null;
+  };
+
+  const updateBreadcrumbs = () => {
+    const nav = document.querySelector('.breadcrumbs');
+    const list = nav?.querySelector('.breadcrumbs__list');
+    if (!nav || !list) {
+      return;
+    }
+
+    const fallbackTitle = document.title || '';
+    const pageName = extractPageName(list, fallbackTitle) || 'Aktuelle Seite';
+
+    const searchContext = normalizeText(`${window.location.pathname} ${fallbackTitle}`);
+
+    const breadcrumbRules = [
+      {
+        type: 'section',
+        label: '3D-Druck',
+        href: '/leistungen/3d-druck.html',
+        keywords: [
+          '3d-druck',
+          '3ddruck',
+          'druck-',
+          'druck_',
+          'drucktipps',
+          'druck-kosten',
+          'druckkosten',
+          'ablauf-anfrage',
+          'ablauf_anfrage',
+          'slicer',
+          'material',
+          'wartung-reinigung',
+          '3ddruck-faq',
+          'ideenquellen',
+        ],
+      },
+      {
+        type: 'section',
+        label: 'Leistungen',
+        href: '/leistungen.html',
+        keywords: ['leistungen', 'pc-hilfe', 'pc_hilfe', 'cad-prototyping', 'cad_prototyping'],
+      },
+      {
+        type: 'section',
+        label: 'Über KI',
+        href: '/ki/index.html',
+        keywords: ['ueber-ki', 'uber-ki', 'uber ki', 'ueber ki', 'ueber_ki', 'ki/'],
+      },
+      {
+        type: 'single',
+        label: 'Kontakt',
+        href: '/kontakt.html',
+        keywords: ['kontakt'],
+      },
+    ];
+
+    const matchedRule = breadcrumbRules.find((rule) =>
+      rule.keywords.some((keyword) => searchContext.includes(normalizeText(keyword)))
+    );
+
+    while (list.firstChild) {
+      list.removeChild(list.firstChild);
+    }
+
+    list.appendChild(createBreadcrumbItem('Start', '/index.html', false));
+
+    if (matchedRule) {
+      if (matchedRule.type === 'section') {
+        list.appendChild(createBreadcrumbItem(matchedRule.label, matchedRule.href, false));
+        list.appendChild(createBreadcrumbItem(pageName, null, true));
+      } else {
+        list.appendChild(createBreadcrumbItem(matchedRule.label || pageName, null, true));
+      }
+    } else {
+      list.appendChild(createBreadcrumbItem(pageName, null, true));
+    }
+  };
+
+  updateBreadcrumbs();
+
   dropdowns.forEach((dropdown) => {
     dropdown.button.addEventListener('click', (event) => {
       event.preventDefault();
