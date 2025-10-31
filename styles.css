@@ -2809,6 +2809,153 @@ a:focus-visible {
   }
 }
 
+.faq-accordion {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.faq-accordion__item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.faq-accordion__item summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: clamp(1.1rem, 3vw, 1.5rem) clamp(1.3rem, 3vw, 1.9rem);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+  background: transparent;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.faq-accordion__item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-accordion__item summary::after {
+  content: '+';
+  font-size: 1.45rem;
+  line-height: 1;
+  color: var(--accent);
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+
+.faq-accordion__item[open] summary {
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface-muted) 40%, var(--surface) 60%);
+}
+
+.faq-accordion__item[open] summary::after {
+  content: '−';
+  color: var(--accent-dark);
+}
+
+.faq-accordion__item summary:hover {
+  background: color-mix(in srgb, var(--surface-muted) 35%, var(--surface) 65%);
+}
+
+.faq-accordion__item summary:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 4px;
+  border-radius: 14px;
+}
+
+.faq-accordion__content {
+  padding: 0 clamp(1.3rem, 3vw, 1.9rem) clamp(1.3rem, 3vw, 1.9rem);
+  display: grid;
+  gap: 0.75rem;
+  color: var(--text-muted);
+}
+
+.faq-accordion__content p {
+  margin: 0;
+}
+
+.faq-accordion__content a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.faq-accordion__content a:hover,
+.faq-accordion__content a:focus-visible {
+  text-decoration: underline;
+}
+
+.faq-glossary__table {
+  overflow-x: auto;
+}
+
+.faq-glossary table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.faq-glossary th,
+.faq-glossary td {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.faq-glossary th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--text);
+  width: 32%;
+}
+
+.faq-glossary td {
+  color: var(--text-muted);
+}
+
+.faq-glossary tbody tr:last-child th,
+.faq-glossary tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+
+.faq-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.faq-links li {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.faq-links li:not(:last-child)::after {
+  content: '·';
+  margin-left: 0.5rem;
+  color: var(--text-muted);
+}
+
+.faq-links a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.faq-links a:hover,
+.faq-links a:focus-visible {
+  text-decoration: underline;
+}
+
 .cta-banner {
   border-radius: 24px;
   padding: clamp(1.75rem, 4vw, 2.5rem);
