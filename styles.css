@@ -2881,6 +2881,11 @@ a:focus-visible {
   }
 }
 
+.calc-card__title {
+  margin: 0 0 var(--space-3);
+  font-size: clamp(1.2rem, 1.6vw + 1rem, 1.5rem);
+}
+
 .calc-form {
   display: grid;
   gap: var(--space-4);
@@ -2978,6 +2983,11 @@ a:focus-visible {
   gap: var(--space-4);
 }
 
+.calc-results__header {
+  display: grid;
+  gap: 0.35rem;
+}
+
 .calc-results__list {
   list-style: none;
   margin: 0;
@@ -3026,6 +3036,24 @@ a:focus-visible {
   gap: 0.6rem;
 }
 
+.calc-checkbox--vat {
+  justify-content: flex-end;
+  align-self: flex-end;
+  margin-top: -0.5rem;
+}
+
+.calc-results__subheading {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-subtle);
+}
+
+.calc-formula {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
 .calc-checkbox input {
   width: 1.15rem;
   height: 1.15rem;
@@ -3034,6 +3062,117 @@ a:focus-visible {
 .calc-meta {
   font-size: 0.95rem;
   color: var(--text-subtle);
+}
+
+.info-tooltip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.35rem;
+}
+
+.info-tooltip__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  padding: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface-muted) 88%);
+  color: var(--accent);
+  cursor: help;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  font: inherit;
+}
+
+.info-tooltip__trigger:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.info-tooltip__trigger svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  fill: none;
+}
+
+.info-tooltip__trigger svg line {
+  stroke-linecap: round;
+}
+
+.info-tooltip__trigger svg circle {
+  fill: currentColor;
+  opacity: 0.15;
+  stroke: currentColor;
+}
+
+.info-tooltip__dot {
+  fill: currentColor;
+  opacity: 1;
+}
+
+.info-tooltip__content {
+  position: absolute;
+  z-index: 10;
+  inset-inline-start: 50%;
+  bottom: calc(100% + 0.5rem);
+  transform: translateX(-50%);
+  width: min(20rem, 75vw);
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--surface) 85%, var(--accent) 15%);
+  color: var(--text);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
+}
+
+.info-tooltip:hover .info-tooltip__content,
+.info-tooltip:focus-within .info-tooltip__content {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (max-width: 639px) {
+  .calc-checkbox--vat {
+    margin-top: 0;
+  }
+
+  .info-tooltip__content {
+    inset-inline-start: auto;
+    transform: none;
+    right: 0;
+  }
+}
+
+.page-links {
+  padding-top: 0;
+}
+
+.page-links__text {
+  margin: 0;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.page-links__text a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
+.page-links__text a:hover,
+.page-links__text a:focus-visible {
+  color: var(--accent);
 }
 
 .service-card__example summary:focus-visible,
