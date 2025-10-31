@@ -182,7 +182,9 @@
                 <label for="materialSelect">Material</label>
                 <select id="materialSelect" name="material">
                   <option value="PLA">PLA</option>
+                  <option value="PLA+">PLA+</option>
                   <option value="PETG">PETG</option>
+                  <option value="ABS">ABS</option>
                   <option value="ASA">ASA</option>
                   <option value="TPU">TPU</option>
                 </select>
@@ -330,7 +332,9 @@
       var integerFormatter = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 });
       var materialData = {
         'PLA': { price: 20, gramsPerMeter: 2.98 },
+        'PLA+': { price: 20, gramsPerMeter: 2.98 },
         'PETG': { price: 25, gramsPerMeter: 3.05 },
+        'ABS': { price: 35, gramsPerMeter: 2.58 },
         'ASA': { price: 35, gramsPerMeter: 2.57 },
         'TPU': { price: 30, gramsPerMeter: 2.91 }
       };
@@ -339,7 +343,11 @@
         var selected = materialSelect.value;
         var defaults = materialData[selected];
         if (defaults) {
-          pricePerKgInput.value = defaults.price.toFixed(2);
+          var priceDefault = defaults.price.toFixed(2);
+          pricePerKgInput.value = priceDefault;
+          pricePerKgInput.placeholder = priceDefault.replace('.', ',');
+          weightInput.dataset.gramsPerMeter = defaults.gramsPerMeter.toFixed(2);
+          lengthInput.dataset.gramsPerMeter = defaults.gramsPerMeter.toFixed(2);
           if (!weightInput.value && !lengthInput.value) {
             weightInput.value = '';
             lengthInput.value = '';
