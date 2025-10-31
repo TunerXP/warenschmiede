@@ -6,7 +6,8 @@ from __future__ import annotations
 import datetime as _dt
 import os
 from html.parser import HTMLParser
-from typing import Iterable, List, Tuple
+from collections import defaultdict
+from typing import Dict, Iterable, List, Tuple
 from urllib.parse import urlparse
 
 BASE_URL = "https://www.warenschmiede.com"
@@ -22,6 +23,8 @@ class SeoParser(HTMLParser):
         self._collect_title = False
         self.meta_description: str | None = None
         self.links: List[str] = []
+        self.canonical: str | None = None
+        self.is_redirect = False
 
     def handle_starttag(self, tag: str, attrs: List[Tuple[str, str | None]]) -> None:
         if tag.lower() == "title":
@@ -33,6 +36,15 @@ class SeoParser(HTMLParser):
             name = attributes.get("name", "").lower()
             if name == "description" and "content" in attributes:
                 self.meta_description = attributes["content"].strip()
+            http_equiv = attributes.get("http-equiv", "").lower()
+            if http_equiv == "refresh":
+                self.is_redirect = True
+            return
+
+        if tag.lower() == "link":
+            attributes = {name.lower(): (value or "") for name, value in attrs}
+            if attributes.get("rel", "").lower() == "canonical" and "href" in attributes and not self.canonical:
+                self.canonical = attributes["href"].strip()
             return
 
         if tag.lower() == "a":
@@ -132,7 +144,7 @@ def resolve_local_path(source: str, target: str) -> str | None:
     return candidate
 
 
-def analyse_file(path: str) -> Tuple[str, str | None, List[str]]:
+def analyse_file(path: str) -> Tuple[str, str | None, List[str], str | None, bool]:
     full_path = os.path.join(REPO_ROOT, path)
     with open(full_path, "r", encoding="utf-8") as handle:
         content = handle.read()
@@ -141,26 +153,38 @@ def analyse_file(path: str) -> Tuple[str, str | None, List[str]]:
     parser.feed(content)
     parser.close()
 
-    return parser.title, parser.meta_description, parser.links
+    return parser.title, parser.meta_description, parser.links, parser.canonical, parser.is_redirect
 
 
 def analyse_html_files(html_files: Iterable[str]):
     title_issues: List[str] = []
     description_issues: List[str] = []
     broken_links: List[str] = []
+    canonical_issues: List[str] = []
+    title_map: Dict[str, List[str]] = defaultdict(list)
+    description_map: Dict[str, List[str]] = defaultdict(list)
 
     for path in html_files:
-        title, description, links = analyse_file(path)
+        title, description, links, canonical, is_redirect = analyse_file(path)
 
         if not title:
             title_issues.append(f"{path}: fehlender <title>")
         elif len(title) > 60:
             title_issues.append(f"{path}: Titel zu lang ({len(title)} Zeichen)")
+        elif not is_redirect:
+            title_map[title].append(path)
 
         if not description:
             description_issues.append(f"{path}: fehlende Meta-Description")
         elif len(description) > 160:
             description_issues.append(f"{path}: Description zu lang ({len(description)} Zeichen)")
+        elif not is_redirect:
+            description_map[description].append(path)
+
+        if not canonical:
+            canonical_issues.append(f"{path}: fehlender Canonical-Link")
+        elif not canonical.startswith(BASE_URL):
+            canonical_issues.append(f"{path}: Canonical zeigt auf {canonical}")
 
         for href in links:
             normalized = normalize_href(href)
@@ -175,10 +199,37 @@ def analyse_html_files(html_files: Iterable[str]):
             if not os.path.exists(target_path):
                 broken_links.append(f"{path} → {href}")
 
-    return title_issues, description_issues, broken_links
+    duplicate_title_issues = [
+        f"{', '.join(sorted(paths))} teilen sich den Titel \"{title}\""
+        for title, paths in title_map.items()
+        if len(paths) > 1
+    ]
+
+    duplicate_description_issues = [
+        f"{', '.join(sorted(paths))} teilen sich die Description \"{description}\""
+        for description, paths in description_map.items()
+        if len(paths) > 1
+    ]
+
+    return (
+        title_issues,
+        description_issues,
+        broken_links,
+        canonical_issues,
+        duplicate_title_issues,
+        duplicate_description_issues,
+    )
 
 
-def write_report(timestamp: str, title_issues, description_issues, broken_links) -> None:
+def write_report(
+    timestamp: str,
+    title_issues,
+    description_issues,
+    broken_links,
+    canonical_issues,
+    duplicate_title_issues,
+    duplicate_description_issues,
+) -> None:
     lines = [
         f"Warenschmiede SEO Report – {timestamp}",
         "=" * 40,
@@ -199,6 +250,27 @@ def write_report(timestamp: str, title_issues, description_issues, broken_links)
         lines.append("- Alle Meta-Descriptions sind vorhanden und maximal 160 Zeichen lang.")
 
     lines.append("")
+    lines.append("Doppelte Titles:")
+    if duplicate_title_issues:
+        lines.extend(f"- {issue}" for issue in duplicate_title_issues)
+    else:
+        lines.append("- Keine mehrfach verwendeten Titles gefunden.")
+
+    lines.append("")
+    lines.append("Doppelte Descriptions:")
+    if duplicate_description_issues:
+        lines.extend(f"- {issue}" for issue in duplicate_description_issues)
+    else:
+        lines.append("- Keine mehrfach verwendeten Meta-Descriptions gefunden.")
+
+    lines.append("")
+    lines.append("Canonical-Prüfung:")
+    if canonical_issues:
+        lines.extend(f"- {issue}" for issue in canonical_issues)
+    else:
+        lines.append("- Alle Seiten besitzen einen Canonical auf https://www.warenschmiede.com.")
+
+    lines.append("")
     lines.append("Interne Link-Prüfung (*.html):")
     if broken_links:
         lines.extend(f"- {issue}" for issue in broken_links)
@@ -206,16 +278,35 @@ def write_report(timestamp: str, title_issues, description_issues, broken_links)
         lines.append("- Keine defekten internen HTML-Links gefunden.")
 
     report_path = os.path.join(REPO_ROOT, "seo-report.txt")
-    with open(report_path, "w", encoding="utf-8") as report_file:
-        report_file.write("\n".join(lines) + "\n")
+    report_entry = "\n".join(lines) + "\n"
+    if os.path.exists(report_path) and os.path.getsize(report_path) > 0:
+        report_entry = "\n" + report_entry
+
+    with open(report_path, "a", encoding="utf-8") as report_file:
+        report_file.write(report_entry)
 
 
 def main() -> None:
     html_files = collect_html_files()
     generate_sitemap(html_files)
     timestamp = _dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    title_issues, description_issues, broken_links = analyse_html_files(html_files)
-    write_report(timestamp, title_issues, description_issues, broken_links)
+    (
+        title_issues,
+        description_issues,
+        broken_links,
+        canonical_issues,
+        duplicate_title_issues,
+        duplicate_description_issues,
+    ) = analyse_html_files(html_files)
+    write_report(
+        timestamp,
+        title_issues,
+        description_issues,
+        broken_links,
+        canonical_issues,
+        duplicate_title_issues,
+        duplicate_description_issues,
+    )
     print(f"Sitemap.xml neu erstellt ({len(html_files)} Seiten) – {timestamp}")
 
 
