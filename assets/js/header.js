@@ -223,6 +223,114 @@
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '');
 
+  const normalizeCtaLabel = (value) =>
+    normalizeText(value)
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  const CTA_LABEL_MAP = new Map([
+    ['mehr erfahren', 'Mehr erfahren'],
+    ['mehr infos', 'Mehr erfahren'],
+    ['mehr informationen', 'Mehr erfahren'],
+    ['mehr details', 'Mehr erfahren'],
+    ['mehr anzeigen', 'Mehr erfahren'],
+    ['weiterlesen', 'Mehr erfahren'],
+    ['weitere details', 'Mehr erfahren'],
+    ['jetzt anfragen', 'Jetzt anfragen'],
+    ['jetzt kontaktieren', 'Jetzt anfragen'],
+    ['kontakt aufnehmen', 'Jetzt anfragen'],
+    ['angebot anfragen', 'Jetzt anfragen'],
+    ['angebot anfordern', 'Jetzt anfragen'],
+  ]);
+
+  const findPrimaryCtaTextNode = (element) => {
+    if (!element) {
+      return null;
+    }
+    const nodes = Array.from(element.childNodes);
+    for (const node of nodes) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const content = node.textContent?.trim();
+        if (content) {
+          return node;
+        }
+      }
+    }
+    return null;
+  };
+
+  const getCtaLabelTarget = (element) => {
+    const textNode = findPrimaryCtaTextNode(element);
+    if (textNode) {
+      return { type: 'text', node: textNode };
+    }
+
+    const explicitLabel = element.querySelector('[data-cta-label]');
+    if (explicitLabel instanceof HTMLElement && explicitLabel.childElementCount === 0) {
+      return { type: 'element', node: explicitLabel };
+    }
+
+    const quickContactLabel = element.querySelector('.quick-contact__label');
+    if (quickContactLabel instanceof HTMLElement && quickContactLabel.childElementCount === 0) {
+      return { type: 'element', node: quickContactLabel };
+    }
+
+    return null;
+  };
+
+  const shouldSkipCtaStandardization = () => {
+    const path = (window.location.pathname || '').toLowerCase();
+    return /(^|\/)kontakt(?:\/|\.html)?$/.test(path);
+  };
+
+  const standardizeCtas = () => {
+    if (shouldSkipCtaStandardization()) {
+      return;
+    }
+
+    const ctas = document.querySelectorAll('.btn, .cta');
+    if (!ctas.length) {
+      return;
+    }
+
+    ctas.forEach((element) => {
+      if (!(element instanceof HTMLElement)) {
+        return;
+      }
+
+      if (element.dataset.label === 'fixed') {
+        return;
+      }
+
+      const target = getCtaLabelTarget(element);
+      if (!target) {
+        return;
+      }
+
+      const rawText =
+        target.type === 'text'
+          ? target.node.textContent || ''
+          : target.node.textContent || '';
+
+      const normalized = normalizeCtaLabel(rawText);
+      if (!normalized) {
+        return;
+      }
+
+      const replacement = CTA_LABEL_MAP.get(normalized);
+      if (!replacement || rawText === replacement) {
+        return;
+      }
+
+      if (target.type === 'text') {
+        target.node.textContent = replacement;
+      } else if (target.node instanceof HTMLElement) {
+        target.node.textContent = replacement;
+      }
+    });
+  };
+
   const createBreadcrumbItem = (label, href, isCurrent) => {
     const item = document.createElement('li');
     item.className = 'breadcrumbs__item';
@@ -355,6 +463,7 @@
   };
 
   updateBreadcrumbs();
+  standardizeCtas();
 
   dropdowns.forEach((dropdown) => {
     dropdown.button.addEventListener('click', (event) => {
