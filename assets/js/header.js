@@ -1,27 +1,28 @@
 (() => {
-  const header = document.querySelector('[data-header]');
-  const toggle = document.querySelector('[data-nav-toggle]');
-  const menu = document.querySelector('[data-nav-menu]');
-  const navLinks = menu ? Array.from(menu.querySelectorAll('[data-nav-link]')) : [];
-  const dropdowns = Array.from(document.querySelectorAll('[data-nav-dropdown]'))
-    .map((root) => {
-      const button = root.querySelector('.nav-more-btn');
-      const dropdownMenu = root.querySelector('.nav-more-menu');
-      if (!button || !dropdownMenu) {
-        return null;
-      }
-      button.setAttribute('aria-expanded', button.getAttribute('aria-expanded') === 'true' ? 'true' : 'false');
-      dropdownMenu.hidden = dropdownMenu.hidden ?? true;
-      return { root, button, menu: dropdownMenu };
-    })
-    .filter(Boolean);
+  const initialize = () => {
+    const header = document.querySelector('[data-header]');
+    const toggle = document.querySelector('[data-nav-toggle]');
+    const menu = document.querySelector('[data-nav-menu]');
+    const navLinks = menu ? Array.from(menu.querySelectorAll('[data-nav-link]')) : [];
+    const dropdowns = Array.from(document.querySelectorAll('[data-nav-dropdown]'))
+      .map((root) => {
+        const button = root.querySelector('.nav-more-btn');
+        const dropdownMenu = root.querySelector('.nav-more-menu');
+        if (!button || !dropdownMenu) {
+          return null;
+        }
+        button.setAttribute('aria-expanded', button.getAttribute('aria-expanded') === 'true' ? 'true' : 'false');
+        dropdownMenu.hidden = dropdownMenu.hidden ?? true;
+        return { root, button, menu: dropdownMenu };
+      })
+      .filter(Boolean);
 
-  const updateDropdownButtonState = (dropdown) => {
-    const hasActiveLink = !!dropdown.menu.querySelector(
-      '[data-nav-link].active, [data-nav-link].is-active, [data-nav-link][aria-current="page"]'
-    );
-    dropdown.button.classList.toggle('active', hasActiveLink);
-    dropdown.button.classList.toggle('is-active', hasActiveLink);
+    const updateDropdownButtonState = (dropdown) => {
+      const hasActiveLink = !!dropdown.menu.querySelector(
+        '[data-nav-link].active, [data-nav-link].is-active, [data-nav-link][aria-current="page"]'
+      );
+      dropdown.button.classList.toggle('active', hasActiveLink);
+      dropdown.button.classList.toggle('is-active', hasActiveLink);
   };
 
   const updateAllDropdownButtonStates = () => {
@@ -407,5 +408,12 @@
     );
 
     sections.forEach((section) => observer.observe(section));
+  }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initialize, { once: true });
+  } else {
+    initialize();
   }
 })();
