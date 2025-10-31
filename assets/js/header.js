@@ -286,6 +286,12 @@
     const breadcrumbRules = [
       {
         type: 'section',
+        label: 'Leistungen',
+        href: '/leistungen.html',
+        keywords: ['leistungen/3d-druck', 'leistungen/3d-druck.html'],
+      },
+      {
+        type: 'section',
         label: '3D-Druck',
         href: '/leistungen/3d-druck.html',
         keywords: [
