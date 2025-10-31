@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Slicer &amp; Einstellungen – Grundlagen einfach erklärt | Warenschmiede</title>
-  <meta name="description" content="Slicer erklärt – Programme, Begriffe und Einstellungen einfach verstehen für den 3D-Druck-Einstieg.">
+  <title>Slicer Einstellungen für Anfänger – Programme, Profile und G-Code einfach erklärt</title>
+  <meta name="description" content="Einsteiger-Guide zum 3D-Druck-Slicer (Deutsch): Programme, G-Code, Druckprofile, Kalibrierung, Glossar und Praxis-Tipps einfach erklärt.">
+  <meta name="keywords" content="Slicer Erklärung, 3D-Druck Slicer Deutsch, G-Code, Druckprofile, Kalibrierung, Slicer Fehler.">
   <meta name="geo.region" content="DE-BW">
   <meta name="geo.placename" content="Donaueschingen">
   <meta name="geo.position" content="47.953;8.499">
@@ -38,8 +39,8 @@
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0f17">
   <meta name="color-scheme" content="light dark">
   <link rel="canonical" href="https://warenschmiede.com/slicer-einstellungen.html">
-  <meta property="og:title" content="Slicer &amp; Einstellungen – Grundlagen einfach erklärt | Warenschmiede">
-  <meta property="og:description" content="Slicer erklärt – Programme, Begriffe und Einstellungen einfach verstehen für den 3D-Druck-Einstieg.">
+  <meta property="og:title" content="Slicer Einstellungen für Anfänger – Programme, Profile und G-Code einfach erklärt">
+  <meta property="og:description" content="Einsteiger-Guide zum 3D-Druck-Slicer (Deutsch): Programme, G-Code, Druckprofile, Kalibrierung, Glossar und Praxis-Tipps einfach erklärt.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://warenschmiede.com/slicer-einstellungen.html">
   <meta property="og:image" content="/assets/og/og-default.jpg">
@@ -168,6 +169,11 @@
           <h2 id="was-ist-slicer">1️⃣ Was ist ein Slicer?</h2>
           <p>Ein Slicer übersetzt dein 3D-Modell in Schichten („Layer“) – er erzeugt den G-Code, den der Drucker ausführt. Ohne Slicer wüsste dein Drucker nicht, wie er Material ablegen soll.</p>
         </div>
+        <div class="card info-card" aria-labelledby="gcode-erklaerung">
+          <h3 id="gcode-erklaerung">⚙️ Was ist der G-Code?</h3>
+          <p>Beim Slicen wird eine G-Code-Datei erzeugt – sie enthält die exakten Bewegungs- und Temperaturbefehle, die dein Drucker ausführt.</p>
+          <p>Diese Datei wird üblicherweise auf eine SD-Karte kopiert oder per Netzwerk an den Drucker gesendet.</p>
+        </div>
       </div>
     </section>
 
@@ -220,10 +226,54 @@
       </div>
     </section>
 
+    <section class="section" aria-labelledby="druckprofile">
+      <div class="container">
+        <div class="section-heading">
+          <h2 id="druckprofile">3️⃣ Druckprofile verstehen</h2>
+          <p>Profile speichern abgestimmte Einstellungen für Geschwindigkeit, Schichthöhe und Wandstärke. Starte mit einem passenden Grundprofil und passe es bei Bedarf an.</p>
+        </div>
+        <div class="card">
+          <div class="mat-table">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Profil</th>
+                  <th scope="col">Beschreibung</th>
+                  <th scope="col">Zweck</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Entwurf</td>
+                  <td>Grobe Schichthöhe, schneller Druck</td>
+                  <td>Testteile, Prototypen</td>
+                </tr>
+                <tr>
+                  <td>Standard</td>
+                  <td>Ausgewogene Einstellungen</td>
+                  <td>Alltagsdrucke</td>
+                </tr>
+                <tr>
+                  <td>Fein</td>
+                  <td>Kleine Schichthöhe, langsamer</td>
+                  <td>Detail- oder Präzisionsdrucke</td>
+                </tr>
+                <tr>
+                  <td>Stark</td>
+                  <td>Dicke Wände, robust</td>
+                  <td>Funktionsteile, mechanische Bauteile</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="section" aria-labelledby="begriffe-einstellungen">
       <div class="container">
         <div class="section-heading">
-          <h2 id="begriffe-einstellungen">3️⃣ Wichtige Begriffe und Einstellungen für Einsteiger</h2>
+          <h2 id="begriffe-einstellungen">4️⃣ Wichtige Begriffe und Einstellungen für Einsteiger</h2>
           <p>Die wichtigsten Einstellungen auf einen Blick – mit deutscher Übersetzung und kurzer Erklärung.</p>
         </div>
         <div class="card">
@@ -295,22 +345,123 @@
       </div>
     </section>
 
-    <section class="section" aria-labelledby="praxis-tipp">
+    <section class="section" aria-labelledby="kalibrierung">
       <div class="container">
-        <div class="card tip-box">
-          <h2 id="praxis-tipp" class="sr-only">Praxis-Tipp</h2>
-          <p class="tip-box__label" aria-hidden="true">💡 Mein Tipp</p>
-          <p class="tip-box__text">„Ich nutze meist Bambu Studio mit 0,2&nbsp;mm Schichthöhe und 20&nbsp;% Infill. Halte dich am Anfang an die Standardprofile – damit kommst du am schnellsten zum guten Ergebnis.“</p>
+        <div class="section-heading">
+          <h2 id="kalibrierung">5️⃣ Kalibrierung macht den Unterschied</h2>
+          <p>Bevor du ein neues Projekt startest, lohnt sich ein kurzer Technik-Check. So stellst du sicher, dass Maße, Haftung und Oberflächenqualität stimmen.</p>
+        </div>
+        <div class="card info-card" aria-labelledby="kalibrierung-hinweis">
+          <h3 id="kalibrierung-hinweis">⚙️ Vor dem Druck</h3>
+          <p>Bett leveln, Nozzle reinigen, Testwürfel drucken – so stimmen Maße und Haftung.</p>
+          <p>Kleine Kalibrierungen verhindern später viele Druckfehler.</p>
         </div>
       </div>
     </section>
 
-    <section class="section" aria-labelledby="interne-links">
+    <section class="section" aria-labelledby="slicer-fehler">
       <div class="container">
-        <div class="card">
-          <h2 id="interne-links">5️⃣ Interne Verlinkungen</h2>
-          <p>Wenn du wissen möchtest, was ein Druck kostet, findest du hier den <a href="/druck-kosten.html">Kosten-Rechner</a>.</p>
+        <div class="section-heading">
+          <h2 id="slicer-fehler">6️⃣ ⚠️ Typische Fehler im Slicer – und wie du sie vermeidest</h2>
+          <p>Viele Druckprobleme entstehen durch kleine Unachtsamkeiten in den Einstellungen. Diese Stolperfallen solltest du kennen.</p>
         </div>
+        <div class="card info-card">
+          <ul class="icon-list" aria-label="Typische Slicer-Fehler und ihre Auswirkungen">
+            <li class="icon-list__item">
+              <span class="icon-list__title">🚀 Zu hohe Druckgeschwindigkeit</span>
+              <p>→ Qualitätsverlust und unsaubere Oberflächen.</p>
+            </li>
+            <li class="icon-list__item">
+              <span class="icon-list__title">🔥 Zu heiß gedruckt</span>
+              <p>→ Fäden (Stringing) und glänzende, unsaubere Oberflächen.</p>
+            </li>
+            <li class="icon-list__item">
+              <span class="icon-list__title">🧱 Keine Supports</span>
+              <p>→ Überhänge brechen ab oder hängen durch.</p>
+            </li>
+            <li class="icon-list__item">
+              <span class="icon-list__title">📏 Falsche Layerhöhe</span>
+              <p>→ Maßabweichungen und instabile Teile.</p>
+            </li>
+            <li class="icon-list__item">
+              <span class="icon-list__title">🔁 Kein Retraction</span>
+              <p>→ Fäden zwischen Bauteilen und unsaubere Kanten.</p>
+            </li>
+          </ul>
+        </div>
+        <div class="card tip-box">
+          <h2 id="praxis-tipp" class="sr-only">Praxis-Tipp</h2>
+          <p class="tip-box__label" aria-hidden="true">🧠 Tipp</p>
+          <p class="tip-box__text">Beobachte deinen ersten Layer – wenn der gut aussieht, läuft meist der Rest des Drucks ebenfalls sauber.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="slicer-faq">
+      <div class="container">
+        <div class="section-heading">
+          <h2 id="slicer-faq">7️⃣ Mini-FAQ: Häufig gestellte Fragen</h2>
+          <p>Kurze Antworten auf typische Einsteigerfragen – ideal zum schnellen Nachschlagen.</p>
+        </div>
+        <div class="faq__items">
+          <article class="faq__item">
+            <h3>Wie wähle ich das richtige Profil?</h3>
+            <p>Starte mit dem Standardprofil deines Slicers und passe nur Temperatur und Infill leicht an.</p>
+          </article>
+          <article class="faq__item">
+            <h3>Wie speichere ich den G-Code?</h3>
+            <p>Über den „Export“-Button im Slicer; die Datei endet auf <code>.gcode</code>.</p>
+          </article>
+          <article class="faq__item">
+            <h3>Was tun bei Fehldrucken?</h3>
+            <p>Zuerst Temperatur und Z-Offset prüfen, dann Haftung und Kühlung.</p>
+          </article>
+        </div>
+        <p class="mat-link-hint">Du möchtest wissen, was dein Druck kostet? Dann nutze den <a href="/druck-kosten.html">Kostenrechner</a>.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="slicer-glossar">
+      <div class="container">
+        <div class="section-heading">
+          <h2 id="slicer-glossar">8️⃣ Glossar – wichtige Begriffe einfach erklärt</h2>
+          <p>Ein kompaktes Nachschlagewerk für die wichtigsten Wörter rund um deinen Slicer.</p>
+        </div>
+        <div class="card">
+          <div class="mat-table">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Begriff</th>
+                  <th scope="col">Bedeutung</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>G-Code</td>
+                  <td>Steuerbefehle, die der Drucker ausführt.</td>
+                </tr>
+                <tr>
+                  <td>Retraction</td>
+                  <td>Filamentrückzug zur Fadenvermeidung.</td>
+                </tr>
+                <tr>
+                  <td>Slicer-Profil</td>
+                  <td>Voreinstellung für Material &amp; Qualität.</td>
+                </tr>
+                <tr>
+                  <td>Export</td>
+                  <td>Speichern der G-Code-Datei auf Datenträger.</td>
+                </tr>
+                <tr>
+                  <td>Bed Leveling</td>
+                  <td>Druckbett ausrichten für gleichmäßige erste Schicht.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p class="mat-link-hint">Mehr Tipps zum Drucken findest du in <a href="/druck-tipps.html">Tipps &amp; Abläufe / Kosten</a> und im <a href="/material.html">Materialwissen &amp; Vergleiche</a>.</p>
       </div>
     </section>
   </main>
