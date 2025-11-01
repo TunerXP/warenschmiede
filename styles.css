@@ -34,6 +34,14 @@
   --badge-th-fg: #0b3c8a;
   --badge-cu-bg: #ede9fe;
   --badge-cu-fg: #4c1d95;
+  --tooltip-trigger-bg: #f1f5f9;
+  --tooltip-trigger-border: #cbd5e1;
+  --tooltip-trigger-color: #0f172a;
+  --tooltip-trigger-hover-bg: #e2e8f0;
+  --tooltip-trigger-hover-border: #94a3b8;
+  --tooltip-trigger-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  --tooltip-trigger-hover-shadow: 0 4px 14px rgba(15, 23, 42, 0.16);
+  --tooltip-trigger-active-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
@@ -80,6 +88,14 @@ html[data-theme="dark"] {
   --badge-th-fg: #e8f1ff;
   --badge-cu-bg: #a855f7;
   --badge-cu-fg: #f7ecff;
+  --tooltip-trigger-bg: rgba(30, 41, 59, 0.9);
+  --tooltip-trigger-border: rgba(148, 163, 184, 0.45);
+  --tooltip-trigger-color: #e2e8f0;
+  --tooltip-trigger-hover-bg: rgba(148, 163, 184, 0.22);
+  --tooltip-trigger-hover-border: rgba(148, 163, 184, 0.65);
+  --tooltip-trigger-shadow: 0 1px 2px rgba(15, 23, 42, 0.6);
+  --tooltip-trigger-hover-shadow: 0 0 0 2px rgba(148, 163, 184, 0.35);
+  --tooltip-trigger-active-shadow: 0 0 0 2px rgba(148, 163, 184, 0.4);
 }
 
 * {
@@ -3738,29 +3754,30 @@ a:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  min-width: 1.5rem;
-  min-height: 1.5rem;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
   padding: 0;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-  background: color-mix(in srgb, var(--accent) 12%, var(--surface-muted) 88%);
-  color: var(--accent);
+  border: 1px solid var(--tooltip-trigger-border);
+  background: var(--tooltip-trigger-bg);
+  color: var(--tooltip-trigger-color);
+  box-shadow: var(--tooltip-trigger-shadow);
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: 1.125rem;
   font-weight: 600;
   line-height: 1;
   text-decoration: none;
   touch-action: manipulation;
   cursor: help;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.12s ease;
 }
 
 .ws-tip-trigger:hover,
 .ws-tip-trigger:focus-visible {
-  background: color-mix(in srgb, var(--accent) 22%, var(--surface-muted) 78%);
-  color: var(--accent-strong, var(--accent));
+  background: var(--tooltip-trigger-hover-bg);
+  border-color: var(--tooltip-trigger-hover-border);
+  color: var(--tooltip-trigger-color);
+  box-shadow: var(--tooltip-trigger-hover-shadow);
 }
 
 .ws-tip-trigger:focus-visible {
@@ -3769,7 +3786,10 @@ a:focus-visible {
 }
 
 .ws-tip-trigger:active {
-  background: color-mix(in srgb, var(--accent) 30%, var(--surface-muted) 70%);
+  background: var(--tooltip-trigger-hover-bg);
+  border-color: var(--tooltip-trigger-hover-border);
+  box-shadow: var(--tooltip-trigger-active-shadow);
+  transform: scale(0.95);
 }
 
 #ws-tooltips-portal,
@@ -3836,9 +3856,9 @@ a:focus-visible {
   }
 
   .ws-tip-trigger {
-    min-width: 2.25rem;
-    min-height: 2.25rem;
-    font-size: 1rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    font-size: 1.2rem;
   }
 
   .ws-tooltips-portal .ws-tooltip {
