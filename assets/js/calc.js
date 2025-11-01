@@ -72,6 +72,7 @@
           var marginOutput = document.getElementById('marginValue');
           var discountRow = document.querySelector('[data-result="discount"]');
           var discountOutput = document.getElementById('discountValue');
+          var vatNoteOutput = document.getElementById('vatNote');
           var resultChartSection = document.getElementById('resultChart');
           var resultChartBars = document.getElementById('resultChartBars');
           var resultChartToggle = document.getElementById('resultChartToggle');
@@ -192,6 +193,8 @@
           var printGrossOutput = document.getElementById('printGross');
           var printTotalOutput = document.getElementById('printTotal');
           var printResultGrid = document.querySelector('.calc-print__result-grid');
+          var printAdjustmentsGroup = document.querySelector('[data-print-group="adjustments"]');
+          var printAdjustmentsSeparator = document.querySelector('[data-print-separator="after-adjustments"]');
           var printSummaryItemTime = printTimeCostOutput ? printTimeCostOutput.closest('.calc-print__item') : null;
           var printSummaryItemMachine = null;
           var printSummaryItemFixed = printFixedCostOutput ? printFixedCostOutput.closest('.calc-print__item') : null;
@@ -776,6 +779,7 @@
             if (proRows && proRows.length) {
               proRows.forEach(function (row) {
                 row.hidden = !enabled;
+                row.setAttribute('aria-hidden', (!enabled).toString());
               });
             }
             if (proStatusOutput) {
@@ -852,6 +856,15 @@
               return;
             }
             row.hidden = !visible;
+          }
+
+          function setSectionVisibility(section, visible) {
+            if (!section) {
+              return;
+            }
+            var isVisible = !!visible;
+            section.hidden = !isVisible;
+            section.setAttribute('aria-hidden', (!isVisible).toString());
           }
 
           function normalizeFileNamePart(value) {
@@ -2502,7 +2515,7 @@
 
             materialCostLabelOutput.textContent = 'Material (Basis)';
             if (energyCostLabelOutput) {
-              energyCostLabelOutput.textContent = 'Energiekosten';
+              energyCostLabelOutput.textContent = 'Energie';
             }
 
             if (materialWasteOutput) {
@@ -2528,7 +2541,7 @@
             }
 
             if (fixedCostOutput) {
-              fixedCostOutput.textContent = formatter.format(state.pro.fixedCost);
+              fixedCostOutput.textContent = '+\u00A0' + formatter.format(state.pro.fixedCost);
             }
 
             if (subtotalOutput) {
@@ -2537,14 +2550,17 @@
             }
 
             if (marginOutput) {
-              marginOutput.textContent = formatter.format(state.pro.marginValue);
+              marginOutput.textContent = '+\u00A0' + formatter.format(state.pro.marginValue);
             }
 
             if (discountOutput) {
-              var discountText = hasValue(state.pro.discountValue)
-                ? '– ' + formatter.format(state.pro.discountValue)
-                : formatter.format(state.pro.discountValue);
-              discountOutput.textContent = discountText;
+              discountOutput.textContent = '\u2013\u00A0' + formatter.format(state.pro.discountValue);
+            }
+
+            if (vatNoteOutput) {
+              var vatVisible = !state.vatIncluded;
+              vatNoteOutput.hidden = !vatVisible;
+              vatNoteOutput.setAttribute('aria-hidden', (!vatVisible).toString());
             }
 
             renderResultChart(state);
@@ -2755,7 +2771,7 @@
               printMachineCostOutput.textContent = formatter.format(state.pro.machineCost);
             }
             if (printFixedCostOutput) {
-              printFixedCostOutput.textContent = formatter.format(state.pro.fixedCost);
+              printFixedCostOutput.textContent = '+\u00A0' + formatter.format(state.pro.fixedCost);
             }
             if (printPackagingCostOutput) {
               printPackagingCostOutput.textContent = formatter.format(state.pro.packagingCost);
@@ -2783,20 +2799,27 @@
               printSubtotalOutput.textContent = formatter.format(subtotalValue);
             }
             if (printMarginOutput) {
-              printMarginOutput.textContent = formatter.format(state.pro.marginValue);
+              printMarginOutput.textContent = '+\u00A0' + formatter.format(state.pro.marginValue);
             }
             if (printDiscountOutput) {
-              var discountText = hasValue(state.pro.discountValue)
-                ? '– ' + formatter.format(state.pro.discountValue)
-                : formatter.format(state.pro.discountValue);
-              printDiscountOutput.textContent = discountText;
+              printDiscountOutput.textContent = '\u2013\u00A0' + formatter.format(state.pro.discountValue);
             }
 
-            setRowVisibility(printSummaryItemTime, state.pro.enabled && hasValue(state.pro.timeCost));
-            setRowVisibility(printSummaryItemMachine, state.pro.enabled && hasValue(state.pro.machineCost));
-            setRowVisibility(printSummaryItemFixed, state.pro.enabled && hasValue(state.pro.fixedCost));
-            setRowVisibility(printSummaryItemMargin, state.pro.enabled && hasValue(state.pro.marginValue));
-            setRowVisibility(printSummaryItemDiscount, state.pro.enabled && hasValue(state.pro.discountValue));
+            var hasTime = state.pro.enabled && hasValue(state.pro.timeCost);
+            var hasMachine = state.pro.enabled && hasValue(state.pro.machineCost);
+            var hasFixed = state.pro.enabled && hasValue(state.pro.fixedCost);
+            var hasMargin = state.pro.enabled && hasValue(state.pro.marginValue);
+            var hasDiscount = state.pro.enabled && hasValue(state.pro.discountValue);
+
+            setRowVisibility(printSummaryItemTime, hasTime);
+            setRowVisibility(printSummaryItemMachine, hasMachine);
+            setRowVisibility(printSummaryItemFixed, hasFixed);
+            setRowVisibility(printSummaryItemMargin, hasMargin);
+            setRowVisibility(printSummaryItemDiscount, hasDiscount);
+
+            var hasAdjustments = hasMargin || hasFixed || hasDiscount;
+            setSectionVisibility(printAdjustmentsGroup, state.pro.enabled && hasAdjustments);
+            setSectionVisibility(printAdjustmentsSeparator, state.pro.enabled && hasAdjustments);
 
             printNetOutput.textContent = formatter.format(state.net);
             printGrossOutput.textContent = formatter.format(state.gross);
@@ -2808,10 +2831,16 @@
               printTotalContextOutput.textContent = state.vatIncluded ? ' (inkl. MwSt.)' : ' (netto)';
             }
 
-            if (state.vatIncluded) {
-              printVatNoteOutput.textContent = 'Preise inkl. MwSt. (19\u00A0%)';
-            } else {
-              printVatNoteOutput.textContent = 'Hinweis: §19 UStG – keine Umsatzsteuer.';
+            if (printVatNoteOutput) {
+              if (state.vatIncluded) {
+                printVatNoteOutput.textContent = '';
+                printVatNoteOutput.hidden = true;
+                printVatNoteOutput.setAttribute('aria-hidden', 'true');
+              } else {
+                printVatNoteOutput.textContent = 'Hinweis: §19 UStG – keine Umsatzsteuer.';
+                printVatNoteOutput.hidden = false;
+                printVatNoteOutput.setAttribute('aria-hidden', 'false');
+              }
             }
 
             if (printProParamsSection) {
