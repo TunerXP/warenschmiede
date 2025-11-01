@@ -3734,57 +3734,42 @@ a:focus-visible {
   margin-left: 0.35rem;
 }
 
-.info-tooltip__trigger,
 .ws-tip-trigger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.2rem;
-  height: 1.2rem;
-  min-width: 1.2rem;
-  min-height: 1.2rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
   padding: 0;
-  border-radius: 50%;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
   background: color-mix(in srgb, var(--accent) 12%, var(--surface-muted) 88%);
   color: var(--accent);
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-  font: inherit;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
   touch-action: manipulation;
   cursor: help;
-  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.info-tooltip__trigger:focus-visible,
+.ws-tip-trigger:hover,
+.ws-tip-trigger:focus-visible {
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface-muted) 78%);
+  color: var(--accent-strong, var(--accent));
+}
+
 .ws-tip-trigger:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
-.info-tooltip__trigger svg,
-.ws-tip-trigger svg {
-  width: 0.85rem;
-  height: 0.85rem;
-  stroke: currentColor;
-  stroke-width: 1.4;
-  fill: none;
-}
-
-.info-tooltip__trigger svg line,
-.ws-tip-trigger svg line {
-  stroke-linecap: round;
-}
-
-.info-tooltip__trigger svg circle,
-.ws-tip-trigger svg circle {
-  fill: currentColor;
-  opacity: 0.15;
-  stroke: currentColor;
-}
-
-.info-tooltip__dot {
-  fill: currentColor;
-  opacity: 1;
+.ws-tip-trigger:active {
+  background: color-mix(in srgb, var(--accent) 30%, var(--surface-muted) 70%);
 }
 
 #ws-tooltips-portal,
@@ -3795,77 +3780,40 @@ a:focus-visible {
   z-index: 9999;
 }
 
-#ws-tooltips-portal .ws-tooltip,
 .ws-tooltips-portal .ws-tooltip {
   position: fixed;
-  inset: auto;
   z-index: 9999;
   max-width: min(320px, 90vw);
-  width: max-content;
-  background: #111 !important;
-  color: #fff !important;
-  font-size: 0.95rem;
-  line-height: 1.35;
+  background: #111;
+  color: #fff;
   padding: 10px 12px;
   border-radius: 10px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
-  opacity: 0;
-  visibility: hidden;
-  transform: translate3d(0, -6px, 0);
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  line-height: 1.35;
+  font-size: 0.95rem;
   pointer-events: auto;
 }
 
-.ws-tooltip__inner {
+.ws-tooltips-portal .ws-tooltip__content {
   display: block;
   word-break: break-word;
   overflow-wrap: anywhere;
 }
 
-#ws-tooltips-portal .ws-tooltip__arrow,
 .ws-tooltips-portal .ws-tooltip__arrow {
   position: absolute;
   width: 10px;
   height: 10px;
-  left: 50%;
-  transform: translateX(calc(-50% + var(--tooltip-arrow-offset, 0px))) rotate(45deg);
-  background: #111 !important;
-  border-radius: 0.2rem;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+  background: #111;
+  transform: rotate(45deg);
 }
 
-.ws-tooltip--visible {
-  opacity: 1;
-  visibility: visible;
-  transform: translate3d(0, 0, 0);
-}
-
-.ws-tooltip--top {
-  transform: translate3d(0, -6px, 0);
-}
-
-.ws-tooltip--top .ws-tooltip__arrow {
+.ws-tooltips-portal .ws-tooltip[data-placement="top"] .ws-tooltip__arrow {
   bottom: -5px;
 }
 
-.ws-tooltip--bottom {
-  transform: translate3d(0, 6px, 0);
-}
-
-.ws-tooltip--bottom .ws-tooltip__arrow {
+.ws-tooltips-portal .ws-tooltip[data-placement="bottom"] .ws-tooltip__arrow {
   top: -5px;
-}
-
-.ws-tooltip--top.ws-tooltip--visible,
-.ws-tooltip--bottom.ws-tooltip--visible {
-  transform: translate3d(0, 0, 0);
-}
-
-.info-tooltip__content,
-.info-tooltip__content[hidden],
-.ws-help-inline,
-.help-text {
-  display: none !important;
 }
 
 @media print {
@@ -3874,18 +3822,26 @@ a:focus-visible {
   }
 }
 
+/* Alte Reste killen */
+.info-tooltip__content,
+.info-tooltip__content[hidden],
+.ws-help-inline,
+.help-text {
+  display: none !important;
+}
+
 @media (max-width: 768px) {
   .calc-checkbox--vat {
     margin-top: 0;
   }
 
-  .info-tooltip__trigger,
   .ws-tip-trigger {
-    min-width: 2.5rem;
-    min-height: 2.5rem;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    font-size: 1rem;
   }
 
-  .ws-tooltip {
+  .ws-tooltips-portal .ws-tooltip {
     font-size: 0.95rem;
     line-height: 1.45;
     padding: 0.75rem 1rem;
