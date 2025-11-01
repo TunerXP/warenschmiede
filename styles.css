@@ -3776,7 +3776,7 @@ a:focus-visible {
 
 .info-tooltip__content {
   position: absolute;
-  z-index: 40;
+  z-index: 120;
   inset-inline-start: 50%;
   bottom: calc(100% + 0.5rem);
   transform: translateX(-50%);
@@ -3819,6 +3819,7 @@ a:focus-visible {
     inset-inline-start: var(--tooltip-left, 50%);
     inset-block-start: var(--tooltip-anchor, auto);
     transform: translate(-50%, calc(-100% - var(--tooltip-gap, 12px)));
+    z-index: 200;
     max-width: min(22rem, calc(90vw - var(--safe-area-left, 0px) - var(--safe-area-right, 0px)));
     width: auto;
     opacity: 0;
@@ -3829,6 +3830,12 @@ a:focus-visible {
     line-height: 1.5;
     text-align: left;
     word-break: break-word;
+  }
+
+  .info-tooltip:focus-within .info-tooltip__content {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   .info-tooltip__content[data-placement="bottom"] {
