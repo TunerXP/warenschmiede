@@ -259,13 +259,20 @@
         portal = document.createElement('div');
         portal.id = PORTAL_ID;
         portal.setAttribute('aria-hidden', 'true');
+        portal.classList.add('ws-tooltips-portal');
         if (document.body.firstElementChild) {
           document.body.insertBefore(portal, document.body.firstElementChild);
         } else {
           document.body.appendChild(portal);
         }
-      } else if (portal.parentElement !== document.body || portal !== document.body.firstElementChild) {
-        document.body.insertBefore(portal, document.body.firstElementChild);
+      } else {
+        portal.classList.add('ws-tooltips-portal');
+        if (!portal.hasAttribute('aria-hidden')) {
+          portal.setAttribute('aria-hidden', 'true');
+        }
+        if (portal.parentElement !== document.body || portal !== document.body.firstElementChild) {
+          document.body.insertBefore(portal, document.body.firstElementChild);
+        }
       }
 
       return portal;
@@ -311,8 +318,14 @@
             trigger.setAttribute('aria-describedby', tooltipId);
           }
 
-          if (!trigger.hasAttribute('type')) {
+          if (trigger.tagName === 'BUTTON' && !trigger.hasAttribute('type')) {
             trigger.setAttribute('type', 'button');
+          }
+
+          const tipName = (root.dataset.tip || trigger.dataset.tip || '').trim();
+          if (tipName.length > 0) {
+            root.dataset.tip = tipName;
+            trigger.dataset.tip = tipName;
           }
 
           source.setAttribute('aria-hidden', 'true');
@@ -722,7 +735,17 @@
         }
 
         const entry = this.activeTooltip;
+        if (!entry.trigger || !entry.trigger.isConnected) {
+          this.close(entry);
+          return;
+        }
+
         const newRect = entry.trigger.getBoundingClientRect();
+
+        if (!this.isTriggerVisible(entry.trigger, newRect)) {
+          this.close(entry);
+          return;
+        }
 
         if (entry.lastTriggerRect) {
           const dx = newRect.left - entry.lastTriggerRect.left;
@@ -750,6 +773,29 @@
 
       const hasOpenTooltip = this.tooltips.some((entry) => entry.isOpen);
       this.portal.setAttribute('aria-hidden', hasOpenTooltip ? 'false' : 'true');
+    }
+
+    isTriggerVisible(trigger, rect) {
+      if (!trigger || !rect) {
+        return false;
+      }
+
+      if (rect.width === 0 && rect.height === 0) {
+        return false;
+      }
+
+      const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+
+      if (rect.bottom < 0 || rect.top > viewportHeight) {
+        return false;
+      }
+
+      if (rect.right < 0 || rect.left > viewportWidth) {
+        return false;
+      }
+
+      return true;
     }
   }
 
