@@ -205,8 +205,8 @@
                       <span class="calc-toggle__thumb"></span>
                     </span>
                     <span class="calc-toggle__text">
-                      <span class="calc-toggle__title">Erweiterter Rechner</span>
-                      <span class="calc-toggle__hint">Zusatzfelder für Marge, Zeiten &amp; Rabatt</span>
+                      <span class="calc-toggle__title">Pro-Optionen</span>
+                      <span class="calc-toggle__hint">Zusatzfelder für professionelle Kalkulation.</span>
                     </span>
                   </label>
                 </div>
@@ -295,47 +295,125 @@
                 </div>
               </div>
 
-              <section class="calc-pro" id="pro-fields" hidden aria-hidden="true" inert>
-                <p class="calc-hint calc-hint--lead">Nutze die Zusatzfelder für Marge, Arbeitszeit und optionale Abschläge.</p>
-                <div class="calc-pro__grid">
-                  <div class="calc-field">
-                  <label for="profitMargin">Gewinnmarge (%)</label>
-                    <input type="number" id="profitMargin" name="profitMargin" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 10">
-                  </div>
-                  <div class="calc-field">
-                  <label for="hourlyRate">Stundenlohn (€/h)</label>
-                    <input type="number" id="hourlyRate" name="hourlyRate" min="0" step="1" inputmode="decimal" placeholder="z. B. 20">
-                  </div>
-                  <div class="calc-field">
-                  <label for="setupMinutes">Rüstzeit (min)</label>
-                    <input type="number" id="setupMinutes" name="setupMinutes" min="0" step="1" inputmode="decimal" placeholder="z. B. 10">
-                  </div>
-                  <div class="calc-field">
-                    <label for="proPrintMinutes">Druckzeit (min)</label>
-                    <input type="number" id="proPrintMinutes" name="proPrintMinutes" min="0" step="1" inputmode="decimal" aria-describedby="hint-printMinutes">
-                    <p class="calc-hint" id="hint-printMinutes">Synchronisiert mit der Laufzeit oben.</p>
-                  </div>
-                  <div class="calc-field">
-                  <label for="finishingMinutes">Nachbearbeitung (min)</label>
-                    <input type="number" id="finishingMinutes" name="finishingMinutes" min="0" step="1" inputmode="decimal" placeholder="z. B. 10">
-                  </div>
-                  <div class="calc-field">
-                  <label for="fixedCost">Fixkosten (€)</label>
-                    <input type="number" id="fixedCost" name="fixedCost" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 5">
-                  </div>
-                  <div class="calc-field">
-                  <label for="discountPercent">Rabatt (%)</label>
-                    <input type="number" id="discountPercent" name="discountPercent" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 0">
-                  </div>
-                </div>
-              </section>
             </form>
           </div>
 
-          <section class="card pro-placeholder" aria-labelledby="pro-placeholder-heading">
-            <h3 id="pro-placeholder-heading">Pro-Optionen (in Entwicklung)</h3>
-            <p>Hier werden künftig zusätzliche Eingaben wie Maschinenkosten, Fehlerrate usw. erscheinen.</p>
-          </section>
+          <aside class="card calc-pro-card" id="proCard" hidden aria-hidden="true">
+            <div class="calc-pro-card__header">
+              <div class="calc-pro-card__heading">
+                <h2 class="calc-card__title">Pro-Optionen</h2>
+                <p class="calc-pro-card__description">Zusatzfelder für professionelle Kalkulation.</p>
+              </div>
+              <button type="button" class="calc-pro-card__toggle" id="proCollapseToggle" aria-expanded="true">
+                Bereiche ausblenden
+              </button>
+            </div>
+            <div class="calc-pro-card__body" id="proCardBody">
+              <section class="calc-pro" id="pro-fields" hidden aria-hidden="true" inert>
+                <p class="calc-hint calc-hint--lead">Kostenfaktoren für professionelle Kalkulation. Wirken nur, wenn aktiviert.</p>
+                <div class="calc-pro__group">
+                  <h3 class="calc-pro__subheading">Kostenaufschläge</h3>
+                  <div class="calc-pro__grid">
+                    <div class="calc-field">
+                      <label for="profitMargin">Gewinnmarge (%)</label>
+                      <input type="number" id="profitMargin" name="profitMargin" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 10">
+                      <p class="calc-hint">Aufschlag auf Material, Energie, Arbeitszeit &amp; Maschine.</p>
+                    </div>
+                    <div class="calc-field">
+                      <label for="discountPercent">Rabatt (%)</label>
+                      <input type="number" id="discountPercent" name="discountPercent" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 0">
+                      <p class="calc-hint">Abzug vor MwSt. auf die Zwischensumme.</p>
+                    </div>
+                    <div class="calc-field">
+                      <label for="errorRate">Fehlerrate (%)</label>
+                      <input type="number" id="errorRate" name="errorRate" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 5">
+                      <p class="calc-hint">Wirkt nur auf Material (inkl. Verschnitt).</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="calc-pro__group">
+                  <h3 class="calc-pro__subheading">Zeiten &amp; Lohn</h3>
+                  <div class="calc-pro__grid">
+                    <div class="calc-field">
+                      <label for="hourlyRate">Stundenlohn (€/h)</label>
+                      <input type="number" id="hourlyRate" name="hourlyRate" min="0" step="1" inputmode="decimal" placeholder="z. B. 20">
+                      <p class="calc-hint">Wirkt auf Rüstzeit + Nachbearbeitung.</p>
+                    </div>
+                    <div class="calc-field">
+                      <label for="setupMinutes">Rüstzeit (min)</label>
+                      <input type="number" id="setupMinutes" name="setupMinutes" min="0" step="1" inputmode="decimal" placeholder="z. B. 10">
+                      <p class="calc-hint">Vorbereitung &amp; Setup je Auftrag.</p>
+                    </div>
+                    <div class="calc-field">
+                      <label for="finishingMinutes">Nachbearbeitung (min)</label>
+                      <input type="number" id="finishingMinutes" name="finishingMinutes" min="0" step="1" inputmode="decimal" placeholder="z. B. 10">
+                      <p class="calc-hint">Entgraten, Reinigen, Finish.</p>
+                    </div>
+                    <div class="calc-field">
+                      <label for="proPrintMinutes">Druckzeit (min)</label>
+                      <input type="number" id="proPrintMinutes" name="proPrintMinutes" min="0" step="1" inputmode="decimal" aria-describedby="hint-printMinutes">
+                      <p class="calc-hint" id="hint-printMinutes">Synchronisiert mit der Laufzeit oben.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="calc-pro__group">
+                  <h3 class="calc-pro__subheading">Fix &amp; Logistik</h3>
+                  <div class="calc-pro__grid">
+                    <div class="calc-field">
+                      <label for="fixedCost">Fixkosten (€)</label>
+                      <input type="number" id="fixedCost" name="fixedCost" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 5">
+                      <p class="calc-hint">Bleiben fix – keine Marge darauf.</p>
+                    </div>
+                    <div class="calc-field">
+                      <label for="packagingCost">Verpackung (€)</label>
+                      <input type="number" id="packagingCost" name="packagingCost" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 2">
+                      <p class="calc-hint">Zählt zu den Fixkosten je Auftrag.</p>
+                    </div>
+                    <div class="calc-field">
+                      <label for="shippingCost">Versand (€)</label>
+                      <input type="number" id="shippingCost" name="shippingCost" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 5">
+                      <p class="calc-hint">Zählt zu den Fixkosten je Auftrag.</p>
+                    </div>
+                  </div>
+                  <p class="calc-hint calc-hint--note">Fixkosten umfassen Verpackung &amp; Versand.</p>
+                </div>
+                <div class="calc-pro__group">
+                  <h3 class="calc-pro__subheading">Maschine</h3>
+                  <div class="calc-pro__grid">
+                    <div class="calc-field calc-field--stacked">
+                      <label for="machineHourlyRate">Maschinenkosten (€/h)</label>
+                      <input type="number" id="machineHourlyRate" name="machineHourlyRate" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 1.5">
+                      <p class="calc-hint">Wirkt direkt auf die Druckzeit.</p>
+                      <details class="calc-pro-advanced" id="machineAdvanced">
+                        <summary>Anschaffung &amp; Lebensdauer hinterlegen</summary>
+                        <div class="calc-pro-advanced__grid">
+                          <div class="calc-field">
+                            <label for="machinePurchase">Anschaffungswert (€)</label>
+                            <input type="number" id="machinePurchase" name="machinePurchase" min="0" step="50" inputmode="decimal" placeholder="z. B. 1200">
+                          </div>
+                          <div class="calc-field">
+                            <label for="machineLifetime">Lebensdauer (h)</label>
+                            <input type="number" id="machineLifetime" name="machineLifetime" min="0" step="50" inputmode="decimal" placeholder="z. B. 4000">
+                          </div>
+                        </div>
+                        <p class="calc-hint" id="machineAutoHint">Ergibt automatisch einen €/h-Wert.</p>
+                      </details>
+                    </div>
+                  </div>
+                </div>
+                <div class="calc-pro__group">
+                  <h3 class="calc-pro__subheading">Materialdaten</h3>
+                  <div class="calc-pro__grid">
+                    <div class="calc-field">
+                      <label for="materialDensity">Dichte (g/cm³)</label>
+                      <input type="number" id="materialDensity" name="materialDensity" min="0" step="0.01" inputmode="decimal" placeholder="z. B. 1.24">
+                      <p class="calc-hint" id="materialDensityNote">Für Filamentlänge → Gewicht (Ø 1,75&nbsp;mm).</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </aside>
 
           <div class="card calc-results" aria-live="polite">
             <div class="calc-results__header">
@@ -360,7 +438,7 @@
                 <span class="calc-results__value" id="materialWasteCost">0,00&nbsp;€</span>
               </li>
               <li class="calc-results__item" data-result="materialTotal">
-                <span class="calc-results__label">Material (inkl. Verschnitt)</span>
+                <span class="calc-results__label">Material (inkl. Verschnitt &amp; Fehlerrate)</span>
                 <span class="calc-results__value" id="materialTotalCost">0,00&nbsp;€</span>
               </li>
               <li class="calc-results__item">
@@ -371,8 +449,12 @@
                 <span class="calc-results__label">Arbeitszeitkosten (Rüstzeit + Nachbearbeitung)</span>
                 <span class="calc-results__value" id="timeCost">0,00&nbsp;€</span>
               </li>
+              <li class="calc-results__item calc-results__item--pro" data-result="machineCost" data-pro-row="true" hidden>
+                <span class="calc-results__label">Maschinenkosten</span>
+                <span class="calc-results__value" id="machineCostValue">0,00&nbsp;€</span>
+              </li>
               <li class="calc-results__item calc-results__item--pro" data-result="fixedCost" data-pro-row="true" hidden>
-                <span class="calc-results__label">Fixkosten</span>
+                <span class="calc-results__label">Fixkosten (inkl. Verpackung/Versand)</span>
                 <span class="calc-results__value" id="fixedCostValue">0,00&nbsp;€</span>
               </li>
               <li class="calc-results__item" data-result="subtotal">
@@ -412,13 +494,14 @@
                 <span class="chip chip-material">Material</span>
                 <span class="chip chip-energy">Energie</span>
                 <span class="chip chip-labor">Arbeitszeit</span>
+                <span class="chip chip-machine">Maschine</span>
                 <span class="chip chip-fix">Fixkosten</span>
                 <span class="chip chip-margin">Marge</span>
                 <span class="chip chip-discount">Rabatt</span>
               </div>
               <p class="chart-total" id="chartNetTotal">Gesamtkosten (netto): 0,00&nbsp;€</p>
             </section>
-            <p class="calc-results__pro-hint" id="proStatus" data-pro-row="true" hidden>Erweiterter Rechner aktiv – Zusatzposten &amp; Fixkosten werden separat ausgewiesen.</p>
+            <p class="calc-results__pro-hint" id="proStatus" data-pro-row="true" hidden>Pro-Optionen aktiv – Maschine, Arbeitszeit &amp; Fixkosten werden berücksichtigt.</p>
             <h3 class="calc-results__subheading">Disclaimer</h3>
             <p class="calc-formula">Energiekosten = (Watt/1000) × Laufzeit × €/kWh × Lastfaktor (Schätzung).</p>
             <p class="calc-note">Unverbindliche Orientierung ohne Design- oder Nachbearbeitungskosten. Tatsächliche Kosten können abweichen.</p>
@@ -448,15 +531,18 @@
             <li>Ergebnis ansehen oder Ergebnis drucken (A4).</li>
           </ol>
 
-          <h3 id="pro-guide">Erweiterter Modus (Pro)</h3>
-          <p>Aktiviere &bdquo;Erweiterter Rechner&ldquo;, wenn du zusätzlich kalkulieren willst:</p>
+          <h3 id="pro-guide">Pro-Optionen</h3>
+          <p>Aktiviere die &bdquo;Pro-Optionen&ldquo;, wenn du zusätzlich kalkulieren willst:</p>
           <ul>
             <li>Rüstzeit (min): Vorbereitung, Einrichten, Start.</li>
             <li>Nachbearbeitung (min): Entgraten, Reinigen, Montage.</li>
             <li>Stundenlohn (&euro;/h): wirkt nur auf Rüstzeit + Nachbearbeitung.</li>
-            <li>Fixkosten (&euro;): feste Kosten pro Auftrag (Verpackung, Abschreibung, Versandpauschale &hellip;).</li>
-            <li>Gewinnmarge (%): Aufschlag auf variable Kosten (Material + Energie + Arbeitszeit). Fixkosten bleiben fix.</li>
+            <li>Maschinenkosten (&euro;/h): wirken auf die Druckzeit (optional via Anschaffung/Lebensdauer).</li>
+            <li>Fixkosten (&euro;): feste Kosten pro Auftrag inkl. Verpackung &amp; Versand.</li>
+            <li>Fehlerrate (%): Zuschlag auf Material inkl. Verschnitt.</li>
+            <li>Gewinnmarge (%): Aufschlag auf Material, Energie, Arbeitszeit &amp; Maschine. Fixkosten bleiben fix.</li>
             <li>Rabatt (%): optionaler Abzug vor MwSt.</li>
+            <li>Dichte (g/cm³): konvertiert Filamentlänge (Ø 1,75&nbsp;mm) zu Gewicht.</li>
           </ul>
           <p>Nutze anschließend &bdquo;Ergebnis + Eingaben drucken&ldquo; (2 Seiten: Ergebnis + Eingaben).</p>
 
@@ -503,15 +589,18 @@
             <dd>Durchschnittliche Auslastung während des Drucks (nicht immer 100 %). Beispiel: 80 % bedeutet, dass Heizung/Lüfter/Bewegung im Mittel bei 0,8×Leistung laufen.</dd>
           </dl>
 
-          <h3>Erweiterter Rechner (optional)</h3>
+          <h3>Pro-Optionen (optional)</h3>
           <p>Zusatzfelder für professionelle Kalkulation. Wirken nur, wenn der Schalter aktiv ist:</p>
           <ul>
             <li>Rüstzeit (min): Vorbereitung, Einrichtung, Start.</li>
             <li>Nachbearbeitung (min): Support entfernen, Entgraten, Finish.</li>
             <li>Stundenlohn (€/h): Eigen-/Kalkulationslohn für Rüstzeit + Nachbearbeitung (wirkt nur auf diese beiden Zeiten).</li>
-            <li>Fixkosten (€): Feste Kosten pro Auftrag (z. B. Verpackung, Abschreibung, Versandpauschale). Bleiben fix – werden nicht durch Marge erhöht.</li>
-            <li>Gewinnmarge (%): Aufschlag auf variable Kosten (Material + Energie + Arbeitszeit).</li>
+            <li>Maschinenkosten (€/h): Wirken auf die Druckzeit, optional aus Anschaffung &amp; Lebensdauer berechnet.</li>
+            <li>Fixkosten (€): Feste Kosten pro Auftrag (inkl. Verpackung &amp; Versand). Bleiben fix – werden nicht durch Marge erhöht.</li>
+            <li>Fehlerrate (%): Zuschlag auf Material (inkl. Verschnitt).</li>
+            <li>Gewinnmarge (%): Aufschlag auf Material, Energie, Arbeitszeit &amp; Maschine.</li>
             <li>Rabatt (%): Optionaler Abzug vor MwSt.</li>
+            <li>Dichte (g/cm³): Für die Umrechnung Filamentlänge → Gewicht (Ø 1,75&nbsp;mm).</li>
           </ul>
 
           <h3>Ergebnisfelder</h3>
@@ -573,7 +662,7 @@
             </div>
             <dl class="calc-print__list">
               <div class="calc-print__item">
-                <dt>Material (inkl. Verschnitt)</dt>
+                <dt>Material (inkl. Verschnitt &amp; Fehlerrate)</dt>
                 <dd id="printMaterialTotal">0,00&nbsp;€</dd>
               </div>
               <div class="calc-print__item">
@@ -585,7 +674,11 @@
                 <dd id="printTimeCost">0,00&nbsp;€</dd>
               </div>
               <div class="calc-print__item" data-pro-row="true">
-                <dt>Fixkosten</dt>
+                <dt>Maschine</dt>
+                <dd id="printMachineCost">0,00&nbsp;€</dd>
+              </div>
+              <div class="calc-print__item" data-pro-row="true">
+                <dt>Fixkosten (inkl. Verpackung/Versand)</dt>
                 <dd id="printFixedCost">0,00&nbsp;€</dd>
               </div>
               <div class="calc-print__item" data-pro-row="true">
@@ -681,6 +774,14 @@
                 <th scope="row">Gewinnmarge</th>
                 <td id="printProfitMargin">0&nbsp;%</td>
               </tr>
+              <tr data-input-row="discountPercent">
+                <th scope="row">Rabatt</th>
+                <td id="printDiscountPercent">0&nbsp;%</td>
+              </tr>
+              <tr data-input-row="errorRate">
+                <th scope="row">Fehlerrate</th>
+                <td id="printErrorRate">0&nbsp;%</td>
+              </tr>
               <tr data-input-row="hourlyRate">
                 <th scope="row">Stundenlohn</th>
                 <td id="printHourlyRate">0,00&nbsp;€/h</td>
@@ -701,9 +802,29 @@
                 <th scope="row">Fixkosten pro Auftrag</th>
                 <td id="printFixedCostInput">0,00&nbsp;€</td>
               </tr>
-              <tr data-input-row="discountPercent">
-                <th scope="row">Rabatt</th>
-                <td id="printDiscountPercent">0&nbsp;%</td>
+              <tr data-input-row="packagingCost">
+                <th scope="row">Verpackung</th>
+                <td id="printPackagingCost">0,00&nbsp;€</td>
+              </tr>
+              <tr data-input-row="shippingCost">
+                <th scope="row">Versand</th>
+                <td id="printShippingCost">0,00&nbsp;€</td>
+              </tr>
+              <tr data-input-row="machineHourlyRate">
+                <th scope="row">Maschinenkosten</th>
+                <td id="printMachineHourly">0,00&nbsp;€/h</td>
+              </tr>
+              <tr data-input-row="machinePurchase">
+                <th scope="row">Anschaffungswert</th>
+                <td id="printMachinePurchase">0,00&nbsp;€</td>
+              </tr>
+              <tr data-input-row="machineLifetime">
+                <th scope="row">Lebensdauer</th>
+                <td id="printMachineLifetime">0&nbsp;h</td>
+              </tr>
+              <tr data-input-row="materialDensity">
+                <th scope="row">Dichte</th>
+                <td id="printMaterialDensity">0,00&nbsp;g/cm³</td>
               </tr>
             </tbody>
           </table>
@@ -766,6 +887,7 @@
       var materialTotalOutput = document.getElementById('materialTotalCost');
       var timeCostRow = document.querySelector('[data-result="timeCost"]');
       var timeCostOutput = document.getElementById('timeCost');
+      var machineCostOutput = document.getElementById('machineCostValue');
       var fixedCostRow = document.querySelector('[data-result="fixedCost"]');
       var fixedCostOutput = document.getElementById('fixedCostValue');
       var subtotalRow = document.querySelector('[data-result="subtotal"]');
@@ -783,6 +905,9 @@
       var printFullButton = document.getElementById('printFullButton');
       var proToggle = document.getElementById('proToggle');
       var proFields = document.getElementById('pro-fields');
+      var proCard = document.getElementById('proCard');
+      var proCardBody = document.getElementById('proCardBody');
+      var proCollapseToggle = document.getElementById('proCollapseToggle');
       var proRows = document.querySelectorAll('[data-pro-row="true"]');
       var rootElement = document.documentElement;
       var profitMarginInput = document.getElementById('profitMargin');
@@ -816,9 +941,21 @@
       var printTotalOutput = document.getElementById('printTotal');
       var printResultGrid = document.querySelector('.calc-print__result-grid');
       var printSummaryItemTime = printTimeCostOutput ? printTimeCostOutput.closest('.calc-print__item') : null;
+      var printSummaryItemMachine = null;
       var printSummaryItemFixed = printFixedCostOutput ? printFixedCostOutput.closest('.calc-print__item') : null;
       var printSummaryItemMargin = printMarginOutput ? printMarginOutput.closest('.calc-print__item') : null;
       var printSummaryItemDiscount = printDiscountOutput ? printDiscountOutput.closest('.calc-print__item') : null;
+      var printMachineCostOutput = document.getElementById('printMachineCost');
+      if (printMachineCostOutput) {
+        printSummaryItemMachine = printMachineCostOutput.closest('.calc-print__item');
+      }
+      var printErrorRateOutput = document.getElementById('printErrorRate');
+      var printPackagingCostOutput = document.getElementById('printPackagingCost');
+      var printShippingCostOutput = document.getElementById('printShippingCost');
+      var printMachineHourlyOutput = document.getElementById('printMachineHourly');
+      var printMachinePurchaseOutput = document.getElementById('printMachinePurchase');
+      var printMachineLifetimeOutput = document.getElementById('printMachineLifetime');
+      var printMaterialDensityOutput = document.getElementById('printMaterialDensity');
       var printHeaderPartName = document.getElementById('printHeaderPartName');
       var printHeaderPartNameValue = document.getElementById('printHeaderPartNameValue');
       var printInputsPartName = document.getElementById('printInputsPartName');
@@ -867,9 +1004,12 @@
       var percentNumberFormatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
       var chartCompactPercentFormatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
       var co2Formatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+      var FILAMENT_DIAMETER_MM = 1.75;
 
       var chartCollapseMediaQuery = window.matchMedia('(max-width: 359px)');
       var chartToggleInteracted = false;
+      var proCardMediaQuery = window.matchMedia('(max-width: 1099px)');
+      var proCardCollapsed = false;
 
       function setChartVisibility(expanded) {
         if (!resultChartSection) {
@@ -899,6 +1039,45 @@
         setChartVisibility(!shouldCollapse);
       }
 
+      function updateProCollapseToggle(collapsed) {
+        if (!proCollapseToggle) {
+          return;
+        }
+        var isCollapsed = !!collapsed;
+        proCollapseToggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+        proCollapseToggle.textContent = isCollapsed ? 'Bereiche anzeigen' : 'Bereiche ausblenden';
+      }
+
+      function syncProCardCollapseForViewport() {
+        if (!proCard || !proModeEnabled) {
+          if (proCard) {
+            proCard.classList.remove('is-collapsed');
+          }
+          if (proCardBody) {
+            proCardBody.setAttribute('aria-hidden', 'true');
+          }
+          updateProCollapseToggle(false);
+          return;
+        }
+
+        var isMobile = proCardMediaQuery.matches;
+        var shouldCollapse = isMobile && proCardCollapsed;
+        proCard.classList.toggle('is-collapsed', shouldCollapse);
+        if (proCardBody) {
+          proCardBody.setAttribute('aria-hidden', shouldCollapse ? 'true' : 'false');
+        }
+        if (!isMobile) {
+          updateProCollapseToggle(false);
+        } else {
+          updateProCollapseToggle(shouldCollapse);
+        }
+      }
+
+      function setProCardCollapsedState(collapsed) {
+        proCardCollapsed = !!collapsed;
+        syncProCardCollapseForViewport();
+      }
+
       if (resultChartToggle) {
         setChartVisibility(!chartCollapseMediaQuery.matches);
         resultChartToggle.checked = !chartCollapseMediaQuery.matches;
@@ -911,6 +1090,16 @@
         } else if (chartCollapseMediaQuery.addListener) {
           chartCollapseMediaQuery.addListener(applyChartMediaPreference);
         }
+      }
+
+      if (proCardMediaQuery.addEventListener) {
+        proCardMediaQuery.addEventListener('change', function () {
+          syncProCardCollapseForViewport();
+        });
+      } else if (proCardMediaQuery.addListener) {
+        proCardMediaQuery.addListener(function () {
+          syncProCardCollapseForViewport();
+        });
       }
       var dateTimeFormatter = new Intl.DateTimeFormat('de-DE', { dateStyle: 'short', timeStyle: 'short' });
 
@@ -963,57 +1152,68 @@
         'PLA': {
           price: 20,
           gramsPerMeter: 2.98,
-          densityHint: 'Richtwert: 2,98\u00A0g/m (PLA)'
+          density: 1.24,
+          densityHint: 'Richtwert: 2,98\u00A0g/m · 1,24\u00A0g/cm³ (PLA)'
         },
         'PLA_PLUS': {
           price: 23,
           gramsPerMeter: 3.05,
-          densityHint: 'Richtwert: 3,05\u00A0g/m (PLA+)'
+          density: 1.27,
+          densityHint: 'Richtwert: 3,05\u00A0g/m · 1,27\u00A0g/cm³ (PLA+)'
         },
         'PLA_SILK': {
           price: 25,
           gramsPerMeter: 2.90,
-          densityHint: 'Richtwert: 2,90\u00A0g/m (PLA Silk)'
+          density: 1.21,
+          densityHint: 'Richtwert: 2,90\u00A0g/m · 1,21\u00A0g/cm³ (PLA Silk)'
         },
         'PETG': {
           price: 25,
           gramsPerMeter: 3.05,
-          densityHint: 'Richtwert: 3,05\u00A0g/m (PETG)'
+          density: 1.27,
+          densityHint: 'Richtwert: 3,05\u00A0g/m · 1,27\u00A0g/cm³ (PETG)'
         },
         'PETG_CF': {
           price: 55,
           gramsPerMeter: 3.20,
-          densityHint: 'Richtwert: 3,20\u00A0g/m (PETG-CF)'
+          density: 1.33,
+          densityHint: 'Richtwert: 3,20\u00A0g/m · 1,33\u00A0g/cm³ (PETG-CF)'
         },
         'ABS': {
           price: 27,
           gramsPerMeter: 2.65,
-          densityHint: 'Richtwert: 2,65\u00A0g/m (ABS)'
+          density: 1.10,
+          densityHint: 'Richtwert: 2,65\u00A0g/m · 1,10\u00A0g/cm³ (ABS)'
         },
         'ABS_CF': {
           price: 58,
           gramsPerMeter: 2.60,
-          densityHint: 'Richtwert: 2,60\u00A0g/m (ABS-CF)'
+          density: 1.08,
+          densityHint: 'Richtwert: 2,60\u00A0g/m · 1,08\u00A0g/cm³ (ABS-CF)'
         },
         'ASA': {
           price: 35,
           gramsPerMeter: 2.57,
-          densityHint: 'Richtwert: 2,57\u00A0g/m (ASA)'
+          density: 1.07,
+          densityHint: 'Richtwert: 2,57\u00A0g/m · 1,07\u00A0g/cm³ (ASA)'
         },
         'ASA_CF': {
           price: 60,
           gramsPerMeter: 2.70,
-          densityHint: 'Richtwert: 2,70\u00A0g/m (ASA-CF)'
+          density: 1.12,
+          densityHint: 'Richtwert: 2,70\u00A0g/m · 1,12\u00A0g/cm³ (ASA-CF)'
         },
         'TPU': {
           price: 30,
           gramsPerMeter: 2.85,
-          densityHint: 'Richtwert: 2,85\u00A0g/m (TPU)'
+          density: 1.19,
+          densityHint: 'Richtwert: 2,85\u00A0g/m · 1,19\u00A0g/cm³ (TPU)'
         },
         'PA': {
           price: 45,
           gramsPerMeter: 2.74,
-          densityHint: 'Richtwert: 2,74\u00A0g/m (Nylon)'
+          density: 1.14,
+          densityHint: 'Richtwert: 2,74\u00A0g/m · 1,14\u00A0g/cm³ (Nylon)'
         }
       };
 
@@ -1034,6 +1234,13 @@
             proFields.setAttribute('inert', '');
           }
         }
+        if (proCard) {
+          proCard.hidden = !enabled;
+          proCard.setAttribute('aria-hidden', enabled ? 'false' : 'true');
+        }
+        if (proCardBody) {
+          proCardBody.setAttribute('aria-hidden', enabled ? 'false' : 'true');
+        }
         if (proRows && proRows.length) {
           proRows.forEach(function (row) {
             row.hidden = !enabled;
@@ -1049,12 +1256,22 @@
           rootElement.classList.toggle('is-pro-on', enabled);
           rootElement.classList.toggle('is-pro-off', !enabled);
         }
+        if (enabled) {
+          syncProCardCollapseForViewport();
+        }
       }
 
       function setProModeEnabled(enabled, options) {
         var normalized = !!enabled;
         proModeEnabled = normalized;
+        if (normalized) {
+          proCardCollapsed = proCardMediaQuery.matches;
+        }
         applyProVisibility(normalized);
+        if (!normalized) {
+          proCardCollapsed = false;
+          updateProCollapseToggle(false);
+        }
         if (!options || !options.skipRecalc) {
           recalc();
         }
@@ -1149,6 +1366,14 @@
           materialDensityHint.textContent = defaults.densityHint || 'Richtwert: nach Bedarf anpassen';
         }
 
+        if (materialDensityInput) {
+          if (defaults.density && isFinite(defaults.density)) {
+            materialDensityInput.value = defaults.density.toFixed(2);
+          } else {
+            materialDensityInput.value = '';
+          }
+        }
+
         if (pricePerKgInput) {
           var placeholder = formatPricePlaceholder(defaults.price);
           pricePerKgInput.placeholder = placeholder;
@@ -1186,6 +1411,16 @@
           return 0;
         }
         return val;
+      }
+
+      function computeGramsPerMeterFromDensity(density) {
+        if (!density || density <= 0) {
+          return 0;
+        }
+        var diameterCm = FILAMENT_DIAMETER_MM / 10;
+        var radiusCm = diameterCm / 2;
+        var crossSection = Math.PI * radiusCm * radiusCm;
+        return density * crossSection * 100;
       }
 
       function updateModeVisibility() {
@@ -1283,6 +1518,7 @@
         var gramsPerMeter = defaults.gramsPerMeter || 0;
 
         var pricePerKg = readNumber(pricePerKgInput);
+        var proEnabled = proModeEnabled;
 
         var weightRawValue = getInputRaw(weightInput);
         var lengthRawValue = getInputRaw(lengthInput);
@@ -1298,9 +1534,17 @@
         var finishingMinutesRawValue = getInputRaw(finishingMinutesInput);
         var fixedCostRawValue = getInputRaw(fixedCostInput);
         var discountPercentRawValue = getInputRaw(discountPercentInput);
+        var errorRateRawValue = getInputRaw(errorRateInput);
+        var packagingCostRawValue = getInputRaw(packagingCostInput);
+        var shippingCostRawValue = getInputRaw(shippingCostInput);
+        var machineHourlyRawValue = getInputRaw(machineHourlyInput);
+        var machinePurchaseRawValue = getInputRaw(machinePurchaseInput);
+        var machineLifetimeRawValue = getInputRaw(machineLifetimeInput);
+        var materialDensityRawValue = getInputRaw(materialDensityInput);
 
         var weight = readNumber(weightInput);
         var length = readNumber(lengthInput);
+        var materialDensityValue = readNumber(materialDensityInput);
 
         if (weightMode.checked) {
           if (gramsPerMeter > 0) {
@@ -1311,7 +1555,12 @@
             lengthInput.value = '';
           }
         } else {
-          if (gramsPerMeter > 0) {
+          var gramsPerMeterFromDensity = proEnabled ? computeGramsPerMeterFromDensity(materialDensityValue) : 0;
+          var effectiveGramsPerMeter = gramsPerMeterFromDensity > 0 ? gramsPerMeterFromDensity : gramsPerMeter;
+          if (effectiveGramsPerMeter > 0 && length > 0 && (!weightRawValue || weightRawValue === '')) {
+            weight = length * effectiveGramsPerMeter;
+            weightInput.value = weight ? weight.toFixed(0) : '';
+          } else if (gramsPerMeter > 0) {
             weight = length * gramsPerMeter;
             weightInput.value = weight ? weight.toFixed(0) : '';
           } else {
@@ -1351,12 +1600,72 @@
 
         var materialWaste = materialCost * (wastePercent / 100);
         var materialWithWaste = materialCost + materialWaste;
+        var materialErrorValue = 0;
+        var materialTotal = materialWithWaste;
+
+        var errorRate = readNumber(errorRateInput);
+        if (errorRateInput) {
+          if (errorRate > 100) {
+            errorRate = 100;
+            errorRateInput.value = errorRate.toString();
+          } else if (!errorRateRawValue) {
+            errorRate = 0;
+            errorRateInput.value = '';
+          }
+        }
+
+        if (proEnabled && errorRate > 0) {
+          materialErrorValue = materialWithWaste * (errorRate / 100);
+          materialTotal = materialWithWaste + materialErrorValue;
+        }
         var loadFactorShare = loadFactor / 100;
         var energyCost = (power / 1000) * hours * energyPrice * loadFactorShare;
         var co2EmissionKg = (power / 1000) * hours * loadFactorShare * 0.4;
         var co2EmissionGrams = co2EmissionKg * 1000;
         var showCo2 = power > 0 && hours > 0 && loadFactor > 0;
         var vatIncluded = !!vatCheckbox.checked;
+        var machinePurchase = readNumber(machinePurchaseInput);
+        var machineLifetime = readNumber(machineLifetimeInput);
+        var machineHourlyManual = readNumber(machineHourlyInput);
+        var packagingCost = readNumber(packagingCostInput);
+        var shippingCost = readNumber(shippingCostInput);
+        if (packagingCostInput && !packagingCostRawValue) {
+          packagingCost = 0;
+          packagingCostInput.value = '';
+        }
+        if (shippingCostInput && !shippingCostRawValue) {
+          shippingCost = 0;
+          shippingCostInput.value = '';
+        }
+        if (machineHourlyInput && !machineHourlyRawValue) {
+          machineHourlyManual = 0;
+          machineHourlyInput.value = '';
+        }
+        if (machinePurchaseInput && !machinePurchaseRawValue) {
+          machinePurchase = 0;
+          machinePurchaseInput.value = '';
+        }
+        if (machineLifetimeInput && !machineLifetimeRawValue) {
+          machineLifetime = 0;
+          machineLifetimeInput.value = '';
+        }
+        var hasDensityValue = !!materialDensityRawValue;
+        if (materialDensityInput && !hasDensityValue) {
+          materialDensityValue = 0;
+        }
+        var machineAutoRate = 0;
+        if (machinePurchase > 0 && machineLifetime > 0) {
+          machineAutoRate = machinePurchase / machineLifetime;
+        }
+        if (machineAutoHint) {
+          if (machineAutoRate > 0) {
+            machineAutoHint.textContent = 'Aus Eingaben: ' + formatter.format(machineAutoRate) + ' pro Stunde.';
+          } else if (machinePurchaseRawValue || machineLifetimeRawValue) {
+            machineAutoHint.textContent = 'Bitte Anschaffung & Lebensdauer komplett eintragen.';
+          } else {
+            machineAutoHint.textContent = 'Ergibt automatisch einen €/h-Wert.';
+          }
+        }
         var labourMinutes = 0;
         var timeCost = 0;
         var fixedCostValue = 0;
@@ -1369,7 +1678,6 @@
         var net = marginBase;
         var gross = vatIncluded ? net * 1.19 : net;
 
-        var proEnabled = proModeEnabled;
         var defaultMinutes = Math.round(hours * 60);
         var profitMargin = 0;
         var hourlyRate = 0;
@@ -1378,6 +1686,10 @@
         var finishingMinutes = 0;
         var fixedCost = 0;
         var discountPercent = 0;
+        var machineHourlyEffective = 0;
+        var machineCost = 0;
+        var packagingValue = 0;
+        var shippingValue = 0;
         var proData = {
           enabled: proEnabled,
           profitMargin: 0,
@@ -1387,10 +1699,21 @@
           finishingMinutes: 0,
           wastePercent: wastePercent,
           materialWaste: materialWaste,
+          materialErrorPercent: proEnabled ? errorRate : 0,
+          materialErrorValue: proEnabled ? materialErrorValue : 0,
           materialWithWaste: materialWithWaste,
+          materialTotal: proEnabled ? materialTotal : materialWithWaste,
           labourMinutes: labourMinutes,
           timeCost: timeCost,
           fixedCost: fixedCostValue,
+          fixedCostBase: proEnabled ? fixedCost : 0,
+          packagingCost: 0,
+          shippingCost: 0,
+          machineHourly: 0,
+          machineAutoHourly: machineAutoRate,
+          machineCost: 0,
+          machinePurchase: proEnabled ? machinePurchase : 0,
+          machineLifetime: proEnabled ? machineLifetime : 0,
           marginBase: marginBase,
           subtotal: marginBase,
           marginValue: marginValue,
@@ -1399,7 +1722,8 @@
           netBeforeDiscount: netBeforeDiscount,
           net: net,
           gross: gross,
-          standardSubtotal: standardSubtotal
+          standardSubtotal: standardSubtotal,
+          materialDensity: proEnabled ? materialDensityValue : 0
         };
 
         if (proEnabled) {
@@ -1422,12 +1746,16 @@
             discountPercent = 100;
             discountPercentInput.value = discountPercent.toString();
           }
-
+          packagingValue = packagingCost;
+          shippingValue = shippingCost;
+          machineHourlyEffective = machineHourlyManual > 0 ? machineHourlyManual : machineAutoRate;
           standardSubtotal = materialWithWaste + energyCost;
+          var subtotalWithMaterial = materialTotal + energyCost;
           labourMinutes = setupMinutes + finishingMinutes;
           timeCost = (hourlyRate / 60) * labourMinutes;
-          marginBase = standardSubtotal + timeCost;
-          fixedCostValue = fixedCost;
+          machineCost = hours * machineHourlyEffective;
+          marginBase = subtotalWithMaterial + timeCost + machineCost;
+          fixedCostValue = fixedCost + packagingValue + shippingValue;
           marginValue = marginBase * (profitMargin / 100);
           netBeforeDiscount = marginBase + marginValue + fixedCostValue;
           discountPercentValue = discountPercent;
@@ -1447,10 +1775,19 @@
             finishingMinutes: finishingMinutes,
             wastePercent: wastePercent,
             materialWaste: materialWaste,
+            materialErrorPercent: errorRate,
+            materialErrorValue: materialErrorValue,
             materialWithWaste: materialWithWaste,
+            materialTotal: materialTotal,
             labourMinutes: labourMinutes,
             timeCost: timeCost,
             fixedCost: fixedCostValue,
+            fixedCostBase: fixedCost,
+            packagingCost: packagingValue,
+            shippingCost: shippingValue,
+            machineHourly: machineHourlyEffective,
+            machineAutoHourly: machineAutoRate,
+            machineCost: machineCost,
             marginBase: marginBase,
             subtotal: marginBase,
             marginValue: marginValue,
@@ -1459,7 +1796,10 @@
             netBeforeDiscount: netBeforeDiscount,
             net: proNet,
             gross: proGross,
-            standardSubtotal: standardSubtotal
+            standardSubtotal: standardSubtotal,
+            materialDensity: materialDensityValue,
+            machinePurchase: machinePurchase,
+            machineLifetime: machineLifetime
           };
         }
 
@@ -1483,7 +1823,14 @@
           printMinutes: proEnabled && proMinutes > 0,
           finishingMinutes: proEnabled && finishingMinutes > 0,
           fixedCost: proEnabled && fixedCost > 0,
-          discountPercent: proEnabled && discountPercent > 0
+          discountPercent: proEnabled && discountPercent > 0,
+          errorRate: proEnabled && errorRate > 0,
+          packagingCost: proEnabled && packagingValue > 0,
+          shippingCost: proEnabled && shippingValue > 0,
+          machineHourlyRate: proEnabled && machineHourlyEffective > 0,
+          machinePurchase: proEnabled && machinePurchase > 0,
+          machineLifetime: proEnabled && machineLifetime > 0,
+          materialDensity: proEnabled && materialDensityValue > 0
         };
 
         return {
@@ -1537,7 +1884,7 @@
         var lengthText = decimalFormatter.format(state.length) + '\u00A0m';
         var metaText = 'Gewicht: ' + weightText + ' · Länge: ' + lengthText;
         if (state.pro.enabled) {
-          metaText += ' · Erweiterter Rechner aktiv';
+          metaText += ' · Pro-Optionen aktiv';
         }
         metaOutput.textContent = metaText;
 
@@ -1554,7 +1901,7 @@
         }
 
         if (materialTotalOutput) {
-          materialTotalOutput.textContent = formatter.format(state.pro.materialWithWaste);
+          materialTotalOutput.textContent = formatter.format(state.pro.materialTotal);
         }
         if (materialTotalRow) {
           materialTotalRow.hidden = false;
@@ -1562,6 +1909,10 @@
 
         if (timeCostOutput) {
           timeCostOutput.textContent = formatter.format(state.pro.timeCost);
+        }
+
+        if (machineCostOutput) {
+          machineCostOutput.textContent = formatter.format(state.pro.machineCost);
         }
 
         if (fixedCostOutput) {
@@ -1589,14 +1940,17 @@
 
       function getCostChartData(state) {
         var items = [];
-        if (state.pro.materialWithWaste > 0) {
-          items.push({ key: 'material', label: 'Material', value: state.pro.materialWithWaste });
+        if (state.pro.materialTotal > 0) {
+          items.push({ key: 'material', label: 'Material', value: state.pro.materialTotal });
         }
         if (state.energyCost > 0) {
           items.push({ key: 'energy', label: 'Energie', value: state.energyCost });
         }
         if (state.pro.timeCost > 0) {
           items.push({ key: 'labor', label: 'Arbeitszeit', value: state.pro.timeCost });
+        }
+        if (state.pro.machineCost > 0) {
+          items.push({ key: 'machine', label: 'Maschine', value: state.pro.machineCost });
         }
         if (state.pro.fixedCost > 0) {
           items.push({ key: 'fix', label: 'Fixkosten', value: state.pro.fixedCost });
@@ -1775,7 +2129,7 @@
         setRowVisibility(printInputRows.wastePercent, !!state.inputs.wastePercent);
 
         if (printMaterialTotalOutput) {
-          printMaterialTotalOutput.textContent = formatter.format(state.pro.materialWithWaste);
+          printMaterialTotalOutput.textContent = formatter.format(state.pro.materialTotal);
         }
         if (printEnergyCostOutput) {
           printEnergyCostOutput.textContent = formatter.format(state.energyCost);
@@ -1783,8 +2137,32 @@
         if (printTimeCostOutput) {
           printTimeCostOutput.textContent = formatter.format(state.pro.timeCost);
         }
+        if (printMachineCostOutput) {
+          printMachineCostOutput.textContent = formatter.format(state.pro.machineCost);
+        }
         if (printFixedCostOutput) {
           printFixedCostOutput.textContent = formatter.format(state.pro.fixedCost);
+        }
+        if (printPackagingCostOutput) {
+          printPackagingCostOutput.textContent = formatter.format(state.pro.packagingCost);
+        }
+        if (printShippingCostOutput) {
+          printShippingCostOutput.textContent = formatter.format(state.pro.shippingCost);
+        }
+        if (printMachineHourlyOutput) {
+          printMachineHourlyOutput.textContent = formatter.format(state.pro.machineHourly) + '/h';
+        }
+        if (printMachinePurchaseOutput) {
+          printMachinePurchaseOutput.textContent = formatter.format(state.pro.machinePurchase);
+        }
+        if (printMachineLifetimeOutput) {
+          printMachineLifetimeOutput.textContent = integerFormatter.format(state.pro.machineLifetime) + '\u00A0h';
+        }
+        if (printMaterialDensityOutput) {
+          printMaterialDensityOutput.textContent = decimalFormatter.format(state.pro.materialDensity) + '\u00A0g/cm³';
+        }
+        if (printErrorRateOutput) {
+          printErrorRateOutput.textContent = percentNumberFormatter.format(state.pro.materialErrorPercent) + '\u00A0%';
         }
         if (printSubtotalOutput) {
           var subtotalValue = state.pro.enabled ? state.pro.subtotal : state.standardSubtotal;
@@ -1801,6 +2179,7 @@
         }
 
         setRowVisibility(printSummaryItemTime, state.pro.enabled && hasValue(state.pro.timeCost));
+        setRowVisibility(printSummaryItemMachine, state.pro.enabled && hasValue(state.pro.machineCost));
         setRowVisibility(printSummaryItemFixed, state.pro.enabled && hasValue(state.pro.fixedCost));
         setRowVisibility(printSummaryItemMargin, state.pro.enabled && hasValue(state.pro.marginValue));
         setRowVisibility(printSummaryItemDiscount, state.pro.enabled && hasValue(state.pro.discountValue));
@@ -1829,7 +2208,14 @@
             printMinutes: state.inputs.printMinutes,
             finishingMinutes: state.inputs.finishingMinutes,
             fixedCost: state.inputs.fixedCost,
-            discountPercent: state.inputs.discountPercent
+            discountPercent: state.inputs.discountPercent,
+            errorRate: state.inputs.errorRate,
+            packagingCost: state.inputs.packagingCost,
+            shippingCost: state.inputs.shippingCost,
+            machineHourlyRate: state.inputs.machineHourlyRate,
+            machinePurchase: state.inputs.machinePurchase,
+            machineLifetime: state.inputs.machineLifetime,
+            materialDensity: state.inputs.materialDensity
           };
 
           if (state.pro.enabled) {
@@ -1838,8 +2224,29 @@
             printSetupMinutesOutput.textContent = integerFormatter.format(state.pro.setupMinutes) + '\u00A0min';
             printProPrintMinutesOutput.textContent = integerFormatter.format(state.pro.printMinutes) + '\u00A0min';
             printFinishingMinutesOutput.textContent = integerFormatter.format(state.pro.finishingMinutes) + '\u00A0min';
-            printFixedCostInputOutput.textContent = formatter.format(state.pro.fixedCost);
+            printFixedCostInputOutput.textContent = formatter.format(state.pro.fixedCostBase);
             printDiscountPercentOutput.textContent = percentNumberFormatter.format(state.pro.discountPercent) + '\u00A0%';
+            if (printErrorRateOutput) {
+              printErrorRateOutput.textContent = percentNumberFormatter.format(state.pro.materialErrorPercent) + '\u00A0%';
+            }
+            if (printPackagingCostOutput) {
+              printPackagingCostOutput.textContent = formatter.format(state.pro.packagingCost);
+            }
+            if (printShippingCostOutput) {
+              printShippingCostOutput.textContent = formatter.format(state.pro.shippingCost);
+            }
+            if (printMachineHourlyOutput) {
+              printMachineHourlyOutput.textContent = formatter.format(state.pro.machineHourly) + '/h';
+            }
+            if (printMachinePurchaseOutput) {
+              printMachinePurchaseOutput.textContent = formatter.format(state.pro.machinePurchase);
+            }
+            if (printMachineLifetimeOutput) {
+              printMachineLifetimeOutput.textContent = integerFormatter.format(state.pro.machineLifetime) + '\u00A0h';
+            }
+            if (printMaterialDensityOutput) {
+              printMaterialDensityOutput.textContent = decimalFormatter.format(state.pro.materialDensity) + '\u00A0g/cm³';
+            }
 
             setRowVisibility(printProInputRows.profitMargin, !!proVisibility.profitMargin);
             setRowVisibility(printProInputRows.hourlyRate, !!proVisibility.hourlyRate);
@@ -1848,6 +2255,13 @@
             setRowVisibility(printProInputRows.finishingMinutes, !!proVisibility.finishingMinutes);
             setRowVisibility(printProInputRows.fixedCost, !!proVisibility.fixedCost);
             setRowVisibility(printProInputRows.discountPercent, !!proVisibility.discountPercent);
+            setRowVisibility(printProInputRows.errorRate, !!proVisibility.errorRate);
+            setRowVisibility(printProInputRows.packagingCost, !!proVisibility.packagingCost);
+            setRowVisibility(printProInputRows.shippingCost, !!proVisibility.shippingCost);
+            setRowVisibility(printProInputRows.machineHourlyRate, !!proVisibility.machineHourlyRate);
+            setRowVisibility(printProInputRows.machinePurchase, !!proVisibility.machinePurchase);
+            setRowVisibility(printProInputRows.machineLifetime, !!proVisibility.machineLifetime);
+            setRowVisibility(printProInputRows.materialDensity, !!proVisibility.materialDensity);
 
             var hasVisibleProRow = Object.keys(proVisibility).some(function (key) {
               return !!proVisibility[key];
@@ -1955,7 +2369,30 @@
         });
       }
 
-      [profitMarginInput, hourlyRateInput, setupMinutesInput, finishingMinutesInput, fixedCostInput, discountPercentInput].forEach(function (input) {
+      if (proCollapseToggle) {
+        proCollapseToggle.addEventListener('click', function () {
+          if (!proModeEnabled) {
+            return;
+          }
+          setProCardCollapsedState(!proCardCollapsed);
+        });
+      }
+
+      [
+        profitMarginInput,
+        hourlyRateInput,
+        setupMinutesInput,
+        finishingMinutesInput,
+        fixedCostInput,
+        discountPercentInput,
+        errorRateInput,
+        packagingCostInput,
+        shippingCostInput,
+        machineHourlyInput,
+        machinePurchaseInput,
+        machineLifetimeInput,
+        materialDensityInput
+      ].forEach(function (input) {
         if (!input) return;
         input.addEventListener('input', recalc);
       });
