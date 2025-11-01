@@ -352,8 +352,8 @@ img {
 .nav-link {
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
+  justify-content: flex-start;
+  gap: 0;
   padding-block: var(--space-2);
   font-weight: 600;
   text-decoration: none;
@@ -361,6 +361,26 @@ img {
   font-size: 1rem;
   position: relative;
   border-radius: 10px;
+}
+
+.nav-ico {
+  display: inline-flex;
+  align-items: center;
+  font-size: .95em;
+  margin-right: .5rem;
+  opacity: .9;
+  line-height: 1;
+}
+
+.nav-link:hover .nav-ico,
+.nav-link:focus-visible .nav-ico,
+.nav-link.active .nav-ico,
+.nav-link.is-active .nav-ico,
+.nav-more-btn:hover .nav-ico,
+.nav-more-btn:focus-visible .nav-ico,
+.nav-more-btn[aria-expanded="true"] .nav-ico,
+.nav-more-btn.active .nav-ico {
+  opacity: 1;
 }
 
 .nav-link::after {
@@ -396,7 +416,7 @@ img {
 .nav-more-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0;
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid var(--border);
@@ -530,7 +550,8 @@ img {
 
   .nav-list > li > a,
   .nav-more-btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     padding: 8px 12px;
     line-height: 1;
     border-radius: 999px;
