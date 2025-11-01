@@ -594,56 +594,74 @@
               <input type="checkbox" id="includeVat" data-calc name="includeVat" value="true">
               <span>Preise inkl. MwSt.</span>
             </label>
-            <ul class="calc-results__list">
-              <li class="calc-results__item">
-                <span class="calc-results__label" id="materialCostLabel">Material (Basis)</span>
-                <span class="calc-results__value" id="materialCost">0,00&nbsp;€</span>
-              </li>
-              <li class="calc-results__item" data-result="materialWaste">
-                <span class="calc-results__label">Verschnitt</span>
-                <span class="calc-results__value" id="materialWasteCost">0,00&nbsp;€</span>
-              </li>
-              <li class="calc-results__item" data-result="materialTotal">
-                <span class="calc-results__label">Material (inkl. Verschnitt &amp; Fehlerrate)</span>
-                <span class="calc-results__value" id="materialTotalCost">0,00&nbsp;€</span>
-              </li>
-              <li class="calc-results__item">
-                <span class="calc-results__label" id="energyCostLabel">Energiekosten</span>
-                <span class="calc-results__value" id="energyCost">0,00&nbsp;€</span>
-              </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="timeCost" data-pro-row="true" hidden>
-                <span class="calc-results__label">Arbeitszeitkosten (Rüstzeit + Nachbearbeitung)</span>
-                <span class="calc-results__value" id="timeCost">0,00&nbsp;€</span>
-              </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="machineCost" data-pro-row="true" hidden>
-                <span class="calc-results__label">Maschinenkosten</span>
-                <span class="calc-results__value" id="machineCostValue">0,00&nbsp;€</span>
-              </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="fixedCost" data-pro-row="true" hidden>
-                <span class="calc-results__label">Fixkosten (inkl. Verpackung/Versand)</span>
-                <span class="calc-results__value" id="fixedCostValue">0,00&nbsp;€</span>
-              </li>
-              <li class="calc-results__item" data-result="subtotal">
-                <span class="calc-results__label">Zwischensumme</span>
-                <span class="calc-results__value" id="subtotalValue">0,00&nbsp;€</span>
-              </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="margin" data-pro-row="true" hidden>
-                <span class="calc-results__label">Marge</span>
-                <span class="calc-results__value" id="marginValue">0,00&nbsp;€</span>
-              </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="discount" data-pro-row="true" hidden>
-                <span class="calc-results__label">Rabatt</span>
-                <span class="calc-results__value calc-results__value--deduction" id="discountValue">0,00&nbsp;€</span>
-              </li>
-              <li class="calc-results__item">
-                <span class="calc-results__label">Gesamtkosten (netto)</span>
-                <span class="calc-results__value calc-results__value--accent" id="totalNet">0,00&nbsp;€</span>
-              </li>
-              <li class="calc-results__item">
-                <span class="calc-results__label" id="grossLabel">Gesamtkosten (brutto)</span>
-                <span class="calc-results__value" id="totalGross">0,00&nbsp;€</span>
-              </li>
-            </ul>
+            <div class="calc-results__groups">
+              <div class="calc-results__group" data-result-group="variable" role="group" aria-label="Variable Kosten">
+                <p class="sum-group-title">Variable Kosten</p>
+                <ul class="calc-results__list">
+                  <li class="calc-results__item">
+                    <span class="calc-results__label" id="materialCostLabel">Material (Basis)</span>
+                    <span class="calc-results__value" id="materialCost">0,00&nbsp;€</span>
+                  </li>
+                  <li class="calc-results__item" data-result="materialWaste">
+                    <span class="calc-results__label">Verschnitt</span>
+                    <span class="calc-results__value" id="materialWasteCost">0,00&nbsp;€</span>
+                  </li>
+                  <li class="calc-results__item" data-result="materialTotal">
+                    <span class="calc-results__label">Material (inkl. Verschnitt &amp; Fehlerrate)</span>
+                    <span class="calc-results__value" id="materialTotalCost">0,00&nbsp;€</span>
+                  </li>
+                  <li class="calc-results__item">
+                    <span class="calc-results__label" id="energyCostLabel">Energie</span>
+                    <span class="calc-results__value" id="energyCost">0,00&nbsp;€</span>
+                  </li>
+                  <li class="calc-results__item calc-results__item--pro" data-result="timeCost" data-pro-row="true" hidden>
+                    <span class="calc-results__label">Arbeitszeit</span>
+                    <span class="calc-results__value" id="timeCost">0,00&nbsp;€</span>
+                  </li>
+                  <li class="calc-results__item calc-results__item--pro" data-result="machineCost" data-pro-row="true" hidden>
+                    <span class="calc-results__label">Maschine</span>
+                    <span class="calc-results__value" id="machineCostValue">0,00&nbsp;€</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="sum-sep" data-result-separator="after-variable" aria-hidden="true"></div>
+              <div class="calc-results__group" data-result-group="adjustments" data-pro-row="true" role="group" aria-label="Auf-/Abschläge" hidden>
+                <p class="sum-group-title">Auf-/Abschläge</p>
+                <ul class="calc-results__list">
+                  <li class="calc-results__item calc-results__item--pro" data-result="margin" data-pro-row="true">
+                    <span class="calc-results__label">Marge</span>
+                    <span class="calc-results__value" id="marginValue">+&nbsp;0,00&nbsp;€</span>
+                  </li>
+                  <li class="calc-results__item calc-results__item--pro" data-result="fixedCost" data-pro-row="true">
+                    <span class="calc-results__label">Fixkosten (inkl. Verpackung/Versand)</span>
+                    <span class="calc-results__value" id="fixedCostValue">+&nbsp;0,00&nbsp;€</span>
+                  </li>
+                  <li class="calc-results__item calc-results__item--pro" data-result="discount" data-pro-row="true">
+                    <span class="calc-results__label">Rabatt</span>
+                    <span class="calc-results__value calc-results__value--deduction" id="discountValue">–&nbsp;0,00&nbsp;€</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="sum-sep" data-result-separator="after-adjustments" data-pro-row="true" aria-hidden="true"></div>
+              <div class="calc-results__group" data-result-group="summary" role="group" aria-label="Gesamtergebnis">
+                <p class="sum-group-title">Gesamtergebnis</p>
+                <ul class="calc-results__list">
+                  <li class="calc-results__item" data-result="subtotal">
+                    <span class="calc-results__label">Zwischensumme (vor Auf-/Abschlägen)</span>
+                    <span class="calc-results__value" id="subtotalValue">0,00&nbsp;€</span>
+                  </li>
+                  <li class="calc-results__item">
+                    <span class="calc-results__label">Gesamtkosten (netto)</span>
+                    <span class="calc-results__value calc-results__value--accent" id="totalNet">0,00&nbsp;€</span>
+                  </li>
+                  <li class="calc-results__item">
+                    <span class="calc-results__label" id="grossLabel">Gesamtkosten (brutto)</span>
+                    <span class="calc-results__value" id="totalGross">0,00&nbsp;€</span>
+                  </li>
+                </ul>
+                <p class="calc-results__vat-note" id="vatNote">Hinweis: §19 UStG – keine Umsatzsteuer.</p>
+              </div>
+            </div>
             <div class="co2" id="co2Output" hidden>
               🌿 CO₂-Bilanz: <strong id="co2Value">0,0&nbsp;g</strong>
             </div>
@@ -796,7 +814,7 @@
       <section class="calc-print__offer" aria-labelledby="printOfferHeading">
         <h2 class="sr-only" id="printOfferHeading">Angebotskopf</h2>
         <div class="calc-print__offer-columns">
-          <div class="calc-print__offer-column" aria-labelledby="printOfferVendorTitle" data-offer-column="vendor">
+          <div class="calc-print__offer-column pdf-card" aria-labelledby="printOfferVendorTitle" data-offer-column="vendor">
             <h3 class="calc-print__offer-heading" id="printOfferVendorTitle">Anbieter</h3>
             <dl class="calc-print__offer-list">
               <div class="calc-print__offer-row" data-offer-row="vendorName">
@@ -829,7 +847,7 @@
               </div>
             </dl>
           </div>
-          <div class="calc-print__offer-column" aria-labelledby="printOfferCustomerTitle" data-offer-column="customer">
+          <div class="calc-print__offer-column pdf-card" aria-labelledby="printOfferCustomerTitle" data-offer-column="customer">
             <h3 class="calc-print__offer-heading" id="printOfferCustomerTitle">Kunde</h3>
             <dl class="calc-print__offer-list">
               <div class="calc-print__offer-row" data-offer-row="customerName">
@@ -879,48 +897,66 @@
               <p class="calc-print__total-value" id="printTotal">0,00&nbsp;€</p>
               <p class="calc-print__vat-note" id="printVatNote">Hinweis: §19 UStG – keine Umsatzsteuer.</p>
             </div>
-            <dl class="calc-print__list">
-              <div class="calc-print__item">
-                <dt>Material (inkl. Verschnitt &amp; Fehlerrate)</dt>
-                <dd id="printMaterialTotal">0,00&nbsp;€</dd>
+            <div class="calc-print__groups">
+              <div class="calc-print__group" role="group" aria-label="Variable Kosten">
+                <p class="sum-group-title">Variable Kosten</p>
+                <dl class="calc-print__list">
+                  <div class="calc-print__item">
+                    <dt>Material (inkl. Verschnitt &amp; Fehlerrate)</dt>
+                    <dd id="printMaterialTotal">0,00&nbsp;€</dd>
+                  </div>
+                  <div class="calc-print__item">
+                    <dt>Energie</dt>
+                    <dd id="printEnergyCost">0,00&nbsp;€</dd>
+                  </div>
+                  <div class="calc-print__item" data-pro-row="true">
+                    <dt>Arbeitszeit</dt>
+                    <dd id="printTimeCost">0,00&nbsp;€</dd>
+                  </div>
+                  <div class="calc-print__item" data-pro-row="true">
+                    <dt>Maschine</dt>
+                    <dd id="printMachineCost">0,00&nbsp;€</dd>
+                  </div>
+                </dl>
               </div>
-              <div class="calc-print__item">
-                <dt>Energie</dt>
-                <dd id="printEnergyCost">0,00&nbsp;€</dd>
+              <div class="sum-sep sum-sep--print" data-print-separator="after-variable" aria-hidden="true"></div>
+              <div class="calc-print__group" data-print-group="adjustments" data-pro-row="true" role="group" aria-label="Auf-/Abschläge" hidden>
+                <p class="sum-group-title">Auf-/Abschläge</p>
+                <dl class="calc-print__list">
+                  <div class="calc-print__item" data-pro-row="true">
+                    <dt>Marge</dt>
+                    <dd id="printMargin">+&nbsp;0,00&nbsp;€</dd>
+                  </div>
+                  <div class="calc-print__item" data-pro-row="true">
+                    <dt>Fixkosten (inkl. Verpackung/Versand)</dt>
+                    <dd id="printFixedCost">+&nbsp;0,00&nbsp;€</dd>
+                  </div>
+                  <div class="calc-print__item" data-pro-row="true">
+                    <dt>Rabatt</dt>
+                    <dd id="printDiscount">–&nbsp;0,00&nbsp;€</dd>
+                  </div>
+                </dl>
               </div>
-              <div class="calc-print__item" data-pro-row="true">
-                <dt>Arbeitszeit</dt>
-                <dd id="printTimeCost">0,00&nbsp;€</dd>
+              <div class="sum-sep sum-sep--print" data-print-separator="after-adjustments" data-pro-row="true" aria-hidden="true"></div>
+              <div class="calc-print__group" role="group" aria-label="Gesamtergebnis">
+                <p class="sum-group-title">Gesamtergebnis</p>
+                <dl class="calc-print__list">
+                  <div class="calc-print__item">
+                    <dt>Zwischensumme (vor Auf-/Abschlägen)</dt>
+                    <dd id="printSubtotal">0,00&nbsp;€</dd>
+                  </div>
+                  <div class="calc-print__item">
+                    <dt>Gesamtkosten (netto)</dt>
+                    <dd id="printNet">0,00&nbsp;€</dd>
+                  </div>
+                  <div class="calc-print__item">
+                    <dt>Gesamtkosten (brutto)</dt>
+                    <dd id="printGross">0,00&nbsp;€</dd>
+                  </div>
+                </dl>
+                <p class="calc-print__disclaimer">Unverbindliche Kalkulation – Werte können abweichen.</p>
               </div>
-              <div class="calc-print__item" data-pro-row="true">
-                <dt>Maschine</dt>
-                <dd id="printMachineCost">0,00&nbsp;€</dd>
-              </div>
-              <div class="calc-print__item" data-pro-row="true">
-                <dt>Fixkosten (inkl. Verpackung/Versand)</dt>
-                <dd id="printFixedCost">0,00&nbsp;€</dd>
-              </div>
-              <div class="calc-print__item" data-pro-row="true">
-                <dt>Marge</dt>
-                <dd id="printMargin">0,00&nbsp;€</dd>
-              </div>
-              <div class="calc-print__item" data-pro-row="true">
-                <dt>Rabatt</dt>
-                <dd id="printDiscount">0,00&nbsp;€</dd>
-              </div>
-              <div class="calc-print__item">
-                <dt>Zwischensumme</dt>
-                <dd id="printSubtotal">0,00&nbsp;€</dd>
-              </div>
-              <div class="calc-print__item">
-                <dt>Gesamtkosten (netto)</dt>
-                <dd id="printNet">0,00&nbsp;€</dd>
-              </div>
-              <div class="calc-print__item">
-                <dt>Gesamtkosten (brutto)</dt>
-                <dd id="printGross">0,00&nbsp;€</dd>
-              </div>
-            </dl>
+            </div>
           </section>
           <aside class="calc-print__chart" id="printChartSection" aria-labelledby="printChartTitle">
             <h2 class="calc-print__chart-title" id="printChartTitle">Kostenanteile</h2>
@@ -1044,9 +1080,6 @@
         </section>
       </div>
 
-      <footer class="calc-print__footer">
-        <p>Unverbindliche Kalkulation – Werte können abweichen.</p>
-      </footer>
     </div>
     <footer id="ws-print-footer" class="print-only">
       <span class="ws-brand">Erstellt mit Warenschmiede 3D-Rechner – www.warenschmiede.com</span>
