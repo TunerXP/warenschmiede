@@ -261,7 +261,7 @@
                     <label for="partWeight">Materialgewicht (g)</label>
                     <input type="number" id="partWeight" name="partWeight" min="0" step="1" inputmode="decimal" placeholder="z. B. 200">
                   </div>
-                  <div class="calc-field" data-field="length" hidden>
+                  <div class="calc-field" data-field="length">
                     <label for="filamentLength">Filamentlänge in Metern</label>
                     <input type="number" id="filamentLength" name="filamentLength" min="0" step="0.1" inputmode="decimal" placeholder="z. B. 32">
                   </div>
@@ -408,6 +408,7 @@
                       <label for="materialDensity">Dichte (g/cm³)</label>
                       <input type="number" id="materialDensity" name="materialDensity" min="0" step="0.01" inputmode="decimal" placeholder="z. B. 1.24">
                       <p class="calc-hint" id="materialDensityNote">Für Filamentlänge → Gewicht (Ø 1,75&nbsp;mm).</p>
+                      <button type="button" class="calc-reset-link is-hidden" id="materialDensityReset">Preset-Dichte wiederherstellen</button>
                     </div>
                   </div>
                 </div>
@@ -857,6 +858,7 @@
     (function () {
       var materialSelect = document.getElementById('materialSelect');
       var materialDensityHint = document.getElementById('materialDensityHint');
+      var materialDensityResetButton = document.getElementById('materialDensityReset');
       var pricePerKgInput = document.getElementById('pricePerKg');
       var priceSuggestionButton = document.getElementById('priceSuggestionButton');
       var priceSuggestionSrText = document.getElementById('priceSuggestionSrText');
@@ -1103,6 +1105,28 @@
       }
       var dateTimeFormatter = new Intl.DateTimeFormat('de-DE', { dateStyle: 'short', timeStyle: 'short' });
 
+      function updateMaterialDensityResetState(defaults) {
+        if (!materialDensityResetButton || !materialDensityInput) {
+          return;
+        }
+
+        var defaultsSafe = defaults || currentMaterialDefaults || {};
+        var hasDensityPreset = typeof defaultsSafe.density === 'number' && isFinite(defaultsSafe.density);
+        if (!hasDensityPreset) {
+          materialDensityResetButton.classList.add('is-hidden');
+          return;
+        }
+
+        var currentValueRaw = materialDensityInput.value != null ? materialDensityInput.value.toString().trim() : '';
+        var currentValue = parseFloat(currentValueRaw.replace(',', '.'));
+        var differs = !isFinite(currentValue) || Math.abs(currentValue - defaultsSafe.density) > 0.001;
+        if (differs) {
+          materialDensityResetButton.classList.remove('is-hidden');
+        } else {
+          materialDensityResetButton.classList.add('is-hidden');
+        }
+      }
+
       function updateMaterialSuggestionState(defaults) {
         if (!priceSuggestionButton) {
           return;
@@ -1113,6 +1137,7 @@
         var hasDensitySuggestion = typeof defaultsSafe.density === 'number' && isFinite(defaultsSafe.density);
 
         if (!hasPriceSuggestion && !hasDensitySuggestion) {
+          updateMaterialDensityResetState(defaultsSafe);
           priceSuggestionButton.classList.add('is-hidden');
           priceSuggestionButton.dataset.suggestion = '';
           priceSuggestionButton.dataset.densitySuggestion = '';
@@ -1170,6 +1195,8 @@
         } else {
           priceSuggestionButton.classList.add('is-hidden');
         }
+
+        updateMaterialDensityResetState(defaultsSafe);
       }
 
       var materialData = {
@@ -1251,6 +1278,7 @@
       var machineHourlyProgrammatic = false;
 
       var suppressProSync = false;
+      var timeSyncInProgress = false;
       var proModeEnabled = false;
 
       function applyProVisibility(enabled) {
@@ -1406,6 +1434,17 @@
           } else {
             materialDensityInput.placeholder = '';
           }
+          var shouldApplyDensity = !materialDensityUserEdited || !(materialDensityInput.value || '').toString().trim();
+          if (shouldApplyDensity) {
+            materialDensityProgrammatic = true;
+            if (defaults.density && isFinite(defaults.density)) {
+              materialDensityInput.value = defaults.density.toFixed(2);
+            } else {
+              materialDensityInput.value = '';
+            }
+            materialDensityProgrammatic = false;
+            materialDensityUserEdited = false;
+          }
         }
 
         if (pricePerKgInput) {
@@ -1449,11 +1488,27 @@
         return density * crossSection * 100;
       }
 
+      function setModeFieldState(field, input, isActive) {
+        if (!field || !input) {
+          return;
+        }
+        field.hidden = false;
+        field.classList.toggle('is-inactive', !isActive);
+        field.classList.toggle('is-active', !!isActive);
+        if (isActive) {
+          input.disabled = false;
+          input.removeAttribute('aria-disabled');
+        } else {
+          input.disabled = true;
+          input.setAttribute('aria-disabled', 'true');
+        }
+      }
+
       function updateModeVisibility() {
         var useWeight = weightMode.checked;
-        if (weightField) weightField.hidden = !useWeight;
-        if (lengthField) lengthField.hidden = useWeight;
-        recalc();
+        setModeFieldState(weightField, weightInput, useWeight);
+        setModeFieldState(lengthField, lengthInput, !useWeight);
+        triggerRecalc({ immediate: true });
       }
 
       function formatMinutesDisplay(totalMinutes) {
@@ -1562,32 +1617,42 @@
       }
 
       function syncProMinutesFromTime(hours) {
-        if (!proPrintMinutesInput || suppressProSync) {
+        if (!proPrintMinutesInput || suppressProSync || timeSyncInProgress) {
           return;
         }
         if (document.activeElement === proPrintMinutesInput) {
           return;
         }
-        var minutes = Math.round(hours * 60);
-        if (!minutes) {
-          proPrintMinutesInput.value = '';
-        } else {
-          proPrintMinutesInput.value = minutes.toString();
+        timeSyncInProgress = true;
+        try {
+          var minutes = Math.round(hours * 60);
+          if (!minutes) {
+            proPrintMinutesInput.value = '';
+          } else {
+            proPrintMinutesInput.value = minutes.toString();
+          }
+        } finally {
+          timeSyncInProgress = false;
         }
       }
 
       function updateTimeFromProMinutes() {
-        if (!proPrintMinutesInput || !timeInput) {
+        if (!proPrintMinutesInput || !timeInput || timeSyncInProgress) {
           return;
         }
         suppressProSync = true;
-        var minutes = Math.max(readNumber(proPrintMinutesInput), 0);
-        var hoursPart = Math.floor(minutes / 60);
-        var minutesPart = Math.round(minutes % 60);
-        var hh = String(hoursPart).padStart(2, '0');
-        var mm = String(minutesPart).padStart(2, '0');
-        timeInput.value = hh + ':' + mm;
-        suppressProSync = false;
+        timeSyncInProgress = true;
+        try {
+          var minutes = Math.max(readNumber(proPrintMinutesInput), 0);
+          var hoursPart = Math.floor(minutes / 60);
+          var minutesPart = Math.round(minutes % 60);
+          var hh = String(hoursPart).padStart(2, '0');
+          var mm = String(minutesPart).padStart(2, '0');
+          timeInput.value = hh + ':' + mm;
+        } finally {
+          timeSyncInProgress = false;
+          suppressProSync = false;
+        }
         recalc();
       }
 
@@ -1604,8 +1669,9 @@
         var pricePerKg = readNumber(pricePerKgInput);
         var proEnabled = proModeEnabled;
 
-        var weightRawValue = getInputRaw(weightInput);
-        var lengthRawValue = getInputRaw(lengthInput);
+        var weightModeActive = !!weightMode.checked;
+        var lengthModeActive = !weightModeActive;
+
         var timeRawValue = getInputRaw(timeInput);
         var powerRawValue = getInputRaw(powerInput);
         var energyPriceRawValue = getInputRaw(energyPriceInput);
@@ -1626,31 +1692,36 @@
         var machineLifetimeRawValue = getInputRaw(machineLifetimeInput);
         var materialDensityRawValue = getInputRaw(materialDensityInput);
 
-        var weight = readNumber(weightInput);
-        var length = readNumber(lengthInput);
         var materialDensityValue = readNumber(materialDensityInput);
+        var weightInputValue = weightModeActive ? readNumber(weightInput) : 0;
+        var lengthInputValue = lengthModeActive ? readNumber(lengthInput) : 0;
 
-        if (weightMode.checked) {
-          if (gramsPerMeter > 0) {
+        var weight = weightInputValue;
+        var length = lengthInputValue;
+
+        if (weightModeActive) {
+          if (gramsPerMeter > 0 && weight > 0) {
             length = weight / gramsPerMeter;
-            lengthInput.value = length ? length.toFixed(2) : '';
           } else {
             length = 0;
-            lengthInput.value = '';
           }
         } else {
-          var gramsPerMeterFromDensity = proEnabled ? computeGramsPerMeterFromDensity(materialDensityValue) : 0;
+          var gramsPerMeterFromDensity = proEnabled && materialDensityValue > 0
+            ? computeGramsPerMeterFromDensity(materialDensityValue)
+            : 0;
           var effectiveGramsPerMeter = gramsPerMeterFromDensity > 0 ? gramsPerMeterFromDensity : gramsPerMeter;
-          if (effectiveGramsPerMeter > 0 && length > 0 && (!weightRawValue || weightRawValue === '')) {
+          if (effectiveGramsPerMeter > 0 && length > 0) {
             weight = length * effectiveGramsPerMeter;
-            weightInput.value = weight ? weight.toFixed(0) : '';
-          } else if (gramsPerMeter > 0) {
-            weight = length * gramsPerMeter;
-            weightInput.value = weight ? weight.toFixed(0) : '';
           } else {
             weight = 0;
-            weightInput.value = '';
           }
+        }
+
+        if (!isFinite(weight) || weight < 0) {
+          weight = 0;
+        }
+        if (!isFinite(length) || length < 0) {
+          length = 0;
         }
 
         var hours = parseHours(timeInput.value || '0:00');
@@ -2481,6 +2552,26 @@
         });
       }
 
+      if (materialDensityResetButton && materialDensityInput) {
+        materialDensityResetButton.addEventListener('click', function () {
+          var defaults = currentMaterialDefaults || {};
+          var hasDensity = typeof defaults.density === 'number' && isFinite(defaults.density);
+          materialDensityProgrammatic = true;
+          if (hasDensity) {
+            materialDensityInput.value = defaults.density.toFixed(2);
+          } else {
+            materialDensityInput.value = '';
+          }
+          materialDensityProgrammatic = false;
+          materialDensityUserEdited = false;
+          updateMaterialSuggestionState(defaults);
+          triggerRecalc({ immediate: true });
+          if (proModeEnabled && !materialDensityInput.disabled) {
+            materialDensityInput.focus();
+          }
+        });
+      }
+
       if (printResultButton) {
         printResultButton.addEventListener('click', function () {
           triggerPrint('result');
@@ -2576,6 +2667,10 @@
           pendingPrintTitle = null;
         }
       });
+
+      document.addEventListener('DOMContentLoaded', function () {
+        recalc();
+      }, { once: true });
 
       setMaterialDefaults();
       updateModeVisibility();
