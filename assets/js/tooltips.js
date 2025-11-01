@@ -8,6 +8,7 @@
   const DESKTOP_MAX_WIDTH = 320;
   const HORIZONTAL_MARGIN = 16;
   const BOUNDARY_PADDING = 4;
+  const ARROW_EDGE_PADDING = 14;
   const UPDATE_THROTTLE = 50;
   const SCROLL_CLOSE_THRESHOLD = 50;
   const SUPPORTS_POINTER = typeof window !== 'undefined' && 'PointerEvent' in window;
@@ -15,12 +16,16 @@
   let tooltipUid = 0;
 
   class TooltipPositioner {
-    constructor(trigger, tooltip, options = {}) {
+    constructor(trigger, tooltip = null, options = {}) {
       this.trigger = trigger;
       this.tooltip = tooltip;
       this.options = {
         gap: options.gap ?? DEFAULT_GAP,
       };
+    }
+
+    setTooltipElement(element) {
+      this.tooltip = element;
     }
 
     measure(maxWidth) {
@@ -146,7 +151,9 @@
 
       const centerX = adjustedCenterX;
       const left = centerX - halfWidth;
-      const arrowOffset = triggerCenterX - centerX;
+      const rawArrowOffset = triggerCenterX - centerX;
+      const arrowLimit = Math.max(halfWidth - ARROW_EDGE_PADDING, 0);
+      const arrowOffset = Math.min(Math.max(rawArrowOffset, -arrowLimit), arrowLimit);
 
       return {
         placement,
@@ -204,10 +211,45 @@
     }
 
     init() {
+      this.cleanupLegacyArtifacts();
       this.portal = this.ensurePortal();
       this.tooltips = this.collectTooltips();
       this.tooltips.forEach((entry) => this.bindTooltip(entry));
       this.bindGlobalListeners();
+    }
+
+    cleanupLegacyArtifacts() {
+      const tooltipTexts = new Set(
+        Array.from(document.querySelectorAll('.info-tooltip__content'))
+          .map((el) => el.textContent.trim())
+          .filter((text) => text.length > 0),
+      );
+
+      const textNodeType = typeof Node !== 'undefined' ? Node.TEXT_NODE : 3;
+
+      const portal = document.getElementById(PORTAL_ID);
+      if (portal) {
+        while (portal.firstChild) {
+          portal.removeChild(portal.firstChild);
+        }
+      }
+
+      const legacyNodes = document.querySelectorAll('.ws-tooltip, .ws-tip-text');
+      legacyNodes.forEach((node) => {
+        if (node.parentNode) {
+          node.parentNode.removeChild(node);
+        }
+      });
+
+      Array.from(document.body.childNodes).forEach((node) => {
+        if (node.nodeType === textNodeType) {
+          const value = (node.textContent || '').trim();
+
+          if (value.length > 0 && tooltipTexts.has(value) && node.parentNode) {
+            node.parentNode.removeChild(node);
+          }
+        }
+      });
     }
 
     ensurePortal() {
@@ -217,7 +259,13 @@
         portal = document.createElement('div');
         portal.id = PORTAL_ID;
         portal.setAttribute('aria-hidden', 'true');
-        document.body.appendChild(portal);
+        if (document.body.firstElementChild) {
+          document.body.insertBefore(portal, document.body.firstElementChild);
+        } else {
+          document.body.appendChild(portal);
+        }
+      } else if (portal.parentElement !== document.body || portal !== document.body.firstElementChild) {
+        document.body.insertBefore(portal, document.body.firstElementChild);
       }
 
       return portal;
@@ -246,28 +294,94 @@
             trigger.setAttribute('aria-describedby', tooltipId);
           }
 
-          content.setAttribute('role', 'tooltip');
           content.setAttribute('aria-hidden', 'true');
-          content.setAttribute('aria-live', 'polite');
-          content.dataset.state = 'closed';
-          content.style.pointerEvents = 'none';
-
-          this.portal.appendChild(content);
+          content.classList.add('info-tooltip__content');
 
           return {
             id: tooltipId,
             root,
             trigger,
             content,
-            positioner: new TooltipPositioner(trigger, content),
+            positioner: new TooltipPositioner(trigger),
+            bubble: null,
+            arrow: null,
             manual: false,
             hovered: false,
             focused: false,
             skipNextClick: false,
             lastTriggerRect: null,
+            preferredPlacement: content.dataset.placement || 'top',
+            currentPlacement: null,
+            isOpen: false,
           };
         })
         .filter(Boolean);
+    }
+
+    createBubble(entry) {
+      if (!this.portal) {
+        return null;
+      }
+
+      const bubble = document.createElement('div');
+      bubble.className = 'ws-tooltip';
+      bubble.id = entry.id;
+      bubble.setAttribute('role', 'tooltip');
+      bubble.setAttribute('aria-hidden', 'true');
+      bubble.dataset.placement = entry.preferredPlacement;
+
+      const arrow = document.createElement('div');
+      arrow.className = 'ws-tooltip__arrow';
+      arrow.setAttribute('aria-hidden', 'true');
+
+      const inner = document.createElement('div');
+      inner.className = 'ws-tooltip__inner';
+      inner.innerHTML = entry.content.innerHTML;
+
+      bubble.appendChild(inner);
+      bubble.appendChild(arrow);
+      this.portal.appendChild(bubble);
+
+      entry.positioner.setTooltipElement(bubble);
+      entry.bubble = bubble;
+      entry.arrow = arrow;
+
+      if (SUPPORTS_POINTER) {
+        bubble.addEventListener('pointerenter', entry.handleBubblePointerEnter);
+        bubble.addEventListener('pointerleave', entry.handleBubblePointerLeave);
+      }
+
+      return bubble;
+    }
+
+    destroyBubble(entry) {
+      if (entry.bubble) {
+        if (SUPPORTS_POINTER) {
+          entry.bubble.removeEventListener('pointerenter', entry.handleBubblePointerEnter);
+          entry.bubble.removeEventListener('pointerleave', entry.handleBubblePointerLeave);
+        }
+
+        if (entry.bubble.parentNode) {
+          entry.bubble.parentNode.removeChild(entry.bubble);
+        }
+      }
+
+      entry.positioner.setTooltipElement(null);
+      entry.bubble = null;
+      entry.arrow = null;
+      entry.currentPlacement = null;
+    }
+
+    updateBubblePlacement(entry, placement) {
+      if (!entry.bubble) {
+        return;
+      }
+
+      entry.bubble.classList.remove('ws-tooltip--top', 'ws-tooltip--bottom');
+      if (placement) {
+        entry.bubble.classList.add(`ws-tooltip--${placement}`);
+        entry.bubble.dataset.placement = placement;
+      }
     }
 
     bindTooltip(entry) {
@@ -320,7 +434,7 @@
         this.maybeClose(entry);
       };
 
-      entry.handleContentPointerEnter = (event) => {
+      entry.handleBubblePointerEnter = (event) => {
         if (!SUPPORTS_POINTER || (event.pointerType && event.pointerType !== 'mouse')) {
           return;
         }
@@ -328,7 +442,7 @@
         entry.hovered = true;
       };
 
-      entry.handleContentPointerLeave = (event) => {
+      entry.handleBubblePointerLeave = (event) => {
         if (!SUPPORTS_POINTER || (event.pointerType && event.pointerType !== 'mouse')) {
           return;
         }
@@ -345,7 +459,7 @@
       entry.handleFocusOut = (event) => {
         const nextTarget = event.relatedTarget;
 
-        if (nextTarget && (root.contains(nextTarget) || content.contains(nextTarget))) {
+        if (nextTarget && (root.contains(nextTarget) || (entry.bubble && entry.bubble.contains(nextTarget)))) {
           return;
         }
 
@@ -358,8 +472,6 @@
         trigger.addEventListener('pointercancel', entry.handlePointerCancel);
         trigger.addEventListener('pointerenter', entry.handlePointerEnter);
         trigger.addEventListener('pointerleave', entry.handlePointerLeave);
-        content.addEventListener('pointerenter', entry.handleContentPointerEnter);
-        content.addEventListener('pointerleave', entry.handleContentPointerLeave);
       } else {
         trigger.addEventListener('mouseenter', () => {
           entry.hovered = true;
@@ -395,9 +507,9 @@
         return;
       }
 
-      const { root, content } = this.activeTooltip;
+      const { root, bubble } = this.activeTooltip;
 
-      if (root.contains(event.target) || content.contains(event.target)) {
+      if (root.contains(event.target) || (bubble && bubble.contains(event.target))) {
         return;
       }
 
@@ -437,38 +549,56 @@
 
     open(entry, { manual = false } = {}) {
       this.tooltips.forEach((item) => {
-        if (item !== entry && item.content.dataset.state === 'open') {
+        if (item !== entry && item.isOpen) {
           this.close(item);
         }
       });
 
-      const preferred = entry.content.dataset.placement || 'top';
+      const bubble = entry.bubble || this.createBubble(entry);
+
+      if (!bubble) {
+        return;
+      }
+
+      const inner = bubble.querySelector('.ws-tooltip__inner');
+      if (inner) {
+        inner.innerHTML = entry.content.innerHTML;
+      }
+
+      const preferred = entry.currentPlacement || entry.preferredPlacement || 'top';
       const position = entry.positioner.compute(preferred);
       entry.positioner.apply(position);
+      this.updateBubblePlacement(entry, position.placement);
+      bubble.setAttribute('aria-hidden', 'false');
+      bubble.classList.add('ws-tooltip--visible');
 
-      entry.content.dataset.state = 'open';
-      entry.content.setAttribute('aria-hidden', 'false');
       entry.trigger.setAttribute('aria-expanded', 'true');
       entry.root.classList.add(ACTIVE_CLASS);
       entry.manual = manual;
       entry.lastTriggerRect = entry.trigger.getBoundingClientRect();
-      entry.content.style.pointerEvents = 'auto';
+      entry.currentPlacement = position.placement;
+      entry.isOpen = true;
       this.activeTooltip = entry;
       this.updatePortalAria();
     }
 
     close(entry) {
-      entry.content.dataset.state = 'closed';
-      entry.content.setAttribute('aria-hidden', 'true');
+      if (entry.bubble) {
+        entry.bubble.classList.remove('ws-tooltip--visible');
+        entry.bubble.setAttribute('aria-hidden', 'true');
+      }
+
+      this.destroyBubble(entry);
+
       entry.trigger.setAttribute('aria-expanded', 'false');
       entry.root.classList.remove(ACTIVE_CLASS);
       entry.positioner.reset();
       entry.manual = false;
       entry.hovered = false;
       entry.focused = document.activeElement === entry.trigger;
-      entry.content.style.pointerEvents = 'none';
       entry.lastTriggerRect = null;
       entry.skipNextClick = false;
+      entry.isOpen = false;
 
       if (this.activeTooltip === entry) {
         this.activeTooltip = null;
@@ -492,7 +622,7 @@
     }
 
     scheduleUpdate() {
-      if (!this.activeTooltip) {
+      if (!this.activeTooltip || !this.activeTooltip.bubble) {
         return;
       }
 
@@ -521,8 +651,10 @@
           }
         }
 
-        const position = entry.positioner.compute(entry.content.dataset.placement || 'top');
+        const position = entry.positioner.compute(entry.currentPlacement || entry.preferredPlacement || 'top');
         entry.positioner.apply(position);
+        this.updateBubblePlacement(entry, position.placement);
+        entry.currentPlacement = position.placement;
         entry.lastTriggerRect = newRect;
       }, UPDATE_THROTTLE);
     }
@@ -532,7 +664,7 @@
         return;
       }
 
-      const hasOpenTooltip = this.tooltips.some((entry) => entry.content.dataset.state === 'open');
+      const hasOpenTooltip = this.tooltips.some((entry) => entry.isOpen);
       this.portal.setAttribute('aria-hidden', hasOpenTooltip ? 'false' : 'true');
     }
   }
