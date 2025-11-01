@@ -199,7 +199,7 @@
             <form class="calc-form" id="calcForm" novalidate>
               <div class="calc-pro-toggle">
                 <label class="calc-toggle">
-                  <input class="calc-toggle__input" type="checkbox" id="proToggle" name="proToggle">
+                  <input class="calc-toggle__input" type="checkbox" id="proToggle" name="proToggle" aria-controls="proFields" aria-expanded="false">
                   <span class="calc-toggle__track" aria-hidden="true">
                     <span class="calc-toggle__thumb"></span>
                   </span>
@@ -290,7 +290,7 @@
                 </div>
               </div>
 
-              <div class="calc-pro" id="proFields" hidden>
+              <div class="calc-pro" id="proFields" hidden aria-hidden="true" inert>
                 <p class="calc-hint calc-hint--lead">Nutze die Zusatzfelder für Marge, Arbeitszeit und optionale Abschläge.</p>
                 <div class="calc-pro__grid">
                   <div class="calc-field">
@@ -363,14 +363,14 @@
             </label>
             <ul class="calc-results__list">
               <li class="calc-results__item">
-                <span class="calc-results__label" id="materialCostLabel">Materialkosten</span>
+                <span class="calc-results__label" id="materialCostLabel">Material (Basis)</span>
                 <span class="calc-results__value" id="materialCost">0,00&nbsp;€</span>
               </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="materialWaste" hidden>
+              <li class="calc-results__item" data-result="materialWaste">
                 <span class="calc-results__label">Verschnitt</span>
                 <span class="calc-results__value" id="materialWasteCost">0,00&nbsp;€</span>
               </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="materialTotal" hidden>
+              <li class="calc-results__item" data-result="materialTotal">
                 <span class="calc-results__label">Material (inkl. Verschnitt)</span>
                 <span class="calc-results__value" id="materialTotalCost">0,00&nbsp;€</span>
               </li>
@@ -378,23 +378,23 @@
                 <span class="calc-results__label" id="energyCostLabel">Energiekosten</span>
                 <span class="calc-results__value" id="energyCost">0,00&nbsp;€</span>
               </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="timeCost" hidden>
+              <li class="calc-results__item calc-results__item--pro" data-result="timeCost" data-pro-only="true" hidden>
                 <span class="calc-results__label">Arbeitszeitkosten (Rüstzeit + Nachbearbeitung)</span>
                 <span class="calc-results__value" id="timeCost">0,00&nbsp;€</span>
               </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="fixedCost" hidden>
+              <li class="calc-results__item calc-results__item--pro" data-result="fixedCost" data-pro-only="true" hidden>
                 <span class="calc-results__label">Fixkosten</span>
                 <span class="calc-results__value" id="fixedCostValue">0,00&nbsp;€</span>
               </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="subtotal" hidden>
+              <li class="calc-results__item" data-result="subtotal">
                 <span class="calc-results__label">Zwischensumme</span>
                 <span class="calc-results__value" id="subtotalValue">0,00&nbsp;€</span>
               </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="margin" hidden>
+              <li class="calc-results__item calc-results__item--pro" data-result="margin" data-pro-only="true" hidden>
                 <span class="calc-results__label">Marge</span>
                 <span class="calc-results__value" id="marginValue">0,00&nbsp;€</span>
               </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="discount" hidden>
+              <li class="calc-results__item calc-results__item--pro" data-result="discount" data-pro-only="true" hidden>
                 <span class="calc-results__label">Rabatt</span>
                 <span class="calc-results__value calc-results__value--deduction" id="discountValue">0,00&nbsp;€</span>
               </li>
@@ -506,14 +506,14 @@
       <table class="calc-print__table calc-print__table--summary">
         <tbody>
           <tr>
-            <th scope="row" id="printMaterialLabel">Materialkosten</th>
+            <th scope="row" id="printMaterialLabel">Material (Basis)</th>
             <td id="printMaterialCost">0,00&nbsp;€</td>
           </tr>
-          <tr class="print-row-pro" data-print="waste" hidden>
+          <tr data-print="waste">
             <th scope="row">Verschnitt</th>
             <td id="printWasteCost">0,00&nbsp;€</td>
           </tr>
-          <tr class="print-row-pro" data-print="materialTotal" hidden>
+          <tr data-print="materialTotal">
             <th scope="row">Material (inkl. Verschnitt)</th>
             <td id="printMaterialTotal">0,00&nbsp;€</td>
           </tr>
@@ -521,23 +521,23 @@
             <th scope="row" id="printEnergyLabel">Energiekosten</th>
             <td id="printEnergyCost">0,00&nbsp;€</td>
           </tr>
-          <tr class="print-row-pro" data-print="timeCost" hidden>
+          <tr class="print-row-pro" data-print="timeCost" data-print-pro="true" hidden>
             <th scope="row">Arbeitszeitkosten (Rüstzeit + Nachbearbeitung)</th>
             <td id="printTimeCost">0,00&nbsp;€</td>
           </tr>
-          <tr class="print-row-pro" data-print="fixedCost" hidden>
+          <tr class="print-row-pro" data-print="fixedCost" data-print-pro="true" hidden>
             <th scope="row">Fixkosten</th>
             <td id="printFixedCost">0,00&nbsp;€</td>
           </tr>
-          <tr class="print-row-pro" data-print="subtotal" hidden>
+          <tr data-print="subtotal">
             <th scope="row">Zwischensumme</th>
             <td id="printSubtotal">0,00&nbsp;€</td>
           </tr>
-          <tr class="print-row-pro" data-print="margin" hidden>
+          <tr class="print-row-pro" data-print="margin" data-print-pro="true" hidden>
             <th scope="row">Marge</th>
             <td id="printMargin">0,00&nbsp;€</td>
           </tr>
-          <tr class="print-row-pro" data-print="discount" hidden>
+          <tr class="print-row-pro" data-print="discount" data-print-pro="true" hidden>
             <th scope="row">Rabatt</th>
             <td id="printDiscount">0,00&nbsp;€</td>
           </tr>
@@ -660,6 +660,8 @@
       var printButton = document.getElementById('printButton');
       var proToggle = document.getElementById('proToggle');
       var proFields = document.getElementById('proFields');
+      var proResultItems = document.querySelectorAll('[data-pro-only="true"]');
+      var proPrintRows = document.querySelectorAll('[data-print-pro="true"]');
       var profitMarginInput = document.getElementById('profitMargin');
       var hourlyRateInput = document.getElementById('hourlyRate');
       var setupMinutesInput = document.getElementById('setupMinutes');
@@ -680,21 +682,14 @@
       var printLoadFactorOutput = document.getElementById('printLoadFactor');
       var printMaterialLabelOutput = document.getElementById('printMaterialLabel');
       var printMaterialCostOutput = document.getElementById('printMaterialCost');
-      var printWasteRow = document.querySelector('[data-print="waste"]');
       var printWasteCostOutput = document.getElementById('printWasteCost');
-      var printMaterialTotalRow = document.querySelector('[data-print="materialTotal"]');
       var printMaterialTotalOutput = document.getElementById('printMaterialTotal');
       var printEnergyLabelOutput = document.getElementById('printEnergyLabel');
       var printEnergyCostOutput = document.getElementById('printEnergyCost');
-      var printTimeCostRow = document.querySelector('[data-print="timeCost"]');
       var printTimeCostOutput = document.getElementById('printTimeCost');
-      var printFixedCostRow = document.querySelector('[data-print="fixedCost"]');
       var printFixedCostOutput = document.getElementById('printFixedCost');
-      var printSubtotalRow = document.querySelector('[data-print="subtotal"]');
       var printSubtotalOutput = document.getElementById('printSubtotal');
-      var printMarginRow = document.querySelector('[data-print="margin"]');
       var printMarginOutput = document.getElementById('printMargin');
-      var printDiscountRow = document.querySelector('[data-print="discount"]');
       var printDiscountOutput = document.getElementById('printDiscount');
       var printNetOutput = document.getElementById('printNet');
       var printGrossOutput = document.getElementById('printGross');
@@ -729,6 +724,7 @@
 
       var suppressProSync = false;
       var PRO_STORAGE_KEY = 'ws_pro_calc_enabled';
+      var proModeEnabled = false;
 
       function getStoredProEnabled() {
         try {
@@ -759,9 +755,44 @@
       function applyProVisibility(enabled) {
         if (proToggle) {
           proToggle.checked = enabled;
+          proToggle.setAttribute('aria-expanded', enabled ? 'true' : 'false');
         }
         if (proFields) {
           proFields.hidden = !enabled;
+          proFields.setAttribute('aria-hidden', enabled ? 'false' : 'true');
+          if (enabled) {
+            proFields.removeAttribute('inert');
+          } else {
+            proFields.setAttribute('inert', '');
+          }
+        }
+        if (proResultItems && proResultItems.length) {
+          proResultItems.forEach(function (item) {
+            item.hidden = !enabled;
+          });
+        }
+        if (proPrintRows && proPrintRows.length) {
+          proPrintRows.forEach(function (row) {
+            row.hidden = !enabled;
+          });
+        }
+        if (proStatusOutput) {
+          proStatusOutput.hidden = !enabled;
+        }
+        if (printProParamsSection) {
+          printProParamsSection.hidden = !enabled;
+        }
+      }
+
+      function setProModeEnabled(enabled, options) {
+        var normalized = !!enabled;
+        proModeEnabled = normalized;
+        applyProVisibility(normalized);
+        if (!options || !options.skipPersist) {
+          persistProEnabled(normalized);
+        }
+        if (!options || !options.skipRecalc) {
+          recalc();
         }
       }
 
@@ -830,11 +861,6 @@
         if (printTimestampOutput) {
           printTimestampOutput.textContent = dateTimeFormatter.format(new Date());
         }
-      }
-
-      function toggleElement(element, show) {
-        if (!element) return;
-        element.hidden = !show;
       }
 
       function hasValue(value) {
@@ -931,7 +957,7 @@
         var net = marginBase;
         var gross = vatIncluded ? net * 1.19 : net;
 
-        var proEnabled = proToggle && proToggle.checked;
+        var proEnabled = proModeEnabled;
         var defaultMinutes = Math.round(hours * 60);
         var proData = {
           enabled: proEnabled,
@@ -1067,7 +1093,7 @@
         }
         metaOutput.textContent = metaText;
 
-        materialCostLabelOutput.textContent = state.pro.enabled ? 'Material (Basis)' : 'Materialkosten';
+        materialCostLabelOutput.textContent = 'Material (Basis)';
         if (energyCostLabelOutput) {
           energyCostLabelOutput.textContent = 'Energiekosten';
         }
@@ -1075,47 +1101,39 @@
         if (materialWasteOutput) {
           materialWasteOutput.textContent = formatter.format(state.pro.materialWaste);
         }
-        toggleElement(materialWasteRow, state.pro.enabled && hasValue(state.pro.materialWaste));
+        if (materialWasteRow) {
+          materialWasteRow.hidden = false;
+        }
 
         if (materialTotalOutput) {
           materialTotalOutput.textContent = formatter.format(state.pro.materialWithWaste);
         }
-        toggleElement(materialTotalRow, state.pro.enabled);
+        if (materialTotalRow) {
+          materialTotalRow.hidden = false;
+        }
 
         if (timeCostOutput) {
           timeCostOutput.textContent = formatter.format(state.pro.timeCost);
         }
-        toggleElement(timeCostRow, state.pro.enabled && hasValue(state.pro.timeCost));
 
         if (fixedCostOutput) {
           fixedCostOutput.textContent = formatter.format(state.pro.fixedCost);
-        }
-        toggleElement(fixedCostRow, state.pro.enabled && hasValue(state.pro.fixedCost));
-
-        if (subtotalRow) {
-          subtotalRow.classList.toggle('calc-results__item--pro', state.pro.enabled);
         }
 
         if (subtotalOutput) {
           var subtotalValue = state.pro.enabled ? state.pro.subtotal : state.standardSubtotal;
           subtotalOutput.textContent = formatter.format(subtotalValue);
         }
-        toggleElement(subtotalRow, state.pro.enabled);
 
         if (marginOutput) {
           marginOutput.textContent = formatter.format(state.pro.marginValue);
         }
-        toggleElement(marginRow, state.pro.enabled && hasValue(state.pro.marginValue));
 
         if (discountOutput) {
-          discountOutput.textContent = state.pro.enabled && hasValue(state.pro.discountValue)
+          var discountText = hasValue(state.pro.discountValue)
             ? '– ' + formatter.format(state.pro.discountValue)
-            : formatter.format(0);
-        }
-        toggleElement(discountRow, state.pro.enabled && hasValue(state.pro.discountValue));
-
-        if (proStatusOutput) {
-          proStatusOutput.hidden = !state.pro.enabled;
+            : formatter.format(state.pro.discountValue);
+          discountOutput.textContent = discountText;
         }
       }
 
@@ -1135,19 +1153,17 @@
         printLoadFactorOutput.textContent = integerFormatter.format(state.loadFactor) + '\u00A0%';
 
         if (printMaterialLabelOutput) {
-          printMaterialLabelOutput.textContent = state.pro.enabled ? 'Material (Basis)' : 'Materialkosten';
+          printMaterialLabelOutput.textContent = 'Material (Basis)';
         }
         printMaterialCostOutput.textContent = formatter.format(state.materialCost);
 
         if (printWasteCostOutput) {
           printWasteCostOutput.textContent = formatter.format(state.pro.materialWaste);
         }
-        toggleElement(printWasteRow, state.pro.enabled && hasValue(state.pro.materialWaste));
 
         if (printMaterialTotalOutput) {
           printMaterialTotalOutput.textContent = formatter.format(state.pro.materialWithWaste);
         }
-        toggleElement(printMaterialTotalRow, state.pro.enabled);
 
         if (printEnergyLabelOutput) {
           printEnergyLabelOutput.textContent = 'Energiekosten';
@@ -1157,34 +1173,26 @@
         if (printTimeCostOutput) {
           printTimeCostOutput.textContent = formatter.format(state.pro.timeCost);
         }
-        toggleElement(printTimeCostRow, state.pro.enabled && hasValue(state.pro.timeCost));
 
         if (printFixedCostOutput) {
           printFixedCostOutput.textContent = formatter.format(state.pro.fixedCost);
-        }
-        toggleElement(printFixedCostRow, state.pro.enabled && hasValue(state.pro.fixedCost));
-
-        if (printSubtotalRow) {
-          printSubtotalRow.classList.toggle('print-row-pro', state.pro.enabled);
         }
 
         if (printSubtotalOutput) {
           var printSubtotalValue = state.pro.enabled ? state.pro.subtotal : state.standardSubtotal;
           printSubtotalOutput.textContent = formatter.format(printSubtotalValue);
         }
-        toggleElement(printSubtotalRow, state.pro.enabled);
 
         if (printMarginOutput) {
           printMarginOutput.textContent = formatter.format(state.pro.marginValue);
         }
-        toggleElement(printMarginRow, state.pro.enabled && hasValue(state.pro.marginValue));
 
         if (printDiscountOutput) {
-          printDiscountOutput.textContent = state.pro.enabled && hasValue(state.pro.discountValue)
+          var printDiscountText = hasValue(state.pro.discountValue)
             ? '– ' + formatter.format(state.pro.discountValue)
-            : formatter.format(0);
+            : formatter.format(state.pro.discountValue);
+          printDiscountOutput.textContent = printDiscountText;
         }
-        toggleElement(printDiscountRow, state.pro.enabled && hasValue(state.pro.discountValue));
 
         printNetOutput.textContent = formatter.format(state.net);
         printGrossOutput.textContent = formatter.format(state.gross);
@@ -1198,18 +1206,15 @@
           printVatNoteOutput.textContent = 'Hinweis: §19 UStG – keine Umsatzsteuer.';
         }
 
-        if (printProParamsSection) {
-          printProParamsSection.hidden = !state.pro.enabled;
-          if (state.pro.enabled) {
-            printProfitMarginOutput.textContent = percentNumberFormatter.format(state.pro.profitMargin) + '\u00A0%';
-            printHourlyRateOutput.textContent = formatter.format(state.pro.hourlyRate) + '/h';
-            printSetupMinutesOutput.textContent = integerFormatter.format(state.pro.setupMinutes) + '\u00A0min';
-            printProPrintMinutesOutput.textContent = integerFormatter.format(state.pro.printMinutes) + '\u00A0min';
-            printFinishingMinutesOutput.textContent = integerFormatter.format(state.pro.finishingMinutes) + '\u00A0min';
-            printWastePercentOutput.textContent = percentNumberFormatter.format(state.pro.wastePercent) + '\u00A0%';
-            printFixedCostInputOutput.textContent = formatter.format(state.pro.fixedCost);
-            printDiscountPercentOutput.textContent = percentNumberFormatter.format(state.pro.discountPercent) + '\u00A0%';
-          }
+        if (printProParamsSection && state.pro.enabled) {
+          printProfitMarginOutput.textContent = percentNumberFormatter.format(state.pro.profitMargin) + '\u00A0%';
+          printHourlyRateOutput.textContent = formatter.format(state.pro.hourlyRate) + '/h';
+          printSetupMinutesOutput.textContent = integerFormatter.format(state.pro.setupMinutes) + '\u00A0min';
+          printProPrintMinutesOutput.textContent = integerFormatter.format(state.pro.printMinutes) + '\u00A0min';
+          printFinishingMinutesOutput.textContent = integerFormatter.format(state.pro.finishingMinutes) + '\u00A0min';
+          printWastePercentOutput.textContent = percentNumberFormatter.format(state.pro.wastePercent) + '\u00A0%';
+          printFixedCostInputOutput.textContent = formatter.format(state.pro.fixedCost);
+          printDiscountPercentOutput.textContent = percentNumberFormatter.format(state.pro.discountPercent) + '\u00A0%';
         }
 
         if (printUrlOutput) {
@@ -1243,14 +1248,11 @@
 
       var storedProEnabled = getStoredProEnabled();
       var initialProEnabled = storedProEnabled === null ? false : storedProEnabled;
-      applyProVisibility(initialProEnabled);
+      setProModeEnabled(initialProEnabled, { skipPersist: true, skipRecalc: true });
 
       if (proToggle) {
         proToggle.addEventListener('change', function () {
-          var enabled = !!proToggle.checked;
-          applyProVisibility(enabled);
-          persistProEnabled(enabled);
-          recalc();
+          setProModeEnabled(proToggle.checked);
         });
       }
 
