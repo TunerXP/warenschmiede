@@ -160,6 +160,7 @@
 
   const MOBILE_BREAKPOINT = 768;
   const ACTIVE_CLASS = 'is-active';
+  const SUPPORTS_POINTER = typeof window !== 'undefined' && 'PointerEvent' in window;
 
   class MobileTooltipController {
     constructor() {
@@ -168,7 +169,9 @@
       this.initialized = false;
       this.rafId = null;
       this.lastInteractionWasKeyboard = false;
+      this.supportsPointer = SUPPORTS_POINTER;
 
+      this.handleDocumentPointerDown = this.handleDocumentPointerDown.bind(this);
       this.handleDocumentClick = this.handleDocumentClick.bind(this);
       this.handleKeydown = this.handleKeydown.bind(this);
       this.handleScroll = () => this.scheduleUpdate();
@@ -185,9 +188,24 @@
       this.tooltips = this.collectTooltips();
       this.tooltips.forEach((entry) => {
         entry.triggerHandler = (event) => this.handleTriggerClick(event, entry);
+        entry.skipNextClick = false;
+
         entry.trigger.addEventListener('click', entry.triggerHandler);
+
+        if (this.supportsPointer) {
+          entry.pointerHandler = (event) => this.handleTriggerPointer(event, entry);
+          entry.pointerResetHandler = () => {
+            entry.skipNextClick = false;
+          };
+
+          entry.trigger.addEventListener('pointerup', entry.pointerHandler);
+          entry.trigger.addEventListener('pointercancel', entry.pointerResetHandler);
+        }
       });
 
+      if (this.supportsPointer) {
+        document.addEventListener('pointerdown', this.handleDocumentPointerDown);
+      }
       document.addEventListener('click', this.handleDocumentClick);
       document.addEventListener('keydown', this.handleKeydown);
       window.addEventListener('scroll', this.handleScroll, { passive: true });
@@ -208,12 +226,20 @@
 
       this.tooltips.forEach((entry) => {
         entry.trigger.removeEventListener('click', entry.triggerHandler);
+
+        if (this.supportsPointer) {
+          entry.trigger.removeEventListener('pointerup', entry.pointerHandler);
+          entry.trigger.removeEventListener('pointercancel', entry.pointerResetHandler);
+        }
         entry.positioner.reset();
         entry.root.classList.remove(ACTIVE_CLASS);
         entry.trigger.setAttribute('aria-expanded', 'false');
         entry.content.tabIndex = -1;
       });
 
+      if (this.supportsPointer) {
+        document.removeEventListener('pointerdown', this.handleDocumentPointerDown);
+      }
       document.removeEventListener('click', this.handleDocumentClick);
       document.removeEventListener('keydown', this.handleKeydown);
       window.removeEventListener('scroll', this.handleScroll);
@@ -255,6 +281,7 @@
             trigger,
             content,
             positioner: new TooltipPositioner(trigger, content),
+            id: root.dataset.tip || null,
           };
         })
         .filter(Boolean);
@@ -266,17 +293,50 @@
       }
     }
 
+    handleTriggerPointer(event, entry) {
+      if (event.pointerType === 'mouse' || event.isPrimary === false) {
+        return;
+      }
+
+      entry.skipNextClick = true;
+      this.toggleTooltip(event, entry, { isKeyboard: false });
+    }
+
     handleTriggerClick(event, entry) {
+      if (entry.skipNextClick) {
+        entry.skipNextClick = false;
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+
+      const isKeyboard = event.detail === 0;
+      this.toggleTooltip(event, entry, { isKeyboard });
+    }
+
+    toggleTooltip(event, entry, { isKeyboard }) {
       event.preventDefault();
       event.stopPropagation();
 
-      this.lastInteractionWasKeyboard = event.detail === 0;
+      this.lastInteractionWasKeyboard = isKeyboard;
 
       if (this.activeTooltip === entry) {
         this.close(entry);
       } else {
-        this.open(entry, { focus: this.lastInteractionWasKeyboard });
+        this.open(entry, { focus: isKeyboard });
       }
+    }
+
+    handleDocumentPointerDown(event) {
+      if (!this.activeTooltip) {
+        return;
+      }
+
+      if (this.activeTooltip.root.contains(event.target)) {
+        return;
+      }
+
+      this.close(this.activeTooltip);
     }
 
     handleDocumentClick(event) {
@@ -316,9 +376,11 @@
     }
 
     open(entry, { focus = false } = {}) {
-      if (this.activeTooltip && this.activeTooltip !== entry) {
-        this.close(this.activeTooltip);
-      }
+      this.tooltips.forEach((item) => {
+        if (item !== entry && item.root.classList.contains(ACTIVE_CLASS)) {
+          this.close(item);
+        }
+      });
 
       const position = entry.positioner.compute('top');
       entry.positioner.apply(position);
@@ -339,6 +401,7 @@
       entry.positioner.reset();
       entry.trigger.setAttribute('aria-expanded', 'false');
       entry.content.tabIndex = -1;
+      entry.skipNextClick = false;
 
       if (document.activeElement === entry.content) {
         entry.trigger.focus({ preventScroll: true });
