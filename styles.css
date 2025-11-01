@@ -4300,34 +4300,83 @@ a:focus-visible {
   line-height: 1.45;
 }
 
+:root {
+  --ws-print-page-width: 210mm;
+  --ws-print-page-height: 297mm;
+}
+
 .calc-print__page {
   margin-bottom: 2rem;
   page-break-inside: avoid;
+  position: relative;
 }
 
-.calc-print__header {
+#ws-print-footer {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 1.6rem;
-  margin-bottom: 1.2rem;
+  gap: 1.2rem;
+  font-size: 11px;
+  color: #0f172a;
+  line-height: 1.4;
 }
 
-.calc-print__header-left {
-  flex: 1 1 auto;
+#ws-print-footer .ws-brand,
+#ws-print-footer .ws-pageno {
+  font-weight: 500;
 }
 
-.calc-print__header-right {
-  text-align: right;
-  font-size: 0.95rem;
-  color: #475569;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
+#ws-print-footer .ws-pageno::before {
+  content: 'Seite ' counter(page) ' / ' counter(pages);
 }
 
-.calc-print__header-right p {
+#ws-print-footer.ws-print-footer--manual .ws-pageno::before {
+  content: none;
+}
+
+.ws-print-stage {
+  position: fixed;
+  top: -10000px;
+  left: -10000px;
+  width: var(--ws-print-page-width);
+  background: #fff;
+  color: #0f172a;
+  pointer-events: none;
+  opacity: 0;
+  z-index: -1;
+}
+
+.ws-print-stage .calc-print,
+.ws-print-stage .print-only {
+  display: block !important;
+}
+
+.ws-print-stage .no-print {
+  display: none !important;
+}
+
+.ws-print-stage .calc-print__page {
   margin: 0;
+  min-height: var(--ws-print-page-height);
+  width: var(--ws-print-page-width);
+  box-sizing: border-box;
+  padding: 18mm 12mm 32mm;
+  background: #fff;
+}
+
+.ws-print-stage #ws-print-footer {
+  position: absolute;
+  bottom: 8mm;
+  left: 12mm;
+  right: 12mm;
+  display: flex !important;
+  opacity: 0.8;
+}
+
+.ws-print-stage .print-header,
+.ws-print-stage .ws-print-header,
+.ws-print-stage header.ws-print {
+  display: none !important;
 }
 
 .calc-print__offer {
@@ -4409,27 +4458,10 @@ a:focus-visible {
   color: #cbd5f5;
 }
 
-.calc-print__brand-note {
-  margin: 0;
-  align-self: flex-end;
-  font-size: 0.85rem;
-  color: #94a3b8;
-  text-align: right;
-}
-
 @media (min-width: 40rem) {
   .calc-print__offer-columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-}
-
-.calc-print__brand {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: none;
-  color: #1e293b;
 }
 
 .calc-print__title {
@@ -4437,6 +4469,13 @@ a:focus-visible {
   font-size: 1.85rem;
   font-weight: 700;
   color: #0f172a;
+}
+
+.calc-print__page-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1.4rem;
 }
 
 .calc-print__part {
@@ -4731,6 +4770,12 @@ a:focus-visible {
     page-break-before: always;
   }
 
+  .calc-print__page {
+    box-sizing: border-box;
+    padding: 18mm 12mm 32mm;
+    background: #fff;
+  }
+
   :root:not(.is-pro-on) [data-pro-row="true"] {
     display: none !important;
   }
@@ -4740,13 +4785,19 @@ a:focus-visible {
     text-decoration: none;
   }
 
-  body::after {
-    content: 'Seite ' counter(page) '/' counter(pages);
+  #ws-print-footer {
     position: fixed;
-    right: 1.4cm;
-    bottom: 0.7cm;
-    font-size: 0.9rem;
-    color: #475569;
+    bottom: 8mm;
+    left: 12mm;
+    right: 12mm;
+    display: flex !important;
+    opacity: 0.8;
+  }
+
+  .print-header,
+  .ws-print-header,
+  header.ws-print {
+    display: none !important;
   }
 
 }
