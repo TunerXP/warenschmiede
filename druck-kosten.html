@@ -217,6 +217,12 @@
                 <summary class="calc-offer__summary">Anbieter</summary>
                 <fieldset class="calc-offer__fieldset">
                   <legend class="sr-only">Anbieter</legend>
+                  <div class="calc-remember">
+                    <label class="calc-checkbox" for="offerRememberSeller">
+                      <input type="checkbox" id="offerRememberSeller" data-remember-toggle="seller">
+                      <span class="remember-flag">Daten im Browser merken</span>
+                    </label>
+                  </div>
                   <div class="calc-offer__group">
                     <div class="calc-field">
                       <label for="offerVendorName">Firmenname / Name</label>
@@ -260,6 +266,12 @@
                 <summary class="calc-offer__summary">Kunde</summary>
                 <fieldset class="calc-offer__fieldset">
                   <legend class="sr-only">Kunde</legend>
+                  <div class="calc-remember">
+                    <label class="calc-checkbox" for="offerRememberCustomer">
+                      <input type="checkbox" id="offerRememberCustomer" data-remember-toggle="customer">
+                      <span class="remember-flag">Daten im Browser merken</span>
+                    </label>
+                  </div>
                   <div class="calc-offer__group">
                     <div class="calc-field">
                       <label for="offerCustomerName">Firma / Name</label>
@@ -433,11 +445,11 @@
 
             </form>
             <div class="calc-storage">
-              <label class="calc-checkbox" for="storageToggleStandard">
-                <input type="checkbox" id="storageToggleStandard" data-storage-toggle>
-                <span>Daten im Browser merken</span>
+              <label class="calc-checkbox" for="rememberStandard">
+                <input type="checkbox" id="rememberStandard" data-remember-toggle="standard">
+                <span class="remember-flag">Daten im Browser merken</span>
               </label>
-              <p class="calc-storage__note">Die Daten werden ausschließlich in deinem Browser gespeichert (localStorage) und nicht übertragen.</p>
+              <p class="calc-storage__note">Speichert die Eingaben des Standard-Rechners lokal in deinem Browser.</p>
             </div>
           </div>
 
@@ -557,11 +569,11 @@
                   </div>
                 </div>
                 <div class="calc-storage">
-                  <label class="calc-checkbox" for="storageTogglePro">
-                    <input type="checkbox" id="storageTogglePro" data-storage-toggle>
-                    <span>Daten im Browser merken</span>
+                  <label class="calc-checkbox" for="rememberPro">
+                    <input type="checkbox" id="rememberPro" data-remember-toggle="pro">
+                    <span class="remember-flag">Daten im Browser merken</span>
                   </label>
-                  <p class="calc-storage__note">Die Daten werden ausschließlich in deinem Browser gespeichert (localStorage) und nicht übertragen.</p>
+                  <p class="calc-storage__note">Speichert Pro-Parameter und den Pro-Status lokal in deinem Browser.</p>
                 </div>
               </section>
             </div>
@@ -577,6 +589,7 @@
               <button type="button" class="btn btn-outline" id="printResultButton">Ergebnis drucken</button>
               <button type="button" class="btn btn-outline" id="printFullButton">Ergebnis + Eingaben drucken</button>
             </div>
+            <p class="calc-results__print-note">Für ein sauberes Angebot bitte im Druckdialog Kopf- und Fußzeilen deaktivieren.</p>
             <label class="calc-checkbox calc-checkbox--vat" for="includeVat">
               <input type="checkbox" id="includeVat" data-calc name="includeVat" value="true">
               <span>Preise inkl. MwSt.</span>
@@ -674,7 +687,7 @@
             <li><b>(Optional) Pro-Optionen aktivieren:</b> Rüstzeit, Nachbearbeitung, Fixkosten, Maschine, Marge/Rabatt.</li>
             <li><b>PDF erzeugen:</b> „Ergebnis drucken“ (nur Ergebnis) oder „Ergebnis + Eingaben drucken“ (inkl. Kopf und Eingaben).</li>
           </ol>
-          <p class="text-muted"><small>☑ „Daten im Browser merken“ speichert nur den Kopf lokal. Preise inkl. MwSt. nach Bedarf aktivieren.</small></p>
+          <p class="text-muted"><small>☑ „Daten im Browser merken“ steht in Standard, Pro, Anbieter &amp; Kunde bereit und speichert jede Sektion lokal im Browser. Preise inkl. MwSt. nach Bedarf aktivieren.</small></p>
         </div>
       </div>
     </section>
@@ -689,7 +702,7 @@
           <ul>
             <li><strong>Anbieter &amp; Kunde:</strong> Name, Ansprechpartner, Adresse, Kontaktmöglichkeiten. Optional ergänzt du hier deine USt-IdNr.</li>
             <li><strong>Angaben zum Angebot:</strong> Angebotsnummer, Datum, Gültigkeit, Lieferzeit und Zahlungsbedingungen.</li>
-            <li><strong>Daten im Browser merken:</strong> Speichert nur den Angebots-Kopf lokal (localStorage) und wird nicht übertragen.</li>
+            <li><strong>Daten im Browser merken:</strong> Für Standard, Pro, Anbieter &amp; Kunde einzeln aktivierbar – speichert ausschließlich lokal im Browser (localStorage).</li>
           </ul>
 
           <h3 id="anleitung-standard">Standard-Rechner</h3>
@@ -740,7 +753,7 @@
           </ul>
 
           <h3 id="anleitung-print">PDF / Print</h3>
-          <p>„Ergebnis drucken“ erstellt eine einseitige Zusammenfassung der Kosten. „Ergebnis + Eingaben drucken“ erzeugt zwei Seiten: Angebots-Kopf + Eingaben sowie die Kostenübersicht. Das Layout ist für A4 optimiert und enthält einen dezenten Hinweis „Erstellt mit dem Warenschmiede 3D-Rechner“.</p>
+          <p>„Ergebnis drucken“ erstellt eine kompakte Seite mit Kostenübersicht. „Ergebnis + Eingaben drucken“ ergänzt auf derselben Seite die Eingabetabellen. Das Layout ist für A4 optimiert und enthält einen dezenten Hinweis „Erstellt mit dem Warenschmiede 3D-Rechner“.</p>
 
           <h3 id="anleitung-reset">Erneut loslegen</h3>
           <p>Starte ein neues Angebot, indem du Felder überschreibst oder die Checkbox „Daten im Browser merken“ deaktivierst, um gespeicherte Kopfdaten zu entfernen. Bei Bedarf kannst du einzelne Sektionen einklappen, um schneller zu navigieren.</p>
@@ -915,127 +928,125 @@
             <p class="calc-print__chart-note" id="printChartTotal">Gesamtkosten (netto): 0,00&nbsp;€</p>
           </aside>
         </div>
+        <p class="calc-print__inline-note">Hinweis: Eingaben &amp; Parameter findest du unten im Abschnitt „Eingaben“.</p>
+        <section class="calc-print__section" id="printInputsSection">
+          <div class="calc-print__section-header">
+            <h2 class="calc-print__heading">Eingaben</h2>
+            <p class="calc-print__section-note" id="printInputsPartName" hidden>Teilename: <span id="printInputsPartNameValue"></span></p>
+          </div>
+          <div class="calc-print__inputs-grid">
+            <table class="calc-print__table" id="printInputsTable">
+              <tbody>
+                <tr>
+                  <th scope="row">Material</th>
+                  <td id="printMaterial">PLA</td>
+                </tr>
+                <tr>
+                  <th scope="row">Materialpreis</th>
+                  <td id="printMaterialPrice">0,00&nbsp;€/kg</td>
+                </tr>
+                <tr>
+                  <th scope="row">Berechnungsgrundlage</th>
+                  <td id="printMode">Bauteilgewicht</td>
+                </tr>
+                <tr data-input-row="weight">
+                  <th scope="row">Bauteilgewicht</th>
+                  <td id="printWeight">0&nbsp;g</td>
+                </tr>
+                <tr data-input-row="length">
+                  <th scope="row">Filamentlänge</th>
+                  <td id="printLength">0,00&nbsp;m</td>
+                </tr>
+                <tr data-input-row="duration">
+                  <th scope="row">Druckzeit</th>
+                  <td id="printDuration">0&nbsp;min</td>
+                </tr>
+                <tr data-input-row="power">
+                  <th scope="row">Leistung</th>
+                  <td id="printPower">0&nbsp;W</td>
+                </tr>
+                <tr data-input-row="energyPrice">
+                  <th scope="row">Strompreis</th>
+                  <td id="printEnergyPrice">0,00&nbsp;€/kWh</td>
+                </tr>
+                <tr data-input-row="loadFactor">
+                  <th scope="row">Lastfaktor</th>
+                  <td id="printLoadFactor">0&nbsp;%</td>
+                </tr>
+                <tr data-input-row="wastePercent">
+                  <th scope="row">Verschnitt</th>
+                  <td id="printWastePercent">0&nbsp;%</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table class="calc-print__table" id="printProParams" data-pro-row="true">
+              <tbody>
+                <tr data-input-row="profitMargin">
+                  <th scope="row">Gewinnmarge</th>
+                  <td id="printProfitMargin">0&nbsp;%</td>
+                </tr>
+                <tr data-input-row="discountPercent">
+                  <th scope="row">Rabatt</th>
+                  <td id="printDiscountPercent">0&nbsp;%</td>
+                </tr>
+                <tr data-input-row="errorRate">
+                  <th scope="row">Fehlerrate</th>
+                  <td id="printErrorRate">0&nbsp;%</td>
+                </tr>
+                <tr data-input-row="hourlyRate">
+                  <th scope="row">Stundenlohn</th>
+                  <td id="printHourlyRate">0,00&nbsp;€/h</td>
+                </tr>
+                <tr data-input-row="setupMinutes">
+                  <th scope="row">Rüstzeit</th>
+                  <td id="printSetupMinutes">0&nbsp;min</td>
+                </tr>
+                <tr data-input-row="printMinutes">
+                  <th scope="row">Druckzeit (Minuten)</th>
+                  <td id="printProPrintMinutes">0&nbsp;min</td>
+                </tr>
+                <tr data-input-row="finishingMinutes">
+                  <th scope="row">Nachbearbeitung</th>
+                  <td id="printFinishingMinutes">0&nbsp;min</td>
+                </tr>
+                <tr data-input-row="fixedCost">
+                  <th scope="row">Fixkosten pro Auftrag</th>
+                  <td id="printFixedCostInput">0,00&nbsp;€</td>
+                </tr>
+                <tr data-input-row="packagingCost">
+                  <th scope="row">Verpackung</th>
+                  <td id="printPackagingCost">0,00&nbsp;€</td>
+                </tr>
+                <tr data-input-row="shippingCost">
+                  <th scope="row">Versand</th>
+                  <td id="printShippingCost">0,00&nbsp;€</td>
+                </tr>
+                <tr data-input-row="machineHourlyRate">
+                  <th scope="row">Maschinenkosten</th>
+                  <td id="printMachineHourly">0,00&nbsp;€/h</td>
+                </tr>
+                <tr data-input-row="machinePurchase">
+                  <th scope="row">Anschaffungswert</th>
+                  <td id="printMachinePurchase">0,00&nbsp;€</td>
+                </tr>
+                <tr data-input-row="machineLifetime">
+                  <th scope="row">Lebensdauer</th>
+                  <td id="printMachineLifetime">0&nbsp;h</td>
+                </tr>
+                <tr data-input-row="materialDensity">
+                  <th scope="row">Dichte</th>
+                  <td id="printMaterialDensity">0,00&nbsp;g/cm³</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
 
       <footer class="calc-print__footer">
         <p>Unverbindliche Kalkulation – Werte können abweichen.</p>
       </footer>
-    </div>
-
-    <div class="calc-print__page" data-page="inputs">
-      <section class="calc-print__section" id="printInputsSection">
-        <div class="calc-print__section-header">
-          <h2 class="calc-print__heading">Eingaben</h2>
-          <p class="calc-print__section-note" id="printInputsPartName" hidden>Teilename: <span id="printInputsPartNameValue"></span></p>
-        </div>
-        <div class="calc-print__inputs-grid">
-          <table class="calc-print__table" id="printInputsTable">
-            <tbody>
-              <tr>
-                <th scope="row">Material</th>
-                <td id="printMaterial">PLA</td>
-              </tr>
-              <tr>
-                <th scope="row">Materialpreis</th>
-                <td id="printMaterialPrice">0,00&nbsp;€/kg</td>
-              </tr>
-              <tr>
-                <th scope="row">Berechnungsgrundlage</th>
-                <td id="printMode">Bauteilgewicht</td>
-              </tr>
-              <tr data-input-row="weight">
-                <th scope="row">Bauteilgewicht</th>
-                <td id="printWeight">0&nbsp;g</td>
-              </tr>
-              <tr data-input-row="length">
-                <th scope="row">Filamentlänge</th>
-                <td id="printLength">0,00&nbsp;m</td>
-              </tr>
-              <tr data-input-row="duration">
-                <th scope="row">Druckzeit</th>
-                <td id="printDuration">0&nbsp;min</td>
-              </tr>
-              <tr data-input-row="power">
-                <th scope="row">Leistung</th>
-                <td id="printPower">0&nbsp;W</td>
-              </tr>
-              <tr data-input-row="energyPrice">
-                <th scope="row">Strompreis</th>
-                <td id="printEnergyPrice">0,00&nbsp;€/kWh</td>
-              </tr>
-              <tr data-input-row="loadFactor">
-                <th scope="row">Lastfaktor</th>
-                <td id="printLoadFactor">0&nbsp;%</td>
-              </tr>
-              <tr data-input-row="wastePercent">
-                <th scope="row">Verschnitt</th>
-                <td id="printWastePercent">0&nbsp;%</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <table class="calc-print__table" id="printProParams" data-pro-row="true">
-            <tbody>
-              <tr data-input-row="profitMargin">
-                <th scope="row">Gewinnmarge</th>
-                <td id="printProfitMargin">0&nbsp;%</td>
-              </tr>
-              <tr data-input-row="discountPercent">
-                <th scope="row">Rabatt</th>
-                <td id="printDiscountPercent">0&nbsp;%</td>
-              </tr>
-              <tr data-input-row="errorRate">
-                <th scope="row">Fehlerrate</th>
-                <td id="printErrorRate">0&nbsp;%</td>
-              </tr>
-              <tr data-input-row="hourlyRate">
-                <th scope="row">Stundenlohn</th>
-                <td id="printHourlyRate">0,00&nbsp;€/h</td>
-              </tr>
-              <tr data-input-row="setupMinutes">
-                <th scope="row">Rüstzeit</th>
-                <td id="printSetupMinutes">0&nbsp;min</td>
-              </tr>
-              <tr data-input-row="printMinutes">
-                <th scope="row">Druckzeit (Minuten)</th>
-                <td id="printProPrintMinutes">0&nbsp;min</td>
-              </tr>
-              <tr data-input-row="finishingMinutes">
-                <th scope="row">Nachbearbeitung</th>
-                <td id="printFinishingMinutes">0&nbsp;min</td>
-              </tr>
-              <tr data-input-row="fixedCost">
-                <th scope="row">Fixkosten pro Auftrag</th>
-                <td id="printFixedCostInput">0,00&nbsp;€</td>
-              </tr>
-              <tr data-input-row="packagingCost">
-                <th scope="row">Verpackung</th>
-                <td id="printPackagingCost">0,00&nbsp;€</td>
-              </tr>
-              <tr data-input-row="shippingCost">
-                <th scope="row">Versand</th>
-                <td id="printShippingCost">0,00&nbsp;€</td>
-              </tr>
-              <tr data-input-row="machineHourlyRate">
-                <th scope="row">Maschinenkosten</th>
-                <td id="printMachineHourly">0,00&nbsp;€/h</td>
-              </tr>
-              <tr data-input-row="machinePurchase">
-                <th scope="row">Anschaffungswert</th>
-                <td id="printMachinePurchase">0,00&nbsp;€</td>
-              </tr>
-              <tr data-input-row="machineLifetime">
-                <th scope="row">Lebensdauer</th>
-                <td id="printMachineLifetime">0&nbsp;h</td>
-              </tr>
-              <tr data-input-row="materialDensity">
-                <th scope="row">Dichte</th>
-                <td id="printMaterialDensity">0,00&nbsp;g/cm³</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
     </div>
     <footer id="ws-print-footer" class="print-only">
       <span class="ws-brand">Erstellt mit Warenschmiede 3D-Rechner – www.warenschmiede.com</span>
@@ -1064,6 +1075,7 @@
   <script src="assets/js/header.js" defer></script>
   <script src="assets/js/whatsapp.js" defer></script>
   <script src="assets/js/storage.js" defer></script>
+  <script src="assets/js/persist.js" defer></script>
   <script src="assets/js/calc.js" defer></script>
 
 </body>
