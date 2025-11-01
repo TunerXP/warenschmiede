@@ -199,7 +199,7 @@
             <form class="calc-form" id="calcForm" novalidate>
               <div class="calc-pro-toggle">
                 <label class="calc-toggle">
-                  <input class="calc-toggle__input" type="checkbox" id="proToggle" name="proToggle" aria-controls="proFields" aria-expanded="false">
+                  <input class="calc-toggle__input" type="checkbox" id="proToggle" name="proToggle" aria-controls="pro-fields" aria-expanded="false">
                   <span class="calc-toggle__track" aria-hidden="true">
                     <span class="calc-toggle__thumb"></span>
                   </span>
@@ -290,7 +290,7 @@
                 </div>
               </div>
 
-              <div class="calc-pro" id="proFields" hidden aria-hidden="true" inert>
+              <div class="calc-pro" id="pro-fields" hidden aria-hidden="true" inert>
                 <p class="calc-hint calc-hint--lead">Nutze die Zusatzfelder für Marge, Arbeitszeit und optionale Abschläge.</p>
                 <div class="calc-pro__grid">
                   <div class="calc-field">
@@ -378,11 +378,11 @@
                 <span class="calc-results__label" id="energyCostLabel">Energiekosten</span>
                 <span class="calc-results__value" id="energyCost">0,00&nbsp;€</span>
               </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="timeCost" data-pro-only="true" hidden>
+              <li class="calc-results__item calc-results__item--pro" data-result="timeCost" data-pro-row="true" hidden>
                 <span class="calc-results__label">Arbeitszeitkosten (Rüstzeit + Nachbearbeitung)</span>
                 <span class="calc-results__value" id="timeCost">0,00&nbsp;€</span>
               </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="fixedCost" data-pro-only="true" hidden>
+              <li class="calc-results__item calc-results__item--pro" data-result="fixedCost" data-pro-row="true" hidden>
                 <span class="calc-results__label">Fixkosten</span>
                 <span class="calc-results__value" id="fixedCostValue">0,00&nbsp;€</span>
               </li>
@@ -390,11 +390,11 @@
                 <span class="calc-results__label">Zwischensumme</span>
                 <span class="calc-results__value" id="subtotalValue">0,00&nbsp;€</span>
               </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="margin" data-pro-only="true" hidden>
+              <li class="calc-results__item calc-results__item--pro" data-result="margin" data-pro-row="true" hidden>
                 <span class="calc-results__label">Marge</span>
                 <span class="calc-results__value" id="marginValue">0,00&nbsp;€</span>
               </li>
-              <li class="calc-results__item calc-results__item--pro" data-result="discount" data-pro-only="true" hidden>
+              <li class="calc-results__item calc-results__item--pro" data-result="discount" data-pro-row="true" hidden>
                 <span class="calc-results__label">Rabatt</span>
                 <span class="calc-results__value calc-results__value--deduction" id="discountValue">0,00&nbsp;€</span>
               </li>
@@ -407,7 +407,7 @@
                 <span class="calc-results__value" id="totalGross">0,00&nbsp;€</span>
               </li>
             </ul>
-            <p class="calc-results__pro-hint" id="proStatus" hidden>Erweiterter Rechner aktiv – Zusatzposten &amp; Fixkosten werden separat ausgewiesen.</p>
+            <p class="calc-results__pro-hint" id="proStatus" data-pro-row="true" hidden>Erweiterter Rechner aktiv – Zusatzposten &amp; Fixkosten werden separat ausgewiesen.</p>
             <h3 class="calc-results__subheading">Disclaimer</h3>
             <p class="calc-formula">Energiekosten = (Watt/1000) × Laufzeit × €/kWh × Lastfaktor (Schätzung).</p>
             <p class="calc-note">Unverbindliche Orientierung ohne Design- oder Nachbearbeitungskosten. Tatsächliche Kosten können abweichen.</p>
@@ -521,11 +521,11 @@
             <th scope="row" id="printEnergyLabel">Energiekosten</th>
             <td id="printEnergyCost">0,00&nbsp;€</td>
           </tr>
-          <tr class="print-row-pro" data-print="timeCost" data-print-pro="true" hidden>
+          <tr class="print-row-pro" data-print="timeCost" data-pro-row="true" hidden>
             <th scope="row">Arbeitszeitkosten (Rüstzeit + Nachbearbeitung)</th>
             <td id="printTimeCost">0,00&nbsp;€</td>
           </tr>
-          <tr class="print-row-pro" data-print="fixedCost" data-print-pro="true" hidden>
+          <tr class="print-row-pro" data-print="fixedCost" data-pro-row="true" hidden>
             <th scope="row">Fixkosten</th>
             <td id="printFixedCost">0,00&nbsp;€</td>
           </tr>
@@ -533,11 +533,11 @@
             <th scope="row">Zwischensumme</th>
             <td id="printSubtotal">0,00&nbsp;€</td>
           </tr>
-          <tr class="print-row-pro" data-print="margin" data-print-pro="true" hidden>
+          <tr class="print-row-pro" data-print="margin" data-pro-row="true" hidden>
             <th scope="row">Marge</th>
             <td id="printMargin">0,00&nbsp;€</td>
           </tr>
-          <tr class="print-row-pro" data-print="discount" data-print-pro="true" hidden>
+          <tr class="print-row-pro" data-print="discount" data-pro-row="true" hidden>
             <th scope="row">Rabatt</th>
             <td id="printDiscount">0,00&nbsp;€</td>
           </tr>
@@ -553,7 +553,7 @@
       </table>
     </section>
 
-    <section class="calc-print__section" id="printProParams" hidden>
+    <section class="calc-print__section" id="printProParams" data-pro-row="true" hidden>
       <h2 class="calc-print__heading">Erweiterter Rechner – Eingaben</h2>
       <table class="calc-print__table">
         <tbody>
@@ -659,9 +659,9 @@
       var proStatusOutput = document.getElementById('proStatus');
       var printButton = document.getElementById('printButton');
       var proToggle = document.getElementById('proToggle');
-      var proFields = document.getElementById('proFields');
-      var proResultItems = document.querySelectorAll('[data-pro-only="true"]');
-      var proPrintRows = document.querySelectorAll('[data-print-pro="true"]');
+      var proFields = document.getElementById('pro-fields');
+      var proRows = document.querySelectorAll('[data-pro-row="true"]');
+      var rootElement = document.documentElement;
       var profitMarginInput = document.getElementById('profitMargin');
       var hourlyRateInput = document.getElementById('hourlyRate');
       var setupMinutesInput = document.getElementById('setupMinutes');
@@ -723,34 +723,7 @@
       };
 
       var suppressProSync = false;
-      var PRO_STORAGE_KEY = 'ws_pro_calc_enabled';
       var proModeEnabled = false;
-
-      function getStoredProEnabled() {
-        try {
-          if (typeof window === 'undefined' || !window.localStorage) {
-            return null;
-          }
-          var storedValue = window.localStorage.getItem(PRO_STORAGE_KEY);
-          if (storedValue === null) {
-            return null;
-          }
-          return storedValue === 'true';
-        } catch (error) {
-          return null;
-        }
-      }
-
-      function persistProEnabled(enabled) {
-        try {
-          if (typeof window === 'undefined' || !window.localStorage) {
-            return;
-          }
-          window.localStorage.setItem(PRO_STORAGE_KEY, enabled ? 'true' : 'false');
-        } catch (error) {
-          // ignore storage errors
-        }
-      }
 
       function applyProVisibility(enabled) {
         if (proToggle) {
@@ -766,13 +739,8 @@
             proFields.setAttribute('inert', '');
           }
         }
-        if (proResultItems && proResultItems.length) {
-          proResultItems.forEach(function (item) {
-            item.hidden = !enabled;
-          });
-        }
-        if (proPrintRows && proPrintRows.length) {
-          proPrintRows.forEach(function (row) {
+        if (proRows && proRows.length) {
+          proRows.forEach(function (row) {
             row.hidden = !enabled;
           });
         }
@@ -782,15 +750,16 @@
         if (printProParamsSection) {
           printProParamsSection.hidden = !enabled;
         }
+        if (rootElement) {
+          rootElement.classList.toggle('is-pro-on', enabled);
+          rootElement.classList.toggle('is-pro-off', !enabled);
+        }
       }
 
       function setProModeEnabled(enabled, options) {
         var normalized = !!enabled;
         proModeEnabled = normalized;
         applyProVisibility(normalized);
-        if (!options || !options.skipPersist) {
-          persistProEnabled(normalized);
-        }
         if (!options || !options.skipRecalc) {
           recalc();
         }
@@ -1246,9 +1215,7 @@
         });
       }
 
-      var storedProEnabled = getStoredProEnabled();
-      var initialProEnabled = storedProEnabled === null ? false : storedProEnabled;
-      setProModeEnabled(initialProEnabled, { skipPersist: true, skipRecalc: true });
+      setProModeEnabled(false, { skipRecalc: true });
 
       if (proToggle) {
         proToggle.addEventListener('change', function () {

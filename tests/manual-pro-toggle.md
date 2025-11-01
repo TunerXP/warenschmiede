@@ -9,12 +9,11 @@
    - In der Ergebnisliste müssen nur folgende Zeilen erscheinen: Material (Basis), Verschnitt, Material (inkl. Verschnitt), Energiekosten, Zwischensumme sowie Gesamtkosten (netto/brutto).
 
 2. **Pro-Modus aktivieren**
-   - Toggle aktivieren und sicherstellen, dass `localStorage.ws_pro_calc_enabled` den Wert `"true"` erhält.
-   - Bestätigen, dass der Pro-Block sichtbar ist (ohne `hidden`, `aria-hidden="false"`, kein `inert`).
+   - Toggle aktivieren und sicherstellen, dass der Pro-Block sichtbar ist (ohne `hidden`, `aria-hidden="false"`, kein `inert`).
    - Ergebnisliste erweitert sich um Arbeitszeitkosten, Fixkosten, Marge, Rabatt und den Hinweistext.
 
-3. **Persistenz nach Reload**
-   - Seite aktualisieren und kontrollieren, dass der Toggle gemäß gespeichertem Zustand gesetzt ist und die Felder bzw. Ergebniszeilen passend angezeigt werden.
+3. **Kein Persistieren**
+   - Seite aktualisieren und bestätigen, dass der Toggle wieder deaktiviert ist und die Pro-Felder sowie Ergebniszeilen ausgeblendet bleiben.
 
 4. **Berechnung & Anzeige**
    - Beispielwerte eintragen (Materialpreis, Gewicht, Stromkosten usw.).
