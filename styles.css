@@ -3550,6 +3550,8 @@ a:focus-visible {
 
 .calc-print__section {
   margin-bottom: 1.8rem;
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 
 .calc-print__heading {
@@ -3562,6 +3564,8 @@ a:focus-visible {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.98rem;
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 
 .calc-print__table th,
@@ -3619,7 +3623,7 @@ a:focus-visible {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 1.7cm;
+    margin: 1.4cm;
   }
 
   :root {
@@ -3641,12 +3645,12 @@ a:focus-visible {
     display: block !important;
   }
 
-  html[data-print-mode="result"] #printInputs,
-  html[data-print-mode="result"] #printProParams {
+  html[data-print="result"] #printInputs,
+  html[data-print="result"] #printProParams {
     display: none !important;
   }
 
-  html[data-print-mode="full"] #printInputs {
+  html[data-print="full"] #printInputs {
     page-break-before: always;
   }
 

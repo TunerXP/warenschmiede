@@ -215,12 +215,13 @@
                   <label for="materialSelect">Material</label>
                   <select id="materialSelect" name="material">
                     <option value="PLA">PLA</option>
-                    <option value="PLA+">PLA+</option>
                     <option value="PETG">PETG</option>
-                    <option value="ABS">ABS</option>
                     <option value="ASA">ASA</option>
-                    <option value="TPU">TPU</option>
+                    <option value="PA">Nylon (PA)</option>
+                    <option value="PETG_CF">PETG-CF</option>
+                    <option value="ASA_CF">ASA-CF</option>
                   </select>
+                  <p class="calc-hint" id="materialDensityHint" aria-live="polite">Richtwert: 2,98&nbsp;g/m (PLA)</p>
                 </div>
 
                 <div class="calc-field">
@@ -559,8 +560,7 @@
 
   <section class="calc-print print-only" id="printSummary" aria-hidden="true">
     <header class="calc-print__header">
-      <p class="calc-print__brand">Warenschmiede</p>
-      <p class="calc-print__meta"><span id="printUrl">https://www.warenschmiede.com/druck-kosten.html</span> · <span id="printTimestamp"></span></p>
+      <p class="calc-print__meta">Warenschmiede · <span id="printUrl">warenschmiede.com</span> · <span id="printTimestamp"></span></p>
       <h1 class="calc-print__title">3D-Druck Rechner – Ergebnis</h1>
     </header>
 
@@ -704,8 +704,7 @@
     </section>
 
     <footer class="calc-print__footer">
-      <p>Kontakt: <a href="mailto:info@warenschmiede.com">info@warenschmiede.com</a> · <a href="https://www.warenschmiede.com">www.warenschmiede.com</a></p>
-      <p>Unverbindliche Kalkulation.</p>
+      <p>Unverbindliche Kalkulation – Werte können abweichen.</p>
     </footer>
   </section>
 
@@ -732,6 +731,7 @@
   <script>
     (function () {
       var materialSelect = document.getElementById('materialSelect');
+      var materialDensityHint = document.getElementById('materialDensityHint');
       var pricePerKgInput = document.getElementById('pricePerKg');
       var weightInput = document.getElementById('partWeight');
       var lengthInput = document.getElementById('filamentLength');
@@ -825,12 +825,12 @@
       var dateTimeFormatter = new Intl.DateTimeFormat('de-DE', { dateStyle: 'short', timeStyle: 'short' });
 
       var materialData = {
-        'PLA': { price: 20, gramsPerMeter: 2.98 },
-        'PLA+': { price: 20, gramsPerMeter: 2.98 },
-        'PETG': { price: 25, gramsPerMeter: 3.05 },
-        'ABS': { price: 35, gramsPerMeter: 2.58 },
-        'ASA': { price: 35, gramsPerMeter: 2.57 },
-        'TPU': { price: 30, gramsPerMeter: 2.91 }
+        'PLA': { price: 20, gramsPerMeter: 2.98, densityHint: 'Richtwert: 2,98\u00A0g/m (PLA)' },
+        'PETG': { price: 28, gramsPerMeter: 3.05, densityHint: 'Richtwert: 3,05\u00A0g/m (PETG)' },
+        'ASA': { price: 35, gramsPerMeter: 2.57, densityHint: 'Richtwert: 2,57\u00A0g/m (ASA)' },
+        'PA': { price: 45, gramsPerMeter: 2.74, densityHint: 'Richtwert: 2,74\u00A0g/m (Nylon)' },
+        'PETG_CF': { price: 58, gramsPerMeter: 3.20, densityHint: 'Richtwert: 3,20\u00A0g/m (PETG-CF)' },
+        'ASA_CF': { price: 60, gramsPerMeter: 2.70, densityHint: 'Richtwert: 2,70\u00A0g/m (ASA-CF)' }
       };
 
       var suppressProSync = false;
@@ -876,17 +876,60 @@
         }
       }
 
+      function formatPricePlaceholder(value) {
+        if (!value || !isFinite(value)) {
+          return 'z.\u00A0B. 20';
+        }
+        var isInteger = Math.abs(value - Math.round(value)) < 0.001;
+        var normalized = isInteger ? Math.round(value).toString() : value.toFixed(2);
+        return normalized.replace('.', ',');
+      }
+
+      function getPrintDomain() {
+        if (typeof window === 'undefined' || !window.location) {
+          return 'warenschmiede.com';
+        }
+        var host = window.location.hostname || '';
+        if (!host) {
+          return 'warenschmiede.com';
+        }
+        return host.replace(/^www\./, '') || 'warenschmiede.com';
+      }
+
       function setMaterialDefaults() {
+        if (!materialSelect) return;
         var selected = materialSelect.value;
-        var defaults = materialData[selected];
-        if (defaults) {
-          weightInput.dataset.gramsPerMeter = defaults.gramsPerMeter.toFixed(2);
-          lengthInput.dataset.gramsPerMeter = defaults.gramsPerMeter.toFixed(2);
-          if (!weightInput.value && !lengthInput.value) {
-            weightInput.value = '';
-            lengthInput.value = '';
+        var defaults = materialData[selected] || {};
+        var gramsPerMeter = defaults.gramsPerMeter;
+
+        if (weightInput) {
+          if (gramsPerMeter) {
+            weightInput.dataset.gramsPerMeter = gramsPerMeter.toFixed(2);
+          } else {
+            delete weightInput.dataset.gramsPerMeter;
           }
         }
+
+        if (lengthInput) {
+          if (gramsPerMeter) {
+            lengthInput.dataset.gramsPerMeter = gramsPerMeter.toFixed(2);
+          } else {
+            delete lengthInput.dataset.gramsPerMeter;
+          }
+        }
+
+        if (materialDensityHint) {
+          materialDensityHint.textContent = defaults.densityHint || 'Richtwert: nach Bedarf anpassen';
+        }
+
+        if (pricePerKgInput) {
+          var placeholder = formatPricePlaceholder(defaults.price);
+          pricePerKgInput.placeholder = placeholder;
+          if (defaults.price) {
+            pricePerKgInput.value = defaults.price.toString();
+          }
+        }
+
         recalc();
       }
 
@@ -940,17 +983,17 @@
         }
       }
 
-      function setPrintModeAttribute(mode) {
+      function setPrintAttribute(mode) {
         if (!rootElement) return;
         if (mode) {
-          rootElement.setAttribute('data-print-mode', mode);
+          rootElement.setAttribute('data-print', mode);
         } else {
-          rootElement.removeAttribute('data-print-mode');
+          rootElement.removeAttribute('data-print');
         }
       }
 
       function triggerPrint(mode) {
-        setPrintModeAttribute(mode);
+        setPrintAttribute(mode);
         updatePrintTimestamp();
         recalc();
         window.print();
@@ -1318,7 +1361,7 @@
         }
 
         if (printUrlOutput) {
-          printUrlOutput.textContent = window.location.href;
+          printUrlOutput.textContent = getPrintDomain();
         }
       }
 
@@ -1369,7 +1412,7 @@
       }
 
       if (printUrlOutput) {
-        printUrlOutput.textContent = window.location.href;
+        printUrlOutput.textContent = getPrintDomain();
       }
 
       updatePrintTimestamp();
@@ -1379,7 +1422,7 @@
       });
 
       window.addEventListener('afterprint', function () {
-        setPrintModeAttribute(null);
+        setPrintAttribute(null);
       });
 
       setMaterialDefaults();
