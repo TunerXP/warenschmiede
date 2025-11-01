@@ -3229,28 +3229,6 @@ a:focus-visible {
   }
 }
 
-.pro-placeholder {
-  display: none;
-  background: color-mix(in srgb, var(--surface-muted) 75%, var(--surface) 25%);
-  border: 1px dashed color-mix(in srgb, var(--control-border) 80%, transparent);
-  color: var(--text-subtle);
-}
-
-.pro-placeholder h3 {
-  margin: 0;
-  color: var(--text);
-}
-
-.pro-placeholder p {
-  margin: 0;
-}
-
-@media (min-width: 1100px) {
-  .pro-placeholder {
-    display: flex;
-  }
-}
-
 .calc-card__title {
   margin: 0 0 var(--space-3);
   font-size: clamp(1.2rem, 1.6vw + 1rem, 1.5rem);
@@ -3410,6 +3388,127 @@ a:focus-visible {
   width: 100%;
 }
 
+.calc-pro-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.calc-pro-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.calc-pro-card__heading {
+  display: grid;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.calc-pro-card__description {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.calc-pro-card__toggle {
+  align-self: center;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  transition: color 0.2s ease;
+}
+
+.calc-pro-card__toggle:hover,
+.calc-pro-card__toggle:focus-visible {
+  color: color-mix(in srgb, var(--accent) 80%, var(--text) 20%);
+}
+
+.calc-pro-card__toggle:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.calc-pro-card__body {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.calc-pro-card.is-collapsed .calc-pro-card__body {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .calc-pro-card__toggle {
+    display: none;
+  }
+
+  .calc-pro-card.is-collapsed .calc-pro-card__body {
+    display: grid;
+  }
+}
+
+.calc-pro__group {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.calc-pro__group + .calc-pro__group {
+  padding-top: var(--space-3);
+  border-top: 1px solid color-mix(in srgb, var(--control-border) 60%, transparent);
+}
+
+.calc-pro__subheading {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-subtle);
+}
+
+.calc-field--stacked {
+  gap: 0.75rem;
+}
+
+.calc-pro-advanced {
+  margin-top: 0.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--control-border) 65%, transparent);
+  padding-top: 0.75rem;
+}
+
+.calc-pro-advanced summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--accent);
+  list-style: none;
+}
+
+.calc-pro-advanced summary::-webkit-details-marker {
+  display: none;
+}
+
+.calc-pro-advanced[open] summary {
+  color: color-mix(in srgb, var(--accent) 90%, var(--text) 10%);
+}
+
+.calc-pro-advanced__grid {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .calc-pro-advanced__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .calc-toggle__input {
   position: absolute;
   opacity: 0;
@@ -3472,10 +3571,6 @@ a:focus-visible {
 .calc-pro {
   display: grid;
   gap: var(--space-4);
-  padding: 1.4rem 1.5rem;
-  border-radius: 18px;
-  border: 1px solid var(--control-border);
-  background: color-mix(in srgb, var(--surface-muted) 60%, var(--surface) 40%);
 }
 
 #pro-fields[hidden] {
@@ -3507,6 +3602,12 @@ a:focus-visible {
   margin: 0;
   color: var(--text-subtle);
   font-size: 0.95rem;
+}
+
+.calc-hint--note {
+  margin: -0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }
 
 .calc-feature-list {
@@ -3722,6 +3823,10 @@ a:focus-visible {
   background: linear-gradient(90deg, color-mix(in srgb, #0f766e 36%, var(--surface) 64%), color-mix(in srgb, #14b8a6 36%, var(--surface) 64%));
 }
 
+.result-bar--machine .result-bar__fill {
+  background: linear-gradient(90deg, color-mix(in srgb, #475569 34%, var(--surface) 66%), color-mix(in srgb, #1f2937 46%, var(--surface) 54%));
+}
+
 .result-bar--fix .result-bar__fill {
   background: linear-gradient(90deg, color-mix(in srgb, #4a3f35 38%, var(--surface) 62%), color-mix(in srgb, #6b5d52 48%, var(--surface) 52%));
 }
@@ -3754,6 +3859,10 @@ a:focus-visible {
 
 .chip-labor {
   background: color-mix(in srgb, #0f766e 14%, var(--chip-bg) 86%);
+}
+
+.chip-machine {
+  background: color-mix(in srgb, #334155 22%, var(--chip-bg) 78%);
 }
 
 .chip-fix {
