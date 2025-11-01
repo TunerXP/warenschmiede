@@ -212,7 +212,18 @@
                 </div>
 
                 <div class="calc-field">
-                  <label for="materialSelect">Material</label>
+                  <label for="materialSelect">Material
+                    <span class="info-tooltip calc-material-tooltip">
+                      <button type="button" class="info-tooltip__trigger" id="materialTooltipTrigger" aria-describedby="tooltip-material-info" aria-label="Kurzinfo zum ausgewählten Material" aria-haspopup="true" aria-expanded="false">
+                        <svg class="info-tooltip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                          <circle cx="8" cy="8" r="7" />
+                          <circle class="info-tooltip__dot" cx="8" cy="4.6" r="0.7" />
+                          <line x1="8" y1="7" x2="8" y2="11" />
+                        </svg>
+                      </button>
+                      <span class="info-tooltip__content" role="tooltip" tabindex="-1" id="tooltip-material-info"></span>
+                    </span>
+                  </label>
                   <select id="materialSelect" name="material">
                     <option value="PLA">PLA</option>
                     <option value="PETG">PETG</option>
@@ -237,7 +248,13 @@
                       <span class="info-tooltip__content" role="tooltip" tabindex="-1" id="tooltip-price-per-kg">Preis deiner Filamentrolle in Euro pro Kilogramm.</span>
                     </span>
                   </label>
-                  <input type="number" id="pricePerKg" name="pricePerKg" min="0" step="0.10" inputmode="decimal" placeholder="z. B. 20">
+                  <div class="calc-price-input-row">
+                    <input class="calc-price-input" type="number" id="pricePerKg" name="pricePerKg" min="0" step="0.10" inputmode="decimal" placeholder="z. B. 20">
+                    <button type="button" class="calc-price-suggestion is-hidden" id="priceSuggestionButton">
+                      Vorschlag einsetzen
+                      <span class="sr-only" id="priceSuggestionSrText"></span>
+                    </button>
+                  </div>
                 </div>
 
                 <fieldset class="calc-fieldset">
@@ -734,6 +751,9 @@
       var materialSelect = document.getElementById('materialSelect');
       var materialDensityHint = document.getElementById('materialDensityHint');
       var pricePerKgInput = document.getElementById('pricePerKg');
+      var materialTooltipContent = document.getElementById('tooltip-material-info');
+      var priceSuggestionButton = document.getElementById('priceSuggestionButton');
+      var priceSuggestionSrText = document.getElementById('priceSuggestionSrText');
       var weightInput = document.getElementById('partWeight');
       var lengthInput = document.getElementById('filamentLength');
       var weightMode = document.getElementById('modeWeight');
@@ -825,13 +845,88 @@
       var percentNumberFormatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
       var dateTimeFormatter = new Intl.DateTimeFormat('de-DE', { dateStyle: 'short', timeStyle: 'short' });
 
+      function updatePriceSuggestionState(defaults) {
+        if (!priceSuggestionButton) {
+          return;
+        }
+
+        var suggestion = defaults && typeof defaults.price === 'number' && isFinite(defaults.price)
+          ? defaults.price
+          : null;
+
+        if (suggestion === null) {
+          priceSuggestionButton.classList.add('is-hidden');
+          priceSuggestionButton.dataset.suggestion = '';
+          if (priceSuggestionSrText) {
+            priceSuggestionSrText.textContent = '';
+          }
+          return;
+        }
+
+        var formattedSuggestion = decimalFormatter.format(suggestion) + '\u00A0€/kg';
+        priceSuggestionButton.dataset.suggestion = suggestion.toString();
+        if (priceSuggestionSrText) {
+          priceSuggestionSrText.textContent = ' – ' + formattedSuggestion + ' übernehmen';
+        }
+
+        var currentValueRaw = pricePerKgInput && pricePerKgInput.value != null
+          ? pricePerKgInput.value.toString().trim()
+          : '';
+
+        var shouldShow = false;
+        if (currentValueRaw) {
+          var parsedCurrent = parseFloat(currentValueRaw.replace(',', '.'));
+          if (!isFinite(parsedCurrent)) {
+            shouldShow = true;
+          } else {
+            shouldShow = Math.abs(parsedCurrent - suggestion) > 0.001;
+          }
+        }
+
+        if (shouldShow) {
+          priceSuggestionButton.classList.remove('is-hidden');
+        } else {
+          priceSuggestionButton.classList.add('is-hidden');
+        }
+      }
+
       var materialData = {
-        'PLA': { price: 20, gramsPerMeter: 2.98, densityHint: 'Richtwert: 2,98\u00A0g/m (PLA)' },
-        'PETG': { price: 28, gramsPerMeter: 3.05, densityHint: 'Richtwert: 3,05\u00A0g/m (PETG)' },
-        'ASA': { price: 35, gramsPerMeter: 2.57, densityHint: 'Richtwert: 2,57\u00A0g/m (ASA)' },
-        'PA': { price: 45, gramsPerMeter: 2.74, densityHint: 'Richtwert: 2,74\u00A0g/m (Nylon)' },
-        'PETG_CF': { price: 58, gramsPerMeter: 3.20, densityHint: 'Richtwert: 3,20\u00A0g/m (PETG-CF)' },
-        'ASA_CF': { price: 60, gramsPerMeter: 2.70, densityHint: 'Richtwert: 2,70\u00A0g/m (ASA-CF)' }
+        'PLA': {
+          price: 20,
+          gramsPerMeter: 2.98,
+          densityHint: 'Richtwert: 2,98\u00A0g/m (PLA)',
+          tooltip: 'Einfach, formstabil, Allround – gute Optik.'
+        },
+        'PETG': {
+          price: 25,
+          gramsPerMeter: 3.05,
+          densityHint: 'Richtwert: 3,05\u00A0g/m (PETG)',
+          tooltip: 'Zäher als PLA, leicht flexibel – Gehäuse/Technik.'
+        },
+        'ASA': {
+          price: 35,
+          gramsPerMeter: 2.57,
+          densityHint: 'Richtwert: 2,57\u00A0g/m (ASA)',
+          tooltip: 'UV-/wetterfest – gut für Außen & Funktion.'
+        },
+        'PA': {
+          price: 45,
+          gramsPerMeter: 2.74,
+          densityHint: 'Richtwert: 2,74\u00A0g/m (Nylon)',
+          tooltip: 'Sehr zäh & abriebfest – Mechanik/Scharnier.'
+        },
+        'PETG_CF': {
+          price: 55,
+          gramsPerMeter: 3.20,
+          densityHint: 'Richtwert: 3,20\u00A0g/m (PETG-CF)',
+          tooltip: 'Steif & maßhaltig – technische Teile.'
+        },
+        'ASA_CF': {
+          price: 60,
+          gramsPerMeter: 2.70,
+          densityHint: 'Richtwert: 2,70\u00A0g/m (ASA-CF)',
+          tooltip: 'Steif + UV-fest – anspruchsvolle Funktionsteile.'
+        }
       };
 
       var suppressProSync = false;
@@ -926,10 +1021,21 @@
         if (pricePerKgInput) {
           var placeholder = formatPricePlaceholder(defaults.price);
           pricePerKgInput.placeholder = placeholder;
-          if (defaults.price) {
-            pricePerKgInput.value = defaults.price.toString();
+          var currentRaw = pricePerKgInput.value != null ? pricePerKgInput.value.toString().trim() : '';
+          if (!currentRaw) {
+            if (typeof defaults.price === 'number' && isFinite(defaults.price)) {
+              pricePerKgInput.value = defaults.price.toString();
+            } else {
+              pricePerKgInput.value = '';
+            }
           }
         }
+
+        if (materialTooltipContent) {
+          materialTooltipContent.textContent = defaults.tooltip || 'Material auswählen, um Details zu sehen.';
+        }
+
+        updatePriceSuggestionState(defaults);
 
         recalc();
       }
@@ -1378,8 +1484,33 @@
 
       [pricePerKgInput, weightInput, lengthInput, timeInput, powerInput, energyPriceInput, loadFactorInput, wastePercentInput].forEach(function (input) {
         if (!input) return;
-        input.addEventListener('input', recalc);
+        input.addEventListener('input', function () {
+          if (input === pricePerKgInput) {
+            var currentDefaults = materialSelect ? materialData[materialSelect.value] || {} : {};
+            updatePriceSuggestionState(currentDefaults);
+          }
+          recalc();
+        });
       });
+
+      if (priceSuggestionButton) {
+        priceSuggestionButton.addEventListener('click', function () {
+          if (!materialSelect || !pricePerKgInput) {
+            return;
+          }
+
+          var defaults = materialData[materialSelect.value] || {};
+          if (typeof defaults.price !== 'number' || !isFinite(defaults.price)) {
+            return;
+          }
+
+          pricePerKgInput.value = defaults.price.toString();
+          updatePriceSuggestionState(defaults);
+          recalc();
+
+          pricePerKgInput.focus();
+        });
+      }
 
       vatCheckbox.addEventListener('change', recalc);
 
