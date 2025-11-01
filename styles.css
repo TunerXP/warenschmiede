@@ -40,6 +40,10 @@
   --space-5: 1.5rem;
   --space-6: 2rem;
   --space-7: 2.75rem;
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
 }
 
 html[data-theme="dark"] {
@@ -3690,6 +3694,7 @@ a:focus-visible {
   border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   font: inherit;
+  cursor: pointer;
 }
 
 .info-tooltip__trigger:focus-visible {
@@ -3722,7 +3727,7 @@ a:focus-visible {
 
 .info-tooltip__content {
   position: absolute;
-  z-index: 10;
+  z-index: 40;
   inset-inline-start: 50%;
   bottom: calc(100% + 0.5rem);
   transform: translateX(-50%);
@@ -3745,15 +3750,71 @@ a:focus-visible {
   visibility: visible;
 }
 
-@media (max-width: 639px) {
+@media (max-width: 768px) {
   .calc-checkbox--vat {
     margin-top: 0;
   }
 
+  .info-tooltip {
+    position: static;
+  }
+
+  .info-tooltip__trigger {
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+  }
+
   .info-tooltip__content {
-    inset-inline-start: auto;
-    transform: none;
-    right: 0;
+    position: fixed;
+    inset: auto;
+    inset-inline-start: var(--tooltip-left, 50%);
+    inset-block-start: var(--tooltip-anchor, auto);
+    transform: translate(-50%, calc(-100% - var(--tooltip-gap, 12px)));
+    max-width: min(22rem, calc(90vw - var(--safe-area-left, 0px) - var(--safe-area-right, 0px)));
+    width: auto;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    padding-block: 0.75rem;
+    padding-inline: calc(1rem + var(--tooltip-inline-safe, 0px));
+    line-height: 1.5;
+    text-align: left;
+    word-break: break-word;
+  }
+
+  .info-tooltip__content[data-placement="bottom"] {
+    transform: translate(-50%, var(--tooltip-gap, 12px));
+  }
+
+  .info-tooltip__content::after {
+    content: "";
+    position: absolute;
+    width: 0.75rem;
+    height: 0.75rem;
+    background: inherit;
+    left: calc(50% + var(--tooltip-arrow-offset, 0px));
+    bottom: -0.35rem;
+    border-radius: 0.2rem;
+    transform: translate(-50%, 50%) rotate(45deg);
+    box-shadow: inherit;
+  }
+
+  .info-tooltip__content[data-placement="bottom"]::after {
+    top: -0.35rem;
+    bottom: auto;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .info-tooltip.is-active .info-tooltip__content {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .info-tooltip:hover .info-tooltip__content,
+  .info-tooltip:focus-within .info-tooltip__content {
+    opacity: 0;
+    visibility: hidden;
   }
 }
 
