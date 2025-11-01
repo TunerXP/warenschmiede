@@ -985,13 +985,18 @@ img {
   gap: var(--space-2);
 }
 
-.card {
+.card { 
   border-radius: 20px;
   padding: var(--space-5);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.card--narrow {
+  max-width: min(78ch, 100%);
+  margin-inline: auto;
 }
 
 .card h3 {
@@ -3441,8 +3446,33 @@ a:focus-visible {
   font-size: 0.95rem;
 }
 
-.calc-material-tooltip {
-  margin-left: 0.4rem;
+.calc-feature-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.calc-feature-list dt {
+  margin: var(--space-3) 0 0;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.calc-feature-list dt:first-of-type {
+  margin-top: 0;
+}
+
+.calc-feature-list dd {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.calc-feature-list dd p {
+  margin: 0;
+}
+
+.calc-feature-list dd p + p {
+  margin-top: 0.35rem;
 }
 
 .calc-price-input-row {
@@ -3690,15 +3720,6 @@ a:focus-visible {
 }
 
 @media print {
-  #ws-tooltips-portal,
-  .ws-tooltips-portal {
-    display: none !important;
-  }
-
-  .ws-tooltip {
-    display: none !important;
-  }
-
   @page {
     size: A4 portrait;
     margin: 1.4cm;
@@ -3742,132 +3763,14 @@ a:focus-visible {
   }
 
   
-.info-tooltip {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 0.35rem;
-}
-
-.ws-tip-trigger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 2.5rem;
-  min-height: 2.5rem;
-  padding: 0;
-  border-radius: 999px;
-  border: 1px solid var(--tooltip-trigger-border);
-  background: var(--tooltip-trigger-bg);
-  color: var(--tooltip-trigger-color);
-  box-shadow: var(--tooltip-trigger-shadow);
-  font-family: inherit;
-  font-size: 1.125rem;
-  font-weight: 600;
-  line-height: 1;
-  text-decoration: none;
-  touch-action: manipulation;
-  pointer-events: auto;
-  cursor: help;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.12s ease;
-}
-
-.ws-tip-trigger:hover,
-.ws-tip-trigger:focus-visible {
-  background: var(--tooltip-trigger-hover-bg);
-  border-color: var(--tooltip-trigger-hover-border);
-  color: var(--tooltip-trigger-color);
-  box-shadow: var(--tooltip-trigger-hover-shadow);
-}
-
-.ws-tip-trigger:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-}
-
-.ws-tip-trigger:active {
-  background: var(--tooltip-trigger-hover-bg);
-  border-color: var(--tooltip-trigger-hover-border);
-  box-shadow: var(--tooltip-trigger-active-shadow);
-  transform: scale(0.95);
-}
-
-#ws-tooltips-portal,
-.ws-tooltips-portal {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-}
-
-.ws-tooltips-portal .ws-tooltip {
-  position: fixed;
-  z-index: 9999;
-  max-width: min(320px, 90vw);
-  background: #111;
-  color: #fff;
-  padding: 10px 12px;
-  border-radius: 10px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
-  line-height: 1.35;
-  font-size: 0.95rem;
-  pointer-events: auto;
-}
-
-.ws-tooltips-portal .ws-tooltip__content {
-  display: block;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-
-.ws-tooltips-portal .ws-tooltip__arrow {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: #111;
-  transform: rotate(45deg);
-}
-
-.ws-tooltips-portal .ws-tooltip[data-placement="top"] .ws-tooltip__arrow {
-  bottom: -5px;
-}
-
-.ws-tooltips-portal .ws-tooltip[data-placement="bottom"] .ws-tooltip__arrow {
-  top: -5px;
-}
 
 @media print {
-  .ws-tooltip {
-    display: none !important;
-  }
 }
 
 /* Alte Reste killen */
-.info-tooltip__content,
-.info-tooltip__content[hidden],
 .ws-help-inline,
 .help-text {
   display: none !important;
-}
-
-@media (max-width: 768px) {
-  .calc-checkbox--vat {
-    margin-top: 0;
-  }
-
-  .ws-tip-trigger {
-    min-width: 2.75rem;
-    min-height: 2.75rem;
-    font-size: 1.2rem;
-  }
-
-  .ws-tooltips-portal .ws-tooltip {
-    font-size: 0.95rem;
-    line-height: 1.45;
-    padding: 0.75rem 1rem;
-    max-width: min(90vw, 20rem);
-  }
 }
 
 .page-links {
