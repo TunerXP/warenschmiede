@@ -3674,7 +3674,8 @@ a:focus-visible {
 }
 
 @media print {
-  #ws-tooltips-portal {
+  #ws-tooltips-portal,
+  .ws-tooltips-portal {
     display: none !important;
   }
 
@@ -3786,14 +3787,16 @@ a:focus-visible {
   opacity: 1;
 }
 
-#ws-tooltips-portal {
+#ws-tooltips-portal,
+.ws-tooltips-portal {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 9999;
 }
 
-.ws-tooltip {
+#ws-tooltips-portal .ws-tooltip,
+.ws-tooltips-portal .ws-tooltip {
   position: fixed;
   inset: auto;
   z-index: 9999;
@@ -3819,7 +3822,8 @@ a:focus-visible {
   overflow-wrap: anywhere;
 }
 
-.ws-tooltip__arrow {
+#ws-tooltips-portal .ws-tooltip__arrow,
+.ws-tooltips-portal .ws-tooltip__arrow {
   position: absolute;
   width: 10px;
   height: 10px;
