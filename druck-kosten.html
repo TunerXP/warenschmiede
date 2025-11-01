@@ -195,7 +195,7 @@
         </div>
         <div class="cost-layout">
           <div class="card" id="calculatorCard">
-            <h2 class="calc-card__title">Formular</h2>
+            <h2 class="calc-card__title">Standard-Rechner</h2>
             <form class="calc-form" id="calcForm" novalidate>
               <div id="std-fields">
                 <div class="calc-pro-toggle">
@@ -1103,41 +1103,65 @@
       }
       var dateTimeFormatter = new Intl.DateTimeFormat('de-DE', { dateStyle: 'short', timeStyle: 'short' });
 
-      function updatePriceSuggestionState(defaults) {
+      function updateMaterialSuggestionState(defaults) {
         if (!priceSuggestionButton) {
           return;
         }
 
-        var suggestion = defaults && typeof defaults.price === 'number' && isFinite(defaults.price)
-          ? defaults.price
-          : null;
+        var defaultsSafe = defaults || {};
+        var hasPriceSuggestion = typeof defaultsSafe.price === 'number' && isFinite(defaultsSafe.price);
+        var hasDensitySuggestion = typeof defaultsSafe.density === 'number' && isFinite(defaultsSafe.density);
 
-        if (suggestion === null) {
+        if (!hasPriceSuggestion && !hasDensitySuggestion) {
           priceSuggestionButton.classList.add('is-hidden');
           priceSuggestionButton.dataset.suggestion = '';
+          priceSuggestionButton.dataset.densitySuggestion = '';
           if (priceSuggestionSrText) {
             priceSuggestionSrText.textContent = '';
           }
           return;
         }
 
-        var formattedSuggestion = decimalFormatter.format(suggestion) + '\u00A0€/kg';
-        priceSuggestionButton.dataset.suggestion = suggestion.toString();
+        priceSuggestionButton.dataset.suggestion = hasPriceSuggestion ? defaultsSafe.price.toString() : '';
+        priceSuggestionButton.dataset.densitySuggestion = hasDensitySuggestion ? defaultsSafe.density.toString() : '';
+
         if (priceSuggestionSrText) {
-          priceSuggestionSrText.textContent = ' – ' + formattedSuggestion + ' übernehmen';
+          var srParts = [];
+          if (hasPriceSuggestion) {
+            srParts.push(decimalFormatter.format(defaultsSafe.price) + '\u00A0€/kg');
+          }
+          if (hasDensitySuggestion) {
+            srParts.push(decimalFormatter.format(defaultsSafe.density) + '\u00A0g/cm³');
+          }
+          priceSuggestionSrText.textContent = srParts.length ? ' – ' + srParts.join(' · ') + ' übernehmen' : '';
         }
 
-        var currentValueRaw = pricePerKgInput && pricePerKgInput.value != null
-          ? pricePerKgInput.value.toString().trim()
-          : '';
-
         var shouldShow = false;
-        if (currentValueRaw) {
-          var parsedCurrent = parseFloat(currentValueRaw.replace(',', '.'));
-          if (!isFinite(parsedCurrent)) {
+        if (hasPriceSuggestion && pricePerKgInput) {
+          var currentPriceRaw = pricePerKgInput.value != null ? pricePerKgInput.value.toString().trim() : '';
+          if (!currentPriceRaw) {
             shouldShow = true;
           } else {
-            shouldShow = Math.abs(parsedCurrent - suggestion) > 0.001;
+            var parsedPrice = parseFloat(currentPriceRaw.replace(',', '.'));
+            if (!isFinite(parsedPrice)) {
+              shouldShow = true;
+            } else if (Math.abs(parsedPrice - defaultsSafe.price) > 0.001) {
+              shouldShow = true;
+            }
+          }
+        }
+
+        if (!shouldShow && hasDensitySuggestion && materialDensityInput) {
+          var currentDensityRaw = materialDensityInput.value != null ? materialDensityInput.value.toString().trim() : '';
+          if (!currentDensityRaw) {
+            shouldShow = true;
+          } else {
+            var parsedDensity = parseFloat(currentDensityRaw.replace(',', '.'));
+            if (!isFinite(parsedDensity)) {
+              shouldShow = true;
+            } else if (Math.abs(parsedDensity - defaultsSafe.density) > 0.001) {
+              shouldShow = true;
+            }
           }
         }
 
@@ -1216,6 +1240,15 @@
           densityHint: 'Richtwert: 2,74\u00A0g/m · 1,14\u00A0g/cm³ (Nylon)'
         }
       };
+
+      var currentMaterialDefaults = {};
+      var pricePerKgUserEdited = false;
+      var materialDensityUserEdited = false;
+      var machineHourlyUserEdited = false;
+
+      var pricePerKgProgrammatic = false;
+      var materialDensityProgrammatic = false;
+      var machineHourlyProgrammatic = false;
 
       var suppressProSync = false;
       var proModeEnabled = false;
@@ -1345,6 +1378,7 @@
         var selected = materialSelect.value;
         var defaults = materialData[selected] || {};
         var gramsPerMeter = defaults.gramsPerMeter;
+        currentMaterialDefaults = defaults;
 
         if (weightInput) {
           if (gramsPerMeter) {
@@ -1368,28 +1402,20 @@
 
         if (materialDensityInput) {
           if (defaults.density && isFinite(defaults.density)) {
-            materialDensityInput.value = defaults.density.toFixed(2);
+            materialDensityInput.placeholder = defaults.density.toFixed(2);
           } else {
-            materialDensityInput.value = '';
+            materialDensityInput.placeholder = '';
           }
         }
 
         if (pricePerKgInput) {
           var placeholder = formatPricePlaceholder(defaults.price);
           pricePerKgInput.placeholder = placeholder;
-          var currentRaw = pricePerKgInput.value != null ? pricePerKgInput.value.toString().trim() : '';
-          if (!currentRaw) {
-            if (typeof defaults.price === 'number' && isFinite(defaults.price)) {
-              pricePerKgInput.value = defaults.price.toString();
-            } else {
-              pricePerKgInput.value = '';
-            }
-          }
         }
 
-        updatePriceSuggestionState(defaults);
+        updateMaterialSuggestionState(defaults);
 
-        recalc();
+        triggerRecalc({ immediate: true });
       }
 
       function parseHours(value) {
@@ -1452,12 +1478,70 @@
         }
       }
 
+      function attachRecalcListeners(element, options) {
+        if (!element) {
+          return;
+        }
+        var opts = options || {};
+        element.addEventListener('input', function (event) {
+          if (typeof opts.onInput === 'function') {
+            opts.onInput(event);
+          }
+          triggerRecalc();
+        });
+        ['change', 'blur'].forEach(function (eventName) {
+          element.addEventListener(eventName, function (event) {
+            if (eventName === 'change' && typeof opts.onChange === 'function') {
+              opts.onChange(event);
+            }
+            triggerRecalc({ immediate: true });
+          });
+        });
+      }
+
       function setPrintAttribute(mode) {
         if (!rootElement) return;
         if (mode) {
           rootElement.setAttribute('data-print', mode);
         } else {
           rootElement.removeAttribute('data-print');
+        }
+      }
+
+      var recalcThrottleDelay = 75;
+      function createThrottled(callback, delay) {
+        var timeoutId = null;
+        var lastCall = 0;
+        var safeDelay = typeof delay === 'number' && delay >= 0 ? delay : 0;
+        return function () {
+          var now = Date.now();
+          var remaining = safeDelay - (now - lastCall);
+          var invoke = function () {
+            timeoutId = null;
+            lastCall = Date.now();
+            callback();
+          };
+          if (remaining <= 0) {
+            if (timeoutId) {
+              clearTimeout(timeoutId);
+              timeoutId = null;
+            }
+            invoke();
+          } else if (!timeoutId) {
+            timeoutId = setTimeout(invoke, Math.min(remaining, safeDelay));
+          }
+        };
+      }
+
+      var queueRecalc = createThrottled(function () {
+        recalc();
+      }, recalcThrottleDelay);
+
+      function triggerRecalc(options) {
+        if (options && options.immediate) {
+          recalc();
+        } else {
+          queueRecalc();
         }
       }
 
@@ -1640,6 +1724,7 @@
         if (machineHourlyInput && !machineHourlyRawValue) {
           machineHourlyManual = 0;
           machineHourlyInput.value = '';
+          machineHourlyUserEdited = false;
         }
         if (machinePurchaseInput && !machinePurchaseRawValue) {
           machinePurchase = 0;
@@ -1656,6 +1741,17 @@
         var machineAutoRate = 0;
         if (machinePurchase > 0 && machineLifetime > 0) {
           machineAutoRate = machinePurchase / machineLifetime;
+        }
+        if (machineAutoRate > 0 && machineHourlyInput) {
+          var machineHourlyCurrentRaw = machineHourlyInput.value != null ? machineHourlyInput.value.toString().trim() : '';
+          var hasCurrentHourly = machineHourlyCurrentRaw.length > 0;
+          if (!machineHourlyUserEdited || !hasCurrentHourly) {
+            machineHourlyProgrammatic = true;
+            machineHourlyInput.value = machineAutoRate.toFixed(2);
+            machineHourlyProgrammatic = false;
+            machineHourlyUserEdited = false;
+            machineHourlyManual = machineAutoRate;
+          }
         }
         if (machineAutoHint) {
           if (machineAutoRate > 0) {
@@ -2317,16 +2413,39 @@
       weightMode.addEventListener('change', updateModeVisibility);
       lengthMode.addEventListener('change', updateModeVisibility);
 
-      [pricePerKgInput, weightInput, lengthInput, timeInput, powerInput, energyPriceInput, loadFactorInput, wastePercentInput].forEach(function (input) {
-        if (!input) return;
-        input.addEventListener('input', function () {
-          if (input === pricePerKgInput) {
-            var currentDefaults = materialSelect ? materialData[materialSelect.value] || {} : {};
-            updatePriceSuggestionState(currentDefaults);
+      attachRecalcListeners(pricePerKgInput, {
+        onInput: function () {
+          if (!pricePerKgProgrammatic) {
+            var valueRaw = pricePerKgInput.value != null ? pricePerKgInput.value.toString().trim() : '';
+            pricePerKgUserEdited = valueRaw.length > 0;
           }
-          recalc();
-        });
+          var currentDefaults = materialSelect ? materialData[materialSelect.value] || {} : {};
+          updateMaterialSuggestionState(currentDefaults);
+        },
+        onChange: function () {
+          if (!pricePerKgProgrammatic) {
+            var valueRaw = pricePerKgInput.value != null ? pricePerKgInput.value.toString().trim() : '';
+            pricePerKgUserEdited = valueRaw.length > 0;
+          }
+          var currentDefaults = materialSelect ? materialData[materialSelect.value] || {} : {};
+          updateMaterialSuggestionState(currentDefaults);
+        }
       });
+
+      [weightInput, lengthInput, powerInput, energyPriceInput, loadFactorInput, wastePercentInput, partNameInput].forEach(function (input) {
+        attachRecalcListeners(input);
+      });
+
+      attachRecalcListeners(timeInput);
+
+      if (vatCheckbox) {
+        vatCheckbox.addEventListener('input', function () {
+          triggerRecalc({ immediate: true });
+        });
+        vatCheckbox.addEventListener('change', function () {
+          triggerRecalc({ immediate: true });
+        });
+      }
 
       if (priceSuggestionButton) {
         priceSuggestionButton.addEventListener('click', function () {
@@ -2335,19 +2454,32 @@
           }
 
           var defaults = materialData[materialSelect.value] || {};
-          if (typeof defaults.price !== 'number' || !isFinite(defaults.price)) {
+          var hasPrice = typeof defaults.price === 'number' && isFinite(defaults.price);
+          var hasDensity = typeof defaults.density === 'number' && isFinite(defaults.density);
+          if (!hasPrice && !hasDensity) {
             return;
           }
 
-          pricePerKgInput.value = defaults.price.toString();
-          updatePriceSuggestionState(defaults);
-          recalc();
+          if (hasPrice) {
+            pricePerKgProgrammatic = true;
+            pricePerKgInput.value = defaults.price.toString();
+            pricePerKgProgrammatic = false;
+            pricePerKgUserEdited = false;
+          }
+
+          if (hasDensity && materialDensityInput) {
+            materialDensityProgrammatic = true;
+            materialDensityInput.value = defaults.density.toFixed(2);
+            materialDensityProgrammatic = false;
+            materialDensityUserEdited = false;
+          }
+
+          updateMaterialSuggestionState(defaults);
+          triggerRecalc({ immediate: true });
 
           pricePerKgInput.focus();
         });
       }
-
-      vatCheckbox.addEventListener('change', recalc);
 
       if (printResultButton) {
         printResultButton.addEventListener('click', function () {
@@ -2388,21 +2520,47 @@
         errorRateInput,
         packagingCostInput,
         shippingCostInput,
-        machineHourlyInput,
         machinePurchaseInput,
-        machineLifetimeInput,
-        materialDensityInput
+        machineLifetimeInput
       ].forEach(function (input) {
-        if (!input) return;
-        input.addEventListener('input', recalc);
+        attachRecalcListeners(input);
+      });
+
+      attachRecalcListeners(machineHourlyInput, {
+        onInput: function () {
+          if (!machineHourlyProgrammatic) {
+            var valueRaw = machineHourlyInput.value != null ? machineHourlyInput.value.toString().trim() : '';
+            machineHourlyUserEdited = valueRaw.length > 0;
+          }
+        },
+        onChange: function () {
+          if (!machineHourlyProgrammatic) {
+            var valueRaw = machineHourlyInput.value != null ? machineHourlyInput.value.toString().trim() : '';
+            machineHourlyUserEdited = valueRaw.length > 0;
+          }
+        }
+      });
+      attachRecalcListeners(materialDensityInput, {
+        onInput: function () {
+          if (!materialDensityProgrammatic) {
+            var valueRaw = materialDensityInput.value != null ? materialDensityInput.value.toString().trim() : '';
+            materialDensityUserEdited = valueRaw.length > 0;
+          }
+          updateMaterialSuggestionState(currentMaterialDefaults);
+        },
+        onChange: function () {
+          if (!materialDensityProgrammatic) {
+            var valueRaw = materialDensityInput.value != null ? materialDensityInput.value.toString().trim() : '';
+            materialDensityUserEdited = valueRaw.length > 0;
+          }
+          updateMaterialSuggestionState(currentMaterialDefaults);
+        }
       });
 
       if (proPrintMinutesInput) {
-        proPrintMinutesInput.addEventListener('input', updateTimeFromProMinutes);
-      }
-
-      if (partNameInput) {
-        partNameInput.addEventListener('input', recalc);
+        ['input', 'change', 'blur'].forEach(function (eventName) {
+          proPrintMinutesInput.addEventListener(eventName, updateTimeFromProMinutes);
+        });
       }
 
       updatePrintTimestamp();
