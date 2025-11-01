@@ -193,8 +193,9 @@
           <h2 id="rechner-heading">Kostenrechner für Filamentdruck</h2>
           <p>Wähle Material, gib Gewicht oder Länge ein und ergänze Laufzeit sowie Stromkosten – der Rest passiert automatisch.</p>
         </div>
-        <div class="cost-layout">
-          <div class="card" id="calculatorCard">
+        <section class="calc-grid" data-grid>
+          <div data-col="standard">
+            <div class="card" id="calculatorCard">
             <h2 class="calc-card__title">Standard-Rechner</h2>
             <form class="calc-form" id="calcForm" novalidate>
               <div id="std-fields">
@@ -297,8 +298,10 @@
 
             </form>
           </div>
+        </div>
 
-          <aside class="card calc-pro-card" id="proCard" data-pro-pane aria-hidden="true" inert>
+        <div data-col="pro" data-pro-pane aria-hidden="true" inert>
+          <aside class="card calc-pro-card" id="proCard">
             <div class="calc-pro-card__header">
               <div class="calc-pro-card__heading">
                 <h2 class="calc-card__title">Pro-Optionen</h2>
@@ -415,7 +418,9 @@
               </section>
             </div>
           </aside>
+        </div>
 
+        <aside data-col="result" data-result>
           <div class="card calc-results" aria-live="polite">
             <div class="calc-results__header">
               <h2>Ergebnis</h2>
@@ -507,7 +512,8 @@
             <p class="calc-formula">Energiekosten = (Watt/1000) × Laufzeit × €/kWh × Lastfaktor (Schätzung).</p>
             <p class="calc-note">Unverbindliche Orientierung ohne Design- oder Nachbearbeitungskosten. Tatsächliche Kosten können abweichen.</p>
           </div>
-        </div>
+        </aside>
+      </section>
       </div>
     </section>
 
