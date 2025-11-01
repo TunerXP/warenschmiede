@@ -3733,7 +3733,8 @@ a:focus-visible {
   margin-left: 0.35rem;
 }
 
-.info-tooltip__trigger {
+.info-tooltip__trigger,
+.ws-tip-trigger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3753,12 +3754,14 @@ a:focus-visible {
   cursor: pointer;
 }
 
-.info-tooltip__trigger:focus-visible {
+.info-tooltip__trigger:focus-visible,
+.ws-tip-trigger:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
-.info-tooltip__trigger svg {
+.info-tooltip__trigger svg,
+.ws-tip-trigger svg {
   width: 0.85rem;
   height: 0.85rem;
   stroke: currentColor;
@@ -3766,11 +3769,13 @@ a:focus-visible {
   fill: none;
 }
 
-.info-tooltip__trigger svg line {
+.info-tooltip__trigger svg line,
+.ws-tip-trigger svg line {
   stroke-linecap: round;
 }
 
-.info-tooltip__trigger svg circle {
+.info-tooltip__trigger svg circle,
+.ws-tip-trigger svg circle {
   fill: currentColor;
   opacity: 0.15;
   stroke: currentColor;
@@ -3789,17 +3794,18 @@ a:focus-visible {
 }
 
 .ws-tooltip {
-  position: absolute;
+  position: fixed;
   inset: auto;
-  max-width: min(90vw, 320px);
+  z-index: 9999;
+  max-width: min(320px, 90vw);
   width: max-content;
-  background: rgba(17, 17, 17, 0.92);
+  background: #111;
   color: #fff;
   font-size: 0.9rem;
-  line-height: 1.45;
-  padding: 0.65rem 0.85rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.22);
+  line-height: 1.35;
+  padding: 0.625rem;
+  border-radius: 0.625rem;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
   opacity: 0;
   visibility: hidden;
   transform: translate3d(0, -6px, 0);
@@ -3810,30 +3816,18 @@ a:focus-visible {
 .ws-tooltip__inner {
   display: block;
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .ws-tooltip__arrow {
   position: absolute;
-  width: 0.75rem;
-  height: 0.75rem;
+  width: 10px;
+  height: 10px;
   left: 50%;
-  transform: translateX(calc(-50% + var(--tooltip-arrow-offset, 0px)));
-  overflow: hidden;
-}
-
-.ws-tooltip__arrow::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(17, 17, 17, 0.92);
-  border-radius: 0.15rem;
-  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.22);
-  left: 50%;
-  top: 50%;
-  width: 100%;
-  height: 100%;
-  transform-origin: center;
-  transform: translate(-50%, -50%) rotate(45deg);
+  transform: translateX(calc(-50% + var(--tooltip-arrow-offset, 0px))) rotate(45deg);
+  background: #111;
+  border-radius: 0.2rem;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
 }
 
 .ws-tooltip--visible {
@@ -3847,7 +3841,7 @@ a:focus-visible {
 }
 
 .ws-tooltip--top .ws-tooltip__arrow {
-  bottom: -0.37rem;
+  bottom: -5px;
 }
 
 .ws-tooltip--bottom {
@@ -3855,7 +3849,7 @@ a:focus-visible {
 }
 
 .ws-tooltip--bottom .ws-tooltip__arrow {
-  top: -0.37rem;
+  top: -5px;
 }
 
 .ws-tooltip--top.ws-tooltip--visible,
@@ -3863,7 +3857,9 @@ a:focus-visible {
   transform: translate3d(0, 0, 0);
 }
 
-.info-tooltip__content {
+.info-tooltip__content,
+.info-tooltip__content[hidden],
+.ws-help-inline {
   display: none !important;
 }
 
@@ -3872,12 +3868,13 @@ a:focus-visible {
     margin-top: 0;
   }
 
-  .info-tooltip__trigger {
+  .info-tooltip__trigger,
+  .ws-tip-trigger {
     min-width: 2.5rem;
     min-height: 2.5rem;
   }
 
-  .info-tooltip__content {
+  .ws-tooltip {
     font-size: 0.95rem;
     line-height: 1.45;
     padding: 0.75rem 1rem;
