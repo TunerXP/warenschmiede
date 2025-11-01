@@ -407,7 +407,7 @@
                 <span class="calc-results__value" id="totalGross">0,00&nbsp;€</span>
               </li>
             </ul>
-            <p class="calc-results__pro-hint" id="proStatus" hidden>Erweiterter Rechner aktiv – Aufschlüsselung enthält Zusatzposten.</p>
+            <p class="calc-results__pro-hint" id="proStatus" hidden>Erweiterter Rechner aktiv – Zusatzposten &amp; Fixkosten werden separat ausgewiesen.</p>
             <h3 class="calc-results__subheading">Disclaimer</h3>
             <p class="calc-formula">Energiekosten = (Watt/1000) × Laufzeit × €/kWh × Lastfaktor (Schätzung).</p>
             <p class="calc-note">Unverbindliche Orientierung ohne Design- oder Nachbearbeitungskosten. Tatsächliche Kosten können abweichen.</p>
@@ -728,6 +728,42 @@
       };
 
       var suppressProSync = false;
+      var PRO_STORAGE_KEY = 'ws_pro_calc_enabled';
+
+      function getStoredProEnabled() {
+        try {
+          if (typeof window === 'undefined' || !window.localStorage) {
+            return null;
+          }
+          var storedValue = window.localStorage.getItem(PRO_STORAGE_KEY);
+          if (storedValue === null) {
+            return null;
+          }
+          return storedValue === 'true';
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function persistProEnabled(enabled) {
+        try {
+          if (typeof window === 'undefined' || !window.localStorage) {
+            return;
+          }
+          window.localStorage.setItem(PRO_STORAGE_KEY, enabled ? 'true' : 'false');
+        } catch (error) {
+          // ignore storage errors
+        }
+      }
+
+      function applyProVisibility(enabled) {
+        if (proToggle) {
+          proToggle.checked = enabled;
+        }
+        if (proFields) {
+          proFields.hidden = !enabled;
+        }
+      }
 
       function setMaterialDefaults() {
         var selected = materialSelect.value;
@@ -880,11 +916,19 @@
 
         var materialCost = (weight / 1000) * pricePerKg;
         var energyCost = (power / 1000) * hours * energyPrice * (loadFactor / 100);
+        var vatIncluded = !!vatCheckbox.checked;
         var materialWaste = 0;
         var materialWithWaste = materialCost;
+        var labourMinutes = 0;
+        var timeCost = 0;
+        var fixedCostValue = 0;
         var standardSubtotal = materialWithWaste + energyCost;
-        var net = standardSubtotal;
-        var vatIncluded = !!vatCheckbox.checked;
+        var marginBase = standardSubtotal;
+        var marginValue = 0;
+        var discountPercentValue = 0;
+        var discountValue = 0;
+        var netBeforeDiscount = marginBase;
+        var net = marginBase;
         var gross = vatIncluded ? net * 1.19 : net;
 
         var proEnabled = proToggle && proToggle.checked;
@@ -899,14 +943,15 @@
           wastePercent: 0,
           materialWaste: materialWaste,
           materialWithWaste: materialWithWaste,
-          labourMinutes: 0,
-          timeCost: 0,
-          fixedCost: 0,
-          subtotal: standardSubtotal,
-          marginValue: 0,
-          discountPercent: 0,
-          discountValue: 0,
-          netBeforeDiscount: standardSubtotal,
+          labourMinutes: labourMinutes,
+          timeCost: timeCost,
+          fixedCost: fixedCostValue,
+          marginBase: marginBase,
+          subtotal: marginBase,
+          marginValue: marginValue,
+          discountPercent: discountPercentValue,
+          discountValue: discountValue,
+          netBeforeDiscount: netBeforeDiscount,
           net: net,
           gross: gross,
           standardSubtotal: standardSubtotal
@@ -941,12 +986,14 @@
           materialWaste = materialCost * (wastePercent / 100);
           materialWithWaste = materialCost + materialWaste;
           standardSubtotal = materialWithWaste + energyCost;
-          var labourMinutes = setupMinutes + finishingMinutes;
-          var timeCost = (hourlyRate / 60) * labourMinutes;
-          var subtotal = standardSubtotal + timeCost + fixedCost;
-          var marginValue = subtotal * (profitMargin / 100);
-          var netBeforeDiscount = subtotal + marginValue;
-          var discountValue = netBeforeDiscount * (discountPercent / 100);
+          labourMinutes = setupMinutes + finishingMinutes;
+          timeCost = (hourlyRate / 60) * labourMinutes;
+          marginBase = standardSubtotal + timeCost;
+          fixedCostValue = fixedCost;
+          marginValue = marginBase * (profitMargin / 100);
+          netBeforeDiscount = marginBase + marginValue + fixedCostValue;
+          discountPercentValue = discountPercent;
+          discountValue = netBeforeDiscount * (discountPercent / 100);
           var proNet = netBeforeDiscount - discountValue;
           var proGross = vatIncluded ? proNet * 1.19 : proNet;
 
@@ -965,10 +1012,11 @@
             materialWithWaste: materialWithWaste,
             labourMinutes: labourMinutes,
             timeCost: timeCost,
-            fixedCost: fixedCost,
-            subtotal: subtotal,
+            fixedCost: fixedCostValue,
+            marginBase: marginBase,
+            subtotal: marginBase,
             marginValue: marginValue,
-            discountPercent: discountPercent,
+            discountPercent: discountPercentValue,
             discountValue: discountValue,
             netBeforeDiscount: netBeforeDiscount,
             net: proNet,
@@ -1052,8 +1100,7 @@
           var subtotalValue = state.pro.enabled ? state.pro.subtotal : state.standardSubtotal;
           subtotalOutput.textContent = formatter.format(subtotalValue);
         }
-        var showSubtotal = state.pro.enabled || hasValue(state.standardSubtotal);
-        toggleElement(subtotalRow, showSubtotal);
+        toggleElement(subtotalRow, state.pro.enabled);
 
         if (marginOutput) {
           marginOutput.textContent = formatter.format(state.pro.marginValue);
@@ -1125,8 +1172,7 @@
           var printSubtotalValue = state.pro.enabled ? state.pro.subtotal : state.standardSubtotal;
           printSubtotalOutput.textContent = formatter.format(printSubtotalValue);
         }
-        var showPrintSubtotal = state.pro.enabled || hasValue(state.standardSubtotal);
-        toggleElement(printSubtotalRow, showPrintSubtotal);
+        toggleElement(printSubtotalRow, state.pro.enabled);
 
         if (printMarginOutput) {
           printMarginOutput.textContent = formatter.format(state.pro.marginValue);
@@ -1195,11 +1241,15 @@
         });
       }
 
+      var storedProEnabled = getStoredProEnabled();
+      var initialProEnabled = storedProEnabled === null ? false : storedProEnabled;
+      applyProVisibility(initialProEnabled);
+
       if (proToggle) {
         proToggle.addEventListener('change', function () {
-          if (proFields) {
-            proFields.hidden = !proToggle.checked;
-          }
+          var enabled = !!proToggle.checked;
+          applyProVisibility(enabled);
+          persistProEnabled(enabled);
           recalc();
         });
       }
@@ -1215,10 +1265,6 @@
 
       if (printUrlOutput) {
         printUrlOutput.textContent = window.location.href;
-      }
-
-      if (proFields) {
-        proFields.hidden = !(proToggle && proToggle.checked);
       }
 
       updatePrintTimestamp();
