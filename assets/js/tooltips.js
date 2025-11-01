@@ -14,6 +14,41 @@
   const SUPPORTS_POINTER = typeof window !== 'undefined' && 'PointerEvent' in window;
 
   let tooltipUid = 0;
+  const usedTipNames = new Set();
+
+  const sanitizeTipName = (value) => {
+    return (value || '')
+      .toString()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  };
+
+  const getUniqueTipName = (rawName) => {
+    let base = sanitizeTipName(rawName);
+
+    if (!base) {
+      tooltipUid += 1;
+      base = `auto-${tooltipUid}`;
+    }
+
+    let candidate = base;
+    while (usedTipNames.has(candidate)) {
+      tooltipUid += 1;
+      candidate = `${base}-${tooltipUid}`;
+    }
+
+    usedTipNames.add(candidate);
+    return candidate;
+  };
+
+  const resolveContainer = (trigger) => {
+    if (!trigger) {
+      return null;
+    }
+
+    return trigger.closest('.info-tooltip') || trigger.parentElement || trigger;
+  };
 
   class TooltipPositioner {
     constructor(trigger, tooltip = null, options = {}) {
@@ -214,6 +249,11 @@
       this.cleanupLegacyArtifacts();
       this.portal = this.ensurePortal();
       this.tooltips = this.collectTooltips();
+      if (this.tooltips.length === 0) {
+        console.warn('[tooltips] Keine Tooltip-Trigger gefunden.');
+        return;
+      }
+
       this.tooltips.forEach((entry) => this.bindTooltip(entry));
       this.bindGlobalListeners();
     }
@@ -279,93 +319,92 @@
     }
 
     collectTooltips() {
-      return Array.from(document.querySelectorAll('.info-tooltip'))
-        .map((root) => {
-          const trigger = root.querySelector('.info-tooltip__trigger, .ws-tip-trigger');
-          let content = root.querySelector('.info-tooltip__content');
+      usedTipNames.clear();
+      const triggers = Array.from(document.querySelectorAll('.ws-tip-trigger'));
 
+      return triggers
+        .map((trigger) => {
           if (!trigger) {
             return null;
           }
 
-          const ensureContent = () => {
-            if (!content) {
-              content = document.createElement('span');
-              content.className = 'info-tooltip__content';
-              root.appendChild(content);
-            }
+          const container = resolveContainer(trigger);
+          let content = container ? container.querySelector('.info-tooltip__content') : null;
+          let inlineMode = 'text';
+          let inlineValue = '';
 
-            return content;
-          };
-
-          const getHelpTextAttr = () => (trigger.getAttribute('data-help') || root.getAttribute('data-help') || '').trim();
-
-          const source = ensureContent();
-          let tooltipId = source.id;
-
-          if (!tooltipId) {
-            tooltipUid += 1;
-            tooltipId = `tooltip-generated-${tooltipUid}`;
-            source.id = tooltipId;
+          if (content) {
+            inlineMode = content.childElementCount > 0 ? 'html' : 'text';
+            inlineValue = inlineMode === 'html' ? content.innerHTML.trim() : content.textContent.trim();
           }
+
+          let helpValue = (trigger.getAttribute('data-help') || trigger.dataset.help || '').trim();
+
+          if (!helpValue && container) {
+            const containerHelp = (container.getAttribute('data-help') || container.dataset.help || '').trim();
+            if (containerHelp.length > 0) {
+              helpValue = containerHelp;
+            }
+          }
+
+          if (!helpValue && inlineValue && inlineMode === 'text') {
+            helpValue = inlineValue;
+          }
+
+          if (helpValue.length > 0) {
+            trigger.setAttribute('data-help', helpValue);
+            trigger.dataset.help = helpValue;
+            if (container) {
+              container.setAttribute('data-help', helpValue);
+              container.dataset.help = helpValue;
+            }
+          }
+
+          const tipNameSource = trigger.dataset.tip || (container && container.dataset.tip) || '';
+          const tipName = getUniqueTipName(tipNameSource);
+          const tooltipId = `tip-${tipName}`;
 
           trigger.classList.add('ws-tip-trigger');
-          trigger.setAttribute('aria-expanded', trigger.getAttribute('aria-expanded') === 'true' ? 'true' : 'false');
+          trigger.dataset.tip = tipName;
+          trigger.setAttribute('data-tip', tipName);
+          trigger.setAttribute('aria-expanded', 'false');
           trigger.setAttribute('aria-haspopup', 'true');
           trigger.setAttribute('aria-controls', tooltipId);
-
-          if (!trigger.hasAttribute('aria-describedby')) {
-            trigger.setAttribute('aria-describedby', tooltipId);
-          }
+          trigger.setAttribute('aria-describedby', tooltipId);
 
           if (trigger.tagName === 'BUTTON' && !trigger.hasAttribute('type')) {
             trigger.setAttribute('type', 'button');
           }
 
-          const tipName = (root.dataset.tip || trigger.dataset.tip || '').trim();
-          if (tipName.length > 0) {
-            root.dataset.tip = tipName;
-            trigger.dataset.tip = tipName;
+          if (container) {
+            container.dataset.tip = tipName;
           }
 
-          source.setAttribute('aria-hidden', 'true');
-          source.setAttribute('hidden', '');
-          source.hidden = true;
-          source.classList.add('info-tooltip__content');
-          if (source.hasAttribute('role')) {
-            source.removeAttribute('role');
+          if (content && content.parentNode) {
+            content.setAttribute('hidden', '');
+            content.setAttribute('aria-hidden', 'true');
+            content.remove();
+            content = null;
           }
 
-          if (!source.dataset.placement && root.dataset.placement) {
-            source.dataset.placement = root.dataset.placement;
-          }
-
-          if (source.textContent.trim().length === 0) {
-            const attrHelp = getHelpTextAttr();
-            if (attrHelp.length > 0) {
-              source.textContent = attrHelp;
-            }
-          }
+          const preferredPlacement =
+            trigger.dataset.placement || (container && container.dataset.placement) || 'top';
 
           const getContent = () => {
-            const attrHelp = getHelpTextAttr();
-
-            if (source) {
-              if (source.childElementCount > 0) {
-                const html = source.innerHTML.trim();
-                if (html.length > 0) {
-                  return { value: html, mode: 'html' };
-                }
-              }
-
-              const text = source.textContent.trim();
-              if (text.length > 0) {
-                return { value: text, mode: 'text' };
-              }
-            }
-
+            const attrHelp = (trigger.getAttribute('data-help') || trigger.dataset.help || '').trim();
             if (attrHelp.length > 0) {
               return { value: attrHelp, mode: 'text' };
+            }
+
+            if (inlineValue.length > 0) {
+              return { value: inlineValue, mode: inlineMode };
+            }
+
+            if (container) {
+              const containerHelp = (container.getAttribute('data-help') || container.dataset.help || '').trim();
+              if (containerHelp.length > 0) {
+                return { value: containerHelp, mode: 'text' };
+              }
             }
 
             return { value: '', mode: 'text' };
@@ -373,9 +412,9 @@
 
           return {
             id: tooltipId,
-            root,
+            tipName,
+            container,
             trigger,
-            content: source,
             getContent,
             positioner: new TooltipPositioner(trigger),
             bubble: null,
@@ -385,7 +424,7 @@
             focused: false,
             skipNextClick: false,
             lastTriggerRect: null,
-            preferredPlacement: source.dataset.placement || root.dataset.placement || 'top',
+            preferredPlacement: preferredPlacement || 'top',
             currentPlacement: null,
             isOpen: false,
           };
@@ -482,7 +521,7 @@
     }
 
     bindTooltip(entry) {
-      const { trigger, root } = entry;
+      const { trigger, container } = entry;
 
       entry.handlePointerUp = (event) => {
         if (!SUPPORTS_POINTER) {
@@ -556,7 +595,10 @@
       entry.handleFocusOut = (event) => {
         const nextTarget = event.relatedTarget;
 
-        if (nextTarget && (root.contains(nextTarget) || (entry.bubble && entry.bubble.contains(nextTarget)))) {
+        if (
+          nextTarget &&
+          ((container && container.contains(nextTarget)) || (entry.bubble && entry.bubble.contains(nextTarget)))
+        ) {
           return;
         }
 
@@ -582,8 +624,8 @@
       }
 
       trigger.addEventListener('click', entry.handleClick);
-      root.addEventListener('focusin', entry.handleFocusIn);
-      root.addEventListener('focusout', entry.handleFocusOut);
+      trigger.addEventListener('focus', entry.handleFocusIn);
+      trigger.addEventListener('blur', entry.handleFocusOut);
     }
 
     bindGlobalListeners() {
@@ -604,9 +646,13 @@
         return;
       }
 
-      const { root, bubble } = this.activeTooltip;
+      const { container, trigger, bubble } = this.activeTooltip;
 
-      if (root.contains(event.target) || (bubble && bubble.contains(event.target))) {
+      if (
+        (container && container.contains(event.target)) ||
+        (trigger && trigger.contains(event.target)) ||
+        (bubble && bubble.contains(event.target))
+      ) {
         return;
       }
 
@@ -670,7 +716,9 @@
       bubble.classList.add('ws-tooltip--visible');
 
       entry.trigger.setAttribute('aria-expanded', 'true');
-      entry.root.classList.add(ACTIVE_CLASS);
+      if (entry.container) {
+        entry.container.classList.add(ACTIVE_CLASS);
+      }
       entry.manual = manual;
       entry.lastTriggerRect = entry.trigger.getBoundingClientRect();
       entry.currentPlacement = position.placement;
@@ -688,7 +736,9 @@
       this.destroyBubble(entry);
 
       entry.trigger.setAttribute('aria-expanded', 'false');
-      entry.root.classList.remove(ACTIVE_CLASS);
+      if (entry.container) {
+        entry.container.classList.remove(ACTIVE_CLASS);
+      }
       entry.positioner.reset();
       entry.manual = false;
       entry.hovered = false;
