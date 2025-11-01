@@ -3802,12 +3802,12 @@ a:focus-visible {
   z-index: 9999;
   max-width: min(320px, 90vw);
   width: max-content;
-  background: #111;
-  color: #fff;
-  font-size: 0.9rem;
+  background: #111 !important;
+  color: #fff !important;
+  font-size: 0.95rem;
   line-height: 1.35;
-  padding: 0.625rem;
-  border-radius: 0.625rem;
+  padding: 10px 12px;
+  border-radius: 10px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
   opacity: 0;
   visibility: hidden;
@@ -3829,7 +3829,7 @@ a:focus-visible {
   height: 10px;
   left: 50%;
   transform: translateX(calc(-50% + var(--tooltip-arrow-offset, 0px))) rotate(45deg);
-  background: #111;
+  background: #111 !important;
   border-radius: 0.2rem;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
 }
@@ -3863,8 +3863,15 @@ a:focus-visible {
 
 .info-tooltip__content,
 .info-tooltip__content[hidden],
-.ws-help-inline {
+.ws-help-inline,
+.help-text {
   display: none !important;
+}
+
+@media print {
+  .ws-tooltip {
+    display: none !important;
+  }
 }
 
 @media (max-width: 768px) {
