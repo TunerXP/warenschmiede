@@ -10,6 +10,7 @@
   };
 
   function initCalc() {
+          var calcGrid = document.querySelector('.calc-grid');
           var proToggle = document.querySelector('#proToggle,[data-pro-toggle]');
           var proPane = document.querySelector('#calc-pro,[data-pro-pane]');
           var resultBox = document.querySelector('#calc-result,[data-result]');
@@ -489,6 +490,9 @@
             if (rootElement) {
               rootElement.classList.toggle('is-pro-on', enabled);
               rootElement.classList.toggle('is-pro-off', !enabled);
+            }
+            if (calcGrid) {
+              calcGrid.classList.toggle('pro-active', enabled);
             }
             if (!enabled && proCard) {
               proCard.classList.remove('is-collapsed');
