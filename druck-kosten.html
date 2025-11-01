@@ -193,6 +193,132 @@
           <h2 id="rechner-heading">Kostenrechner für Filamentdruck</h2>
           <p>Wähle Material, gib Gewicht oder Länge ein und ergänze Laufzeit sowie Stromkosten – der Rest passiert automatisch.</p>
         </div>
+        <div class="card calc-offer" id="offerCard">
+          <h2 class="calc-card__title" id="offer-heading">Angebot</h2>
+          <div class="calc-offer__layout">
+            <div class="calc-offer__columns">
+              <details class="calc-offer__section" data-offer-section open>
+                <summary class="calc-offer__summary">Anbieter</summary>
+                <fieldset class="calc-offer__fieldset">
+                  <legend class="sr-only">Anbieter</legend>
+                  <div class="calc-offer__group">
+                    <div class="calc-field">
+                      <label for="offerVendorName">Firmenname / Name</label>
+                      <input type="text" id="offerVendorName" name="offerVendorName" data-offer-field="vendorName" autocomplete="organization" placeholder="z. B. Warenschmiede">
+                    </div>
+                    <div class="calc-field">
+                      <label for="offerVendorContact">Ansprechpartner <span class="calc-offer__optional">(optional)</span></label>
+                      <input type="text" id="offerVendorContact" name="offerVendorContact" data-offer-field="vendorContact" autocomplete="name" placeholder="z. B. Max Mustermann">
+                    </div>
+                    <div class="calc-field">
+                      <label for="offerVendorStreet">Straße</label>
+                      <input type="text" id="offerVendorStreet" name="offerVendorStreet" data-offer-field="vendorStreet" autocomplete="street-address" placeholder="z. B. Musterweg 1">
+                    </div>
+                    <div class="calc-offer__row">
+                      <div class="calc-field">
+                        <label for="offerVendorPostalCode">PLZ</label>
+                        <input type="text" id="offerVendorPostalCode" name="offerVendorPostalCode" data-offer-field="vendorPostalCode" inputmode="numeric" autocomplete="postal-code" placeholder="z. B. 78166">
+                      </div>
+                      <div class="calc-field">
+                        <label for="offerVendorCity">Ort</label>
+                        <input type="text" id="offerVendorCity" name="offerVendorCity" data-offer-field="vendorCity" autocomplete="address-level2" placeholder="z. B. Donaueschingen">
+                      </div>
+                    </div>
+                    <div class="calc-field">
+                      <label for="offerVendorEmail">E-Mail</label>
+                      <input type="email" id="offerVendorEmail" name="offerVendorEmail" data-offer-field="vendorEmail" autocomplete="email" placeholder="z. B. kontakt@warenschmiede.com">
+                    </div>
+                    <div class="calc-field">
+                      <label for="offerVendorPhone">Telefon</label>
+                      <input type="text" id="offerVendorPhone" name="offerVendorPhone" data-offer-field="vendorPhone" autocomplete="tel" placeholder="z. B. +49 7705 123456">
+                    </div>
+                    <div class="calc-field">
+                      <label for="offerVendorVatId">USt-IdNr. <span class="calc-offer__optional">(optional)</span></label>
+                      <input type="text" id="offerVendorVatId" name="offerVendorVatId" data-offer-field="vendorVatId" placeholder="z. B. DE123456789">
+                    </div>
+                  </div>
+                </fieldset>
+              </details>
+
+              <details class="calc-offer__section" data-offer-section open>
+                <summary class="calc-offer__summary">Kunde</summary>
+                <fieldset class="calc-offer__fieldset">
+                  <legend class="sr-only">Kunde</legend>
+                  <div class="calc-offer__group">
+                    <div class="calc-field">
+                      <label for="offerCustomerName">Firma / Name</label>
+                      <input type="text" id="offerCustomerName" name="offerCustomerName" data-offer-field="customerName" autocomplete="organization" placeholder="z. B. Kund GmbH">
+                    </div>
+                    <div class="calc-field">
+                      <label for="offerCustomerContact">Ansprechpartner <span class="calc-offer__optional">(optional)</span></label>
+                      <input type="text" id="offerCustomerContact" name="offerCustomerContact" data-offer-field="customerContact" autocomplete="name" placeholder="z. B. Erika Beispiel">
+                    </div>
+                    <div class="calc-field">
+                      <label for="offerCustomerStreet">Straße</label>
+                      <input type="text" id="offerCustomerStreet" name="offerCustomerStreet" data-offer-field="customerStreet" autocomplete="street-address" placeholder="z. B. Kundenweg 5">
+                    </div>
+                    <div class="calc-offer__row">
+                      <div class="calc-field">
+                        <label for="offerCustomerPostalCode">PLZ</label>
+                        <input type="text" id="offerCustomerPostalCode" name="offerCustomerPostalCode" data-offer-field="customerPostalCode" inputmode="numeric" autocomplete="postal-code" placeholder="z. B. 10115">
+                      </div>
+                      <div class="calc-field">
+                        <label for="offerCustomerCity">Ort</label>
+                        <input type="text" id="offerCustomerCity" name="offerCustomerCity" data-offer-field="customerCity" autocomplete="address-level2" placeholder="z. B. Berlin">
+                      </div>
+                    </div>
+                    <div class="calc-field">
+                      <label for="offerCustomerEmail">E-Mail</label>
+                      <input type="email" id="offerCustomerEmail" name="offerCustomerEmail" data-offer-field="customerEmail" autocomplete="email" placeholder="z. B. einkauf@kund.de">
+                    </div>
+                    <div class="calc-field">
+                      <label for="offerCustomerPhone">Telefon</label>
+                      <input type="text" id="offerCustomerPhone" name="offerCustomerPhone" data-offer-field="customerPhone" autocomplete="tel" placeholder="z. B. +49 30 123456">
+                    </div>
+                  </div>
+                </fieldset>
+              </details>
+            </div>
+
+            <details class="calc-offer__section calc-offer__section--meta" data-offer-section open>
+              <summary class="calc-offer__summary">Angaben zum Angebot</summary>
+              <fieldset class="calc-offer__fieldset">
+                <legend class="sr-only">Angaben zum Angebot</legend>
+                <div class="calc-offer__meta-grid">
+                  <div class="calc-field">
+                    <label for="offerNumber">Angebots-Nr.</label>
+                    <input type="text" id="offerNumber" name="offerNumber" data-offer-field="offerNumber" inputmode="text" autocomplete="off" placeholder="z. B. ANG-2024-001">
+                  </div>
+                  <div class="calc-field">
+                    <label for="offerDate">Angebotsdatum</label>
+                    <input type="date" id="offerDate" name="offerDate" data-offer-field="offerDate">
+                  </div>
+                  <div class="calc-field">
+                    <label for="offerValidUntil">Gültig bis</label>
+                    <input type="date" id="offerValidUntil" name="offerValidUntil" data-offer-field="offerValidUntil">
+                  </div>
+                  <div class="calc-field">
+                    <label for="offerDeliveryTime">Lieferzeit</label>
+                    <input type="text" id="offerDeliveryTime" name="offerDeliveryTime" data-offer-field="offerDeliveryTime" placeholder="z. B. 7–10 Tage ab Auftragsklarheit">
+                  </div>
+                  <div class="calc-field">
+                    <label for="offerPaymentTerms">Zahlungsbedingungen</label>
+                    <input type="text" id="offerPaymentTerms" name="offerPaymentTerms" data-offer-field="offerPaymentTerms" placeholder="z. B. Vorkasse / 14 Tage netto">
+                  </div>
+                </div>
+              </fieldset>
+            </details>
+          </div>
+
+          <div class="calc-offer__options">
+            <label class="calc-checkbox" for="offerRemember">
+              <input type="checkbox" id="offerRemember" name="offerRemember" data-offer-remember>
+              <span>Daten im Browser merken</span>
+            </label>
+            <p class="calc-offer__note">Die Daten werden ausschließlich in deinem Browser gespeichert (localStorage) und nicht übertragen.</p>
+          </div>
+        </div>
+
         <section class="calc-grid">
           <div class="calc-grid__standard" id="calc-standard">
             <div class="card" id="calculatorCard">
@@ -655,6 +781,84 @@
           <p class="calc-print__timestamp" id="printTimestamp"></p>
         </div>
       </header>
+
+      <section class="calc-print__offer" aria-labelledby="printOfferHeading">
+        <h2 class="sr-only" id="printOfferHeading">Angebotskopf</h2>
+        <div class="calc-print__offer-columns">
+          <div class="calc-print__offer-column" aria-labelledby="printOfferVendorTitle" data-offer-column="vendor">
+            <h3 class="calc-print__offer-heading" id="printOfferVendorTitle">Anbieter</h3>
+            <dl class="calc-print__offer-list">
+              <div class="calc-print__offer-row" data-offer-row="vendorName">
+                <dt>Firma / Name</dt>
+                <dd id="printOfferVendorName">–</dd>
+              </div>
+              <div class="calc-print__offer-row" data-offer-row="vendorContact">
+                <dt>Ansprechpartner</dt>
+                <dd id="printOfferVendorContact">–</dd>
+              </div>
+              <div class="calc-print__offer-row" data-offer-row="vendorStreet">
+                <dt>Straße</dt>
+                <dd id="printOfferVendorStreet">–</dd>
+              </div>
+              <div class="calc-print__offer-row" data-offer-row="vendorPostal">
+                <dt>PLZ / Ort</dt>
+                <dd id="printOfferVendorPostal">–</dd>
+              </div>
+              <div class="calc-print__offer-row" data-offer-row="vendorEmail">
+                <dt>E-Mail</dt>
+                <dd id="printOfferVendorEmail">–</dd>
+              </div>
+              <div class="calc-print__offer-row" data-offer-row="vendorPhone">
+                <dt>Telefon</dt>
+                <dd id="printOfferVendorPhone">–</dd>
+              </div>
+              <div class="calc-print__offer-row" data-offer-row="vendorVat">
+                <dt>USt-IdNr.</dt>
+                <dd id="printOfferVendorVat">–</dd>
+              </div>
+            </dl>
+          </div>
+          <div class="calc-print__offer-column" aria-labelledby="printOfferCustomerTitle" data-offer-column="customer">
+            <h3 class="calc-print__offer-heading" id="printOfferCustomerTitle">Kunde</h3>
+            <dl class="calc-print__offer-list">
+              <div class="calc-print__offer-row" data-offer-row="customerName">
+                <dt>Firma / Name</dt>
+                <dd id="printOfferCustomerName">–</dd>
+              </div>
+              <div class="calc-print__offer-row" data-offer-row="customerContact">
+                <dt>Ansprechpartner</dt>
+                <dd id="printOfferCustomerContact">–</dd>
+              </div>
+              <div class="calc-print__offer-row" data-offer-row="customerStreet">
+                <dt>Straße</dt>
+                <dd id="printOfferCustomerStreet">–</dd>
+              </div>
+              <div class="calc-print__offer-row" data-offer-row="customerPostal">
+                <dt>PLZ / Ort</dt>
+                <dd id="printOfferCustomerPostal">–</dd>
+              </div>
+              <div class="calc-print__offer-row" data-offer-row="customerEmail">
+                <dt>E-Mail</dt>
+                <dd id="printOfferCustomerEmail">–</dd>
+              </div>
+              <div class="calc-print__offer-row" data-offer-row="customerPhone">
+                <dt>Telefon</dt>
+                <dd id="printOfferCustomerPhone">–</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+        <div class="calc-print__offer-meta" aria-label="Angaben zum Angebot">
+          <ul class="calc-print__offer-meta-list">
+            <li class="calc-print__offer-meta-item" data-offer-meta="number">Angebots-Nr.: <span id="printOfferNumber">–</span></li>
+            <li class="calc-print__offer-meta-item" data-offer-meta="date">Datum: <span id="printOfferDate">–</span></li>
+            <li class="calc-print__offer-meta-item" data-offer-meta="validUntil">Gültig bis: <span id="printOfferValidUntil">–</span></li>
+            <li class="calc-print__offer-meta-item" data-offer-meta="delivery">Lieferzeit: <span id="printOfferDelivery">–</span></li>
+            <li class="calc-print__offer-meta-item" data-offer-meta="payment">Zahlungsbedingungen: <span id="printOfferPayment">–</span></li>
+          </ul>
+        </div>
+        <p class="calc-print__brand-note">Erstellt mit dem Warenschmiede 3D-Rechner – www.warenschmiede.com</p>
+      </section>
 
       <div class="calc-print__body">
         <div class="calc-print__result-grid">

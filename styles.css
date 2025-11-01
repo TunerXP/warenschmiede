@@ -3218,6 +3218,151 @@ a:focus-visible {
   --calc-result-width: 420px;
 }
 
+.calc-offer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: clamp(1.75rem, 2vw, 2.5rem);
+}
+
+.calc-offer__layout {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.calc-offer__columns {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.calc-offer__section {
+  border: 1px solid var(--control-border);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--surface-muted) 65%, var(--surface) 35%);
+  overflow: hidden;
+}
+
+.calc-offer__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.calc-offer__summary::-webkit-details-marker {
+  display: none;
+}
+
+.calc-offer__summary::after {
+  content: '▾';
+  font-size: 0.9rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.calc-offer__section[open] > .calc-offer__summary::after {
+  transform: rotate(180deg);
+}
+
+.calc-offer__fieldset {
+  border: none;
+  margin: 0;
+  padding: 0 1.25rem 1.5rem;
+}
+
+.calc-offer__section[open] > .calc-offer__fieldset {
+  display: block;
+}
+
+.calc-offer__group {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.calc-offer__row {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.calc-offer__meta-grid {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.calc-offer__optional {
+  font-size: 0.85em;
+  color: var(--text-subtle);
+  font-weight: 500;
+}
+
+.calc-offer__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.calc-offer__options .calc-checkbox {
+  font-weight: 600;
+}
+
+.calc-offer__options input[type='checkbox'] {
+  flex-shrink: 0;
+}
+
+.calc-offer__note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-subtle);
+}
+
+@media (min-width: 34rem) {
+  .calc-offer__row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: var(--calc-bp-tablet)) {
+  .calc-offer__columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .calc-offer__section {
+    border: none;
+    border-radius: 0;
+    background: none;
+    overflow: visible;
+  }
+
+  .calc-offer__summary {
+    display: none;
+  }
+
+  .calc-offer__fieldset {
+    padding: 0;
+  }
+
+  .calc-offer__group {
+    gap: var(--space-3);
+    padding: 0;
+  }
+
+  .calc-offer__meta-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .calc-offer__meta-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
 .calc-grid {
   display: grid;
   gap: var(--calc-grid-gap);
@@ -3399,6 +3544,18 @@ a:focus-visible {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.calc-field input.is-invalid,
+.calc-field select.is-invalid {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #dc2626 22%, transparent);
+}
+
+.calc-field input.is-invalid:focus,
+.calc-field select.is-invalid:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #dc2626 30%, transparent);
 }
 
 .calc-inline {
@@ -4157,6 +4314,99 @@ a:focus-visible {
 
 .calc-print__header-right p {
   margin: 0;
+}
+
+.calc-print__offer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-bottom: 1.8rem;
+}
+
+.calc-print__offer-columns {
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.calc-print__offer-column[hidden] {
+  display: none;
+}
+
+.calc-print__offer-heading {
+  margin: 0 0 0.6rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.calc-print__offer-list {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+}
+
+.calc-print__offer-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.2rem 0.8rem;
+  align-items: baseline;
+}
+
+.calc-print__offer-row dt {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.calc-print__offer-row dd {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #0f172a;
+  justify-self: end;
+}
+
+.calc-print__offer-meta {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.calc-print__offer-meta-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.calc-print__offer-meta-item[hidden] {
+  display: none;
+}
+
+.calc-print__offer-meta-item + .calc-print__offer-meta-item::before {
+  content: '·';
+  margin-right: 0.45rem;
+  color: #cbd5f5;
+}
+
+.calc-print__brand-note {
+  margin: 0;
+  align-self: flex-end;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  text-align: right;
+}
+
+@media (min-width: 40rem) {
+  .calc-print__offer-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .calc-print__brand {

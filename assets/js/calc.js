@@ -90,6 +90,58 @@
           var machineAutoHint = document.getElementById('machineAutoHint');
           var materialDensityInput = document.getElementById('proDensity');
           var partNameInput = document.getElementById('partName');
+          var offerFields = $$('[data-offer-field]');
+          var offerFieldMap = {};
+          offerFields.forEach(function (field) {
+            var key = field.getAttribute('data-offer-field');
+            if (key) {
+              offerFieldMap[key] = field;
+            }
+          });
+          var offerRememberToggle = document.querySelector('[data-offer-remember]');
+          var offerSections = document.querySelectorAll('[data-offer-section]');
+          var offerAccordionMediaQuery = window.matchMedia ? window.matchMedia('(max-width: 47.99rem)') : null;
+          var printOfferColumnsContainer = document.querySelector('.calc-print__offer-columns');
+          var printOfferColumns = {
+            vendor: document.querySelector('[data-offer-column="vendor"]'),
+            customer: document.querySelector('[data-offer-column="customer"]')
+          };
+          function findOfferPrintRow(rowKey, valueId) {
+            return {
+              row: document.querySelector('[data-offer-row="' + rowKey + '"]'),
+              value: document.getElementById(valueId)
+            };
+          }
+          var printOfferRows = {
+            vendorName: findOfferPrintRow('vendorName', 'printOfferVendorName'),
+            vendorContact: findOfferPrintRow('vendorContact', 'printOfferVendorContact'),
+            vendorStreet: findOfferPrintRow('vendorStreet', 'printOfferVendorStreet'),
+            vendorPostal: findOfferPrintRow('vendorPostal', 'printOfferVendorPostal'),
+            vendorEmail: findOfferPrintRow('vendorEmail', 'printOfferVendorEmail'),
+            vendorPhone: findOfferPrintRow('vendorPhone', 'printOfferVendorPhone'),
+            vendorVat: findOfferPrintRow('vendorVat', 'printOfferVendorVat'),
+            customerName: findOfferPrintRow('customerName', 'printOfferCustomerName'),
+            customerContact: findOfferPrintRow('customerContact', 'printOfferCustomerContact'),
+            customerStreet: findOfferPrintRow('customerStreet', 'printOfferCustomerStreet'),
+            customerPostal: findOfferPrintRow('customerPostal', 'printOfferCustomerPostal'),
+            customerEmail: findOfferPrintRow('customerEmail', 'printOfferCustomerEmail'),
+            customerPhone: findOfferPrintRow('customerPhone', 'printOfferCustomerPhone')
+          };
+          var printOfferMetaContainer = document.querySelector('.calc-print__offer-meta');
+          var printOfferMetaItems = {
+            number: document.querySelector('[data-offer-meta="number"]'),
+            date: document.querySelector('[data-offer-meta="date"]'),
+            validUntil: document.querySelector('[data-offer-meta="validUntil"]'),
+            delivery: document.querySelector('[data-offer-meta="delivery"]'),
+            payment: document.querySelector('[data-offer-meta="payment"]')
+          };
+          var printOfferMetaValues = {
+            number: document.getElementById('printOfferNumber'),
+            date: document.getElementById('printOfferDate'),
+            validUntil: document.getElementById('printOfferValidUntil'),
+            delivery: document.getElementById('printOfferDelivery'),
+            payment: document.getElementById('printOfferPayment')
+          };
 
           var printMaterialOutput = document.getElementById('printMaterial');
           var printMaterialPriceOutput = document.getElementById('printMaterialPrice');
@@ -175,12 +227,18 @@
           var percentNumberFormatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
           var chartCompactPercentFormatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
           var co2Formatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+          var offerDateFormatter = new Intl.DateTimeFormat('de-DE');
           var FILAMENT_DIAMETER_MM = 1.75;
 
           var chartCollapseMediaQuery = window.matchMedia('(max-width: 359px)');
           var chartToggleInteracted = false;
           var proCardMediaQuery = window.matchMedia('(max-width: 1099px)');
           var proCardCollapsed = false;
+          var offerStorageEnabled = false;
+          var queueOfferSave = null;
+          var OFFER_STORAGE_KEY = 'ws3d_offer_v1';
+          var OFFER_COUNTER_KEY = 'ws3d_offer_counter';
+          var offerEmailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
 
           function setChartVisibility(expanded) {
             if (!resultChartSection) {
@@ -198,6 +256,30 @@
               resultChartSection.classList.add('is-collapsed');
               resultChartSection.setAttribute('aria-hidden', 'true');
             }
+          }
+
+          function getStorageItem(key) {
+            try {
+              return window.localStorage ? window.localStorage.getItem(key) : null;
+            } catch (error) {
+              return null;
+            }
+          }
+
+          function setStorageItem(key, value) {
+            try {
+              if (window.localStorage) {
+                window.localStorage.setItem(key, value);
+              }
+            } catch (error) {}
+          }
+
+          function removeStorageItem(key) {
+            try {
+              if (window.localStorage) {
+                window.localStorage.removeItem(key);
+              }
+            } catch (error) {}
           }
 
           function applyChartMediaPreference(event) {
@@ -577,15 +659,51 @@
             return year + '-' + month + '-' + day;
           }
 
+          function formatDateForInputValue(date) {
+            if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+              return '';
+            }
+            var tzOffset = date.getTimezoneOffset();
+            var local = new Date(date.getTime() - tzOffset * 60 * 1000);
+            return local.toISOString().slice(0, 10);
+          }
+
+          function storeOfferCounter(year, nextValue) {
+            if (!Number.isFinite(year) || !Number.isFinite(nextValue)) {
+              return;
+            }
+            setStorageItem(OFFER_COUNTER_KEY, JSON.stringify({ year: year, next: nextValue }));
+          }
+
+          function buildOfferNumberSuggestion() {
+            var now = new Date();
+            var year = now.getFullYear();
+            var nextValue = 1;
+            var raw = getStorageItem(OFFER_COUNTER_KEY);
+            if (raw) {
+              try {
+                var parsed = JSON.parse(raw);
+                if (parsed && parsed.year === year && typeof parsed.next === 'number' && parsed.next > 0) {
+                  nextValue = parsed.next;
+                }
+              } catch (error) {}
+            }
+            var suggestion = 'ANG-' + year + '-' + String(nextValue).padStart(3, '0');
+            storeOfferCounter(year, nextValue + 1);
+            return suggestion;
+          }
+
           function buildPrintFileName(mode, state) {
             var normalizedPart = normalizeFileNamePart(state.partName);
             var datePart = formatDateForFile(new Date());
             var prefix = mode === 'full' ? 'Kostenblatt_Eingaben' : 'Kostenblatt';
             var nameParts = [prefix];
-            if (mode === 'full') {
-              nameParts.push(normalizedPart);
-            } else {
-              nameParts.push(normalizedPart);
+            nameParts.push(normalizedPart);
+            if (state.offer && state.offer.meta && state.offer.meta.number) {
+              var offerNumberPart = normalizeFileNamePart(state.offer.meta.number);
+              if (offerNumberPart && offerNumberPart !== normalizedPart) {
+                nameParts.push(offerNumberPart);
+              }
             }
             nameParts.push(datePart);
             return nameParts.join('_') + '.pdf';
@@ -765,7 +883,7 @@
           }
 
           function wireInputs() {
-            var fields = $$('[data-calc],[data-calc-pro]');
+            var fields = $$('[data-calc],[data-calc-pro],[data-offer-field]');
             fields.forEach(function (el) {
               el.addEventListener('input', handleCalcInputEvent);
               el.addEventListener('change', handleCalcChangeEvent);
@@ -809,6 +927,12 @@
           var queueRecalc = createThrottled(function () {
             recalculate();
           }, recalcThrottleDelay);
+
+          queueOfferSave = createThrottled(function () {
+            if (offerStorageEnabled) {
+              saveOfferStateToStorage();
+            }
+          }, 250);
 
           function triggerRecalc(options) {
             if (options && options.immediate) {
@@ -874,12 +998,407 @@
             recalculate();
           }
 
+          function getOfferValue(key) {
+            var field = offerFieldMap[key];
+            if (!field) {
+              return '';
+            }
+            var raw = field.value;
+            return raw == null ? '' : raw.toString().trim();
+          }
+
+          function suggestOfferNumber() {
+            var field = offerFieldMap.offerNumber;
+            if (!field) {
+              return;
+            }
+            var current = field.value != null ? field.value.toString().trim() : '';
+            if (current) {
+              return;
+            }
+            var suggestion = buildOfferNumberSuggestion();
+            if (suggestion) {
+              field.value = suggestion;
+            }
+          }
+
+          function setOfferDefaults() {
+            if (!offerFieldMap) {
+              return;
+            }
+            var today = new Date();
+            var offerDateField = offerFieldMap.offerDate;
+            if (offerDateField) {
+              var current = offerDateField.value != null ? offerDateField.value.toString().trim() : '';
+              if (!current) {
+                offerDateField.value = formatDateForInputValue(today);
+              }
+            }
+            var validUntilField = offerFieldMap.offerValidUntil;
+            if (validUntilField) {
+              var validCurrent = validUntilField.value != null ? validUntilField.value.toString().trim() : '';
+              if (!validCurrent) {
+                var validDate = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
+                validUntilField.value = formatDateForInputValue(validDate);
+              }
+            }
+            var deliveryField = offerFieldMap.offerDeliveryTime;
+            if (deliveryField) {
+              var deliveryCurrent = deliveryField.value != null ? deliveryField.value.toString().trim() : '';
+              if (!deliveryCurrent) {
+                deliveryField.value = '7–10 Tage ab Auftragsklarheit';
+              }
+            }
+            var paymentField = offerFieldMap.offerPaymentTerms;
+            if (paymentField) {
+              var paymentCurrent = paymentField.value != null ? paymentField.value.toString().trim() : '';
+              if (!paymentCurrent) {
+                paymentField.value = 'Vorkasse / 14 Tage netto';
+              }
+            }
+            suggestOfferNumber();
+          }
+
+          function hasNonEmptyValue(values) {
+            if (!values || !values.length) {
+              return false;
+            }
+            for (var i = 0; i < values.length; i += 1) {
+              var value = values[i];
+              if (value != null && value.toString().trim().length > 0) {
+                return true;
+              }
+            }
+            return false;
+          }
+
+          function collectOfferState() {
+            var fields = {};
+            Object.keys(offerFieldMap).forEach(function (key) {
+              fields[key] = getOfferValue(key);
+            });
+            var vendor = {
+              name: fields.vendorName || '',
+              contact: fields.vendorContact || '',
+              street: fields.vendorStreet || '',
+              postalCode: fields.vendorPostalCode || '',
+              city: fields.vendorCity || '',
+              email: fields.vendorEmail || '',
+              phone: fields.vendorPhone || '',
+              vatId: fields.vendorVatId || ''
+            };
+            var customer = {
+              name: fields.customerName || '',
+              contact: fields.customerContact || '',
+              street: fields.customerStreet || '',
+              postalCode: fields.customerPostalCode || '',
+              city: fields.customerCity || '',
+              email: fields.customerEmail || '',
+              phone: fields.customerPhone || ''
+            };
+            var meta = {
+              number: fields.offerNumber || '',
+              date: fields.offerDate || '',
+              validUntil: fields.offerValidUntil || '',
+              deliveryTime: fields.offerDeliveryTime || '',
+              paymentTerms: fields.offerPaymentTerms || ''
+            };
+            var hasVendor = hasNonEmptyValue([
+              vendor.name,
+              vendor.contact,
+              vendor.street,
+              vendor.postalCode,
+              vendor.city,
+              vendor.email,
+              vendor.phone,
+              vendor.vatId
+            ]);
+            var hasCustomer = hasNonEmptyValue([
+              customer.name,
+              customer.contact,
+              customer.street,
+              customer.postalCode,
+              customer.city,
+              customer.email,
+              customer.phone
+            ]);
+            var hasMeta = hasNonEmptyValue([
+              meta.number,
+              meta.date,
+              meta.validUntil,
+              meta.deliveryTime,
+              meta.paymentTerms
+            ]);
+            return {
+              fields: fields,
+              vendor: vendor,
+              customer: customer,
+              meta: meta,
+              hasVendor: hasVendor,
+              hasCustomer: hasCustomer,
+              hasMeta: hasMeta
+            };
+          }
+
+          function applyOfferState(data) {
+            if (!data || !data.fields) {
+              return;
+            }
+            Object.keys(data.fields).forEach(function (key) {
+              var field = offerFieldMap[key];
+              if (field) {
+                var value = data.fields[key];
+                field.value = value == null ? '' : value;
+              }
+            });
+          }
+
+          function loadOfferStateFromStorage() {
+            var raw = getStorageItem(OFFER_STORAGE_KEY);
+            if (!raw) {
+              return null;
+            }
+            try {
+              var data = JSON.parse(raw);
+              if (!data || data.remember !== true || !data.fields) {
+                return null;
+              }
+              applyOfferState(data);
+              setOfferRemember(true, { skipSave: true, skipToggle: false });
+              return data;
+            } catch (error) {
+              return null;
+            }
+          }
+
+          function saveOfferStateToStorage() {
+            if (!offerStorageEnabled) {
+              return;
+            }
+            var state = collectOfferState();
+            var payload = {
+              remember: true,
+              fields: state.fields,
+              timestamp: new Date().toISOString()
+            };
+            setStorageItem(OFFER_STORAGE_KEY, JSON.stringify(payload));
+          }
+
+          function setOfferRemember(enabled, options) {
+            var opts = options || {};
+            offerStorageEnabled = !!enabled;
+            if (offerRememberToggle && !opts.skipToggle) {
+              offerRememberToggle.checked = offerStorageEnabled;
+            }
+            if (offerStorageEnabled) {
+              if (!opts.skipSave) {
+                saveOfferStateToStorage();
+              }
+            } else {
+              removeStorageItem(OFFER_STORAGE_KEY);
+            }
+          }
+
+          function scheduleOfferSave() {
+            if (offerStorageEnabled && typeof queueOfferSave === 'function') {
+              queueOfferSave();
+            }
+          }
+
+          function validateOfferField(field) {
+            if (!field) {
+              return true;
+            }
+            var value = field.value != null ? field.value.toString().trim() : '';
+            var isEmailField = field.type === 'email' || /email/i.test(field.name || '');
+            var isValid = true;
+            if (isEmailField && value) {
+              isValid = offerEmailPattern.test(value);
+            }
+            if (isValid) {
+              field.classList.remove('is-invalid');
+              field.removeAttribute('aria-invalid');
+            } else {
+              field.classList.add('is-invalid');
+              field.setAttribute('aria-invalid', 'true');
+            }
+            return isValid;
+          }
+
+          function handleOfferFieldInput(field) {
+            validateOfferField(field);
+            scheduleOfferSave();
+          }
+
+          function attachOfferFieldListeners() {
+            offerFields.forEach(function (field) {
+              field.addEventListener('input', function () {
+                handleOfferFieldInput(field);
+              });
+              field.addEventListener('change', function () {
+                handleOfferFieldInput(field);
+              });
+              field.addEventListener('blur', function () {
+                var trimmed = field.value != null ? field.value.toString().trim() : '';
+                field.value = trimmed;
+                handleOfferFieldInput(field);
+              });
+            });
+          }
+
+          function syncOfferAccordionForViewport() {
+            if (!offerSections || !offerSections.length) {
+              return;
+            }
+            if (!offerAccordionMediaQuery || !offerAccordionMediaQuery.matches) {
+              offerSections.forEach(function (section) {
+                if (section && !section.open) {
+                  section.open = true;
+                }
+              });
+            }
+          }
+
+          function initializeOfferSection() {
+            loadOfferStateFromStorage();
+            setOfferDefaults();
+            attachOfferFieldListeners();
+            offerFields.forEach(function (field) {
+              validateOfferField(field);
+            });
+            if (offerRememberToggle) {
+              offerRememberToggle.addEventListener('change', function () {
+                setOfferRemember(offerRememberToggle.checked);
+                triggerRecalc({ immediate: true });
+              });
+            }
+            syncOfferAccordionForViewport();
+            if (offerAccordionMediaQuery) {
+              var handleAccordionChange = function (event) {
+                if (!event.matches) {
+                  syncOfferAccordionForViewport();
+                }
+              };
+              if (typeof offerAccordionMediaQuery.addEventListener === 'function') {
+                offerAccordionMediaQuery.addEventListener('change', handleAccordionChange);
+              } else if (typeof offerAccordionMediaQuery.addListener === 'function') {
+                offerAccordionMediaQuery.addListener(handleAccordionChange);
+              }
+            }
+            if (offerStorageEnabled) {
+              saveOfferStateToStorage();
+            }
+          }
+
+          function formatOfferDateDisplay(value) {
+            if (!value) {
+              return '';
+            }
+            var trimmed = value.toString().trim();
+            if (!trimmed) {
+              return '';
+            }
+            var parsed = new Date(trimmed);
+            if (Number.isNaN(parsed.getTime())) {
+              return trimmed;
+            }
+            return offerDateFormatter.format(parsed);
+          }
+
+          function setOfferPrintRow(key, value) {
+            var entry = printOfferRows[key];
+            if (!entry || !entry.value) {
+              return;
+            }
+            var text = value != null ? value.toString().trim() : '';
+            entry.value.textContent = text || '–';
+            if (entry.row) {
+              if (text) {
+                entry.row.hidden = false;
+                entry.row.removeAttribute('hidden');
+              } else {
+                entry.row.hidden = true;
+              }
+            }
+          }
+
+          function setOfferMetaItem(key, value) {
+            var item = printOfferMetaItems[key];
+            var valueElement = printOfferMetaValues[key];
+            var text = value != null ? value.toString().trim() : '';
+            if (valueElement) {
+              valueElement.textContent = text || '–';
+            }
+            if (item) {
+              item.hidden = !text;
+            }
+            return !!text;
+          }
+
+          function updatePrintOffer(offerState) {
+            var state = offerState || {};
+            var vendor = state.vendor || {};
+            var customer = state.customer || {};
+            var meta = state.meta || {};
+            var vendorPostalLine = '';
+            if (vendor.postalCode || vendor.city) {
+              vendorPostalLine = [vendor.postalCode, vendor.city].filter(Boolean).join(' ');
+            }
+            var customerPostalLine = '';
+            if (customer.postalCode || customer.city) {
+              customerPostalLine = [customer.postalCode, customer.city].filter(Boolean).join(' ');
+            }
+            setOfferPrintRow('vendorName', vendor.name);
+            setOfferPrintRow('vendorContact', vendor.contact);
+            setOfferPrintRow('vendorStreet', vendor.street);
+            setOfferPrintRow('vendorPostal', vendorPostalLine);
+            setOfferPrintRow('vendorEmail', vendor.email);
+            setOfferPrintRow('vendorPhone', vendor.phone);
+            setOfferPrintRow('vendorVat', vendor.vatId);
+            setOfferPrintRow('customerName', customer.name);
+            setOfferPrintRow('customerContact', customer.contact);
+            setOfferPrintRow('customerStreet', customer.street);
+            setOfferPrintRow('customerPostal', customerPostalLine);
+            setOfferPrintRow('customerEmail', customer.email);
+            setOfferPrintRow('customerPhone', customer.phone);
+            if (printOfferColumns.vendor) {
+              if (state.hasVendor) {
+                printOfferColumns.vendor.hidden = false;
+                printOfferColumns.vendor.removeAttribute('hidden');
+              } else {
+                printOfferColumns.vendor.hidden = true;
+              }
+            }
+            if (printOfferColumns.customer) {
+              if (state.hasCustomer) {
+                printOfferColumns.customer.hidden = false;
+                printOfferColumns.customer.removeAttribute('hidden');
+              } else {
+                printOfferColumns.customer.hidden = true;
+              }
+            }
+            if (printOfferColumnsContainer) {
+              var showColumns = !!state.hasVendor || !!state.hasCustomer;
+              printOfferColumnsContainer.hidden = !showColumns;
+            }
+            var metaVisible = false;
+            metaVisible = setOfferMetaItem('number', meta.number) || metaVisible;
+            metaVisible = setOfferMetaItem('date', formatOfferDateDisplay(meta.date)) || metaVisible;
+            metaVisible = setOfferMetaItem('validUntil', formatOfferDateDisplay(meta.validUntil)) || metaVisible;
+            metaVisible = setOfferMetaItem('delivery', meta.deliveryTime) || metaVisible;
+            metaVisible = setOfferMetaItem('payment', meta.paymentTerms) || metaVisible;
+            if (printOfferMetaContainer) {
+              printOfferMetaContainer.hidden = !metaVisible;
+            }
+          }
+
           function computeState() {
             var partNameRaw = getInputRaw(partNameInput);
             var partNameTrimmed = partNameRaw ? partNameRaw.trim() : '';
             if (partNameTrimmed.length > 80) {
               partNameTrimmed = partNameTrimmed.slice(0, 80);
             }
+            var offerState = collectOfferState();
             var selected = materialSelect.value;
             var defaults = materialData[selected] || {};
             var gramsPerMeter = defaults.gramsPerMeter || 0;
@@ -1241,7 +1760,8 @@
               hasPartName: partNameTrimmed.length > 0,
               chartEnabled: chartEnabled,
               mode: weightMode.checked ? 'weight' : 'length',
-              inputs: inputVisibility
+              inputs: inputVisibility,
+              offer: offerState
             };
           }
 
@@ -1464,6 +1984,8 @@
             if (!printMaterialOutput) {
               return;
             }
+
+            updatePrintOffer(state.offer);
 
             if (printHeaderPartName) {
               if (state.hasPartName) {
@@ -1698,6 +2220,7 @@
             return state;
           }
 
+          initializeOfferSection();
           wireInputs();
 
           materialSelect.addEventListener('change', setMaterialDefaults);
