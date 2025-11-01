@@ -194,14 +194,14 @@
           <p>Wähle Material, gib Gewicht oder Länge ein und ergänze Laufzeit sowie Stromkosten – der Rest passiert automatisch.</p>
         </div>
         <section class="calc-grid" data-grid>
-          <div data-col="standard">
+          <div data-col="standard" id="calc-standard">
             <div class="card" id="calculatorCard">
             <h2 class="calc-card__title">Standard-Rechner</h2>
             <form class="calc-form" id="calcForm" novalidate>
               <div id="std-fields">
                 <div class="calc-pro-toggle">
-                  <label class="calc-toggle">
-                    <input class="calc-toggle__input" type="checkbox" id="proToggle" name="proToggle" aria-controls="pro-fields" aria-expanded="false">
+                  <input class="calc-toggle__input" type="checkbox" id="proToggle" name="proToggle" aria-controls="pro-fields" aria-expanded="false">
+                  <label class="calc-toggle" for="proToggle">
                     <span class="calc-toggle__track" aria-hidden="true">
                       <span class="calc-toggle__thumb"></span>
                     </span>
@@ -300,7 +300,7 @@
           </div>
         </div>
 
-        <div data-col="pro" data-pro-pane aria-hidden="true" inert>
+        <div data-col="pro" id="calc-pro" data-pro-pane aria-hidden="true">
           <aside class="card calc-pro-card" id="proCard">
             <div class="calc-pro-card__header">
               <div class="calc-pro-card__heading">
@@ -312,24 +312,24 @@
               </button>
             </div>
             <div class="calc-pro-card__body" id="proCardBody">
-              <section class="calc-pro" id="pro-fields" hidden aria-hidden="true" inert>
+              <section class="calc-pro" id="pro-fields" hidden aria-hidden="true">
                 <p class="calc-hint calc-hint--lead">Kostenfaktoren für professionelle Kalkulation. Wirken nur, wenn aktiviert.</p>
                 <div class="calc-pro__group">
                   <h3 class="calc-pro__subheading">Kostenaufschläge</h3>
                   <div class="calc-pro__grid">
                     <div class="calc-field">
                       <label for="profitMargin">Gewinnmarge (%)</label>
-                      <input type="number" id="profitMargin" data-calc name="profitMargin" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 10">
+                      <input type="number" id="profitMargin" data-calc-pro name="profitMargin" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 10">
                       <p class="calc-hint">Aufschlag auf Material, Energie, Arbeitszeit &amp; Maschine.</p>
                     </div>
                     <div class="calc-field">
                       <label for="discountPercent">Rabatt (%)</label>
-                      <input type="number" id="discountPercent" data-calc name="discountPercent" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 0">
+                      <input type="number" id="discountPercent" data-calc-pro name="discountPercent" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 0">
                       <p class="calc-hint">Abzug vor MwSt. auf die Zwischensumme.</p>
                     </div>
                     <div class="calc-field">
                       <label for="errorRate">Fehlerrate (%)</label>
-                      <input type="number" id="errorRate" data-calc name="errorRate" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 5">
+                      <input type="number" id="errorRate" data-calc-pro name="errorRate" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 5">
                       <p class="calc-hint">Wirkt nur auf Material (inkl. Verschnitt).</p>
                     </div>
                   </div>
@@ -339,22 +339,22 @@
                   <div class="calc-pro__grid">
                     <div class="calc-field">
                       <label for="hourlyRate">Stundenlohn (€/h)</label>
-                      <input type="number" id="hourlyRate" data-calc name="hourlyRate" min="0" step="1" inputmode="decimal" placeholder="z. B. 20">
+                      <input type="number" id="hourlyRate" data-calc-pro name="hourlyRate" min="0" step="1" inputmode="decimal" placeholder="z. B. 20">
                       <p class="calc-hint">Wirkt auf Rüstzeit + Nachbearbeitung.</p>
                     </div>
                     <div class="calc-field">
                       <label for="setupMinutes">Rüstzeit (min)</label>
-                      <input type="number" id="setupMinutes" data-calc name="setupMinutes" min="0" step="1" inputmode="decimal" placeholder="z. B. 10">
+                      <input type="number" id="setupMinutes" data-calc-pro name="setupMinutes" min="0" step="1" inputmode="decimal" placeholder="z. B. 10">
                       <p class="calc-hint">Vorbereitung &amp; Setup je Auftrag.</p>
                     </div>
                     <div class="calc-field">
                       <label for="finishingMinutes">Nachbearbeitung (min)</label>
-                      <input type="number" id="finishingMinutes" data-calc name="finishingMinutes" min="0" step="1" inputmode="decimal" placeholder="z. B. 10">
+                      <input type="number" id="finishingMinutes" data-calc-pro name="finishingMinutes" min="0" step="1" inputmode="decimal" placeholder="z. B. 10">
                       <p class="calc-hint">Entgraten, Reinigen, Finish.</p>
                     </div>
                     <div class="calc-field">
                       <label for="proPrintMinutes">Druckzeit (min)</label>
-                      <input type="number" id="proPrintMinutes" data-calc name="proPrintMinutes" min="0" step="1" inputmode="decimal" aria-describedby="hint-printMinutes">
+                      <input type="number" id="proPrintMinutes" data-calc-pro name="proPrintMinutes" min="0" step="1" inputmode="decimal" aria-describedby="hint-printMinutes">
                       <p class="calc-hint" id="hint-printMinutes">Synchronisiert mit der Laufzeit oben.</p>
                     </div>
                   </div>
@@ -364,17 +364,17 @@
                   <div class="calc-pro__grid">
                     <div class="calc-field">
                       <label for="fixedCost">Fixkosten (€)</label>
-                      <input type="number" id="fixedCost" data-calc name="fixedCost" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 5">
+                      <input type="number" id="fixedCost" data-calc-pro name="fixedCost" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 5">
                       <p class="calc-hint">Bleiben fix – keine Marge darauf.</p>
                     </div>
                     <div class="calc-field">
                       <label for="packagingCost">Verpackung (€)</label>
-                      <input type="number" id="packagingCost" data-calc name="packagingCost" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 2">
+                      <input type="number" id="packagingCost" data-calc-pro name="packagingCost" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 2">
                       <p class="calc-hint">Zählt zu den Fixkosten je Auftrag.</p>
                     </div>
                     <div class="calc-field">
                       <label for="shippingCost">Versand (€)</label>
-                      <input type="number" id="shippingCost" data-calc name="shippingCost" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 5">
+                      <input type="number" id="shippingCost" data-calc-pro name="shippingCost" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 5">
                       <p class="calc-hint">Zählt zu den Fixkosten je Auftrag.</p>
                     </div>
                   </div>
@@ -385,18 +385,18 @@
                   <div class="calc-pro__grid">
                     <div class="calc-field calc-field--stacked">
                       <label for="machineHourlyRate">Maschinenkosten (€/h)</label>
-                      <input type="number" id="machineHourlyRate" data-calc name="machineHourlyRate" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 1.5">
+                      <input type="number" id="machineHourlyRate" data-calc-pro name="machineHourlyRate" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 1.5">
                       <p class="calc-hint">Wirkt direkt auf die Druckzeit.</p>
                       <details class="calc-pro-advanced" id="machineAdvanced">
                         <summary>Anschaffung &amp; Lebensdauer hinterlegen</summary>
                         <div class="calc-pro-advanced__grid">
                           <div class="calc-field">
                             <label for="machinePurchase">Anschaffungswert (€)</label>
-                            <input type="number" id="machinePurchase" data-calc name="machinePurchase" min="0" step="50" inputmode="decimal" placeholder="z. B. 1200">
+                            <input type="number" id="machinePurchase" data-calc-pro name="machinePurchase" min="0" step="50" inputmode="decimal" placeholder="z. B. 1200">
                           </div>
                           <div class="calc-field">
                             <label for="machineLifetime">Lebensdauer (h)</label>
-                            <input type="number" id="machineLifetime" data-calc name="machineLifetime" min="0" step="50" inputmode="decimal" placeholder="z. B. 4000">
+                            <input type="number" id="machineLifetime" data-calc-pro name="machineLifetime" min="0" step="50" inputmode="decimal" placeholder="z. B. 4000">
                           </div>
                         </div>
                         <p class="calc-hint" id="machineAutoHint">Ergibt automatisch einen €/h-Wert.</p>
@@ -408,8 +408,8 @@
                   <h3 class="calc-pro__subheading">Materialdaten</h3>
                   <div class="calc-pro__grid">
                     <div class="calc-field">
-                      <label for="materialDensity">Dichte (g/cm³)</label>
-                      <input type="number" id="materialDensity" data-calc name="materialDensity" min="0" step="0.01" inputmode="decimal" placeholder="z. B. 1.24">
+                      <label for="proDensity">Dichte (g/cm³)</label>
+                      <input type="number" id="proDensity" data-calc-pro name="materialDensity" min="0" step="0.01" inputmode="decimal" placeholder="z. B. 1.24">
                       <p class="calc-hint" id="materialDensityNote">Für Filamentlänge → Gewicht (Ø 1,75&nbsp;mm).</p>
                       <button type="button" class="calc-reset-link is-hidden" id="materialDensityReset">Preset-Dichte wiederherstellen</button>
                     </div>
@@ -420,7 +420,7 @@
           </aside>
         </div>
 
-        <aside data-col="result" data-result>
+        <aside data-col="result" id="calc-result" data-result>
           <div class="card calc-results" aria-live="polite">
             <div class="calc-results__header">
               <h2>Ergebnis</h2>
