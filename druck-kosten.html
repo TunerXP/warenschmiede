@@ -224,8 +224,19 @@
                 </div>
 
                 <div class="calc-field">
-                  <label for="pricePerKg">Materialpreis in €/kg</label>
-                  <input type="number" id="pricePerKg" name="pricePerKg" min="0" step="0.10" inputmode="decimal" />
+                  <label for="pricePerKg">Materialpreis (€/kg)
+                    <span class="info-tooltip">
+                      <button type="button" class="info-tooltip__trigger" aria-describedby="tooltip-price-per-kg" aria-label="Info zum Feld Materialpreis" aria-haspopup="true">
+                        <svg class="info-tooltip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                          <circle cx="8" cy="8" r="7" />
+                          <circle class="info-tooltip__dot" cx="8" cy="4.6" r="0.7" />
+                          <line x1="8" y1="7" x2="8" y2="11" />
+                        </svg>
+                      </button>
+                      <span class="info-tooltip__content" role="tooltip" id="tooltip-price-per-kg">Preis deiner Filamentrolle in Euro pro Kilogramm.</span>
+                    </span>
+                  </label>
+                  <input type="number" id="pricePerKg" name="pricePerKg" min="0" step="0.10" inputmode="decimal" placeholder="z. B. 20">
                 </div>
 
                 <fieldset class="calc-fieldset">
@@ -241,8 +252,19 @@
                     </div>
                   </div>
                   <div class="calc-field" data-field="weight">
-                    <label for="partWeight">Gewicht in Gramm</label>
-                    <input type="number" id="partWeight" name="partWeight" min="0" step="1" inputmode="decimal" placeholder="z. B. 50">
+                    <label for="partWeight">Materialgewicht (g)
+                      <span class="info-tooltip">
+                        <button type="button" class="info-tooltip__trigger" aria-describedby="tooltip-material-weight" aria-label="Info zum Feld Materialgewicht" aria-haspopup="true">
+                          <svg class="info-tooltip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                            <circle cx="8" cy="8" r="7" />
+                            <circle class="info-tooltip__dot" cx="8" cy="4.6" r="0.7" />
+                            <line x1="8" y1="7" x2="8" y2="11" />
+                          </svg>
+                        </button>
+                        <span class="info-tooltip__content" role="tooltip" id="tooltip-material-weight">Gewicht des verwendeten Filaments in Gramm. Kann aus dem Slicer – z. B. Bambu Studio – abgelesen werden.</span>
+                      </span>
+                    </label>
+                    <input type="number" id="partWeight" name="partWeight" min="0" step="1" inputmode="decimal" placeholder="z. B. 200">
                   </div>
                   <div class="calc-field" data-field="length" hidden>
                     <label for="filamentLength">Filamentlänge in Metern</label>
@@ -250,18 +272,56 @@
                   </div>
                 </fieldset>
 
+                <div class="calc-field">
+                  <label for="wastePercent">Verschnitt (%)
+                    <span class="info-tooltip">
+                      <button type="button" class="info-tooltip__trigger" aria-describedby="tooltip-waste-percent" aria-label="Info zum Feld Verschnitt" aria-haspopup="true">
+                        <svg class="info-tooltip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                          <circle cx="8" cy="8" r="7" />
+                          <circle class="info-tooltip__dot" cx="8" cy="4.6" r="0.7" />
+                          <line x1="8" y1="7" x2="8" y2="11" />
+                        </svg>
+                      </button>
+                      <span class="info-tooltip__content" role="tooltip" id="tooltip-waste-percent">Anteil des Materials, der durch Reste, Brim oder Support verloren geht.</span>
+                    </span>
+                  </label>
+                  <input type="number" id="wastePercent" name="wastePercent" min="0" max="100" step="1" inputmode="decimal" placeholder="z. B. 10">
+                </div>
+
                 <div class="calc-inline">
                   <div class="calc-field">
-                    <label for="printTime">Druckzeit (hh:mm)</label>
-                    <input type="time" id="printTime" name="printTime" step="60" placeholder="03:00">
+                    <label for="printTime">Druckzeit (hh:mm)
+                      <span class="info-tooltip">
+                        <button type="button" class="info-tooltip__trigger" aria-describedby="tooltip-print-time" aria-label="Info zum Feld Druckzeit" aria-haspopup="true">
+                          <svg class="info-tooltip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                            <circle cx="8" cy="8" r="7" />
+                            <circle class="info-tooltip__dot" cx="8" cy="4.6" r="0.7" />
+                            <line x1="8" y1="7" x2="8" y2="11" />
+                          </svg>
+                        </button>
+                        <span class="info-tooltip__content" role="tooltip" id="tooltip-print-time">Geschätzte oder vom Slicer berechnete Druckzeit in Stunden. Zeitformat hh:mm, z. B. 05:00.</span>
+                      </span>
+                    </label>
+                    <input type="time" id="printTime" name="printTime" step="60" placeholder="05:00">
                   </div>
                   <div class="calc-field">
-                    <label for="powerDraw">Leistung in Watt</label>
+                    <label for="powerDraw">Leistung (W)
+                      <span class="info-tooltip">
+                        <button type="button" class="info-tooltip__trigger" aria-describedby="tooltip-power-draw" aria-label="Info zum Feld Leistung" aria-haspopup="true">
+                          <svg class="info-tooltip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                            <circle cx="8" cy="8" r="7" />
+                            <circle class="info-tooltip__dot" cx="8" cy="4.6" r="0.7" />
+                            <line x1="8" y1="7" x2="8" y2="11" />
+                          </svg>
+                        </button>
+                        <span class="info-tooltip__content" role="tooltip" id="tooltip-power-draw">Elektrische Leistungsaufnahme deines 3D-Druckers in Watt. Steht oft auf dem Typenschild oder im Netzteil.</span>
+                      </span>
+                    </label>
                     <input type="number" id="powerDraw" name="powerDraw" min="0" step="10" placeholder="z. B. 150">
                     <p class="calc-hint">Wird erst berücksichtigt, wenn du einen Wert eingibst.</p>
                   </div>
                   <div class="calc-field">
-                    <label for="energyPrice">Strompreis in €/kWh
+                    <label for="energyPrice">Strompreis (€/kWh)
                       <span class="info-tooltip">
                         <button type="button" class="info-tooltip__trigger" aria-describedby="tooltip-energy-price" aria-label="Info zum Feld Strompreis" aria-haspopup="true">
                           <svg class="info-tooltip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
@@ -270,14 +330,14 @@
                             <line x1="8" y1="7" x2="8" y2="11" />
                           </svg>
                         </button>
-                        <span class="info-tooltip__content" role="tooltip" id="tooltip-energy-price">Aktueller Arbeitspreis aus deinem Stromvertrag. Beispiel: 0,30&nbsp;€/kWh.</span>
+                        <span class="info-tooltip__content" role="tooltip" id="tooltip-energy-price">Dein aktueller Strompreis laut Stromanbieter.</span>
                       </span>
                     </label>
                     <input type="number" id="energyPrice" name="energyPrice" min="0" step="0.01" inputmode="decimal" placeholder="z. B. 0,30">
                     <p class="calc-hint">Wird erst berücksichtigt, wenn du einen Wert eingibst.</p>
                   </div>
                   <div class="calc-field">
-                    <label for="loadFactor">Lastfaktor in %
+                    <label for="loadFactor">Lastfaktor (%)
                       <span class="info-tooltip">
                         <button type="button" class="info-tooltip__trigger" aria-describedby="tooltip-load-factor" aria-label="Info zum Feld Lastfaktor" aria-haspopup="true">
                           <svg class="info-tooltip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
@@ -286,7 +346,7 @@
                             <line x1="8" y1="7" x2="8" y2="11" />
                           </svg>
                         </button>
-                        <span class="info-tooltip__content" role="tooltip" id="tooltip-load-factor">Schätzung, wie viel&nbsp;% der Nennleistung der Drucker im Schnitt zieht. Typisch: 60–80&nbsp;%; bei geschlossenen Gehäusen/ASA/ABS oft höher.</span>
+                        <span class="info-tooltip__content" role="tooltip" id="tooltip-load-factor">Durchschnittliche Auslastung während des Drucks. Beispiel: 80 % = nicht volle Leistung die ganze Zeit.</span>
                       </span>
                     </label>
                     <input type="number" id="loadFactor" name="loadFactor" min="0" max="100" step="1" placeholder="z. B. 80">
@@ -299,12 +359,22 @@
                 <p class="calc-hint calc-hint--lead">Nutze die Zusatzfelder für Marge, Arbeitszeit und optionale Abschläge.</p>
                 <div class="calc-pro__grid">
                   <div class="calc-field">
-                    <label for="profitMargin">Gewinnmarge in %</label>
-                    <input type="number" id="profitMargin" name="profitMargin" min="0" max="100" step="0.5" inputmode="decimal" aria-describedby="hint-profitMargin">
-                    <p class="calc-hint" id="hint-profitMargin">Deckungsbeitrag für Betrieb &amp; Risiko.</p>
+                    <label for="profitMargin">Gewinnmarge (%)
+                      <span class="info-tooltip">
+                        <button type="button" class="info-tooltip__trigger" aria-describedby="tooltip-profit-margin" aria-label="Info zum Feld Gewinnmarge" aria-haspopup="true">
+                          <svg class="info-tooltip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                            <circle cx="8" cy="8" r="7" />
+                            <circle class="info-tooltip__dot" cx="8" cy="4.6" r="0.7" />
+                            <line x1="8" y1="7" x2="8" y2="11" />
+                          </svg>
+                        </button>
+                        <span class="info-tooltip__content" role="tooltip" id="tooltip-profit-margin">Aufschlag auf variable Kosten (Material, Energie, Arbeitszeit). Fixkosten bleiben unverändert.</span>
+                      </span>
+                    </label>
+                    <input type="number" id="profitMargin" name="profitMargin" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 10">
                   </div>
                   <div class="calc-field">
-                    <label for="hourlyRate">Stundenlohn in €/h
+                    <label for="hourlyRate">Stundenlohn (€/h)
                       <span class="info-tooltip">
                         <button type="button" class="info-tooltip__trigger" aria-describedby="tooltip-hourly-rate" aria-label="Info zum Feld Stundenlohn" aria-haspopup="true">
                           <svg class="info-tooltip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
@@ -313,41 +383,75 @@
                             <line x1="8" y1="7" x2="8" y2="11" />
                           </svg>
                         </button>
-                        <span class="info-tooltip__content" role="tooltip" id="tooltip-hourly-rate">Gilt nur für Rüstzeit + Nachbearbeitung (nicht für Druckzeit).</span>
+                        <span class="info-tooltip__content" role="tooltip" id="tooltip-hourly-rate">Eigen- oder Kalkulationslohn für manuelle Arbeiten – wirkt nur auf Rüst- und Nachbearbeitung.</span>
                       </span>
                     </label>
-                    <input type="number" id="hourlyRate" name="hourlyRate" min="0" step="1" inputmode="decimal" aria-describedby="hint-hourlyRate">
-                    <p class="calc-hint" id="hint-hourlyRate">Eigener Stundensatz inkl. Nebenkosten.</p>
+                    <input type="number" id="hourlyRate" name="hourlyRate" min="0" step="1" inputmode="decimal" placeholder="z. B. 20">
                   </div>
                   <div class="calc-field">
-                    <label for="setupMinutes">Rüstzeit in Minuten</label>
-                    <input type="number" id="setupMinutes" name="setupMinutes" min="0" step="1" inputmode="decimal" aria-describedby="hint-setupMinutes">
-                    <p class="calc-hint" id="hint-setupMinutes">Einrichtung &amp; Vorbereitung.</p>
+                    <label for="setupMinutes">Rüstzeit (min)
+                      <span class="info-tooltip">
+                        <button type="button" class="info-tooltip__trigger" aria-describedby="tooltip-setup-minutes" aria-label="Info zum Feld Rüstzeit" aria-haspopup="true">
+                          <svg class="info-tooltip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                            <circle cx="8" cy="8" r="7" />
+                            <circle class="info-tooltip__dot" cx="8" cy="4.6" r="0.7" />
+                            <line x1="8" y1="7" x2="8" y2="11" />
+                          </svg>
+                        </button>
+                        <span class="info-tooltip__content" role="tooltip" id="tooltip-setup-minutes">Zeit für Vorbereitung, Einrichtung und Start des Drucks.</span>
+                      </span>
+                    </label>
+                    <input type="number" id="setupMinutes" name="setupMinutes" min="0" step="1" inputmode="decimal" placeholder="z. B. 10">
                   </div>
                   <div class="calc-field">
-                    <label for="proPrintMinutes">Druckzeit in Minuten</label>
+                    <label for="proPrintMinutes">Druckzeit (min)</label>
                     <input type="number" id="proPrintMinutes" name="proPrintMinutes" min="0" step="1" inputmode="decimal" aria-describedby="hint-printMinutes">
                     <p class="calc-hint" id="hint-printMinutes">Synchronisiert mit der Laufzeit oben.</p>
                   </div>
                   <div class="calc-field">
-                    <label for="finishingMinutes">Nachbearbeitung in Minuten</label>
-                    <input type="number" id="finishingMinutes" name="finishingMinutes" min="0" step="1" inputmode="decimal" aria-describedby="hint-finishingMinutes">
-                    <p class="calc-hint" id="hint-finishingMinutes">Entgraten, Reinigen &amp; Finish.</p>
+                    <label for="finishingMinutes">Nachbearbeitung (min)
+                      <span class="info-tooltip">
+                        <button type="button" class="info-tooltip__trigger" aria-describedby="tooltip-finishing-minutes" aria-label="Info zum Feld Nachbearbeitung" aria-haspopup="true">
+                          <svg class="info-tooltip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                            <circle cx="8" cy="8" r="7" />
+                            <circle class="info-tooltip__dot" cx="8" cy="4.6" r="0.7" />
+                            <line x1="8" y1="7" x2="8" y2="11" />
+                          </svg>
+                        </button>
+                        <span class="info-tooltip__content" role="tooltip" id="tooltip-finishing-minutes">Zeit für Entfernen von Support, Schleifen oder Montage.</span>
+                      </span>
+                    </label>
+                    <input type="number" id="finishingMinutes" name="finishingMinutes" min="0" step="1" inputmode="decimal" placeholder="z. B. 10">
                   </div>
                   <div class="calc-field">
-                    <label for="wastePercent">Verschnitt in %</label>
-                    <input type="number" id="wastePercent" name="wastePercent" min="0" max="100" step="1" inputmode="decimal" aria-describedby="hint-wastePercent">
-                    <p class="calc-hint" id="hint-wastePercent">Reserve für Support &amp; Testdrucke.</p>
+                    <label for="fixedCost">Fixkosten (€)
+                      <span class="info-tooltip">
+                        <button type="button" class="info-tooltip__trigger" aria-describedby="tooltip-fixed-cost" aria-label="Info zum Feld Fixkosten" aria-haspopup="true">
+                          <svg class="info-tooltip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                            <circle cx="8" cy="8" r="7" />
+                            <circle class="info-tooltip__dot" cx="8" cy="4.6" r="0.7" />
+                            <line x1="8" y1="7" x2="8" y2="11" />
+                          </svg>
+                        </button>
+                        <span class="info-tooltip__content" role="tooltip" id="tooltip-fixed-cost">Feste Kosten pro Auftrag, z. B. Stromzähler, Maschinenabschreibung oder Verpackung.</span>
+                      </span>
+                    </label>
+                    <input type="number" id="fixedCost" name="fixedCost" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 5">
                   </div>
                   <div class="calc-field">
-                    <label for="fixedCost">Fixkosten pro Auftrag in €</label>
-                    <input type="number" id="fixedCost" name="fixedCost" min="0" step="0.5" inputmode="decimal" aria-describedby="hint-fixedCost">
-                    <p class="calc-hint" id="hint-fixedCost">Optional, z.&nbsp;B. Maschinenabschreibung.</p>
-                  </div>
-                  <div class="calc-field">
-                    <label for="discountPercent">Rabatt in %</label>
-                    <input type="number" id="discountPercent" name="discountPercent" min="0" max="100" step="0.5" inputmode="decimal" aria-describedby="hint-discountPercent">
-                    <p class="calc-hint" id="hint-discountPercent">Optionaler Abschlag vor MwSt.</p>
+                    <label for="discountPercent">Rabatt (%)
+                      <span class="info-tooltip">
+                        <button type="button" class="info-tooltip__trigger" aria-describedby="tooltip-discount-percent" aria-label="Info zum Feld Rabatt" aria-haspopup="true">
+                          <svg class="info-tooltip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                            <circle cx="8" cy="8" r="7" />
+                            <circle class="info-tooltip__dot" cx="8" cy="4.6" r="0.7" />
+                            <line x1="8" y1="7" x2="8" y2="11" />
+                          </svg>
+                        </button>
+                        <span class="info-tooltip__content" role="tooltip" id="tooltip-discount-percent">Abzug vom Endpreis, z. B. Treuerabatt für Kunden.</span>
+                      </span>
+                    </label>
+                    <input type="number" id="discountPercent" name="discountPercent" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 0">
                   </div>
                 </div>
               </section>
@@ -776,9 +880,6 @@
         var selected = materialSelect.value;
         var defaults = materialData[selected];
         if (defaults) {
-          var priceDefault = defaults.price.toFixed(2);
-          pricePerKgInput.value = priceDefault;
-          pricePerKgInput.placeholder = priceDefault.replace('.', ',');
           weightInput.dataset.gramsPerMeter = defaults.gramsPerMeter.toFixed(2);
           lengthInput.dataset.gramsPerMeter = defaults.gramsPerMeter.toFixed(2);
           if (!weightInput.value && !lengthInput.value) {
@@ -894,10 +995,7 @@
         var defaults = materialData[selected] || {};
         var gramsPerMeter = defaults.gramsPerMeter || 0;
 
-        var pricePerKg = parseFloat((pricePerKgInput.value || '').replace(',', '.'));
-        if (!isFinite(pricePerKg)) {
-          pricePerKg = defaults.price || 0;
-        }
+        var pricePerKg = readNumber(pricePerKgInput);
 
         var weight = readNumber(weightInput);
         var length = readNumber(lengthInput);
@@ -940,10 +1038,20 @@
         syncProMinutesFromTime(hours);
 
         var materialCost = (weight / 1000) * pricePerKg;
+        var wastePercentRaw = wastePercentInput ? (wastePercentInput.value || '').trim() : '';
+        var wastePercent = wastePercentInput ? readNumber(wastePercentInput) : 0;
+        if (wastePercentInput && wastePercent > 100) {
+          wastePercent = 100;
+          wastePercentInput.value = wastePercent.toString();
+        } else if (!wastePercentRaw && wastePercentInput) {
+          wastePercent = 0;
+          wastePercentInput.value = '';
+        }
+
+        var materialWaste = materialCost * (wastePercent / 100);
+        var materialWithWaste = materialCost + materialWaste;
         var energyCost = (power / 1000) * hours * energyPrice * (loadFactor / 100);
         var vatIncluded = !!vatCheckbox.checked;
-        var materialWaste = 0;
-        var materialWithWaste = materialCost;
         var labourMinutes = 0;
         var timeCost = 0;
         var fixedCostValue = 0;
@@ -965,7 +1073,7 @@
           setupMinutes: 0,
           printMinutes: defaultMinutes,
           finishingMinutes: 0,
-          wastePercent: 0,
+          wastePercent: wastePercent,
           materialWaste: materialWaste,
           materialWithWaste: materialWithWaste,
           labourMinutes: labourMinutes,
@@ -996,11 +1104,6 @@
             proPrintMinutesInput.value = proMinutes.toString();
           }
           var finishingMinutes = readNumber(finishingMinutesInput);
-          var wastePercent = readNumber(wastePercentInput);
-          if (wastePercent > 100) {
-            wastePercent = 100;
-            wastePercentInput.value = wastePercent.toString();
-          }
           var fixedCost = readNumber(fixedCostInput);
           var discountPercent = readNumber(discountPercentInput);
           if (discountPercent > 100) {
@@ -1008,8 +1111,6 @@
             discountPercentInput.value = discountPercent.toString();
           }
 
-          materialWaste = materialCost * (wastePercent / 100);
-          materialWithWaste = materialCost + materialWaste;
           standardSubtotal = materialWithWaste + energyCost;
           labourMinutes = setupMinutes + finishingMinutes;
           timeCost = (hourlyRate / 60) * labourMinutes;
@@ -1231,7 +1332,7 @@
       weightMode.addEventListener('change', updateModeVisibility);
       lengthMode.addEventListener('change', updateModeVisibility);
 
-      [pricePerKgInput, weightInput, lengthInput, timeInput, powerInput, energyPriceInput, loadFactorInput].forEach(function (input) {
+      [pricePerKgInput, weightInput, lengthInput, timeInput, powerInput, energyPriceInput, loadFactorInput, wastePercentInput].forEach(function (input) {
         if (!input) return;
         input.addEventListener('input', recalc);
       });
@@ -1258,7 +1359,7 @@
         });
       }
 
-      [profitMarginInput, hourlyRateInput, setupMinutesInput, finishingMinutesInput, wastePercentInput, fixedCostInput, discountPercentInput].forEach(function (input) {
+      [profitMarginInput, hourlyRateInput, setupMinutesInput, finishingMinutesInput, fixedCostInput, discountPercentInput].forEach(function (input) {
         if (!input) return;
         input.addEventListener('input', recalc);
       });
