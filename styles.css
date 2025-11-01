@@ -3288,6 +3288,8 @@ a:focus-visible {
 .calc-results__actions {
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-3);
   margin-top: 0.35rem;
 }
 
@@ -3632,6 +3634,15 @@ a:focus-visible {
   .print-only,
   .calc-print {
     display: block !important;
+  }
+
+  html[data-print-mode="result"] #printInputs,
+  html[data-print-mode="result"] #printProParams {
+    display: none !important;
+  }
+
+  html[data-print-mode="full"] #printInputs {
+    page-break-before: always;
   }
 
   :root:not(.is-pro-on) [data-pro-row="true"] {
