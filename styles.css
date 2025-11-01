@@ -3674,6 +3674,10 @@ a:focus-visible {
 }
 
 @media print {
+  #ws-tooltips-portal {
+    display: none !important;
+  }
+
   @page {
     size: A4 portrait;
     margin: 1.4cm;
@@ -3716,11 +3720,7 @@ a:focus-visible {
     text-decoration: none;
   }
 
-  .info-tooltip {
-    display: none !important;
-  }
-}
-
+  
 .info-tooltip {
   position: relative;
   display: inline-flex;
@@ -3735,14 +3735,17 @@ a:focus-visible {
   justify-content: center;
   width: 1.2rem;
   height: 1.2rem;
+  min-width: 1.2rem;
+  min-height: 1.2rem;
   padding: 0;
   border-radius: 50%;
   background: color-mix(in srgb, var(--accent) 12%, var(--surface-muted) 88%);
   color: var(--accent);
-  cursor: help;
   border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   font: inherit;
+  touch-action: manipulation;
+  cursor: help;
   cursor: pointer;
 }
 
@@ -3774,38 +3777,69 @@ a:focus-visible {
   opacity: 1;
 }
 
+#ws-tooltips-portal {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4000;
+}
+
+#ws-tooltips-portal .info-tooltip__content {
+  position: absolute;
+}
+
 .info-tooltip__content {
   position: absolute;
-  z-index: 120;
-  inset-inline-start: 50%;
-  bottom: calc(100% + 0.5rem);
-  transform: translateX(-50%);
-  width: min(20rem, 75vw);
-  padding: 0.6rem 0.75rem;
-  border-radius: 0.75rem;
   background: color-mix(in srgb, var(--surface) 85%, var(--accent) 15%);
   color: var(--text);
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
   font-size: 0.9rem;
-  line-height: 1.4;
+  line-height: 1.45;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.75rem;
+  max-width: min(20rem, 85vw);
+  width: max-content;
+  word-break: break-word;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.2s ease;
+  pointer-events: none;
+  transform: translate3d(0, calc(var(--tooltip-shift, -6px)), 0);
+  transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
-.info-tooltip:hover .info-tooltip__content,
-.info-tooltip:focus-within .info-tooltip__content {
+.info-tooltip__content::after {
+  content: "";
+  position: absolute;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: inherit;
+  left: calc(50% + var(--tooltip-arrow-offset, 0px));
+  bottom: -0.35rem;
+  border-radius: 0.2rem;
+  transform: translate(-50%, 50%) rotate(45deg);
+  box-shadow: inherit;
+}
+
+.info-tooltip__content[data-placement="bottom"] {
+  --tooltip-shift: 6px;
+}
+
+.info-tooltip__content[data-placement="bottom"]::after {
+  top: -0.35rem;
+  bottom: auto;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.info-tooltip__content[data-state="open"] {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0);
 }
 
 @media (max-width: 768px) {
   .calc-checkbox--vat {
     margin-top: 0;
-  }
-
-  .info-tooltip {
-    position: static;
   }
 
   .info-tooltip__trigger {
@@ -3814,63 +3848,10 @@ a:focus-visible {
   }
 
   .info-tooltip__content {
-    position: fixed;
-    inset: auto;
-    inset-inline-start: var(--tooltip-left, 50%);
-    inset-block-start: var(--tooltip-anchor, auto);
-    transform: translate(-50%, calc(-100% - var(--tooltip-gap, 12px)));
-    z-index: 200;
-    max-width: min(22rem, calc(90vw - var(--safe-area-left, 0px) - var(--safe-area-right, 0px)));
-    width: auto;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    padding-block: 0.75rem;
-    padding-inline: calc(1rem + var(--tooltip-inline-safe, 0px));
-    line-height: 1.5;
-    text-align: left;
-    word-break: break-word;
-  }
-
-  .info-tooltip:focus-within .info-tooltip__content {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  .info-tooltip__content[data-placement="bottom"] {
-    transform: translate(-50%, var(--tooltip-gap, 12px));
-  }
-
-  .info-tooltip__content::after {
-    content: "";
-    position: absolute;
-    width: 0.75rem;
-    height: 0.75rem;
-    background: inherit;
-    left: calc(50% + var(--tooltip-arrow-offset, 0px));
-    bottom: -0.35rem;
-    border-radius: 0.2rem;
-    transform: translate(-50%, 50%) rotate(45deg);
-    box-shadow: inherit;
-  }
-
-  .info-tooltip__content[data-placement="bottom"]::after {
-    top: -0.35rem;
-    bottom: auto;
-    transform: translate(-50%, -50%) rotate(45deg);
-  }
-
-  .info-tooltip.is-active .info-tooltip__content {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-  }
-
-  .info-tooltip:hover .info-tooltip__content,
-  .info-tooltip:focus-within .info-tooltip__content {
-    opacity: 0;
-    visibility: hidden;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    padding: 0.75rem 1rem;
+    max-width: min(90vw, 20rem);
   }
 }
 
