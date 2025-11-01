@@ -274,18 +274,35 @@
     collectTooltips() {
       return Array.from(document.querySelectorAll('.info-tooltip'))
         .map((root) => {
-          const trigger = root.querySelector('.info-tooltip__trigger');
-          const content = root.querySelector('.info-tooltip__content');
+          const trigger = root.querySelector('.info-tooltip__trigger, .ws-tip-trigger');
+          let content = root.querySelector('.info-tooltip__content');
 
-          if (!trigger || !content) {
+          if (!trigger) {
             return null;
           }
 
-          const tooltipId = content.id || `tooltip-generated-${tooltipUid += 1}`;
-          if (!content.id) {
-            content.id = tooltipId;
+          const ensureContent = () => {
+            if (!content) {
+              content = document.createElement('span');
+              content.className = 'info-tooltip__content';
+              root.appendChild(content);
+            }
+
+            return content;
+          };
+
+          const getHelpTextAttr = () => (trigger.getAttribute('data-help') || root.getAttribute('data-help') || '').trim();
+
+          const source = ensureContent();
+          let tooltipId = source.id;
+
+          if (!tooltipId) {
+            tooltipUid += 1;
+            tooltipId = `tooltip-generated-${tooltipUid}`;
+            source.id = tooltipId;
           }
 
+          trigger.classList.add('ws-tip-trigger');
           trigger.setAttribute('aria-expanded', trigger.getAttribute('aria-expanded') === 'true' ? 'true' : 'false');
           trigger.setAttribute('aria-haspopup', 'true');
           trigger.setAttribute('aria-controls', tooltipId);
@@ -294,14 +311,59 @@
             trigger.setAttribute('aria-describedby', tooltipId);
           }
 
-          content.setAttribute('aria-hidden', 'true');
-          content.classList.add('info-tooltip__content');
+          if (!trigger.hasAttribute('type')) {
+            trigger.setAttribute('type', 'button');
+          }
+
+          source.setAttribute('aria-hidden', 'true');
+          source.setAttribute('hidden', '');
+          source.hidden = true;
+          source.classList.add('info-tooltip__content');
+          if (source.hasAttribute('role')) {
+            source.removeAttribute('role');
+          }
+
+          if (!source.dataset.placement && root.dataset.placement) {
+            source.dataset.placement = root.dataset.placement;
+          }
+
+          if (source.textContent.trim().length === 0) {
+            const attrHelp = getHelpTextAttr();
+            if (attrHelp.length > 0) {
+              source.textContent = attrHelp;
+            }
+          }
+
+          const getContent = () => {
+            const attrHelp = getHelpTextAttr();
+
+            if (source) {
+              if (source.childElementCount > 0) {
+                const html = source.innerHTML.trim();
+                if (html.length > 0) {
+                  return { value: html, mode: 'html' };
+                }
+              }
+
+              const text = source.textContent.trim();
+              if (text.length > 0) {
+                return { value: text, mode: 'text' };
+              }
+            }
+
+            if (attrHelp.length > 0) {
+              return { value: attrHelp, mode: 'text' };
+            }
+
+            return { value: '', mode: 'text' };
+          };
 
           return {
             id: tooltipId,
             root,
             trigger,
-            content,
+            content: source,
+            getContent,
             positioner: new TooltipPositioner(trigger),
             bubble: null,
             arrow: null,
@@ -310,12 +372,34 @@
             focused: false,
             skipNextClick: false,
             lastTriggerRect: null,
-            preferredPlacement: content.dataset.placement || 'top',
+            preferredPlacement: source.dataset.placement || root.dataset.placement || 'top',
             currentPlacement: null,
             isOpen: false,
           };
         })
         .filter(Boolean);
+    }
+
+    renderBubbleContent(entry, target) {
+      if (!target || !entry || typeof entry.getContent !== 'function') {
+        return;
+      }
+
+      const { value, mode } = entry.getContent();
+
+      if (mode === 'html') {
+        target.innerHTML = value;
+      } else {
+        target.textContent = value;
+      }
+    }
+
+    isFinePointer(event) {
+      if (!event || typeof event.pointerType !== 'string') {
+        return false;
+      }
+
+      return event.pointerType === 'mouse' || event.pointerType === 'pen';
     }
 
     createBubble(entry) {
@@ -336,7 +420,7 @@
 
       const inner = document.createElement('div');
       inner.className = 'ws-tooltip__inner';
-      inner.innerHTML = entry.content.innerHTML;
+      this.renderBubbleContent(entry, inner);
 
       bubble.appendChild(inner);
       bubble.appendChild(arrow);
@@ -385,14 +469,14 @@
     }
 
     bindTooltip(entry) {
-      const { trigger, content, root } = entry;
+      const { trigger, root } = entry;
 
       entry.handlePointerUp = (event) => {
         if (!SUPPORTS_POINTER) {
           return;
         }
 
-        if (event.pointerType === 'mouse' || event.isPrimary === false) {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen' || event.isPrimary === false) {
           return;
         }
 
@@ -417,7 +501,7 @@
       };
 
       entry.handlePointerEnter = (event) => {
-        if (!SUPPORTS_POINTER || event.pointerType !== 'mouse') {
+        if (!SUPPORTS_POINTER || !this.isFinePointer(event)) {
           return;
         }
 
@@ -426,7 +510,7 @@
       };
 
       entry.handlePointerLeave = (event) => {
-        if (!SUPPORTS_POINTER || event.pointerType !== 'mouse') {
+        if (!SUPPORTS_POINTER || !this.isFinePointer(event)) {
           return;
         }
 
@@ -435,7 +519,7 @@
       };
 
       entry.handleBubblePointerEnter = (event) => {
-        if (!SUPPORTS_POINTER || (event.pointerType && event.pointerType !== 'mouse')) {
+        if (!SUPPORTS_POINTER || (event.pointerType && !this.isFinePointer(event))) {
           return;
         }
 
@@ -443,7 +527,7 @@
       };
 
       entry.handleBubblePointerLeave = (event) => {
-        if (!SUPPORTS_POINTER || (event.pointerType && event.pointerType !== 'mouse')) {
+        if (!SUPPORTS_POINTER || (event.pointerType && !this.isFinePointer(event))) {
           return;
         }
 
@@ -562,7 +646,7 @@
 
       const inner = bubble.querySelector('.ws-tooltip__inner');
       if (inner) {
-        inner.innerHTML = entry.content.innerHTML;
+        this.renderBubbleContent(entry, inner);
       }
 
       const preferred = entry.currentPlacement || entry.preferredPlacement || 'top';
