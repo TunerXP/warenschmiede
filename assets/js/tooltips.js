@@ -4,9 +4,19 @@ const GAP = 12;
 const PADDING = 8;
 const ARROW_SIZE = 10;
 const REPOSITION_DELAY = 50;
-const state = { portal: null, trigger: null, tooltip: null, arrow: null, timer: 0 };
+const state = {
+  portal: null,
+  trigger: null,
+  tooltip: null,
+  arrow: null,
+  timer: 0,
+  isCoarse: false,
+  mobileOkLogged: false,
+};
 const COARSE_TAP_COOLDOWN = 150;
 let lastCoarseActivation = 0;
+const coarseFallbackTimers = new WeakMap();
+const processedLabels = new WeakSet();
 
 const ensurePortal = () => {
   let portal = document.getElementById(PORTAL_ID);
@@ -75,6 +85,11 @@ const openTooltip = (trigger) => {
   state.portal.appendChild(tooltip); state.portal.setAttribute('aria-hidden', 'false'); trigger.setAttribute('aria-expanded', 'true');
   state.trigger = trigger; state.tooltip = tooltip; state.arrow = arrow;
   placeTooltip();
+  if (state.isCoarse && !state.mobileOkLogged) {
+    state.mobileOkLogged = true;
+    document.documentElement.dataset.tooltipsMobile = 'ok';
+    console.info('WS tooltips: mobile OK');
+  }
 };
 
 const toggleTooltip = (trigger) => {
@@ -102,28 +117,81 @@ const handlePointerDown = (event) => {
   closeTooltip();
 };
 
+const cancelTouchFallback = (trigger) => {
+  if (!trigger) return;
+  const timer = coarseFallbackTimers.get(trigger);
+  if (timer) {
+    window.clearTimeout(timer);
+    coarseFallbackTimers.delete(trigger);
+  }
+};
+
+const handleCoarseActivate = (event, trigger) => {
+  cancelTouchFallback(trigger);
+  if (!trigger) return;
+  if (event.type === 'click' && typeof event.detail === 'number' && event.detail === 0) {
+    if (typeof event.preventDefault === 'function') event.preventDefault();
+    if (typeof event.stopPropagation === 'function') event.stopPropagation();
+    return;
+  }
+  if (event.pointerType && event.pointerType === 'mouse') return;
+  if (typeof event.button === 'number' && event.button !== 0) return;
+  const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+  if (now - lastCoarseActivation < COARSE_TAP_COOLDOWN) {
+    if (typeof event.preventDefault === 'function') event.preventDefault();
+    if (typeof event.stopPropagation === 'function') event.stopPropagation();
+    return;
+  }
+  lastCoarseActivation = now;
+  if (typeof event.preventDefault === 'function') event.preventDefault();
+  if (typeof event.stopPropagation === 'function') event.stopPropagation();
+  if (typeof trigger.focus === 'function') {
+    try { trigger.focus({ preventScroll: true }); }
+    catch (error) { trigger.focus(); }
+  }
+  toggleTooltip(trigger);
+};
+
 const initTooltips = () => {
   state.portal = ensurePortal();
   const triggers = Array.from(document.querySelectorAll(TRIGGER_SELECTOR)); if (triggers.length === 0) console.warn('WS tooltips: no triggers');
   const coarse = window.matchMedia ? window.matchMedia('(pointer: coarse)').matches : false;
   const useCoarse = coarse;
+  state.isCoarse = useCoarse;
   triggers.forEach((trigger) => {
+    if (trigger.tagName !== 'BUTTON') trigger.setAttribute('role', trigger.getAttribute('role') || 'button');
+    trigger.setAttribute('type', trigger.getAttribute('type') || 'button');
+    if (!trigger.hasAttribute('tabindex')) trigger.setAttribute('tabindex', '0');
+    trigger.style.pointerEvents = 'auto';
+    const parentLabel = trigger.closest('label');
+    if (parentLabel && !processedLabels.has(parentLabel)) {
+      parentLabel.style.pointerEvents = 'none';
+      processedLabels.add(parentLabel);
+    }
     textFromTrigger(trigger);
     trigger.setAttribute('aria-expanded', trigger.getAttribute('aria-expanded') || 'false');
     if (useCoarse) {
-      const pointerEvent = window.PointerEvent ? 'pointerup' : 'click';
-      const handleCoarseActivate = (event) => {
-        if (event.pointerType && !['touch', 'pen', 'mouse'].includes(event.pointerType)) return;
-        if (typeof event.button === 'number' && event.button !== 0) return;
-        const now = typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
-        if (now - lastCoarseActivation < COARSE_TAP_COOLDOWN) { event.preventDefault(); return; }
-        lastCoarseActivation = now;
-        event.preventDefault();
-        trigger.focus({ preventScroll: true });
-        toggleTooltip(trigger);
-      };
-      trigger.addEventListener(pointerEvent, handleCoarseActivate);
-      if (pointerEvent === 'pointerup') trigger.addEventListener('click', (event) => event.preventDefault());
+      const pointerHandler = (event) => handleCoarseActivate(event, trigger);
+      if (window.PointerEvent) trigger.addEventListener('pointerup', pointerHandler);
+      trigger.addEventListener('click', pointerHandler);
+      trigger.addEventListener('touchstart', (event) => {
+        if (!event || (event.touches && event.touches.length > 1)) return;
+        cancelTouchFallback(trigger);
+        const timer = window.setTimeout(() => {
+          coarseFallbackTimers.delete(trigger);
+          const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+          if (now - lastCoarseActivation < COARSE_TAP_COOLDOWN) return;
+          lastCoarseActivation = now;
+          if (typeof trigger.focus === 'function') {
+            try { trigger.focus({ preventScroll: true }); }
+            catch (error) { trigger.focus(); }
+          }
+          toggleTooltip(trigger);
+        }, 80);
+        coarseFallbackTimers.set(trigger, timer);
+      }, { passive: true });
+      trigger.addEventListener('touchend', () => cancelTouchFallback(trigger), { passive: true });
+      trigger.addEventListener('touchcancel', () => cancelTouchFallback(trigger), { passive: true });
     } else {
       trigger.addEventListener('mouseenter', () => openTooltip(trigger));
       trigger.addEventListener('mouseleave', () => state.trigger === trigger && closeTooltip());
@@ -144,9 +212,21 @@ const initTooltips = () => {
   }
   window.addEventListener('scroll', schedulePlacement, { passive: true });
   window.addEventListener('resize', schedulePlacement);
-  document.documentElement.setAttribute('data-tooltips', 'ok');
+  document.documentElement.dataset.tooltips = 'ok';
   console.info('WS tooltips: ok');
 };
 
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initTooltips);
-else initTooltips();
+let initExecuted = false;
+const runInit = () => {
+  if (initExecuted) return;
+  if (!document.body) {
+    requestAnimationFrame(runInit);
+    return;
+  }
+  initExecuted = true;
+  initTooltips();
+};
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', runInit, { once: true });
+else runInit();
+requestAnimationFrame(runInit);
