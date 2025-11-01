@@ -1,4 +1,9 @@
 (function () {
+  function qsa(sel, root) {
+    var context = root || document;
+    return Array.prototype.slice.call(context.querySelectorAll(sel));
+  }
+
   function initCalc() {
           var materialSelect = document.getElementById('materialSelect');
           var materialDensityHint = document.getElementById('materialDensityHint');
@@ -57,7 +62,7 @@
           var proCollapseToggle = document.getElementById('proCollapseToggle');
           var proRows = document.querySelectorAll('[data-pro-row="true"]');
           var rootElement = document.documentElement;
-          var calcFields = document.querySelectorAll('[data-calc]');
+          var calcFields = qsa('[data-calc], [data-calc-pro]');
           var suppressCalcEvent = false;
           var profitMarginInput = document.getElementById('profitMargin');
           var hourlyRateInput = document.getElementById('hourlyRate');
@@ -435,7 +440,7 @@
             }
             if (proPane) {
               proPane.classList.toggle('is-active', enabled);
-              proPane.setAttribute('aria-hidden', enabled ? 'false' : 'true');
+              proPane.setAttribute('aria-hidden', (!enabled).toString());
               if (enabled) {
                 proPane.removeAttribute('inert');
               } else {
@@ -630,6 +635,9 @@
 
           function readNumber(input) {
             if (!input) return 0;
+            if (typeof input.closest === 'function' && input.closest('[data-pro-pane]:not(.is-active)')) {
+              return 0;
+            }
             var value = num(input.value);
             if (value < 0) {
               return 0;
@@ -667,6 +675,7 @@
             var useWeight = weightMode.checked;
             setModeFieldState(weightField, weightInput, useWeight);
             setModeFieldState(lengthField, lengthInput, !useWeight);
+            triggerRecalc({ immediate: true });
           }
 
           function formatMinutesDisplay(totalMinutes) {
@@ -733,7 +742,7 @@
             }
           }
 
-          var recalcThrottleDelay = 75;
+          var recalcThrottleDelay = 0;
           function createThrottled(callback, delay) {
             var timeoutId = null;
             var lastCall = 0;
@@ -1750,7 +1759,7 @@
             });
           }
 
-          setProModeEnabled(false, { skipRecalc: true });
+          setProModeEnabled(proToggle ? proToggle.checked : false, { skipRecalc: true });
 
           if (proToggle) {
             proToggle.addEventListener('change', function () {
