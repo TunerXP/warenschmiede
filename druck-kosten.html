@@ -188,7 +188,7 @@
     </section>
 
     <section class="section" aria-labelledby="rechner-heading">
-      <div class="container">
+      <div class="container container--calc-wide">
         <div class="section-heading">
           <h2 id="rechner-heading">Kostenrechner für Filamentdruck</h2>
           <p>Wähle Material, gib Gewicht oder Länge ein und ergänze Laufzeit sowie Stromkosten – der Rest passiert automatisch.</p>
@@ -332,6 +332,11 @@
             </form>
           </div>
 
+          <section class="card pro-placeholder" aria-labelledby="pro-placeholder-heading">
+            <h3 id="pro-placeholder-heading">Pro-Optionen (in Entwicklung)</h3>
+            <p>Hier werden künftig zusätzliche Eingaben wie Maschinenkosten, Fehlerrate usw. erscheinen.</p>
+          </section>
+
           <div class="card calc-results" aria-live="polite">
             <div class="calc-results__header">
               <h2>Ergebnis</h2>
@@ -391,6 +396,9 @@
                 <span class="calc-results__value" id="totalGross">0,00&nbsp;€</span>
               </li>
             </ul>
+            <div class="co2" id="co2Output" hidden>
+              🌿 CO₂-Bilanz: <strong id="co2Value">0,0&nbsp;g</strong>
+            </div>
             <section class="result-chart" aria-label="Kostenverteilung" id="resultChart" hidden>
               <header class="result-chart__header">
                 <span class="result-chart__title">Visualisierung</span>
@@ -750,6 +758,8 @@
       var metaOutput = document.getElementById('calcMeta');
       var materialCostLabelOutput = document.getElementById('materialCostLabel');
       var energyCostLabelOutput = document.getElementById('energyCostLabel');
+      var co2Output = document.getElementById('co2Output');
+      var co2ValueOutput = document.getElementById('co2Value');
       var materialWasteRow = document.querySelector('[data-result="materialWaste"]');
       var materialWasteOutput = document.getElementById('materialWasteCost');
       var materialTotalRow = document.querySelector('[data-result="materialTotal"]');
@@ -856,6 +866,7 @@
       var integerFormatter = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 });
       var percentNumberFormatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
       var chartCompactPercentFormatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      var co2Formatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
       var chartCollapseMediaQuery = window.matchMedia('(max-width: 359px)');
       var chartToggleInteracted = false;
@@ -1340,7 +1351,11 @@
 
         var materialWaste = materialCost * (wastePercent / 100);
         var materialWithWaste = materialCost + materialWaste;
-        var energyCost = (power / 1000) * hours * energyPrice * (loadFactor / 100);
+        var loadFactorShare = loadFactor / 100;
+        var energyCost = (power / 1000) * hours * energyPrice * loadFactorShare;
+        var co2EmissionKg = (power / 1000) * hours * loadFactorShare * 0.4;
+        var co2EmissionGrams = co2EmissionKg * 1000;
+        var showCo2 = power > 0 && hours > 0 && loadFactor > 0;
         var vatIncluded = !!vatCheckbox.checked;
         var labourMinutes = 0;
         var timeCost = 0;
@@ -1481,6 +1496,8 @@
           power: power,
           energyPrice: energyPrice,
           loadFactor: loadFactor,
+          co2EmissionGrams: co2EmissionGrams,
+          showCo2: showCo2,
           vatIncluded: vatIncluded,
           materialCost: materialCost,
           energyCost: energyCost,
@@ -1499,6 +1516,16 @@
       function updateResults(state) {
         materialCostOutput.textContent = formatter.format(state.materialCost);
         energyCostOutput.textContent = formatter.format(state.energyCost);
+        if (co2Output && co2ValueOutput) {
+          if (state.showCo2) {
+            co2Output.hidden = false;
+            co2Output.setAttribute('aria-hidden', 'false');
+            co2ValueOutput.textContent = co2Formatter.format(state.co2EmissionGrams) + '\u00A0g';
+          } else {
+            co2Output.hidden = true;
+            co2Output.setAttribute('aria-hidden', 'true');
+          }
+        }
         totalNetOutput.textContent = formatter.format(state.net);
         totalGrossOutput.textContent = formatter.format(state.gross);
 
