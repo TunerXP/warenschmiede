@@ -386,6 +386,25 @@
                 <span class="calc-results__value" id="totalGross">0,00&nbsp;€</span>
               </li>
             </ul>
+            <section class="result-chart" aria-label="Kostenverteilung" id="resultChart" hidden>
+              <header class="result-chart__header">
+                <span class="result-chart__title">Visualisierung</span>
+                <label class="chart-toggle" for="resultChartToggle">
+                  <input type="checkbox" id="resultChartToggle" name="resultChartToggle" aria-controls="resultChart" checked>
+                  <span>Diagramm anzeigen</span>
+                </label>
+              </header>
+              <div class="bars" role="list" id="resultChartBars"></div>
+              <div class="chart-legend">
+                <span class="chip chip-material">Material</span>
+                <span class="chip chip-energy">Energie</span>
+                <span class="chip chip-labor">Arbeitszeit</span>
+                <span class="chip chip-fix">Fixkosten</span>
+                <span class="chip chip-margin">Marge</span>
+                <span class="chip chip-discount">Rabatt</span>
+              </div>
+              <p class="chart-total" id="chartNetTotal">Gesamtkosten (netto): 0,00&nbsp;€</p>
+            </section>
             <p class="calc-results__pro-hint" id="proStatus" data-pro-row="true" hidden>Erweiterter Rechner aktiv – Zusatzposten &amp; Fixkosten werden separat ausgewiesen.</p>
             <h3 class="calc-results__subheading">Disclaimer</h3>
             <p class="calc-formula">Energiekosten = (Watt/1000) × Laufzeit × €/kWh × Lastfaktor (Schätzung).</p>
@@ -727,6 +746,10 @@
       var marginOutput = document.getElementById('marginValue');
       var discountRow = document.querySelector('[data-result="discount"]');
       var discountOutput = document.getElementById('discountValue');
+      var resultChartSection = document.getElementById('resultChart');
+      var resultChartBars = document.getElementById('resultChartBars');
+      var resultChartToggle = document.getElementById('resultChartToggle');
+      var chartNetTotalOutput = document.getElementById('chartNetTotal');
       var proStatusOutput = document.getElementById('proStatus');
       var printResultButton = document.getElementById('printResultButton');
       var printFullButton = document.getElementById('printFullButton');
@@ -783,6 +806,52 @@
       var decimalFormatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       var integerFormatter = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 });
       var percentNumberFormatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+      var chartCompactPercentFormatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+      var chartCollapseMediaQuery = window.matchMedia('(max-width: 359px)');
+      var chartToggleInteracted = false;
+
+      function setChartVisibility(expanded) {
+        if (!resultChartSection) {
+          return;
+        }
+
+        if (resultChartToggle) {
+          resultChartToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        }
+
+        if (expanded) {
+          resultChartSection.classList.remove('is-collapsed');
+          resultChartSection.setAttribute('aria-hidden', 'false');
+        } else {
+          resultChartSection.classList.add('is-collapsed');
+          resultChartSection.setAttribute('aria-hidden', 'true');
+        }
+      }
+
+      function applyChartMediaPreference(event) {
+        if (!resultChartToggle || chartToggleInteracted) {
+          return;
+        }
+
+        var shouldCollapse = event.matches;
+        resultChartToggle.checked = !shouldCollapse;
+        setChartVisibility(!shouldCollapse);
+      }
+
+      if (resultChartToggle) {
+        setChartVisibility(!chartCollapseMediaQuery.matches);
+        resultChartToggle.checked = !chartCollapseMediaQuery.matches;
+        resultChartToggle.addEventListener('change', function () {
+          chartToggleInteracted = true;
+          setChartVisibility(resultChartToggle.checked);
+        });
+        if (chartCollapseMediaQuery.addEventListener) {
+          chartCollapseMediaQuery.addEventListener('change', applyChartMediaPreference);
+        } else if (chartCollapseMediaQuery.addListener) {
+          chartCollapseMediaQuery.addListener(applyChartMediaPreference);
+        }
+      }
       var dateTimeFormatter = new Intl.DateTimeFormat('de-DE', { dateStyle: 'short', timeStyle: 'short' });
 
       function updatePriceSuggestionState(defaults) {
@@ -1339,6 +1408,116 @@
             ? '– ' + formatter.format(state.pro.discountValue)
             : formatter.format(state.pro.discountValue);
           discountOutput.textContent = discountText;
+        }
+
+        renderResultChart(state);
+      }
+
+      function renderResultChart(state) {
+        if (!resultChartSection || !resultChartBars) {
+          return;
+        }
+
+        var items = [];
+
+        if (state.pro.materialWithWaste > 0) {
+          items.push({ key: 'material', label: 'Material', value: state.pro.materialWithWaste });
+        }
+        if (state.energyCost > 0) {
+          items.push({ key: 'energy', label: 'Energie', value: state.energyCost });
+        }
+        if (state.pro.timeCost > 0) {
+          items.push({ key: 'labor', label: 'Arbeitszeit', value: state.pro.timeCost });
+        }
+        if (state.pro.fixedCost > 0) {
+          items.push({ key: 'fix', label: 'Fixkosten', value: state.pro.fixedCost });
+        }
+        if (state.pro.marginValue > 0) {
+          items.push({ key: 'margin', label: 'Marge', value: state.pro.marginValue });
+        }
+
+        var discountValue = state.pro.discountValue > 0 ? state.pro.discountValue : 0;
+        var positiveTotal = items.reduce(function (sum, item) { return sum + item.value; }, 0);
+        var hasData = items.length > 0 || discountValue > 0;
+
+        if (!hasData) {
+          resultChartSection.hidden = true;
+          resultChartSection.setAttribute('aria-hidden', 'true');
+          return;
+        }
+
+        resultChartSection.hidden = false;
+        if (resultChartToggle) {
+          setChartVisibility(resultChartToggle.checked);
+        } else {
+          resultChartSection.classList.remove('is-collapsed');
+          resultChartSection.setAttribute('aria-hidden', 'false');
+        }
+
+        if (chartNetTotalOutput) {
+          chartNetTotalOutput.textContent = 'Gesamtkosten (netto): ' + formatter.format(state.net);
+        }
+
+        while (resultChartBars.firstChild) {
+          resultChartBars.removeChild(resultChartBars.firstChild);
+        }
+
+        var safeTotal = positiveTotal > 0 ? positiveTotal : 1;
+
+        items.forEach(function (item) {
+          var share = item.value / safeTotal;
+          var width = share > 0 ? Math.max(Math.min(share * 100, 100), 3) : 0;
+          var bar = document.createElement('div');
+          bar.className = 'result-bar result-bar--' + item.key;
+          bar.setAttribute('role', 'listitem');
+
+          var percentText = safeTotal > 0 ? chartCompactPercentFormatter.format(share * 100) + '\u00A0%' : '0\u00A0%';
+          var label = document.createElement('span');
+          label.className = 'result-bar__label';
+          label.textContent = item.label + ': ' + formatter.format(item.value) + ' (' + percentText + ')';
+
+          var track = document.createElement('div');
+          track.className = 'result-bar__track';
+          var fill = document.createElement('span');
+          fill.className = 'result-bar__fill';
+          fill.setAttribute('aria-hidden', 'true');
+          fill.style.width = width + '%';
+
+          var ariaPercentText = safeTotal > 0 ? chartCompactPercentFormatter.format(share * 100) + ' %' : '0 %';
+          bar.setAttribute('aria-label', item.label + ': ' + formatter.format(item.value) + ' (' + ariaPercentText + ')');
+
+          track.appendChild(fill);
+          bar.appendChild(label);
+          bar.appendChild(track);
+          resultChartBars.appendChild(bar);
+        });
+
+        if (discountValue > 0) {
+          var discountShare = discountValue / safeTotal;
+          var discountWidth = discountShare > 0 ? Math.max(Math.min(discountShare * 100, 100), 3) : 0;
+          var discountBar = document.createElement('div');
+          discountBar.className = 'result-bar result-bar--discount';
+          discountBar.setAttribute('role', 'listitem');
+
+          var discountPercentText = safeTotal > 0 ? chartCompactPercentFormatter.format(discountShare * 100) + '\u00A0%' : '0\u00A0%';
+          var discountLabel = document.createElement('span');
+          discountLabel.className = 'result-bar__label';
+          discountLabel.textContent = 'Rabatt: – ' + formatter.format(discountValue) + ' (' + discountPercentText + ')';
+
+          var discountTrack = document.createElement('div');
+          discountTrack.className = 'result-bar__track';
+          var discountFill = document.createElement('span');
+          discountFill.className = 'result-bar__fill';
+          discountFill.setAttribute('aria-hidden', 'true');
+          discountFill.style.width = discountWidth + '%';
+
+          var discountAriaPercent = safeTotal > 0 ? chartCompactPercentFormatter.format(discountShare * 100) + ' %' : '0 %';
+          discountBar.setAttribute('aria-label', 'Rabatt: – ' + formatter.format(discountValue) + ' (' + discountAriaPercent + ')');
+
+          discountTrack.appendChild(discountFill);
+          discountBar.appendChild(discountLabel);
+          discountBar.appendChild(discountTrack);
+          resultChartBars.appendChild(discountBar);
         }
       }
 
