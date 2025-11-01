@@ -9,6 +9,22 @@
     return Number.isFinite(normalized) ? normalized : 0;
   };
 
+  var createDebounce = function (callback, delay) {
+    var timeoutId = null;
+    var wait = typeof delay === 'number' && delay >= 0 ? delay : 0;
+    return function () {
+      var args = arguments;
+      var context = this;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      timeoutId = setTimeout(function () {
+        timeoutId = null;
+        callback.apply(context, args);
+      }, wait);
+    };
+  };
+
   function initCalc() {
           var calcGrid = document.querySelector('.calc-grid');
           var proToggle = document.querySelector('#proToggle,[data-pro-toggle]');
@@ -68,6 +84,10 @@
           var proCardBody = document.getElementById('proCardBody');
           var proCollapseToggle = document.getElementById('proCollapseToggle');
           var proRows = document.querySelectorAll('[data-pro-row="true"]');
+          var rememberStandardToggle = document.getElementById('rememberStandard');
+          var rememberProToggle = document.getElementById('rememberPro');
+          var rememberSellerToggle = document.getElementById('offerRememberSeller');
+          var rememberCustomerToggle = document.getElementById('offerRememberCustomer');
           var rootElement = document.documentElement;
           if (resultBox) {
             resultBox.dataset.ready = 'true';
@@ -93,13 +113,20 @@
           var offerFields = $$('[data-offer-field]');
           var calcInputs = $$('[data-calc]');
           var proCalcInputs = $$('[data-calc-pro]');
-          var storageToggleElements = $$('[data-storage-toggle]');
           var offerFieldMap = {};
           offerFields.forEach(function (field) {
             var key = field.getAttribute('data-offer-field');
             if (key) {
               offerFieldMap[key] = field;
             }
+          });
+          var sellerFieldElements = offerFields.filter(function (field) {
+            var key = field.getAttribute('data-offer-field') || '';
+            return /^vendor/i.test(key) || /^offer/i.test(key);
+          });
+          var customerFieldElements = offerFields.filter(function (field) {
+            var key = field.getAttribute('data-offer-field') || '';
+            return /^customer/i.test(key);
           });
           var offerSections = document.querySelectorAll('[data-offer-section]');
           var offerAccordionMediaQuery = window.matchMedia ? window.matchMedia('(max-width: 47.99rem)') : null;
@@ -240,11 +267,18 @@
           var chartToggleInteracted = false;
           var proCardMediaQuery = window.matchMedia('(max-width: 1099px)');
           var proCardCollapsed = false;
-          var storageEnabled = false;
-          var queueStateSave = null;
-          var PERSISTENCE_STORAGE_KEY = 'ws-costcalc:v2';
           var OFFER_COUNTER_KEY = 'ws3d_offer_counter';
           var storageApi = window.wsStorage || null;
+          var persistApi = window.wsPersist || null;
+          var hasPersistApi = !!(persistApi && typeof persistApi.loadSection === 'function' && typeof persistApi.saveSection === 'function' && typeof persistApi.clearSection === 'function');
+          var standardPersistence = null;
+          var proPersistence = null;
+          var sellerPersistence = null;
+          var customerPersistence = null;
+          var loadedStandardPayload = null;
+          var loadedProPayload = null;
+          var loadedSellerPayload = null;
+          var loadedCustomerPayload = null;
           var offerEmailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
 
           function setChartVisibility(expanded) {
@@ -298,6 +332,170 @@
                 window.localStorage.removeItem(key);
               }
             } catch (error) {}
+          }
+
+          function createPersistenceController(sectionKey, config) {
+            if (!sectionKey) {
+              return null;
+            }
+            var cfg = config || {};
+            var checkbox = cfg.checkbox || null;
+            var collect = typeof cfg.collect === 'function' ? cfg.collect : function () { return {}; };
+            var apply = typeof cfg.apply === 'function' ? cfg.apply : null;
+            var onEnable = typeof cfg.onEnable === 'function' ? cfg.onEnable : null;
+            var onClear = typeof cfg.onClear === 'function' ? cfg.onClear : null;
+            var remember = false;
+            var lastLoaded = null;
+            var debouncedSave = createDebounce(function () {
+              if (!remember || !hasPersistApi) {
+                return;
+              }
+              var payload = collect();
+              if (!payload || typeof payload !== 'object') {
+                payload = {};
+              }
+              payload.remember = true;
+              persistApi.saveSection(sectionKey, payload);
+            }, 250);
+
+            function saveImmediate(options) {
+              if (!remember || !hasPersistApi) {
+                return;
+              }
+              var payload = collect();
+              if (!payload || typeof payload !== 'object') {
+                payload = {};
+              }
+              payload.remember = true;
+              persistApi.saveSection(sectionKey, payload);
+              if (!options || !options.skipTrack) {
+                lastLoaded = payload;
+              }
+            }
+
+            function setRememberState(nextValue, options) {
+              var opts = options || {};
+              var next = !!nextValue;
+              var previous = remember;
+              remember = next;
+              if (checkbox && checkbox.checked !== remember) {
+                checkbox.checked = remember;
+              }
+              if (remember) {
+                if (!opts.skipEnable && onEnable) {
+                  onEnable();
+                }
+                if (!opts.skipSave) {
+                  saveImmediate({ skipTrack: !!opts.skipTrack });
+                }
+              } else if (previous) {
+                if (hasPersistApi) {
+                  persistApi.clearSection(sectionKey);
+                }
+                lastLoaded = null;
+                if (onClear) {
+                  onClear();
+                }
+              }
+            }
+
+            if (checkbox) {
+              checkbox.addEventListener('change', function () {
+                if (checkbox.checked) {
+                  setRememberState(true);
+                } else {
+                  setRememberState(false);
+                }
+              });
+            }
+
+            if (hasPersistApi) {
+              var stored = persistApi.loadSection(sectionKey);
+              if (stored && stored.remember === true) {
+                remember = true;
+                lastLoaded = stored;
+                if (checkbox) {
+                  checkbox.checked = true;
+                }
+                if (apply) {
+                  apply(stored);
+                }
+              }
+            }
+
+            return {
+              isRemembering: function () {
+                return remember;
+              },
+              scheduleSave: function () {
+                if (remember) {
+                  debouncedSave();
+                }
+              },
+              saveImmediate: saveImmediate,
+              clear: function () {
+                setRememberState(false);
+              },
+              setRemember: setRememberState,
+              getLoaded: function () {
+                return lastLoaded;
+              }
+            };
+          }
+
+          function isCustomerFieldKey(key) {
+            return /^customer/i.test((key || '').toString());
+          }
+
+          function isSellerFieldKey(key) {
+            if (!key) {
+              return false;
+            }
+            if (isCustomerFieldKey(key)) {
+              return false;
+            }
+            return /^vendor/i.test(key) || /^offer/i.test(key);
+          }
+
+          function schedulePersistenceForTarget(target, immediate) {
+            if (!target) {
+              return;
+            }
+            var runImmediate = !!immediate;
+            if (target.hasAttribute('data-calc') && standardPersistence) {
+              if (runImmediate) {
+                standardPersistence.saveImmediate();
+              } else {
+                standardPersistence.scheduleSave();
+              }
+            }
+            if (target.hasAttribute('data-calc-pro') && proPersistence) {
+              if (runImmediate) {
+                proPersistence.saveImmediate();
+              } else {
+                proPersistence.scheduleSave();
+              }
+            }
+            var offerKey = target.getAttribute('data-offer-field');
+            if (offerKey) {
+              if (isCustomerFieldKey(offerKey)) {
+                if (customerPersistence) {
+                  if (runImmediate) {
+                    customerPersistence.saveImmediate();
+                  } else {
+                    customerPersistence.scheduleSave();
+                  }
+                }
+              } else if (isSellerFieldKey(offerKey)) {
+                if (sellerPersistence) {
+                  if (runImmediate) {
+                    sellerPersistence.saveImmediate();
+                  } else {
+                    sellerPersistence.scheduleSave();
+                  }
+                }
+              }
+            }
           }
 
           function applyChartMediaPreference(event) {
@@ -617,15 +815,20 @@
             }
           }
 
-          function setProState(on) {
+          function setProState(on, options) {
+            var opts = options || {};
             var enabled = !!on;
             setProModeEnabled(enabled, { skipRecalc: true });
             if (proPane) {
               proPane.classList.toggle('is-active', enabled);
               proPane.setAttribute('aria-hidden', (!enabled).toString());
             }
-            recalculate();
-            scheduleStateSave();
+            if (!opts.skipRecalc) {
+              recalculate();
+            }
+            if (proPersistence && proPersistence.isRemembering() && !opts.skipPersist) {
+              proPersistence.saveImmediate();
+            }
           }
 
           function formatPricePlaceholder(value) {
@@ -880,20 +1083,20 @@
             });
           }
 
-          function handleCalcInputEvent() {
+          function handleCalcInputEvent(event) {
             if (suppressCalcEvent) {
               return;
             }
             triggerRecalc();
-            scheduleStateSave();
+            schedulePersistenceForTarget(event ? event.target : null, false);
           }
 
-          function handleCalcChangeEvent() {
+          function handleCalcChangeEvent(event) {
             if (suppressCalcEvent) {
               return;
             }
             triggerRecalc({ immediate: true });
-            scheduleStateSave();
+            schedulePersistenceForTarget(event ? event.target : null, true);
           }
 
           function wireInputs() {
@@ -942,19 +1145,12 @@
             recalculate();
           }, recalcThrottleDelay);
 
-          queueStateSave = createThrottled(function () {
-            if (storageEnabled) {
-              savePersistentState();
-            }
-          }, 250);
-
           function triggerRecalc(options) {
             if (options && options.immediate) {
               recalculate();
             } else {
               queueRecalc();
             }
-            scheduleStateSave();
           }
 
           function cloneNodeWithStyles(node) {
@@ -1189,9 +1385,13 @@
             stage.appendChild(clone);
             document.body.appendChild(stage);
             if (mode === 'result') {
-              var inputsPage = stage.querySelector('.calc-print__page[data-page="inputs"]');
-              if (inputsPage && inputsPage.parentNode) {
-                inputsPage.parentNode.removeChild(inputsPage);
+              var inlineNoteClone = stage.querySelector('.calc-print__inline-note');
+              if (inlineNoteClone && inlineNoteClone.parentNode) {
+                inlineNoteClone.parentNode.removeChild(inlineNoteClone);
+              }
+              var inputsSectionClone = stage.querySelector('#printInputsSection');
+              if (inputsSectionClone && inputsSectionClone.parentNode) {
+                inputsSectionClone.parentNode.removeChild(inputsSectionClone);
               }
             }
             var footer = stage.querySelector('#ws-print-footer');
@@ -1368,6 +1568,7 @@
               suppressProSync = false;
             }
             recalculate();
+            schedulePersistenceForTarget(timeInput, true);
           }
 
           function getOfferValue(key) {
@@ -1391,6 +1592,7 @@
             var suggestion = buildOfferNumberSuggestion();
             if (suggestion) {
               field.value = suggestion;
+              schedulePersistenceForTarget(field, true);
             }
           }
 
@@ -1404,6 +1606,7 @@
               var current = offerDateField.value != null ? offerDateField.value.toString().trim() : '';
               if (!current) {
                 offerDateField.value = formatDateForInputValue(today);
+                schedulePersistenceForTarget(offerDateField, true);
               }
             }
             var validUntilField = offerFieldMap.offerValidUntil;
@@ -1412,6 +1615,7 @@
               if (!validCurrent) {
                 var validDate = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
                 validUntilField.value = formatDateForInputValue(validDate);
+                schedulePersistenceForTarget(validUntilField, true);
               }
             }
             var deliveryField = offerFieldMap.offerDeliveryTime;
@@ -1419,6 +1623,7 @@
               var deliveryCurrent = deliveryField.value != null ? deliveryField.value.toString().trim() : '';
               if (!deliveryCurrent) {
                 deliveryField.value = '7–10 Tage ab Auftragsklarheit';
+                schedulePersistenceForTarget(deliveryField, true);
               }
             }
             var paymentField = offerFieldMap.offerPaymentTerms;
@@ -1426,6 +1631,7 @@
               var paymentCurrent = paymentField.value != null ? paymentField.value.toString().trim() : '';
               if (!paymentCurrent) {
                 paymentField.value = 'Vorkasse / 14 Tage netto';
+                schedulePersistenceForTarget(paymentField, true);
               }
             }
             suggestOfferNumber();
@@ -1601,111 +1807,113 @@
             });
           }
 
-          function syncStorageToggles(checked) {
-            if (!storageToggleElements || !storageToggleElements.length) {
-              return;
-            }
-            storageToggleElements.forEach(function (toggle) {
-              if (toggle) {
-                toggle.checked = !!checked;
+          standardPersistence = createPersistenceController('std', {
+            checkbox: rememberStandardToggle,
+            collect: function () {
+              return { values: collectInputValues(calcInputs) };
+            },
+            apply: function (payload) {
+              loadedStandardPayload = payload;
+              var values = payload && payload.values ? payload.values : null;
+              if (!values) {
+                return;
               }
-            });
-          }
-
-          function savePersistentState() {
-            if (!storageEnabled) {
-              return;
+              suppressCalcEvent = true;
+              try {
+                applyInputValues(calcInputs, values);
+              } finally {
+                suppressCalcEvent = false;
+              }
+              if (pricePerKgInput && values.pricePerKg != null && values.pricePerKg !== '') {
+                pricePerKgUserEdited = true;
+              }
             }
-            var offerState = collectOfferState();
-            var payload = {
-              remember: true,
-              version: 2,
-              timestamp: new Date().toISOString(),
-              offer: offerState.fields,
-              standard: collectInputValues(calcInputs),
-              pro: collectInputValues(proCalcInputs),
-              toggles: {
+          });
+
+          proPersistence = createPersistenceController('pro', {
+            checkbox: rememberProToggle,
+            collect: function () {
+              return {
+                values: collectInputValues(proCalcInputs),
                 proEnabled: proToggle ? !!proToggle.checked : false
+              };
+            },
+            onEnable: function () {
+              if (proToggle && !proToggle.checked) {
+                proToggle.checked = true;
+                setProState(true, { skipPersist: true });
               }
-            };
-            if (resultChartToggle) {
-              payload.toggles.chart = !!resultChartToggle.checked;
+            },
+            apply: function (payload) {
+              loadedProPayload = payload;
+              var values = payload && payload.values ? payload.values : null;
+              suppressCalcEvent = true;
+              try {
+                if (values) {
+                  applyInputValues(proCalcInputs, values);
+                }
+              } finally {
+                suppressCalcEvent = false;
+              }
+              if (typeof payload.proEnabled === 'boolean' && proToggle) {
+                proToggle.checked = payload.proEnabled;
+                setProState(payload.proEnabled, { skipPersist: true, skipRecalc: true });
+              }
+              if (materialDensityInput && values && values.materialDensity != null && values.materialDensity !== '') {
+                materialDensityUserEdited = true;
+                materialDensityInput.setAttribute('data-user-set', '1');
+              }
+              if (machineHourlyInput && values && values.machineHourlyRate != null && values.machineHourlyRate !== '') {
+                machineHourlyUserEdited = true;
+              }
             }
-            setStorageItem(PERSISTENCE_STORAGE_KEY, JSON.stringify(payload));
-          }
+          });
 
-          function setStorageEnabled(enabled, options) {
-            var opts = options || {};
-            storageEnabled = !!enabled;
-            if (!opts.skipToggle) {
-              syncStorageToggles(storageEnabled);
-            }
-            if (storageEnabled) {
-              if (!opts.skipSave) {
-                savePersistentState();
+          sellerPersistence = createPersistenceController('seller', {
+            checkbox: rememberSellerToggle,
+            collect: function () {
+              return { values: collectInputValues(sellerFieldElements) };
+            },
+            apply: function (payload) {
+              loadedSellerPayload = payload;
+              var values = payload && payload.values ? payload.values : null;
+              if (!values) {
+                return;
               }
-            } else {
-              removeStorageItem(PERSISTENCE_STORAGE_KEY);
+              applyInputValues(sellerFieldElements, values);
+              sellerFieldElements.forEach(function (field) {
+                validateOfferField(field);
+              });
+            },
+            onClear: function () {
+              sellerFieldElements.forEach(function (field) {
+                validateOfferField(field);
+              });
             }
-          }
+          });
 
-          function scheduleStateSave() {
-            if (storageEnabled && typeof queueStateSave === 'function') {
-              queueStateSave();
-            }
-          }
-
-          function loadPersistentState() {
-            var raw = getStorageItem(PERSISTENCE_STORAGE_KEY);
-            if (!raw) {
-              return null;
-            }
-            var parsed;
-            try {
-              parsed = JSON.parse(raw);
-            } catch (error) {
-              return null;
-            }
-            if (!parsed || parsed.remember !== true) {
-              return null;
-            }
-            suppressCalcEvent = true;
-            try {
-              if (parsed.offer) {
-                applyOfferState({ fields: parsed.offer });
+          customerPersistence = createPersistenceController('customer', {
+            checkbox: rememberCustomerToggle,
+            collect: function () {
+              return { values: collectInputValues(customerFieldElements) };
+            },
+            apply: function (payload) {
+              loadedCustomerPayload = payload;
+              var values = payload && payload.values ? payload.values : null;
+              if (!values) {
+                return;
               }
-              if (parsed.standard) {
-                applyInputValues(calcInputs, parsed.standard);
-              }
-              if (parsed.pro) {
-                applyInputValues(proCalcInputs, parsed.pro);
-              }
-            } finally {
-              suppressCalcEvent = false;
+              applyInputValues(customerFieldElements, values);
+              customerFieldElements.forEach(function (field) {
+                validateOfferField(field);
+              });
+            },
+            onClear: function () {
+              customerFieldElements.forEach(function (field) {
+                validateOfferField(field);
+              });
             }
-            setStorageEnabled(true, { skipSave: true, skipToggle: false });
-            if (parsed.toggles) {
-              if (proToggle && typeof parsed.toggles.proEnabled === 'boolean') {
-                proToggle.checked = parsed.toggles.proEnabled;
-              }
-              if (resultChartToggle && typeof parsed.toggles.chart === 'boolean') {
-                chartToggleInteracted = true;
-                resultChartToggle.checked = parsed.toggles.chart;
-                setChartVisibility(resultChartToggle.checked);
-              }
-            }
-            if (pricePerKgInput && parsed.standard && parsed.standard.pricePerKg) {
-              pricePerKgUserEdited = true;
-            }
-            if (materialDensityInput && parsed.pro && parsed.pro.materialDensity) {
-              materialDensityUserEdited = true;
-              materialDensityInput.setAttribute('data-user-set', '1');
-            }
-            if (machineHourlyInput && parsed.pro && parsed.pro.machineHourlyRate) {
-              machineHourlyUserEdited = true;
-            }
-            return parsed;
-          }
+          });
 
           function validateOfferField(field) {
             if (!field) {
@@ -1727,23 +1935,26 @@
             return isValid;
           }
 
-          function handleOfferFieldInput(field) {
+          function handleOfferFieldInput(field, immediate) {
+            if (!field) {
+              return;
+            }
             validateOfferField(field);
-            scheduleStateSave();
+            schedulePersistenceForTarget(field, immediate);
           }
 
           function attachOfferFieldListeners() {
             offerFields.forEach(function (field) {
               field.addEventListener('input', function () {
-                handleOfferFieldInput(field);
+                handleOfferFieldInput(field, false);
               });
               field.addEventListener('change', function () {
-                handleOfferFieldInput(field);
+                handleOfferFieldInput(field, true);
               });
               field.addEventListener('blur', function () {
                 var trimmed = field.value != null ? field.value.toString().trim() : '';
                 field.value = trimmed;
-                handleOfferFieldInput(field);
+                handleOfferFieldInput(field, true);
               });
             });
           }
@@ -1762,20 +1973,11 @@
           }
 
           function initializeOfferSection() {
-            var persisted = loadPersistentState();
             setOfferDefaults();
             attachOfferFieldListeners();
             offerFields.forEach(function (field) {
               validateOfferField(field);
             });
-            if (storageToggleElements && storageToggleElements.length) {
-              storageToggleElements.forEach(function (toggle) {
-                toggle.addEventListener('change', function () {
-                  setStorageEnabled(toggle.checked);
-                  triggerRecalc({ immediate: true });
-                });
-              });
-            }
             syncOfferAccordionForViewport();
             if (offerAccordionMediaQuery) {
               var handleAccordionChange = function (event) {
@@ -1789,12 +1991,8 @@
                 offerAccordionMediaQuery.addListener(handleAccordionChange);
               }
             }
-            if (storageEnabled) {
-              savePersistentState();
-            } else {
-              syncStorageToggles(false);
-            }
-            if (persisted) {
+            var hasLoaded = !!(loadedStandardPayload || loadedProPayload || loadedSellerPayload || loadedCustomerPayload);
+            if (hasLoaded) {
               triggerRecalc({ immediate: true });
             }
           }
@@ -2791,6 +2989,12 @@
 
               updateMaterialSuggestionState(defaults);
               triggerRecalc({ immediate: true });
+              if (hasPrice) {
+                schedulePersistenceForTarget(pricePerKgInput, true);
+              }
+              if (hasDensity && materialDensityInput) {
+                schedulePersistenceForTarget(materialDensityInput, true);
+              }
 
               pricePerKgInput.focus();
             });
@@ -2811,6 +3015,7 @@
               materialDensityInput.removeAttribute('data-user-set');
               updateMaterialSuggestionState(defaults);
               triggerRecalc({ immediate: true });
+              schedulePersistenceForTarget(materialDensityInput, true);
               if (proModeEnabled && !materialDensityInput.disabled) {
                 materialDensityInput.focus();
               }
