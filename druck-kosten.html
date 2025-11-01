@@ -34,6 +34,7 @@
     })();
   </script>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="assets/css/print.css">
   <meta name="robots" content="index,follow">
   <meta name="theme-color" content="#0d1117">
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8fafc">
@@ -325,13 +326,6 @@
             </details>
           </div>
 
-          <div class="calc-offer__options">
-            <label class="calc-checkbox" for="offerRemember">
-              <input type="checkbox" id="offerRemember" name="offerRemember" data-offer-remember>
-              <span>Daten im Browser merken</span>
-            </label>
-            <p class="calc-offer__note">Die Daten werden ausschließlich in deinem Browser gespeichert (localStorage) und nicht übertragen.</p>
-          </div>
         </div>
 
         <section class="calc-grid">
@@ -438,6 +432,13 @@
               </div>
 
             </form>
+            <div class="calc-storage">
+              <label class="calc-checkbox" for="storageToggleStandard">
+                <input type="checkbox" id="storageToggleStandard" data-storage-toggle>
+                <span>Daten im Browser merken</span>
+              </label>
+              <p class="calc-storage__note">Die Daten werden ausschließlich in deinem Browser gespeichert (localStorage) und nicht übertragen.</p>
+            </div>
           </div>
 
           <aside class="calc-grid__pro" id="calc-pro" data-pro-pane aria-hidden="true">
@@ -554,6 +555,13 @@
                       <button type="button" class="calc-reset-link is-hidden" id="materialDensityReset">Preset-Dichte wiederherstellen</button>
                     </div>
                   </div>
+                </div>
+                <div class="calc-storage">
+                  <label class="calc-checkbox" for="storageTogglePro">
+                    <input type="checkbox" id="storageTogglePro" data-storage-toggle>
+                    <span>Daten im Browser merken</span>
+                  </label>
+                  <p class="calc-storage__note">Die Daten werden ausschließlich in deinem Browser gespeichert (localStorage) und nicht übertragen.</p>
                 </div>
               </section>
             </div>
@@ -768,7 +776,7 @@
   <section class="calc-print print-only" id="printSummary" aria-hidden="true">
     <div class="calc-print__page" data-page="result">
       <div class="calc-print__page-heading">
-        <h1 class="calc-print__title">3D-Druck Rechner – Ergebnis</h1>
+        <h1 class="calc-print__title">Angebot</h1>
         <p class="calc-print__part" id="printHeaderPartName" hidden>Teilename: <span id="printHeaderPartNameValue"></span></p>
       </div>
 
@@ -1030,7 +1038,7 @@
       </section>
     </div>
     <footer id="ws-print-footer" class="print-only">
-      <span class="ws-brand">Erstellt mit dem Warenschmiede 3D-Rechner – www.warenschmiede.com</span>
+      <span class="ws-brand">Erstellt mit Warenschmiede 3D-Rechner – www.warenschmiede.com</span>
       <span class="ws-pageno"></span>
     </footer>
   </section>
@@ -1055,6 +1063,7 @@
   <script src="assets/js/theme.js" defer></script>
   <script src="assets/js/header.js" defer></script>
   <script src="assets/js/whatsapp.js" defer></script>
+  <script src="assets/js/storage.js" defer></script>
   <script src="assets/js/calc.js" defer></script>
 
 </body>

@@ -91,6 +91,9 @@
           var materialDensityInput = document.getElementById('proDensity');
           var partNameInput = document.getElementById('partName');
           var offerFields = $$('[data-offer-field]');
+          var calcInputs = $$('[data-calc]');
+          var proCalcInputs = $$('[data-calc-pro]');
+          var storageToggleElements = $$('[data-storage-toggle]');
           var offerFieldMap = {};
           offerFields.forEach(function (field) {
             var key = field.getAttribute('data-offer-field');
@@ -98,7 +101,6 @@
               offerFieldMap[key] = field;
             }
           });
-          var offerRememberToggle = document.querySelector('[data-offer-remember]');
           var offerSections = document.querySelectorAll('[data-offer-section]');
           var offerAccordionMediaQuery = window.matchMedia ? window.matchMedia('(max-width: 47.99rem)') : null;
           var printOfferColumnsContainer = document.querySelector('.calc-print__offer-columns');
@@ -238,10 +240,11 @@
           var chartToggleInteracted = false;
           var proCardMediaQuery = window.matchMedia('(max-width: 1099px)');
           var proCardCollapsed = false;
-          var offerStorageEnabled = false;
-          var queueOfferSave = null;
-          var OFFER_STORAGE_KEY = 'ws3d_offer_v1';
+          var storageEnabled = false;
+          var queueStateSave = null;
+          var PERSISTENCE_STORAGE_KEY = 'ws-costcalc:v2';
           var OFFER_COUNTER_KEY = 'ws3d_offer_counter';
+          var storageApi = window.wsStorage || null;
           var offerEmailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
 
           function setChartVisibility(expanded) {
@@ -263,6 +266,9 @@
           }
 
           function getStorageItem(key) {
+            if (storageApi && typeof storageApi.get === 'function') {
+              return storageApi.get(key);
+            }
             try {
               return window.localStorage ? window.localStorage.getItem(key) : null;
             } catch (error) {
@@ -271,6 +277,10 @@
           }
 
           function setStorageItem(key, value) {
+            if (storageApi && typeof storageApi.set === 'function') {
+              storageApi.set(key, value);
+              return;
+            }
             try {
               if (window.localStorage) {
                 window.localStorage.setItem(key, value);
@@ -279,6 +289,10 @@
           }
 
           function removeStorageItem(key) {
+            if (storageApi && typeof storageApi.remove === 'function') {
+              storageApi.remove(key);
+              return;
+            }
             try {
               if (window.localStorage) {
                 window.localStorage.removeItem(key);
@@ -611,6 +625,7 @@
               proPane.setAttribute('aria-hidden', (!enabled).toString());
             }
             recalculate();
+            scheduleStateSave();
           }
 
           function formatPricePlaceholder(value) {
@@ -870,6 +885,7 @@
               return;
             }
             triggerRecalc();
+            scheduleStateSave();
           }
 
           function handleCalcChangeEvent() {
@@ -877,6 +893,7 @@
               return;
             }
             triggerRecalc({ immediate: true });
+            scheduleStateSave();
           }
 
           function wireInputs() {
@@ -925,9 +942,9 @@
             recalculate();
           }, recalcThrottleDelay);
 
-          queueOfferSave = createThrottled(function () {
-            if (offerStorageEnabled) {
-              saveOfferStateToStorage();
+          queueStateSave = createThrottled(function () {
+            if (storageEnabled) {
+              savePersistentState();
             }
           }, 250);
 
@@ -937,6 +954,7 @@
             } else {
               queueRecalc();
             }
+            scheduleStateSave();
           }
 
           function cloneNodeWithStyles(node) {
@@ -1507,56 +1525,186 @@
             });
           }
 
-          function loadOfferStateFromStorage() {
-            var raw = getStorageItem(OFFER_STORAGE_KEY);
+          function getFieldKey(field) {
+            if (!field) {
+              return null;
+            }
+            var explicit = field.getAttribute ? field.getAttribute('data-storage-key') : null;
+            if (explicit) {
+              return explicit;
+            }
+            if (field.name) {
+              return field.name;
+            }
+            if (field.id) {
+              return field.id;
+            }
+            return null;
+          }
+
+          function collectInputValues(fields) {
+            var values = {};
+            if (!fields || !fields.length) {
+              return values;
+            }
+            fields.forEach(function (field) {
+              var key = getFieldKey(field);
+              if (!key) {
+                return;
+              }
+              var type = (field.type || '').toLowerCase();
+              if (type === 'checkbox') {
+                values[key] = !!field.checked;
+              } else if (type === 'radio') {
+                if (field.checked) {
+                  values[key] = field.value;
+                }
+              } else if (field.tagName === 'SELECT' && field.multiple) {
+                var selected = Array.prototype.slice.call(field.options).filter(function (option) {
+                  return option.selected;
+                }).map(function (option) {
+                  return option.value;
+                });
+                values[key] = selected;
+              } else {
+                values[key] = field.value != null ? field.value.toString() : '';
+              }
+            });
+            return values;
+          }
+
+          function applyInputValues(fields, values) {
+            if (!fields || !fields.length || !values) {
+              return;
+            }
+            fields.forEach(function (field) {
+              var key = getFieldKey(field);
+              if (!key || !(key in values)) {
+                return;
+              }
+              var stored = values[key];
+              var type = (field.type || '').toLowerCase();
+              if (type === 'checkbox') {
+                field.checked = !!stored;
+              } else if (type === 'radio') {
+                if (stored == null) {
+                  return;
+                }
+                field.checked = stored === field.value;
+              } else if (field.tagName === 'SELECT' && field.multiple && Array.isArray(stored)) {
+                Array.prototype.slice.call(field.options).forEach(function (option) {
+                  option.selected = stored.indexOf(option.value) !== -1;
+                });
+              } else {
+                field.value = stored == null ? '' : stored;
+              }
+            });
+          }
+
+          function syncStorageToggles(checked) {
+            if (!storageToggleElements || !storageToggleElements.length) {
+              return;
+            }
+            storageToggleElements.forEach(function (toggle) {
+              if (toggle) {
+                toggle.checked = !!checked;
+              }
+            });
+          }
+
+          function savePersistentState() {
+            if (!storageEnabled) {
+              return;
+            }
+            var offerState = collectOfferState();
+            var payload = {
+              remember: true,
+              version: 2,
+              timestamp: new Date().toISOString(),
+              offer: offerState.fields,
+              standard: collectInputValues(calcInputs),
+              pro: collectInputValues(proCalcInputs),
+              toggles: {
+                proEnabled: proToggle ? !!proToggle.checked : false
+              }
+            };
+            if (resultChartToggle) {
+              payload.toggles.chart = !!resultChartToggle.checked;
+            }
+            setStorageItem(PERSISTENCE_STORAGE_KEY, JSON.stringify(payload));
+          }
+
+          function setStorageEnabled(enabled, options) {
+            var opts = options || {};
+            storageEnabled = !!enabled;
+            if (!opts.skipToggle) {
+              syncStorageToggles(storageEnabled);
+            }
+            if (storageEnabled) {
+              if (!opts.skipSave) {
+                savePersistentState();
+              }
+            } else {
+              removeStorageItem(PERSISTENCE_STORAGE_KEY);
+            }
+          }
+
+          function scheduleStateSave() {
+            if (storageEnabled && typeof queueStateSave === 'function') {
+              queueStateSave();
+            }
+          }
+
+          function loadPersistentState() {
+            var raw = getStorageItem(PERSISTENCE_STORAGE_KEY);
             if (!raw) {
               return null;
             }
+            var parsed;
             try {
-              var data = JSON.parse(raw);
-              if (!data || data.remember !== true || !data.fields) {
-                return null;
-              }
-              applyOfferState(data);
-              setOfferRemember(true, { skipSave: true, skipToggle: false });
-              return data;
+              parsed = JSON.parse(raw);
             } catch (error) {
               return null;
             }
-          }
-
-          function saveOfferStateToStorage() {
-            if (!offerStorageEnabled) {
-              return;
+            if (!parsed || parsed.remember !== true) {
+              return null;
             }
-            var state = collectOfferState();
-            var payload = {
-              remember: true,
-              fields: state.fields,
-              timestamp: new Date().toISOString()
-            };
-            setStorageItem(OFFER_STORAGE_KEY, JSON.stringify(payload));
-          }
-
-          function setOfferRemember(enabled, options) {
-            var opts = options || {};
-            offerStorageEnabled = !!enabled;
-            if (offerRememberToggle && !opts.skipToggle) {
-              offerRememberToggle.checked = offerStorageEnabled;
-            }
-            if (offerStorageEnabled) {
-              if (!opts.skipSave) {
-                saveOfferStateToStorage();
+            suppressCalcEvent = true;
+            try {
+              if (parsed.offer) {
+                applyOfferState({ fields: parsed.offer });
               }
-            } else {
-              removeStorageItem(OFFER_STORAGE_KEY);
+              if (parsed.standard) {
+                applyInputValues(calcInputs, parsed.standard);
+              }
+              if (parsed.pro) {
+                applyInputValues(proCalcInputs, parsed.pro);
+              }
+            } finally {
+              suppressCalcEvent = false;
             }
-          }
-
-          function scheduleOfferSave() {
-            if (offerStorageEnabled && typeof queueOfferSave === 'function') {
-              queueOfferSave();
+            setStorageEnabled(true, { skipSave: true, skipToggle: false });
+            if (parsed.toggles) {
+              if (proToggle && typeof parsed.toggles.proEnabled === 'boolean') {
+                proToggle.checked = parsed.toggles.proEnabled;
+              }
+              if (resultChartToggle && typeof parsed.toggles.chart === 'boolean') {
+                chartToggleInteracted = true;
+                resultChartToggle.checked = parsed.toggles.chart;
+                setChartVisibility(resultChartToggle.checked);
+              }
             }
+            if (pricePerKgInput && parsed.standard && parsed.standard.pricePerKg) {
+              pricePerKgUserEdited = true;
+            }
+            if (materialDensityInput && parsed.pro && parsed.pro.materialDensity) {
+              materialDensityUserEdited = true;
+              materialDensityInput.setAttribute('data-user-set', '1');
+            }
+            if (machineHourlyInput && parsed.pro && parsed.pro.machineHourlyRate) {
+              machineHourlyUserEdited = true;
+            }
+            return parsed;
           }
 
           function validateOfferField(field) {
@@ -1581,7 +1729,7 @@
 
           function handleOfferFieldInput(field) {
             validateOfferField(field);
-            scheduleOfferSave();
+            scheduleStateSave();
           }
 
           function attachOfferFieldListeners() {
@@ -1614,16 +1762,18 @@
           }
 
           function initializeOfferSection() {
-            loadOfferStateFromStorage();
+            var persisted = loadPersistentState();
             setOfferDefaults();
             attachOfferFieldListeners();
             offerFields.forEach(function (field) {
               validateOfferField(field);
             });
-            if (offerRememberToggle) {
-              offerRememberToggle.addEventListener('change', function () {
-                setOfferRemember(offerRememberToggle.checked);
-                triggerRecalc({ immediate: true });
+            if (storageToggleElements && storageToggleElements.length) {
+              storageToggleElements.forEach(function (toggle) {
+                toggle.addEventListener('change', function () {
+                  setStorageEnabled(toggle.checked);
+                  triggerRecalc({ immediate: true });
+                });
               });
             }
             syncOfferAccordionForViewport();
@@ -1639,8 +1789,13 @@
                 offerAccordionMediaQuery.addListener(handleAccordionChange);
               }
             }
-            if (offerStorageEnabled) {
-              saveOfferStateToStorage();
+            if (storageEnabled) {
+              savePersistentState();
+            } else {
+              syncStorageToggles(false);
+            }
+            if (persisted) {
+              triggerRecalc({ immediate: true });
             }
           }
 
