@@ -257,7 +257,8 @@
                   </div>
                   <div class="calc-field">
                     <label for="powerDraw">Leistung in Watt</label>
-                    <input type="number" id="powerDraw" name="powerDraw" min="0" step="10" placeholder="150">
+                    <input type="number" id="powerDraw" name="powerDraw" min="0" step="10" placeholder="z. B. 150">
+                    <p class="calc-hint">Wird erst berücksichtigt, wenn du einen Wert eingibst.</p>
                   </div>
                   <div class="calc-field">
                     <label for="energyPrice">Strompreis in €/kWh
@@ -272,7 +273,8 @@
                         <span class="info-tooltip__content" role="tooltip" id="tooltip-energy-price">Aktueller Arbeitspreis aus deinem Stromvertrag. Beispiel: 0,30&nbsp;€/kWh.</span>
                       </span>
                     </label>
-                    <input type="number" id="energyPrice" name="energyPrice" min="0" step="0.01" inputmode="decimal" placeholder="0,30">
+                    <input type="number" id="energyPrice" name="energyPrice" min="0" step="0.01" inputmode="decimal" placeholder="z. B. 0,30">
+                    <p class="calc-hint">Wird erst berücksichtigt, wenn du einen Wert eingibst.</p>
                   </div>
                   <div class="calc-field">
                     <label for="loadFactor">Lastfaktor in %
@@ -287,7 +289,8 @@
                         <span class="info-tooltip__content" role="tooltip" id="tooltip-load-factor">Schätzung, wie viel&nbsp;% der Nennleistung der Drucker im Schnitt zieht. Typisch: 60–80&nbsp;%; bei geschlossenen Gehäusen/ASA/ABS oft höher.</span>
                       </span>
                     </label>
-                    <input type="number" id="loadFactor" name="loadFactor" min="0" max="100" step="1" value="60">
+                    <input type="number" id="loadFactor" name="loadFactor" min="0" max="100" step="1" placeholder="z. B. 80">
+                    <p class="calc-hint">Wird erst berücksichtigt, wenn du einen Wert eingibst.</p>
                   </div>
                 </div>
               </div>
@@ -357,7 +360,8 @@
               <p class="calc-meta" id="calcMeta">Gewicht: 0&nbsp;g · Länge: 0,00&nbsp;m</p>
             </div>
             <div class="calc-results__actions">
-              <button type="button" class="btn btn-outline" id="printButton">Speichern / Drucken</button>
+              <button type="button" class="btn btn-outline" id="printResultButton">Ergebnis drucken</button>
+              <button type="button" class="btn btn-outline" id="printFullButton">Ergebnis + Eingaben drucken</button>
             </div>
             <label class="calc-checkbox calc-checkbox--vat" for="includeVat">
               <input type="checkbox" id="includeVat" name="includeVat" value="true">
@@ -456,51 +460,7 @@
       <h1 class="calc-print__title">3D-Druck Rechner – Ergebnis</h1>
     </header>
 
-    <section class="calc-print__section">
-      <h2 class="calc-print__heading">Eingaben</h2>
-      <table class="calc-print__table">
-        <tbody>
-          <tr>
-            <th scope="row">Material</th>
-            <td id="printMaterial">PLA</td>
-          </tr>
-          <tr>
-            <th scope="row">Materialpreis</th>
-            <td id="printMaterialPrice">0,00&nbsp;€/kg</td>
-          </tr>
-          <tr>
-            <th scope="row">Berechnungsgrundlage</th>
-            <td id="printMode">Bauteilgewicht</td>
-          </tr>
-          <tr>
-            <th scope="row">Bauteilgewicht</th>
-            <td id="printWeight">0&nbsp;g</td>
-          </tr>
-          <tr>
-            <th scope="row">Filamentlänge</th>
-            <td id="printLength">0,00&nbsp;m</td>
-          </tr>
-          <tr>
-            <th scope="row">Druckzeit</th>
-            <td id="printDuration">0&nbsp;min</td>
-          </tr>
-          <tr>
-            <th scope="row">Leistung</th>
-            <td id="printPower">0&nbsp;W</td>
-          </tr>
-          <tr>
-            <th scope="row">Strompreis</th>
-            <td id="printEnergyPrice">0,00&nbsp;€/kWh</td>
-          </tr>
-          <tr>
-            <th scope="row">Lastfaktor</th>
-            <td id="printLoadFactor">0&nbsp;%</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section class="calc-print__section">
+    <section class="calc-print__section" id="printResult">
       <h2 class="calc-print__heading">Zusammenfassung</h2>
       <p class="calc-print__lead">Endsumme</p>
       <p class="calc-print__total" id="printTotal">0,00&nbsp;€</p>
@@ -550,6 +510,50 @@
           <tr>
             <th scope="row">Gesamtkosten (brutto)</th>
             <td id="printGross">0,00&nbsp;€</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="calc-print__section" id="printInputs">
+      <h2 class="calc-print__heading">Eingaben</h2>
+      <table class="calc-print__table">
+        <tbody>
+          <tr>
+            <th scope="row">Material</th>
+            <td id="printMaterial">PLA</td>
+          </tr>
+          <tr>
+            <th scope="row">Materialpreis</th>
+            <td id="printMaterialPrice">0,00&nbsp;€/kg</td>
+          </tr>
+          <tr>
+            <th scope="row">Berechnungsgrundlage</th>
+            <td id="printMode">Bauteilgewicht</td>
+          </tr>
+          <tr>
+            <th scope="row">Bauteilgewicht</th>
+            <td id="printWeight">0&nbsp;g</td>
+          </tr>
+          <tr>
+            <th scope="row">Filamentlänge</th>
+            <td id="printLength">0,00&nbsp;m</td>
+          </tr>
+          <tr>
+            <th scope="row">Druckzeit</th>
+            <td id="printDuration">0&nbsp;min</td>
+          </tr>
+          <tr>
+            <th scope="row">Leistung</th>
+            <td id="printPower">0&nbsp;W</td>
+          </tr>
+          <tr>
+            <th scope="row">Strompreis</th>
+            <td id="printEnergyPrice">0,00&nbsp;€/kWh</td>
+          </tr>
+          <tr>
+            <th scope="row">Lastfaktor</th>
+            <td id="printLoadFactor">0&nbsp;%</td>
           </tr>
         </tbody>
       </table>
@@ -659,7 +663,8 @@
       var discountRow = document.querySelector('[data-result="discount"]');
       var discountOutput = document.getElementById('discountValue');
       var proStatusOutput = document.getElementById('proStatus');
-      var printButton = document.getElementById('printButton');
+      var printResultButton = document.getElementById('printResultButton');
+      var printFullButton = document.getElementById('printFullButton');
       var proToggle = document.getElementById('proToggle');
       var proFields = document.getElementById('pro-fields');
       var proRows = document.querySelectorAll('[data-pro-row="true"]');
@@ -834,6 +839,22 @@
         }
       }
 
+      function setPrintModeAttribute(mode) {
+        if (!rootElement) return;
+        if (mode) {
+          rootElement.setAttribute('data-print-mode', mode);
+        } else {
+          rootElement.removeAttribute('data-print-mode');
+        }
+      }
+
+      function triggerPrint(mode) {
+        setPrintModeAttribute(mode);
+        updatePrintTimestamp();
+        recalc();
+        window.print();
+      }
+
       function hasValue(value) {
         return Math.abs(value) > 0.005;
       }
@@ -901,13 +922,20 @@
 
         var hours = parseHours(timeInput.value || '0:00');
         var power = readNumber(powerInput);
-        var energyPrice = parseFloat((energyPriceInput.value || '').replace(',', '.'));
-        if (!isFinite(energyPrice)) {
-          energyPrice = 0;
+        var energyPrice = readNumber(energyPriceInput);
+        var loadFactorRaw = (loadFactorInput.value || '').trim();
+        var loadFactorValue = readNumber(loadFactorInput);
+        var loadFactor = Math.min(Math.max(loadFactorValue, 0), 100);
+        if (!loadFactorRaw) {
+          loadFactorInput.value = '';
+        } else {
+          var parsedLoadFactor = parseFloat(loadFactorRaw.replace(',', '.'));
+          if (!isFinite(parsedLoadFactor)) {
+            loadFactorInput.value = '';
+          } else if (Math.abs(parsedLoadFactor - loadFactor) > 0.0001) {
+            loadFactorInput.value = loadFactor.toString();
+          }
         }
-        var loadFactor = readNumber(loadFactorInput);
-        loadFactor = Math.min(Math.max(loadFactor, 0), 100);
-        loadFactorInput.value = loadFactor.toString();
 
         syncProMinutesFromTime(hours);
 
@@ -1210,10 +1238,15 @@
 
       vatCheckbox.addEventListener('change', recalc);
 
-      if (printButton) {
-        printButton.addEventListener('click', function () {
-          updatePrintTimestamp();
-          window.print();
+      if (printResultButton) {
+        printResultButton.addEventListener('click', function () {
+          triggerPrint('result');
+        });
+      }
+
+      if (printFullButton) {
+        printFullButton.addEventListener('click', function () {
+          triggerPrint('full');
         });
       }
 
@@ -1242,6 +1275,10 @@
       window.addEventListener('beforeprint', function () {
         updatePrintTimestamp();
         recalc();
+      });
+
+      window.addEventListener('afterprint', function () {
+        setPrintModeAttribute(null);
       });
 
       setMaterialDefaults();
