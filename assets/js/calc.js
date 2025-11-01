@@ -1,10 +1,18 @@
 (function () {
-  function qsa(sel, root) {
+  var $$ = function (sel, root) {
     var context = root || document;
     return Array.prototype.slice.call(context.querySelectorAll(sel));
-  }
+  };
+
+  var num = function (value) {
+    var normalized = parseFloat(String(value == null ? '' : value).replace(',', '.'));
+    return Number.isFinite(normalized) ? normalized : 0;
+  };
 
   function initCalc() {
+          var proToggle = document.querySelector('#proToggle,[data-pro-toggle]');
+          var proPane = document.querySelector('#calc-pro,[data-pro-pane]');
+          var resultBox = document.querySelector('#calc-result,[data-result]');
           var materialSelect = document.getElementById('materialSelect');
           var materialDensityHint = document.getElementById('materialDensityHint');
           var materialDensityResetButton = document.getElementById('materialDensityReset');
@@ -54,15 +62,15 @@
           var proStatusOutput = document.getElementById('proStatus');
           var printResultButton = document.getElementById('printResultButton');
           var printFullButton = document.getElementById('printFullButton');
-          var proToggle = document.getElementById('proToggle');
           var proFields = document.getElementById('pro-fields');
           var proCard = document.getElementById('proCard');
-          var proPane = document.querySelector('[data-pro-pane]');
           var proCardBody = document.getElementById('proCardBody');
           var proCollapseToggle = document.getElementById('proCollapseToggle');
           var proRows = document.querySelectorAll('[data-pro-row="true"]');
           var rootElement = document.documentElement;
-          var calcFields = qsa('[data-calc], [data-calc-pro]');
+          if (resultBox) {
+            resultBox.dataset.ready = 'true';
+          }
           var suppressCalcEvent = false;
           var profitMarginInput = document.getElementById('profitMargin');
           var hourlyRateInput = document.getElementById('hourlyRate');
@@ -72,6 +80,14 @@
           var wastePercentInput = document.getElementById('wastePercent');
           var fixedCostInput = document.getElementById('fixedCost');
           var discountPercentInput = document.getElementById('discountPercent');
+          var errorRateInput = document.getElementById('errorRate');
+          var packagingCostInput = document.getElementById('packagingCost');
+          var shippingCostInput = document.getElementById('shippingCost');
+          var machineHourlyInput = document.getElementById('machineHourlyRate');
+          var machinePurchaseInput = document.getElementById('machinePurchase');
+          var machineLifetimeInput = document.getElementById('machineLifetime');
+          var machineAutoHint = document.getElementById('machineAutoHint');
+          var materialDensityInput = document.getElementById('proDensity');
           var partNameInput = document.getElementById('partName');
 
           var printMaterialOutput = document.getElementById('printMaterial');
@@ -494,8 +510,18 @@
               updateProCollapseToggle(false);
             }
             if (!options || !options.skipRecalc) {
-              recalc();
+              recalculate();
             }
+          }
+
+          function setProState(on) {
+            var enabled = !!on;
+            setProModeEnabled(enabled, { skipRecalc: true });
+            if (proPane) {
+              proPane.classList.toggle('is-active', enabled);
+              proPane.setAttribute('aria-hidden', (!enabled).toString());
+            }
+            recalculate();
           }
 
           function formatPricePlaceholder(value) {
@@ -604,6 +630,7 @@
                 }
                 materialDensityProgrammatic = false;
                 materialDensityUserEdited = false;
+                materialDensityInput.removeAttribute('data-user-set');
               }
             }
 
@@ -628,13 +655,11 @@
             return hours + minutes / 60;
           }
 
-          function num(value) {
-            var normalized = parseFloat(String(value == null ? '' : value).replace(',', '.'));
-            return Number.isFinite(normalized) ? normalized : 0;
-          }
-
           function readNumber(input) {
             if (!input) return 0;
+            if (input.disabled) {
+              return 0;
+            }
             if (typeof input.closest === 'function' && input.closest('[data-pro-pane]:not(.is-active)')) {
               return 0;
             }
@@ -665,9 +690,11 @@
             if (isActive) {
               input.disabled = false;
               input.removeAttribute('aria-disabled');
+              input.setAttribute('data-calc', '');
             } else {
               input.disabled = true;
               input.setAttribute('aria-disabled', 'true');
+              input.removeAttribute('data-calc');
             }
           }
 
@@ -733,6 +760,14 @@
             triggerRecalc({ immediate: true });
           }
 
+          function wireInputs() {
+            var fields = $$('[data-calc],[data-calc-pro]');
+            fields.forEach(function (el) {
+              el.addEventListener('input', handleCalcInputEvent);
+              el.addEventListener('change', handleCalcChangeEvent);
+            });
+          }
+
           function setPrintAttribute(mode) {
             if (!rootElement) return;
             if (mode) {
@@ -768,12 +803,12 @@
           }
 
           var queueRecalc = createThrottled(function () {
-            recalc();
+            recalculate();
           }, recalcThrottleDelay);
 
           function triggerRecalc(options) {
             if (options && options.immediate) {
-              recalc();
+              recalculate();
             } else {
               queueRecalc();
             }
@@ -782,7 +817,7 @@
           function triggerPrint(mode) {
             setPrintAttribute(mode);
             updatePrintTimestamp();
-            var state = recalc();
+            var state = recalculate();
             if (state) {
               var fileTitle = buildPrintFileName(mode, state);
               pendingPrintTitle = fileTitle;
@@ -832,7 +867,7 @@
               timeSyncInProgress = false;
               suppressProSync = false;
             }
-            recalc();
+            recalculate();
           }
 
           function computeState() {
@@ -1652,17 +1687,14 @@
             }
           }
 
-          function recalc() {
+          function recalculate() {
             var state = computeState();
             updateResults(state);
             updatePrintSummary(state);
             return state;
           }
 
-          calcFields.forEach(function (field) {
-            field.addEventListener('input', handleCalcInputEvent);
-            field.addEventListener('change', handleCalcChangeEvent);
-          });
+          wireInputs();
 
           materialSelect.addEventListener('change', setMaterialDefaults);
           weightMode.addEventListener('change', updateModeVisibility);
@@ -1718,6 +1750,7 @@
                 materialDensityInput.value = defaults.density.toFixed(2);
                 materialDensityProgrammatic = false;
                 materialDensityUserEdited = false;
+                materialDensityInput.removeAttribute('data-user-set');
               }
 
               updateMaterialSuggestionState(defaults);
@@ -1739,6 +1772,7 @@
               }
               materialDensityProgrammatic = false;
               materialDensityUserEdited = false;
+              materialDensityInput.removeAttribute('data-user-set');
               updateMaterialSuggestionState(defaults);
               triggerRecalc({ immediate: true });
               if (proModeEnabled && !materialDensityInput.disabled) {
@@ -1759,11 +1793,9 @@
             });
           }
 
-          setProModeEnabled(proToggle ? proToggle.checked : false, { skipRecalc: true });
-
           if (proToggle) {
             proToggle.addEventListener('change', function () {
-              setProModeEnabled(proToggle.checked);
+              setProState(proToggle.checked);
             });
           }
 
@@ -1811,6 +1843,11 @@
               if (!materialDensityProgrammatic) {
                 var valueRaw = materialDensityInput.value != null ? materialDensityInput.value.toString().trim() : '';
                 materialDensityUserEdited = valueRaw.length > 0;
+                if (materialDensityUserEdited) {
+                  materialDensityInput.setAttribute('data-user-set', '1');
+                } else {
+                  materialDensityInput.removeAttribute('data-user-set');
+                }
               }
               updateMaterialSuggestionState(currentMaterialDefaults);
             },
@@ -1818,6 +1855,11 @@
               if (!materialDensityProgrammatic) {
                 var valueRaw = materialDensityInput.value != null ? materialDensityInput.value.toString().trim() : '';
                 materialDensityUserEdited = valueRaw.length > 0;
+                if (materialDensityUserEdited) {
+                  materialDensityInput.setAttribute('data-user-set', '1');
+                } else {
+                  materialDensityInput.removeAttribute('data-user-set');
+                }
               }
               updateMaterialSuggestionState(currentMaterialDefaults);
             }
@@ -1832,7 +1874,7 @@
           updatePrintTimestamp();
           window.addEventListener('beforeprint', function () {
             updatePrintTimestamp();
-            recalc();
+            recalculate();
           });
 
           window.addEventListener('afterprint', function () {
@@ -1845,7 +1887,8 @@
 
           setMaterialDefaults();
           updateModeVisibility();
-          recalc();
+          setProState(proToggle ? proToggle.checked : false);
+          recalculate();
   }
 
   if (document.readyState === 'loading') {
