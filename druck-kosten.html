@@ -299,7 +299,18 @@
                     <p class="calc-hint" id="hint-profitMargin">Deckungsbeitrag für Betrieb &amp; Risiko.</p>
                   </div>
                   <div class="calc-field">
-                    <label for="hourlyRate">Stundenlohn in €/h</label>
+                    <label for="hourlyRate">Stundenlohn in €/h
+                      <span class="info-tooltip">
+                        <button type="button" class="info-tooltip__trigger" aria-describedby="tooltip-hourly-rate" aria-label="Info zum Feld Stundenlohn" aria-haspopup="true">
+                          <svg class="info-tooltip__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                            <circle cx="8" cy="8" r="7" />
+                            <circle class="info-tooltip__dot" cx="8" cy="4.6" r="0.7" />
+                            <line x1="8" y1="7" x2="8" y2="11" />
+                          </svg>
+                        </button>
+                        <span class="info-tooltip__content" role="tooltip" id="tooltip-hourly-rate">Gilt nur für Rüstzeit + Nachbearbeitung (nicht für Druckzeit).</span>
+                      </span>
+                    </label>
                     <input type="number" id="hourlyRate" name="hourlyRate" min="0" step="1" inputmode="decimal" aria-describedby="hint-hourlyRate">
                     <p class="calc-hint" id="hint-hourlyRate">Eigener Stundensatz inkl. Nebenkosten.</p>
                   </div>
@@ -368,7 +379,7 @@
                 <span class="calc-results__value" id="energyCost">0,00&nbsp;€</span>
               </li>
               <li class="calc-results__item calc-results__item--pro" data-result="timeCost" hidden>
-                <span class="calc-results__label">Zeitkosten</span>
+                <span class="calc-results__label">Arbeitszeitkosten (Rüstzeit + Nachbearbeitung)</span>
                 <span class="calc-results__value" id="timeCost">0,00&nbsp;€</span>
               </li>
               <li class="calc-results__item calc-results__item--pro" data-result="fixedCost" hidden>
@@ -511,7 +522,7 @@
             <td id="printEnergyCost">0,00&nbsp;€</td>
           </tr>
           <tr class="print-row-pro" data-print="timeCost" hidden>
-            <th scope="row">Zeitkosten</th>
+            <th scope="row">Arbeitszeitkosten (Rüstzeit + Nachbearbeitung)</th>
             <td id="printTimeCost">0,00&nbsp;€</td>
           </tr>
           <tr class="print-row-pro" data-print="fixedCost" hidden>
@@ -869,7 +880,10 @@
 
         var materialCost = (weight / 1000) * pricePerKg;
         var energyCost = (power / 1000) * hours * energyPrice * (loadFactor / 100);
-        var net = materialCost + energyCost;
+        var materialWaste = 0;
+        var materialWithWaste = materialCost;
+        var standardSubtotal = materialWithWaste + energyCost;
+        var net = standardSubtotal;
         var vatIncluded = !!vatCheckbox.checked;
         var gross = vatIncluded ? net * 1.19 : net;
 
@@ -883,18 +897,19 @@
           printMinutes: defaultMinutes,
           finishingMinutes: 0,
           wastePercent: 0,
-          materialWaste: 0,
-          materialWithWaste: materialCost,
-          timeMinutes: defaultMinutes,
+          materialWaste: materialWaste,
+          materialWithWaste: materialWithWaste,
+          labourMinutes: 0,
           timeCost: 0,
           fixedCost: 0,
-          subtotal: materialCost + energyCost,
+          subtotal: standardSubtotal,
           marginValue: 0,
           discountPercent: 0,
           discountValue: 0,
-          netBeforeDiscount: materialCost + energyCost,
+          netBeforeDiscount: standardSubtotal,
           net: net,
-          gross: gross
+          gross: gross,
+          standardSubtotal: standardSubtotal
         };
 
         if (proEnabled) {
@@ -923,11 +938,12 @@
             discountPercentInput.value = discountPercent.toString();
           }
 
-          var materialWaste = materialCost * (wastePercent / 100);
-          var materialWithWaste = materialCost + materialWaste;
-          var timeMinutes = setupMinutes + proMinutes + finishingMinutes;
-          var timeCost = (hourlyRate / 60) * timeMinutes;
-          var subtotal = materialWithWaste + energyCost + timeCost + fixedCost;
+          materialWaste = materialCost * (wastePercent / 100);
+          materialWithWaste = materialCost + materialWaste;
+          standardSubtotal = materialWithWaste + energyCost;
+          var labourMinutes = setupMinutes + finishingMinutes;
+          var timeCost = (hourlyRate / 60) * labourMinutes;
+          var subtotal = standardSubtotal + timeCost + fixedCost;
           var marginValue = subtotal * (profitMargin / 100);
           var netBeforeDiscount = subtotal + marginValue;
           var discountValue = netBeforeDiscount * (discountPercent / 100);
@@ -947,7 +963,7 @@
             wastePercent: wastePercent,
             materialWaste: materialWaste,
             materialWithWaste: materialWithWaste,
-            timeMinutes: timeMinutes,
+            labourMinutes: labourMinutes,
             timeCost: timeCost,
             fixedCost: fixedCost,
             subtotal: subtotal,
@@ -956,7 +972,8 @@
             discountValue: discountValue,
             netBeforeDiscount: netBeforeDiscount,
             net: proNet,
-            gross: proGross
+            gross: proGross,
+            standardSubtotal: standardSubtotal
           };
         }
 
@@ -979,6 +996,7 @@
           energyCost: energyCost,
           net: net,
           gross: gross,
+          standardSubtotal: standardSubtotal,
           pro: proData
         };
       }
@@ -1026,10 +1044,16 @@
         }
         toggleElement(fixedCostRow, state.pro.enabled && hasValue(state.pro.fixedCost));
 
-        if (subtotalOutput) {
-          subtotalOutput.textContent = formatter.format(state.pro.subtotal);
+        if (subtotalRow) {
+          subtotalRow.classList.toggle('calc-results__item--pro', state.pro.enabled);
         }
-        toggleElement(subtotalRow, state.pro.enabled);
+
+        if (subtotalOutput) {
+          var subtotalValue = state.pro.enabled ? state.pro.subtotal : state.standardSubtotal;
+          subtotalOutput.textContent = formatter.format(subtotalValue);
+        }
+        var showSubtotal = state.pro.enabled || hasValue(state.standardSubtotal);
+        toggleElement(subtotalRow, showSubtotal);
 
         if (marginOutput) {
           marginOutput.textContent = formatter.format(state.pro.marginValue);
@@ -1093,10 +1117,16 @@
         }
         toggleElement(printFixedCostRow, state.pro.enabled && hasValue(state.pro.fixedCost));
 
-        if (printSubtotalOutput) {
-          printSubtotalOutput.textContent = formatter.format(state.pro.subtotal);
+        if (printSubtotalRow) {
+          printSubtotalRow.classList.toggle('print-row-pro', state.pro.enabled);
         }
-        toggleElement(printSubtotalRow, state.pro.enabled);
+
+        if (printSubtotalOutput) {
+          var printSubtotalValue = state.pro.enabled ? state.pro.subtotal : state.standardSubtotal;
+          printSubtotalOutput.textContent = formatter.format(printSubtotalValue);
+        }
+        var showPrintSubtotal = state.pro.enabled || hasValue(state.standardSubtotal);
+        toggleElement(printSubtotalRow, showPrintSubtotal);
 
         if (printMarginOutput) {
           printMarginOutput.textContent = formatter.format(state.pro.marginValue);
