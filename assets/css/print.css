@@ -148,6 +148,41 @@
   white-space: pre-wrap;
 }
 
+@media print {
+  .calc-print__result-grid {
+    grid-template-areas:
+      "summary chart"
+      "summary note";
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.9fr);
+    grid-template-rows: auto auto;
+    column-gap: 1.6rem;
+    row-gap: 0;
+  }
+
+  .calc-print__summary {
+    grid-area: summary;
+  }
+
+  .calc-print__chart {
+    grid-area: chart;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .calc-print__note-card {
+    grid-area: note;
+    margin-top: 10mm !important;
+    margin-bottom: 0;
+    padding: calc(0.78rem * var(--print-compact)) calc(0.96rem * var(--print-compact));
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .calc-print__note-text {
+    line-height: 1.35;
+  }
+}
+
 .calc-print__chart-hint {
   display: none;
 }
