@@ -4379,6 +4379,39 @@ a:focus-visible {
   --ws-print-page-height: 297mm;
 }
 
+#printProParams {
+  display: contents;
+}
+
+.print-page {
+  width: 210mm;
+}
+
+.calc-print__page--inputs {
+  break-before: page;
+  page-break-before: always;
+  display: flex;
+  flex-direction: column;
+  gap: 7mm;
+}
+
+.calc-print__page--inputs.print-tight {
+  font-size: 95%;
+}
+
+.calc-print__page--inputs.print-tight .inputs-grid {
+  gap: 6.5mm 6mm;
+}
+
+.calc-print__page--inputs.print-tight .inputs-card.pdf-card {
+  padding: 2.9mm 3.3mm;
+}
+
+.calc-print__page--inputs.print-tight .inputs-card__table th,
+.calc-print__page--inputs.print-tight .inputs-card__table td {
+  padding: 2.4mm 2.5mm;
+}
+
 .calc-print__page {
   margin-bottom: 2rem;
   page-break-inside: avoid;
@@ -4418,6 +4451,7 @@ a:focus-visible {
   pointer-events: none;
   opacity: 0;
   z-index: -1;
+  --print-compact: 0.82;
 }
 
 .ws-print-stage .calc-print,
@@ -4434,7 +4468,7 @@ a:focus-visible {
   min-height: var(--ws-print-page-height);
   width: var(--ws-print-page-width);
   box-sizing: border-box;
-  padding: 18mm 12mm 32mm;
+  padding: 12mm 12mm 20mm;
   background: #fff;
 }
 
@@ -4753,46 +4787,104 @@ a:focus-visible {
   color: #475569;
 }
 
-.calc-print__inputs-grid {
+.calc-print__inputs-grid,
+.inputs-grid {
   display: grid;
-  gap: 1.4rem;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8mm 7mm;
+  align-items: start;
+}
+
+.inputs-card {
+  display: grid;
+  gap: 2.8mm;
+  align-content: start;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.inputs-card.pdf-card {
+  padding: 3.2mm 3.6mm;
+  gap: 2.8mm;
+}
+
+.inputs-card__title {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.inputs-card__table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.inputs-card__table tr {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.inputs-card__table tr:last-of-type {
+  border-bottom: none;
 }
 
 .calc-print__table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-size: 0.98rem;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.calc-print__table-row {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
   page-break-inside: avoid;
   break-inside: avoid;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  border-radius: 10px;
-  background: #fff;
-  overflow: hidden;
+}
+
+.calc-print__table-row:last-of-type {
+  border-bottom: none;
+}
+
+.inputs-card__table th,
+.inputs-card__table td {
+  padding: 2.6mm 2.8mm;
+  vertical-align: top;
 }
 
 .calc-print__table th,
 .calc-print__table td {
   text-align: left;
-  padding: calc(0.65rem * var(--print-compact)) calc(1.1rem * var(--print-compact));
-  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
 }
 
-.calc-print__table th {
-  font-weight: 600;
-  color: #475569;
-  width: 52%;
+.calc-print__label,
+.calc-print__value {
+  line-height: 1.38;
+  font-size: 9.8pt;
+  vertical-align: top;
 }
 
-.calc-print__table td {
+.calc-print__label {
+  width: 55%;
+  padding-right: 3mm;
+  font-weight: 500;
+  color: #1f2937;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+.calc-print__value {
+  width: 45%;
+  text-align: right;
   font-weight: 600;
   color: #0f172a;
-}
-
-.calc-print__table tr:last-child th,
-.calc-print__table tr:last-child td {
-  border-bottom: none;
+  font-variant-numeric: tabular-nums;
+  white-space: normal;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .calc-print__footer {
@@ -4813,8 +4905,8 @@ a:focus-visible {
 
 @media print {
   @page {
-    size: A4 portrait;
-    margin: 1.4cm;
+    size: A4;
+    margin: 12mm;
   }
 
   :root {
@@ -4826,6 +4918,8 @@ a:focus-visible {
     margin: 0;
     background: #fff;
     color: #0f172a;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .no-print {
@@ -4843,14 +4937,14 @@ a:focus-visible {
 
   .calc-print__page {
     box-sizing: border-box;
-    padding: 16mm 10mm 26mm;
+    padding: 12mm 12mm 20mm;
     background: #fff;
     page-break-inside: avoid;
   }
 
   .calc-print__offer,
   .calc-print__result-grid,
-  .calc-print__section,
+  .inputs-card,
   .calc-print__inline-note {
     page-break-inside: avoid;
   }
@@ -4883,10 +4977,6 @@ a:focus-visible {
   header.ws-print {
     display: none !important;
   }
-
-}
-
-@media print {
 }
 
 /* Alte Reste killen */
