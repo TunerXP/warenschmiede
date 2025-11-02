@@ -411,6 +411,19 @@ img {
   color: var(--accent);
 }
 
+.nav-highlight .nav-link {
+  color: var(--accent);
+}
+
+.nav-highlight .nav-link::after {
+  transform: scaleX(1);
+}
+
+.nav-highlight .nav-link:hover,
+.nav-highlight .nav-link:focus-visible {
+  color: var(--accent-dark);
+}
+
 .nav-more {
   position: relative;
   display: block;
@@ -722,6 +735,7 @@ img {
   margin: 0;
 }
 
+.section-hero h1,
 .section-hero h2 {
   margin: 0;
   font-size: clamp(2rem, 5vw, 2.75rem);
@@ -734,10 +748,55 @@ img {
   color: var(--muted);
 }
 
+.hero-meta {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-subtle);
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+}
+
+.hero-cta {
+  flex: 1 1 auto;
+  min-width: 220px;
+}
+
+.hero-link {
+  margin: 0;
+  font-weight: 600;
+}
+
+.hero-link a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.hero-link a::after {
+  content: "→";
+  transition: transform 0.2s ease;
+}
+
+.hero-link a:hover::after,
+.hero-link a:focus-visible::after {
+  transform: translateX(4px);
+}
+
+@media (max-width: 640px) {
+  .hero-cta {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .hero-link {
+    margin-top: var(--space-2);
+  }
 }
 
 .section-heading {
