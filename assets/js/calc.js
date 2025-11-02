@@ -112,7 +112,10 @@
           var machineLifetimeInput = document.getElementById('machineLifetime');
           var machineAutoHint = document.getElementById('machineAutoHint');
           var materialDensityInput = document.getElementById('proDensity');
-          var nozzleSelect = document.getElementById('nozzleSelect');
+          var nozzleDiameterSelect = document.getElementById('nozzleDiameter');
+          var nozzleTypeSelect = document.getElementById('nozzleType');
+          var nozzleDiameterError = document.getElementById('nozzleDiameterError');
+          var nozzleTypeError = document.getElementById('nozzleTypeError');
           var proNoteInput = document.getElementById('proNote');
           var partNameInput = document.getElementById('partName');
           var offerFields = $$('[data-offer-field]');
@@ -765,6 +768,134 @@
           var suppressProSync = false;
           var timeSyncInProgress = false;
           var proModeEnabled = false;
+          var NOZZLE_DEFAULT_DIAMETER = '0.4 mm';
+          var NOZZLE_DEFAULT_TYPE = 'Standard';
+
+          function setFieldErrorState(field, errorElement, message) {
+            if (field) {
+              if (message) {
+                field.classList.add('is-invalid');
+                field.setAttribute('aria-invalid', 'true');
+              } else {
+                field.classList.remove('is-invalid');
+                field.removeAttribute('aria-invalid');
+              }
+            }
+            if (errorElement) {
+              if (message) {
+                errorElement.textContent = message;
+                errorElement.hidden = false;
+                errorElement.setAttribute('aria-hidden', 'false');
+              } else {
+                errorElement.textContent = '';
+                errorElement.hidden = true;
+                errorElement.setAttribute('aria-hidden', 'true');
+              }
+            }
+          }
+
+          function selectHasOption(select, value) {
+            if (!select || !value) {
+              return false;
+            }
+            return Array.prototype.some.call(select.options || [], function (option) {
+              return option.value === value;
+            });
+          }
+
+          function setSelectValueIfExists(select, value) {
+            if (!select || !value) {
+              return false;
+            }
+            if (selectHasOption(select, value)) {
+              select.value = value;
+              return true;
+            }
+            return false;
+          }
+
+          function parseLegacyNozzleValue(value) {
+            var text = value == null ? '' : value.toString().trim();
+            if (!text) {
+              return { diameter: '', type: '' };
+            }
+            var diameter = '';
+            var diameterMatch = text.match(/(0(?:\.[2468])?|1\.0)\s*mm/i);
+            if (diameterMatch && diameterMatch[1]) {
+              var normalized = diameterMatch[1].replace(',', '.');
+              diameter = normalized + ' mm';
+            }
+            var type = '';
+            if (/gehärtet/i.test(text)) {
+              type = 'gehärtet';
+            } else if (/standard/i.test(text)) {
+              type = 'Standard';
+            }
+            if (!type) {
+              var lower = text.toLowerCase();
+              if (lower === 'gehärtet') {
+                type = 'gehärtet';
+              } else if (lower === 'standard') {
+                type = 'Standard';
+              }
+            }
+            return { diameter: diameter, type: type };
+          }
+
+          function applyLegacyNozzleValue(value) {
+            if (!nozzleDiameterSelect || !nozzleTypeSelect) {
+              return;
+            }
+            var parsed = parseLegacyNozzleValue(value);
+            if (!parsed) {
+              return;
+            }
+            if (parsed.diameter) {
+              setSelectValueIfExists(nozzleDiameterSelect, parsed.diameter);
+            }
+            if (parsed.type) {
+              setSelectValueIfExists(nozzleTypeSelect, parsed.type);
+            }
+          }
+
+          function ensureNozzleDefaults() {
+            if (!nozzleDiameterSelect || !nozzleTypeSelect) {
+              return;
+            }
+            var diameterCurrent = getInputRaw(nozzleDiameterSelect);
+            var typeCurrent = getInputRaw(nozzleTypeSelect);
+            var diameterApplied = false;
+            var typeApplied = false;
+            if (!diameterCurrent) {
+              diameterApplied = setSelectValueIfExists(nozzleDiameterSelect, NOZZLE_DEFAULT_DIAMETER);
+            }
+            if (!typeCurrent) {
+              typeApplied = setSelectValueIfExists(nozzleTypeSelect, NOZZLE_DEFAULT_TYPE);
+            }
+            if (diameterApplied) {
+              schedulePersistenceForTarget(nozzleDiameterSelect, true);
+            }
+            if (typeApplied) {
+              schedulePersistenceForTarget(nozzleTypeSelect, true);
+            }
+          }
+
+          function getNozzleSelection() {
+            var diameterRaw = getInputRaw(nozzleDiameterSelect);
+            var typeRaw = getInputRaw(nozzleTypeSelect);
+            var diameterValue = diameterRaw ? diameterRaw.replace(/\s+/g, ' ').trim() : '';
+            var typeValue = typeRaw ? typeRaw.replace(/\s+/g, ' ').trim() : '';
+            var shouldValidate = proModeEnabled || (diameterValue.length > 0 && typeValue.length > 0);
+            var diameterMessage = shouldValidate && !diameterValue ? 'Bitte Düsendurchmesser wählen.' : '';
+            var typeMessage = shouldValidate && !typeValue ? 'Bitte Düsen-Typ wählen.' : '';
+            setFieldErrorState(nozzleDiameterSelect, nozzleDiameterError, diameterMessage);
+            setFieldErrorState(nozzleTypeSelect, nozzleTypeError, typeMessage);
+            return {
+              diameter: diameterValue,
+              type: typeValue,
+              combined: diameterValue && typeValue ? diameterValue + ' (' + typeValue + ')' : ''
+            };
+          }
 
           function applyProVisibility(enabled) {
             if (proToggle) {
@@ -1547,9 +1678,9 @@
             stage.appendChild(clone);
             document.body.appendChild(stage);
             if (mode === 'result') {
-              var inlineNoteClone = stage.querySelector('.calc-print__inline-note');
-              if (inlineNoteClone && inlineNoteClone.parentNode) {
-                inlineNoteClone.parentNode.removeChild(inlineNoteClone);
+              var chartHintClone = stage.querySelector('.calc-print__chart-hint');
+              if (chartHintClone && chartHintClone.parentNode) {
+                chartHintClone.parentNode.removeChild(chartHintClone);
               }
               var inputsSectionClone = stage.querySelector('#printInputsSection');
               if (inputsSectionClone && inputsSectionClone.parentNode) {
@@ -2025,7 +2156,13 @@
               try {
                 if (values) {
                   applyInputValues(proCalcInputs, values);
+                  if (Object.prototype.hasOwnProperty.call(values, 'nozzle') && values.nozzle) {
+                    applyLegacyNozzleValue(values.nozzle);
+                    schedulePersistenceForTarget(nozzleDiameterSelect, true);
+                    schedulePersistenceForTarget(nozzleTypeSelect, true);
+                  }
                 }
+                ensureNozzleDefaults();
               } finally {
                 suppressCalcEvent = false;
               }
@@ -2040,6 +2177,7 @@
               if (machineHourlyInput && values && values.machineHourlyRate != null && values.machineHourlyRate !== '') {
                 machineHourlyUserEdited = true;
               }
+              getNozzleSelection();
             }
           });
 
@@ -2309,11 +2447,11 @@
             var machinePurchaseRawValue = getInputRaw(machinePurchaseInput);
             var machineLifetimeRawValue = getInputRaw(machineLifetimeInput);
             var materialDensityRawValue = getInputRaw(materialDensityInput);
-            var nozzleRawValue = getInputRaw(nozzleSelect);
+            var nozzleSelection = getNozzleSelection();
             var noteRawValue = getInputRaw(proNoteInput);
 
             var materialDensityValue = readNumber(materialDensityInput);
-            var nozzleValue = nozzleRawValue ? nozzleRawValue.replace(/\s+/g, ' ').trim() : '';
+            var nozzleValue = nozzleSelection.combined;
             var noteNormalized = noteRawValue ? noteRawValue.slice(0, 300) : '';
             noteNormalized = noteNormalized.replace(/\r\n/g, '\n');
             var noteTrimmed = noteNormalized.trim();
@@ -2517,6 +2655,8 @@
               standardSubtotal: standardSubtotal,
               materialDensity: proEnabled ? materialDensityValue : 0,
               nozzle: nozzleValue,
+              nozzleDiameter: nozzleSelection.diameter,
+              nozzleType: nozzleSelection.type,
               note: noteValue
             };
 
@@ -2595,6 +2735,8 @@
                 machinePurchase: machinePurchase,
                 machineLifetime: machineLifetime,
                 nozzle: nozzleValue,
+                nozzleDiameter: nozzleSelection.diameter,
+                nozzleType: nozzleSelection.type,
                 note: noteValue
               };
             }
@@ -3355,6 +3497,8 @@
             }
           });
 
+          ensureNozzleDefaults();
+          getNozzleSelection();
           setMaterialDefaults();
           updateModeVisibility();
           setProState(proToggle ? proToggle.checked : false);

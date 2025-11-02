@@ -569,16 +569,24 @@
                       <button type="button" class="calc-reset-link is-hidden" id="materialDensityReset">Preset-Dichte wiederherstellen</button>
                     </div>
                     <div class="calc-field">
-                      <label for="nozzleSelect">Druckerdüse</label>
-                      <select id="nozzleSelect" data-calc-pro name="nozzle">
+                      <label for="nozzleDiameter">Düsendurchmesser</label>
+                      <select id="nozzleDiameter" data-calc-pro name="nozzleDiameter" aria-describedby="nozzleDiameterError">
                         <option value="">–</option>
                         <option value="0.2 mm">0.2&nbsp;mm</option>
-                        <option value="0.4 mm">0.4&nbsp;mm</option>
+                        <option value="0.4 mm" selected>0.4&nbsp;mm</option>
                         <option value="0.6 mm">0.6&nbsp;mm</option>
                         <option value="0.8 mm">0.8&nbsp;mm</option>
                         <option value="1.0 mm">1.0&nbsp;mm</option>
+                      </select>
+                      <p class="calc-field__error" id="nozzleDiameterError" hidden aria-hidden="true" aria-live="polite"></p>
+                    </div>
+                    <div class="calc-field">
+                      <label for="nozzleType">Düsen-Typ</label>
+                      <select id="nozzleType" data-calc-pro name="nozzleType" aria-describedby="nozzleTypeError">
+                        <option value="Standard" selected>Standard</option>
                         <option value="gehärtet">gehärtet</option>
                       </select>
+                      <p class="calc-field__error" id="nozzleTypeError" hidden aria-hidden="true" aria-live="polite"></p>
                     </div>
                   </div>
                 </div>
@@ -929,6 +937,7 @@
             <h2 class="calc-print__chart-title" id="printChartTitle">Kostenanteile</h2>
             <div class="calc-print__chart-bars" id="printChartBars" role="list"></div>
             <p class="calc-print__chart-note" id="printChartTotal">Gesamtkosten (netto): 0,00&nbsp;€</p>
+            <p class="calc-print__chart-hint" id="printChartHint">Hinweis: Eingaben &amp; Parameter findest du unten im Abschnitt „Eingaben“.</p>
           </aside>
           <aside class="calc-print__note-card" id="printNoteCard" hidden aria-labelledby="printNoteTitle">
             <h2 class="calc-print__note-title" id="printNoteTitle">Notiz</h2>
@@ -936,7 +945,6 @@
             <p class="calc-print__note-text" id="printNoteValue"></p>
           </aside>
         </div>
-        <p class="calc-print__inline-note">Hinweis: Eingaben &amp; Parameter findest du unten im Abschnitt „Eingaben“.</p>
       </div>
 
     </div>
