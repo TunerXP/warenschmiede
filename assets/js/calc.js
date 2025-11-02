@@ -222,6 +222,7 @@
           var printVatNoteOutput = document.getElementById('printVatNote');
           var printInputsSection = document.getElementById('printInputsSection');
           var printInputsTable = document.getElementById('printInputsTable');
+          var printInputsContainer = printInputsSection || printInputsTable;
           var printProParamsSection = document.getElementById('printProParams');
           var printProfitMarginOutput = document.getElementById('printProfitMargin');
           var printHourlyRateOutput = document.getElementById('printHourlyRate');
@@ -232,22 +233,29 @@
           var printFixedCostInputOutput = document.getElementById('printFixedCostInput');
           var printDiscountPercentOutput = document.getElementById('printDiscountPercent');
           var printInputRows = {
-            weight: printInputsTable ? printInputsTable.querySelector('[data-input-row="weight"]') : null,
-            length: printInputsTable ? printInputsTable.querySelector('[data-input-row="length"]') : null,
-            duration: printInputsTable ? printInputsTable.querySelector('[data-input-row="duration"]') : null,
-            power: printInputsTable ? printInputsTable.querySelector('[data-input-row="power"]') : null,
-            energyPrice: printInputsTable ? printInputsTable.querySelector('[data-input-row="energyPrice"]') : null,
-            loadFactor: printInputsTable ? printInputsTable.querySelector('[data-input-row="loadFactor"]') : null,
-            wastePercent: printInputsTable ? printInputsTable.querySelector('[data-input-row="wastePercent"]') : null
+            weight: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="weight"]') : null,
+            length: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="length"]') : null,
+            duration: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="duration"]') : null,
+            power: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="power"]') : null,
+            energyPrice: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="energyPrice"]') : null,
+            loadFactor: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="loadFactor"]') : null,
+            wastePercent: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="wastePercent"]') : null
           };
           var printProInputRows = {
-            profitMargin: printProParamsSection ? printProParamsSection.querySelector('[data-input-row="profitMargin"]') : null,
-            hourlyRate: printProParamsSection ? printProParamsSection.querySelector('[data-input-row="hourlyRate"]') : null,
-            setupMinutes: printProParamsSection ? printProParamsSection.querySelector('[data-input-row="setupMinutes"]') : null,
-            printMinutes: printProParamsSection ? printProParamsSection.querySelector('[data-input-row="printMinutes"]') : null,
-            finishingMinutes: printProParamsSection ? printProParamsSection.querySelector('[data-input-row="finishingMinutes"]') : null,
-            fixedCost: printProParamsSection ? printProParamsSection.querySelector('[data-input-row="fixedCost"]') : null,
-            discountPercent: printProParamsSection ? printProParamsSection.querySelector('[data-input-row="discountPercent"]') : null
+            profitMargin: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="profitMargin"]') : null,
+            hourlyRate: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="hourlyRate"]') : null,
+            setupMinutes: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="setupMinutes"]') : null,
+            printMinutes: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="printMinutes"]') : null,
+            finishingMinutes: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="finishingMinutes"]') : null,
+            fixedCost: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="fixedCost"]') : null,
+            discountPercent: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="discountPercent"]') : null,
+            errorRate: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="errorRate"]') : null,
+            packagingCost: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="packagingCost"]') : null,
+            shippingCost: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="shippingCost"]') : null,
+            machineHourlyRate: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="machineHourlyRate"]') : null,
+            machinePurchase: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="machinePurchase"]') : null,
+            machineLifetime: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="machineLifetime"]') : null,
+            materialDensity: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="materialDensity"]') : null
           };
           var originalDocumentTitle = document.title;
           var pendingPrintTitle = null;
@@ -1379,6 +1387,75 @@
             }
           }
 
+          function applyPrintTightClass(root) {
+            if (!root) {
+              return false;
+            }
+            var inputsPage = root.querySelector('.calc-print__page[data-page="inputs"]');
+            if (!inputsPage) {
+              return false;
+            }
+            inputsPage.classList.remove('print-tight');
+            var clientHeight = inputsPage.clientHeight;
+            if (!clientHeight) {
+              return false;
+            }
+            var overflow = Math.ceil(inputsPage.scrollHeight) - Math.ceil(clientHeight) > 1;
+            if (overflow) {
+              inputsPage.classList.add('print-tight');
+              overflow = Math.ceil(inputsPage.scrollHeight) - Math.ceil(inputsPage.clientHeight) > 1;
+            }
+            return inputsPage.classList.contains('print-tight');
+          }
+
+          function updatePrintTightClassForSummary() {
+            var summary = document.getElementById('printSummary');
+            if (!summary) {
+              return false;
+            }
+            var previous = {
+              display: summary.style.display,
+              position: summary.style.position,
+              visibility: summary.style.visibility,
+              pointerEvents: summary.style.pointerEvents,
+              left: summary.style.left,
+              top: summary.style.top,
+              width: summary.style.width,
+              maxWidth: summary.style.maxWidth
+            };
+            summary.style.display = 'block';
+            summary.style.position = 'fixed';
+            summary.style.visibility = 'hidden';
+            summary.style.pointerEvents = 'none';
+            summary.style.left = '-9999px';
+            summary.style.top = '0';
+            summary.style.width = PRINT_PAGE_WIDTH_MM + 'mm';
+            summary.style.maxWidth = 'none';
+            try {
+              return applyPrintTightClass(summary);
+            } finally {
+              summary.style.display = previous.display || '';
+              summary.style.position = previous.position || '';
+              summary.style.visibility = previous.visibility || '';
+              summary.style.pointerEvents = previous.pointerEvents || '';
+              summary.style.left = previous.left || '';
+              summary.style.top = previous.top || '';
+              summary.style.width = previous.width || '';
+              summary.style.maxWidth = previous.maxWidth || '';
+            }
+          }
+
+          function clearPrintTightClass() {
+            var summary = document.getElementById('printSummary');
+            if (!summary) {
+              return;
+            }
+            var inputsPage = summary.querySelector('.calc-print__page[data-page="inputs"]');
+            if (inputsPage) {
+              inputsPage.classList.remove('print-tight');
+            }
+          }
+
           function createPrintStage(mode) {
             var summary = document.getElementById('printSummary');
             if (!summary) {
@@ -1406,6 +1483,8 @@
               if (inputsSectionClone && inputsSectionClone.parentNode) {
                 inputsSectionClone.parentNode.removeChild(inputsSectionClone);
               }
+            } else {
+              applyPrintTightClass(stage);
             }
             var footer = stage.querySelector('#ws-print-footer');
             return { stage: stage, footer: footer };
@@ -1489,6 +1568,11 @@
           function fallbackPrint(mode) {
             try {
               setPrintAttribute(mode);
+              if (mode === 'full') {
+                updatePrintTightClassForSummary();
+              } else {
+                clearPrintTightClass();
+              }
               window.print();
             } catch (error) {
               console.error('Fallback-Druck fehlgeschlagen', error);
@@ -1504,6 +1588,11 @@
             var resolvedMode = mode === 'result' ? 'result' : 'full';
             setPrintAttribute(resolvedMode);
             var state = recalculate();
+            if (resolvedMode === 'full') {
+              updatePrintTightClassForSummary();
+            } else {
+              clearPrintTightClass();
+            }
             var fileTitle = state ? buildPrintFileName(resolvedMode, state) : null;
             if (!fileTitle) {
               fileTitle = 'warenschmiede-angebot.pdf';

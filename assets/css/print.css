@@ -130,8 +130,37 @@
   color: #64748b;
 }
 
-#printInputsSection {
-  margin-top: calc(1.1rem * var(--print-compact));
+#printProParams {
+  display: contents;
+}
+
+.print-page {
+  width: 210mm;
+}
+
+.calc-print__page--inputs {
+  break-before: page;
+  page-break-before: always;
+  display: flex;
+  flex-direction: column;
+  gap: 7mm;
+}
+
+.calc-print__page--inputs.print-tight {
+  font-size: 95%;
+}
+
+.calc-print__page--inputs.print-tight .inputs-grid {
+  gap: 6.5mm 6mm;
+}
+
+.calc-print__page--inputs.print-tight .inputs-card.pdf-card {
+  padding: 2.9mm 3.3mm;
+}
+
+.calc-print__page--inputs.print-tight .inputs-card__table th,
+.calc-print__page--inputs.print-tight .inputs-card__table td {
+  padding: 2.4mm 2.5mm;
 }
 
 .calc-print__section-header {
@@ -164,61 +193,86 @@
   margin-bottom: calc(0.35rem * var(--print-compact));
 }
 
-.calc-print__inputs-grid {
-  display: block;
+.calc-print__inputs-grid,
+.inputs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8mm 7mm;
+  align-items: start;
+}
+
+.inputs-card {
+  display: grid;
+  gap: 2.8mm;
+  align-content: start;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.inputs-card.pdf-card {
+  padding: 3.2mm 3.6mm;
+  gap: 2.8mm;
+}
+
+.inputs-card__title {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.inputs-card__table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.inputs-card__table tr {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.inputs-card__table tr:last-of-type {
+  border-bottom: none;
 }
 
 .calc-print__table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+  border-collapse: collapse;
   table-layout: fixed;
 }
 
-.calc-print__table-group {
-  page-break-inside: avoid;
-  break-inside: avoid;
-}
-
-.calc-print__group-heading th {
-  font-size: calc(1.02rem * var(--print-compact));
-  font-weight: 600;
-  color: #1e293b;
-  padding: calc(0.6rem * var(--print-compact)) 0 calc(0.35rem * var(--print-compact));
-  border-top: 1px solid rgba(148, 163, 184, 0.45);
-  text-align: left;
-}
-
-.calc-print__table-group:first-of-type .calc-print__group-heading:first-of-type th {
-  border-top: 0;
-  padding-top: 0;
-}
-
 .calc-print__table-row {
-  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
   page-break-inside: avoid;
   break-inside: avoid;
 }
 
-.calc-print__table-group tr.calc-print__table-row:last-of-type {
+.calc-print__table-row:last-of-type {
   border-bottom: none;
+}
+
+.inputs-card__table th,
+.inputs-card__table td {
+  padding: 2.6mm 2.8mm;
+  vertical-align: top;
 }
 
 .calc-print__label,
 .calc-print__value {
-  padding: calc(0.4rem * var(--print-compact)) 0;
-  line-height: 1.45;
-  font-size: calc(0.95rem * var(--print-compact));
+  line-height: 1.38;
+  font-size: 9.8pt;
   vertical-align: top;
 }
 
 .calc-print__label {
   width: 55%;
-  padding-right: calc(0.75rem * var(--print-compact));
+  padding-right: 3mm;
   font-weight: 500;
   color: #1f2937;
   white-space: normal;
-  word-break: normal;
+  word-break: break-word;
   overflow-wrap: anywhere;
   hyphens: auto;
 }
@@ -226,19 +280,12 @@
 .calc-print__value {
   width: 45%;
   text-align: right;
-  padding-left: calc(0.5rem * var(--print-compact));
   font-weight: 600;
   color: #0f172a;
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.calc-print__table-group tr.calc-print__table-row:nth-of-type(odd) {
-  background: rgba(148, 163, 184, 0.1);
-}
-
-.calc-print__table-group .calc-print__group-heading:not(:first-of-type) th {
-  padding-top: calc(0.9rem * var(--print-compact));
+  white-space: normal;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .calc-print__inline-note {
@@ -259,4 +306,34 @@
 
 #ws-print-footer .ws-pageno {
   font-weight: 500;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  :root {
+    color-scheme: light;
+    --print-compact: 0.82;
+  }
+
+  body {
+    margin: 0;
+    background: #fff;
+    color: #0f172a;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .calc-print__page {
+    box-sizing: border-box;
+    padding: 12mm 12mm 20mm;
+    background: #fff;
+  }
+
+  html[data-print="result"] #printInputsSection {
+    display: none !important;
+  }
 }
