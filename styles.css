@@ -3349,7 +3349,7 @@ a:focus-visible {
 }
 
 .calc-storage {
-  margin-top: var(--space-4);
+  margin-top: var(--space-5);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -3568,7 +3568,8 @@ a:focus-visible {
 }
 
 .calc-field input,
-.calc-field select {
+.calc-field select,
+.calc-field textarea {
   border-radius: 12px;
   border: 1px solid var(--control-border);
   background: var(--surface);
@@ -3578,26 +3579,36 @@ a:focus-visible {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.calc-field input::placeholder {
+.calc-field--textarea textarea {
+  min-height: 6.5rem;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.calc-field input::placeholder,
+.calc-field textarea::placeholder {
   color: #999;
   opacity: 1;
 }
 
 .calc-field input:focus,
-.calc-field select:focus {
+.calc-field select:focus,
+.calc-field textarea:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
 .calc-field input.is-invalid,
-.calc-field select.is-invalid {
+.calc-field select.is-invalid,
+.calc-field textarea.is-invalid {
   border-color: #dc2626;
   box-shadow: 0 0 0 3px color-mix(in srgb, #dc2626 22%, transparent);
 }
 
 .calc-field input.is-invalid:focus,
-.calc-field select.is-invalid:focus {
+.calc-field select.is-invalid:focus,
+.calc-field textarea.is-invalid:focus {
   border-color: #dc2626;
   box-shadow: 0 0 0 3px color-mix(in srgb, #dc2626 30%, transparent);
 }
@@ -3905,6 +3916,21 @@ a:focus-visible {
   margin: -0.2rem 0 0;
   font-size: 0.9rem;
   color: var(--text-muted);
+}
+
+.calc-inline-note {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--text-muted) 80%, transparent);
+}
+
+.calc-inline-error {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #dc2626;
+  font-weight: 600;
 }
 
 .calc-hint--lead {

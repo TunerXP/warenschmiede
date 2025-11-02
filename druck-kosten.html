@@ -477,13 +477,14 @@
                     </div>
                     <div class="calc-field">
                       <label for="discountPercent">Rabatt (%)</label>
-                      <input type="number" id="discountPercent" data-calc-pro name="discountPercent" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 0">
-                      <p class="calc-hint">Abzug vor MwSt. auf die Zwischensumme.</p>
+                      <input type="number" id="discountPercent" data-calc-pro name="discountPercent" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 0" aria-describedby="discountHint discountError">
+                      <p class="calc-inline-note" id="discountHint">Rabatt wird auf die Zwischensumme inkl. Fixkosten angewendet.</p>
+                      <p class="calc-inline-error" id="discountError" role="alert" hidden>Rabatt darf nicht 100&nbsp;% oder mehr betragen.</p>
                     </div>
                     <div class="calc-field">
                       <label for="errorRate">Fehlerrate (%)</label>
-                      <input type="number" id="errorRate" data-calc-pro name="errorRate" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 5">
-                      <p class="calc-hint">Wirkt nur auf Material (inkl. Verschnitt).</p>
+                      <input type="number" id="errorRate" data-calc-pro name="errorRate" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 5" aria-describedby="errorRateHint">
+                      <p class="calc-inline-note" id="errorRateHint">Berücksichtigt Fehldrucke/Ausschuss (typisch 3–10&nbsp;%).</p>
                     </div>
                   </div>
                 </div>
@@ -538,8 +539,8 @@
                   <div class="calc-pro__grid">
                     <div class="calc-field calc-field--stacked">
                       <label for="machineHourlyRate">Maschinenkosten (€/h)</label>
-                      <input type="number" id="machineHourlyRate" data-calc-pro name="machineHourlyRate" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 1.5">
-                      <p class="calc-hint">Wirkt direkt auf die Druckzeit.</p>
+                      <input type="number" id="machineHourlyRate" data-calc-pro name="machineHourlyRate" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 1.5" aria-describedby="machineHourlyHint">
+                      <p class="calc-inline-note" id="machineHourlyHint">Hinweis: Wert enthält Abschreibung + Betriebskosten. Beispiel: 1&nbsp;200&nbsp;€ / 4&nbsp;000&nbsp;h = 0,30&nbsp;€/h + Betrieb ≈ 1,50&nbsp;€/h.</p>
                       <details class="calc-pro-advanced" id="machineAdvanced">
                         <summary>Anschaffung &amp; Lebensdauer hinterlegen</summary>
                         <div class="calc-pro-advanced__grid">
@@ -566,6 +567,24 @@
                       <p class="calc-hint" id="materialDensityNote">Für Filamentlänge → Gewicht (Ø 1,75&nbsp;mm).</p>
                       <button type="button" class="calc-reset-link is-hidden" id="materialDensityReset">Preset-Dichte wiederherstellen</button>
                     </div>
+                    <div class="calc-field">
+                      <label for="nozzleSelect">Druckerdüse</label>
+                      <select id="nozzleSelect" data-calc-pro name="nozzle">
+                        <option value="">–</option>
+                        <option value="0.2 mm">0.2&nbsp;mm</option>
+                        <option value="0.4 mm">0.4&nbsp;mm</option>
+                        <option value="0.6 mm">0.6&nbsp;mm</option>
+                        <option value="0.8 mm">0.8&nbsp;mm</option>
+                        <option value="1.0 mm">1.0&nbsp;mm</option>
+                        <option value="gehärtet">gehärtet</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="calc-pro__group calc-pro__group--note">
+                  <div class="calc-field calc-field--textarea">
+                    <label for="proNote">Notiz</label>
+                    <textarea id="proNote" data-calc-pro name="proNote" rows="3" maxlength="300" placeholder="Interne Notiz oder Druckhinweis (z. B. Farbe, Variante, Kunde)"></textarea>
                   </div>
                 </div>
                 <div class="calc-storage">
@@ -963,6 +982,11 @@
             <div class="calc-print__chart-bars" id="printChartBars" role="list"></div>
             <p class="calc-print__chart-note" id="printChartTotal">Gesamtkosten (netto): 0,00&nbsp;€</p>
           </aside>
+          <aside class="calc-print__note-card" id="printNoteCard" hidden aria-labelledby="printNoteTitle">
+            <h2 class="calc-print__note-title" id="printNoteTitle">Notiz</h2>
+            <span class="calc-print__note-divider" aria-hidden="true"></span>
+            <p class="calc-print__note-text" id="printNoteValue"></p>
+          </aside>
         </div>
         <p class="calc-print__inline-note">Hinweis: Eingaben &amp; Parameter findest du unten im Abschnitt „Eingaben“.</p>
       </div>
@@ -1102,6 +1126,10 @@
                 <tr class="calc-print__table-row" data-input-row="materialDensity" data-pro-row="true">
                   <th scope="row" class="calc-print__label">Dichte</th>
                   <td class="calc-print__value" id="printMaterialDensity">0,00&nbsp;g/cm³</td>
+                </tr>
+                <tr class="calc-print__table-row" data-input-row="materialNozzle" data-pro-row="true">
+                  <th scope="row" class="calc-print__label">Düse</th>
+                  <td class="calc-print__value" id="printNozzle">–</td>
                 </tr>
               </tbody>
             </table>

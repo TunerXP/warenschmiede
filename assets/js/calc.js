@@ -94,6 +94,7 @@
             resultBox.dataset.ready = 'true';
           }
           var suppressCalcEvent = false;
+          var lastValidState = null;
           var profitMarginInput = document.getElementById('profitMargin');
           var hourlyRateInput = document.getElementById('hourlyRate');
           var setupMinutesInput = document.getElementById('setupMinutes');
@@ -103,6 +104,7 @@
           var fixedCostInput = document.getElementById('fixedCost');
           var discountPercentInput = document.getElementById('discountPercent');
           var errorRateInput = document.getElementById('errorRate');
+          var discountErrorOutput = document.getElementById('discountError');
           var packagingCostInput = document.getElementById('packagingCost');
           var shippingCostInput = document.getElementById('shippingCost');
           var machineHourlyInput = document.getElementById('machineHourlyRate');
@@ -110,6 +112,8 @@
           var machineLifetimeInput = document.getElementById('machineLifetime');
           var machineAutoHint = document.getElementById('machineAutoHint');
           var materialDensityInput = document.getElementById('proDensity');
+          var nozzleSelect = document.getElementById('nozzleSelect');
+          var proNoteInput = document.getElementById('proNote');
           var partNameInput = document.getElementById('partName');
           var offerFields = $$('[data-offer-field]');
           var calcInputs = $$('[data-calc]');
@@ -211,6 +215,7 @@
           var printMachinePurchaseOutput = document.getElementById('printMachinePurchase');
           var printMachineLifetimeOutput = document.getElementById('printMachineLifetime');
           var printMaterialDensityOutput = document.getElementById('printMaterialDensity');
+          var printNozzleOutput = document.getElementById('printNozzle');
           var printHeaderPartName = document.getElementById('printHeaderPartName');
           var printHeaderPartNameValue = document.getElementById('printHeaderPartNameValue');
           var printInputsPartName = document.getElementById('printInputsPartName');
@@ -219,6 +224,8 @@
           var printChartSection = document.getElementById('printChartSection');
           var printChartBarsOutput = document.getElementById('printChartBars');
           var printChartNoteOutput = document.getElementById('printChartTotal');
+          var printNoteCard = document.getElementById('printNoteCard');
+          var printNoteValue = document.getElementById('printNoteValue');
           var printVatNoteOutput = document.getElementById('printVatNote');
           var printInputsSection = document.getElementById('printInputsSection');
           var printInputsTable = document.getElementById('printInputsTable');
@@ -255,7 +262,8 @@
             machineHourlyRate: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="machineHourlyRate"]') : null,
             machinePurchase: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="machinePurchase"]') : null,
             machineLifetime: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="machineLifetime"]') : null,
-            materialDensity: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="materialDensity"]') : null
+            materialDensity: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="materialDensity"]') : null,
+            materialNozzle: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="materialNozzle"]') : null
           };
           var originalDocumentTitle = document.title;
           var pendingPrintTitle = null;
@@ -873,6 +881,70 @@
             var isVisible = !!visible;
             section.hidden = !isVisible;
             section.setAttribute('aria-hidden', (!isVisible).toString());
+          }
+
+          function setPrintButtonsDisabled(disabled) {
+            var isDisabled = !!disabled;
+            if (printResultButton) {
+              printResultButton.disabled = isDisabled;
+              if (isDisabled) {
+                printResultButton.setAttribute('aria-disabled', 'true');
+              } else {
+                printResultButton.removeAttribute('aria-disabled');
+              }
+            }
+            if (printFullButton) {
+              printFullButton.disabled = isDisabled;
+              if (isDisabled) {
+                printFullButton.setAttribute('aria-disabled', 'true');
+              } else {
+                printFullButton.removeAttribute('aria-disabled');
+              }
+            }
+          }
+
+          function setDiscountValidity(isValid) {
+            if (!discountPercentInput) {
+              return;
+            }
+            var valid = !!isValid;
+            if (valid) {
+              discountPercentInput.classList.remove('is-invalid');
+              discountPercentInput.removeAttribute('aria-invalid');
+              if (discountErrorOutput) {
+                discountErrorOutput.hidden = true;
+                discountErrorOutput.setAttribute('aria-hidden', 'true');
+                discountErrorOutput.textContent = '';
+              }
+              setPrintButtonsDisabled(false);
+            } else {
+              discountPercentInput.classList.add('is-invalid');
+              discountPercentInput.setAttribute('aria-invalid', 'true');
+              if (discountErrorOutput) {
+                discountErrorOutput.hidden = false;
+                discountErrorOutput.setAttribute('aria-hidden', 'false');
+                discountErrorOutput.textContent = 'Rabatt darf nicht 100\u00A0% oder mehr betragen.';
+              }
+              setPrintButtonsDisabled(true);
+            }
+          }
+
+          function isDiscountInvalid() {
+            if (!discountPercentInput) {
+              return false;
+            }
+            if (!proModeEnabled) {
+              return false;
+            }
+            var raw = getInputRaw(discountPercentInput);
+            if (!raw) {
+              return false;
+            }
+            var parsed = num(raw);
+            if (!Number.isFinite(parsed)) {
+              return false;
+            }
+            return parsed >= 100;
           }
 
           function normalizeFileNamePart(value) {
@@ -2237,8 +2309,15 @@
             var machinePurchaseRawValue = getInputRaw(machinePurchaseInput);
             var machineLifetimeRawValue = getInputRaw(machineLifetimeInput);
             var materialDensityRawValue = getInputRaw(materialDensityInput);
+            var nozzleRawValue = getInputRaw(nozzleSelect);
+            var noteRawValue = getInputRaw(proNoteInput);
 
             var materialDensityValue = readNumber(materialDensityInput);
+            var nozzleValue = nozzleRawValue ? nozzleRawValue.replace(/\s+/g, ' ').trim() : '';
+            var noteNormalized = noteRawValue ? noteRawValue.slice(0, 300) : '';
+            noteNormalized = noteNormalized.replace(/\r\n/g, '\n');
+            var noteTrimmed = noteNormalized.trim();
+            var noteValue = noteTrimmed ? noteTrimmed : '';
             var weightInputValue = weightModeActive ? readNumber(weightInput) : 0;
             var lengthInputValue = lengthModeActive ? readNumber(lengthInput) : 0;
 
@@ -2436,7 +2515,9 @@
               net: net,
               gross: gross,
               standardSubtotal: standardSubtotal,
-              materialDensity: proEnabled ? materialDensityValue : 0
+              materialDensity: proEnabled ? materialDensityValue : 0,
+              nozzle: nozzleValue,
+              note: noteValue
             };
 
             if (proEnabled) {
@@ -2512,7 +2593,9 @@
                 standardSubtotal: standardSubtotal,
                 materialDensity: materialDensityValue,
                 machinePurchase: machinePurchase,
-                machineLifetime: machineLifetime
+                machineLifetime: machineLifetime,
+                nozzle: nozzleValue,
+                note: noteValue
               };
             }
 
@@ -2543,7 +2626,9 @@
               machineHourlyRate: proEnabled && machineHourlyEffective > 0,
               machinePurchase: proEnabled && machinePurchase > 0,
               machineLifetime: proEnabled && machineLifetime > 0,
-              materialDensity: proEnabled && materialDensityValue > 0
+              materialDensity: proEnabled && materialDensityValue > 0,
+              materialNozzle: nozzleValue.length > 0,
+              note: noteValue.length > 0
             };
 
             return {
@@ -2880,6 +2965,13 @@
             if (printMaterialDensityOutput) {
               printMaterialDensityOutput.textContent = decimalFormatter.format(state.pro.materialDensity) + '\u00A0g/cm³';
             }
+            if (printNozzleOutput) {
+              if (state.pro.nozzle) {
+                printNozzleOutput.textContent = state.pro.nozzle;
+              } else {
+                printNozzleOutput.textContent = '–';
+              }
+            }
             if (printErrorRateOutput) {
               printErrorRateOutput.textContent = percentNumberFormatter.format(state.pro.materialErrorPercent) + '\u00A0%';
             }
@@ -2947,7 +3039,8 @@
                 machineHourlyRate: state.inputs.machineHourlyRate,
                 machinePurchase: state.inputs.machinePurchase,
                 machineLifetime: state.inputs.machineLifetime,
-                materialDensity: state.inputs.materialDensity
+                materialDensity: state.inputs.materialDensity,
+                materialNozzle: state.inputs.materialNozzle
               };
 
               if (state.pro.enabled) {
@@ -2994,6 +3087,7 @@
                 setRowVisibility(printProInputRows.machinePurchase, !!proVisibility.machinePurchase);
                 setRowVisibility(printProInputRows.machineLifetime, !!proVisibility.machineLifetime);
                 setRowVisibility(printProInputRows.materialDensity, !!proVisibility.materialDensity);
+                setRowVisibility(printProInputRows.materialNozzle, !!proVisibility.materialNozzle);
 
                 var hasVisibleProRow = Object.keys(proVisibility).some(function (key) {
                   return !!proVisibility[key];
@@ -3001,6 +3095,19 @@
                 printProParamsSection.hidden = !hasVisibleProRow;
               } else {
                 printProParamsSection.hidden = true;
+              }
+            }
+
+            if (printNoteCard && printNoteValue) {
+              var hasNote = !!state.pro.note && state.pro.note.length > 0;
+              if (hasNote) {
+                printNoteValue.textContent = state.pro.note;
+                printNoteCard.hidden = false;
+                printNoteCard.setAttribute('aria-hidden', 'false');
+              } else {
+                printNoteValue.textContent = '';
+                printNoteCard.hidden = true;
+                printNoteCard.setAttribute('aria-hidden', 'true');
               }
             }
 
@@ -3039,7 +3146,13 @@
           }
 
           function recalculate() {
+            var discountInvalid = isDiscountInvalid();
+            setDiscountValidity(!discountInvalid);
+            if (discountInvalid) {
+              return lastValidState;
+            }
             var state = computeState();
+            lastValidState = state;
             updateResults(state);
             updatePrintSummary(state);
             return state;
