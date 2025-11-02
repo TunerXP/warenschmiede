@@ -3512,12 +3512,34 @@
           }
 
           if (guidePrintButton) {
+            var removePrintGuideClass = function () {
+              document.body.classList.remove('print-guide');
+            };
+
+            if ('onafterprint' in window) {
+              window.addEventListener('afterprint', removePrintGuideClass);
+            }
+
+            if (typeof window.matchMedia === 'function') {
+              var printMediaQuery = window.matchMedia('print');
+              var handlePrintChange = function (event) {
+                if (!event.matches) {
+                  removePrintGuideClass();
+                }
+              };
+
+              if (typeof printMediaQuery.addEventListener === 'function') {
+                printMediaQuery.addEventListener('change', handlePrintChange);
+              } else if (typeof printMediaQuery.addListener === 'function') {
+                printMediaQuery.addListener(handlePrintChange);
+              }
+            }
+
             guidePrintButton.addEventListener('click', function () {
               document.body.classList.add('print-guide');
-              window.print();
-              setTimeout(function () {
-                document.body.classList.remove('print-guide');
-              }, 0);
+              requestAnimationFrame(function () {
+                window.print();
+              });
             });
           }
 
