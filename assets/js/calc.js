@@ -93,7 +93,6 @@
           var shareButton = document.querySelector('[data-share-trigger]');
           var shareMessage = document.querySelector('[data-share-message]');
           var shareMessageTimer = null;
-          var guidePrintButton = document.getElementById('guidePrintButton');
 
           function clearShareMessageTimer() {
             if (shareMessageTimer) {
@@ -3508,38 +3507,6 @@
           if (printFullButton) {
             printFullButton.addEventListener('click', function () {
               exportPdf('full');
-            });
-          }
-
-          if (guidePrintButton) {
-            var removePrintGuideClass = function () {
-              document.body.classList.remove('print-guide');
-            };
-
-            if ('onafterprint' in window) {
-              window.addEventListener('afterprint', removePrintGuideClass);
-            }
-
-            if (typeof window.matchMedia === 'function') {
-              var printMediaQuery = window.matchMedia('print');
-              var handlePrintChange = function (event) {
-                if (!event.matches) {
-                  removePrintGuideClass();
-                }
-              };
-
-              if (typeof printMediaQuery.addEventListener === 'function') {
-                printMediaQuery.addEventListener('change', handlePrintChange);
-              } else if (typeof printMediaQuery.addListener === 'function') {
-                printMediaQuery.addListener(handlePrintChange);
-              }
-            }
-
-            guidePrintButton.addEventListener('click', function () {
-              document.body.classList.add('print-guide');
-              requestAnimationFrame(function () {
-                window.print();
-              });
             });
           }
 
