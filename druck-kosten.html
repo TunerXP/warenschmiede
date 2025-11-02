@@ -966,116 +966,143 @@
         </div>
         <p class="calc-print__inline-note">Hinweis: Eingaben &amp; Parameter findest du unten im Abschnitt „Eingaben“.</p>
         <section class="calc-print__section" id="printInputsSection">
-          <div class="calc-print__section-header">
-            <h2 class="calc-print__heading">Eingaben</h2>
-            <p class="calc-print__section-note" id="printInputsPartName" hidden>Teilename: <span id="printInputsPartNameValue"></span></p>
-          </div>
-          <div class="calc-print__inputs-grid">
-            <table class="calc-print__table" id="printInputsTable">
-              <tbody>
-                <tr>
-                  <th scope="row">Material</th>
-                  <td id="printMaterial">PLA</td>
-                </tr>
-                <tr>
-                  <th scope="row">Materialpreis</th>
-                  <td id="printMaterialPrice">0,00&nbsp;€/kg</td>
-                </tr>
-                <tr>
-                  <th scope="row">Berechnungsgrundlage</th>
-                  <td id="printMode">Bauteilgewicht</td>
-                </tr>
-                <tr data-input-row="weight">
-                  <th scope="row">Bauteilgewicht</th>
-                  <td id="printWeight">0&nbsp;g</td>
-                </tr>
-                <tr data-input-row="length">
-                  <th scope="row">Filamentlänge</th>
-                  <td id="printLength">0,00&nbsp;m</td>
-                </tr>
-                <tr data-input-row="duration">
-                  <th scope="row">Druckzeit</th>
-                  <td id="printDuration">0&nbsp;min</td>
-                </tr>
-                <tr data-input-row="power">
-                  <th scope="row">Leistung</th>
-                  <td id="printPower">0&nbsp;W</td>
-                </tr>
-                <tr data-input-row="energyPrice">
-                  <th scope="row">Strompreis</th>
-                  <td id="printEnergyPrice">0,00&nbsp;€/kWh</td>
-                </tr>
-                <tr data-input-row="loadFactor">
-                  <th scope="row">Lastfaktor</th>
-                  <td id="printLoadFactor">0&nbsp;%</td>
-                </tr>
-                <tr data-input-row="wastePercent">
-                  <th scope="row">Verschnitt</th>
-                  <td id="printWastePercent">0&nbsp;%</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <table class="calc-print__table" id="printProParams" data-pro-row="true">
-              <tbody>
-                <tr data-input-row="profitMargin">
-                  <th scope="row">Gewinnmarge</th>
-                  <td id="printProfitMargin">0&nbsp;%</td>
-                </tr>
-                <tr data-input-row="discountPercent">
-                  <th scope="row">Rabatt</th>
-                  <td id="printDiscountPercent">0&nbsp;%</td>
-                </tr>
-                <tr data-input-row="errorRate">
-                  <th scope="row">Fehlerrate</th>
-                  <td id="printErrorRate">0&nbsp;%</td>
-                </tr>
-                <tr data-input-row="hourlyRate">
-                  <th scope="row">Stundenlohn</th>
-                  <td id="printHourlyRate">0,00&nbsp;€/h</td>
-                </tr>
-                <tr data-input-row="setupMinutes">
-                  <th scope="row">Rüstzeit</th>
-                  <td id="printSetupMinutes">0&nbsp;min</td>
-                </tr>
-                <tr data-input-row="printMinutes">
-                  <th scope="row">Druckzeit (Minuten)</th>
-                  <td id="printProPrintMinutes">0&nbsp;min</td>
-                </tr>
-                <tr data-input-row="finishingMinutes">
-                  <th scope="row">Nachbearbeitung</th>
-                  <td id="printFinishingMinutes">0&nbsp;min</td>
-                </tr>
-                <tr data-input-row="fixedCost">
-                  <th scope="row">Fixkosten pro Auftrag</th>
-                  <td id="printFixedCostInput">0,00&nbsp;€</td>
-                </tr>
-                <tr data-input-row="packagingCost">
-                  <th scope="row">Verpackung</th>
-                  <td id="printPackagingCost">0,00&nbsp;€</td>
-                </tr>
-                <tr data-input-row="shippingCost">
-                  <th scope="row">Versand</th>
-                  <td id="printShippingCost">0,00&nbsp;€</td>
-                </tr>
-                <tr data-input-row="machineHourlyRate">
-                  <th scope="row">Maschinenkosten</th>
-                  <td id="printMachineHourly">0,00&nbsp;€/h</td>
-                </tr>
-                <tr data-input-row="machinePurchase">
-                  <th scope="row">Anschaffungswert</th>
-                  <td id="printMachinePurchase">0,00&nbsp;€</td>
-                </tr>
-                <tr data-input-row="machineLifetime">
-                  <th scope="row">Lebensdauer</th>
-                  <td id="printMachineLifetime">0&nbsp;h</td>
-                </tr>
-                <tr data-input-row="materialDensity">
-                  <th scope="row">Dichte</th>
-                  <td id="printMaterialDensity">0,00&nbsp;g/cm³</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="calc-print__inputs-card pdf-card" data-print-card="inputs">
+            <div class="calc-print__section-header">
+              <h2 class="calc-print__heading">Eingaben</h2>
+              <p class="calc-print__section-note" id="printInputsPartName" hidden>Teilename: <span id="printInputsPartNameValue"></span></p>
+            </div>
+            <div class="calc-print__inputs-grid">
+              <table class="calc-print__table" id="printInputsTable">
+                <tbody class="calc-print__table-group" data-print-group="material">
+                  <tr class="calc-print__group-heading">
+                    <th scope="rowgroup" colspan="2">Material</th>
+                  </tr>
+                  <tr class="calc-print__table-row">
+                    <th scope="row" class="calc-print__label">Material</th>
+                    <td class="calc-print__value" id="printMaterial">PLA</td>
+                  </tr>
+                  <tr class="calc-print__table-row">
+                    <th scope="row" class="calc-print__label">Materialpreis</th>
+                    <td class="calc-print__value" id="printMaterialPrice">0,00&nbsp;€/kg</td>
+                  </tr>
+                  <tr class="calc-print__table-row">
+                    <th scope="row" class="calc-print__label">Berechnungsgrundlage</th>
+                    <td class="calc-print__value" id="printMode">Bauteilgewicht</td>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="weight">
+                    <th scope="row" class="calc-print__label">Bauteilgewicht</th>
+                    <td class="calc-print__value" id="printWeight">0&nbsp;g</td>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="length">
+                    <th scope="row" class="calc-print__label">Filamentlänge</th>
+                    <td class="calc-print__value" id="printLength">0,00&nbsp;m</td>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="wastePercent">
+                    <th scope="row" class="calc-print__label">Verschnitt</th>
+                    <td class="calc-print__value" id="printWastePercent">0&nbsp;%</td>
+                  </tr>
+                </tbody>
+                <tbody class="calc-print__table-group" data-print-group="zeiten">
+                  <tr class="calc-print__group-heading">
+                    <th scope="rowgroup" colspan="2">Zeiten &amp; Lohn</th>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="duration">
+                    <th scope="row" class="calc-print__label">Druckzeit</th>
+                    <td class="calc-print__value" id="printDuration">0&nbsp;min</td>
+                  </tr>
+                </tbody>
+                <tbody class="calc-print__table-group" data-print-group="maschine">
+                  <tr class="calc-print__group-heading">
+                    <th scope="rowgroup" colspan="2">Maschine</th>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="power">
+                    <th scope="row" class="calc-print__label">Leistung</th>
+                    <td class="calc-print__value" id="printPower">0&nbsp;W</td>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="energyPrice">
+                    <th scope="row" class="calc-print__label">Strompreis</th>
+                    <td class="calc-print__value" id="printEnergyPrice">0,00&nbsp;€/kWh</td>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="loadFactor">
+                    <th scope="row" class="calc-print__label">Lastfaktor</th>
+                    <td class="calc-print__value" id="printLoadFactor">0&nbsp;%</td>
+                  </tr>
+                </tbody>
+                <tbody class="calc-print__table-group" id="printProParams" data-pro-row="true">
+                  <tr class="calc-print__group-heading" data-pro-row="true">
+                    <th scope="rowgroup" colspan="2">Material</th>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="errorRate" data-pro-row="true">
+                    <th scope="row" class="calc-print__label">Fehlerrate</th>
+                    <td class="calc-print__value" id="printErrorRate">0&nbsp;%</td>
+                  </tr>
+                  <tr class="calc-print__group-heading" data-pro-row="true">
+                    <th scope="rowgroup" colspan="2">Zeiten &amp; Lohn</th>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="hourlyRate" data-pro-row="true">
+                    <th scope="row" class="calc-print__label">Stundenlohn</th>
+                    <td class="calc-print__value" id="printHourlyRate">0,00&nbsp;€/h</td>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="setupMinutes" data-pro-row="true">
+                    <th scope="row" class="calc-print__label">Rüstzeit</th>
+                    <td class="calc-print__value" id="printSetupMinutes">0&nbsp;min</td>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="printMinutes" data-pro-row="true">
+                    <th scope="row" class="calc-print__label">Druckzeit (Minuten)</th>
+                    <td class="calc-print__value" id="printProPrintMinutes">0&nbsp;min</td>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="finishingMinutes" data-pro-row="true">
+                    <th scope="row" class="calc-print__label">Nachbearbeitung</th>
+                    <td class="calc-print__value" id="printFinishingMinutes">0&nbsp;min</td>
+                  </tr>
+                  <tr class="calc-print__group-heading" data-pro-row="true">
+                    <th scope="rowgroup" colspan="2">Fix &amp; Logistik</th>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="profitMargin" data-pro-row="true">
+                    <th scope="row" class="calc-print__label">Gewinnmarge</th>
+                    <td class="calc-print__value" id="printProfitMargin">0&nbsp;%</td>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="discountPercent" data-pro-row="true">
+                    <th scope="row" class="calc-print__label">Rabatt</th>
+                    <td class="calc-print__value" id="printDiscountPercent">0&nbsp;%</td>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="fixedCost" data-pro-row="true">
+                    <th scope="row" class="calc-print__label">Fixkosten pro Auftrag</th>
+                    <td class="calc-print__value" id="printFixedCostInput">0,00&nbsp;€</td>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="packagingCost" data-pro-row="true">
+                    <th scope="row" class="calc-print__label">Verpackung</th>
+                    <td class="calc-print__value" id="printPackagingCost">0,00&nbsp;€</td>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="shippingCost" data-pro-row="true">
+                    <th scope="row" class="calc-print__label">Versand</th>
+                    <td class="calc-print__value" id="printShippingCost">0,00&nbsp;€</td>
+                  </tr>
+                  <tr class="calc-print__group-heading" data-pro-row="true">
+                    <th scope="rowgroup" colspan="2">Maschine</th>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="machineHourlyRate" data-pro-row="true">
+                    <th scope="row" class="calc-print__label">Maschinenkosten</th>
+                    <td class="calc-print__value" id="printMachineHourly">0,00&nbsp;€/h</td>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="machinePurchase" data-pro-row="true">
+                    <th scope="row" class="calc-print__label">Anschaffungswert</th>
+                    <td class="calc-print__value" id="printMachinePurchase">0,00&nbsp;€</td>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="machineLifetime" data-pro-row="true">
+                    <th scope="row" class="calc-print__label">Lebensdauer</th>
+                    <td class="calc-print__value" id="printMachineLifetime">0&nbsp;h</td>
+                  </tr>
+                  <tr class="calc-print__group-heading" data-pro-row="true">
+                    <th scope="rowgroup" colspan="2">Materialdaten</th>
+                  </tr>
+                  <tr class="calc-print__table-row" data-input-row="materialDensity" data-pro-row="true">
+                    <th scope="row" class="calc-print__label">Dichte</th>
+                    <td class="calc-print__value" id="printMaterialDensity">0,00&nbsp;g/cm³</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
       </div>
