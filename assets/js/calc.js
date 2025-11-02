@@ -90,6 +90,109 @@
           var rememberSellerToggle = document.getElementById('offerRememberSeller');
           var rememberCustomerToggle = document.getElementById('offerRememberCustomer');
           var rootElement = document.documentElement;
+          var shareButton = document.querySelector('[data-share-trigger]');
+          var shareMessage = document.querySelector('[data-share-message]');
+          var shareMessageTimer = null;
+
+          function clearShareMessageTimer() {
+            if (shareMessageTimer) {
+              clearTimeout(shareMessageTimer);
+              shareMessageTimer = null;
+            }
+          }
+
+          function showShareMessage(text) {
+            if (!shareMessage) {
+              return;
+            }
+            clearShareMessageTimer();
+            shareMessage.textContent = text;
+            shareMessage.classList.add('is-visible');
+            shareMessageTimer = setTimeout(function () {
+              shareMessage.classList.remove('is-visible');
+              shareMessageTimer = null;
+            }, 4200);
+          }
+
+          function fallbackCopyUsingTextArea(text) {
+            return new Promise(function (resolve, reject) {
+              var textArea = document.createElement('textarea');
+              textArea.value = text;
+              textArea.setAttribute('readonly', '');
+              textArea.style.position = 'fixed';
+              textArea.style.top = '-9999px';
+              textArea.style.left = '-9999px';
+              textArea.style.opacity = '0';
+              document.body.appendChild(textArea);
+              var selection = document.getSelection ? document.getSelection() : null;
+              var selectedRange = selection && selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+              textArea.focus();
+              textArea.select();
+              textArea.setSelectionRange(0, textArea.value.length);
+              var succeeded = false;
+              var error = null;
+              try {
+                succeeded = document.execCommand('copy');
+              } catch (copyError) {
+                error = copyError;
+              }
+              document.body.removeChild(textArea);
+              if (selectedRange && selection) {
+                selection.removeAllRanges();
+                selection.addRange(selectedRange);
+              }
+              if (succeeded) {
+                resolve();
+              } else {
+                reject(error || new Error('copy command unsuccessful'));
+              }
+            });
+          }
+
+          function copyShareLink(url) {
+            return new Promise(function (resolve, reject) {
+              if (!url) {
+                reject(new Error('Missing share URL'));
+                return;
+              }
+              if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                navigator.clipboard.writeText(url).then(resolve, function () {
+                  fallbackCopyUsingTextArea(url).then(resolve, reject);
+                });
+              } else {
+                fallbackCopyUsingTextArea(url).then(resolve, reject);
+              }
+            });
+          }
+
+          if (shareButton) {
+            shareButton.addEventListener('click', function (event) {
+              event.preventDefault();
+              var trigger = event.currentTarget || shareButton;
+              var shareUrl = trigger.getAttribute('data-share-url') || window.location.href;
+              var shareTitle = trigger.getAttribute('data-share-title') || document.title;
+              var shareText = trigger.getAttribute('data-share-text') || '';
+              var successMessage = trigger.getAttribute('data-share-success') || 'Link kopiert.';
+              if (navigator.share && typeof navigator.share === 'function') {
+                try {
+                  navigator.share({ title: shareTitle, text: shareText, url: shareUrl }).catch(function (shareError) {
+                    if (!shareError) {
+                      return;
+                    }
+                    if (shareError.name === 'AbortError' || shareError.name === 'NotAllowedError') {
+                      return;
+                    }
+                  });
+                } catch (error) {}
+              }
+              copyShareLink(shareUrl).then(function () {
+                showShareMessage(successMessage);
+              }, function () {
+                showShareMessage('Link konnte nicht automatisch kopiert werden. Bitte kopiere ihn manuell aus der Adresszeile.');
+              });
+            });
+          }
+
           if (resultBox) {
             resultBox.dataset.ready = 'true';
           }
