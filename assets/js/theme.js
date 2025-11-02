@@ -7,15 +7,17 @@
     system: '🖥️'
   };
   var labelMap = {
-    light: 'helles Design',
-    dark: 'dunkles Design',
-    system: 'Systemeinstellung'
+    light: 'Helles Design',
+    dark: 'Dunkles Design'
   };
+
+  var toggleTitle = 'Design umschalten: Hell/Dunkel';
 
   var root = document.documentElement;
   var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
   var button = null;
   var iconSpan = null;
+  var textSpan = null;
 
   var readStoredPreference = function () {
     try {
@@ -51,14 +53,14 @@
       return;
     }
     var icon = iconMap[preference] || iconMap.system;
-    var label = labelMap[preference] || labelMap.system;
+    var resolved = resolveTheme(preference);
+    var label = resolved === 'dark' ? labelMap.dark : labelMap.light;
     iconSpan.textContent = icon;
-    var accessibleLabel = 'Theme wechseln (aktuell: ' + label + ')';
-    button.setAttribute('aria-label', accessibleLabel);
-    button.setAttribute('title', accessibleLabel);
-    var srLabel = button.querySelector('.theme-toggle__label');
-    if (srLabel) {
-      srLabel.textContent = 'Aktuelles Theme: ' + label;
+    button.setAttribute('aria-label', toggleTitle);
+    button.setAttribute('title', toggleTitle);
+    button.setAttribute('aria-pressed', String(resolved === 'dark'));
+    if (textSpan) {
+      textSpan.textContent = label;
     }
   };
 
@@ -85,6 +87,7 @@
   var initialize = function () {
     button = document.getElementById('themeToggleBtn');
     iconSpan = document.getElementById('themeIcon');
+    textSpan = document.getElementById('themeToggleText');
 
     var storedPreference = readStoredPreference();
     if (storedPreference) {
