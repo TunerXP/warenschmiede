@@ -182,9 +182,9 @@
           <p>Kosten kalkulieren, Kundendaten eintragen und als PDF ausgeben – kostenlos mit kleinem, dezentem Branding.</p>
           <div class="hero-actions">
             <a class="btn btn-primary" href="#rechner">Zum Rechner</a>
-            <a class="btn btn-outline" href="#anleitung">Zur Anleitung</a>
+            <a class="btn btn-outline" href="#so-funktioniert-heading">Zur Anleitung</a>
           </div>
-          <p class="text-muted"><small>Kein Tracking – Daten werden nur lokal im Browser gespeichert (wenn aktiviert).</small></p>
+          <p class="text-muted"><small>Keine Bilder oder Binärdaten – Autosave speichert nur lokal im Browser und lässt sich jederzeit aus- oder einschalten.</small></p>
         </div>
       </div>
     </section>
@@ -194,10 +194,11 @@
         <div class="card card--narrow">
           <h2 id="was-ist-das">Was macht der 3D-Druck-Rechner?</h2>
           <p>
-            Der Warenschmiede-Rechner schätzt die Herstellungskosten für FDM-3D-Drucke.
-            Er berücksichtigt Material, Energie und – optional – professionelle Faktoren wie Rüst- und Nachbearbeitungszeit, Fixkosten, Maschinenkosten, Marge und Rabatt.
-            Im Angebots-Kopf trägst du Anbieter- und Kundendaten ein und erzeugst ein sauberes PDF-Angebot.
-            Die Nutzung ist kostenlos; im PDF erscheint lediglich ein dezenter Hinweis „Erstellt mit dem Warenschmiede 3D-Rechner“.
+            Der Warenschmiede-Rechner erstellt in Sekunden ein Angebot für deine FDM-Druckteile.
+            Du gibst Stückzahl, Material, Gewicht oder Länge sowie Druckzeit, Energiepreis und Versanddaten ein – der Rechner kombiniert alles live zu Kosten und Verkaufspreis.
+            Über die Pro-Optionen ergänzt du Marge, Arbeits- und Maschinenzeiten sowie Fixkosten; die Notiz erscheint im PDF unten rechts auf Seite&nbsp;1, die gewählte Düse auf Seite&nbsp;2.
+            Deine Eingaben bleiben auf deinem Gerät, es werden keine Bilder oder Binärdaten übertragen.
+            Die Autosave-Option speichert Felder nur lokal und lässt sich jederzeit aktivieren oder deaktivieren.
           </p>
         </div>
       </div>
@@ -379,7 +380,7 @@
                     <option value="TPU">TPU</option>
                     <option value="PA">Nylon (PA)</option>
                   </select>
-                  <p class="calc-hint" id="materialDensityHint" aria-live="polite">Richtwert: 2,98&nbsp;g/m (PLA)</p>
+                  <p class="calc-hint" id="materialDensityHint" aria-live="polite">Richtwert: 2,98&nbsp;g/m · 1,24&nbsp;g/cm³ (PLA). Der Wert steuert Materialgewicht und damit die Materialkosten.</p>
                 </div>
 
                 <div class="calc-field">
@@ -428,17 +429,17 @@
                   <div class="calc-field">
                     <label for="powerDraw">Leistung (W)</label>
                     <input type="number" id="powerDraw" data-calc name="powerDraw" min="0" step="10" placeholder="z. B. 150">
-                    <p class="calc-hint">Wird erst berücksichtigt, wenn du einen Wert eingibst.</p>
+                    <p class="calc-hint">Bestimmt den Stromverbrauch je Stunde. Höhere Wattzahlen erhöhen die Energiekosten.</p>
                   </div>
                   <div class="calc-field">
                   <label for="energyPrice">Strompreis (€/kWh)</label>
                     <input type="number" id="energyPrice" data-calc name="energyPrice" min="0" step="0.01" inputmode="decimal" placeholder="z. B. 0,30">
-                    <p class="calc-hint">Wird erst berücksichtigt, wenn du einen Wert eingibst.</p>
+                    <p class="calc-hint">Tarif deines Energieversorgers. Jeder Cent mehr schlägt direkt auf die Energiekosten durch.</p>
                   </div>
                   <div class="calc-field">
                   <label for="loadFactor">Lastfaktor (%)</label>
                     <input type="number" id="loadFactor" data-calc name="loadFactor" min="0" max="100" step="1" placeholder="z. B. 80">
-                    <p class="calc-hint">Wird erst berücksichtigt, wenn du einen Wert eingibst.</p>
+                    <p class="calc-hint">Schätzt die durchschnittliche Auslastung. Ein niedrigerer Faktor reduziert die berechneten Energiekosten.</p>
                   </div>
                 </div>
               </div>
@@ -466,14 +467,14 @@
             </div>
             <div class="calc-pro-card__body" id="proCardBody">
               <section class="calc-pro" id="pro-fields" hidden aria-hidden="true">
-                <p class="calc-hint calc-hint--lead">Kostenfaktoren für professionelle Kalkulation. Wirken nur, wenn aktiviert.</p>
+                <p class="calc-hint calc-hint--lead">Diese Felder ergänzen professionelle Kosten. Sie zählen nur, wenn du Werte setzt.</p>
                 <div class="calc-pro__group">
                   <h3 class="calc-pro__subheading">Kostenaufschläge</h3>
                   <div class="calc-pro__grid">
                     <div class="calc-field">
                       <label for="profitMargin">Gewinnmarge (%)</label>
                       <input type="number" id="profitMargin" data-calc-pro name="profitMargin" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 10">
-                      <p class="calc-hint">Aufschlag auf Material, Energie, Arbeitszeit &amp; Maschine.</p>
+                      <p class="calc-hint">Prozentualer Aufschlag auf Material, Energie, Arbeitszeit und Maschine. Höhere Marge steigert den Angebotspreis.</p>
                     </div>
                     <div class="calc-field">
                       <label for="discountPercent">Rabatt (%)</label>
@@ -494,22 +495,22 @@
                     <div class="calc-field">
                       <label for="hourlyRate">Stundenlohn (€/h)</label>
                       <input type="number" id="hourlyRate" data-calc-pro name="hourlyRate" min="0" step="1" inputmode="decimal" placeholder="z. B. 20">
-                      <p class="calc-hint">Wirkt auf Rüstzeit + Nachbearbeitung.</p>
+                      <p class="calc-hint">Definiert deinen Stundensatz für Handarbeit. Wirkt auf Rüst- und Nachbearbeitungszeiten.</p>
                     </div>
                     <div class="calc-field">
                       <label for="setupMinutes">Rüstzeit (min)</label>
                       <input type="number" id="setupMinutes" data-calc-pro name="setupMinutes" min="0" step="1" inputmode="decimal" placeholder="z. B. 10">
-                      <p class="calc-hint">Vorbereitung &amp; Setup je Auftrag.</p>
+                      <p class="calc-hint">Minuten für Vorbereitung pro Auftrag. Multipliziert sich mit dem Stundensatz zu Arbeitskosten.</p>
                     </div>
                     <div class="calc-field">
                       <label for="finishingMinutes">Nachbearbeitung (min)</label>
                       <input type="number" id="finishingMinutes" data-calc-pro name="finishingMinutes" min="0" step="1" inputmode="decimal" placeholder="z. B. 10">
-                      <p class="calc-hint">Entgraten, Reinigen, Finish.</p>
+                      <p class="calc-hint">Zeit für Entgraten, Reinigen oder Finish. Jede Minute erhöht die Arbeitskosten gemäß Stundensatz.</p>
                     </div>
                     <div class="calc-field">
                       <label for="proPrintMinutes">Druckzeit (min)</label>
                       <input type="number" id="proPrintMinutes" data-calc-pro name="proPrintMinutes" min="0" step="1" inputmode="decimal" aria-describedby="hint-printMinutes">
-                      <p class="calc-hint" id="hint-printMinutes">Synchronisiert mit der Laufzeit oben.</p>
+                      <p class="calc-hint" id="hint-printMinutes">Übernimmt standardmäßig die Laufzeit oben. Änderungen wirken direkt auf die Arbeitszeit-Kalkulation.</p>
                     </div>
                   </div>
                 </div>
@@ -519,20 +520,20 @@
                     <div class="calc-field">
                       <label for="fixedCost">Fixkosten (€)</label>
                       <input type="number" id="fixedCost" data-calc-pro name="fixedCost" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 5">
-                      <p class="calc-hint">Bleiben fix – keine Marge darauf.</p>
+                      <p class="calc-hint">Fixbetrag pro Auftrag, der unverändert addiert wird. Ideal für Gebühren oder Lizenzkosten.</p>
                     </div>
                     <div class="calc-field">
                       <label for="packagingCost">Verpackung (€)</label>
                       <input type="number" id="packagingCost" data-calc-pro name="packagingCost" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 2">
-                      <p class="calc-hint">Zählt zu den Fixkosten je Auftrag.</p>
+                      <p class="calc-hint">Kommt zu den Fixkosten je Auftrag hinzu und erhöht den Gesamtpreis unabhängig von der Stückzahl.</p>
                     </div>
                     <div class="calc-field">
                       <label for="shippingCost">Versand (€)</label>
                       <input type="number" id="shippingCost" data-calc-pro name="shippingCost" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 5">
-                      <p class="calc-hint">Zählt zu den Fixkosten je Auftrag.</p>
+                      <p class="calc-hint">Ergänzt die Fixkosten pro Auftrag. Versand schlägt einmalig auf den Endpreis auf.</p>
                     </div>
                   </div>
-                  <p class="calc-hint calc-hint--note">Fixkosten umfassen Verpackung &amp; Versand.</p>
+                  <p class="calc-hint calc-hint--note">Fixkosten werden einmal pro Auftrag berechnet – Verpackung und Versand zählen dazu.</p>
                 </div>
                 <div class="calc-pro__group">
                   <h3 class="calc-pro__subheading">Maschine</h3>
@@ -553,7 +554,7 @@
                             <input type="number" id="machineLifetime" data-calc-pro name="machineLifetime" min="0" step="50" inputmode="decimal" placeholder="z. B. 4000">
                           </div>
                         </div>
-                        <p class="calc-hint" id="machineAutoHint">Ergibt automatisch einen €/h-Wert.</p>
+                        <p class="calc-hint" id="machineAutoHint">Berechnet aus Anschaffung und Lebensdauer automatisch den €/h-Wert. Dieser Wert bestimmt die Maschinenkosten im Angebot.</p>
                       </details>
                     </div>
                   </div>
@@ -564,7 +565,7 @@
                     <div class="calc-field">
                       <label for="proDensity">Dichte (g/cm³)</label>
                       <input type="number" id="proDensity" data-calc-pro name="materialDensity" min="0" step="0.01" inputmode="decimal" placeholder="z. B. 1.24">
-                      <p class="calc-hint" id="materialDensityNote">Für Filamentlänge → Gewicht (Ø 1,75&nbsp;mm).</p>
+                      <p class="calc-hint" id="materialDensityNote">Nutze den Wert für die Umrechnung Filamentlänge → Gewicht (Ø 1,75&nbsp;mm). So stimmen Materialmenge und Materialkosten.</p>
                       <button type="button" class="calc-reset-link is-hidden" id="materialDensityReset">Preset-Dichte wiederherstellen</button>
                     </div>
                     <div class="calc-field">
@@ -714,86 +715,33 @@
       </div>
     </section>
 
-    <section class="section" aria-labelledby="schnellstart-heading">
-      <div class="container">
-        <div class="card card--narrow">
-          <h2 id="schnellstart-heading">Schnellstart: In 4 Schritten zum PDF-Angebot</h2>
-          <ol>
-            <li><b>Angebots-Kopf ausfüllen:</b> Anbieter/Kunde, Angebots-Nr., Datum, Gültigkeit.</li>
-            <li><b>Kosten berechnen:</b> Material wählen, Gewicht oder Filamentlänge angeben, Laufzeit und Energie ergänzen.</li>
-            <li><b>(Optional) Pro-Optionen aktivieren:</b> Rüstzeit, Nachbearbeitung, Fixkosten, Maschine, Marge/Rabatt.</li>
-            <li><b>PDF erzeugen:</b> „Ergebnis drucken“ (nur Ergebnis) oder „Ergebnis + Eingaben drucken“ (inkl. Kopf und Eingaben).</li>
-          </ol>
-          <p class="text-muted"><small>☑ „Daten im Browser merken“ steht in Standard, Pro, Anbieter &amp; Kunde bereit und speichert jede Sektion lokal im Browser. Preise inkl. MwSt. nach Bedarf aktivieren.</small></p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" aria-labelledby="anleitung">
+    <section class="section" aria-labelledby="so-funktioniert-heading">
       <div class="container">
         <div class="card">
-          <h2 id="anleitung">Anleitung &amp; Felder erklärt</h2>
-
-          <h3 id="anleitung-angebot">Angebots-Kopf</h3>
-          <p>Im ersten Block pflegst du alle Angaben, die später in deinem Angebot erscheinen. Anbieter- und Kundendaten lassen sich separat ausklappen, damit du nur die Bereiche siehst, die du gerade bearbeitest.</p>
-          <ul>
-            <li><strong>Anbieter &amp; Kunde:</strong> Name, Ansprechpartner, Adresse, Kontaktmöglichkeiten. Optional ergänzt du hier deine USt-IdNr.</li>
-            <li><strong>Angaben zum Angebot:</strong> Angebotsnummer, Datum, Gültigkeit, Lieferzeit und Zahlungsbedingungen.</li>
-            <li><strong>Daten im Browser merken:</strong> Für Standard, Pro, Anbieter &amp; Kunde einzeln aktivierbar – speichert ausschließlich lokal im Browser (localStorage).</li>
-          </ul>
-
-          <h3 id="anleitung-standard">Standard-Rechner</h3>
-          <p>Der Standard-Rechner bildet Material- und Energiekosten ab. Gehe Schritt für Schritt durch die Felder und nutze die Vorschläge als Orientierung:</p>
+          <h2 id="so-funktioniert-heading">So funktioniert’s</h2>
           <ol>
-            <li>Material wählen (z. B. PLA). Die Auswahl setzt – falls leer – einen Richtwert für den Materialpreis.</li>
-            <li>Materialpreis in &euro;/kg ergänzen. Du findest ihn auf der Filamentrolle oder in der Bestellung.</li>
-            <li>Bauteilgewicht oder Filamentlänge angeben. Werte liefert dein Slicer; optional kannst du einen Verschnittzuschlag addieren.</li>
-            <li>Druckzeit, Leistungsaufnahme (W), Strompreis (&euro;/kWh) und Lastfaktor (%) eintragen, um die Energiekosten zu ermitteln.</li>
+            <li><strong>Angebotsdaten eintragen:</strong> Anbieter- und Kundendaten ergänzen, Angebotsnummer, Datum und Zahlungsziele festlegen.</li>
+            <li><strong>Standardwerte ausfüllen:</strong> Material, Gewicht oder Länge, Verschnitt sowie Druckzeit, Leistung, Strompreis und Lastfaktor setzen.</li>
+            <li><strong>Pro-Optionen prüfen:</strong> Bei Bedarf Marge, Arbeitszeiten, Maschinen- und Fixkosten aktivieren; die Notiz erscheint im PDF unten rechts auf Seite&nbsp;1.</li>
+            <li><strong>Live-Check beobachten:</strong> Das Ergebnisfeld aktualisiert Material-, Energie- und Pro-Kosten sofort und zeigt, ob MwSt. aktiv ist.</li>
+            <li><strong>PDF-Vorschau erstellen:</strong> „Ergebnis drucken“ erzeugt eine kompakte Seite, „Ergebnis + Eingaben drucken“ liefert beide Seiten inklusive ausgewählter Düse auf Seite&nbsp;2.</li>
+            <li><strong>Angebot sichern oder teilen:</strong> Autosave pro Bereich einschalten, PDF speichern oder direkt verschicken.</li>
           </ol>
-          <dl class="calc-feature-list">
-            <dt>Verschnitt (%)</dt>
-            <dd>Anteil für Reste, Stützen oder zweite Druckversuche. Typisch 5–15&nbsp;%.</dd>
 
-            <dt>Druckzeit (hh:mm)</dt>
-            <dd>Geplante Laufzeit des Drucks. Nutze die Schätzung aus deinem Slicer.</dd>
+          <h3 id="so-funktioniert-faq">Mini-FAQ</h3>
+          <dl>
+            <dt>Warum ändert sich der Preis nach einem Feldwechsel?</dt>
+            <dd>Jede Eingabe fließt sofort in die Kalkulation: Materialwert bestimmt Materialkosten, Zeitfelder steuern Energie- und Arbeitskosten, Pro-Optionen addieren Auf- oder Abschläge.</dd>
 
-            <dt>Leistung (W)</dt>
-            <dd>Elektrische Leistungsaufnahme deines Druckers – vom Typenschild, Netzteil oder Energiekosten-Messgerät.</dd>
+            <dt>Wo erscheint die Notiz im PDF?</dt>
+            <dd>Die Pro-Notiz steht im Angebot unten rechts auf Seite&nbsp;1; die ausgewählte Düse wird automatisch auf Seite&nbsp;2 in der Eingabentabelle ausgegeben.</dd>
 
-            <dt>Strompreis (&euro;/kWh)</dt>
-            <dd>Aktueller Tarif deines Energieversorgers.</dd>
+            <dt>Warum ist mein Rabatt begrenzt?</dt>
+            <dd>Der Rabatt darf höchstens 99,9&nbsp;% betragen, damit der Angebotspreis nie null oder negativ wird. Bei 100&nbsp;% oder mehr blockt der Rechner die Berechnung und zeigt eine Fehlermeldung.</dd>
 
-            <dt>Lastfaktor (%)</dt>
-            <dd>Durchschnittliche Auslastung während des Drucks (z. B. 80&nbsp;% bei wechselnder Heizbett-/Hotend-Leistung).</dd>
+            <dt>Wie aktiviere oder deaktiviere ich Autosave?</dt>
+            <dd>Nutze die Checkbox „Daten im Browser merken“ in Standard-, Pro- oder Angebotsbereichen. Ein Häkchen speichert die jeweilige Sektion lokal, ohne Daten hochzuladen; entfernst du es, wird die Speicherung gestoppt.</dd>
           </dl>
-
-          <h3 id="anleitung-pro">Pro-Optionen</h3>
-          <p>Aktiviere die „Pro-Optionen“, wenn du weitere Kostenpositionen kalkulieren möchtest:</p>
-          <ul>
-            <li>Rüstzeit &amp; Nachbearbeitung (Minuten) inklusive eigenem Stundenlohn.</li>
-            <li>Maschinenkosten (&euro;/h) für Abschreibung oder Wartung.</li>
-            <li>Fixkosten (&euro;) pro Auftrag – z. B. Verpackung und Versand.</li>
-            <li>Fehlerrate (%) als Zuschlag auf Material inklusive Verschnitt.</li>
-            <li>Gewinnmarge (%) als Aufschlag auf Material, Energie, Arbeitszeit und Maschine.</li>
-            <li>Rabatt (%) als optionaler Abzug vor der Mehrwertsteuer.</li>
-            <li>Dichte (g/cm³) für die Umrechnung Filamentlänge → Gewicht (Ø 1,75&nbsp;mm).</li>
-          </ul>
-
-          <h3 id="anleitung-ergebnis">Ergebnis &amp; Visualisierung</h3>
-          <p>Das Ergebnis zeigt alle Zwischensummen sowie Netto- und Bruttowerte. Bei aktiven Pro-Optionen erscheinen zusätzliche Zeilen für Arbeitszeit, Maschine, Fixkosten, Marge und Rabatt. Das Diagramm lässt sich ein- und ausblenden und stellt die Kostenanteile übersichtlich dar.</p>
-          <ul>
-            <li>Material (inkl. Verschnitt &amp; Fehlerrate)</li>
-            <li>Energie = (Watt/1000) × Laufzeit × &euro;/kWh × Lastfaktor</li>
-            <li>Arbeitszeitkosten = (Rüstzeit + Nachbearbeitung) × (Stundenlohn/60)</li>
-            <li>Zwischensumme + Marge/Rabatt + Fixkosten → Gesamtkosten (netto)</li>
-            <li>Bruttosumme je nach MwSt.-Einstellung (inkl. §&nbsp;19 UStG Hinweis)</li>
-          </ul>
-
-          <h3 id="anleitung-print">PDF / Print</h3>
-          <p>„Ergebnis drucken“ erstellt eine kompakte Seite mit Kostenübersicht. „Ergebnis + Eingaben drucken“ ergänzt auf derselben Seite die Eingabetabellen. Das Layout ist für A4 optimiert und enthält einen dezenten Hinweis „Erstellt mit dem Warenschmiede 3D-Rechner“.</p>
-
-          <h3 id="anleitung-reset">Erneut loslegen</h3>
-          <p>Starte ein neues Angebot, indem du Felder überschreibst oder die Checkbox „Daten im Browser merken“ deaktivierst, um gespeicherte Kopfdaten zu entfernen. Bei Bedarf kannst du einzelne Sektionen einklappen, um schneller zu navigieren.</p>
         </div>
       </div>
     </section>
@@ -801,7 +749,7 @@
     <div class="container">
       <div class="page-anchor-buttons">
         <a class="btn btn-primary" href="#rechner">↑ Zum Rechner</a>
-        <a class="btn btn-outline" href="#anleitung">↑ Zur Anleitung</a>
+        <a class="btn btn-outline" href="#so-funktioniert-heading">↑ Zur Anleitung</a>
       </div>
     </div>
 

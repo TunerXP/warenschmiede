@@ -689,67 +689,67 @@
               price: 20,
               gramsPerMeter: 2.98,
               density: 1.24,
-              densityHint: 'Richtwert: 2,98\u00A0g/m · 1,24\u00A0g/cm³ (PLA)'
+              densityHint: 'Richtwert: 2,98\u00A0g/m · 1,24\u00A0g/cm³ (PLA). Der Wert steuert Materialgewicht und damit die Materialkosten.'
             },
             'PLA_PLUS': {
               price: 23,
               gramsPerMeter: 3.05,
               density: 1.27,
-              densityHint: 'Richtwert: 3,05\u00A0g/m · 1,27\u00A0g/cm³ (PLA+)'
+              densityHint: 'Richtwert: 3,05\u00A0g/m · 1,27\u00A0g/cm³ (PLA+). Der Wert steuert Materialgewicht und damit die Materialkosten.'
             },
             'PLA_SILK': {
               price: 25,
               gramsPerMeter: 2.90,
               density: 1.21,
-              densityHint: 'Richtwert: 2,90\u00A0g/m · 1,21\u00A0g/cm³ (PLA Silk)'
+              densityHint: 'Richtwert: 2,90\u00A0g/m · 1,21\u00A0g/cm³ (PLA Silk). Der Wert steuert Materialgewicht und damit die Materialkosten.'
             },
             'PETG': {
               price: 25,
               gramsPerMeter: 3.05,
               density: 1.27,
-              densityHint: 'Richtwert: 3,05\u00A0g/m · 1,27\u00A0g/cm³ (PETG)'
+              densityHint: 'Richtwert: 3,05\u00A0g/m · 1,27\u00A0g/cm³ (PETG). Der Wert steuert Materialgewicht und damit die Materialkosten.'
             },
             'PETG_CF': {
               price: 55,
               gramsPerMeter: 3.20,
               density: 1.33,
-              densityHint: 'Richtwert: 3,20\u00A0g/m · 1,33\u00A0g/cm³ (PETG-CF)'
+              densityHint: 'Richtwert: 3,20\u00A0g/m · 1,33\u00A0g/cm³ (PETG-CF). Der Wert steuert Materialgewicht und damit die Materialkosten.'
             },
             'ABS': {
               price: 27,
               gramsPerMeter: 2.65,
               density: 1.10,
-              densityHint: 'Richtwert: 2,65\u00A0g/m · 1,10\u00A0g/cm³ (ABS)'
+              densityHint: 'Richtwert: 2,65\u00A0g/m · 1,10\u00A0g/cm³ (ABS). Der Wert steuert Materialgewicht und damit die Materialkosten.'
             },
             'ABS_CF': {
               price: 58,
               gramsPerMeter: 2.60,
               density: 1.08,
-              densityHint: 'Richtwert: 2,60\u00A0g/m · 1,08\u00A0g/cm³ (ABS-CF)'
+              densityHint: 'Richtwert: 2,60\u00A0g/m · 1,08\u00A0g/cm³ (ABS-CF). Der Wert steuert Materialgewicht und damit die Materialkosten.'
             },
             'ASA': {
               price: 35,
               gramsPerMeter: 2.57,
               density: 1.07,
-              densityHint: 'Richtwert: 2,57\u00A0g/m · 1,07\u00A0g/cm³ (ASA)'
+              densityHint: 'Richtwert: 2,57\u00A0g/m · 1,07\u00A0g/cm³ (ASA). Der Wert steuert Materialgewicht und damit die Materialkosten.'
             },
             'ASA_CF': {
               price: 60,
               gramsPerMeter: 2.70,
               density: 1.12,
-              densityHint: 'Richtwert: 2,70\u00A0g/m · 1,12\u00A0g/cm³ (ASA-CF)'
+              densityHint: 'Richtwert: 2,70\u00A0g/m · 1,12\u00A0g/cm³ (ASA-CF). Der Wert steuert Materialgewicht und damit die Materialkosten.'
             },
             'TPU': {
               price: 30,
               gramsPerMeter: 2.85,
               density: 1.19,
-              densityHint: 'Richtwert: 2,85\u00A0g/m · 1,19\u00A0g/cm³ (TPU)'
+              densityHint: 'Richtwert: 2,85\u00A0g/m · 1,19\u00A0g/cm³ (TPU). Der Wert steuert Materialgewicht und damit die Materialkosten.'
             },
             'PA': {
               price: 45,
               gramsPerMeter: 2.74,
               density: 1.14,
-              densityHint: 'Richtwert: 2,74\u00A0g/m · 1,14\u00A0g/cm³ (Nylon)'
+              densityHint: 'Richtwert: 2,74\u00A0g/m · 1,14\u00A0g/cm³ (Nylon). Der Wert steuert Materialgewicht und damit die Materialkosten.'
             }
           };
 
@@ -1047,7 +1047,7 @@
             }
 
             if (materialDensityHint) {
-              materialDensityHint.textContent = defaults.densityHint || 'Richtwert: nach Bedarf anpassen';
+              materialDensityHint.textContent = defaults.densityHint || 'Richtwert nach Bedarf anpassen. Er beeinflusst Materialgewicht und -kosten.';
             }
 
             if (materialDensityInput) {
