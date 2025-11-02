@@ -93,6 +93,7 @@
           var shareButton = document.querySelector('[data-share-trigger]');
           var shareMessage = document.querySelector('[data-share-message]');
           var shareMessageTimer = null;
+          var guidePrintButton = document.getElementById('guidePrintButton');
 
           function clearShareMessageTimer() {
             if (shareMessageTimer) {
@@ -3507,6 +3508,16 @@
           if (printFullButton) {
             printFullButton.addEventListener('click', function () {
               exportPdf('full');
+            });
+          }
+
+          if (guidePrintButton) {
+            guidePrintButton.addEventListener('click', function () {
+              document.body.classList.add('print-guide');
+              window.print();
+              setTimeout(function () {
+                document.body.classList.remove('print-guide');
+              }, 0);
             });
           }
 
