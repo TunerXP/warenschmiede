@@ -152,9 +152,93 @@
   margin: 0;
 }
 
+.calc-print__inputs-card {
+  padding: calc(1.15rem * var(--print-compact)) calc(1.25rem * var(--print-compact));
+  gap: calc(0.8rem * var(--print-compact));
+  align-content: start;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.calc-print__inputs-card .calc-print__section-header {
+  margin-bottom: calc(0.35rem * var(--print-compact));
+}
+
 .calc-print__inputs-grid {
-  display: grid;
-  gap: calc(0.75rem * var(--print-compact));
+  display: block;
+}
+
+.calc-print__table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.calc-print__table-group {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.calc-print__group-heading th {
+  font-size: calc(1.02rem * var(--print-compact));
+  font-weight: 600;
+  color: #1e293b;
+  padding: calc(0.6rem * var(--print-compact)) 0 calc(0.35rem * var(--print-compact));
+  border-top: 1px solid rgba(148, 163, 184, 0.45);
+  text-align: left;
+}
+
+.calc-print__table-group:first-of-type .calc-print__group-heading:first-of-type th {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.calc-print__table-row {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.calc-print__table-group tr.calc-print__table-row:last-of-type {
+  border-bottom: none;
+}
+
+.calc-print__label,
+.calc-print__value {
+  padding: calc(0.4rem * var(--print-compact)) 0;
+  line-height: 1.45;
+  font-size: calc(0.95rem * var(--print-compact));
+  vertical-align: top;
+}
+
+.calc-print__label {
+  width: 55%;
+  padding-right: calc(0.75rem * var(--print-compact));
+  font-weight: 500;
+  color: #1f2937;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+.calc-print__value {
+  width: 45%;
+  text-align: right;
+  padding-left: calc(0.5rem * var(--print-compact));
+  font-weight: 600;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.calc-print__table-group tr.calc-print__table-row:nth-of-type(odd) {
+  background: rgba(148, 163, 184, 0.1);
+}
+
+.calc-print__table-group .calc-print__group-heading:not(:first-of-type) th {
+  padding-top: calc(0.9rem * var(--print-compact));
 }
 
 .calc-print__inline-note {
