@@ -1296,6 +1296,27 @@ img {
   text-decoration: underline;
 }
 
+.guide-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.guide-header h2 {
+  flex: 1 1 auto;
+  margin: 0;
+}
+
+#guidePrintButton {
+  align-self: flex-start;
+  margin-left: auto;
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  font-size: 0.9rem;
+}
+
 .pc-help-hero__inner {
   display: flex;
   flex-direction: column;
@@ -5331,5 +5352,26 @@ a:focus-visible {
 
   .section {
     padding-block: var(--space-4);
+  }
+}
+
+@media print {
+  body.print-guide * {
+    display: none !important;
+  }
+
+  body.print-guide #guide,
+  body.print-guide #guide * {
+    display: block !important;
+  }
+
+  body.print-guide #guide {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: var(--space-5);
+  }
+
+  body.print-guide #guidePrintButton {
+    display: none !important;
   }
 }
