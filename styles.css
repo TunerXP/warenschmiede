@@ -3702,6 +3702,37 @@ a:focus-visible {
   gap: var(--space-3);
 }
 
+.calc-offer__bank {
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.calc-offer__bank-heading {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.calc-offer__bank-grid {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (min-width: 40rem) {
+  .calc-offer__bank-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.calc-offer__required {
+  font-size: 0.85em;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
 .calc-offer__row {
   display: grid;
   gap: var(--space-3);
@@ -4073,21 +4104,85 @@ a:focus-visible {
 
 .calc-results__actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: 0.35rem;
+}
+
+.calc-results__button-group {
+  display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
-  margin-top: 0.35rem;
 }
 
 .calc-results__actions .btn {
   white-space: nowrap;
 }
 
+.calc-results__paid {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.paid-date-input {
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--control-border);
+  border-radius: 12px;
+  background: var(--surface);
+  font: inherit;
+  color: inherit;
+  min-width: 11rem;
+}
+
+.paid-date-input:disabled {
+  opacity: 0.6;
+  background: var(--surface-muted);
+}
+
+.calc-results__error {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  color: #b91c1c;
+}
+
+.print-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.calc-results__document-meta {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.calc-results__document-meta .calc-field {
+  margin: 0;
+}
+
+.calc-results__notes {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.calc-results__notes .calc-field {
+  margin: 0;
+}
+
+.calc-results__notes textarea {
+  resize: vertical;
+}
+
 .calc-results__print-note {
   margin: 0;
   font-size: 0.9rem;
   color: var(--text-muted);
-  text-align: right;
+  text-align: left;
 }
 
 .co2 {
@@ -5202,6 +5297,202 @@ a:focus-visible {
   margin: 0.6rem 0 0;
   font-size: 0.85rem;
   color: #64748b;
+}
+
+.offer-only {
+  display: none;
+}
+
+.invoice-only {
+  display: none;
+}
+
+.internal-only {
+  display: block;
+}
+
+body[print-mode='internal'] .offer-only,
+body[print-mode='internal'] .invoice-only {
+  display: none !important;
+}
+
+body[print-mode='offer'] .internal-only {
+  display: none !important;
+}
+
+body[print-mode='offer'] .offer-only {
+  display: block !important;
+}
+
+body[print-mode='offer'] .invoice-only {
+  display: none !important;
+}
+
+body[print-mode='invoice'] .internal-only,
+body[print-mode='invoice'] .offer-only {
+  display: none !important;
+}
+
+body[print-mode='invoice'] .invoice-only {
+  display: block !important;
+}
+
+body[print-mode='invoice'] .calc-print__offer-meta {
+  display: none !important;
+}
+
+.print-branding {
+  font-size: 0.68rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.print-offer {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.print-offer__summary {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.print-offer__totals {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.print-offer__item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.95rem;
+}
+
+.print-offer__item dt {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.print-offer__item dd {
+  margin: 0;
+  color: #111827;
+}
+
+.print-offer__line {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #1f2937;
+}
+
+.print-offer__note-card,
+.print-invoice__note-card {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+  background: rgba(148, 163, 184, 0.1);
+}
+
+.print-offer__note-title,
+.print-invoice__note-title {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.print-offer__note-text,
+.print-invoice__note-text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #1f2937;
+}
+
+.print-invoice {
+  margin-top: 1.8rem;
+  position: relative;
+  display: grid;
+  gap: 1rem;
+}
+
+.print-invoice__table-wrapper {
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 12px;
+}
+
+.print-invoice__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.print-invoice__table th,
+.print-invoice__table td {
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+  font-size: 0.95rem;
+  color: #1f2937;
+}
+
+.print-invoice__table thead th {
+  background: rgba(148, 163, 184, 0.2);
+  font-weight: 600;
+}
+
+.print-invoice__table tfoot td {
+  font-weight: 600;
+}
+
+.print-invoice__table tfoot tr:not(:last-child) td {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.print-invoice__vat-note {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.print-invoice__payment {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.print-invoice__payment-line {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #1f2937;
+}
+
+.print-invoice__payment-paid {
+  color: #0f766e;
+  font-weight: 600;
+}
+
+.paid-stamp {
+  display: none;
+  pointer-events: none;
+}
+
+body[print-mode='invoice'][data-paid='true'] .paid-stamp {
+  display: block !important;
+  position: absolute;
+  top: 40%;
+  left: 35%;
+  transform: rotate(-15deg);
+  font-size: 4.5rem;
+  color: #444;
+  opacity: 0.12;
+  letter-spacing: 0.2rem;
+  border: 0.2rem solid #444;
+  padding: 0.3rem 0.8rem;
+  border-radius: 0.3rem;
+  text-transform: uppercase;
 }
 
 .calc-print__section {

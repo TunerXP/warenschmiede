@@ -307,6 +307,23 @@
                       <label for="offerVendorVatId">USt-IdNr. <span class="calc-offer__optional">(optional)</span></label>
                       <input type="text" id="offerVendorVatId" name="offerVendorVatId" data-offer-field="vendorVatId" placeholder="z. B. DE123456789">
                     </div>
+                    <div class="calc-offer__bank">
+                      <p class="calc-offer__bank-heading">Bankdaten</p>
+                      <div class="calc-offer__bank-grid">
+                        <div class="calc-field">
+                          <label for="offerVendorIban">IBAN <span class="calc-offer__required">(Pflicht für Rechnung)</span></label>
+                          <input type="text" id="offerVendorIban" name="offerVendorIban" data-offer-field="vendorIban" class="iban-input" placeholder="DE12 3456 7890 1234 5678 90" autocomplete="off">
+                        </div>
+                        <div class="calc-field">
+                          <label for="offerVendorBic">BIC <span class="calc-offer__optional">(optional)</span></label>
+                          <input type="text" id="offerVendorBic" name="offerVendorBic" data-offer-field="vendorBic" class="bic-input" placeholder="BANKDEFFXXX" autocomplete="off">
+                        </div>
+                        <div class="calc-field">
+                          <label for="offerVendorBankName">Bankname <span class="calc-offer__optional">(optional)</span></label>
+                          <input type="text" id="offerVendorBankName" name="offerVendorBankName" data-offer-field="vendorBankName" class="bankname-input" placeholder="Musterbank" autocomplete="organization">
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </fieldset>
               </details>
@@ -662,14 +679,56 @@
               <p class="calc-meta" id="calcMeta">Gewicht: 0&nbsp;g · Länge: 0,00&nbsp;m</p>
             </div>
             <div class="calc-results__actions">
-              <button type="button" class="btn btn-outline" id="printResultButton">Ergebnis drucken</button>
-              <button type="button" class="btn btn-outline" id="printFullButton">Ergebnis + Eingaben drucken</button>
+              <div class="calc-results__button-group" role="group" aria-label="Druckoptionen">
+                <button type="button" class="btn btn-outline" id="printResultButton">Ergebnis drucken</button>
+                <button type="button" class="btn btn-outline" id="printFullButton">Ergebnis + Eingaben drucken</button>
+                <button type="button" class="btn btn-outline btn-offer-print" id="printOfferButton">Kundenangebot drucken</button>
+                <button type="button" class="btn btn-outline btn-invoice-print" id="printInvoiceButton">Rechnung drucken</button>
+              </div>
+              <div class="calc-results__paid">
+                <label class="calc-checkbox checkbox-paid" for="markInvoicePaid">
+                  <input type="checkbox" id="markInvoicePaid" class="checkbox-paid" autocomplete="off">
+                  <span>Bereits bezahlt</span>
+                </label>
+                <input type="date" id="paidDate" class="paid-date-input" disabled>
+              </div>
             </div>
             <p class="calc-results__print-note">Für ein sauberes Angebot bitte im Druckdialog Kopf- und Fußzeilen deaktivieren.</p>
+            <p class="print-hint" id="printPaidHint">Bei aktivem Haken wird die Rechnung als bezahlt markiert (mit Datum). Ohne Haken wird automatisch „Zahlbar bis“ aus den Zahlungsbedingungen gesetzt.</p>
+            <p class="print-hint">Angebot/Rechnung beziehen sich immer auf genau diese eine Kalkulation. Sammelpositionen werden nicht unterstützt.</p>
+            <p class="print-hint">Dieser Rechner erzeugt Angebot/Rechnung für <strong>eine</strong> kalkulierte Position. Sammelpositionen werden nicht unterstützt.</p>
+            <p class="calc-results__error" id="invoiceError" role="alert" hidden></p>
             <label class="calc-checkbox calc-checkbox--vat" for="includeVat">
               <input type="checkbox" id="includeVat" data-calc name="includeVat" value="true">
               <span>Preise inkl. MwSt.</span>
             </label>
+            <div class="calc-results__document-meta" aria-labelledby="invoiceMetaHeading">
+              <h3 class="sr-only" id="invoiceMetaHeading">Rechnungsangaben</h3>
+              <div class="calc-field">
+                <label for="invoiceNumber">Rechnungsnummer</label>
+                <input type="text" id="invoiceNumber" name="invoiceNumber" data-offer-field="invoiceNumber" inputmode="text" autocomplete="off" placeholder="RE-2025-001">
+              </div>
+              <div class="calc-field">
+                <label for="invoiceDate">Rechnungsdatum</label>
+                <input type="date" id="invoiceDate" name="invoiceDate" data-offer-field="invoiceDate">
+              </div>
+              <div class="calc-field">
+                <label for="serviceDate">Leistungsdatum</label>
+                <input type="date" id="serviceDate" name="serviceDate" data-offer-field="serviceDate">
+              </div>
+            </div>
+            <div class="calc-results__notes" aria-labelledby="documentNotesHeading">
+              <h3 class="sr-only" id="documentNotesHeading">Notizen</h3>
+              <div class="calc-field calc-field--textarea">
+                <label for="offerNote">Notiz – Angebot</label>
+                <textarea id="offerNote" class="note-offer" rows="3" maxlength="400" placeholder="Zusätzliche Infos oder Hinweise für das Angebot"></textarea>
+              </div>
+              <div class="calc-field calc-field--textarea">
+                <label for="invoiceNote">Notiz – Rechnung</label>
+                <textarea id="invoiceNote" class="note-invoice" rows="3" maxlength="400" placeholder="Zusätzliche Hinweise für die Rechnung"></textarea>
+              </div>
+              <p class="print-hint">Die Notiz gilt nur für diese angebotene Kalkulation / diese Rechnung. Sammelrechnungen werden nicht unterstützt.</p>
+            </div>
             <div class="calc-results__groups">
               <div class="calc-results__group" data-result-group="variable" role="group" aria-label="Variable Kosten">
                 <p class="sum-group-title">Variable Kosten</p>
@@ -870,6 +929,18 @@
                 <dt>USt-IdNr.</dt>
                 <dd id="printOfferVendorVat">–</dd>
               </div>
+              <div class="calc-print__offer-row" data-offer-row="vendorIban">
+                <dt>IBAN</dt>
+                <dd id="printOfferVendorIban">–</dd>
+              </div>
+              <div class="calc-print__offer-row" data-offer-row="vendorBic">
+                <dt>BIC</dt>
+                <dd id="printOfferVendorBic">–</dd>
+              </div>
+              <div class="calc-print__offer-row" data-offer-row="vendorBankName">
+                <dt>Bank</dt>
+                <dd id="printOfferVendorBank">–</dd>
+              </div>
             </dl>
           </div>
           <div class="calc-print__offer-column pdf-card" aria-labelledby="printOfferCustomerTitle" data-offer-column="customer">
@@ -911,6 +982,13 @@
             <li class="calc-print__offer-meta-item" data-offer-meta="payment">Zahlungsbedingungen: <span id="printOfferPayment">–</span></li>
           </ul>
         </div>
+        <div class="calc-print__invoice-meta invoice-only" aria-label="Angaben zur Rechnung">
+          <ul class="calc-print__offer-meta-list">
+            <li class="calc-print__offer-meta-item" data-invoice-meta="number">Rechnungs-Nr.: <span id="printInvoiceNumber">–</span></li>
+            <li class="calc-print__offer-meta-item" data-invoice-meta="date">Rechnungsdatum: <span id="printInvoiceDate">–</span></li>
+            <li class="calc-print__offer-meta-item" data-invoice-meta="service">Leistungsdatum: <span id="printServiceDate">–</span></li>
+          </ul>
+        </div>
       </section>
 
       <div class="calc-print__body">
@@ -922,7 +1000,7 @@
               <p class="calc-print__total-value" id="printTotal">0,00&nbsp;€</p>
               <p class="calc-print__vat-note" id="printVatNote">Hinweis: §19 UStG – keine Umsatzsteuer.</p>
             </div>
-            <div class="calc-print__groups">
+            <div class="calc-print__groups internal-only">
               <div class="calc-print__group" role="group" aria-label="Variable Kosten">
                 <p class="sum-group-title">Variable Kosten</p>
                 <dl class="calc-print__list">
@@ -966,7 +1044,7 @@
               <div class="calc-print__group" role="group" aria-label="Gesamtergebnis">
                 <p class="sum-group-title">Gesamtergebnis</p>
                 <dl class="calc-print__list">
-                  <div class="calc-print__item">
+                  <div class="calc-print__item internal-only">
                     <dt>Zwischensumme (vor Auf-/Abschlägen)</dt>
                     <dd id="printSubtotal">0,00&nbsp;€</dd>
                   </div>
@@ -989,13 +1067,87 @@
             <p class="calc-print__chart-note" id="printChartTotal">Gesamtkosten (netto): 0,00&nbsp;€</p>
             <p class="calc-print__chart-hint" id="printChartHint">Hinweis: Eingaben &amp; Parameter findest du unten im Abschnitt „Eingaben“.</p>
           </aside>
-          <aside class="calc-print__note-card" id="printNoteCard" hidden aria-labelledby="printNoteTitle">
+          <aside class="calc-print__note-card internal-only" id="printNoteCard" hidden aria-labelledby="printNoteTitle">
             <h2 class="calc-print__note-title" id="printNoteTitle">Notiz</h2>
             <span class="calc-print__note-divider" aria-hidden="true"></span>
             <p class="calc-print__note-text" id="printNoteValue"></p>
           </aside>
         </div>
       </div>
+
+      <section class="print-offer offer-only" aria-labelledby="printOfferDetailsHeading">
+        <h2 class="sr-only" id="printOfferDetailsHeading">Details zum Angebot</h2>
+        <div class="print-offer__summary">
+          <dl class="print-offer__totals">
+            <div class="print-offer__item">
+              <dt>Gesamtkosten (netto)</dt>
+              <dd id="printOfferNet">0,00&nbsp;€</dd>
+            </div>
+            <div class="print-offer__item">
+              <dt>Gesamtkosten (brutto)</dt>
+              <dd id="printOfferGross">0,00&nbsp;€</dd>
+            </div>
+          </dl>
+          <p class="print-offer__line">Lieferzeit: <span id="printOfferDeliveryInline">–</span></p>
+        </div>
+        <p class="print-offer__line">Zahlungsbedingungen: <span id="printOfferPaymentInline">–</span></p>
+        <aside class="print-offer__note-card" id="printOfferNoteCard" hidden aria-labelledby="printOfferNoteTitle">
+          <h2 class="print-offer__note-title" id="printOfferNoteTitle">Notiz</h2>
+          <p class="print-offer__note-text" id="printOfferNoteValue"></p>
+        </aside>
+        <p class="print-branding offer-only">Dieses Dokument wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt – transparente Preise, Made in Germany.</p>
+      </section>
+
+      <section class="print-invoice invoice-only" aria-labelledby="printInvoiceDetailsHeading">
+        <h2 class="sr-only" id="printInvoiceDetailsHeading">Rechnungsdetails</h2>
+        <div class="paid-stamp" id="printPaidStamp">BEZAHLT</div>
+        <div class="print-invoice__table-wrapper">
+          <table class="print-invoice__table">
+            <thead>
+              <tr>
+                <th scope="col">Pos.</th>
+                <th scope="col">Beschreibung</th>
+                <th scope="col">Menge</th>
+                <th scope="col">Einzelpreis</th>
+                <th scope="col">Summe</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>3D-Druck gemäß Spezifikation</td>
+                <td>1</td>
+                <td id="printInvoiceUnitPrice">0,00&nbsp;€</td>
+                <td id="printInvoiceNet">0,00&nbsp;€</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4">Zwischensumme (netto)</td>
+                <td id="printInvoiceSubtotal">0,00&nbsp;€</td>
+              </tr>
+              <tr id="printInvoiceVatRow">
+                <td colspan="4">MwSt.</td>
+                <td id="printInvoiceVat">0,00&nbsp;€</td>
+              </tr>
+              <tr>
+                <td colspan="4">Summe (brutto)</td>
+                <td id="printInvoiceGross">0,00&nbsp;€</td>
+              </tr>
+            </tfoot>
+          </table>
+          <p class="print-invoice__vat-note" id="printInvoiceVatNote"></p>
+        </div>
+        <div class="print-invoice__payment" id="printInvoicePayment">
+          <p class="print-invoice__payment-line print-invoice__payment-paid" id="printInvoicePaidLine" hidden>Bereits bezahlt am <span id="printInvoicePaidDate">–</span></p>
+          <p class="print-invoice__payment-line print-invoice__payment-due" id="printInvoiceDueLine">Zahlbar bis: <span id="printInvoiceDueDate">–</span></p>
+        </div>
+        <aside class="print-invoice__note-card" id="printInvoiceNoteCard" hidden aria-labelledby="printInvoiceNoteTitle">
+          <h2 class="print-invoice__note-title" id="printInvoiceNoteTitle">Notiz</h2>
+          <p class="print-invoice__note-text" id="printInvoiceNoteValue"></p>
+        </aside>
+        <p class="print-branding invoice-only">Dieses Dokument wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt – transparente Preise, Made in Germany.</p>
+      </section>
 
     </div>
     <div class="calc-print__page calc-print__page--inputs print-page" data-page="inputs" id="printInputsSection">
