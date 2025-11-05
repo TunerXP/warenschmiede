@@ -80,6 +80,16 @@
           var proStatusOutput = document.getElementById('proStatus');
           var printResultButton = document.getElementById('printResultButton');
           var printFullButton = document.getElementById('printFullButton');
+          var printOfferButton = document.getElementById('printOfferButton');
+          var printInvoiceButton = document.getElementById('printInvoiceButton');
+          var markInvoicePaidCheckbox = document.getElementById('markInvoicePaid');
+          var paidDateInput = document.getElementById('paidDate');
+          var invoiceErrorOutput = document.getElementById('invoiceError');
+          var invoiceNumberInput = document.getElementById('invoiceNumber');
+          var invoiceDateInput = document.getElementById('invoiceDate');
+          var serviceDateInput = document.getElementById('serviceDate');
+          var offerNoteInput = document.getElementById('offerNote');
+          var invoiceNoteInput = document.getElementById('invoiceNote');
           var proFields = document.getElementById('pro-fields');
           var proCard = document.getElementById('proCard');
           var proCardBody = document.getElementById('proCardBody');
@@ -90,6 +100,7 @@
           var rememberSellerToggle = document.getElementById('offerRememberSeller');
           var rememberCustomerToggle = document.getElementById('offerRememberCustomer');
           var rootElement = document.documentElement;
+          var bodyElement = document.body;
           var shareButton = document.querySelector('[data-share-trigger]');
           var shareMessage = document.querySelector('[data-share-message]');
           var shareMessageTimer = null;
@@ -233,7 +244,7 @@
           });
           var sellerFieldElements = offerFields.filter(function (field) {
             var key = field.getAttribute('data-offer-field') || '';
-            return /^vendor/i.test(key) || /^offer/i.test(key);
+            return /^vendor/i.test(key) || /^offer/i.test(key) || /^invoice/i.test(key);
           });
           var customerFieldElements = offerFields.filter(function (field) {
             var key = field.getAttribute('data-offer-field') || '';
@@ -260,6 +271,9 @@
             vendorEmail: findOfferPrintRow('vendorEmail', 'printOfferVendorEmail'),
             vendorPhone: findOfferPrintRow('vendorPhone', 'printOfferVendorPhone'),
             vendorVat: findOfferPrintRow('vendorVat', 'printOfferVendorVat'),
+            vendorIban: findOfferPrintRow('vendorIban', 'printOfferVendorIban'),
+            vendorBic: findOfferPrintRow('vendorBic', 'printOfferVendorBic'),
+            vendorBankName: findOfferPrintRow('vendorBankName', 'printOfferVendorBank'),
             customerName: findOfferPrintRow('customerName', 'printOfferCustomerName'),
             customerContact: findOfferPrintRow('customerContact', 'printOfferCustomerContact'),
             customerStreet: findOfferPrintRow('customerStreet', 'printOfferCustomerStreet'),
@@ -281,6 +295,17 @@
             validUntil: document.getElementById('printOfferValidUntil'),
             delivery: document.getElementById('printOfferDelivery'),
             payment: document.getElementById('printOfferPayment')
+          };
+          var printInvoiceMetaContainer = document.querySelector('.calc-print__invoice-meta');
+          var printInvoiceMetaItems = {
+            number: document.querySelector('[data-invoice-meta="number"]'),
+            date: document.querySelector('[data-invoice-meta="date"]'),
+            service: document.querySelector('[data-invoice-meta="service"]')
+          };
+          var printInvoiceMetaValues = {
+            number: document.getElementById('printInvoiceNumber'),
+            date: document.getElementById('printInvoiceDate'),
+            service: document.getElementById('printServiceDate')
           };
 
           var printMaterialOutput = document.getElementById('printMaterial');
@@ -345,6 +370,25 @@
           var printWastePercentOutput = document.getElementById('printWastePercent');
           var printFixedCostInputOutput = document.getElementById('printFixedCostInput');
           var printDiscountPercentOutput = document.getElementById('printDiscountPercent');
+          var printOfferNetValue = document.getElementById('printOfferNet');
+          var printOfferGrossValue = document.getElementById('printOfferGross');
+          var printOfferDeliveryInline = document.getElementById('printOfferDeliveryInline');
+          var printOfferPaymentInline = document.getElementById('printOfferPaymentInline');
+          var printOfferNoteCard = document.getElementById('printOfferNoteCard');
+          var printOfferNoteValue = document.getElementById('printOfferNoteValue');
+          var printInvoiceUnitPrice = document.getElementById('printInvoiceUnitPrice');
+          var printInvoiceSubtotal = document.getElementById('printInvoiceSubtotal');
+          var printInvoiceVat = document.getElementById('printInvoiceVat');
+          var printInvoiceVatRow = document.getElementById('printInvoiceVatRow');
+          var printInvoiceGross = document.getElementById('printInvoiceGross');
+          var printInvoiceVatNote = document.getElementById('printInvoiceVatNote');
+          var printInvoicePaymentContainer = document.getElementById('printInvoicePayment');
+          var printInvoicePaidLine = document.getElementById('printInvoicePaidLine');
+          var printInvoicePaidDate = document.getElementById('printInvoicePaidDate');
+          var printInvoiceDueLine = document.getElementById('printInvoiceDueLine');
+          var printInvoiceDueDate = document.getElementById('printInvoiceDueDate');
+          var printInvoiceNoteCard = document.getElementById('printInvoiceNoteCard');
+          var printInvoiceNoteValue = document.getElementById('printInvoiceNoteValue');
           var printInputRows = {
             weight: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="weight"]') : null,
             length: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="length"]') : null,
@@ -579,7 +623,7 @@
             if (isCustomerFieldKey(key)) {
               return false;
             }
-            return /^vendor/i.test(key) || /^offer/i.test(key);
+            return /^vendor/i.test(key) || /^offer/i.test(key) || /^invoice/i.test(key);
           }
 
           function schedulePersistenceForTarget(target, immediate) {
@@ -1434,6 +1478,24 @@
             });
           }
 
+          function setBodyPrintMode(mode) {
+            if (!bodyElement) {
+              return;
+            }
+            if (mode) {
+              bodyElement.setAttribute('print-mode', mode);
+            } else {
+              bodyElement.removeAttribute('print-mode');
+            }
+          }
+
+          function setBodyPaidState(paid) {
+            if (!bodyElement) {
+              return;
+            }
+            bodyElement.dataset.paid = paid ? 'true' : 'false';
+          }
+
           function setPrintAttribute(mode) {
             if (!rootElement) return;
             if (mode) {
@@ -1441,6 +1503,120 @@
             } else {
               rootElement.removeAttribute('data-print');
             }
+            if (mode) {
+              setBodyPrintMode('internal');
+              setBodyPaidState(false);
+            } else {
+              setBodyPrintMode(null);
+              setBodyPaidState(false);
+            }
+          }
+
+          function clearInvoiceError() {
+            if (!invoiceErrorOutput) {
+              return;
+            }
+            invoiceErrorOutput.textContent = '';
+            invoiceErrorOutput.hidden = true;
+            invoiceErrorOutput.setAttribute('aria-hidden', 'true');
+          }
+
+          function showInvoiceError(message) {
+            if (!invoiceErrorOutput) {
+              return;
+            }
+            invoiceErrorOutput.textContent = message;
+            invoiceErrorOutput.hidden = false;
+            invoiceErrorOutput.setAttribute('aria-hidden', 'false');
+          }
+
+          function ensureInvoiceNumber() {
+            if (!invoiceNumberInput) {
+              return '';
+            }
+            var current = invoiceNumberInput.value != null ? invoiceNumberInput.value.toString().trim() : '';
+            if (current) {
+              return current;
+            }
+            var now = new Date();
+            var year = now.getFullYear();
+            var counterKey = 'ws.invoiceCounter.' + year;
+            var storedCounterRaw = getStorageItem(counterKey);
+            var counter = parseInt(storedCounterRaw, 10);
+            if (!isFinite(counter) || counter < 0) {
+              counter = 0;
+            }
+            counter += 1;
+            setStorageItem(counterKey, counter.toString());
+            var invoiceNumber = 'RE-' + year + '-' + String(counter).padStart(3, '0');
+            invoiceNumberInput.value = invoiceNumber;
+            schedulePersistenceForTarget(invoiceNumberInput, true);
+            setStorageItem('ws.invoice.lastNumber', invoiceNumber);
+            return invoiceNumber;
+          }
+
+          function ensureInvoiceDates() {
+            var todayValue = formatDateForInputValue(new Date());
+            if (invoiceDateInput) {
+              var currentDate = invoiceDateInput.value != null ? invoiceDateInput.value.toString().trim() : '';
+              if (!currentDate) {
+                invoiceDateInput.value = todayValue;
+                schedulePersistenceForTarget(invoiceDateInput, true);
+              }
+            }
+            if (serviceDateInput) {
+              var currentService = serviceDateInput.value != null ? serviceDateInput.value.toString().trim() : '';
+              if (!currentService) {
+                var source = invoiceDateInput && invoiceDateInput.value ? invoiceDateInput.value : todayValue;
+                serviceDateInput.value = source;
+                schedulePersistenceForTarget(serviceDateInput, true);
+              }
+            }
+          }
+
+          function syncPaidControls() {
+            if (!paidDateInput) {
+              return;
+            }
+            if (markInvoicePaidCheckbox && markInvoicePaidCheckbox.checked) {
+              paidDateInput.disabled = false;
+              if (!paidDateInput.value) {
+                paidDateInput.value = formatDateForInputValue(new Date());
+              }
+            } else {
+              paidDateInput.disabled = true;
+            }
+          }
+
+          function triggerPrint(mode, paid) {
+            setBodyPrintMode(mode);
+            setBodyPaidState(!!paid);
+            window.print();
+          }
+
+          function handleOfferPrint() {
+            clearInvoiceError();
+            triggerPrint('offer', false);
+          }
+
+          function handleInvoicePrint() {
+            clearInvoiceError();
+            var ibanValue = getOfferValue('vendorIban');
+            if (!ibanValue) {
+              showInvoiceError('Bitte eine IBAN hinterlegen (Anbieter → Bankdaten).');
+              if (offerFieldMap.vendorIban && typeof offerFieldMap.vendorIban.focus === 'function') {
+                offerFieldMap.vendorIban.focus();
+              }
+              return;
+            }
+            ensureInvoiceNumber();
+            ensureInvoiceDates();
+            syncPaidControls();
+            var isPaid = markInvoicePaidCheckbox ? !!markInvoicePaidCheckbox.checked : false;
+            if (isPaid && paidDateInput && !paidDateInput.value) {
+              paidDateInput.value = formatDateForInputValue(new Date());
+            }
+            triggerPrint('invoice', isPaid);
           }
 
           var recalcThrottleDelay = 0;
@@ -2042,7 +2218,73 @@
                 schedulePersistenceForTarget(paymentField, true);
               }
             }
+            var invoiceDateField = offerFieldMap.invoiceDate;
+            if (invoiceDateField) {
+              var invoiceCurrent = invoiceDateField.value != null ? invoiceDateField.value.toString().trim() : '';
+              if (!invoiceCurrent) {
+                invoiceDateField.value = formatDateForInputValue(today);
+                schedulePersistenceForTarget(invoiceDateField, true);
+              }
+            }
+            var serviceDateField = offerFieldMap.serviceDate;
+            if (serviceDateField) {
+              var serviceCurrent = serviceDateField.value != null ? serviceDateField.value.toString().trim() : '';
+              if (!serviceCurrent) {
+                serviceDateField.value = formatDateForInputValue(today);
+                schedulePersistenceForTarget(serviceDateField, true);
+              }
+            }
             suggestOfferNumber();
+          }
+
+          function applyStoredBankData() {
+            var bankMappings = [
+              { key: 'vendorIban', storage: 'ws.company.iban' },
+              { key: 'vendorBic', storage: 'ws.company.bic' },
+              { key: 'vendorBankName', storage: 'ws.company.bankname' }
+            ];
+            bankMappings.forEach(function (entry) {
+              var field = offerFieldMap[entry.key];
+              if (!field) {
+                return;
+              }
+              var current = field.value != null ? field.value.toString().trim() : '';
+              if (current) {
+                return;
+              }
+              var stored = getStorageItem(entry.storage);
+              if (stored && stored.toString().trim()) {
+                field.value = stored;
+                validateOfferField(field);
+              }
+            });
+          }
+
+          function handleNoteInput(input, storageKey) {
+            if (!input) {
+              return;
+            }
+            var stored = getStorageItem(storageKey);
+            if (typeof stored === 'string') {
+              input.value = stored;
+            }
+            var updateNote = function () {
+              var raw = input.value != null ? input.value.toString() : '';
+              var trimmed = raw.trim();
+              if (trimmed) {
+                setStorageItem(storageKey, raw);
+              } else {
+                removeStorageItem(storageKey);
+              }
+              triggerRecalc({ immediate: true });
+            };
+            input.addEventListener('input', updateNote);
+            input.addEventListener('change', updateNote);
+          }
+
+          function initializeDocumentNotes() {
+            handleNoteInput(offerNoteInput, 'ws.notes.offer');
+            handleNoteInput(invoiceNoteInput, 'ws.notes.invoice');
           }
 
           function hasNonEmptyValue(values) {
@@ -2071,7 +2313,10 @@
               city: fields.vendorCity || '',
               email: fields.vendorEmail || '',
               phone: fields.vendorPhone || '',
-              vatId: fields.vendorVatId || ''
+              vatId: fields.vendorVatId || '',
+              iban: fields.vendorIban || '',
+              bic: fields.vendorBic || '',
+              bankName: fields.vendorBankName || ''
             };
             var customer = {
               name: fields.customerName || '',
@@ -2089,6 +2334,11 @@
               deliveryTime: fields.offerDeliveryTime || '',
               paymentTerms: fields.offerPaymentTerms || ''
             };
+            var invoice = {
+              number: fields.invoiceNumber || '',
+              date: fields.invoiceDate || '',
+              serviceDate: fields.serviceDate || ''
+            };
             var hasVendor = hasNonEmptyValue([
               vendor.name,
               vendor.contact,
@@ -2097,7 +2347,10 @@
               vendor.city,
               vendor.email,
               vendor.phone,
-              vendor.vatId
+              vendor.vatId,
+              vendor.iban,
+              vendor.bic,
+              vendor.bankName
             ]);
             var hasCustomer = hasNonEmptyValue([
               customer.name,
@@ -2120,6 +2373,7 @@
               vendor: vendor,
               customer: customer,
               meta: meta,
+              invoice: invoice,
               hasVendor: hasVendor,
               hasCustomer: hasCustomer,
               hasMeta: hasMeta
@@ -2355,6 +2609,30 @@
               return;
             }
             validateOfferField(field);
+            var offerKey = field.getAttribute('data-offer-field') || '';
+            if (offerKey) {
+              var rawValue = field.value != null ? field.value.toString() : '';
+              var trimmedValue = rawValue.trim();
+              if (offerKey === 'vendorIban') {
+                if (trimmedValue) {
+                  setStorageItem('ws.company.iban', trimmedValue);
+                } else {
+                  removeStorageItem('ws.company.iban');
+                }
+              } else if (offerKey === 'vendorBic') {
+                if (trimmedValue) {
+                  setStorageItem('ws.company.bic', trimmedValue);
+                } else {
+                  removeStorageItem('ws.company.bic');
+                }
+              } else if (offerKey === 'vendorBankName') {
+                if (trimmedValue) {
+                  setStorageItem('ws.company.bankname', trimmedValue);
+                } else {
+                  removeStorageItem('ws.company.bankname');
+                }
+              }
+            }
             schedulePersistenceForTarget(field, immediate);
           }
 
@@ -2390,6 +2668,7 @@
           function initializeOfferSection() {
             setOfferDefaults();
             attachOfferFieldListeners();
+            applyStoredBankData();
             offerFields.forEach(function (field) {
               validateOfferField(field);
             });
@@ -2457,11 +2736,28 @@
             return !!text;
           }
 
+          function setInvoiceMetaItem(key, value) {
+            if (!printInvoiceMetaItems || !printInvoiceMetaValues) {
+              return false;
+            }
+            var item = printInvoiceMetaItems[key];
+            var valueElement = printInvoiceMetaValues[key];
+            var text = value != null ? value.toString().trim() : '';
+            if (valueElement) {
+              valueElement.textContent = text || '–';
+            }
+            if (item) {
+              item.hidden = !text;
+            }
+            return !!text;
+          }
+
           function updatePrintOffer(offerState) {
             var state = offerState || {};
             var vendor = state.vendor || {};
             var customer = state.customer || {};
             var meta = state.meta || {};
+            var invoice = state.invoice || {};
             var vendorPostalLine = '';
             if (vendor.postalCode || vendor.city) {
               vendorPostalLine = [vendor.postalCode, vendor.city].filter(Boolean).join(' ');
@@ -2477,6 +2773,9 @@
             setOfferPrintRow('vendorEmail', vendor.email);
             setOfferPrintRow('vendorPhone', vendor.phone);
             setOfferPrintRow('vendorVat', vendor.vatId);
+            setOfferPrintRow('vendorIban', vendor.iban);
+            setOfferPrintRow('vendorBic', vendor.bic);
+            setOfferPrintRow('vendorBankName', vendor.bankName);
             setOfferPrintRow('customerName', customer.name);
             setOfferPrintRow('customerContact', customer.contact);
             setOfferPrintRow('customerStreet', customer.street);
@@ -2511,6 +2810,154 @@
             metaVisible = setOfferMetaItem('payment', meta.paymentTerms) || metaVisible;
             if (printOfferMetaContainer) {
               printOfferMetaContainer.hidden = !metaVisible;
+            }
+            var invoiceVisible = false;
+            invoiceVisible = setInvoiceMetaItem('number', invoice.number) || invoiceVisible;
+            invoiceVisible = setInvoiceMetaItem('date', formatOfferDateDisplay(invoice.date)) || invoiceVisible;
+            invoiceVisible = setInvoiceMetaItem('service', formatOfferDateDisplay(invoice.serviceDate)) || invoiceVisible;
+            if (printInvoiceMetaContainer) {
+              printInvoiceMetaContainer.hidden = !invoiceVisible;
+            }
+          }
+
+          function updateOfferPrintExtras(state) {
+            if (!state) {
+              return;
+            }
+            if (printOfferNetValue) {
+              printOfferNetValue.textContent = formatter.format(state.net);
+            }
+            if (printOfferGrossValue) {
+              printOfferGrossValue.textContent = formatter.format(state.gross);
+            }
+            var offerMeta = state.offer && state.offer.meta ? state.offer.meta : {};
+            if (printOfferDeliveryInline) {
+              var deliveryText = offerMeta.deliveryTime != null ? offerMeta.deliveryTime.toString().trim() : '';
+              printOfferDeliveryInline.textContent = deliveryText || '–';
+            }
+            if (printOfferPaymentInline) {
+              var paymentText = offerMeta.paymentTerms != null ? offerMeta.paymentTerms.toString().trim() : '';
+              printOfferPaymentInline.textContent = paymentText || '–';
+            }
+            if (printOfferNoteCard && printOfferNoteValue) {
+              var note = state.notes && state.notes.offer ? state.notes.offer.toString().trim() : '';
+              if (note) {
+                printOfferNoteValue.textContent = note;
+                printOfferNoteCard.hidden = false;
+                printOfferNoteCard.setAttribute('aria-hidden', 'false');
+              } else {
+                printOfferNoteValue.textContent = '';
+                printOfferNoteCard.hidden = true;
+                printOfferNoteCard.setAttribute('aria-hidden', 'true');
+              }
+            }
+          }
+
+          function resolveDueDateText(paymentTerms) {
+            if (!paymentTerms) {
+              return '';
+            }
+            var raw = paymentTerms.toString().trim();
+            if (!raw) {
+              return '';
+            }
+            var isoMatch = raw.match(/\d{4}-\d{2}-\d{2}/);
+            if (isoMatch && isoMatch[0]) {
+              return formatOfferDateDisplay(isoMatch[0]);
+            }
+            var euMatch = raw.match(/\d{1,2}\.\d{1,2}\.\d{4}/);
+            if (euMatch && euMatch[0]) {
+              return euMatch[0];
+            }
+            return raw;
+          }
+
+          function updateInvoicePrintExtras(state) {
+            if (!state) {
+              return;
+            }
+            var netAmount = state.net;
+            var grossAmount = state.gross;
+            var vatAmount = state.vatIncluded ? Math.max(grossAmount - netAmount, 0) : 0;
+            if (printInvoiceUnitPrice) {
+              printInvoiceUnitPrice.textContent = formatter.format(netAmount);
+            }
+            if (printInvoiceSubtotal) {
+              printInvoiceSubtotal.textContent = formatter.format(netAmount);
+            }
+            if (printInvoiceVat) {
+              printInvoiceVat.textContent = formatter.format(vatAmount);
+            }
+            if (printInvoiceVatRow) {
+              var showVatRow = state.vatIncluded && vatAmount > 0.0005;
+              printInvoiceVatRow.hidden = !showVatRow;
+              printInvoiceVatRow.setAttribute('aria-hidden', showVatRow ? 'false' : 'true');
+            }
+            if (printInvoiceGross) {
+              printInvoiceGross.textContent = formatter.format(grossAmount);
+            }
+            if (printInvoiceVatNote) {
+              if (state.vatIncluded) {
+                printInvoiceVatNote.textContent = '';
+                printInvoiceVatNote.hidden = true;
+                printInvoiceVatNote.setAttribute('aria-hidden', 'true');
+              } else {
+                printInvoiceVatNote.textContent = 'Gemäß § 19 UStG wird keine Umsatzsteuer ausgewiesen.';
+                printInvoiceVatNote.hidden = false;
+                printInvoiceVatNote.setAttribute('aria-hidden', 'false');
+              }
+            }
+            var offerMeta = state.offer && state.offer.meta ? state.offer.meta : {};
+            var dueText = resolveDueDateText(offerMeta.paymentTerms || '');
+            var isPaid = markInvoicePaidCheckbox ? !!markInvoicePaidCheckbox.checked : false;
+            if (printInvoicePaidLine) {
+              if (isPaid) {
+                var paidRaw = paidDateInput ? paidDateInput.value : '';
+                var paidDisplay = formatOfferDateDisplay(paidRaw);
+                if (printInvoicePaidDate) {
+                  printInvoicePaidDate.textContent = paidDisplay || '–';
+                }
+                printInvoicePaidLine.hidden = false;
+                printInvoicePaidLine.setAttribute('aria-hidden', 'false');
+              } else {
+                printInvoicePaidLine.hidden = true;
+                printInvoicePaidLine.setAttribute('aria-hidden', 'true');
+              }
+            }
+            if (printInvoiceDueLine) {
+              if (!isPaid && dueText) {
+                if (printInvoiceDueDate) {
+                  printInvoiceDueDate.textContent = dueText;
+                }
+                printInvoiceDueLine.hidden = false;
+                printInvoiceDueLine.setAttribute('aria-hidden', 'false');
+              } else {
+                printInvoiceDueLine.hidden = true;
+                printInvoiceDueLine.setAttribute('aria-hidden', 'true');
+              }
+            }
+            if (printInvoicePaymentContainer) {
+              var hasPaymentInfo = false;
+              if (printInvoicePaidLine && !printInvoicePaidLine.hidden) {
+                hasPaymentInfo = true;
+              }
+              if (printInvoiceDueLine && !printInvoiceDueLine.hidden) {
+                hasPaymentInfo = true;
+              }
+              printInvoicePaymentContainer.hidden = !hasPaymentInfo;
+              printInvoicePaymentContainer.setAttribute('aria-hidden', hasPaymentInfo ? 'false' : 'true');
+            }
+            if (printInvoiceNoteCard && printInvoiceNoteValue) {
+              var invoiceNote = state.notes && state.notes.invoice ? state.notes.invoice.toString().trim() : '';
+              if (invoiceNote) {
+                printInvoiceNoteValue.textContent = invoiceNote;
+                printInvoiceNoteCard.hidden = false;
+                printInvoiceNoteCard.setAttribute('aria-hidden', 'false');
+              } else {
+                printInvoiceNoteValue.textContent = '';
+                printInvoiceNoteCard.hidden = true;
+                printInvoiceNoteCard.setAttribute('aria-hidden', 'true');
+              }
             }
           }
 
@@ -2559,6 +3006,10 @@
             noteNormalized = noteNormalized.replace(/\r\n/g, '\n');
             var noteTrimmed = noteNormalized.trim();
             var noteValue = noteTrimmed ? noteTrimmed : '';
+            var offerNoteRaw = offerNoteInput && offerNoteInput.value != null ? offerNoteInput.value.toString() : '';
+            var invoiceNoteRaw = invoiceNoteInput && invoiceNoteInput.value != null ? invoiceNoteInput.value.toString() : '';
+            var offerNoteTrimmed = offerNoteRaw.trim();
+            var invoiceNoteTrimmed = invoiceNoteRaw.trim();
             var weightInputValue = weightModeActive ? readNumber(weightInput) : 0;
             var lengthInputValue = lengthModeActive ? readNumber(lengthInput) : 0;
 
@@ -2900,7 +3351,11 @@
               chartEnabled: chartEnabled,
               mode: weightMode.checked ? 'weight' : 'length',
               inputs: inputVisibility,
-              offer: offerState
+              offer: offerState,
+              notes: {
+                offer: offerNoteTrimmed,
+                invoice: invoiceNoteTrimmed
+              }
             };
           }
 
@@ -3128,6 +3583,8 @@
             }
 
             updatePrintOffer(state.offer);
+            updateOfferPrintExtras(state);
+            updateInvoicePrintExtras(state);
 
             if (printHeaderPartName) {
               if (state.hasPartName) {
@@ -3404,6 +3861,9 @@
           }
 
           initializeOfferSection();
+          initializeDocumentNotes();
+          syncPaidControls();
+          clearInvoiceError();
           wireInputs();
 
           materialSelect.addEventListener('change', setMaterialDefaults);
@@ -3510,9 +3970,27 @@
             });
           }
 
+          if (printOfferButton) {
+            printOfferButton.addEventListener('click', function () {
+              handleOfferPrint();
+            });
+          }
+
+          if (printInvoiceButton) {
+            printInvoiceButton.addEventListener('click', function () {
+              handleInvoicePrint();
+            });
+          }
+
           if (proToggle) {
             proToggle.addEventListener('change', function () {
               setProState(proToggle.checked);
+            });
+          }
+
+          if (markInvoicePaidCheckbox) {
+            markInvoicePaidCheckbox.addEventListener('change', function () {
+              syncPaidControls();
             });
           }
 
@@ -3594,6 +4072,7 @@
 
           window.addEventListener('afterprint', function () {
             setPrintAttribute(null);
+            clearInvoiceError();
             if (pendingPrintTitle !== null) {
               document.title = originalDocumentTitle;
               pendingPrintTitle = null;
