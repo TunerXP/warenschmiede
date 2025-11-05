@@ -347,6 +347,7 @@
           var printMachineLifetimeOutput = document.getElementById('printMachineLifetime');
           var printMaterialDensityOutput = document.getElementById('printMaterialDensity');
           var printNozzleOutput = document.getElementById('printNozzle');
+          var printTitleElement = document.querySelector('.calc-print__title');
           var printHeaderPartName = document.getElementById('printHeaderPartName');
           var printHeaderPartNameValue = document.getElementById('printHeaderPartNameValue');
           var printInputsPartName = document.getElementById('printInputsPartName');
@@ -1478,6 +1479,20 @@
             });
           }
 
+          function updatePrintTitleForMode(mode) {
+            if (!printTitleElement) {
+              return;
+            }
+            var titleMap = {
+              offer: 'Angebot',
+              invoice: 'Rechnung'
+            };
+            var title = titleMap[mode] || 'Angebot';
+            if (printTitleElement.textContent !== title) {
+              printTitleElement.textContent = title;
+            }
+          }
+
           function setBodyPrintMode(mode) {
             if (!bodyElement) {
               return;
@@ -1487,6 +1502,7 @@
             } else {
               bodyElement.removeAttribute('print-mode');
             }
+            updatePrintTitleForMode(mode);
           }
 
           function setBodyPaidState(paid) {
