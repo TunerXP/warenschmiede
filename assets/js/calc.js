@@ -377,6 +377,7 @@
           var printOfferPaymentInline = document.getElementById('printOfferPaymentInline');
           var printOfferNoteCard = document.getElementById('printOfferNoteCard');
           var printOfferNoteValue = document.getElementById('printOfferNoteValue');
+          var printInvoiceDescription = document.getElementById('printInvoiceDescription');
           var printInvoiceUnitPrice = document.getElementById('printInvoiceUnitPrice');
           var printInvoiceSubtotal = document.getElementById('printInvoiceSubtotal');
           var printInvoiceVat = document.getElementById('printInvoiceVat');
@@ -390,6 +391,9 @@
           var printInvoiceDueDate = document.getElementById('printInvoiceDueDate');
           var printInvoiceNoteCard = document.getElementById('printInvoiceNoteCard');
           var printInvoiceNoteValue = document.getElementById('printInvoiceNoteValue');
+          var printInvoiceNetValue = document.getElementById('printInvoiceNet');
+          var printFooterBrandElement = document.querySelector('#ws-print-footer .ws-brand');
+          var defaultPrintFooterText = printFooterBrandElement ? printFooterBrandElement.textContent : '';
           var printInputRows = {
             weight: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="weight"]') : null,
             length: printInputsContainer ? printInputsContainer.querySelector('[data-input-row="length"]') : null,
@@ -1493,6 +1497,23 @@
             }
           }
 
+          function updatePrintFooterForMode(mode) {
+            if (!printFooterBrandElement) {
+              return;
+            }
+            var baseText = defaultPrintFooterText || 'Dieses Angebot wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt. Transparente Preise – Made in Germany.';
+            var textMap = {
+              offer: baseText,
+              invoice: 'Diese Rechnung wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt. Transparente Preise – Made in Germany.',
+              internal: baseText,
+              default: baseText
+            };
+            var nextText = textMap.hasOwnProperty(mode) ? textMap[mode] : textMap.default;
+            if (printFooterBrandElement.textContent !== nextText) {
+              printFooterBrandElement.textContent = nextText;
+            }
+          }
+
           function setBodyPrintMode(mode) {
             if (!bodyElement) {
               return;
@@ -1503,6 +1524,7 @@
               bodyElement.removeAttribute('print-mode');
             }
             updatePrintTitleForMode(mode);
+            updatePrintFooterForMode(mode);
           }
 
           function setBodyPaidState(paid) {
@@ -1617,11 +1639,28 @@
 
           function handleInvoicePrint() {
             clearInvoiceError();
-            var ibanValue = getOfferValue('vendorIban');
-            if (!ibanValue) {
-              showInvoiceError('Bitte eine IBAN hinterlegen (Anbieter → Bankdaten).');
-              if (offerFieldMap.vendorIban && typeof offerFieldMap.vendorIban.focus === 'function') {
-                offerFieldMap.vendorIban.focus();
+            var requiredBankFields = [
+              { key: 'vendorIban', label: 'IBAN' },
+              { key: 'vendorBic', label: 'BIC' },
+              { key: 'vendorBankName', label: 'Bankname' }
+            ];
+            var missingBankFields = requiredBankFields.filter(function (entry) {
+              return !getOfferValue(entry.key);
+            });
+            if (missingBankFields.length > 0) {
+              var missingLabels = missingBankFields.map(function (entry) {
+                return entry.label;
+              });
+              var missingText = missingLabels[0];
+              if (missingLabels.length === 2) {
+                missingText = missingLabels[0] + ' und ' + missingLabels[1];
+              } else if (missingLabels.length > 2) {
+                missingText = missingLabels.slice(0, -1).join(', ') + ' und ' + missingLabels[missingLabels.length - 1];
+              }
+              showInvoiceError('Bitte ' + missingText + ' hinterlegen (Anbieter → Bankdaten).');
+              var firstMissing = missingBankFields[0];
+              if (firstMissing && offerFieldMap[firstMissing.key] && typeof offerFieldMap[firstMissing.key].focus === 'function') {
+                offerFieldMap[firstMissing.key].focus();
               }
               return;
             }
@@ -2895,8 +2934,15 @@
             var netAmount = state.net;
             var grossAmount = state.gross;
             var vatAmount = state.vatIncluded ? Math.max(grossAmount - netAmount, 0) : 0;
+            var descriptionText = state.hasPartName ? state.partName : '3D-Druck gemäß Spezifikation';
+            if (printInvoiceDescription) {
+              printInvoiceDescription.textContent = descriptionText;
+            }
             if (printInvoiceUnitPrice) {
               printInvoiceUnitPrice.textContent = formatter.format(netAmount);
+            }
+            if (printInvoiceNetValue) {
+              printInvoiceNetValue.textContent = formatter.format(netAmount);
             }
             if (printInvoiceSubtotal) {
               printInvoiceSubtotal.textContent = formatter.format(netAmount);
@@ -2938,6 +2984,9 @@
               } else {
                 printInvoicePaidLine.hidden = true;
                 printInvoicePaidLine.setAttribute('aria-hidden', 'true');
+                if (printInvoicePaidDate) {
+                  printInvoicePaidDate.textContent = '–';
+                }
               }
             }
             if (printInvoiceDueLine) {
@@ -2950,6 +2999,9 @@
               } else {
                 printInvoiceDueLine.hidden = true;
                 printInvoiceDueLine.setAttribute('aria-hidden', 'true');
+                if (printInvoiceDueDate) {
+                  printInvoiceDueDate.textContent = '–';
+                }
               }
             }
             if (printInvoicePaymentContainer) {
