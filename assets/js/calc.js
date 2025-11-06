@@ -104,6 +104,12 @@
           var shareButton = document.querySelector('[data-share-trigger]');
           var shareMessage = document.querySelector('[data-share-message]');
           var shareMessageTimer = null;
+          var toastElement = document.querySelector('[data-calc-toast]');
+          var toastTimer = null;
+          var toastHideTimer = null;
+          var saveButtons = $$('#btnSaveTop,#btnSaveBottom');
+          var loadButtons = $$('#btnLoadTop,#btnLoadBottom');
+          var fileLoadInput = document.getElementById('fileLoad');
 
           function clearShareMessageTimer() {
             if (shareMessageTimer) {
@@ -122,6 +128,52 @@
             shareMessageTimer = setTimeout(function () {
               shareMessage.classList.remove('is-visible');
               shareMessageTimer = null;
+            }, 4200);
+          }
+
+          function clearToastTimers() {
+            if (toastTimer) {
+              clearTimeout(toastTimer);
+              toastTimer = null;
+            }
+            if (toastHideTimer) {
+              clearTimeout(toastHideTimer);
+              toastHideTimer = null;
+            }
+          }
+
+          function hideToastMessage() {
+            if (!toastElement) {
+              return;
+            }
+            if (toastTimer) {
+              clearTimeout(toastTimer);
+              toastTimer = null;
+            }
+            toastElement.classList.remove('is-visible');
+            toastElement.setAttribute('aria-hidden', 'true');
+            toastHideTimer = setTimeout(function () {
+              if (toastElement) {
+                toastElement.hidden = true;
+              }
+              toastHideTimer = null;
+            }, 260);
+          }
+
+          function showToastMessage(text) {
+            if (!toastElement) {
+              if (text) {
+                window.alert(text);
+              }
+              return;
+            }
+            clearToastTimers();
+            toastElement.textContent = text || '';
+            toastElement.hidden = false;
+            toastElement.setAttribute('aria-hidden', 'false');
+            toastElement.classList.add('is-visible');
+            toastTimer = setTimeout(function () {
+              hideToastMessage();
             }, 4200);
           }
 
@@ -435,6 +487,16 @@
           var chartCompactPercentFormatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
           var co2Formatter = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
           var offerDateFormatter = new Intl.DateTimeFormat('de-DE');
+          var calcAppVersion = (function () {
+            var heading = document.querySelector('.tool-title');
+            if (heading && heading.textContent) {
+              var match = heading.textContent.match(/v\s*([0-9]+\.[0-9]+\.[0-9]+)/i);
+              if (match && match[1]) {
+                return match[1];
+              }
+            }
+            return '1.0.0';
+          })();
           var FILAMENT_DIAMETER_MM = 1.75;
           var PRINT_MM_PER_INCH = 25.4;
           var PRINT_PAGE_WIDTH_MM = 210;
@@ -447,6 +509,7 @@
           var proCardMediaQuery = window.matchMedia('(max-width: 1099px)');
           var proCardCollapsed = false;
           var OFFER_COUNTER_KEY = 'ws3d_offer_counter';
+          var AUTOSAVE_STORAGE_KEY = 'ws:autosaves';
           var storageApi = window.wsStorage || null;
           var persistApi = window.wsPersist || null;
           var hasPersistApi = !!(persistApi && typeof persistApi.loadSection === 'function' && typeof persistApi.saveSection === 'function' && typeof persistApi.clearSection === 'function');
@@ -1146,6 +1209,71 @@
             var isInteger = Math.abs(value - Math.round(value)) < 0.001;
             var normalized = isInteger ? Math.round(value).toString() : value.toFixed(2);
             return normalized.replace('.', ',');
+          }
+
+          function padNumber(value) {
+            var numValue = Number(value);
+            if (!isFinite(numValue)) {
+              numValue = 0;
+            }
+            var integer = Math.floor(Math.abs(numValue));
+            return integer.toString().padStart(2, '0');
+          }
+
+          function formatNow() {
+            var now = new Date();
+            return now.getFullYear().toString() + padNumber(now.getMonth() + 1) + padNumber(now.getDate()) + '-' + padNumber(now.getHours()) + padNumber(now.getMinutes());
+          }
+
+          function formatHoursToTime(hours) {
+            if (!isFinite(hours) || hours < 0) {
+              return '';
+            }
+            var totalMinutes = Math.round(hours * 60);
+            if (totalMinutes < 0) {
+              totalMinutes = 0;
+            }
+            var hoursPart = Math.floor(totalMinutes / 60);
+            var minutesPart = Math.abs(totalMinutes % 60);
+            return padNumber(hoursPart) + ':' + padNumber(minutesPart);
+          }
+
+          function normalizeString(value) {
+            if (value == null) {
+              return '';
+            }
+            return value.toString().trim();
+          }
+
+          function buildPostalCity(postal, city) {
+            var postalValue = normalizeString(postal);
+            var cityValue = normalizeString(city);
+            if (postalValue && cityValue) {
+              return postalValue + ' ' + cityValue;
+            }
+            return postalValue || cityValue;
+          }
+
+          function splitPostalCity(value) {
+            var raw = normalizeString(value);
+            if (!raw) {
+              return { postal: '', city: '' };
+            }
+            var match = raw.match(/^([0-9]{4,6})\s*(.*)$/);
+            if (match) {
+              return {
+                postal: normalizeString(match[1]),
+                city: normalizeString(match[2])
+              };
+            }
+            var parts = raw.split(/\s+/);
+            if (parts.length > 1 && /^[0-9]+$/.test(parts[0])) {
+              return {
+                postal: normalizeString(parts.shift()),
+                city: normalizeString(parts.join(' '))
+              };
+            }
+            return { postal: '', city: raw };
           }
 
           function getInputRaw(input) {
@@ -2271,6 +2399,15 @@
             return raw == null ? '' : raw.toString().trim();
           }
 
+          function setOfferFieldValue(key, value) {
+            var field = offerFieldMap[key];
+            if (!field) {
+              return;
+            }
+            var normalized = value == null ? '' : value;
+            field.value = normalized;
+          }
+
           function suggestOfferNumber() {
             var field = offerFieldMap.offerNumber;
             if (!field) {
@@ -2574,6 +2711,547 @@
                 field.value = stored == null ? '' : stored;
               }
             });
+          }
+
+          function downloadJson(data, fileName) {
+            try {
+              var serialized = JSON.stringify(data, null, 2);
+              var blob = new Blob([serialized], { type: 'application/json' });
+              downloadBlob(blob, fileName);
+              return true;
+            } catch (error) {
+              console.error('JSON-Download fehlgeschlagen', error);
+              return false;
+            }
+          }
+
+          function pushAutosave(snapshot) {
+            if (!snapshot || typeof snapshot !== 'object') {
+              return;
+            }
+            try {
+              if (!window.localStorage) {
+                return;
+              }
+            } catch (storageCheckError) {
+              return;
+            }
+            try {
+              var serialized = JSON.stringify(snapshot);
+              var entry = JSON.parse(serialized);
+              var existingRaw = window.localStorage.getItem(AUTOSAVE_STORAGE_KEY);
+              var entries = [];
+              if (existingRaw) {
+                try {
+                  var parsed = JSON.parse(existingRaw);
+                  if (Array.isArray(parsed)) {
+                    entries = parsed;
+                  }
+                } catch (parseError) {
+                  entries = [];
+                }
+              }
+              entries.unshift(entry);
+              if (entries.length > 5) {
+                entries = entries.slice(0, 5);
+              }
+              window.localStorage.setItem(AUTOSAVE_STORAGE_KEY, JSON.stringify(entries));
+            } catch (error) {
+              // ignore autosave errors silently
+            }
+          }
+
+          function migrateIfNeeded(snapshot) {
+            if (!snapshot || typeof snapshot !== 'object') {
+              return null;
+            }
+            return snapshot;
+          }
+
+          function collectState() {
+            var computed = recalculate();
+            var state = computed || lastValidState || null;
+            var timestamp = new Date();
+            var locale = (window.navigator && window.navigator.language) ? window.navigator.language : 'de-DE';
+            var partNameRaw = getInputRaw(partNameInput);
+            var partNameTrimmed = partNameRaw ? partNameRaw.trim() : '';
+            var vendorPostal = getOfferValue('vendorPostalCode');
+            var vendorCity = getOfferValue('vendorCity');
+            var customerPostal = getOfferValue('customerPostalCode');
+            var customerCity = getOfferValue('customerCity');
+            var timeValue = timeInput && timeInput.value ? timeInput.value : '';
+            var hoursValue = state ? state.hours : parseHours(timeValue || '0:00');
+            var weightRaw = getInputRaw(weightInput);
+            var lengthRaw = getInputRaw(lengthInput);
+            var weightValue = state ? state.weight : (weightRaw ? num(weightRaw) : 0);
+            if (!isFinite(weightValue)) {
+              weightValue = 0;
+            }
+            var lengthValue = state ? state.length : (lengthRaw ? num(lengthRaw) : 0);
+            if (!isFinite(lengthValue)) {
+              lengthValue = 0;
+            }
+            var materialDensityValue = readNumber(materialDensityInput);
+            var powerValue = readNumber(powerInput);
+            var energyPriceValue = readNumber(energyPriceInput);
+            var loadFactorValue = readNumber(loadFactorInput);
+            var loadFactorNormalized = Math.min(Math.max(loadFactorValue, 0), 100);
+            var energyKwh = (powerValue / 1000) * hoursValue * (loadFactorNormalized / 100);
+            if (!isFinite(energyKwh)) {
+              energyKwh = 0;
+            }
+            var wastePercentValue = wastePercentInput ? readNumber(wastePercentInput) : 0;
+            var profitMarginValue = readNumber(profitMarginInput);
+            var discountPercentValue = readNumber(discountPercentInput);
+            var fixedCostValue = readNumber(fixedCostInput);
+            var packagingValue = readNumber(packagingCostInput);
+            var shippingValue = readNumber(shippingCostInput);
+            var errorRateValue = readNumber(errorRateInput);
+            var hourlyRateValue = readNumber(hourlyRateInput);
+            var setupMinutesValue = readNumber(setupMinutesInput);
+            var finishingMinutesValue = readNumber(finishingMinutesInput);
+            var proPrintMinutesValue = readNumber(proPrintMinutesInput);
+            var machineHourlyValue = readNumber(machineHourlyInput);
+            var machinePurchaseValue = readNumber(machinePurchaseInput);
+            var machineLifetimeValue = readNumber(machineLifetimeInput);
+            var nozzleSelection = getNozzleSelection();
+            var proNoteValue = proNoteInput ? normalizeString(proNoteInput.value) : '';
+            var offerNoteValue = offerNoteInput ? normalizeString(offerNoteInput.value) : '';
+            var invoiceNoteValue = invoiceNoteInput ? normalizeString(invoiceNoteInput.value) : '';
+            var materialLabel = '';
+            if (materialSelect && materialSelect.options && materialSelect.selectedIndex >= 0) {
+              materialLabel = materialSelect.options[materialSelect.selectedIndex].textContent || '';
+            }
+            var provider = {
+              firma: getOfferValue('vendorName'),
+              ansprechpartner: getOfferValue('vendorContact'),
+              strasse: getOfferValue('vendorStreet'),
+              plz: vendorPostal,
+              ort: vendorCity,
+              plzOrt: buildPostalCity(vendorPostal, vendorCity),
+              email: getOfferValue('vendorEmail'),
+              telefon: getOfferValue('vendorPhone'),
+              ustId: getOfferValue('vendorVatId'),
+              iban: getOfferValue('vendorIban'),
+              bic: getOfferValue('vendorBic'),
+              bank: getOfferValue('vendorBankName')
+            };
+            var customer = {
+              firma: getOfferValue('customerName'),
+              ansprechpartner: getOfferValue('customerContact'),
+              strasse: getOfferValue('customerStreet'),
+              plz: customerPostal,
+              ort: customerCity,
+              plzOrt: buildPostalCity(customerPostal, customerCity),
+              email: getOfferValue('customerEmail'),
+              telefon: getOfferValue('customerPhone')
+            };
+            var docs = {
+              angebotsNr: getOfferValue('offerNumber'),
+              angebotsdatum: getOfferValue('offerDate'),
+              gueltigBis: getOfferValue('offerValidUntil'),
+              lieferzeit: getOfferValue('offerDeliveryTime'),
+              zahlungsbedingungen: getOfferValue('offerPaymentTerms'),
+              rechnungsNr: getOfferValue('invoiceNumber'),
+              rechnungsdatum: getOfferValue('invoiceDate'),
+              leistungsdatum: getOfferValue('serviceDate'),
+              bereitsBezahlt: markInvoicePaidCheckbox ? !!markInvoicePaidCheckbox.checked : false,
+              bezahltAm: paidDateInput && paidDateInput.value ? paidDateInput.value : null,
+              notizAngebot: offerNoteValue,
+              notizRechnung: invoiceNoteValue
+            };
+            var calc = {
+              teilname: partNameTrimmed,
+              mode: weightMode && weightMode.checked ? 'weight' : 'length',
+              material: {
+                typ: materialSelect ? materialSelect.value : '',
+                label: materialLabel,
+                preisProKg: readNumber(pricePerKgInput),
+                verbrauchGramm: weightValue,
+                mengeInput: {
+                  gewicht: weightRaw,
+                  laenge: lengthRaw
+                },
+                dichte: materialDensityValue,
+                wastePercent: wastePercentValue
+              },
+              energie: {
+                preisProKwh: energyPriceValue,
+                kwh: energyKwh,
+                leistungWatt: powerValue,
+                lastfaktor: loadFactorNormalized
+              },
+              maschine: {
+                stundensatz: machineHourlyValue,
+                stunden: isFinite(hoursValue) ? hoursValue : 0,
+                anschaffung: machinePurchaseValue,
+                lebensdauer: machineLifetimeValue
+              },
+              marge: profitMarginValue,
+              rabattProzent: discountPercentValue,
+              rabattAbsolut: state && state.pro ? state.pro.discountValue : 0,
+              fixkosten: fixedCostValue,
+              verpackung: packagingValue,
+              versand: shippingValue,
+              fehlerrate: errorRateValue,
+              druckParameter: {
+                nozzle: nozzleSelection ? nozzleSelection.diameter : '',
+                nozzleTyp: nozzleSelection ? nozzleSelection.type : '',
+                materialdichte: materialDensityValue,
+                layer: null,
+                infill: null
+              },
+              zeit: {
+                laufzeit: timeValue,
+                setup: setupMinutesValue,
+                print: proPrintMinutesValue,
+                finishing: finishingMinutesValue,
+                stundenlohn: hourlyRateValue
+              },
+              note: proNoteValue,
+              proAktiv: proToggle ? !!proToggle.checked : false,
+              chartAktiv: resultChartToggle ? !!resultChartToggle.checked : true,
+              inputs: {
+                pricePerKg: getInputRaw(pricePerKgInput),
+                materialDensity: getInputRaw(materialDensityInput),
+                wastePercent: getInputRaw(wastePercentInput),
+                power: getInputRaw(powerInput),
+                energyPrice: getInputRaw(energyPriceInput),
+                loadFactor: getInputRaw(loadFactorInput),
+                machineHourlyRate: getInputRaw(machineHourlyInput),
+                machinePurchase: getInputRaw(machinePurchaseInput),
+                machineLifetime: getInputRaw(machineLifetimeInput),
+                packagingCost: getInputRaw(packagingCostInput),
+                shippingCost: getInputRaw(shippingCostInput),
+                profitMargin: getInputRaw(profitMarginInput),
+                discountPercent: getInputRaw(discountPercentInput),
+                errorRate: getInputRaw(errorRateInput),
+                hourlyRate: getInputRaw(hourlyRateInput),
+                setupMinutes: getInputRaw(setupMinutesInput),
+                finishingMinutes: getInputRaw(finishingMinutesInput),
+                proPrintMinutes: getInputRaw(proPrintMinutesInput)
+              }
+            };
+
+            return {
+              version: calcAppVersion,
+              savedAt: timestamp.toISOString(),
+              locale: locale,
+              settings: {
+                preiseInklMwst: vatCheckbox ? !!vatCheckbox.checked : false,
+                mwstSatz: 0.19,
+                proAktiv: calc.proAktiv,
+                chartAktiv: calc.chartAktiv
+              },
+              provider: provider,
+              customer: customer,
+              docs: docs,
+              calc: calc
+            };
+          }
+
+          function applyState(snapshot) {
+            if (!snapshot || typeof snapshot !== 'object') {
+              return;
+            }
+            var settings = snapshot.settings || {};
+            var calcData = snapshot.calc || {};
+            var providerData = snapshot.provider || {};
+            var customerData = snapshot.customer || {};
+            var docsData = snapshot.docs || {};
+            var materialDataSaved = calcData.material || {};
+            var energyData = calcData.energie || {};
+            var machineData = calcData.maschine || {};
+            var timeData = calcData.zeit || {};
+            var inputsData = calcData.inputs || {};
+            var druckParameter = calcData.druckParameter || {};
+            var noteValue = typeof calcData.note === 'string' ? calcData.note : '';
+            var proActiveSetting = typeof settings.proAktiv === 'boolean' ? settings.proAktiv : (typeof calcData.proAktiv === 'boolean' ? calcData.proAktiv : (proToggle ? !!proToggle.checked : false));
+            var chartActiveSetting = typeof settings.chartAktiv === 'boolean' ? settings.chartAktiv : (typeof calcData.chartAktiv === 'boolean' ? calcData.chartAktiv : true);
+            var modeValue = typeof calcData.mode === 'string' ? calcData.mode.toLowerCase() : '';
+            suppressCalcEvent = true;
+            try {
+              if (vatCheckbox) {
+                vatCheckbox.checked = settings.preiseInklMwst === true;
+              }
+              if (resultChartToggle) {
+                resultChartToggle.checked = !!chartActiveSetting;
+                setChartVisibility(!!chartActiveSetting);
+              }
+              if (proToggle) {
+                proToggle.checked = !!proActiveSetting;
+                setProState(!!proActiveSetting, { skipRecalc: true, skipPersist: true });
+              }
+              if (partNameInput) {
+                var partNameValue = calcData.teilname != null ? calcData.teilname : (calcData.partName != null ? calcData.partName : '');
+                partNameInput.value = partNameValue;
+              }
+              if (weightMode && lengthMode) {
+                if (modeValue === 'length') {
+                  lengthMode.checked = true;
+                  weightMode.checked = false;
+                } else {
+                  weightMode.checked = true;
+                  lengthMode.checked = false;
+                }
+              }
+              if (materialSelect && materialDataSaved.typ) {
+                if (!setSelectValueIfExists(materialSelect, materialDataSaved.typ) && !materialSelect.value && materialSelect.options && materialSelect.options.length) {
+                  materialSelect.selectedIndex = 0;
+                }
+              }
+              setMaterialDefaults();
+              var materialInputs = materialDataSaved.mengeInput || {};
+              if (weightInput) {
+                var weightFieldValue = materialInputs.gewicht != null ? materialInputs.gewicht : '';
+                weightInput.value = weightFieldValue;
+              }
+              if (lengthInput) {
+                var lengthFieldValue = materialInputs.laenge != null ? materialInputs.laenge : '';
+                lengthInput.value = lengthFieldValue;
+              }
+              if (pricePerKgInput) {
+                var priceRaw = inputsData.pricePerKg != null ? inputsData.pricePerKg : (materialDataSaved.preisProKg != null ? String(materialDataSaved.preisProKg) : '');
+                pricePerKgProgrammatic = true;
+                pricePerKgInput.value = priceRaw == null ? '' : priceRaw;
+                pricePerKgProgrammatic = false;
+                pricePerKgUserEdited = !!(priceRaw && priceRaw.toString().trim().length > 0);
+              }
+              if (materialDensityInput) {
+                var densityRaw = inputsData.materialDensity != null ? inputsData.materialDensity : (materialDataSaved.dichte != null ? String(materialDataSaved.dichte) : '');
+                materialDensityProgrammatic = true;
+                materialDensityInput.value = densityRaw == null ? '' : densityRaw;
+                materialDensityProgrammatic = false;
+                materialDensityUserEdited = !!(densityRaw && densityRaw.toString().trim().length > 0);
+                if (materialDensityUserEdited) {
+                  materialDensityInput.setAttribute('data-user-set', '1');
+                } else {
+                  materialDensityInput.removeAttribute('data-user-set');
+                }
+              }
+              if (wastePercentInput) {
+                var wasteRaw = inputsData.wastePercent != null ? inputsData.wastePercent : (materialDataSaved.wastePercent != null ? String(materialDataSaved.wastePercent) : '');
+                wastePercentInput.value = wasteRaw == null ? '' : wasteRaw;
+              }
+              if (powerInput) {
+                var powerRaw = inputsData.power != null ? inputsData.power : (energyData.leistungWatt != null ? String(energyData.leistungWatt) : '');
+                powerInput.value = powerRaw == null ? '' : powerRaw;
+              }
+              if (energyPriceInput) {
+                var energyPriceRaw = inputsData.energyPrice != null ? inputsData.energyPrice : (energyData.preisProKwh != null ? String(energyData.preisProKwh) : '');
+                energyPriceInput.value = energyPriceRaw == null ? '' : energyPriceRaw;
+              }
+              if (loadFactorInput) {
+                var loadFactorRaw = inputsData.loadFactor != null ? inputsData.loadFactor : (energyData.lastfaktor != null ? String(energyData.lastfaktor) : '');
+                loadFactorInput.value = loadFactorRaw == null ? '' : loadFactorRaw;
+              }
+              var timeResolved = '';
+              if (typeof timeData.laufzeit === 'string' && timeData.laufzeit) {
+                timeResolved = timeData.laufzeit;
+              } else if (typeof machineData.stunden === 'number' && isFinite(machineData.stunden)) {
+                timeResolved = formatHoursToTime(machineData.stunden);
+              }
+              if (timeInput) {
+                timeSyncInProgress = true;
+                try {
+                  timeInput.value = timeResolved;
+                } finally {
+                  timeSyncInProgress = false;
+                }
+              }
+              var proMinutesRaw = inputsData.proPrintMinutes != null ? inputsData.proPrintMinutes : (timeData.print != null ? String(timeData.print) : '');
+              if (proPrintMinutesInput) {
+                suppressProSync = true;
+                try {
+                  proPrintMinutesInput.value = proMinutesRaw == null ? '' : proMinutesRaw;
+                } finally {
+                  suppressProSync = false;
+                }
+              }
+              if (hourlyRateInput) {
+                var hourlyRaw = inputsData.hourlyRate != null ? inputsData.hourlyRate : (timeData.stundenlohn != null ? String(timeData.stundenlohn) : '');
+                hourlyRateInput.value = hourlyRaw == null ? '' : hourlyRaw;
+              }
+              if (setupMinutesInput) {
+                var setupRaw = inputsData.setupMinutes != null ? inputsData.setupMinutes : (timeData.setup != null ? String(timeData.setup) : '');
+                setupMinutesInput.value = setupRaw == null ? '' : setupRaw;
+              }
+              if (finishingMinutesInput) {
+                var finishingRaw = inputsData.finishingMinutes != null ? inputsData.finishingMinutes : (timeData.finishing != null ? String(timeData.finishing) : '');
+                finishingMinutesInput.value = finishingRaw == null ? '' : finishingRaw;
+              }
+              if (profitMarginInput) {
+                var marginRaw = inputsData.profitMargin != null ? inputsData.profitMargin : (calcData.marge != null ? String(calcData.marge) : '');
+                profitMarginInput.value = marginRaw == null ? '' : marginRaw;
+              }
+              if (discountPercentInput) {
+                var discountRaw = inputsData.discountPercent != null ? inputsData.discountPercent : (calcData.rabattProzent != null ? String(calcData.rabattProzent) : '');
+                discountPercentInput.value = discountRaw == null ? '' : discountRaw;
+              }
+              if (fixedCostInput) {
+                var fixedRaw = calcData.fixkosten != null ? String(calcData.fixkosten) : '';
+                fixedCostInput.value = fixedRaw == null ? '' : fixedRaw;
+              }
+              if (packagingCostInput) {
+                var packagingRaw = inputsData.packagingCost != null ? inputsData.packagingCost : (calcData.verpackung != null ? String(calcData.verpackung) : '');
+                packagingCostInput.value = packagingRaw == null ? '' : packagingRaw;
+              }
+              if (shippingCostInput) {
+                var shippingRaw = inputsData.shippingCost != null ? inputsData.shippingCost : (calcData.versand != null ? String(calcData.versand) : '');
+                shippingCostInput.value = shippingRaw == null ? '' : shippingRaw;
+              }
+              if (errorRateInput) {
+                var errorRaw = inputsData.errorRate != null ? inputsData.errorRate : (calcData.fehlerrate != null ? String(calcData.fehlerrate) : '');
+                errorRateInput.value = errorRaw == null ? '' : errorRaw;
+              }
+              if (machineHourlyInput) {
+                var machineHourlyRaw = inputsData.machineHourlyRate != null ? inputsData.machineHourlyRate : (machineData.stundensatz != null ? String(machineData.stundensatz) : '');
+                machineHourlyProgrammatic = true;
+                machineHourlyInput.value = machineHourlyRaw == null ? '' : machineHourlyRaw;
+                machineHourlyProgrammatic = false;
+                machineHourlyUserEdited = !!(machineHourlyRaw && machineHourlyRaw.toString().trim().length > 0);
+              }
+              if (machinePurchaseInput) {
+                var machinePurchaseRaw = inputsData.machinePurchase != null ? inputsData.machinePurchase : (machineData.anschaffung != null ? String(machineData.anschaffung) : '');
+                machinePurchaseInput.value = machinePurchaseRaw == null ? '' : machinePurchaseRaw;
+              }
+              if (machineLifetimeInput) {
+                var machineLifetimeRaw = inputsData.machineLifetime != null ? inputsData.machineLifetime : (machineData.lebensdauer != null ? String(machineData.lebensdauer) : '');
+                machineLifetimeInput.value = machineLifetimeRaw == null ? '' : machineLifetimeRaw;
+              }
+              if (nozzleDiameterSelect) {
+                if (!setSelectValueIfExists(nozzleDiameterSelect, druckParameter.nozzle) && !druckParameter.nozzle) {
+                  nozzleDiameterSelect.value = '';
+                }
+              }
+              if (nozzleTypeSelect) {
+                var nozzleTypeValue = druckParameter.nozzleTyp != null ? druckParameter.nozzleTyp : druckParameter.nozzleType;
+                if (!setSelectValueIfExists(nozzleTypeSelect, nozzleTypeValue) && !nozzleTypeValue) {
+                  nozzleTypeSelect.value = '';
+                }
+              }
+              if (proNoteInput) {
+                proNoteInput.value = noteValue;
+              }
+              if (offerNoteInput) {
+                offerNoteInput.value = docsData.notizAngebot != null ? docsData.notizAngebot : '';
+              }
+              if (invoiceNoteInput) {
+                invoiceNoteInput.value = docsData.notizRechnung != null ? docsData.notizRechnung : '';
+              }
+              var providerPostal = normalizeString(providerData.plz);
+              var providerCity = normalizeString(providerData.ort);
+              if (!providerPostal && !providerCity && providerData.plzOrt) {
+                var providerSplit = splitPostalCity(providerData.plzOrt);
+                providerPostal = providerSplit.postal;
+                providerCity = providerSplit.city;
+              }
+              setOfferFieldValue('vendorName', providerData.firma != null ? providerData.firma : providerData.name);
+              setOfferFieldValue('vendorContact', providerData.ansprechpartner);
+              setOfferFieldValue('vendorStreet', providerData.strasse);
+              setOfferFieldValue('vendorPostalCode', providerPostal);
+              setOfferFieldValue('vendorCity', providerCity);
+              setOfferFieldValue('vendorEmail', providerData.email);
+              setOfferFieldValue('vendorPhone', providerData.telefon);
+              setOfferFieldValue('vendorVatId', providerData.ustId);
+              setOfferFieldValue('vendorIban', providerData.iban);
+              setOfferFieldValue('vendorBic', providerData.bic);
+              setOfferFieldValue('vendorBankName', providerData.bank);
+              var customerPostalResolved = normalizeString(customerData.plz);
+              var customerCityResolved = normalizeString(customerData.ort);
+              if (!customerPostalResolved && !customerCityResolved && customerData.plzOrt) {
+                var customerSplit = splitPostalCity(customerData.plzOrt);
+                customerPostalResolved = customerSplit.postal;
+                customerCityResolved = customerSplit.city;
+              }
+              setOfferFieldValue('customerName', customerData.firma != null ? customerData.firma : customerData.name);
+              setOfferFieldValue('customerContact', customerData.ansprechpartner);
+              setOfferFieldValue('customerStreet', customerData.strasse);
+              setOfferFieldValue('customerPostalCode', customerPostalResolved);
+              setOfferFieldValue('customerCity', customerCityResolved);
+              setOfferFieldValue('customerEmail', customerData.email);
+              setOfferFieldValue('customerPhone', customerData.telefon);
+              setOfferFieldValue('offerNumber', docsData.angebotsNr);
+              setOfferFieldValue('offerDate', docsData.angebotsdatum);
+              setOfferFieldValue('offerValidUntil', docsData.gueltigBis);
+              setOfferFieldValue('offerDeliveryTime', docsData.lieferzeit);
+              setOfferFieldValue('offerPaymentTerms', docsData.zahlungsbedingungen);
+              setOfferFieldValue('invoiceNumber', docsData.rechnungsNr);
+              setOfferFieldValue('invoiceDate', docsData.rechnungsdatum);
+              setOfferFieldValue('serviceDate', docsData.leistungsdatum);
+              if (markInvoicePaidCheckbox) {
+                markInvoicePaidCheckbox.checked = docsData.bereitsBezahlt === true;
+              }
+              if (paidDateInput) {
+                paidDateInput.value = docsData.bezahltAm || '';
+              }
+            } finally {
+              suppressCalcEvent = false;
+            }
+            updateMaterialSuggestionState(currentMaterialDefaults);
+            ensureNozzleDefaults();
+            getNozzleSelection();
+            updateModeVisibility();
+            syncPaidControls();
+            clearInvoiceError();
+            offerFields.forEach(function (field) {
+              validateOfferField(field);
+            });
+            triggerRecalc({ immediate: true });
+            if (standardPersistence && typeof standardPersistence.saveImmediate === 'function') {
+              standardPersistence.saveImmediate({ skipTrack: true });
+            }
+            if (proPersistence && typeof proPersistence.saveImmediate === 'function') {
+              proPersistence.saveImmediate({ skipTrack: true });
+            }
+            if (sellerPersistence && typeof sellerPersistence.saveImmediate === 'function') {
+              sellerPersistence.saveImmediate({ skipTrack: true });
+            }
+            if (customerPersistence && typeof customerPersistence.saveImmediate === 'function') {
+              customerPersistence.saveImmediate({ skipTrack: true });
+            }
+          }
+
+          function saveCurrent() {
+            var snapshot = collectState();
+            if (!snapshot) {
+              showToastMessage('Datei konnte nicht gespeichert werden.');
+              return;
+            }
+            var fileName = 'warenschmiede-save-' + formatNow() + '.json';
+            var success = downloadJson(snapshot, fileName);
+            if (success) {
+              pushAutosave(snapshot);
+              showToastMessage('Ergebnis gespeichert (' + fileName + ').');
+            } else {
+              showToastMessage('Datei konnte nicht gespeichert werden.');
+            }
+          }
+
+          function loadFromFile(file) {
+            if (!file) {
+              return;
+            }
+            var reader = new FileReader();
+            reader.onload = function () {
+              try {
+                var text = reader.result;
+                var parsed = JSON.parse(text);
+                var migrated = migrateIfNeeded(parsed);
+                if (!migrated) {
+                  throw new Error('Ungültige Daten');
+                }
+                applyState(migrated);
+                showToastMessage('Daten geladen. Ergebnis neu berechnet.');
+              } catch (error) {
+                console.error('Laden der Kalkulation fehlgeschlagen', error);
+                showToastMessage('Datei konnte nicht gelesen werden.');
+              }
+            };
+            reader.onerror = function () {
+              showToastMessage('Datei konnte nicht gelesen werden.');
+            };
+            reader.readAsText(file);
           }
 
           standardPersistence = createPersistenceController('std', {
@@ -4142,6 +4820,42 @@
           if (printInvoiceButton) {
             printInvoiceButton.addEventListener('click', function () {
               handleInvoicePrint();
+            });
+          }
+
+          if (saveButtons && saveButtons.length) {
+            saveButtons.forEach(function (button) {
+              button.addEventListener('click', function (event) {
+                if (event && typeof event.preventDefault === 'function') {
+                  event.preventDefault();
+                }
+                saveCurrent();
+              });
+            });
+          }
+
+          if (loadButtons && loadButtons.length) {
+            loadButtons.forEach(function (button) {
+              button.addEventListener('click', function (event) {
+                if (event && typeof event.preventDefault === 'function') {
+                  event.preventDefault();
+                }
+                if (fileLoadInput) {
+                  fileLoadInput.click();
+                }
+              });
+            });
+          }
+
+          if (fileLoadInput) {
+            fileLoadInput.addEventListener('change', function (event) {
+              var target = event ? event.target : null;
+              if (target && target.files && target.files[0]) {
+                loadFromFile(target.files[0]);
+              }
+              if (target) {
+                target.value = '';
+              }
             });
           }
 

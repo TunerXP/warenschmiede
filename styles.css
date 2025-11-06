@@ -922,6 +922,35 @@ img {
   transform: translateY(0);
 }
 
+.calc-save {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.calc-save__button {
+  white-space: nowrap;
+}
+
+.calc-toast {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  align-self: flex-end;
+  text-align: right;
+  max-width: min(24rem, 100%);
+}
+
+.calc-toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .tool-title {
   margin-bottom: 0.25rem;
 }
@@ -956,6 +985,16 @@ img {
     width: 100%;
     align-items: flex-end;
   }
+
+  .calc-save {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .calc-toast {
+    align-self: stretch;
+    text-align: left;
+  }
 }
 
 @media only screen and (min-width: 48rem) {
@@ -975,6 +1014,10 @@ img {
   .calc-share {
     align-items: flex-end;
     margin-bottom: 0;
+  }
+
+  .calc-save {
+    align-self: flex-start;
   }
 }
 
@@ -4211,6 +4254,18 @@ a:focus-visible {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
+}
+
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.result-actions .btn {
+  white-space: nowrap;
 }
 
 .calc-results__actions .btn {
