@@ -85,6 +85,7 @@
   </script>
 </head>
 <body>
+  <span id="top"></span>
   <header class="site-header no-print" data-header>
     <div class="container header-grid">
       <div class="brand">
@@ -246,14 +247,21 @@
     <section class="section" aria-labelledby="rechner">
       <div class="container container--calc-wide">
         <div class="section-heading section-heading--with-action">
-          <div class="calc-share" data-share-region>
-            <button class="calc-share__button" type="button" data-share-trigger data-share-url="https://www.warenschmiede.com/druck-kosten.html" data-share-title="Warenschmiede 3D-Druck-Kostenrechner" data-share-text="Berechne in Sekunden dein individuelles 3D-Druck-Angebot." data-share-success="Link kopiert – du kannst ihn jetzt an Freunde oder Kollegen senden." aria-label="Link zum Warenschmiede 3D-Druck-Rechner teilen" title="Link teilen">
-              <span class="calc-share__icon" aria-hidden="true">🔗</span>
-              <span class="calc-share__label">Link teilen</span>
-            </button>
-            <p class="calc-share__message" data-share-message role="status" aria-live="polite"></p>
-          </div>
           <div class="section-heading__stack">
+            <h1 class="tool-title">Kostenrechner – Angebot &amp; Rechnung v1.0.0</h1>
+            <div class="section-heading__actions">
+              <nav class="anchor-nav" aria-label="Abschnittsnavigation">
+                <a href="#results" class="anchor-link">Zu den Ergebnissen</a>
+                <a href="#guide" class="anchor-link">Anleitung &amp; Glossar</a>
+              </nav>
+              <div class="calc-share" data-share-region>
+                <button class="calc-share__button" type="button" data-share-trigger data-share-url="https://www.warenschmiede.com/druck-kosten.html" data-share-title="Warenschmiede 3D-Druck-Kostenrechner" data-share-text="Berechne in Sekunden dein individuelles 3D-Druck-Angebot." data-share-success="Link kopiert – du kannst ihn jetzt an Freunde oder Kollegen senden." aria-label="Link zum Warenschmiede 3D-Druck-Rechner teilen" title="Link teilen">
+                  <span class="calc-share__icon" aria-hidden="true">🔗</span>
+                  <span class="calc-share__label">Link teilen</span>
+                </button>
+                <p class="calc-share__message" data-share-message role="status" aria-live="polite"></p>
+              </div>
+            </div>
             <h2 id="rechner">Rechner</h2>
             <p>Wähle Material, gib Gewicht oder Länge ein und ergänze Laufzeit sowie Stromkosten – der Rest passiert automatisch.</p>
           </div>
@@ -678,6 +686,7 @@
               <h2>Ergebnis</h2>
               <p class="calc-meta" id="calcMeta">Gewicht: 0&nbsp;g · Länge: 0,00&nbsp;m</p>
             </div>
+            <span id="results"></span>
             <div class="calc-results__actions">
               <div class="calc-results__button-group" role="group" aria-label="Druckoptionen">
                 <button type="button" class="btn btn-outline" id="printResultButton">Ergebnis drucken</button>
@@ -830,46 +839,6 @@
       </div>
     </section>
 
-    <section class="section" aria-labelledby="so-funktioniert-heading">
-      <div class="container">
-        <div class="card" id="guide">
-          <div class="guide-header">
-            <h2 id="so-funktioniert-heading">So funktioniert’s</h2>
-          </div>
-          <ol>
-            <li><strong>Angebotsdaten eintragen:</strong> Anbieter- und Kundendaten ergänzen, Angebotsnummer, Datum und Zahlungsziele festlegen.</li>
-            <li><strong>Standardwerte ausfüllen:</strong> Material, Gewicht oder Länge, Verschnitt sowie Druckzeit, Leistung, Strompreis und Lastfaktor setzen.</li>
-            <li><strong>Pro-Optionen prüfen:</strong> Bei Bedarf Marge, Arbeitszeiten, Maschinen- und Fixkosten aktivieren; die Notiz erscheint im PDF unten rechts auf Seite&nbsp;1.</li>
-            <li><strong>Live-Check beobachten:</strong> Das Ergebnisfeld aktualisiert Material-, Energie- und Pro-Kosten sofort und zeigt, ob MwSt. aktiv ist.</li>
-            <li><strong>PDF-Vorschau erstellen:</strong> „Ergebnis drucken“ erzeugt eine kompakte Seite, „Ergebnis + Eingaben drucken“ liefert beide Seiten inklusive ausgewählter Düse auf Seite&nbsp;2.</li>
-            <li><strong>Angebot sichern oder teilen:</strong> Autosave pro Bereich einschalten, PDF speichern oder direkt verschicken.</li>
-          </ol>
-
-          <h3 id="so-funktioniert-faq">Mini-FAQ</h3>
-          <dl>
-            <dt>Warum ändert sich der Preis nach einem Feldwechsel?</dt>
-            <dd>Jede Eingabe fließt sofort in die Kalkulation: Materialwert bestimmt Materialkosten, Zeitfelder steuern Energie- und Arbeitskosten, Pro-Optionen addieren Auf- oder Abschläge.</dd>
-
-            <dt>Wo erscheint die Notiz im PDF?</dt>
-            <dd>Die Pro-Notiz steht im Angebot unten rechts auf Seite&nbsp;1; die ausgewählte Düse wird automatisch auf Seite&nbsp;2 in der Eingabentabelle ausgegeben.</dd>
-
-            <dt>Warum ist mein Rabatt begrenzt?</dt>
-            <dd>Der Rabatt darf höchstens 99,9&nbsp;% betragen, damit der Angebotspreis nie null oder negativ wird. Bei 100&nbsp;% oder mehr blockt der Rechner die Berechnung und zeigt eine Fehlermeldung.</dd>
-
-            <dt>Wie aktiviere oder deaktiviere ich Autosave?</dt>
-            <dd>Nutze die Checkbox „Daten im Browser merken“ in Standard-, Pro- oder Angebotsbereichen. Ein Häkchen speichert die jeweilige Sektion lokal, ohne Daten hochzuladen; entfernst du es, wird die Speicherung gestoppt.</dd>
-          </dl>
-        </div>
-      </div>
-    </section>
-
-    <div class="container">
-      <div class="page-anchor-buttons">
-        <a class="btn btn-primary" href="#rechner">↑ Zum Rechner</a>
-        <a class="btn btn-outline" href="#so-funktioniert-heading">↑ Zur Anleitung</a>
-      </div>
-    </div>
-
     <section class="section" aria-labelledby="cta-kosten-heading">
       <div class="container">
         <div class="card">
@@ -886,6 +855,69 @@
         <p class="page-links__text">Mehr wissen: <a href="/material.html">Materialwissen</a> &middot; <a href="/druck-tipps.html">Tipps &amp; Abläufe</a> &middot; <a href="/slicer-einstellungen.html">Slicer &amp; Einstellungen</a></p>
       </div>
     </nav>
+
+    <section id="guide" class="guide">
+      <div class="container">
+        <h2>Anleitung</h2>
+
+        <details open>
+          <summary>Einführung</summary>
+          <p>Der Warenschmiede 3D-Druck-Kostenrechner ermöglicht die präzise Kalkulation eines Druckprojekts mit realistischen Parametern (Material, Druckzeit, Energie, Fixkosten). Ergebnis sind druckfertige PDFs als <strong>Angebot</strong> oder <strong>Rechnung</strong>.</p>
+        </details>
+
+        <details open>
+          <summary>Schritt-für-Schritt</summary>
+          <ol>
+            <li><strong>Teilename</strong> eintragen – erscheint in Position 1 in Angebot/Rechnung.</li>
+            <li><strong>Material</strong> wählen (PLA/PETG/ASA/TPU …) und ggf. Preis je kg anpassen.</li>
+            <li><strong>Druckzeit</strong> und Maschinen-/Energieparameter pflegen (Vorgaben sind vorkonfiguriert).</li>
+            <li><strong>Fixkosten/Marge</strong> optional anpassen (transparent, aber nur intern sichtbar).</li>
+            <li><strong>IBAN/BIC/Bank</strong> unter „Anbieter“ ausfüllen (Pflicht für Rechnung).</li>
+            <li>Bei Bedarf <strong>„Bereits bezahlt“</strong> aktivieren → Rechnung wird als <em>BEZAHLT</em> markiert (mit Datum) und statt „zahlbar bis“ erscheint der Bezahlt-Hinweis.</li>
+            <li>Zu den <a href="#results">Ergebnissen</a> springen und <strong>Kundenangebot drucken</strong> oder <strong>Rechnung drucken</strong> wählen.</li>
+          </ol>
+          <p><em>Hinweise:</em> Dieser Rechner erzeugt stets ein Angebot/eine Rechnung für genau eine kalkulierte Position. Sammelpositionen sind nicht vorgesehen.</p>
+        </details>
+
+        <details>
+          <summary>Drucken</summary>
+          <ul>
+            <li>Im Browser-Druckdialog bitte Kopf-/Fußzeilen deaktivieren.</li>
+            <li>Alle PDFs sind bewusst 1-seitig ausgelegt (keine leeren Folgeseiten).</li>
+            <li>Responsive Layout: Ausgabe ist auf Desktop, Tablet und Smartphone lesbar.</li>
+          </ul>
+        </details>
+
+        <h2>Glossar</h2>
+        <dl class="glossary">
+          <dt>Angebot</dt>
+          <dd>Preisvorschlag mit Gültigkeitsdatum und Liefer-/Zahlungsbedingungen; ohne interne Kostenteile.</dd>
+
+          <dt>Rechnung</dt>
+          <dd>Forderungsdokument nach Leistungserbringung. Enthält Bankdaten und Zahlungsziel bzw. „Bezahlt“-Stempel bei aktivierter Option.</dd>
+
+          <dt>MwSt. (Mehrwertsteuer)</dt>
+          <dd>Umsatzsteuer (derzeit 19 %). Bei §19 UStG („Kleingewerbe“) wird keine MwSt. ausgewiesen.</dd>
+
+          <dt>§19 UStG</dt>
+          <dd>Umsatzsteuerbefreiung für Kleinunternehmer. Hinweis erscheint automatisch im Dokument.</dd>
+
+          <dt>Teilename</dt>
+          <dd>Produkt-/Positionsbezeichnung in Angebot/Rechnung (Position 1).</dd>
+
+          <dt>IBAN/BIC/Bank</dt>
+          <dd>Erforderlich für Rechnungen (Zahlungseingang).</dd>
+
+          <dt>Zahlungsziel</dt>
+          <dd>Frist (z. B. „14 Tage netto“), wird in der Rechnung ausgewiesen, sofern nicht „Bereits bezahlt“.</dd>
+
+          <dt>Bereits bezahlt</dt>
+          <dd>Option im Ergebnisbereich; ersetzt „zahlbar bis“ durch einen bezahlten Vermerk + Datum.</dd>
+        </dl>
+
+        <p class="back-top"><a href="#top">Nach oben</a></p>
+      </div>
+    </section>
   </main>
 
   <section class="calc-print print-only" id="printSummary" aria-hidden="true">

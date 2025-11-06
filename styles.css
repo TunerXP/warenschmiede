@@ -837,13 +837,27 @@ img {
   gap: var(--space-4);
 }
 
+.section-heading__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: var(--space-2);
+}
+
+.section-heading__actions .calc-share {
+  align-self: center;
+  align-items: flex-start;
+  margin-bottom: 0;
+}
+
 .section-heading__stack {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.section-heading--with-action .calc-share {
+.section-heading--with-action > .calc-share {
   align-self: flex-end;
 }
 
@@ -908,6 +922,31 @@ img {
   transform: translateY(0);
 }
 
+.tool-title {
+  margin-bottom: 0.25rem;
+}
+
+.anchor-nav {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.anchor-link {
+  font-size: 0.95rem;
+  text-decoration: none;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--border, #2d333b);
+  border-radius: 0.5rem;
+  color: inherit;
+}
+
+.anchor-link:hover,
+.anchor-link:focus-visible {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 @media (max-width: 47.99rem) {
   .section-heading--with-action {
     align-items: flex-start;
@@ -929,7 +968,7 @@ img {
     flex: 1 1 auto;
   }
 
-  .section-heading--with-action .calc-share {
+  .section-heading--with-action > .calc-share {
     align-self: flex-start;
   }
 
@@ -1459,6 +1498,63 @@ img {
 .guide-header h2 {
   flex: 1 1 auto;
   margin: 0;
+}
+
+.guide {
+  margin-top: 3rem;
+}
+
+.guide details {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border, #2d333b);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin: 0.75rem 0;
+}
+
+.guide details > summary {
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+.guide .glossary {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 0.5rem 1rem;
+}
+
+.guide .glossary dt {
+  font-weight: 700;
+}
+
+.guide .glossary dd {
+  margin: 0;
+}
+
+.back-top {
+  margin-top: 1.5rem;
+  text-align: right;
+}
+
+.back-top a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-top a:hover,
+.back-top a:focus-visible {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .guide .glossary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .guide .glossary dt {
+    text-align: left;
+  }
 }
 
 .pc-help-hero__inner {
@@ -5898,6 +5994,18 @@ body[print-mode='invoice'][data-paid='true'] .calc-print__total {
 
 /* Print */
 @media print {
+  .anchor-nav,
+  nav,
+  header,
+  footer,
+  .share,
+  .btn,
+  .controls,
+  .calc-share,
+  .section-heading__actions {
+    display: none !important;
+  }
+
   .site-header,
   .nav-toggle,
   .nav-menu,
@@ -5908,6 +6016,15 @@ body[print-mode='invoice'][data-paid='true'] .calc-print__total {
 
   .section {
     padding-block: var(--space-4);
+  }
+
+  #guide {
+    page-break-before: always;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
   }
 }
 
