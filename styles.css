@@ -4950,7 +4950,7 @@ a:focus-visible {
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: calc(var(--ws-print-page-height) - 24mm);
+  min-height: calc(var(--ws-print-page-height) - 30mm);
 }
 
 @media print {
@@ -5006,10 +5006,10 @@ a:focus-visible {
 
 .ws-print-stage .calc-print__page {
   margin: 0;
-  min-height: var(--ws-print-page-height);
+  min-height: calc(var(--ws-print-page-height) - 30mm);
   width: var(--ws-print-page-width);
   box-sizing: border-box;
-  padding: 12mm 12mm 20mm;
+  padding: 12mm 12mm 18mm;
   background: #fff;
 }
 
@@ -5033,12 +5033,17 @@ a:focus-visible {
   flex-direction: column;
   gap: 1.2rem;
   margin-bottom: 1.8rem;
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 
 .calc-print__offer-columns {
   display: grid;
   gap: 1.2rem;
   grid-template-columns: minmax(0, 1fr);
+  grid-auto-flow: row dense;
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 
 .calc-print__offer-column[hidden] {
@@ -5111,6 +5116,10 @@ a:focus-visible {
   .calc-print__offer-columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+.ws-print-stage .calc-print__offer-columns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .calc-print__title {
@@ -5362,6 +5371,12 @@ body[print-mode='invoice'] .calc-print__result-grid {
   margin-top: auto;
 }
 
+.print-footer-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
 .print-offer {
   margin-top: auto;
   display: flex;
@@ -5405,6 +5420,53 @@ body[print-mode='invoice'] .calc-print__result-grid {
   color: #1f2937;
 }
 
+.print-offer__table-wrapper {
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 12px;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.print-offer__table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.print-offer__table th,
+.print-offer__table td {
+  padding: 0.55rem 0.75rem;
+  font-size: 0.95rem;
+  color: #1f2937;
+}
+
+.print-offer__table thead th {
+  background: rgba(148, 163, 184, 0.2);
+  font-weight: 600;
+  text-align: left;
+}
+
+.print-offer__table td:nth-child(2) {
+  word-break: break-word;
+}
+
+.print-offer__table th:nth-child(3),
+.print-offer__table th:nth-child(4),
+.print-offer__table th:nth-child(5),
+.print-offer__table td:nth-child(3),
+.print-offer__table td:nth-child(4),
+.print-offer__table td:nth-child(5) {
+  text-align: right;
+}
+
+.print-offer__table th:first-child,
+.print-offer__table th:nth-child(2),
+.print-offer__table td:first-child,
+.print-offer__table td:nth-child(2) {
+  text-align: left;
+}
+
 .print-offer__note-card,
 .print-invoice__note-card {
   border: 1px solid rgba(148, 163, 184, 0.35);
@@ -5441,19 +5503,41 @@ body[print-mode='invoice'] .calc-print__result-grid {
   overflow: hidden;
   border: 1px solid rgba(148, 163, 184, 0.35);
   border-radius: 12px;
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 
 .print-invoice__table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .print-invoice__table th,
 .print-invoice__table td {
   padding: 0.55rem 0.75rem;
-  text-align: left;
   font-size: 0.95rem;
   color: #1f2937;
+}
+
+.print-invoice__table td:nth-child(2) {
+  word-break: break-word;
+}
+
+.print-invoice__table th:nth-child(3),
+.print-invoice__table th:nth-child(4),
+.print-invoice__table th:nth-child(5),
+.print-invoice__table td:nth-child(3),
+.print-invoice__table td:nth-child(4),
+.print-invoice__table td:nth-child(5) {
+  text-align: right;
+}
+
+.print-invoice__table th:first-child,
+.print-invoice__table th:nth-child(2),
+.print-invoice__table td:first-child,
+.print-invoice__table td:nth-child(2) {
+  text-align: left;
 }
 
 .print-invoice__table thead th {
@@ -5463,6 +5547,11 @@ body[print-mode='invoice'] .calc-print__result-grid {
 
 .print-invoice__table tfoot td {
   font-weight: 600;
+  text-align: right;
+}
+
+.print-invoice__table tfoot td:first-child {
+  text-align: left;
 }
 
 .print-invoice__table tfoot tr:not(:last-child) td {
@@ -5701,9 +5790,12 @@ body[print-mode='invoice'][data-paid='true'] .calc-print__total {
 
   .calc-print__page {
     box-sizing: border-box;
-    padding: 12mm 12mm 20mm;
+    padding: 12mm 12mm 18mm;
     background: #fff;
     page-break-inside: avoid;
+  }
+  .calc-print__offer-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .calc-print__offer,

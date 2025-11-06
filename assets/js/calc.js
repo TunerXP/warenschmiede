@@ -375,9 +375,14 @@
           var printOfferGrossValue = document.getElementById('printOfferGross');
           var printOfferDeliveryInline = document.getElementById('printOfferDeliveryInline');
           var printOfferPaymentInline = document.getElementById('printOfferPaymentInline');
+          var printOfferDescription = document.getElementById('printOfferDescription');
+          var printOfferQuantity = document.getElementById('printOfferQuantity');
+          var printOfferUnitPrice = document.getElementById('printOfferUnitPrice');
+          var printOfferLineTotal = document.getElementById('printOfferLineTotal');
           var printOfferNoteCard = document.getElementById('printOfferNoteCard');
           var printOfferNoteValue = document.getElementById('printOfferNoteValue');
           var printInvoiceDescription = document.getElementById('printInvoiceDescription');
+          var printInvoiceQuantity = document.getElementById('printInvoiceQuantity');
           var printInvoiceUnitPrice = document.getElementById('printInvoiceUnitPrice');
           var printInvoiceSubtotal = document.getElementById('printInvoiceSubtotal');
           var printInvoiceVat = document.getElementById('printInvoiceVat');
@@ -1306,6 +1311,36 @@
             return nameParts.join('_') + '.pdf';
           }
 
+          function buildDocumentTitleForMode(mode, state) {
+            if (!mode || !state) {
+              return null;
+            }
+            var labelMap = {
+              offer: 'Angebot',
+              invoice: 'Rechnung'
+            };
+            var label = labelMap[mode];
+            if (!label) {
+              return null;
+            }
+            var partSegment = normalizeFileNamePart(state.partName);
+            var offerMeta = state.offer && state.offer.meta ? state.offer.meta : {};
+            var invoiceMeta = state.offer && state.offer.invoice ? state.offer.invoice : {};
+            var rawNumber = mode === 'invoice' ? invoiceMeta.number : offerMeta.number;
+            var numberSegment = rawNumber ? normalizeFileNamePart(rawNumber) : '';
+            var baseDate = parseDateValue(mode === 'invoice' ? invoiceMeta.date : offerMeta.date) || new Date();
+            var dateSegment = formatDateForFile(baseDate);
+            var segments = ['Warenschmiede', label];
+            if (numberSegment) {
+              segments.push(numberSegment);
+            }
+            if (partSegment && partSegment !== 'unbenannt') {
+              segments.push(partSegment);
+            }
+            segments.push(dateSegment);
+            return segments.join('_');
+          }
+
           function setMaterialDefaults() {
             if (!materialSelect) return;
             var selected = materialSelect.value;
@@ -1501,10 +1536,10 @@
             if (!printFooterBrandElement) {
               return;
             }
-            var baseText = defaultPrintFooterText || 'Dieses Angebot wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt. Transparente Preise – Made in Germany.';
+            var baseText = defaultPrintFooterText || 'Warenschmiede · Transparente 3D-Druckpreise – Made in Germany.';
             var textMap = {
-              offer: baseText,
-              invoice: 'Diese Rechnung wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt. Transparente Preise – Made in Germany.',
+              offer: 'Warenschmiede · Angebot · Transparente 3D-Druckpreise – Made in Germany.',
+              invoice: 'Warenschmiede · Rechnung · Transparente 3D-Druckpreise – Made in Germany.',
               internal: baseText,
               default: baseText
             };
@@ -1627,9 +1662,26 @@
           }
 
           function triggerPrint(mode, paid) {
+            var state = recalculate();
+            if (!state && lastValidState) {
+              state = lastValidState;
+            }
             setBodyPrintMode(mode);
             setBodyPaidState(!!paid);
-            window.print();
+            var previousTitle = document.title;
+            var nextTitle = buildDocumentTitleForMode(mode, state);
+            if (nextTitle && previousTitle !== nextTitle) {
+              document.title = nextTitle;
+            }
+            try {
+              window.print();
+            } finally {
+              if (nextTitle && previousTitle !== nextTitle) {
+                setTimeout(function () {
+                  document.title = previousTitle;
+                }, 50);
+              }
+            }
           }
 
           function handleOfferPrint() {
@@ -2885,6 +2937,20 @@
             if (printOfferGrossValue) {
               printOfferGrossValue.textContent = formatter.format(state.gross);
             }
+            var offerDescription = state.hasPartName ? state.partName : '3D-Druck gemäß Spezifikation';
+            if (printOfferDescription) {
+              printOfferDescription.textContent = offerDescription;
+            }
+            if (printOfferQuantity) {
+              printOfferQuantity.textContent = '1';
+            }
+            var offerLineAmount = state.net;
+            if (printOfferUnitPrice) {
+              printOfferUnitPrice.textContent = formatter.format(offerLineAmount);
+            }
+            if (printOfferLineTotal) {
+              printOfferLineTotal.textContent = formatter.format(offerLineAmount);
+            }
             var offerMeta = state.offer && state.offer.meta ? state.offer.meta : {};
             if (printOfferDeliveryInline) {
               var deliveryText = offerMeta.deliveryTime != null ? offerMeta.deliveryTime.toString().trim() : '';
@@ -2908,7 +2974,22 @@
             }
           }
 
-          function resolveDueDateText(paymentTerms) {
+          function parseDateValue(value) {
+            if (!value) {
+              return null;
+            }
+            var trimmed = value.toString().trim();
+            if (!trimmed) {
+              return null;
+            }
+            var parsed = new Date(trimmed);
+            if (Number.isNaN(parsed.getTime())) {
+              return null;
+            }
+            return parsed;
+          }
+
+          function resolveDueDateText(paymentTerms, invoiceDateValue, fallbackDateValue) {
             if (!paymentTerms) {
               return '';
             }
@@ -2924,7 +3005,17 @@
             if (euMatch && euMatch[0]) {
               return euMatch[0];
             }
-            return raw;
+            var daysMatch = raw.match(/(\d{1,3})\s*(?:tage|tagen|tag|t|d)\b/i);
+            if (daysMatch && daysMatch[1]) {
+              var daysValue = parseInt(daysMatch[1], 10);
+              if (Number.isFinite(daysValue) && daysValue >= 0) {
+                var baseDate = parseDateValue(invoiceDateValue) || parseDateValue(fallbackDateValue) || new Date();
+                var dueDate = new Date(baseDate.getTime());
+                dueDate.setDate(dueDate.getDate() + daysValue);
+                return offerDateFormatter.format(dueDate);
+              }
+            }
+            return '';
           }
 
           function updateInvoicePrintExtras(state) {
@@ -2937,6 +3028,9 @@
             var descriptionText = state.hasPartName ? state.partName : '3D-Druck gemäß Spezifikation';
             if (printInvoiceDescription) {
               printInvoiceDescription.textContent = descriptionText;
+            }
+            if (printInvoiceQuantity) {
+              printInvoiceQuantity.textContent = '1';
             }
             if (printInvoiceUnitPrice) {
               printInvoiceUnitPrice.textContent = formatter.format(netAmount);
@@ -2970,7 +3064,8 @@
               }
             }
             var offerMeta = state.offer && state.offer.meta ? state.offer.meta : {};
-            var dueText = resolveDueDateText(offerMeta.paymentTerms || '');
+            var invoiceInfo = state.offer && state.offer.invoice ? state.offer.invoice : {};
+            var dueText = resolveDueDateText(offerMeta.paymentTerms || '', invoiceInfo.date, offerMeta.date);
             var isPaid = markInvoicePaidCheckbox ? !!markInvoicePaidCheckbox.checked : false;
             if (printInvoicePaidLine) {
               if (isPaid) {
