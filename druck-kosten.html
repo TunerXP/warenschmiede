@@ -694,7 +694,7 @@
               </div>
             </div>
             <p class="calc-results__print-note">Für ein sauberes Angebot bitte im Druckdialog Kopf- und Fußzeilen deaktivieren.</p>
-            <p class="print-hint" id="printPaidHint">Bei aktivem Haken wird die Rechnung als bezahlt markiert (mit Datum). Ohne Haken wird automatisch „Zahlbar bis“ aus den Zahlungsbedingungen gesetzt.</p>
+            <p class="print-hint" id="printPaidHint">Bei aktivem Haken wird die Rechnung als bezahlt markiert (mit Datum). Ohne Haken wird automatisch „Fällig bis“ aus den Zahlungsbedingungen gesetzt.</p>
             <p class="print-hint">Angebot/Rechnung beziehen sich immer auf genau diese eine Kalkulation. Sammelpositionen werden nicht unterstützt.</p>
             <p class="print-hint">Dieser Rechner erzeugt Angebot/Rechnung für <strong>eine</strong> kalkulierte Position. Sammelpositionen werden nicht unterstützt.</p>
             <p class="calc-results__error" id="invoiceError" role="alert" hidden></p>
@@ -1090,11 +1090,34 @@
           </dl>
           <p class="print-offer__line">Lieferzeit: <span id="printOfferDeliveryInline">–</span></p>
         </div>
+        <div class="print-offer__table-wrapper">
+          <table class="print-offer__table">
+            <thead>
+              <tr>
+                <th scope="col">Pos.</th>
+                <th scope="col">Beschreibung</th>
+                <th scope="col">Menge</th>
+                <th scope="col">Einzelpreis</th>
+                <th scope="col">Summe</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td id="printOfferDescription">–</td>
+                <td id="printOfferQuantity">1</td>
+                <td id="printOfferUnitPrice">0,00&nbsp;€</td>
+                <td id="printOfferLineTotal">0,00&nbsp;€</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <p class="print-offer__line">Zahlungsbedingungen: <span id="printOfferPaymentInline">–</span></p>
         <aside class="print-offer__note-card" id="printOfferNoteCard" hidden aria-labelledby="printOfferNoteTitle">
           <h2 class="print-offer__note-title" id="printOfferNoteTitle">Notiz</h2>
           <p class="print-offer__note-text" id="printOfferNoteValue"></p>
         </aside>
+        <p class="print-footer-note offer-only">Unverbindliches Angebot – Preise in Euro.</p>
         <p class="print-branding offer-only">Dieses Angebot wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt. Transparente Preise – Made in Germany.</p>
       </section>
 
@@ -1115,8 +1138,8 @@
             <tbody>
               <tr>
                 <td>1</td>
-                <td id="printInvoiceDescription">3D-Druck gemäß Spezifikation</td>
-                <td>1</td>
+                <td id="printInvoiceDescription">–</td>
+                <td id="printInvoiceQuantity">1</td>
                 <td id="printInvoiceUnitPrice">0,00&nbsp;€</td>
                 <td id="printInvoiceNet">0,00&nbsp;€</td>
               </tr>
@@ -1140,13 +1163,14 @@
         </div>
         <div class="print-invoice__payment" id="printInvoicePayment">
           <p class="print-invoice__payment-line print-invoice__payment-paid" id="printInvoicePaidLine" hidden>Bereits bezahlt am <span id="printInvoicePaidDate">–</span></p>
-          <p class="print-invoice__payment-line print-invoice__payment-due" id="printInvoiceDueLine">Zahlbar bis: <span id="printInvoiceDueDate">–</span></p>
+          <p class="print-invoice__payment-line print-invoice__payment-due" id="printInvoiceDueLine">Fällig bis <span id="printInvoiceDueDate">–</span></p>
         </div>
         <aside class="print-invoice__note-card" id="printInvoiceNoteCard" hidden aria-labelledby="printInvoiceNoteTitle">
           <h2 class="print-invoice__note-title" id="printInvoiceNoteTitle">Notiz</h2>
           <p class="print-invoice__note-text" id="printInvoiceNoteValue"></p>
         </aside>
-        <p class="print-branding invoice-only">Dieses Angebot wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt. Transparente Preise – Made in Germany.</p>
+        <p class="print-footer-note invoice-only">Bitte bei Überweisungen die Rechnungsnummer angeben.</p>
+        <p class="print-branding invoice-only">Diese Rechnung wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt. Transparente Preise – Made in Germany.</p>
       </section>
 
     </div>
@@ -1297,7 +1321,7 @@
     </div>
 
     <footer id="ws-print-footer" class="print-only">
-      <span class="ws-brand">Dieses Angebot wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt. Transparente Preise – Made in Germany.</span>
+      <span class="ws-brand">Warenschmiede · Transparente 3D-Druckpreise – Made in Germany.</span>
       <span class="ws-pageno"></span>
     </footer>
   </section>
