@@ -986,7 +986,7 @@
 
       <section class="calc-print__offer" aria-labelledby="printOfferHeading">
         <h2 class="sr-only" id="printOfferHeading">Angebotskopf</h2>
-        <div class="calc-print__offer-columns">
+        <div class="calc-print__offer-columns header-grid">
           <div class="calc-print__offer-column pdf-card" aria-labelledby="printOfferVendorTitle" data-offer-column="vendor">
             <h3 class="calc-print__offer-heading" id="printOfferVendorTitle">Anbieter</h3>
             <dl class="calc-print__offer-list">
@@ -1084,10 +1084,6 @@
         <div class="calc-print__result-grid">
           <section class="calc-print__summary" aria-labelledby="printSummaryHeading">
             <h2 class="sr-only" id="printSummaryHeading">Kostenübersicht</h2>
-            <div class="calc-print__total">
-              <p class="calc-print__lead">Endsumme <span class="calc-print__total-note" id="printTotalContext"></span></p>
-              <p class="calc-print__total-value" id="printTotal">0,00&nbsp;€</p>
-            </div>
             <p class="calc-print__vat-note" id="printVatNote">Hinweis: §19 UStG – keine Umsatzsteuer.</p>
             <div class="calc-print__groups internal-only">
               <div class="calc-print__group" role="group" aria-label="Variable Kosten">
@@ -1166,19 +1162,7 @@
 
       <section class="print-offer offer-only" aria-labelledby="printOfferDetailsHeading">
         <h2 class="sr-only" id="printOfferDetailsHeading">Details zum Angebot</h2>
-        <div class="print-offer__summary">
-          <dl class="print-offer__totals">
-            <div class="print-offer__item">
-              <dt>Gesamtkosten (netto)</dt>
-              <dd id="printOfferNet">0,00&nbsp;€</dd>
-            </div>
-            <div class="print-offer__item">
-              <dt>Gesamtkosten (brutto)</dt>
-              <dd id="printOfferGross">0,00&nbsp;€</dd>
-            </div>
-          </dl>
-          <p class="print-offer__line">Lieferzeit: <span id="printOfferDeliveryInline">–</span></p>
-        </div>
+        <p class="print-offer__line">Lieferzeit: <span id="printOfferDeliveryInline">–</span></p>
         <div class="print-offer__table-wrapper">
           <table class="print-offer__table">
             <thead>
@@ -1199,6 +1183,20 @@
                 <td id="printOfferLineTotal">0,00&nbsp;€</td>
               </tr>
             </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4">Summe (netto)</td>
+                <td id="printOfferNet">0,00&nbsp;€</td>
+              </tr>
+              <tr id="printOfferVatRow" hidden aria-hidden="true">
+                <td colspan="4">MwSt.</td>
+                <td id="printOfferVat">0,00&nbsp;€</td>
+              </tr>
+              <tr>
+                <td colspan="4">Summe (brutto)</td>
+                <td id="printOfferGross">0,00&nbsp;€</td>
+              </tr>
+            </tfoot>
           </table>
         </div>
         <p class="print-offer__line">Zahlungsbedingungen: <span id="printOfferPaymentInline">–</span></p>

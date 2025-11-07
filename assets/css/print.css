@@ -24,6 +24,12 @@
   align-items: stretch;
 }
 
+.print-doc .header-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
 .pdf-card {
   border: 1px solid rgba(15, 23, 42, 0.14);
   border-radius: 12px;
@@ -415,6 +421,10 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
     column-rule: none !important;
   }
 
+  .print-doc .header-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  }
+
   .page,
   .druckseite,
   .calc-print__page,
@@ -464,4 +474,49 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
   .print-invoice__table {
     display: table !important;
   }
+}
+.print-doc .calc-print__total {
+  display: none !important;
+}
+
+.print-doc .calc-print__total + .calc-print__vat-note {
+  margin-top: calc(0.35rem * var(--print-compact));
+}
+
+.print-offer__table tfoot td,
+.print-invoice__table tfoot td {
+  font-weight: 600;
+}
+
+.print-offer__table tfoot td:first-child,
+.print-invoice__table tfoot td:first-child {
+  text-align: left;
+}
+
+.print-offer__table tfoot td:last-child,
+.print-invoice__table tfoot td:last-child {
+  text-align: right;
+}
+
+.print-offer__table tfoot tr:not(:last-child) td,
+.print-invoice__table tfoot tr:not(:last-child) td {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.print-offer__table tfoot td {
+  font-size: calc(0.95rem * var(--print-compact));
+}
+
+.print-doc table,
+.print-doc tr,
+.print-doc td,
+.print-doc th {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.print-doc canvas,
+.print-doc svg {
+  break-inside: avoid;
+  page-break-inside: avoid;
 }

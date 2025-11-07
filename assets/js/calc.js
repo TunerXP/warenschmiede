@@ -423,6 +423,8 @@
           var printFixedCostInputOutput = document.getElementById('printFixedCostInput');
           var printDiscountPercentOutput = document.getElementById('printDiscountPercent');
           var printOfferNetValue = document.getElementById('printOfferNet');
+          var printOfferVatValue = document.getElementById('printOfferVat');
+          var printOfferVatRow = document.getElementById('printOfferVatRow');
           var printOfferGrossValue = document.getElementById('printOfferGross');
           var printOfferDeliveryInline = document.getElementById('printOfferDeliveryInline');
           var printOfferPaymentInline = document.getElementById('printOfferPaymentInline');
@@ -1684,24 +1686,41 @@
             }
           }
 
+          function setDocumentPrintMode(mode) {
+            if (document.documentElement) {
+              if (mode) {
+                document.documentElement.setAttribute('data-print-mode', mode);
+              } else {
+                document.documentElement.removeAttribute('data-print-mode');
+              }
+            }
+          }
+
           function setBodyPrintMode(mode) {
-            if (!bodyElement) {
-              return;
+            if (bodyElement) {
+              if (mode) {
+                bodyElement.setAttribute('print-mode', mode);
+              } else {
+                bodyElement.removeAttribute('print-mode');
+              }
             }
-            if (mode) {
-              bodyElement.setAttribute('print-mode', mode);
-            } else {
-              bodyElement.removeAttribute('print-mode');
-            }
+            setDocumentPrintMode(mode);
             updatePrintTitleForMode(mode);
             updatePrintFooterForMode(mode);
           }
 
           function setBodyPaidState(paid) {
-            if (!bodyElement) {
-              return;
+            var paidValue = paid ? 'true' : 'false';
+            if (bodyElement) {
+              bodyElement.dataset.paid = paidValue;
             }
-            bodyElement.dataset.paid = paid ? 'true' : 'false';
+            if (document.documentElement) {
+              if (paid) {
+                document.documentElement.setAttribute('data-paid', 'true');
+              } else {
+                document.documentElement.removeAttribute('data-paid');
+              }
+            }
           }
 
           function setPrintAttribute(mode) {
@@ -3733,6 +3752,15 @@
             if (printOfferNetValue) {
               printOfferNetValue.textContent = formatter.format(state.net);
             }
+            var vatAmount = state.vatIncluded ? Math.max(state.gross - state.net, 0) : 0;
+            if (printOfferVatValue) {
+              printOfferVatValue.textContent = formatter.format(vatAmount);
+            }
+            if (printOfferVatRow) {
+              var showVat = state.vatIncluded && vatAmount > 0.0005;
+              printOfferVatRow.hidden = !showVat;
+              printOfferVatRow.setAttribute('aria-hidden', showVat ? 'false' : 'true');
+            }
             if (printOfferGrossValue) {
               printOfferGrossValue.textContent = formatter.format(state.gross);
             }
@@ -5064,6 +5092,7 @@
 
           window.addEventListener('afterprint', function () {
             setPrintAttribute(null);
+            setDocumentPrintMode(null);
             clearInvoiceError();
             if (pendingPrintTitle !== null) {
               document.title = originalDocumentTitle;
