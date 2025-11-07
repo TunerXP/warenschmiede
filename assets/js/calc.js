@@ -2836,9 +2836,12 @@
               bic: getOfferValue('vendorBic'),
               bank: getOfferValue('vendorBankName')
             };
+            var customerNameValue = getOfferValue('customerName');
+            var customerContactValue = getOfferValue('customerContact');
             var customer = {
-              firma: getOfferValue('customerName'),
-              ansprechpartner: getOfferValue('customerContact'),
+              firma: customerNameValue,
+              name: customerContactValue || customerNameValue,
+              ansprechpartner: customerContactValue,
               strasse: getOfferValue('customerStreet'),
               plz: customerPostal,
               ort: customerCity,
@@ -3212,13 +3215,134 @@
             }
           }
 
+          function sanitizeForFileName(value) {
+            if (!value) {
+              return '';
+            }
+            var text = value.toString().trim();
+            if (!text) {
+              return '';
+            }
+            var transliterated = text.replace(/[äÄöÖüÜß]/g, function (char) {
+              switch (char) {
+                case 'ä':
+                  return 'ae';
+                case 'Ä':
+                  return 'Ae';
+                case 'ö':
+                  return 'oe';
+                case 'Ö':
+                  return 'Oe';
+                case 'ü':
+                  return 'ue';
+                case 'Ü':
+                  return 'Ue';
+                case 'ß':
+                  return 'ss';
+                default:
+                  return '';
+              }
+            });
+            var asciiOnly = transliterated.replace(/[^0-9A-Za-z _-]/g, '');
+            var withUnderscores = asciiOnly.replace(/\s+/g, '_');
+            var collapsed = withUnderscores.replace(/_+/g, '_').replace(/^_+|_+$/g, '');
+            if (collapsed.length > 40) {
+              collapsed = collapsed.slice(0, 40);
+            }
+            return collapsed;
+          }
+
+          function buildSuggestedFileName(snapshot) {
+            var fallback = 'warenschmiede-save-' + formatNow() + '.json';
+            if (!snapshot || typeof snapshot !== 'object') {
+              return fallback;
+            }
+            var customer = snapshot.customer || {};
+            var docs = snapshot.docs || {};
+            var nummerRaw = docs.rechnungsNr || docs.angebotsNr || '';
+            var nummer = nummerRaw ? nummerRaw.toString().trim() : '';
+            if (nummer) {
+              nummer = nummer.replace(/[\/:*?"<>|]+/g, '_');
+            }
+            var kundeKurz = sanitizeForFileName(customer.firma || customer.name || '');
+            if (kundeKurz && nummer) {
+              return 'Kunde_' + kundeKurz + '__' + nummer + '.json';
+            }
+            if (nummer) {
+              return nummer + '.json';
+            }
+            return fallback;
+          }
+
+          function serializeSnapshot(snapshot) {
+            try {
+              return JSON.stringify(snapshot, null, 2);
+            } catch (error) {
+              console.error('Snapshot konnte nicht serialisiert werden', error);
+              return null;
+            }
+          }
+
           function saveCurrent() {
             var snapshot = collectState();
             if (!snapshot) {
               showToastMessage('Datei konnte nicht gespeichert werden.');
               return;
             }
-            var fileName = 'warenschmiede-save-' + formatNow() + '.json';
+            var fileName = buildSuggestedFileName(snapshot);
+            var serialized = serializeSnapshot(snapshot);
+            if (!serialized) {
+              showToastMessage('Datei konnte nicht gespeichert werden.');
+              return;
+            }
+            var hasFilePicker = typeof window !== 'undefined' && window && typeof window.showSaveFilePicker === 'function';
+            if (hasFilePicker) {
+              var pickerOptions = {
+                suggestedName: fileName,
+                types: [
+                  {
+                    description: 'Warenschmiede JSON',
+                    accept: {
+                      'application/json': ['.json']
+                    }
+                  }
+                ]
+              };
+              Promise.resolve()
+                .then(function () {
+                  return window.showSaveFilePicker(pickerOptions);
+                })
+                .then(function (handle) {
+                  if (!handle || typeof handle.createWritable !== 'function') {
+                    throw new Error('Ungültiges FileSystemHandle');
+                  }
+                  return handle.createWritable().then(function (writable) {
+                    return Promise.resolve()
+                      .then(function () {
+                        return writable.write(serialized);
+                      })
+                      .then(function () {
+                        return writable.close();
+                      })
+                      .then(function () {
+                        return handle;
+                      });
+                  });
+                })
+                .then(function (handle) {
+                  pushAutosave(snapshot);
+                  var resolvedName = handle && handle.name ? handle.name : fileName;
+                  showToastMessage('Ergebnis gespeichert (' + resolvedName + ').');
+                })
+                .catch(function (error) {
+                  var isAbort = error && (error.name === 'AbortError' || error.name === 'NotAllowedError');
+                  if (!isAbort) {
+                    console.error('Speichern über Datei-Dialog fehlgeschlagen', error);
+                  }
+                  showToastMessage('Speichern abgebrochen');
+                });
+              return;
+            }
             var success = downloadJson(snapshot, fileName);
             if (success) {
               pushAutosave(snapshot);
@@ -3232,6 +3356,7 @@
             if (!file) {
               return;
             }
+            var loadErrorMessage = 'Diese Datei konnte nicht geladen werden. Bitte eine Warenschmiede-Sicherung auswählen.';
             var reader = new FileReader();
             reader.onload = function () {
               try {
@@ -3242,14 +3367,15 @@
                   throw new Error('Ungültige Daten');
                 }
                 applyState(migrated);
-                showToastMessage('Daten geladen. Ergebnis neu berechnet.');
+                var displayName = file && file.name ? file.name : 'Datei';
+                showToastMessage('Geladen: ' + displayName);
               } catch (error) {
                 console.error('Laden der Kalkulation fehlgeschlagen', error);
-                showToastMessage('Datei konnte nicht gelesen werden.');
+                showToastMessage(loadErrorMessage);
               }
             };
             reader.onerror = function () {
-              showToastMessage('Datei konnte nicht gelesen werden.');
+              showToastMessage(loadErrorMessage);
             };
             reader.readAsText(file);
           }
