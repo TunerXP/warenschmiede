@@ -25,6 +25,96 @@
     };
   };
 
+  var PRINT_STORAGE_MARKER = '__wsPrint';
+  var PRINT_LOCAL_STORAGE_MAX_AGE = 1000 * 60 * 60; // 1 Stunde
+
+  function safeStorage(type) {
+    try {
+      var storage = window[type];
+      if (!storage) {
+        return null;
+      }
+      var testKey = '__ws_print_test__' + Math.random().toString(16).slice(2);
+      storage.setItem(testKey, '1');
+      storage.removeItem(testKey);
+      return storage;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function cleanupPrintStorageEntries(storage, now) {
+    if (!storage) {
+      return;
+    }
+    var cutoff = now - PRINT_LOCAL_STORAGE_MAX_AGE;
+    var keysToRemove = [];
+    for (var index = 0; index < storage.length; index++) {
+      var storageKey = storage.key(index);
+      if (!storageKey) {
+        continue;
+      }
+      var raw = storage.getItem(storageKey);
+      if (!raw) {
+        continue;
+      }
+      try {
+        var parsed = JSON.parse(raw);
+        if (parsed && parsed[PRINT_STORAGE_MARKER] === true) {
+          if (typeof parsed.createdAt !== 'number' || parsed.createdAt < cutoff) {
+            keysToRemove.push(storageKey);
+          }
+        }
+      } catch (error) {
+        // ignore invalid entries
+      }
+    }
+    if (keysToRemove.length) {
+      keysToRemove.forEach(function (key) {
+        storage.removeItem(key);
+      });
+    }
+  }
+
+  function createPrintStorageKey() {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+      return window.crypto.randomUUID();
+    }
+    return (
+      'ws-print-' +
+      Math.random().toString(36).slice(2) +
+      '-' +
+      Date.now().toString(36)
+    );
+  }
+
+  function persistPrintPayload(serialized) {
+    var key = createPrintStorageKey();
+    var session = safeStorage('sessionStorage');
+    if (session) {
+      session.setItem(key, serialized);
+      return { key: key };
+    }
+    var local = safeStorage('localStorage');
+    if (local) {
+      var now = Date.now();
+      cleanupPrintStorageEntries(local, now);
+      var storedValue = {
+        data: serialized,
+        createdAt: now,
+        marker: 'session-missing'
+      };
+      storedValue[PRINT_STORAGE_MARKER] = true;
+      local.setItem(key, JSON.stringify(storedValue));
+      return { key: key, storage: 'local' };
+    }
+    if (typeof Blob !== 'undefined' && typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function') {
+      var blob = new Blob([serialized], { type: 'application/json' });
+      return { blobUrl: URL.createObjectURL(blob) };
+    }
+    throw new Error('Druckdaten konnten nicht zwischengespeichert werden.');
+  }
+
   var buildOfferUrl = function () { return ''; };
   var buildInvoiceUrl = function () { return ''; };
   var buildResultUrl = function () { return ''; };
@@ -2978,25 +3068,6 @@
             };
           }
 
-          function base64UrlEncode(text) {
-            var input = text == null ? '' : String(text);
-            var binary = '';
-            if (typeof TextEncoder !== 'undefined') {
-              var bytes = new TextEncoder().encode(input);
-              for (var i = 0; i < bytes.length; i++) {
-                binary += String.fromCharCode(bytes[i]);
-              }
-            } else {
-              binary = unescape(encodeURIComponent(input));
-            }
-            var encoded = window.btoa(binary);
-            return encoded.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
-          }
-
-          function encodePrintPayload(payload) {
-            return base64UrlEncode(JSON.stringify(payload));
-          }
-
           function serializeCurrentState() {
             var snapshot = collectState();
             var state = lastValidState;
@@ -3024,9 +3095,7 @@
                 noteInvoice: state.notes && state.notes.invoice ? state.notes.invoice : ''
               }
             };
-            var params = new URLSearchParams();
-            params.set('data', encodePrintPayload(payload));
-            return params.toString();
+            return JSON.stringify(payload);
           }
 
           function applyState(snapshot) {
@@ -5144,33 +5213,54 @@
             }
           });
 
-          buildOfferUrl = function () {
-            clearInvoiceError();
-            var query = serializeCurrentState();
-            if (!query) {
+          function openPrintPath(path) {
+            var serialized = serializeCurrentState();
+            if (!serialized) {
               throw new Error('Keine Daten für die Druckansicht verfügbar.');
             }
-            return '/druck/angebot.html?' + query;
+            var persisted = persistPrintPayload(serialized);
+            if (persisted && persisted.blobUrl) {
+              return path + '#u=' + encodeURIComponent(persisted.blobUrl);
+            }
+            if (persisted && persisted.key) {
+              return path + '#k=' + persisted.key;
+            }
+            throw new Error('Druckdaten konnten nicht zwischengespeichert werden.');
+          }
+
+          buildOfferUrl = function () {
+            clearInvoiceError();
+            try {
+              return openPrintPath('/druck/angebot.html');
+            } catch (error) {
+              console.error('buildOfferUrl error', error);
+              window.alert(error && error.message ? error.message : 'Druckansicht konnte nicht geöffnet werden.');
+              return '';
+            }
           };
 
           buildInvoiceUrl = function () {
             if (!ensureInvoicePrintable()) {
               return '';
             }
-            var query = serializeCurrentState();
-            if (!query) {
-              throw new Error('Keine Daten für die Druckansicht verfügbar.');
+            try {
+              return openPrintPath('/druck/rechnung.html');
+            } catch (error) {
+              console.error('buildInvoiceUrl error', error);
+              window.alert(error && error.message ? error.message : 'Druckansicht konnte nicht geöffnet werden.');
+              return '';
             }
-            return '/druck/rechnung.html?' + query;
           };
 
           buildResultUrl = function () {
             clearInvoiceError();
-            var query = serializeCurrentState();
-            if (!query) {
-              throw new Error('Keine Daten für die Druckansicht verfügbar.');
+            try {
+              return openPrintPath('/druck/ergebnis.html');
+            } catch (error) {
+              console.error('buildResultUrl error', error);
+              window.alert(error && error.message ? error.message : 'Druckansicht konnte nicht geöffnet werden.');
+              return '';
             }
-            return '/druck/ergebnis.html?' + query + '&mode=full';
           };
 
           ensureNozzleDefaults();
