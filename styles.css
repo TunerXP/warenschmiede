@@ -5736,25 +5736,19 @@ body[print-mode='invoice'] .calc-print__result-grid {
   pointer-events: none;
 }
 
-body[print-mode='invoice'][data-paid='true'] .paid-stamp {
-  display: block !important;
+body[print-mode='invoice'][data-paid='true'] .paid-stamp,
+html[data-print-mode='invoice'][data-paid='true'] .paid-stamp {
+  display: flex !important;
   position: absolute;
-  top: 46%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-18deg);
-  width: 45%;
-  max-width: 320px;
-  padding: 0.45rem 0.6rem;
-  border: 0.18rem solid rgba(30, 64, 175, 0.45);
-  border-radius: 0.35rem;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-14deg);
+  font: 700 42px/1.1 system-ui, sans-serif;
+  color: #2e7d32;
+  opacity: 0.14;
   text-transform: uppercase;
-  text-align: center;
-  letter-spacing: 0.14rem;
-  font-size: 2.6rem;
-  line-height: 1;
-  color: rgba(15, 23, 42, 0.75);
-  background: transparent;
-  opacity: 0.15;
+  letter-spacing: 0.18rem;
 }
 
 body[print-mode='invoice'][data-paid='true'] .print-invoice__table,
