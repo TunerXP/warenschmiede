@@ -1,0 +1,62 @@
+/* --- Einheitliche Print-Basis --- */
+@page {
+  size: A4 portrait;
+  margin: 10mm;
+}
+
+html, body {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  background: #fff !important;
+}
+
+/* 1-Seiten-Canvas für Angebot/Rechnung */
+.print-page {
+  width: 190mm;          /* 210 - 2*10mm */
+  max-height: 277mm;     /* 297 - 2*10mm */
+  margin: 0 auto;
+  overflow: hidden;      /* zweite Seite verhindern */
+  box-shadow: none !important;
+  background: #fff;
+  border: none;
+}
+
+/* Nichts sticky/fixed im Druck */
+* { position: static !important; }
+
+/* Umbrüche vermeiden */
+.print-page, .print-page * {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* Sichtbarkeiten */
+.screen-only { display: none !important; }
+.print-only  { display: block !important; }
+
+/* Interne/Debug-Blöcke aus */
+.cost-breakdown,
+.meta-strip,
+.debug,
+.internal-only {
+  display: none !important;
+}
+
+/* Tabellen */
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 6px 8px; vertical-align: top; }
+tr, td, th { break-inside: avoid; }
+
+h1,h2,h3 { margin: 0 0 6px; }
+.section { margin: 8px 0; }
+
+/* dezenter Footer */
+.print-footer {
+  margin-top: 6mm;
+  font-size: 10px;
+  color: #666;
+}
+
+@media screen {
+  .print-page { /* im Screen egal */ }
+}

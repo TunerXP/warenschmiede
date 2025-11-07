@@ -1664,10 +1664,10 @@
             if (!printFooterBrandElement) {
               return;
             }
-            var baseText = defaultPrintFooterText || 'Warenschmiede · Transparente 3D-Druckpreise – Made in Germany.';
+            var baseText = defaultPrintFooterText || 'Dieses Dokument wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt. Transparente Preise – Made in Germany.';
             var textMap = {
-              offer: 'Warenschmiede · Angebot · Transparente 3D-Druckpreise – Made in Germany.',
-              invoice: 'Warenschmiede · Rechnung · Transparente 3D-Druckpreise – Made in Germany.',
+              offer: baseText,
+              invoice: baseText,
               internal: baseText,
               default: baseText
             };
