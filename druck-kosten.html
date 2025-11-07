@@ -36,6 +36,7 @@
     })();
   </script>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="/assets/print.css?v=1.0.7" media="print">
   <link rel="stylesheet" href="assets/css/print.css">
   <meta name="robots" content="index,follow">
 
@@ -977,7 +978,8 @@
   </main>
 
   <section class="calc-print print-only" id="printSummary" aria-hidden="true">
-    <div class="calc-print__page print-page" data-page="result">
+    <div class="print-page">
+      <div class="calc-print__page" data-page="result">
       <div class="calc-print__page-heading">
         <h1 class="calc-print__title">Angebot</h1>
         <p class="calc-print__part" id="printHeaderPartName" hidden>Teilename: <span id="printHeaderPartNameValue"></span></p>
@@ -1206,7 +1208,6 @@
           <p class="print-offer__note-text" id="printOfferNoteValue"></p>
         </aside>
         <p class="print-footer-note offer-only">Unverbindliches Angebot – Preise in Euro.</p>
-        <p class="print-branding offer-only">Dieses Angebot wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt. Transparente Preise – Made in Germany.</p>
       </section>
 
       <section class="print-invoice invoice-only" aria-labelledby="printInvoiceDetailsHeading">
@@ -1258,12 +1259,11 @@
           <p class="print-invoice__note-text" id="printInvoiceNoteValue"></p>
         </aside>
         <p class="print-footer-note invoice-only">Bitte bei Überweisungen die Rechnungsnummer angeben.</p>
-        <p class="print-branding invoice-only">Diese Rechnung wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt. Transparente Preise – Made in Germany.</p>
       </section>
 
-    </div>
-    <div class="calc-print__page calc-print__page--inputs print-page internal-only" data-page="inputs" id="printInputsSection">
-      <div class="calc-print__page-heading calc-print__page-heading--inputs">
+      </div>
+      <div class="calc-print__page calc-print__page--inputs internal-only" data-page="inputs" id="printInputsSection">
+        <div class="calc-print__page-heading calc-print__page-heading--inputs">
         <h2 class="calc-print__heading">Eingaben &amp; Parameter</h2>
         <p class="calc-print__section-note" id="printInputsPartName" hidden>Teilename: <span id="printInputsPartNameValue"></span></p>
       </div>
@@ -1408,10 +1408,10 @@
       </div>
     </div>
 
-    <footer id="ws-print-footer" class="print-only">
-      <span class="ws-brand">Warenschmiede · Transparente 3D-Druckpreise – Made in Germany.</span>
+    <div class="print-footer print-only" id="ws-print-footer">
+      <span class="ws-brand">Dieses Dokument wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt. Transparente Preise – Made in Germany.</span>
       <span class="ws-pageno"></span>
-    </footer>
+    </div>
   </section>
 
     <footer class="footer no-print">
