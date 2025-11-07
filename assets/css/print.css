@@ -17,8 +17,10 @@
   margin-bottom: calc(0.9rem * var(--print-compact));
 }
 
-.calc-print__offer-columns {
+.print-doc .calc-print__offer-columns {
+  display: grid;
   gap: calc(0.6rem * var(--print-compact));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: stretch;
 }
 
@@ -86,6 +88,20 @@
 
 .calc-print__offer-meta-item + .calc-print__offer-meta-item::before {
   color: rgba(148, 163, 184, 0.7);
+}
+
+body[print-mode='offer'] .print-doc .calc-print__total,
+body[print-mode='invoice'] .print-doc .calc-print__total {
+  display: none !important;
+}
+
+body[print-mode='offer'] .print-doc .calc-print__summary .calc-print__vat-note,
+body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note {
+  margin-top: 0;
+}
+
+.print-doc .calc-print__total + .calc-print__vat-note {
+  margin-top: calc(0.35rem * var(--print-compact));
 }
 
 .calc-print__note-card {
@@ -360,15 +376,17 @@
 }
 
 #ws-print-footer {
-  color: #64748b;
-  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #475569;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  gap: 0.6rem;
 }
 
 #ws-print-footer .ws-brand {
-  font-weight: 500;
-}
-
-#ws-print-footer .ws-pageno {
   font-weight: 500;
 }
 
@@ -427,8 +445,8 @@
     display: none !important;
   }
 
-  .calc-print__offer-columns {
-    grid-template-columns: minmax(0, 1fr) !important;
+  .print-doc .calc-print__offer-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
   html[data-print="result"] #printInputsSection,

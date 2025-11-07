@@ -5127,24 +5127,16 @@ a:focus-visible {
 #ws-print-footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1.2rem;
-  font-size: 11px;
-  color: #0f172a;
+  justify-content: center;
+  text-align: center;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  color: #475569;
   line-height: 1.4;
 }
 
-#ws-print-footer .ws-brand,
-#ws-print-footer .ws-pageno {
+#ws-print-footer .ws-brand {
   font-weight: 500;
-}
-
-#ws-print-footer .ws-pageno::before {
-  content: 'Seite ' counter(page) ' / ' counter(pages);
-}
-
-#ws-print-footer.ws-print-footer--manual .ws-pageno::before {
-  content: none;
 }
 
 .ws-print-stage {
@@ -5205,7 +5197,7 @@ a:focus-visible {
 .calc-print__offer-columns {
   display: grid;
   gap: 1.2rem;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-auto-flow: row dense;
   page-break-inside: avoid;
   break-inside: avoid;
@@ -5277,14 +5269,8 @@ a:focus-visible {
   color: #cbd5f5;
 }
 
-@media only screen and (min-width: 40rem) {
-  .calc-print__offer-columns {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 .ws-print-stage .calc-print__offer-columns {
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .calc-print__title {
@@ -5753,17 +5739,22 @@ body[print-mode='invoice'] .calc-print__result-grid {
 body[print-mode='invoice'][data-paid='true'] .paid-stamp {
   display: block !important;
   position: absolute;
-  top: 40%;
-  left: 35%;
-  transform: rotate(-15deg);
-  font-size: 4.5rem;
-  color: #444;
-  opacity: 0.12;
-  letter-spacing: 0.2rem;
-  border: 0.2rem solid #444;
-  padding: 0.3rem 0.8rem;
-  border-radius: 0.3rem;
+  top: 46%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-18deg);
+  width: 45%;
+  max-width: 320px;
+  padding: 0.45rem 0.6rem;
+  border: 0.18rem solid rgba(30, 64, 175, 0.45);
+  border-radius: 0.35rem;
   text-transform: uppercase;
+  text-align: center;
+  letter-spacing: 0.14rem;
+  font-size: 2.6rem;
+  line-height: 1;
+  color: rgba(15, 23, 42, 0.75);
+  background: transparent;
+  opacity: 0.15;
 }
 
 body[print-mode='invoice'][data-paid='true'] .print-invoice__table,
@@ -5774,8 +5765,18 @@ body[print-mode='invoice'][data-paid='true'] [data-offer-row='vendorBankName'] {
   opacity: 0.65;
 }
 
-body[print-mode='invoice'][data-paid='true'] .calc-print__total {
-  opacity: 0.7;
+body[print-mode='offer'] .print-doc .calc-print__total,
+body[print-mode='invoice'] .print-doc .calc-print__total {
+  display: none !important;
+}
+
+body[print-mode='offer'] .print-doc .calc-print__summary .calc-print__vat-note,
+body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note {
+  margin-top: 0;
+}
+
+.print-doc .calc-print__total + .calc-print__vat-note {
+  margin-top: 0.35rem;
 }
 
 .calc-print__section {

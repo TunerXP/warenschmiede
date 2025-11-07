@@ -78,7 +78,6 @@
           var resultChartToggle = document.getElementById('resultChartToggle');
           var chartNetTotalOutput = document.getElementById('chartNetTotal');
           var proStatusOutput = document.getElementById('proStatus');
-          var printResultButton = document.getElementById('printResultButton');
           var printFullButton = document.getElementById('printFullButton');
           var printOfferButton = document.getElementById('printOfferButton');
           var printInvoiceButton = document.getElementById('printInvoiceButton');
@@ -1301,20 +1300,28 @@
 
           function setPrintButtonsDisabled(disabled) {
             var isDisabled = !!disabled;
-            if (printResultButton) {
-              printResultButton.disabled = isDisabled;
-              if (isDisabled) {
-                printResultButton.setAttribute('aria-disabled', 'true');
-              } else {
-                printResultButton.removeAttribute('aria-disabled');
-              }
-            }
             if (printFullButton) {
               printFullButton.disabled = isDisabled;
               if (isDisabled) {
                 printFullButton.setAttribute('aria-disabled', 'true');
               } else {
                 printFullButton.removeAttribute('aria-disabled');
+              }
+            }
+            if (printOfferButton) {
+              printOfferButton.disabled = isDisabled;
+              if (isDisabled) {
+                printOfferButton.setAttribute('aria-disabled', 'true');
+              } else {
+                printOfferButton.removeAttribute('aria-disabled');
+              }
+            }
+            if (printInvoiceButton) {
+              printInvoiceButton.disabled = isDisabled;
+              if (isDisabled) {
+                printInvoiceButton.setAttribute('aria-disabled', 'true');
+              } else {
+                printInvoiceButton.removeAttribute('aria-disabled');
               }
             }
           }
@@ -2228,10 +2235,6 @@
               sequence = sequence.then(function () {
                 if (footer) {
                   page.appendChild(footer);
-                  var pageNumber = footer.querySelector('.ws-pageno');
-                  if (pageNumber) {
-                    pageNumber.textContent = 'Seite ' + (index + 1) + ' / ' + pages.length;
-                  }
                 }
                 return renderPageElement(page).then(function (canvas) {
                   canvases.push(canvas);
@@ -2245,20 +2248,12 @@
             return sequence.then(function () {
               if (footer) {
                 footer.classList.remove('ws-print-footer--manual');
-                var footerNumber = footer.querySelector('.ws-pageno');
-                if (footerNumber) {
-                  footerNumber.textContent = '';
-                }
               }
               cleanupStage(stage);
               return canvases;
             }).catch(function (error) {
               if (footer) {
                 footer.classList.remove('ws-print-footer--manual');
-                var footerNumber = footer.querySelector('.ws-pageno');
-                if (footerNumber) {
-                  footerNumber.textContent = '';
-                }
               }
               cleanupStage(stage);
               throw error;
@@ -4922,12 +4917,6 @@
               if (proModeEnabled && !materialDensityInput.disabled) {
                 materialDensityInput.focus();
               }
-            });
-          }
-
-          if (printResultButton) {
-            printResultButton.addEventListener('click', function () {
-              exportPdf('result');
             });
           }
 
