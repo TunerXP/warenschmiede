@@ -25,6 +25,45 @@
     };
   };
 
+  var buildOfferUrl = function () { return ''; };
+  var buildInvoiceUrl = function () { return ''; };
+  var buildResultUrl = function () { return ''; };
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var byId = function (id) {
+      return /** @type {HTMLButtonElement|null} */ (document.getElementById(id));
+    };
+    var offer = byId('btnOffer');
+    var invoice = byId('btnInvoice');
+    var result = byId('btnResult');
+
+    var openPrint = function (url) {
+      try {
+        if (!url) {
+          return;
+        }
+        var win = window.open(url, '_blank', 'noopener');
+        if (!win) {
+          window.alert('Pop-up blockiert – bitte Pop-ups erlauben.');
+        }
+      } catch (error) {
+        console.error('openPrint error', error);
+        var message = error && error.message ? error.message : 'Druckansicht konnte nicht geöffnet werden.';
+        window.alert(message);
+      }
+    };
+
+    offer && offer.addEventListener('click', function () {
+      openPrint(buildOfferUrl());
+    });
+    invoice && invoice.addEventListener('click', function () {
+      openPrint(buildInvoiceUrl());
+    });
+    result && result.addEventListener('click', function () {
+      openPrint(buildResultUrl());
+    });
+  });
+
   function initCalc() {
           var calcGrid = document.querySelector('.calc-grid');
           var proToggle = document.querySelector('#proToggle,[data-pro-toggle]');
@@ -78,9 +117,9 @@
           var resultChartToggle = document.getElementById('resultChartToggle');
           var chartNetTotalOutput = document.getElementById('chartNetTotal');
           var proStatusOutput = document.getElementById('proStatus');
-          var printFullButton = document.getElementById('printFullButton');
-          var printOfferButton = document.getElementById('printOfferButton');
-          var printInvoiceButton = document.getElementById('printInvoiceButton');
+          var printFullButton = document.getElementById('btnResult');
+          var printOfferButton = document.getElementById('btnOffer');
+          var printInvoiceButton = document.getElementById('btnInvoice');
           var markInvoicePaidCheckbox = document.getElementById('markInvoicePaid');
           var paidDateInput = document.getElementById('paidDate');
           var invoiceErrorOutput = document.getElementById('invoiceError');
@@ -1815,35 +1854,7 @@
             }
           }
 
-          function triggerPrint(mode, paid) {
-            var state = recalculate();
-            if (!state && lastValidState) {
-              state = lastValidState;
-            }
-            setBodyPrintMode(mode);
-            setBodyPaidState(!!paid);
-            var previousTitle = document.title;
-            var nextTitle = buildDocumentTitleForMode(mode, state);
-            if (nextTitle && previousTitle !== nextTitle) {
-              document.title = nextTitle;
-            }
-            try {
-              window.print();
-            } finally {
-              if (nextTitle && previousTitle !== nextTitle) {
-                setTimeout(function () {
-                  document.title = previousTitle;
-                }, 50);
-              }
-            }
-          }
-
-          function handleOfferPrint() {
-            clearInvoiceError();
-            triggerPrint('offer', false);
-          }
-
-          function handleInvoicePrint() {
+          function ensureInvoicePrintable() {
             clearInvoiceError();
             var requiredBankFields = [
               { key: 'vendorIban', label: 'IBAN' },
@@ -1868,7 +1879,7 @@
               if (firstMissing && offerFieldMap[firstMissing.key] && typeof offerFieldMap[firstMissing.key].focus === 'function') {
                 offerFieldMap[firstMissing.key].focus();
               }
-              return;
+              return false;
             }
             ensureInvoiceNumber();
             ensureInvoiceDates();
@@ -1877,7 +1888,7 @@
             if (isPaid && paidDateInput && !paidDateInput.value) {
               paidDateInput.value = formatDateForInputValue(new Date());
             }
-            triggerPrint('invoice', isPaid);
+            return true;
           }
 
           var recalcThrottleDelay = 0;
@@ -2965,6 +2976,57 @@
               docs: docs,
               calc: calc
             };
+          }
+
+          function base64UrlEncode(text) {
+            var input = text == null ? '' : String(text);
+            var binary = '';
+            if (typeof TextEncoder !== 'undefined') {
+              var bytes = new TextEncoder().encode(input);
+              for (var i = 0; i < bytes.length; i++) {
+                binary += String.fromCharCode(bytes[i]);
+              }
+            } else {
+              binary = unescape(encodeURIComponent(input));
+            }
+            var encoded = window.btoa(binary);
+            return encoded.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+          }
+
+          function encodePrintPayload(payload) {
+            return base64UrlEncode(JSON.stringify(payload));
+          }
+
+          function serializeCurrentState() {
+            var snapshot = collectState();
+            var state = lastValidState;
+            if (!snapshot || !state) {
+              throw new Error('Aktuelle Kalkulation konnte nicht ermittelt werden.');
+            }
+            var docs = snapshot.docs || {};
+            var offerState = state.offer || {};
+            var offerMeta = offerState.meta || {};
+            var invoiceMeta = offerState.invoice || {};
+            var chartData = getCostChartData(state);
+            var payload = {
+              version: typeof calcAppVersion === 'string' ? calcAppVersion : 'v1',
+              generatedAt: new Date().toISOString(),
+              state: state,
+              snapshot: snapshot,
+              computed: {
+                vatAmount: state.vatIncluded ? Math.max(state.gross - state.net, 0) : 0,
+                dueDateText: resolveDueDateText(offerMeta.paymentTerms || '', invoiceMeta.date || '', offerMeta.date || ''),
+                paid: docs.bereitsBezahlt === true,
+                paidDate: docs.bezahltAm || '',
+                chart: chartData,
+                chartEnabled: state.chartEnabled && chartData && chartData.hasData,
+                noteOffer: state.notes && state.notes.offer ? state.notes.offer : '',
+                noteInvoice: state.notes && state.notes.invoice ? state.notes.invoice : ''
+              }
+            };
+            var params = new URLSearchParams();
+            params.set('data', encodePrintPayload(payload));
+            return params.toString();
           }
 
           function applyState(snapshot) {
@@ -4948,24 +5010,6 @@
             });
           }
 
-          if (printFullButton) {
-            printFullButton.addEventListener('click', function () {
-              exportPdf('full');
-            });
-          }
-
-          if (printOfferButton) {
-            printOfferButton.addEventListener('click', function () {
-              handleOfferPrint();
-            });
-          }
-
-          if (printInvoiceButton) {
-            printInvoiceButton.addEventListener('click', function () {
-              handleInvoicePrint();
-            });
-          }
-
           if (saveButtons && saveButtons.length) {
             saveButtons.forEach(function (button) {
               button.addEventListener('click', function (event) {
@@ -5099,6 +5143,35 @@
               pendingPrintTitle = null;
             }
           });
+
+          buildOfferUrl = function () {
+            clearInvoiceError();
+            var query = serializeCurrentState();
+            if (!query) {
+              throw new Error('Keine Daten für die Druckansicht verfügbar.');
+            }
+            return '/druck/angebot.html?' + query;
+          };
+
+          buildInvoiceUrl = function () {
+            if (!ensureInvoicePrintable()) {
+              return '';
+            }
+            var query = serializeCurrentState();
+            if (!query) {
+              throw new Error('Keine Daten für die Druckansicht verfügbar.');
+            }
+            return '/druck/rechnung.html?' + query;
+          };
+
+          buildResultUrl = function () {
+            clearInvoiceError();
+            var query = serializeCurrentState();
+            if (!query) {
+              throw new Error('Keine Daten für die Druckansicht verfügbar.');
+            }
+            return '/druck/ergebnis.html?' + query + '&mode=full';
+          };
 
           ensureNozzleDefaults();
           getNozzleSelection();

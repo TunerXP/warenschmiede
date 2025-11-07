@@ -1,3 +1,55 @@
+
+:root {
+  color-scheme: light;
+  --print-compact: 0.95;
+}
+
+.print-body {
+  margin: 0;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+}
+
+.print-doc {
+  width: min(210mm, 100%);
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
+  overflow: hidden;
+}
+
+.calc-print__page {
+  padding: 18mm;
+  display: grid;
+  gap: 12mm;
+  background: #fff;
+}
+
+.print-page + .print-page .calc-print__page {
+  border-top: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+.print-error {
+  padding: 4rem 3rem;
+  text-align: center;
+  color: #0f172a;
+}
+
+.print-error h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.9rem;
+}
+
+.print-error p {
+  margin: 0;
+  font-size: 1rem;
+  color: #475569;
+}
+
 /* Print-specific refinements for the cost calculator */
 
 .calc-print__page-heading {
@@ -96,18 +148,175 @@
   color: rgba(148, 163, 184, 0.7);
 }
 
-body[print-mode='offer'] .print-doc .calc-print__total,
-body[print-mode='invoice'] .print-doc .calc-print__total {
-  display: none !important;
+.calc-print__result-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+  gap: 18px 24px;
+  align-items: start;
 }
 
-body[print-mode='offer'] .print-doc .calc-print__summary .calc-print__vat-note,
-body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note {
-  margin-top: 0;
+.calc-print__result-grid--single {
+  grid-template-columns: minmax(0, 1fr);
 }
 
-.print-doc .calc-print__total + .calc-print__vat-note {
-  margin-top: calc(0.35rem * var(--print-compact));
+.calc-print__summary {
+  display: grid;
+  gap: 12px;
+  padding: 18px 20px;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.92), rgba(255, 255, 255, 0.96));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  page-break-inside: avoid;
+}
+
+.calc-print__chart {
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 16px;
+  padding: 18px 20px;
+  background: rgba(241, 245, 249, 0.6);
+  display: grid;
+  gap: 12px;
+  page-break-inside: avoid;
+}
+
+.calc-print__chart-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.calc-print__chart-bars {
+  display: grid;
+  gap: 10px;
+}
+
+.calc-print__bar {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.92);
+  display: grid;
+  gap: 6px;
+}
+
+.calc-print__bar-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.calc-print__bar-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.25);
+  overflow: hidden;
+}
+
+.calc-print__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2563eb, #38bdf8);
+}
+
+.calc-print__bar--discount .calc-print__bar-fill {
+  background: linear-gradient(90deg, #ef4444, #f97316);
+}
+
+.calc-print__chart-note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.calc-print__chart-hint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.print-offer__line {
+  margin: 0 0 0.6rem;
+  font-size: 0.92rem;
+  color: #0f172a;
+}
+
+.print-footer-note {
+  margin: 1.4rem 0 0;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.print-offer__table-wrapper,
+.print-invoice__table-wrapper {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.print-offer__table,
+.print-invoice__table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.print-offer__table th,
+.print-invoice__table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #475569;
+  background: rgba(226, 232, 240, 0.5);
+  font-weight: 600;
+}
+
+.print-offer__table td,
+.print-invoice__table td {
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  color: #0f172a;
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.print-offer__table td:last-child,
+.print-invoice__table td:last-child {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.print-offer__table tfoot td,
+.print-invoice__table tfoot td {
+  font-weight: 600;
+  font-size: 0.95rem;
+  background: rgba(241, 245, 249, 0.65);
+}
+
+.paid-stamp {
+  justify-self: center;
+  align-self: center;
+  padding: 10px 24px;
+  border-radius: 14px;
+  border: 3px solid rgba(16, 185, 129, 0.9);
+  color: #047857;
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: 0.3rem;
+  text-transform: uppercase;
+  background: rgba(167, 243, 208, 0.35);
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.2) inset;
+}
+
+.print-footer {
+  padding: 16px 24px 28px;
+  background: rgba(241, 245, 249, 0.7);
 }
 
 .calc-print__note-card {
@@ -186,10 +395,6 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
   .calc-print__note-text {
     line-height: 1.35;
   }
-}
-
-.calc-print__chart-hint {
-  display: none;
 }
 
 .calc-print__groups {
@@ -396,6 +601,16 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
   font-weight: 500;
 }
 
+.print-doc table,
+.print-doc tr,
+.print-doc td,
+.print-doc th,
+.print-doc canvas,
+.print-doc svg {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
 @media print {
   @page {
     size: A4;
@@ -419,6 +634,18 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
     column-count: 1 !important;
     column-gap: 0 !important;
     column-rule: none !important;
+  }
+
+  .print-body {
+    padding: 0;
+    display: block;
+    background: #fff;
+  }
+
+  .print-doc {
+    width: 100%;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .print-doc .header-grid {
@@ -459,12 +686,6 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
-  html[data-print="result"] #printInputsSection,
-  html[data-print="result"] .calc-print__page--inputs,
-  html[data-print="result"] .calc-print__inputs-grid {
-    display: none !important;
-  }
-
   .print-offer__table-wrapper,
   .print-invoice__table-wrapper {
     display: block !important;
@@ -474,49 +695,4 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
   .print-invoice__table {
     display: table !important;
   }
-}
-.print-doc .calc-print__total {
-  display: none !important;
-}
-
-.print-doc .calc-print__total + .calc-print__vat-note {
-  margin-top: calc(0.35rem * var(--print-compact));
-}
-
-.print-offer__table tfoot td,
-.print-invoice__table tfoot td {
-  font-weight: 600;
-}
-
-.print-offer__table tfoot td:first-child,
-.print-invoice__table tfoot td:first-child {
-  text-align: left;
-}
-
-.print-offer__table tfoot td:last-child,
-.print-invoice__table tfoot td:last-child {
-  text-align: right;
-}
-
-.print-offer__table tfoot tr:not(:last-child) td,
-.print-invoice__table tfoot tr:not(:last-child) td {
-  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
-}
-
-.print-offer__table tfoot td {
-  font-size: calc(0.95rem * var(--print-compact));
-}
-
-.print-doc table,
-.print-doc tr,
-.print-doc td,
-.print-doc th {
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-
-.print-doc canvas,
-.print-doc svg {
-  break-inside: avoid;
-  page-break-inside: avoid;
 }
