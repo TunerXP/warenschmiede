@@ -123,34 +123,217 @@
     return postalValue + ' ' + cityValue;
   }
 
-  function parseJsonFromQuery() {
-    var params = new URLSearchParams(window.location.search);
-    var encoded = params.get('data');
-    if (!encoded) {
-      throw new Error('Keine Druckdaten gefunden.');
-    }
-    var normalized = encoded.replace(/-/g, '+').replace(/_/g, '/');
-    var padding = normalized.length % 4;
-    if (padding) {
-      normalized += '='.repeat(4 - padding);
-    }
-    var binary = window.atob(normalized);
-    var length = binary.length;
-    var bytes = new Uint8Array(length);
-    for (var i = 0; i < length; i++) {
-      bytes[i] = binary.charCodeAt(i);
-    }
-    var json;
-    if (typeof TextDecoder !== 'undefined') {
-      json = new TextDecoder().decode(bytes);
-    } else {
-      var escaped = '';
-      for (var j = 0; j < bytes.length; j++) {
-        escaped += '%' + ('00' + bytes[j].toString(16)).slice(-2);
+  var PRINT_STORAGE_MARKER = '__wsPrint';
+  var PRINT_LOCAL_STORAGE_MAX_AGE = 1000 * 60 * 60;
+
+  function safeStorage(type) {
+    try {
+      var storage = window[type];
+      if (!storage) {
+        return null;
       }
-      json = decodeURIComponent(escaped);
+      var testKey = '__ws_print_test__' + Math.random().toString(16).slice(2);
+      storage.setItem(testKey, '1');
+      storage.removeItem(testKey);
+      return storage;
+    } catch (error) {
+      return null;
     }
-    return JSON.parse(json);
+  }
+
+  function cleanupLocalStorage(storage, now) {
+    if (!storage) {
+      return;
+    }
+    var cutoff = now - PRINT_LOCAL_STORAGE_MAX_AGE;
+    var keysToRemove = [];
+    for (var index = 0; index < storage.length; index++) {
+      var storageKey = storage.key(index);
+      if (!storageKey) {
+        continue;
+      }
+      var raw = storage.getItem(storageKey);
+      if (!raw) {
+        continue;
+      }
+      try {
+        var parsed = JSON.parse(raw);
+        if (parsed && parsed[PRINT_STORAGE_MARKER] === true) {
+          if (typeof parsed.createdAt !== 'number' || parsed.createdAt < cutoff) {
+            keysToRemove.push(storageKey);
+          }
+        }
+      } catch (error) {
+        // ignore unrelated entries
+      }
+    }
+    if (keysToRemove.length) {
+      keysToRemove.forEach(function (key) {
+        storage.removeItem(key);
+      });
+    }
+  }
+
+  function readFromSessionStorage(key) {
+    var storage = safeStorage('sessionStorage');
+    if (!storage) {
+      return null;
+    }
+    var value = storage.getItem(key);
+    if (value != null) {
+      storage.removeItem(key);
+    }
+    return value;
+  }
+
+  function readFromLocalStorage(key) {
+    var storage = safeStorage('localStorage');
+    if (!storage) {
+      return null;
+    }
+    cleanupLocalStorage(storage, Date.now());
+    var raw = storage.getItem(key);
+    if (!raw) {
+      return null;
+    }
+    try {
+      var parsed = JSON.parse(raw);
+      if (parsed && parsed[PRINT_STORAGE_MARKER] === true) {
+        if (typeof parsed.data === 'string') {
+          storage.removeItem(key);
+          return parsed.data;
+        }
+        storage.removeItem(key);
+        return null;
+      }
+    } catch (error) {
+      storage.removeItem(key);
+    }
+    return null;
+  }
+
+  function extractHashDescriptor() {
+    var hashString = '';
+    try {
+      hashString = new URL(window.location.href).hash || '';
+    } catch (error) {
+      hashString = window.location.hash || '';
+    }
+    if (typeof hashString !== 'string') {
+      hashString = '';
+    }
+    if (!hashString) {
+      return { type: 'none', value: '' };
+    }
+    if (hashString.indexOf('#k=') === 0) {
+      return { type: 'key', value: hashString.slice(3) };
+    }
+    if (hashString.indexOf('#u=') === 0) {
+      return { type: 'url', value: decodeURIComponent(hashString.slice(3)) };
+    }
+    return { type: 'unknown', value: '' };
+  }
+
+  function loadSerializedPayload() {
+    return new Promise(function (resolve, reject) {
+      var descriptor = extractHashDescriptor();
+      if (descriptor.type === 'key') {
+        var key = descriptor.value;
+        if (!key) {
+          reject(new Error('Keine Druckdaten übergeben.'));
+          return;
+        }
+        var serialized = readFromSessionStorage(key);
+        if (serialized == null) {
+          serialized = readFromLocalStorage(key);
+        }
+        if (serialized == null) {
+          reject(new Error('Druckdaten konnten nicht geladen werden.'));
+          return;
+        }
+        resolve(serialized);
+        return;
+      }
+      if (descriptor.type === 'url') {
+        var objectUrl = descriptor.value;
+        if (!objectUrl) {
+          reject(new Error('Druckdaten konnten nicht geladen werden.'));
+          return;
+        }
+        var handleFailure = function (error) {
+          if (typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function') {
+            try {
+              URL.revokeObjectURL(objectUrl);
+            } catch (revokeError) {
+              // ignore revoke errors
+            }
+          }
+          reject(error);
+        };
+        if (typeof fetch === 'function') {
+          fetch(objectUrl)
+            .then(function (response) {
+              if (!response.ok) {
+                throw new Error('Druckdaten konnten nicht geladen werden.');
+              }
+              return response.text();
+            })
+            .then(function (text) {
+              if (typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function') {
+                try {
+                  URL.revokeObjectURL(objectUrl);
+                } catch (error) {
+                  // ignore revoke errors
+                }
+              }
+              resolve(text);
+            })
+            .catch(handleFailure);
+        } else {
+          try {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', objectUrl, true);
+            xhr.onreadystatechange = function () {
+              if (xhr.readyState === 4) {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                  if (typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function') {
+                    try {
+                      URL.revokeObjectURL(objectUrl);
+                    } catch (error) {
+                      // ignore revoke errors
+                    }
+                  }
+                  resolve(xhr.responseText);
+                } else {
+                  handleFailure(new Error('Druckdaten konnten nicht geladen werden.'));
+                }
+              }
+            };
+            xhr.onerror = function () {
+              handleFailure(new Error('Druckdaten konnten nicht geladen werden.'));
+            };
+            xhr.send();
+          } catch (error) {
+            handleFailure(error);
+          }
+        }
+        return;
+      }
+      reject(new Error('Keine Druckdaten übergeben.'));
+    });
+  }
+
+  function loadPayload() {
+    return loadSerializedPayload().then(function (serialized) {
+      if (!serialized) {
+        throw new Error('Druckdaten konnten nicht geladen werden.');
+      }
+      try {
+        return JSON.parse(serialized);
+      } catch (error) {
+        throw new Error('Druckdaten sind beschädigt.');
+      }
+    });
   }
 
   function setPartName(state) {
@@ -373,7 +556,8 @@
     }
 
     var computed = payload.computed || {};
-    var paid = computed.paid === true;
+    var hasPaidDate = normalizeString(computed.paidDate).length > 0;
+    var paid = computed.paid === true && hasPaidDate;
     var paidLine = $('printInvoicePaidLine');
     var paidDate = $('printInvoicePaidDate');
     if (paidLine) {
@@ -680,8 +864,7 @@
     setPartName(state);
   }
 
-  function renderPayload(target) {
-    var payload = parseJsonFromQuery();
+  function renderPayload(target, payload) {
     renderCommon(payload);
     if (target === 'offer') {
       renderOfferPage(payload);
@@ -713,12 +896,20 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    try {
-      var target = document.body && document.body.getAttribute('data-print-target');
-      renderPayload(target ? target.toLowerCase() : '');
-    } catch (error) {
-      console.error('print render error', error);
-      renderError(error && error.message ? error.message : 'Unbekannter Fehler.');
-    }
+    var targetAttr = document.body && document.body.getAttribute('data-print-target');
+    var target = targetAttr ? targetAttr.toLowerCase() : '';
+    loadPayload()
+      .then(function (payload) {
+        try {
+          renderPayload(target, payload);
+        } catch (error) {
+          console.error('print render error', error);
+          renderError(error && error.message ? error.message : 'Unbekannter Fehler.');
+        }
+      })
+      .catch(function (error) {
+        console.error('print render load error', error);
+        renderError(error && error.message ? error.message : 'Druckdaten nicht verfügbar.');
+      });
   });
 })();
