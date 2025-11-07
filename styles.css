@@ -5284,7 +5284,7 @@ a:focus-visible {
 }
 
 .ws-print-stage .calc-print__offer-columns {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .calc-print__title {
@@ -5939,15 +5939,31 @@ body[print-mode='invoice'][data-paid='true'] .calc-print__total {
     margin: 0;
     background: #fff !important;
     color: #000 !important;
-  }
-
-  body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+    column-count: 1 !important;
+    column-gap: 0 !important;
+    column-rule: none !important;
+  }
+
+  .page,
+  .druckseite,
+  .calc-print__page,
+  .print-offer,
+  .print-invoice {
+    width: 190mm;
+    max-width: 100%;
+    max-height: none;
+    page-break-inside: avoid;
+    column-count: 1 !important;
+    column-gap: 0 !important;
+    column-rule: none !important;
   }
 
   * {
     box-sizing: border-box;
+    box-shadow: none !important;
+    background-image: none !important;
   }
 
   .no-print,
@@ -5981,9 +5997,19 @@ body[print-mode='invoice'][data-paid='true'] .calc-print__total {
   }
 
   html[data-print="result"] #printInputsSection,
-  .calc-print__page--inputs,
-  .calc-print__inputs-grid {
+  html[data-print="result"] .calc-print__page--inputs,
+  html[data-print="result"] .calc-print__inputs-grid {
     display: none !important;
+  }
+
+  .print-offer__table-wrapper,
+  .print-invoice__table-wrapper {
+    display: block !important;
+  }
+
+  .print-offer__table,
+  .print-invoice__table {
+    display: table !important;
   }
 
   body[print-mode='offer'] .internal-only,
@@ -6014,19 +6040,17 @@ body[print-mode='invoice'][data-paid='true'] .calc-print__total {
     text-decoration: none;
   }
 
+  .calc-print__offer-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .calc-print__page {
-    width: auto;
-    max-width: 100%;
     margin: 0 !important;
     padding: 0 !important;
     background: #fff;
     page-break-inside: avoid;
     break-inside: avoid;
     min-height: auto;
-  }
-
-  .calc-print__offer-columns {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .calc-print__offer,
@@ -6062,6 +6086,7 @@ body[print-mode='invoice'][data-paid='true'] .calc-print__total {
     margin-top: 5mm !important;
     margin-bottom: 0;
     padding: calc(0.78rem * var(--print-compact)) calc(0.96rem * var(--print-compact));
+    background-color: #f1f8ff;
   }
 
   .calc-print__footer {
