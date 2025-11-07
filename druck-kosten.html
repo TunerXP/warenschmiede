@@ -223,7 +223,7 @@
           <p>Autosave speichert nur lokal im Browser und lässt sich jederzeit ein- oder ausschalten.</p>
           <div class="hero-actions">
             <a class="btn btn-primary" href="#rechner">Zum Rechner</a>
-            <a class="btn btn-outline" href="#so-funktioniert-heading">Zur Anleitung</a>
+            <a class="btn btn-outline" href="#anleitung">Zur Anleitung</a>
           </div>
         </div>
       </div>
@@ -250,14 +250,11 @@
           <div class="section-heading__stack">
             <h1 class="tool-title">Kostenrechner – Angebot &amp; Rechnung v1.0.0</h1>
             <div class="section-heading__actions">
-              <nav class="anchor-nav" aria-label="Abschnittsnavigation">
-                <a href="#results" class="anchor-link">Zu den Ergebnissen</a>
-                <a href="#guide" class="anchor-link">Anleitung &amp; Glossar</a>
-              </nav>
               <div class="calc-save" data-save-region>
                 <button type="button" class="btn btn-secondary calc-save__button" id="btnSaveTop">Speichern</button>
                 <button type="button" class="btn calc-save__button" id="btnLoadTop">Laden</button>
                 <input id="fileLoad" type="file" accept="application/json" hidden>
+                <a class="calc-save__link" href="#speichern-laden">Speichern &amp; Laden erklärt</a>
               </div>
               <div class="calc-share" data-share-region>
                 <button class="calc-share__button" type="button" data-share-trigger data-share-url="https://www.warenschmiede.com/druck-kosten.html" data-share-title="Warenschmiede 3D-Druck-Kostenrechner" data-share-text="Berechne in Sekunden dein individuelles 3D-Druck-Angebot." data-share-success="Link kopiert – du kannst ihn jetzt an Freunde oder Kollegen senden." aria-label="Link zum Warenschmiede 3D-Druck-Rechner teilen" title="Link teilen">
@@ -266,6 +263,11 @@
                 </button>
                 <p class="calc-share__message" data-share-message role="status" aria-live="polite"></p>
               </div>
+              <nav class="anchor-nav" aria-label="Schnellzugriff">
+                <a href="#ergebnis" class="anchor-link">Ergebnis</a>
+                <a href="#anleitung" class="anchor-link">Anleitung</a>
+                <a href="#glossar" class="anchor-link">Glossar</a>
+              </nav>
               <p class="calc-toast" data-calc-toast role="status" aria-live="polite" hidden></p>
             </div>
             <h2 id="rechner">Rechner</h2>
@@ -689,7 +691,7 @@
           <aside class="calc-grid__result" id="calc-result" data-result>
             <div class="card calc-results" aria-live="polite">
             <div class="calc-results__header">
-              <h2>Ergebnis</h2>
+              <h2 id="ergebnis">Ergebnis</h2>
               <p class="calc-meta" id="calcMeta">Gewicht: 0&nbsp;g · Länge: 0,00&nbsp;m</p>
             </div>
             <span id="results"></span>
@@ -868,7 +870,7 @@
 
     <section id="guide" class="guide">
       <div class="container">
-        <h2>Anleitung</h2>
+        <h2 id="anleitung">Anleitung</h2>
 
         <details open>
           <summary>Einführung</summary>
@@ -884,7 +886,7 @@
             <li><strong>Fixkosten/Marge</strong> optional anpassen (transparent, aber nur intern sichtbar).</li>
             <li><strong>IBAN/BIC/Bank</strong> unter „Anbieter“ ausfüllen (Pflicht für Rechnung).</li>
             <li>Bei Bedarf <strong>„Bereits bezahlt“</strong> aktivieren → Rechnung wird als <em>BEZAHLT</em> markiert (mit Datum) und statt „zahlbar bis“ erscheint der Bezahlt-Hinweis.</li>
-            <li>Zu den <a href="#results">Ergebnissen</a> springen und <strong>Kundenangebot drucken</strong> oder <strong>Rechnung drucken</strong> wählen.</li>
+            <li>Zu den <a href="#ergebnis">Ergebnissen</a> springen und <strong>Kundenangebot drucken</strong> oder <strong>Rechnung drucken</strong> wählen.</li>
           </ol>
           <p><em>Hinweise:</em> Dieser Rechner erzeugt stets ein Angebot/eine Rechnung für genau eine kalkulierte Position. Sammelpositionen sind nicht vorgesehen.</p>
         </details>
@@ -898,13 +900,60 @@
           </ul>
         </details>
 
-        <h2>Glossar</h2>
+        <h3 id="speichern-laden">🔐 Speichern &amp; Laden (empfohlen)</h3>
+        <p>Mit Speichern sicherst du deine komplette Kalkulation (inkl. Eingaben, Einstellungen, Notizen, Angebots-/Rechnungsdaten) als JSON-Datei.</p>
+        <p>Mit Laden holst du sie später 1:1 wieder zurück.</p>
+
+        <h4>Vorteile</h4>
+        <ul>
+          <li>Angebote später weiterbearbeiten (Nummer, Preise, Notizen, Rechnungsstatus).</li>
+          <li>Archiv aufbauen (eine Datei pro Angebot/Rechnung).</li>
+          <li>Kein Copy-Paste, keine Screenshots – alles reproduzierbar.</li>
+        </ul>
+
+        <h4>Dateiname</h4>
+        <p>Wird automatisch sinnvoll vorgeschlagen:</p>
+        <p><code>Kunde_Mueller_GmbH__ANG-2025-003.json</code> oder <code>Kunde_Mueller_GmbH__RE-2025-001.json</code></p>
+        <p>Fallback: <code>warenschmiede-save-YYYYMMDD-HHmm.json</code></p>
+        <p>Du kannst den Namen im Speicherdialog jederzeit ändern.</p>
+
+        <h4>So geht’s</h4>
+        <ol>
+          <li>Klicke Speichern.</li>
+          <li>Wähle im Dialog den Ordner (z. B. Dokumente\Warenschmiede\Angebote\2025).</li>
+          <li>Bestätige – fertig.</li>
+          <li>Zum Wiederherstellen: Laden → Datei wählen.</li>
+        </ol>
+
+        <h4>Tipps für den Alltag</h4>
+        <ul>
+          <li>Lege dir Ordner wie Angebote, Rechnungen, Kunden&lt;Name&gt; an.</li>
+          <li>Versionierung: bei Änderungen einfach erneut speichern (…_v2.json).</li>
+          <li>Für Rechnungen: erst „Bereits bezahlt“ setzen (falls zutreffend), dann speichern und PDF erzeugen.</li>
+        </ul>
+
+        <h2 id="glossar">Glossar</h2>
         <dl class="glossary">
           <dt>Angebot</dt>
           <dd>Preisvorschlag mit Gültigkeitsdatum und Liefer-/Zahlungsbedingungen; ohne interne Kostenteile.</dd>
 
           <dt>Rechnung</dt>
           <dd>Forderungsdokument nach Leistungserbringung. Enthält Bankdaten und Zahlungsziel bzw. „Bezahlt“-Stempel bei aktivierter Option.</dd>
+
+          <dt>Angebotsnummer (ANG-…)</dt>
+          <dd>Eindeutige ID für Angebote. Dient auch als Dateiname.</dd>
+
+          <dt>Rechnungsnummer (RE-…)</dt>
+          <dd>Fortlaufend, eindeutig (rechtlich erforderlich). Ebenfalls als Dateiname genutzt.</dd>
+
+          <dt>Bezahlmarkierung („Bereits bezahlt“)</dt>
+          <dd>Markiert Rechnung als bezahlt und zeigt Zahlungsdatum statt „zahlbar bis“.</dd>
+
+          <dt>Nettopreise / Bruttopreise</dt>
+          <dd>Netto ohne MwSt., Brutto inkl. MwSt.</dd>
+
+          <dt>Kleinunternehmer-Hinweis (§19 UStG)</dt>
+          <dd>Es wird keine Umsatzsteuer ausgewiesen. Hinweis erscheint automatisch.</dd>
 
           <dt>MwSt. (Mehrwertsteuer)</dt>
           <dd>Umsatzsteuer (derzeit 19 %). Bei §19 UStG („Kleingewerbe“) wird keine MwSt. ausgewiesen.</dd>
@@ -920,9 +969,6 @@
 
           <dt>Zahlungsziel</dt>
           <dd>Frist (z. B. „14 Tage netto“), wird in der Rechnung ausgewiesen, sofern nicht „Bereits bezahlt“.</dd>
-
-          <dt>Bereits bezahlt</dt>
-          <dd>Option im Ergebnisbereich; ersetzt „zahlbar bis“ durch einen bezahlten Vermerk + Datum.</dd>
         </dl>
 
         <p class="back-top"><a href="#top">Nach oben</a></p>
