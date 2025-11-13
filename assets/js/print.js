@@ -184,20 +184,20 @@
   }
 
   function loadPayload(target) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve) {
       var storageKey = resolveStorageKey(target);
       if (!storageKey) {
-        reject(new Error('Druckdaten nicht verfügbar.'));
+        resolve(null);
         return;
       }
       var storage = safeStorage('sessionStorage');
       if (!storage) {
-        reject(new Error('Druckdaten konnten nicht geladen werden.'));
+        resolve(null);
         return;
       }
       var serialized = storage.getItem(storageKey);
       if (!serialized) {
-        reject(new Error('Druckdaten nicht verfügbar.'));
+        resolve(null);
         return;
       }
       try {
@@ -205,7 +205,8 @@
         storage.removeItem(storageKey);
         resolve(payload);
       } catch (error) {
-        reject(new Error('Druckdaten sind beschädigt.'));
+        console.warn('print payload parse error', error);
+        resolve(null);
       }
     });
   }
@@ -747,10 +748,24 @@
     }
   }
 
+  function hasRenderableContent(root) {
+    if (!root) {
+      return false;
+    }
+    if (root.querySelector('[data-page]')) {
+      return true;
+    }
+    return root.children && root.children.length > 0;
+  }
+
   function renderError(message) {
     var root = document.getElementById('printRoot');
     if (!root) {
       document.body.textContent = message;
+      return;
+    }
+    if (hasRenderableContent(root)) {
+      console.warn('print render warning:', message);
       return;
     }
     root.innerHTML = '';
@@ -771,8 +786,12 @@
     var storageTarget = getPreferredStorageTarget(renderTarget);
     loadPayload(storageTarget)
       .then(function (payload) {
+        var finalTarget = renderTarget || storageTarget || 'offer';
+        if (!payload) {
+          renderError('Druckdaten nicht verfügbar.');
+          return;
+        }
         try {
-          var finalTarget = renderTarget || storageTarget || 'offer';
           renderPayload(finalTarget, payload);
         } catch (error) {
           console.error('print render error', error);
