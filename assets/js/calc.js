@@ -25,8 +25,15 @@
     };
   };
 
-  var PRINT_STORAGE_MARKER = '__wsPrint';
-  var PRINT_LOCAL_STORAGE_MAX_AGE = 1000 * 60 * 60; // 1 Stunde
+  var PRINT_SESSION_PREFIX = 'druck:';
+  var PRINT_MESSAGE_TYPE = 'WS_Druck';
+  var PRINT_MESSAGE_REQUEST = 'WS_Druck_REQUEST';
+  var PRINT_TOKEN_TTL = 1000 * 60 * 5;
+  var PRINT_POPUP_EVENT_BLOCKED = 'ws:print-popup-blocked';
+  var PRINT_POPUP_EVENT_CLEAR = 'ws:print-popup-clear';
+  var pendingPrintPayloads = Object.create(null);
+  var pendingPrintCleanup = Object.create(null);
+  var printMessageHandlerBound = false;
 
   function safeStorage(type) {
     try {
@@ -43,76 +50,87 @@
     }
   }
 
-  function cleanupPrintStorageEntries(storage, now) {
-    if (!storage) {
+  function cleanupPendingToken(token) {
+    if (!token) {
       return;
     }
-    var cutoff = now - PRINT_LOCAL_STORAGE_MAX_AGE;
-    var keysToRemove = [];
-    for (var index = 0; index < storage.length; index++) {
-      var storageKey = storage.key(index);
-      if (!storageKey) {
-        continue;
-      }
-      var raw = storage.getItem(storageKey);
-      if (!raw) {
-        continue;
-      }
-      try {
-        var parsed = JSON.parse(raw);
-        if (parsed && parsed[PRINT_STORAGE_MARKER] === true) {
-          if (typeof parsed.createdAt !== 'number' || parsed.createdAt < cutoff) {
-            keysToRemove.push(storageKey);
-          }
-        }
-      } catch (error) {
-        // ignore invalid entries
-      }
+    if (pendingPrintCleanup[token]) {
+      clearTimeout(pendingPrintCleanup[token]);
+      delete pendingPrintCleanup[token];
     }
-    if (keysToRemove.length) {
-      keysToRemove.forEach(function (key) {
-        storage.removeItem(key);
-      });
+    delete pendingPrintPayloads[token];
+    var session = safeStorage('sessionStorage');
+    if (session) {
+      try {
+        session.removeItem(PRINT_SESSION_PREFIX + token);
+      } catch (error) {
+        // ignore
+      }
     }
   }
 
-  function createPrintStorageKey() {
-    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
-      return window.crypto.randomUUID();
+  function rememberPrintPayload(token, serialized) {
+    pendingPrintPayloads[token] = serialized;
+    if (pendingPrintCleanup[token]) {
+      clearTimeout(pendingPrintCleanup[token]);
     }
-    return (
-      'ws-print-' +
-      Math.random().toString(36).slice(2) +
-      '-' +
-      Date.now().toString(36)
-    );
+    pendingPrintCleanup[token] = setTimeout(function () {
+      cleanupPendingToken(token);
+    }, PRINT_TOKEN_TTL);
+  }
+
+  function ensurePrintMessageHandler() {
+    if (printMessageHandlerBound) {
+      return;
+    }
+    window.addEventListener('message', function (event) {
+      var originAllowed = !event.origin || event.origin === window.location.origin || event.origin === 'null';
+      if (!originAllowed) {
+        return;
+      }
+      var data = event.data;
+      if (!data || data.type !== PRINT_MESSAGE_REQUEST || typeof data.token !== 'string') {
+        return;
+      }
+      var payload = pendingPrintPayloads[data.token];
+      if (!payload) {
+        return;
+      }
+      if (!event.source || typeof event.source.postMessage !== 'function') {
+        return;
+      }
+      try {
+        event.source.postMessage({ type: PRINT_MESSAGE_TYPE, token: data.token, payload: payload }, event.origin || '*');
+        cleanupPendingToken(data.token);
+      } catch (error) {
+        console.error('print message send error', error);
+      }
+    });
+    printMessageHandlerBound = true;
+  }
+
+  function createPrintToken() {
+    if (window.crypto && window.crypto.getRandomValues) {
+      var buffer = new Uint32Array(2);
+      window.crypto.getRandomValues(buffer);
+      return (buffer[0].toString(36) + buffer[1].toString(36)).slice(0, 12);
+    }
+    return (Math.random().toString(36).slice(2) + Date.now().toString(36)).slice(0, 12);
   }
 
   function persistPrintPayload(serialized) {
-    var key = createPrintStorageKey();
+    var token = createPrintToken();
     var session = safeStorage('sessionStorage');
     if (session) {
-      session.setItem(key, serialized);
-      return { key: key };
+      try {
+        session.setItem(PRINT_SESSION_PREFIX + token, serialized);
+      } catch (error) {
+        console.warn('sessionStorage unavailable for print payload', error);
+      }
     }
-    var local = safeStorage('localStorage');
-    if (local) {
-      var now = Date.now();
-      cleanupPrintStorageEntries(local, now);
-      var storedValue = {
-        data: serialized,
-        createdAt: now,
-        marker: 'session-missing'
-      };
-      storedValue[PRINT_STORAGE_MARKER] = true;
-      local.setItem(key, JSON.stringify(storedValue));
-      return { key: key, storage: 'local' };
-    }
-    if (typeof Blob !== 'undefined' && typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function') {
-      var blob = new Blob([serialized], { type: 'application/json' });
-      return { blobUrl: URL.createObjectURL(blob) };
-    }
-    throw new Error('Druckdaten konnten nicht zwischengespeichert werden.');
+    rememberPrintPayload(token, serialized);
+    ensurePrintMessageHandler();
+    return token;
   }
 
   var buildOfferUrl = function () { return ''; };
@@ -127,31 +145,56 @@
     var invoice = byId('btnInvoice');
     var result = byId('btnResult');
 
-    var openPrint = function (url) {
+    function dispatchPrintEvent(name, detail) {
+      if (!name) {
+        return;
+      }
       try {
-        if (!url) {
-          return;
+        var event;
+        if (typeof window.CustomEvent === 'function') {
+          event = new CustomEvent(name, { detail: detail || {} });
+        } else {
+          event = document.createEvent('CustomEvent');
+          event.initCustomEvent(name, false, false, detail || {});
         }
+        window.dispatchEvent(event);
+      } catch (error) {
+        // ignore
+      }
+    }
+
+    var openPrint = function (url) {
+      if (!url) {
+        return;
+      }
+      dispatchPrintEvent(PRINT_POPUP_EVENT_CLEAR);
+      try {
         var win = window.open(url, '_blank', 'noopener');
         if (!win) {
-          window.alert('Pop-up blockiert – bitte Pop-ups erlauben.');
+          dispatchPrintEvent(PRINT_POPUP_EVENT_BLOCKED, { url: url });
         }
       } catch (error) {
         console.error('openPrint error', error);
-        var message = error && error.message ? error.message : 'Druckansicht konnte nicht geöffnet werden.';
-        window.alert(message);
+        dispatchPrintEvent(PRINT_POPUP_EVENT_BLOCKED, { url: url, error: error });
       }
     };
 
-    offer && offer.addEventListener('click', function () {
-      openPrint(buildOfferUrl());
-    });
-    invoice && invoice.addEventListener('click', function () {
-      openPrint(buildInvoiceUrl());
-    });
-    result && result.addEventListener('click', function () {
-      openPrint(buildResultUrl());
-    });
+    function attachPrintHandler(button, builder) {
+      if (!button || typeof builder !== 'function') {
+        return;
+      }
+      if (button.dataset.printBound === '1') {
+        return;
+      }
+      button.dataset.printBound = '1';
+      button.addEventListener('click', function () {
+        openPrint(builder());
+      });
+    }
+
+    attachPrintHandler(offer, buildOfferUrl);
+    attachPrintHandler(invoice, buildInvoiceUrl);
+    attachPrintHandler(result, buildResultUrl);
   });
 
   function initCalc() {
@@ -210,6 +253,8 @@
           var printFullButton = document.getElementById('btnResult');
           var printOfferButton = document.getElementById('btnOffer');
           var printInvoiceButton = document.getElementById('btnInvoice');
+          var printPopupHint = document.querySelector('[data-print-fallback]');
+          var printPopupLink = document.querySelector('[data-print-fallback-link]');
           var markInvoicePaidCheckbox = document.getElementById('markInvoicePaid');
           var paidDateInput = document.getElementById('paidDate');
           var invoiceErrorOutput = document.getElementById('invoiceError');
@@ -304,6 +349,34 @@
               hideToastMessage();
             }, 4200);
           }
+
+          function hidePrintPopupHint() {
+            if (!printPopupHint) {
+              return;
+            }
+            printPopupHint.hidden = true;
+            printPopupHint.setAttribute('aria-hidden', 'true');
+            if (printPopupLink) {
+              printPopupLink.removeAttribute('href');
+            }
+          }
+
+          function showPrintPopupHint(url) {
+            if (!printPopupHint) {
+              return;
+            }
+            if (printPopupLink) {
+              if (url) {
+                printPopupLink.href = url;
+              } else {
+                printPopupLink.removeAttribute('href');
+              }
+            }
+            printPopupHint.hidden = false;
+            printPopupHint.setAttribute('aria-hidden', 'false');
+          }
+
+          hidePrintPopupHint();
 
           function fallbackCopyUsingTextArea(text) {
             return new Promise(function (resolve, reject) {
@@ -5213,17 +5286,24 @@
             }
           });
 
+          window.addEventListener(PRINT_POPUP_EVENT_CLEAR, function () {
+            hidePrintPopupHint();
+          });
+
+          window.addEventListener(PRINT_POPUP_EVENT_BLOCKED, function (event) {
+            var detail = event && event.detail ? event.detail : {};
+            showToastMessage('Bitte Pop-ups für warenschmiede.com erlauben.');
+            showPrintPopupHint(detail && detail.url ? detail.url : '');
+          });
+
           function openPrintPath(path) {
             var serialized = serializeCurrentState();
             if (!serialized) {
               throw new Error('Keine Daten für die Druckansicht verfügbar.');
             }
-            var persisted = persistPrintPayload(serialized);
-            if (persisted && persisted.blobUrl) {
-              return path + '#u=' + encodeURIComponent(persisted.blobUrl);
-            }
-            if (persisted && persisted.key) {
-              return path + '#k=' + persisted.key;
+            var token = persistPrintPayload(serialized);
+            if (token) {
+              return path + '?k=' + encodeURIComponent(token);
             }
             throw new Error('Druckdaten konnten nicht zwischengespeichert werden.');
           }

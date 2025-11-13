@@ -123,8 +123,10 @@
     return postalValue + ' ' + cityValue;
   }
 
-  var PRINT_STORAGE_MARKER = '__wsPrint';
-  var PRINT_LOCAL_STORAGE_MAX_AGE = 1000 * 60 * 60;
+  var PRINT_SESSION_PREFIX = 'druck:';
+  var PRINT_MESSAGE_TYPE = 'WS_Druck';
+  var PRINT_MESSAGE_REQUEST = 'WS_Druck_REQUEST';
+  var PRINT_REQUEST_TIMEOUT = 4000;
 
   function safeStorage(type) {
     try {
@@ -141,185 +143,97 @@
     }
   }
 
-  function cleanupLocalStorage(storage, now) {
-    if (!storage) {
-      return;
-    }
-    var cutoff = now - PRINT_LOCAL_STORAGE_MAX_AGE;
-    var keysToRemove = [];
-    for (var index = 0; index < storage.length; index++) {
-      var storageKey = storage.key(index);
-      if (!storageKey) {
-        continue;
-      }
-      var raw = storage.getItem(storageKey);
-      if (!raw) {
-        continue;
-      }
-      try {
-        var parsed = JSON.parse(raw);
-        if (parsed && parsed[PRINT_STORAGE_MARKER] === true) {
-          if (typeof parsed.createdAt !== 'number' || parsed.createdAt < cutoff) {
-            keysToRemove.push(storageKey);
-          }
-        }
-      } catch (error) {
-        // ignore unrelated entries
-      }
-    }
-    if (keysToRemove.length) {
-      keysToRemove.forEach(function (key) {
-        storage.removeItem(key);
-      });
-    }
-  }
-
-  function readFromSessionStorage(key) {
+  function readFromSessionStorage(token) {
     var storage = safeStorage('sessionStorage');
     if (!storage) {
       return null;
     }
+    var key = PRINT_SESSION_PREFIX + token;
     var value = storage.getItem(key);
     if (value != null) {
       storage.removeItem(key);
     }
     return value;
   }
-
-  function readFromLocalStorage(key) {
-    var storage = safeStorage('localStorage');
-    if (!storage) {
-      return null;
-    }
-    cleanupLocalStorage(storage, Date.now());
-    var raw = storage.getItem(key);
-    if (!raw) {
-      return null;
-    }
+  function getPrintToken() {
     try {
-      var parsed = JSON.parse(raw);
-      if (parsed && parsed[PRINT_STORAGE_MARKER] === true) {
-        if (typeof parsed.data === 'string') {
-          storage.removeItem(key);
-          return parsed.data;
-        }
-        storage.removeItem(key);
-        return null;
+      var currentUrl = new URL(window.location.href);
+      var searchToken = currentUrl.searchParams.get('k');
+      if (searchToken) {
+        return searchToken;
       }
     } catch (error) {
-      storage.removeItem(key);
+      // ignore
     }
-    return null;
+    var rawHash = window.location.hash || '';
+    if (rawHash.indexOf('k=') !== -1) {
+      return rawHash.split('k=')[1];
+    }
+    return '';
   }
 
-  function extractHashDescriptor() {
-    var hashString = '';
-    try {
-      hashString = new URL(window.location.href).hash || '';
-    } catch (error) {
-      hashString = window.location.hash || '';
-    }
-    if (typeof hashString !== 'string') {
-      hashString = '';
-    }
-    if (!hashString) {
-      return { type: 'none', value: '' };
-    }
-    if (hashString.indexOf('#k=') === 0) {
-      return { type: 'key', value: hashString.slice(3) };
-    }
-    if (hashString.indexOf('#u=') === 0) {
-      return { type: 'url', value: decodeURIComponent(hashString.slice(3)) };
-    }
-    return { type: 'unknown', value: '' };
+  function requestPayloadFromOpener(token) {
+    return new Promise(function (resolve, reject) {
+      if (!token) {
+        reject(new Error('Keine Druckdaten übergeben.'));
+        return;
+      }
+      var opener = window.opener;
+      if (!opener || typeof opener.postMessage !== 'function') {
+        reject(new Error('Druckdaten konnten nicht geladen werden.'));
+        return;
+      }
+      var timer = setTimeout(function () {
+        cleanup();
+        reject(new Error('Druckdaten konnten nicht geladen werden.'));
+      }, PRINT_REQUEST_TIMEOUT);
+
+      function cleanup() {
+        window.removeEventListener('message', handleMessage);
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+      }
+
+      function handleMessage(event) {
+        var sameOrigin = !event.origin || event.origin === window.location.origin || event.origin === 'null';
+        if (!sameOrigin) {
+          return;
+        }
+        var data = event.data;
+        if (!data || data.type !== PRINT_MESSAGE_TYPE || data.token !== token) {
+          return;
+        }
+        cleanup();
+        resolve(data.payload || '');
+      }
+
+      window.addEventListener('message', handleMessage);
+      try {
+        opener.postMessage({ type: PRINT_MESSAGE_REQUEST, token: token }, '*');
+      } catch (error) {
+        cleanup();
+        reject(error);
+      }
+    });
   }
 
   function loadSerializedPayload() {
     return new Promise(function (resolve, reject) {
-      var descriptor = extractHashDescriptor();
-      if (descriptor.type === 'key') {
-        var key = descriptor.value;
-        if (!key) {
-          reject(new Error('Keine Druckdaten übergeben.'));
-          return;
-        }
-        var serialized = readFromSessionStorage(key);
-        if (serialized == null) {
-          serialized = readFromLocalStorage(key);
-        }
-        if (serialized == null) {
-          reject(new Error('Druckdaten konnten nicht geladen werden.'));
-          return;
-        }
+      var token = getPrintToken();
+      if (!token) {
+        reject(new Error('Keine Druckdaten übergeben.'));
+        return;
+      }
+      var serialized = readFromSessionStorage(token);
+      if (serialized != null) {
         resolve(serialized);
         return;
       }
-      if (descriptor.type === 'url') {
-        var objectUrl = descriptor.value;
-        if (!objectUrl) {
-          reject(new Error('Druckdaten konnten nicht geladen werden.'));
-          return;
-        }
-        var handleFailure = function (error) {
-          if (typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function') {
-            try {
-              URL.revokeObjectURL(objectUrl);
-            } catch (revokeError) {
-              // ignore revoke errors
-            }
-          }
-          reject(error);
-        };
-        if (typeof fetch === 'function') {
-          fetch(objectUrl)
-            .then(function (response) {
-              if (!response.ok) {
-                throw new Error('Druckdaten konnten nicht geladen werden.');
-              }
-              return response.text();
-            })
-            .then(function (text) {
-              if (typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function') {
-                try {
-                  URL.revokeObjectURL(objectUrl);
-                } catch (error) {
-                  // ignore revoke errors
-                }
-              }
-              resolve(text);
-            })
-            .catch(handleFailure);
-        } else {
-          try {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', objectUrl, true);
-            xhr.onreadystatechange = function () {
-              if (xhr.readyState === 4) {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                  if (typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function') {
-                    try {
-                      URL.revokeObjectURL(objectUrl);
-                    } catch (error) {
-                      // ignore revoke errors
-                    }
-                  }
-                  resolve(xhr.responseText);
-                } else {
-                  handleFailure(new Error('Druckdaten konnten nicht geladen werden.'));
-                }
-              }
-            };
-            xhr.onerror = function () {
-              handleFailure(new Error('Druckdaten konnten nicht geladen werden.'));
-            };
-            xhr.send();
-          } catch (error) {
-            handleFailure(error);
-          }
-        }
-        return;
-      }
-      reject(new Error('Keine Druckdaten übergeben.'));
+      requestPayloadFromOpener(token)
+        .then(resolve)
+        .catch(reject);
     });
   }
 
@@ -686,11 +600,7 @@
     }
     var resultGrid = $('printResultGrid');
     if (resultGrid) {
-      if (chartEnabled) {
-        resultGrid.classList.remove('calc-print__result-grid--single');
-      } else {
-        resultGrid.classList.add('calc-print__result-grid--single');
-      }
+      resultGrid.classList.add('calc-print__result-grid--single');
     }
 
     var noteCard = $('printNoteCard');

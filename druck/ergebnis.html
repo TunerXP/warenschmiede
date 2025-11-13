@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>Warenschmiede · Ergebnis &amp; Eingaben</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="../assets/css/print.css">
+  <link rel="stylesheet" href="/assets/css/print.css">
 </head>
 <body class="print-body" data-print-target="result">
   <main class="calc-print print-doc" id="printRoot" aria-labelledby="printPageTitle">
@@ -14,84 +14,71 @@
           <h1 class="calc-print__title" id="printPageTitle">Ergebnis</h1>
           <p class="calc-print__part" id="printHeaderPartName" hidden>Teilename: <span id="printHeaderPartNameValue"></span></p>
         </div>
-        <div class="calc-print__body">
-          <div class="calc-print__result-grid" id="printResultGrid">
-            <section class="calc-print__summary" aria-labelledby="printSummaryHeading">
-              <h2 class="sr-only" id="printSummaryHeading">Kostenübersicht</h2>
-              <p class="calc-print__vat-note" id="printVatNote">Hinweis: §19 UStG – keine Umsatzsteuer.</p>
-              <div class="calc-print__groups internal-only">
-                <div class="calc-print__group" role="group" aria-label="Variable Kosten">
-                  <p class="sum-group-title">Variable Kosten</p>
-                  <dl class="calc-print__list">
-                    <div class="calc-print__item">
-                      <dt>Material (inkl. Verschnitt &amp; Fehlerrate)</dt>
-                      <dd id="printMaterialTotal">0,00&nbsp;€</dd>
-                    </div>
-                    <div class="calc-print__item">
-                      <dt>Energie</dt>
-                      <dd id="printEnergyCost">0,00&nbsp;€</dd>
-                    </div>
-                    <div class="calc-print__item" data-pro-row="true">
-                      <dt>Arbeitszeit</dt>
-                      <dd id="printTimeCost">0,00&nbsp;€</dd>
-                    </div>
-                    <div class="calc-print__item" data-pro-row="true">
-                      <dt>Maschine</dt>
-                      <dd id="printMachineCost">0,00&nbsp;€</dd>
-                    </div>
-                  </dl>
-                </div>
-                <div class="sum-sep sum-sep--print" data-print-separator="after-variable" aria-hidden="true"></div>
-                <div class="calc-print__group" data-print-group="adjustments" data-pro-row="true" role="group" aria-label="Auf-/Abschläge" hidden>
-                  <p class="sum-group-title">Auf-/Abschläge</p>
-                  <dl class="calc-print__list">
-                    <div class="calc-print__item" data-pro-row="true">
-                      <dt>Marge</dt>
-                      <dd id="printMargin">+&nbsp;0,00&nbsp;€</dd>
-                    </div>
-                    <div class="calc-print__item" data-pro-row="true">
-                      <dt>Fixkosten (inkl. Verpackung/Versand)</dt>
-                      <dd id="printFixedCost">+&nbsp;0,00&nbsp;€</dd>
-                    </div>
-                    <div class="calc-print__item" data-pro-row="true">
-                      <dt>Rabatt</dt>
-                      <dd id="printDiscount">–&nbsp;0,00&nbsp;€</dd>
-                    </div>
-                  </dl>
-                </div>
-                <div class="sum-sep sum-sep--print" data-print-separator="after-adjustments" data-pro-row="true" aria-hidden="true"></div>
-                <div class="calc-print__group" role="group" aria-label="Gesamtergebnis">
-                  <p class="sum-group-title">Gesamtergebnis</p>
-                  <dl class="calc-print__list">
-                    <div class="calc-print__item internal-only">
-                      <dt>Zwischensumme (vor Auf-/Abschlägen)</dt>
-                      <dd id="printSubtotal">0,00&nbsp;€</dd>
-                    </div>
-                    <div class="calc-print__item">
-                      <dt>Gesamtkosten (netto)</dt>
-                      <dd id="printNet">0,00&nbsp;€</dd>
-                    </div>
-                    <div class="calc-print__item">
-                      <dt>Gesamtkosten (brutto)</dt>
-                      <dd id="printGross">0,00&nbsp;€</dd>
-                    </div>
-                  </dl>
-                  <p class="calc-print__disclaimer">Unverbindliche Kalkulation – Werte können abweichen.</p>
-                </div>
+        <div class="calc-print__result-grid calc-print__result-grid--single" id="printResultGrid">
+          <section class="calc-print__summary" aria-labelledby="printSummaryHeading">
+            <h2 class="sr-only" id="printSummaryHeading">Kostenübersicht</h2>
+            <p class="calc-print__vat-note" id="printVatNote">Hinweis: §19 UStG – keine Umsatzsteuer.</p>
+            <div class="calc-print__groups internal-only">
+              <div class="calc-print__group" role="group" aria-label="Variable Kosten">
+                <p class="sum-group-title">Variable Kosten</p>
+                <dl class="calc-print__list">
+                  <div class="calc-print__item">
+                    <dt>Material (inkl. Verschnitt &amp; Fehlerrate)</dt>
+                    <dd id="printMaterialTotal">0,00&nbsp;€</dd>
+                  </div>
+                  <div class="calc-print__item">
+                    <dt>Energie</dt>
+                    <dd id="printEnergyCost">0,00&nbsp;€</dd>
+                  </div>
+                  <div class="calc-print__item" data-pro-row="true">
+                    <dt>Arbeitszeit</dt>
+                    <dd id="printTimeCost">0,00&nbsp;€</dd>
+                  </div>
+                  <div class="calc-print__item" data-pro-row="true">
+                    <dt>Maschine</dt>
+                    <dd id="printMachineCost">0,00&nbsp;€</dd>
+                  </div>
+                </dl>
               </div>
-            </section>
-            <aside class="calc-print__chart internal-only" id="printChartSection" aria-labelledby="printChartTitle">
-              <h2 class="calc-print__chart-title" id="printChartTitle">Kostenanteile</h2>
-              <div class="calc-print__chart-bars" id="printChartBars" role="list"></div>
-              <p class="calc-print__chart-note" id="printChartTotal">Gesamtkosten (netto): 0,00&nbsp;€</p>
-              <p class="calc-print__chart-hint" id="printChartHint">Hinweis: Eingaben &amp; Parameter findest du auf der nächsten Seite.</p>
-            </aside>
-            <aside class="calc-print__note-card internal-only" id="printNoteCard" hidden aria-labelledby="printNoteTitle">
-              <h2 class="calc-print__note-title" id="printNoteTitle">Notiz</h2>
-              <span class="calc-print__note-divider" aria-hidden="true"></span>
-              <p class="calc-print__note-text" id="printNoteValue"></p>
-            </aside>
-          </div>
+              <div class="sum-sep sum-sep--print" data-print-separator="after-variable" aria-hidden="true"></div>
+              <div class="calc-print__group" data-print-group="adjustments" data-pro-row="true" role="group" aria-label="Auf-/Abschläge" hidden>
+                <p class="sum-group-title">Auf-/Abschläge</p>
+                <dl class="calc-print__list">
+                  <div class="calc-print__item" data-pro-row="true">
+                    <dt>Marge</dt>
+                    <dd id="printMargin">+&nbsp;0,00&nbsp;€</dd>
+                  </div>
+                  <div class="calc-print__item" data-pro-row="true">
+                    <dt>Fixkosten (inkl. Verpackung/Versand)</dt>
+                    <dd id="printFixedCost">+&nbsp;0,00&nbsp;€</dd>
+                  </div>
+                  <div class="calc-print__item" data-pro-row="true">
+                    <dt>Rabatt</dt>
+                    <dd id="printDiscount">–&nbsp;0,00&nbsp;€</dd>
+                  </div>
+                </dl>
+              </div>
+              <div class="sum-sep sum-sep--print" data-print-separator="after-adjustments" data-pro-row="true" aria-hidden="true"></div>
+              <div class="calc-print__group" role="group" aria-label="Gesamtergebnis">
+                <p class="sum-group-title">Gesamtergebnis</p>
+                <dl class="calc-print__list">
+                  <div class="calc-print__item internal-only">
+                    <dt>Zwischensumme (vor Auf-/Abschlägen)</dt>
+                    <dd id="printSubtotal">0,00&nbsp;€</dd>
+                  </div>
+                  <div class="calc-print__item">
+                    <dt>Gesamtkosten (netto)</dt>
+                    <dd id="printNet">0,00&nbsp;€</dd>
+                  </div>
+                  <div class="calc-print__item">
+                    <dt>Gesamtkosten (brutto)</dt>
+                    <dd id="printGross">0,00&nbsp;€</dd>
+                  </div>
+                </dl>
+                <p class="calc-print__disclaimer">Unverbindliche Kalkulation – Werte können abweichen.</p>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </div>
@@ -99,9 +86,20 @@
     <div class="print-page" data-page="inputs">
       <div class="calc-print__page calc-print__page--inputs" id="printInputsSection">
         <div class="calc-print__page-heading calc-print__page-heading--inputs">
-          <h2 class="calc-print__heading">Eingaben &amp; Parameter</h2>
+          <h2 class="calc-print__heading">Diagramm &amp; Eingaben</h2>
           <p class="calc-print__section-note" id="printInputsPartName" hidden>Teilename: <span id="printInputsPartNameValue"></span></p>
         </div>
+        <section class="calc-print__chart internal-only" id="printChartSection" aria-labelledby="printChartTitle">
+          <h2 class="calc-print__chart-title" id="printChartTitle">Kostenanteile</h2>
+          <div class="calc-print__chart-bars" id="printChartBars" role="list"></div>
+          <p class="calc-print__chart-note" id="printChartTotal">Gesamtkosten (netto): 0,00&nbsp;€</p>
+          <p class="calc-print__chart-hint" id="printChartHint">Hinweis: Eingaben &amp; Parameter findest du weiter unten.</p>
+        </section>
+        <aside class="calc-print__note-card internal-only" id="printNoteCard" hidden aria-labelledby="printNoteTitle">
+          <h2 class="calc-print__note-title" id="printNoteTitle">Notiz</h2>
+          <span class="calc-print__note-divider" aria-hidden="true"></span>
+          <p class="calc-print__note-text" id="printNoteValue"></p>
+        </aside>
         <div class="calc-print__inputs-grid inputs-grid" id="printInputsTable">
           <section class="inputs-card pdf-card" data-print-group="material">
             <h3 class="inputs-card__title">Material</h3>
@@ -248,6 +246,6 @@
       <span class="ws-brand">Dieses Dokument wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt. Transparente Preise – Made in Germany.</span>
     </footer>
   </main>
-  <script src="../assets/js/print.js" defer></script>
+  <script src="/assets/js/print.js" defer></script>
 </body>
 </html>

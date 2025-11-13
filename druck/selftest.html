@@ -5,6 +5,9 @@
   <title>Druck Selftest</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    :root {
+      color-scheme: light;
+    }
     body {
       font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
       display: flex;
@@ -16,29 +19,263 @@
       color: #0f172a;
     }
     .selftest {
-      text-align: center;
-      padding: 2rem 3rem;
+      text-align: left;
+      padding: 2rem 2.75rem;
       border-radius: 16px;
       background: #fff;
       box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+      max-width: 540px;
+      width: min(92vw, 540px);
     }
     .selftest h1 {
-      margin: 0 0 0.5rem;
-      font-size: 1.75rem;
+      margin: 0 0 0.25rem;
+      font-size: 1.65rem;
     }
     .selftest p {
-      margin: 0;
+      margin: 0.25rem 0 0;
       font-size: 1rem;
+      color: #475569;
+    }
+    .selftest__status {
+      margin: 1.5rem 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 0.75rem;
+    }
+    .selftest__status-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+      padding-bottom: 0.5rem;
+    }
+    .selftest__status-item dt {
+      margin: 0;
+      font-weight: 600;
+      color: #0f172a;
+    }
+    .selftest__status-item dd {
+      margin: 0;
+      font-weight: 500;
+      color: #0f172a;
+    }
+    .selftest__detail {
+      margin-top: 1.25rem;
+      font-size: 0.95rem;
+      color: #0f172a;
+    }
+    .selftest__detail code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.85rem;
+      background: rgba(148, 163, 184, 0.15);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
     }
   </style>
 </head>
 <body>
-  <div class="selftest">
-    <h1>✅ Druck-Routing aktiv</h1>
-    <p>Fenster-Öffnen funktioniert. Bitte Pop-up-Blocker beachten.</p>
+  <div class="selftest" role="status">
+    <h1 data-selftest-heading>Warte auf Druckdaten …</h1>
+    <p data-selftest-summary>Diese Seite wurde ohne Druck-Token geöffnet. Bitte starte den Selftest direkt aus dem Rechner.</p>
+    <dl class="selftest__status">
+      <div class="selftest__status-item">
+        <dt>SessionStorage</dt>
+        <dd data-selftest-session>–</dd>
+      </div>
+      <div class="selftest__status-item">
+        <dt>postMessage</dt>
+        <dd data-selftest-message>–</dd>
+      </div>
+    </dl>
+    <p class="selftest__detail" data-selftest-detail hidden></p>
   </div>
   <script>
-    console.log('druck.selftest ok');
+    (function () {
+      var heading = document.querySelector('[data-selftest-heading]');
+      var summary = document.querySelector('[data-selftest-summary]');
+      var sessionStatus = document.querySelector('[data-selftest-session]');
+      var messageStatus = document.querySelector('[data-selftest-message]');
+      var detailBox = document.querySelector('[data-selftest-detail]');
+      var MESSAGE_TYPE = 'WS_Druck';
+      var MESSAGE_REQUEST = 'WS_Druck_REQUEST';
+      var REQUEST_TIMEOUT = 4000;
+
+      function normalizeStatus(target, text) {
+        if (target) {
+          target.textContent = text;
+        }
+      }
+
+      function showDetail(text) {
+        if (!detailBox) {
+          return;
+        }
+        if (text) {
+          detailBox.hidden = false;
+          detailBox.textContent = text;
+        } else {
+          detailBox.hidden = true;
+          detailBox.textContent = '';
+        }
+      }
+
+      function getToken() {
+        try {
+          var url = new URL(window.location.href);
+          var token = url.searchParams.get('k');
+          if (token) {
+            return token;
+          }
+        } catch (error) {
+          // ignore
+        }
+        var hash = window.location.hash || '';
+        if (hash.indexOf('k=') !== -1) {
+          return hash.split('k=')[1];
+        }
+        return '';
+      }
+
+      function readSession(token) {
+        try {
+          var storage = window.sessionStorage;
+          if (!storage) {
+            return null;
+          }
+          var key = 'druck:' + token;
+          var value = storage.getItem(key);
+          if (value != null) {
+            storage.removeItem(key);
+          }
+          return value;
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function requestViaOpener(token) {
+        return new Promise(function (resolve, reject) {
+          if (!token) {
+            reject(new Error('Kein Token übergeben.'));
+            return;
+          }
+          var opener = window.opener;
+          if (!opener || typeof opener.postMessage !== 'function') {
+            reject(new Error('Kein Ursprungsfenster erreichbar.'));
+            return;
+          }
+          var timer = setTimeout(function () {
+            cleanup();
+            reject(new Error('Keine Antwort über postMessage.'));
+          }, REQUEST_TIMEOUT);
+
+          function cleanup() {
+            window.removeEventListener('message', handleMessage);
+            if (timer) {
+              clearTimeout(timer);
+              timer = null;
+            }
+          }
+
+          function handleMessage(event) {
+            var originOk = !event.origin || event.origin === window.location.origin;
+            if (!originOk) {
+              return;
+            }
+            var data = event.data;
+            if (!data || data.type !== MESSAGE_TYPE || data.token !== token) {
+              return;
+            }
+            cleanup();
+            resolve(data.payload || '');
+          }
+
+          window.addEventListener('message', handleMessage);
+          try {
+            opener.postMessage({ type: MESSAGE_REQUEST, token: token }, '*');
+          } catch (error) {
+            cleanup();
+            reject(error);
+          }
+        });
+      }
+
+      var token = getToken();
+      if (!token) {
+        normalizeStatus(sessionStatus, '⚠️ Token fehlt');
+        normalizeStatus(messageStatus, '⚠️ Token fehlt');
+        return;
+      }
+
+      if (summary) {
+        summary.textContent = 'Token ' + token + ' empfangen – teste Übertragungswege …';
+      }
+
+      var serialized = readSession(token);
+      var parsed = null;
+      if (serialized) {
+        normalizeStatus(sessionStatus, '✅ OK');
+        try {
+          parsed = JSON.parse(serialized);
+        } catch (error) {
+          parsed = null;
+        }
+        if (heading) {
+          heading.textContent = 'OK (sessionStorage)';
+        }
+      } else {
+        normalizeStatus(sessionStatus, '❌ keine Daten');
+      }
+
+      if (window.opener && typeof window.opener.postMessage === 'function') {
+        normalizeStatus(messageStatus, '⏳ teste …');
+        requestViaOpener(token)
+          .then(function (payload) {
+            normalizeStatus(messageStatus, '✅ OK');
+            if (!serialized) {
+              try {
+                parsed = JSON.parse(payload);
+              } catch (error) {
+                parsed = null;
+              }
+              if (heading) {
+                heading.textContent = 'OK (postMessage)';
+              }
+            }
+            if (summary && !serialized) {
+              summary.textContent = 'Daten via postMessage geladen.';
+            }
+            if (summary && serialized) {
+              summary.textContent = 'Beide Übertragungswege erreichbar.';
+            }
+            if (parsed) {
+              showDetail('Beispiel: Teil "' + (parsed.state && parsed.state.partName ? parsed.state.partName : 'ohne Namen') + '" – Betrag ' + (parsed.state && parsed.state.gross ? parsed.state.gross : 'n/a') + '.');
+            }
+          })
+          .catch(function (error) {
+            normalizeStatus(messageStatus, '❌ ' + (error && error.message ? error.message : 'Fehler'));
+            if (!serialized && heading) {
+              heading.textContent = 'Fehler beim Drucken';
+            }
+            if (summary) {
+              if (serialized) {
+                summary.textContent = 'SessionStorage OK, postMessage fehlgeschlagen.';
+              } else {
+                summary.textContent = 'Es konnten keine Druckdaten geladen werden.';
+              }
+            }
+          });
+      } else {
+        normalizeStatus(messageStatus, '⚠️ kein Ursprungsfenster');
+        if (!serialized && heading) {
+          heading.textContent = 'Keine Daten verfügbar';
+        }
+        if (serialized && summary) {
+          summary.textContent = 'SessionStorage OK, kein Ursprungsfenster für postMessage.';
+        }
+      }
+    })();
   </script>
 </body>
 </html>
