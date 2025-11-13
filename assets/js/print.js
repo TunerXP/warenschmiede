@@ -123,9 +123,8 @@
     return postalValue + ' ' + cityValue;
   }
 
-  var PRINT_STORAGE_KEY_OFFER = 'ws:angebot';
-  var PRINT_STORAGE_KEY_INVOICE = 'ws:rechnung';
-  var PRINT_STORAGE_KEY_RESULT = 'ws:ergebnis';
+  var PRINT_STORAGE_PREFIX = 'ws:print:';
+  var PRINT_STORAGE_PARAM = 'k';
 
   function safeStorage(type) {
     try {
@@ -158,35 +157,31 @@
     return '';
   }
 
-  function resolveStorageKey(target) {
-    var normalized = normalizePrintTarget(target);
-    if (normalized === 'offer') {
-      return PRINT_STORAGE_KEY_OFFER;
+  function resolvePayloadKeyFromQuery() {
+    var search = window.location.search || '';
+    if (!search) {
+      return '';
     }
-    if (normalized === 'invoice') {
-      return PRINT_STORAGE_KEY_INVOICE;
-    }
-    if (normalized === 'result') {
-      return PRINT_STORAGE_KEY_RESULT;
-    }
-    return '';
-  }
-
-  function getPreferredStorageTarget(renderTarget) {
-    var hash = window.location.hash || '';
-    if (hash) {
-      var hashTarget = normalizePrintTarget(hash.replace(/^#/, ''));
-      if (hashTarget && resolveStorageKey(hashTarget)) {
-        return hashTarget;
+    var key = '';
+    try {
+      var params = new URLSearchParams(search);
+      key = params.get(PRINT_STORAGE_PARAM) || '';
+    } catch (error) {
+      var match = search.match(new RegExp('[?&]' + PRINT_STORAGE_PARAM + '=([^&#]+)'));
+      if (match && match[1]) {
+        key = decodeURIComponent(match[1]);
       }
     }
-    return renderTarget;
+    var normalized = normalizeString(key);
+    if (!normalized) {
+      return '';
+    }
+    return normalized.replace(/[^a-z0-9_-]/gi, '');
   }
 
-  function loadPayload(target) {
+  function loadPayloadByKey(key) {
     return new Promise(function (resolve) {
-      var storageKey = resolveStorageKey(target);
-      if (!storageKey) {
+      if (!key) {
         resolve(null);
         return;
       }
@@ -195,15 +190,15 @@
         resolve(null);
         return;
       }
+      var storageKey = PRINT_STORAGE_PREFIX + key;
       var serialized = storage.getItem(storageKey);
       if (!serialized) {
         resolve(null);
         return;
       }
+      storage.removeItem(storageKey);
       try {
-        var payload = JSON.parse(serialized);
-        storage.removeItem(storageKey);
-        resolve(payload);
+        resolve(JSON.parse(serialized));
       } catch (error) {
         console.warn('print payload parse error', error);
         resolve(null);
@@ -259,8 +254,8 @@
     var offerState = state.offer || {};
     var provider = snapshot.provider || {};
     var customer = snapshot.customer || {};
-    var vendorColumn = document.querySelector('[data-offer-column="vendor"]');
-    var customerColumn = document.querySelector('[data-offer-column="customer"]');
+    var vendorColumn = document.querySelector('[data-print-column="vendor"]');
+    var customerColumn = document.querySelector('[data-print-column="customer"]');
     var hasVendor = !!offerState.hasVendor;
     var hasCustomer = !!offerState.hasCustomer;
     if (vendorColumn) {
@@ -269,7 +264,7 @@
     if (customerColumn) {
       toggleNode(customerColumn, hasCustomer);
     }
-    var container = document.querySelector('.calc-print__offer-columns');
+    var container = document.querySelector('[data-print-columns]');
     if (container) {
       toggleNode(container, hasVendor || hasCustomer);
     }
@@ -363,10 +358,27 @@
     setText('printOfferQuantity', '1');
     setText('printOfferUnitPrice', formatCurrency(state.net));
     setText('printOfferLineTotal', formatCurrency(state.net));
-    setText('printOfferNet', formatCurrency(state.net));
-    setText('printOfferGross', formatCurrency(state.gross));
-    setText('printOfferVat', formatCurrency(vatAmount));
-    toggleElement('printOfferVatRow', vatIncluded);
+    setText('printOfferSummaryNet', formatCurrency(state.net));
+    setText('printOfferSummaryGross', formatCurrency(state.gross));
+
+    var grossRow = $('printOfferGrossRow');
+    if (grossRow) {
+      var showGross = !!state.vatIncluded && vatAmount > 0.0005;
+      grossRow.hidden = !showGross;
+      grossRow.setAttribute('aria-hidden', showGross ? 'false' : 'true');
+    }
+    var summaryNote = $('printOfferSummaryNote');
+    if (summaryNote) {
+      if (!state.vatIncluded || vatAmount <= 0.0005) {
+        summaryNote.textContent = 'Hinweis: §19 UStG – keine Umsatzsteuer.';
+        summaryNote.hidden = false;
+        summaryNote.setAttribute('aria-hidden', 'false');
+      } else {
+        summaryNote.textContent = '';
+        summaryNote.hidden = true;
+        summaryNote.setAttribute('aria-hidden', 'true');
+      }
+    }
 
     setText('printOfferPaymentInline', normalizeString(docs.zahlungsbedingungen) || '–');
     toggleOfferNote(payload);
@@ -415,16 +427,22 @@
     setText('printInvoiceSubtotal', formatCurrency(state.net));
     setText('printInvoiceVat', formatCurrency(vatAmount));
     setText('printInvoiceGross', formatCurrency(state.gross));
-    toggleElement('printInvoiceVatRow', vatIncluded);
+    var vatRowVisible = !!state.vatIncluded && vatAmount > 0.0005;
+    toggleElement('printInvoiceVatRow', vatRowVisible);
+    var vatRateValue = 0;
+    if (state.vatIncluded && state.net > 0.0005) {
+      vatRateValue = Math.max(((state.gross - state.net) / state.net) * 100, 0);
+    }
+    setText('printInvoiceVatRate', vatRowVisible ? formatPercentInteger(vatRateValue) + '\u00A0%' : '');
 
     var vatNote = $('printInvoiceVatNote');
     if (vatNote) {
-      if (state.vatIncluded) {
+      if (state.vatIncluded && vatAmount > 0.0005) {
         vatNote.textContent = '';
         vatNote.hidden = true;
         vatNote.setAttribute('aria-hidden', 'true');
       } else {
-        vatNote.textContent = 'Gemäß § 19 UStG wird keine Umsatzsteuer ausgewiesen.';
+        vatNote.textContent = 'Gemäß §19 UStG wird keine Umsatzsteuer ausgewiesen.';
         vatNote.hidden = false;
         vatNote.setAttribute('aria-hidden', 'false');
       }
@@ -758,7 +776,7 @@
     return root.children && root.children.length > 0;
   }
 
-  function renderError(message) {
+  function renderError(message, headingText) {
     var root = document.getElementById('printRoot');
     if (!root) {
       document.body.textContent = message;
@@ -772,7 +790,7 @@
     var errorWrapper = document.createElement('div');
     errorWrapper.className = 'print-error';
     var heading = document.createElement('h1');
-    heading.textContent = 'Druckdaten nicht verfügbar';
+    heading.textContent = headingText || 'Druckdaten nicht verfügbar';
     var paragraph = document.createElement('p');
     paragraph.textContent = message;
     errorWrapper.appendChild(heading);
@@ -782,25 +800,28 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     var targetAttr = document.body && document.body.getAttribute('data-print-target');
-    var renderTarget = normalizePrintTarget(targetAttr);
-    var storageTarget = getPreferredStorageTarget(renderTarget);
-    loadPayload(storageTarget)
+    var renderTarget = normalizePrintTarget(targetAttr) || 'offer';
+    var payloadKey = resolvePayloadKeyFromQuery();
+    if (!payloadKey) {
+      renderError('Bitte den Rechner neu laden und erneut drucken.', 'Keine Druckdaten gefunden');
+      return;
+    }
+    loadPayloadByKey(payloadKey)
       .then(function (payload) {
-        var finalTarget = renderTarget || storageTarget || 'offer';
         if (!payload) {
-          renderError('Druckdaten nicht verfügbar.');
+          renderError('Bitte den Rechner neu laden und erneut drucken.', 'Keine Druckdaten gefunden');
           return;
         }
         try {
-          renderPayload(finalTarget, payload);
+          renderPayload(renderTarget, payload);
         } catch (error) {
           console.error('print render error', error);
-          renderError(error && error.message ? error.message : 'Unbekannter Fehler.');
+          renderError(error && error.message ? error.message : 'Unbekannter Fehler.', 'Fehler beim Rendern');
         }
       })
       .catch(function (error) {
         console.error('print render load error', error);
-        renderError(error && error.message ? error.message : 'Druckdaten nicht verfügbar.');
+        renderError('Bitte den Rechner neu laden und erneut drucken.', 'Keine Druckdaten gefunden');
       });
   });
 })();
