@@ -1,6 +1,6 @@
 @page {
   size: A4;
-  margin: 14mm;
+  margin: 12mm;
 }
 
 :root {
@@ -11,28 +11,254 @@
   --print-footer-font: 0.78rem;
 }
 
-.print-body {
+body.print-body {
   margin: 0;
-  background: #f8fafc;
+  min-height: 100vh;
+  background: #f3f5f9;
   color: #0f172a;
   font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   display: flex;
   justify-content: center;
-  padding: 24px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.print-wrapper {
+  width: 100%;
+  max-width: 210mm;
+  background: transparent;
 }
 
 .print-doc {
-  width: min(210mm, 100%);
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
-  overflow: hidden;
+  width: 100%;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
 }
 
 .print-doc table {
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
+}
+
+@media print {
+  body.print-body {
+    background: #fff;
+    padding: 0;
+    display: block;
+  }
+  .print-page {
+    box-shadow: none;
+    border-radius: 0;
+  }
+}
+
+.print-header {
+  margin-bottom: 8mm;
+}
+
+.print-title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+.print-part {
+  margin: 2mm 0 0;
+  font-size: 13px;
+  color: #475569;
+}
+
+.print-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8mm;
+  margin-bottom: 8mm;
+}
+
+.print-card {
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  border-radius: 8px;
+  padding: 6mm;
+  background: #fff;
+}
+
+.print-card-title {
+  margin: 0 0 3mm;
+  font-size: 15px;
+  color: #0f172a;
+}
+
+.print-details {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2.2mm;
+}
+
+.print-details dt {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+}
+
+.print-details dd {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.print-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 6px 12px;
+  padding: 8px 12px;
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  border-radius: 8px;
+  background: #f8fafc;
+  margin-bottom: 8mm;
+}
+
+.print-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.print-info-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+
+.print-info-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.print-table-section {
+  margin-top: 6mm;
+}
+
+.print-table-wrapper {
+  position: relative;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.print-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.print-table thead th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #475569;
+  background: rgba(226, 232, 240, 0.6);
+  font-weight: 600;
+}
+
+.print-table tbody td {
+  padding: 9px 12px;
+  font-size: 13px;
+  color: #0f172a;
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.print-table thead th:first-child,
+.print-table tbody td:first-child {
+  text-align: center;
+  width: 10%;
+}
+
+.print-table thead th:nth-child(3),
+.print-table tbody td:nth-child(3) {
+  width: 14%;
+  text-align: right;
+}
+
+.print-table thead th:nth-child(4),
+.print-table tbody td:nth-child(4),
+.print-table thead th:nth-child(5),
+.print-table tbody td:nth-child(5) {
+  width: 18%;
+  text-align: right;
+}
+
+.print-table tbody td:last-child {
+  font-variant-numeric: tabular-nums;
+}
+
+.print-summary {
+  margin-top: 7mm;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: grid;
+  gap: 6px;
+  background: rgba(248, 250, 252, 0.8);
+}
+
+.print-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.print-summary-row span {
+  color: #475569;
+  font-weight: 500;
+}
+
+.print-summary-note {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #475569;
+}
+
+.print-payment {
+  margin-top: 6mm;
+  border-top: 1px dashed rgba(148, 163, 184, 0.7);
+  padding-top: 4mm;
+}
+
+.print-payment-line {
+  margin: 0 0 2mm;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.print-note {
+  margin-top: 8mm;
+  font-size: 12px;
+  color: #475569;
+}
+
+.print-footer {
+  padding: 10px 0 0;
+  text-align: center;
+}
+
+.print-footer-text {
+  margin: 0;
+  font-size: 11px;
+  color: #475569;
 }
 
 .print-doc th,
@@ -291,102 +517,22 @@
   color: #475569;
 }
 
-.print-table-wrapper {
-  position: relative;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  border-radius: 16px;
-  overflow: hidden;
-  background: #fff;
-}
-
-.print-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-.print-table thead th {
-  text-align: left;
-  padding: 10px 14px;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #475569;
-  background: rgba(226, 232, 240, 0.5);
-  font-weight: 600;
-}
-
-.print-table tbody td,
-.print-table tfoot td {
-  padding: 12px 14px;
-  font-size: 0.9rem;
-  color: #0f172a;
-  border-top: 1px solid rgba(148, 163, 184, 0.25);
-}
-
-.print-table thead th:first-child,
-.print-table tbody td:first-child {
-  text-align: center;
-  width: 11%;
-}
-
-.print-table thead th:nth-child(3),
-.print-table tbody td:nth-child(3) {
-  width: 14%;
-  text-align: right;
-}
-
-.print-table thead th:nth-child(4),
-.print-table tbody td:nth-child(4),
-.print-table thead th:nth-child(5),
-.print-table tbody td:nth-child(5) {
-  width: 18%;
-  text-align: right;
-}
-
-.print-table td:last-child,
-.print-table th:last-child {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-.print-table tfoot td {
-  font-weight: 600;
-  font-size: 0.95rem;
-  background: rgba(241, 245, 249, 0.65);
-}
-
 .paid-stamp {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(-18deg);
-  color: #16a34a;
+  color: rgba(22, 163, 74, 0.8);
   font-weight: 800;
-  font-size: clamp(28px, 7vw, 58px);
+  font-size: clamp(20px, 5vw, 42px);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  opacity: 0.14;
+  opacity: 0.22;
   pointer-events: none;
   white-space: nowrap;
   text-align: center;
-  max-width: 60%;
-  width: 100%;
+  width: 55%;
   line-height: 1;
-}
-
-.print-footer {
-  padding: 12px 18px;
-  background: #fff;
-  border-top: 1px solid rgba(148, 163, 184, 0.25);
-  text-align: center;
-}
-
-.print-footer .ws-brand {
-  display: block;
-  font-size: var(--print-footer-font);
-  color: #64748b;
-  letter-spacing: 0.01em;
 }
 
 .calc-print__note-card {
@@ -492,7 +638,22 @@
 }
 
 .print-page {
-  width: 210mm;
+  width: 100%;
+  max-width: 210mm;
+  background: #fff;
+  padding: 18mm 20mm 16mm;
+  margin: 0 auto;
+  box-sizing: border-box;
+  border-radius: 6px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+body[data-print-target="result"] .print-page {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .calc-print__page--inputs {

@@ -25,8 +25,8 @@
     };
   };
 
-  var PRINT_STORAGE_KEY_OFFER = 'ws:angebot';
-  var PRINT_STORAGE_KEY_INVOICE = 'ws:rechnung';
+  var PRINT_STORAGE_PREFIX = 'ws:print:';
+  var PRINT_STORAGE_PARAM = 'k';
   var PRINT_POPUP_EVENT_BLOCKED = 'ws:print-popup-blocked';
   var PRINT_POPUP_EVENT_CLEAR = 'ws:print-popup-clear';
 
@@ -5196,8 +5196,8 @@
             showPrintPopupHint(detail && detail.url ? detail.url : '');
           });
 
-          function persistPrintPayloadForSession(storageKey) {
-            if (!storageKey) {
+          function persistPrintPayloadForSession(target) {
+            if (!target) {
               throw new Error('Druckziel nicht definiert.');
             }
             if (!lastValidState) {
@@ -5212,7 +5212,13 @@
               throw new Error('Druckdaten konnten nicht zwischengespeichert werden.');
             }
             try {
-              session.setItem(storageKey, serialized);
+              var key = [
+                target,
+                Date.now().toString(36),
+                Math.random().toString(36).slice(2, 8)
+              ].join('-');
+              session.setItem(PRINT_STORAGE_PREFIX + key, serialized);
+              return key;
             } catch (error) {
               throw new Error('Druckdaten konnten nicht zwischengespeichert werden.');
             }
@@ -5221,8 +5227,8 @@
           buildOfferUrl = function () {
             clearInvoiceError();
             try {
-              persistPrintPayloadForSession(PRINT_STORAGE_KEY_OFFER);
-              return '/druck/angebot.html#angebot';
+              var key = persistPrintPayloadForSession('offer');
+              return '/druck/angebot.html?' + PRINT_STORAGE_PARAM + '=' + encodeURIComponent(key);
             } catch (error) {
               console.error('buildOfferUrl error', error);
               window.alert(error && error.message ? error.message : 'Druckansicht konnte nicht geöffnet werden.');
@@ -5235,8 +5241,8 @@
               return '';
             }
             try {
-              persistPrintPayloadForSession(PRINT_STORAGE_KEY_INVOICE);
-              return '/druck/rechnung.html#rechnung';
+              var key = persistPrintPayloadForSession('invoice');
+              return '/druck/rechnung.html?' + PRINT_STORAGE_PARAM + '=' + encodeURIComponent(key);
             } catch (error) {
               console.error('buildInvoiceUrl error', error);
               window.alert(error && error.message ? error.message : 'Druckansicht konnte nicht geöffnet werden.');

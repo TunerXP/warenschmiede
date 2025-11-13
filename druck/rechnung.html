@@ -7,164 +7,157 @@
   <link rel="stylesheet" href="/assets/css/print.css">
 </head>
 <body class="print-body" data-print-target="invoice">
-  <main class="calc-print print-doc" id="printRoot" aria-labelledby="printPageTitle">
-    <div class="print-page" data-page="invoice">
-      <div class="calc-print__page" data-page="invoice">
-        <div class="calc-print__page-heading">
-          <h1 class="calc-print__title" id="printPageTitle">Rechnung</h1>
-          <p class="calc-print__part" id="printHeaderPartName" hidden>Teilename: <span id="printHeaderPartNameValue"></span></p>
+  <main class="calc-print print-doc print-wrapper" id="printRoot" aria-labelledby="printPageTitle">
+    <section class="print-page" data-page="invoice">
+      <header class="print-header">
+        <div>
+          <h1 class="print-title" id="printPageTitle">Rechnung</h1>
+          <p class="print-part" id="printHeaderPartName" hidden>Teilename: <span id="printHeaderPartNameValue"></span></p>
         </div>
+      </header>
 
-        <section class="calc-print__offer" aria-labelledby="printOfferHeading">
-          <h2 class="sr-only" id="printOfferHeading">Rechnungskopf</h2>
-          <div class="calc-print__offer-columns">
-            <div class="calc-print__offer-column pdf-card" aria-labelledby="printOfferVendorTitle" data-offer-column="vendor">
-              <h3 class="calc-print__offer-heading" id="printOfferVendorTitle">Anbieter</h3>
-              <dl class="calc-print__offer-list">
-                <div class="calc-print__offer-row" data-offer-row="vendorName">
-                  <dt>Firma / Name</dt>
-                  <dd id="printOfferVendorName">–</dd>
-                </div>
-                <div class="calc-print__offer-row" data-offer-row="vendorContact">
-                  <dt>Ansprechpartner</dt>
-                  <dd id="printOfferVendorContact">–</dd>
-                </div>
-                <div class="calc-print__offer-row" data-offer-row="vendorStreet">
-                  <dt>Straße</dt>
-                  <dd id="printOfferVendorStreet">–</dd>
-                </div>
-                <div class="calc-print__offer-row" data-offer-row="vendorPostal">
-                  <dt>PLZ / Ort</dt>
-                  <dd id="printOfferVendorPostal">–</dd>
-                </div>
-                <div class="calc-print__offer-row" data-offer-row="vendorEmail">
-                  <dt>E-Mail</dt>
-                  <dd id="printOfferVendorEmail">–</dd>
-                </div>
-                <div class="calc-print__offer-row" data-offer-row="vendorPhone">
-                  <dt>Telefon</dt>
-                  <dd id="printOfferVendorPhone">–</dd>
-                </div>
-                <div class="calc-print__offer-row" data-offer-row="vendorVat">
-                  <dt>USt-IdNr.</dt>
-                  <dd id="printOfferVendorVat">–</dd>
-                </div>
-                <div class="calc-print__offer-row" data-offer-row="vendorIban">
-                  <dt>IBAN</dt>
-                  <dd id="printOfferVendorIban">–</dd>
-                </div>
-                <div class="calc-print__offer-row" data-offer-row="vendorBic">
-                  <dt>BIC</dt>
-                  <dd id="printOfferVendorBic">–</dd>
-                </div>
-                <div class="calc-print__offer-row" data-offer-row="vendorBankName">
-                  <dt>Bank</dt>
-                  <dd id="printOfferVendorBank">–</dd>
-                </div>
-              </dl>
+      <section class="print-columns" data-print-columns>
+        <article class="print-card" data-print-column="vendor" aria-labelledby="printOfferVendorTitle">
+          <h2 class="print-card-title" id="printOfferVendorTitle">Anbieter</h2>
+          <dl class="print-details">
+            <div>
+              <dt>Firma / Name</dt>
+              <dd id="printOfferVendorName">–</dd>
             </div>
-            <div class="calc-print__offer-column pdf-card" aria-labelledby="printOfferCustomerTitle" data-offer-column="customer">
-              <h3 class="calc-print__offer-heading" id="printOfferCustomerTitle">Kunde</h3>
-              <dl class="calc-print__offer-list">
-                <div class="calc-print__offer-row" data-offer-row="customerName">
-                  <dt>Firma / Name</dt>
-                  <dd id="printOfferCustomerName">–</dd>
-                </div>
-                <div class="calc-print__offer-row" data-offer-row="customerContact">
-                  <dt>Ansprechpartner</dt>
-                  <dd id="printOfferCustomerContact">–</dd>
-                </div>
-                <div class="calc-print__offer-row" data-offer-row="customerStreet">
-                  <dt>Straße</dt>
-                  <dd id="printOfferCustomerStreet">–</dd>
-                </div>
-                <div class="calc-print__offer-row" data-offer-row="customerPostal">
-                  <dt>PLZ / Ort</dt>
-                  <dd id="printOfferCustomerPostal">–</dd>
-                </div>
-                <div class="calc-print__offer-row" data-offer-row="customerEmail">
-                  <dt>E-Mail</dt>
-                  <dd id="printOfferCustomerEmail">–</dd>
-                </div>
-                <div class="calc-print__offer-row" data-offer-row="customerPhone">
-                  <dt>Telefon</dt>
-                  <dd id="printOfferCustomerPhone">–</dd>
-                </div>
-              </dl>
+            <div>
+              <dt>Ansprechpartner</dt>
+              <dd id="printOfferVendorContact">–</dd>
             </div>
-          </div>
-          <div class="calc-print__offer-meta" aria-label="Angaben zum Angebot" id="printOfferMetaContainer">
-            <ul class="calc-print__offer-meta-list">
-              <li class="calc-print__offer-meta-item" id="printOfferMetaNumber">Angebots-Nr.: <span id="printOfferNumber">–</span></li>
-              <li class="calc-print__offer-meta-item" id="printOfferMetaDate">Datum: <span id="printOfferDate">–</span></li>
-              <li class="calc-print__offer-meta-item" id="printOfferMetaValid">Gültig bis: <span id="printOfferValidUntil">–</span></li>
-              <li class="calc-print__offer-meta-item" id="printOfferMetaDelivery">Lieferzeit: <span id="printOfferDelivery">–</span></li>
-              <li class="calc-print__offer-meta-item" id="printOfferMetaPayment">Zahlungsbedingungen: <span id="printOfferPayment">–</span></li>
-            </ul>
-          </div>
-          <div class="calc-print__offer-meta" aria-label="Rechnungsangaben" id="printInvoiceMetaContainer">
-            <ul class="calc-print__offer-meta-list">
-              <li class="calc-print__offer-meta-item" id="printInvoiceMetaNumber">Rechnungs-Nr.: <span id="printInvoiceNumber">–</span></li>
-              <li class="calc-print__offer-meta-item" id="printInvoiceMetaDate">Datum: <span id="printInvoiceDateMeta">–</span></li>
-              <li class="calc-print__offer-meta-item" id="printInvoiceMetaService">Leistungsdatum: <span id="printInvoiceServiceDate">–</span></li>
-            </ul>
-          </div>
-        </section>
+            <div>
+              <dt>Straße</dt>
+              <dd id="printOfferVendorStreet">–</dd>
+            </div>
+            <div>
+              <dt>PLZ / Ort</dt>
+              <dd id="printOfferVendorPostal">–</dd>
+            </div>
+            <div>
+              <dt>E-Mail</dt>
+              <dd id="printOfferVendorEmail">–</dd>
+            </div>
+            <div>
+              <dt>Telefon</dt>
+              <dd id="printOfferVendorPhone">–</dd>
+            </div>
+            <div>
+              <dt>USt-IdNr.</dt>
+              <dd id="printOfferVendorVat">–</dd>
+            </div>
+            <div>
+              <dt>IBAN</dt>
+              <dd id="printOfferVendorIban">–</dd>
+            </div>
+            <div>
+              <dt>BIC</dt>
+              <dd id="printOfferVendorBic">–</dd>
+            </div>
+            <div>
+              <dt>Bank</dt>
+              <dd id="printOfferVendorBank">–</dd>
+            </div>
+          </dl>
+        </article>
+        <article class="print-card" data-print-column="customer" aria-labelledby="printOfferCustomerTitle">
+          <h2 class="print-card-title" id="printOfferCustomerTitle">Kunde</h2>
+          <dl class="print-details">
+            <div>
+              <dt>Firma / Name</dt>
+              <dd id="printOfferCustomerName">–</dd>
+            </div>
+            <div>
+              <dt>Ansprechpartner</dt>
+              <dd id="printOfferCustomerContact">–</dd>
+            </div>
+            <div>
+              <dt>Straße</dt>
+              <dd id="printOfferCustomerStreet">–</dd>
+            </div>
+            <div>
+              <dt>PLZ / Ort</dt>
+              <dd id="printOfferCustomerPostal">–</dd>
+            </div>
+            <div>
+              <dt>E-Mail</dt>
+              <dd id="printOfferCustomerEmail">–</dd>
+            </div>
+            <div>
+              <dt>Telefon</dt>
+              <dd id="printOfferCustomerPhone">–</dd>
+            </div>
+          </dl>
+        </article>
+      </section>
 
-        <section class="print-invoice" aria-labelledby="printInvoiceDetailsHeading">
-          <h2 class="sr-only" id="printInvoiceDetailsHeading">Rechnungsdetails</h2>
-          <div class="print-table-wrapper">
-            <div class="paid-stamp" id="printPaidStamp" hidden aria-hidden="true">BEZAHLT</div>
-            <table class="print-table" aria-describedby="printInvoiceDetailsHeading">
-              <thead>
-                <tr>
-                  <th scope="col">Pos.</th>
-                  <th scope="col">Beschreibung</th>
-                  <th scope="col">Menge</th>
-                  <th scope="col">Einzelpreis</th>
-                  <th scope="col">Summe</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td id="printInvoiceDescription">–</td>
-                  <td id="printInvoiceQuantity">1</td>
-                  <td id="printInvoiceUnitPrice">0,00&nbsp;€</td>
-                  <td id="printInvoiceNet">0,00&nbsp;€</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td colspan="4">Zwischensumme (netto)</td>
-                  <td id="printInvoiceSubtotal">0,00&nbsp;€</td>
-                </tr>
-                <tr id="printInvoiceVatRow">
-                  <td colspan="4">MwSt.</td>
-                  <td id="printInvoiceVat">0,00&nbsp;€</td>
-                </tr>
-                <tr>
-                  <td colspan="4">Summe (brutto)</td>
-                  <td id="printInvoiceGross">0,00&nbsp;€</td>
-                </tr>
-              </tfoot>
-            </table>
-            <p class="print-invoice__vat-note" id="printInvoiceVatNote"></p>
-          </div>
-          <div class="print-invoice__payment" id="printInvoicePayment">
-            <p class="print-invoice__payment-line print-invoice__payment-paid" id="printInvoicePaidLine" hidden>Bereits bezahlt am <span id="printInvoicePaidDate">–</span></p>
-            <p class="print-invoice__payment-line print-invoice__payment-due" id="printInvoiceDueLine" hidden>Fällig bis <span id="printInvoiceDueDate">–</span></p>
-          </div>
-          <aside class="print-invoice__note-card" id="printInvoiceNoteCard" hidden aria-labelledby="printInvoiceNoteTitle">
-            <h2 class="print-invoice__note-title" id="printInvoiceNoteTitle">Notiz</h2>
-            <p class="print-invoice__note-text" id="printInvoiceNoteValue"></p>
-          </aside>
-          <p class="print-footer-note invoice-only">Bitte bei Überweisungen die Rechnungsnummer angeben.</p>
-        </section>
-      </div>
-    </div>
-    <footer class="print-footer" id="ws-print-footer">
-      <span class="ws-brand">Dieses Dokument wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt. Transparente Preise – Made in Germany.</span>
+      <section class="print-info" id="printInvoiceMetaContainer" aria-label="Rechnungsangaben">
+        <div class="print-info-item" id="printInvoiceMetaNumber">
+          <span class="print-info-label">Rechnungs-Nr.</span>
+          <strong class="print-info-value" id="printInvoiceNumber">–</strong>
+        </div>
+        <div class="print-info-item" id="printInvoiceMetaDate">
+          <span class="print-info-label">Rechnungsdatum</span>
+          <strong class="print-info-value" id="printInvoiceDateMeta">–</strong>
+        </div>
+        <div class="print-info-item" id="printInvoiceMetaService">
+          <span class="print-info-label">Leistungsdatum</span>
+          <strong class="print-info-value" id="printInvoiceServiceDate">–</strong>
+        </div>
+      </section>
+
+      <section class="print-table-section">
+        <div class="print-table-wrapper">
+          <div class="paid-stamp" id="printPaidStamp" hidden aria-hidden="true">BEZAHLT</div>
+          <table class="print-table" aria-label="Positionen">
+            <thead>
+              <tr>
+                <th scope="col">Pos.</th>
+                <th scope="col">Beschreibung</th>
+                <th scope="col">Menge</th>
+                <th scope="col">Einzelpreis</th>
+                <th scope="col">Summe</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td id="printInvoiceDescription">–</td>
+                <td id="printInvoiceQuantity">1</td>
+                <td id="printInvoiceUnitPrice">0,00&nbsp;€</td>
+                <td id="printInvoiceNet">0,00&nbsp;€</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="print-summary" aria-label="Summen">
+        <div class="print-summary-row">
+          <span>Zwischensumme (netto)</span>
+          <strong id="printInvoiceSubtotal">0,00&nbsp;€</strong>
+        </div>
+        <div class="print-summary-row" id="printInvoiceVatRow" hidden aria-hidden="true">
+          <span>MwSt. (<span id="printInvoiceVatRate">19&nbsp;%</span>)</span>
+          <strong id="printInvoiceVat">0,00&nbsp;€</strong>
+        </div>
+        <div class="print-summary-row">
+          <span>Summe (brutto)</span>
+          <strong id="printInvoiceGross">0,00&nbsp;€</strong>
+        </div>
+        <p class="print-summary-note" id="printInvoiceVatNote" hidden aria-hidden="true"></p>
+      </section>
+
+      <section class="print-payment" id="printInvoicePayment">
+        <p class="print-payment-line" id="printInvoicePaidLine" hidden aria-hidden="true">Bereits bezahlt am <span id="printInvoicePaidDate">–</span></p>
+        <p class="print-payment-line" id="printInvoiceDueLine" hidden aria-hidden="true">Fällig bis <span id="printInvoiceDueDate">–</span></p>
+      </section>
+    </section>
+    <footer class="print-footer">
+      <p class="print-footer-text">Bitte bei Überweisungen die Rechnungsnummer angeben.</p>
+      <p class="print-footer-text">Diese Rechnung wurde automatisch mit dem Warenschmiede-Kostenrechner erstellt. Transparente Preise – Made in Germany.</p>
     </footer>
   </main>
   <script src="/assets/js/print.js" defer></script>
