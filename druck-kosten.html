@@ -253,29 +253,33 @@
             <p class="tool-subtitle">Optimiert für Desktop und Tablet.</p>
             <div class="section-heading__actions">
               <div class="calc-primary-actions">
-                <div class="calc-save" data-save-region>
-                  <div class="calc-save__buttons">
-                    <button type="button" class="btn btn-primary btn-lg calc-save__button" id="btnSaveTop">Speichern</button>
-                    <button type="button" class="btn btn-primary btn-lg calc-save__button" id="btnLoadTop">Laden</button>
+                <div class="calc-primary-actions__row calc-primary-actions__row--tools">
+                  <div class="calc-save" data-save-region>
+                    <div class="calc-save__buttons">
+                      <button type="button" class="btn btn-primary btn-lg calc-save__button" id="btnSaveTop">Speichern</button>
+                      <button type="button" class="btn btn-primary btn-lg calc-save__button" id="btnLoadTop">Laden</button>
+                    </div>
+                    <input id="fileLoad" type="file" accept="application/json" hidden>
+                    <a class="calc-save__link" href="/kostenrechner-hinweise.html">Speichern &amp; Laden erklärt</a>
                   </div>
-                  <input id="fileLoad" type="file" accept="application/json" hidden>
-                  <a class="calc-save__link" href="#speichern-laden">Speichern &amp; Laden erklärt</a>
+                  <nav class="calc-tabs" aria-label="Bereiche">
+                    <a href="#ergebnis" class="calc-tab">Ergebnis</a>
+                    <a href="#anleitung" class="calc-tab">Anleitung</a>
+                    <a href="#glossar" class="calc-tab">Glossar</a>
+                  </nav>
+                  <div class="calc-share" data-share-region>
+                    <button class="calc-share__button" type="button" data-share-trigger data-share-url="https://www.warenschmiede.com/druck-kosten.html" data-share-title="Warenschmiede 3D-Druck-Kostenrechner" data-share-text="Berechne in Sekunden dein individuelles 3D-Druck-Angebot." data-share-success="Link kopiert – du kannst ihn jetzt an Freunde oder Kollegen senden." aria-label="Link zum Warenschmiede 3D-Druck-Rechner teilen" title="Link teilen">
+                      <span class="calc-share__icon" aria-hidden="true">🔗</span>
+                      <span class="calc-share__label">Link teilen</span>
+                    </button>
+                    <p class="calc-share__message" data-share-message role="status" aria-live="polite"></p>
+                  </div>
                 </div>
-                <nav class="calc-tabs" aria-label="Bereiche">
-                  <a href="#ergebnis" class="calc-tab">Ergebnis</a>
-                  <a href="#anleitung" class="calc-tab">Anleitung</a>
-                  <a href="#glossar" class="calc-tab">Glossar</a>
-                  <a href="#ergebnis" class="calc-tab calc-tab--primary">Zu Angebot &amp; Rechnung</a>
-                </nav>
+                <p class="calc-toast" data-calc-toast role="status" aria-live="polite" hidden></p>
+                <div class="calc-primary-actions__row calc-primary-actions__row--cta">
+                  <a href="#ergebnis" class="btn btn-primary btn-lg calc-primary-actions__cta">Zu Angebot &amp; Rechnung</a>
+                </div>
               </div>
-              <div class="calc-share" data-share-region>
-                <button class="calc-share__button" type="button" data-share-trigger data-share-url="https://www.warenschmiede.com/druck-kosten.html" data-share-title="Warenschmiede 3D-Druck-Kostenrechner" data-share-text="Berechne in Sekunden dein individuelles 3D-Druck-Angebot." data-share-success="Link kopiert – du kannst ihn jetzt an Freunde oder Kollegen senden." aria-label="Link zum Warenschmiede 3D-Druck-Rechner teilen" title="Link teilen">
-                  <span class="calc-share__icon" aria-hidden="true">🔗</span>
-                  <span class="calc-share__label">Link teilen</span>
-                </button>
-                <p class="calc-share__message" data-share-message role="status" aria-live="polite"></p>
-              </div>
-              <p class="calc-toast" data-calc-toast role="status" aria-live="polite" hidden></p>
             </div>
             <h2 id="rechner">Rechner</h2>
             <p>Wähle Material, gib Gewicht oder Länge ein und ergänze Laufzeit sowie Stromkosten – der Rest passiert automatisch.</p>
@@ -707,9 +711,12 @@
             </div>
             <span id="results"></span>
             <div class="calc-results__actions">
-              <div class="calc-results__button-group" role="group" aria-label="Druckoptionen">
-                <button type="button" class="btn btn-outline btn-offer-print" id="btnOffer">Kundenangebot drucken</button>
-                <button type="button" class="btn btn-outline btn-invoice-print" id="btnInvoice">Rechnung drucken</button>
+              <div class="calc-results__cta" aria-label="Druckoptionen">
+                <div class="calc-results__button-group" role="group">
+                  <button type="button" class="btn btn-lg btn-offer" id="btnOffer">Kundenangebot drucken</button>
+                  <button type="button" class="btn btn-lg btn-invoice" id="btnInvoice">Rechnung drucken</button>
+                </div>
+                <a class="calc-results__info-link" href="/kostenrechner-hinweise.html">Hinweise zu Speichern, Laden &amp; Haftung ansehen</a>
               </div>
               <section class="calc-extra-items" id="extraItemsSection" aria-labelledby="extraItemsTitle">
                 <div class="calc-extra-items__header">
@@ -721,9 +728,12 @@
                 </div>
                 <div class="calc-extra-items__list" id="extraItemsList" aria-live="polite"></div>
               </section>
-              <div class="result-actions">
-                <button type="button" class="btn btn-secondary btn-sm" id="btnSaveBottom">Speichern</button>
-                <button type="button" class="btn btn-sm" id="btnLoadBottom">Laden</button>
+              <div class="result-actions" aria-label="Speichern und Laden">
+                <div class="result-actions__buttons">
+                  <button type="button" class="btn btn-utility btn-sm" id="btnSaveBottom">Speichern</button>
+                  <button type="button" class="btn btn-utility btn-sm" id="btnLoadBottom">Laden</button>
+                </div>
+                <p class="result-actions__hint">Hinweis: Gespeicherte Daten verbleiben lokal in deinem Browser. Der Rechner bietet keine serverseitige Speicherung oder Datensicherung.</p>
               </div>
               <div class="calc-results__paid">
                 <label class="calc-checkbox checkbox-paid" for="markInvoicePaid">
