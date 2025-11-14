@@ -249,13 +249,24 @@
       <div class="container container--calc-wide">
         <div class="section-heading section-heading--with-action">
           <div class="section-heading__stack">
-            <h1 class="tool-title">Kostenrechner – Angebot &amp; Rechnung v1.0.0</h1>
+            <h1 class="tool-title">Kostenrechner – Angebot &amp; Rechnung v1.2.0</h1>
+            <p class="tool-subtitle">Optimiert für Desktop und Tablet.</p>
             <div class="section-heading__actions">
-              <div class="calc-save" data-save-region>
-                <button type="button" class="btn btn-secondary calc-save__button" id="btnSaveTop">Speichern</button>
-                <button type="button" class="btn calc-save__button" id="btnLoadTop">Laden</button>
-                <input id="fileLoad" type="file" accept="application/json" hidden>
-                <a class="calc-save__link" href="#speichern-laden">Speichern &amp; Laden erklärt</a>
+              <div class="calc-primary-actions">
+                <div class="calc-save" data-save-region>
+                  <div class="calc-save__buttons">
+                    <button type="button" class="btn btn-primary btn-lg calc-save__button" id="btnSaveTop">Speichern</button>
+                    <button type="button" class="btn btn-primary btn-lg calc-save__button" id="btnLoadTop">Laden</button>
+                  </div>
+                  <input id="fileLoad" type="file" accept="application/json" hidden>
+                  <a class="calc-save__link" href="#speichern-laden">Speichern &amp; Laden erklärt</a>
+                </div>
+                <nav class="calc-tabs" aria-label="Bereiche">
+                  <a href="#ergebnis" class="calc-tab">Ergebnis</a>
+                  <a href="#anleitung" class="calc-tab">Anleitung</a>
+                  <a href="#glossar" class="calc-tab">Glossar</a>
+                  <a href="#ergebnis" class="calc-tab calc-tab--primary">Zu Angebot &amp; Rechnung</a>
+                </nav>
               </div>
               <div class="calc-share" data-share-region>
                 <button class="calc-share__button" type="button" data-share-trigger data-share-url="https://www.warenschmiede.com/druck-kosten.html" data-share-title="Warenschmiede 3D-Druck-Kostenrechner" data-share-text="Berechne in Sekunden dein individuelles 3D-Druck-Angebot." data-share-success="Link kopiert – du kannst ihn jetzt an Freunde oder Kollegen senden." aria-label="Link zum Warenschmiede 3D-Druck-Rechner teilen" title="Link teilen">
@@ -264,11 +275,6 @@
                 </button>
                 <p class="calc-share__message" data-share-message role="status" aria-live="polite"></p>
               </div>
-              <nav class="anchor-nav" aria-label="Schnellzugriff">
-                <a href="#ergebnis" class="anchor-link">Ergebnis</a>
-                <a href="#anleitung" class="anchor-link">Anleitung</a>
-                <a href="#glossar" class="anchor-link">Glossar</a>
-              </nav>
               <p class="calc-toast" data-calc-toast role="status" aria-live="polite" hidden></p>
             </div>
             <h2 id="rechner">Rechner</h2>
@@ -283,12 +289,13 @@
                 <summary class="calc-offer__summary">Anbieter</summary>
                 <fieldset class="calc-offer__fieldset">
                   <legend class="sr-only">Anbieter</legend>
-                  <div class="calc-remember">
-                    <label class="calc-checkbox" for="offerRememberSeller">
-                      <input type="checkbox" id="offerRememberSeller" data-remember-toggle="seller">
-                      <span class="remember-flag">Daten im Browser merken</span>
-                    </label>
-                  </div>
+                <div class="calc-remember">
+                  <label class="calc-checkbox" for="offerRememberSeller">
+                    <input type="checkbox" id="offerRememberSeller" data-remember-toggle="seller">
+                    <span class="remember-flag">Daten im Browser merken</span>
+                  </label>
+                  <p class="calc-remember__hint">Speichert grundlegende Einstellungen (Anbieter/Kunde) lokal im Browser. Nur auf diesem Gerät.</p>
+                </div>
                   <div class="calc-offer__group">
                     <div class="calc-field">
                       <label for="offerVendorName">Firmenname / Name</label>
@@ -349,12 +356,13 @@
                 <summary class="calc-offer__summary">Kunde</summary>
                 <fieldset class="calc-offer__fieldset">
                   <legend class="sr-only">Kunde</legend>
-                  <div class="calc-remember">
-                    <label class="calc-checkbox" for="offerRememberCustomer">
-                      <input type="checkbox" id="offerRememberCustomer" data-remember-toggle="customer">
-                      <span class="remember-flag">Daten im Browser merken</span>
-                    </label>
-                  </div>
+                <div class="calc-remember">
+                  <label class="calc-checkbox" for="offerRememberCustomer">
+                    <input type="checkbox" id="offerRememberCustomer" data-remember-toggle="customer">
+                    <span class="remember-flag">Daten im Browser merken</span>
+                  </label>
+                  <p class="calc-remember__hint">Speichert grundlegende Einstellungen (Anbieter/Kunde) lokal im Browser. Nur auf diesem Gerät.</p>
+                </div>
                   <div class="calc-offer__group">
                     <div class="calc-field">
                       <label for="offerCustomerName">Firma / Name</label>
@@ -450,17 +458,17 @@
                 <div class="calc-field">
                   <label for="materialSelect">Material</label>
                   <select id="materialSelect" data-calc name="material">
-                    <option value="PLA">PLA</option>
-                    <option value="PLA_PLUS">PLA+</option>
-                    <option value="PLA_SILK">PLA Silk</option>
-                    <option value="PETG">PETG</option>
-                    <option value="PETG_CF">PETG-CF</option>
-                    <option value="ABS">ABS</option>
-                    <option value="ABS_CF">ABS-CF</option>
-                    <option value="ASA">ASA</option>
-                    <option value="ASA_CF">ASA-CF</option>
-                    <option value="TPU">TPU</option>
-                    <option value="PA">Nylon (PA)</option>
+                    <option value="PLA">PLA – Standard, gutmütig (ca. 18–24&nbsp;&euro;/kg)</option>
+                    <option value="PLA_PLUS">PLA+ – etwas robuster als PLA</option>
+                    <option value="PLA_SILK">PLA Silk – glatte Optik, eher Deko</option>
+                    <option value="PETG">PETG – robust, zäh (ca. 20–26&nbsp;&euro;/kg)</option>
+                    <option value="PETG_CF">PETG-CF – Carbonmix, sehr steif</option>
+                    <option value="ABS">ABS – temperaturfest, braucht geschlossenen Druckraum</option>
+                    <option value="ABS_CF">ABS-CF – fester, aber anspruchsvoller Druck</option>
+                    <option value="ASA">ASA – UV-beständig, Outdoor</option>
+                    <option value="ASA_CF">ASA-CF – steif, wetterfest, matt</option>
+                    <option value="TPU">TPU – flexibel, langsam drucken</option>
+                    <option value="PA">Nylon (PA) – sehr robust, Feuchtigkeit beachten</option>
                   </select>
                   <p class="calc-hint" id="materialDensityHint" aria-live="polite">Richtwert: 2,98&nbsp;g/m · 1,24&nbsp;g/cm³ (PLA). Der Wert steuert Materialgewicht und damit die Materialkosten.</p>
                 </div>
@@ -501,6 +509,7 @@
                 <div class="calc-field">
                   <label for="wastePercent">Verschnitt (%)</label>
                   <input type="number" id="wastePercent" data-calc name="wastePercent" min="0" max="100" step="1" inputmode="decimal" placeholder="z. B. 10">
+                  <p class="calc-hint">Verschnitt und Fehldrucke einrechnen (typisch 3–10&nbsp;%).</p>
                 </div>
 
                 <div class="calc-inline">
@@ -521,7 +530,7 @@
                   <div class="calc-field">
                   <label for="loadFactor">Lastfaktor (%)</label>
                     <input type="number" id="loadFactor" data-calc name="loadFactor" min="0" max="100" step="1" placeholder="z. B. 80">
-                    <p class="calc-hint">Schätzt die durchschnittliche Auslastung. Ein niedrigerer Faktor reduziert die berechneten Energiekosten.</p>
+                    <p class="calc-hint">Wie stark der Drucker im Durchschnitt läuft (typisch 70–85&nbsp;%).</p>
                   </div>
                 </div>
               </div>
@@ -623,6 +632,7 @@
                     <div class="calc-field calc-field--stacked">
                       <label for="machineHourlyRate">Maschinenkosten (€/h)</label>
                       <input type="number" id="machineHourlyRate" data-calc-pro name="machineHourlyRate" min="0" step="0.5" inputmode="decimal" placeholder="z. B. 1.5" aria-describedby="machineHourlyHint">
+                      <p class="calc-hint">Kosten pro Betriebsstunde (Abschreibung, Wartung und Strom).</p>
                       <p class="calc-inline-note" id="machineHourlyHint">Hinweis: Wert enthält Abschreibung + Betriebskosten. Beispiel: 1&nbsp;200&nbsp;€ / 4&nbsp;000&nbsp;h = 0,30&nbsp;€/h + Betrieb ≈ 1,50&nbsp;€/h.</p>
                       <details class="calc-pro-advanced" id="machineAdvanced">
                         <summary>Anschaffung &amp; Lebensdauer hinterlegen</summary>

@@ -56,38 +56,32 @@ body.print-body {
 }
 
 .print-header {
-  margin-bottom: 4.5mm;
+  margin-bottom: 3mm;
 }
 
 .print-title {
   margin: 0;
-  font-size: 26px;
-  line-height: 1.2;
-}
-
-.print-part {
-  margin: 2mm 0 0;
-  font-size: 13px;
-  color: #475569;
+  font-size: 24px;
+  line-height: 1.15;
 }
 
 .print-columns {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 5mm;
-  margin-bottom: 4.5mm;
+  gap: 4mm;
+  margin-bottom: 3.5mm;
 }
 
 .print-card {
   border: 1px solid rgba(148, 163, 184, 0.5);
-  border-radius: 8px;
-  padding: 4.2mm 4.8mm;
+  border-radius: 6px;
+  padding: 3.2mm 4.2mm;
   background: #fff;
 }
 
 .print-card-title {
   margin: 0 0 2mm;
-  font-size: 13px;
+  font-size: 12px;
   color: #0f172a;
 }
 
@@ -95,33 +89,30 @@ body.print-body {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 1.4mm;
+  gap: 1mm;
 }
 
 .print-details dt {
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #94a3b8;
+  display: none;
 }
 
 .print-details dd {
   margin: 0;
-  font-size: 12px;
-  line-height: 1.35;
-  font-weight: 500;
+  font-size: 11px;
+  line-height: 1.3;
+  font-weight: 600;
   color: #0f172a;
 }
 
 .print-info {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 4px 10px;
-  padding: 6px 10px;
+  gap: 2px 8px;
+  padding: 5px 8px;
   border: 1px solid rgba(148, 163, 184, 0.55);
-  border-radius: 8px;
+  border-radius: 6px;
   background: #f8fafc;
-  margin-bottom: 5mm;
+  margin-bottom: 4mm;
 }
 
 .print-info-item {
@@ -131,14 +122,14 @@ body.print-body {
 }
 
 .print-info-label {
-  font-size: 10px;
+  font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #64748b;
 }
 
 .print-info-value {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: #0f172a;
 }
@@ -213,7 +204,7 @@ body.print-body {
 }
 
 .print-summary {
-  margin-top: 7mm;
+  margin-top: 6mm;
   border: 1px solid rgba(148, 163, 184, 0.5);
   border-radius: 8px;
   padding: 8px 12px;
@@ -242,6 +233,49 @@ body.print-body {
   color: #475569;
 }
 
+.print-bank-info {
+  margin: 6mm auto 0;
+  padding: 2mm 0 0;
+  border-top: 1px solid rgba(148, 163, 184, 0.4);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 14px;
+  font-size: 11px;
+  color: #475569;
+  text-align: center;
+}
+
+.print-bank-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+.print-bank-field::before {
+  content: '·';
+  margin-right: 14px;
+  color: rgba(148, 163, 184, 0.8);
+}
+
+.print-bank-field:first-of-type::before {
+  content: '';
+  margin: 0;
+}
+
+.print-bank-field-label {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.84em;
+  color: #94a3b8;
+}
+
+.print-bank-field-value {
+  font-weight: 600;
+  color: #0f172a;
+}
+
 .print-payment {
   margin-top: 6mm;
   border-top: 1px dashed rgba(148, 163, 184, 0.7);
@@ -255,7 +289,7 @@ body.print-body {
 }
 
 .print-note {
-  margin-top: 8mm;
+  margin-top: 6mm;
   font-size: 12px;
   color: #475569;
 }
@@ -529,25 +563,26 @@ body.print-body {
 
 .paid-stamp {
   position: absolute;
-  top: 50%;
+  top: 55%;
   left: 50%;
-  transform: translate(-50%, -50%) rotate(-18deg);
-  color: rgba(21, 128, 61, 0.85);
+  transform: translate(-50%, -50%) rotate(-15deg);
+  color: rgba(22, 163, 74, 0.88);
   font-weight: 800;
-  font-size: clamp(1.8rem, 4.2vw, 2.6rem);
-  letter-spacing: 0.12em;
+  font-size: clamp(1.7rem, 4vw, 2.4rem);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  opacity: 0.42;
+  opacity: 0.4;
   pointer-events: none;
   white-space: nowrap;
   text-align: center;
-  padding: 0.45rem 2.6rem;
-  border: 3px solid rgba(34, 197, 94, 0.5);
+  padding: 0.35rem 2.2rem;
+  border: 2px solid rgba(34, 197, 94, 0.55);
   border-radius: 999px;
-  background: rgba(187, 247, 208, 0.35);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.25);
+  background: rgba(187, 247, 208, 0.4);
+  box-shadow: 0 5px 16px rgba(16, 185, 129, 0.18);
   line-height: 1.1;
   z-index: 1;
+  max-width: calc(100% - 24px);
 }
 
 .calc-print__note-card {

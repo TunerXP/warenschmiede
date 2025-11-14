@@ -276,10 +276,7 @@
     setText('printOfferVendorPostal', joinPostal(providerPostal.postal, providerPostal.city, ''));
     setText('printOfferVendorEmail', normalizeString(provider.email));
     setText('printOfferVendorPhone', normalizeString(provider.telefon));
-    setText('printOfferVendorVat', normalizeString(provider.ustId));
-    setText('printOfferVendorIban', normalizeString(provider.iban));
-    setText('printOfferVendorBic', normalizeString(provider.bic));
-    setText('printOfferVendorBank', normalizeString(provider.bank));
+    renderBankInfo(provider);
 
     var customerPostal = resolvePostalCity(customer);
     setText('printOfferCustomerName', normalizeString(customer.firma || customer.name));
@@ -288,6 +285,25 @@
     setText('printOfferCustomerPostal', joinPostal(customerPostal.postal, customerPostal.city, ''));
     setText('printOfferCustomerEmail', normalizeString(customer.email));
     setText('printOfferCustomerPhone', normalizeString(customer.telefon));
+  }
+
+  function renderBankInfo(provider) {
+    var bankName = normalizeString(provider.bank);
+    var iban = normalizeString(provider.iban);
+    var bic = normalizeString(provider.bic);
+    var vat = normalizeString(provider.ustId);
+
+    setText('printBankName', bankName);
+    setText('printBankIban', iban);
+    setText('printBankBic', bic);
+    setText('printBankVat', vat);
+
+    var visible = false;
+    visible = toggleElement('printBankNameField', !!bankName) || visible;
+    visible = toggleElement('printBankIbanField', !!iban) || visible;
+    visible = toggleElement('printBankBicField', !!bic) || visible;
+    visible = toggleElement('printBankVatField', !!vat) || visible;
+    toggleElement('printBankInfo', visible);
   }
 
   function renderOfferMeta(docs) {
