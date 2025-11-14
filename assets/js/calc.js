@@ -166,6 +166,10 @@
           var saveButtons = $$('#btnSaveTop,#btnSaveBottom');
           var loadButtons = $$('#btnLoadTop,#btnLoadBottom');
           var fileLoadInput = document.getElementById('fileLoad');
+          var extraItemsList = document.getElementById('extraItemsList');
+          var extraItemsAddButton = document.getElementById('extraItemAddButton');
+          var extraItems = [];
+          var extraItemsIdCounter = 0;
 
           function clearShareMessageTimer() {
             if (shareMessageTimer) {
@@ -196,6 +200,217 @@
               clearTimeout(toastHideTimer);
               toastHideTimer = null;
             }
+          }
+
+          function initializeExtraItems() {
+            if (extraItemsAddButton) {
+              extraItemsAddButton.addEventListener('click', function () {
+                addExtraItem();
+              });
+            }
+          }
+
+          function createExtraItemField(item, config) {
+            var wrapper = document.createElement('div');
+            wrapper.className = 'calc-field calc-extra-item__field';
+            if (config.modifier) {
+              wrapper.classList.add(config.modifier);
+            }
+            var inputId = 'extraItem-' + config.key + '-' + item.id;
+            var label = document.createElement('label');
+            label.setAttribute('for', inputId);
+            label.textContent = config.label;
+            var input = document.createElement('input');
+            input.type = 'text';
+            input.id = inputId;
+            input.autocomplete = 'off';
+            if (config.placeholder) {
+              input.placeholder = config.placeholder;
+            }
+            if (config.inputMode) {
+              input.setAttribute('inputmode', config.inputMode);
+            }
+            if (config.maxLength) {
+              input.maxLength = config.maxLength;
+            }
+            input.value = config.value != null ? config.value : '';
+            input.addEventListener('input', function () {
+              item[config.key] = input.value;
+              triggerRecalc();
+            });
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+            return { wrapper: wrapper, input: input };
+          }
+
+          function appendExtraItemRow(item) {
+            if (!extraItemsList) {
+              return null;
+            }
+            var row = document.createElement('div');
+            row.className = 'calc-extra-item';
+            row.setAttribute('data-extra-item-id', String(item.id));
+
+            var descriptionField = createExtraItemField(item, {
+              key: 'description',
+              label: 'Beschreibung',
+              placeholder: 'LED-Band 2 m',
+              value: item.description || '',
+              maxLength: 200,
+              modifier: 'calc-extra-item__field--description'
+            });
+            var quantityField = createExtraItemField(item, {
+              key: 'quantity',
+              label: 'Menge',
+              placeholder: '1',
+              value: item.quantity || '',
+              inputMode: 'decimal',
+              modifier: 'calc-extra-item__field--quantity'
+            });
+            var priceField = createExtraItemField(item, {
+              key: 'unitPrice',
+              label: 'Einzelpreis (netto)',
+              placeholder: '0,00',
+              value: item.unitPrice || '',
+              inputMode: 'decimal',
+              modifier: 'calc-extra-item__field--price'
+            });
+
+            row.appendChild(descriptionField.wrapper);
+            row.appendChild(quantityField.wrapper);
+            row.appendChild(priceField.wrapper);
+
+            var removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'calc-extra-item__remove';
+            removeButton.setAttribute('aria-label', 'Position entfernen');
+            var removeIcon = document.createElement('span');
+            removeIcon.className = 'calc-extra-item__remove-icon';
+            removeIcon.setAttribute('aria-hidden', 'true');
+            removeIcon.textContent = '–';
+            var removeText = document.createElement('span');
+            removeText.className = 'calc-extra-item__remove-text';
+            removeText.textContent = 'Entfernen';
+            removeButton.appendChild(removeIcon);
+            removeButton.appendChild(removeText);
+            removeButton.addEventListener('click', function () {
+              removeExtraItem(item.id);
+            });
+            row.appendChild(removeButton);
+
+            return { row: row, descriptionInput: descriptionField.input };
+          }
+
+          function addExtraItem(config, options) {
+            if (!extraItemsList) {
+              return;
+            }
+            var data = config || {};
+            var hasQuantity = Object.prototype.hasOwnProperty.call(data, 'quantity');
+            var hasUnitPrice = Object.prototype.hasOwnProperty.call(data, 'unitPrice');
+            var item = {
+              id: ++extraItemsIdCounter,
+              description: typeof data.description === 'string' ? data.description : '',
+              quantity: hasQuantity ? (data.quantity == null ? '' : data.quantity.toString()) : '1',
+              unitPrice: hasUnitPrice ? (data.unitPrice == null ? '' : data.unitPrice.toString()) : ''
+            };
+            extraItems.push(item);
+            var rendered = appendExtraItemRow(item);
+            if (rendered && rendered.row) {
+              extraItemsList.appendChild(rendered.row);
+              if (!options || !options.skipFocus) {
+                var focusTarget = rendered.descriptionInput || rendered.row.querySelector('input');
+                if (focusTarget) {
+                  focusTarget.focus();
+                }
+              }
+            }
+            if (!options || !options.skipRecalc) {
+              triggerRecalc();
+            }
+          }
+
+          function removeExtraItem(id, options) {
+            var index = extraItems.findIndex(function (entry) {
+              return entry.id === id;
+            });
+            if (index === -1) {
+              return;
+            }
+            extraItems.splice(index, 1);
+            if (extraItemsList) {
+              var row = extraItemsList.querySelector('[data-extra-item-id="' + id + '"]');
+              if (row && row.parentNode) {
+                row.parentNode.removeChild(row);
+              }
+            }
+            if (!options || !options.skipRecalc) {
+              triggerRecalc({ immediate: true });
+            }
+          }
+
+          function resetExtraItems(items, options) {
+            extraItems = [];
+            extraItemsIdCounter = 0;
+            if (extraItemsList) {
+              extraItemsList.innerHTML = '';
+            }
+            if (Array.isArray(items) && items.length) {
+              items.forEach(function (entry) {
+                var payload = {
+                  description: entry && typeof entry.description === 'string' ? entry.description : '',
+                  quantity: entry && Object.prototype.hasOwnProperty.call(entry, 'quantity') ? entry.quantity : '',
+                  unitPrice: entry && Object.prototype.hasOwnProperty.call(entry, 'unitPrice') ? entry.unitPrice : ''
+                };
+                addExtraItem(payload, { skipFocus: true, skipRecalc: true });
+              });
+            }
+            if (!options || !options.skipRecalc) {
+              triggerRecalc({ immediate: true });
+            }
+          }
+
+          function getNormalizedExtraItems() {
+            if (!extraItems || !extraItems.length) {
+              return [];
+            }
+            return extraItems.map(function (item) {
+              var descriptionRaw = typeof item.description === 'string' ? item.description : '';
+              var description = descriptionRaw.trim();
+              if (description.length > 200) {
+                description = description.slice(0, 200).trim();
+              }
+              var quantityNumber = num(item.quantity);
+              if (!Number.isFinite(quantityNumber) || quantityNumber < 0) {
+                quantityNumber = 0;
+              }
+              var unitPriceNumber = num(item.unitPrice);
+              if (!Number.isFinite(unitPriceNumber) || unitPriceNumber < 0) {
+                unitPriceNumber = 0;
+              }
+              var lineTotal = quantityNumber * unitPriceNumber;
+              if (!Number.isFinite(lineTotal)) {
+                lineTotal = 0;
+              }
+              return {
+                id: item.id,
+                description: description,
+                quantity: quantityNumber,
+                unitPrice: unitPriceNumber,
+                lineTotal: lineTotal,
+                hasContent: description.length > 0 || unitPriceNumber > 0
+              };
+            }).filter(function (entry) {
+              return entry.hasContent;
+            }).map(function (entry) {
+              return {
+                id: entry.id,
+                description: entry.description,
+                quantity: entry.quantity,
+                unitPrice: entry.unitPrice,
+                lineTotal: entry.lineTotal
+              };
+            });
           }
 
           function hideToastMessage() {
@@ -2806,6 +3021,7 @@
           function collectState() {
             var computed = recalculate();
             var state = computed || lastValidState || null;
+            var extraItemsSnapshot = state && Array.isArray(state.extraItems) ? state.extraItems : getNormalizedExtraItems();
             var timestamp = new Date();
             var locale = (window.navigator && window.navigator.language) ? window.navigator.language : 'de-DE';
             var partNameRaw = getInputRaw(partNameInput);
@@ -2949,6 +3165,13 @@
               note: proNoteValue,
               proAktiv: proToggle ? !!proToggle.checked : false,
               chartAktiv: resultChartToggle ? !!resultChartToggle.checked : true,
+              extraItems: extraItemsSnapshot.map(function (item) {
+                return {
+                  description: item && item.description ? item.description : '',
+                  quantity: Number.isFinite(item.quantity) ? item.quantity : 0,
+                  unitPrice: Number.isFinite(item.unitPrice) ? item.unitPrice : 0
+                };
+              }),
               inputs: {
                 pricePerKg: getInputRaw(pricePerKgInput),
                 materialDensity: getInputRaw(materialDensityInput),
@@ -3207,6 +3430,7 @@
               if (invoiceNoteInput) {
                 invoiceNoteInput.value = docsData.notizRechnung != null ? docsData.notizRechnung : '';
               }
+              resetExtraItems(calcData.extraItems, { skipRecalc: true });
               var providerPostal = normalizeString(providerData.plz);
               var providerCity = normalizeString(providerData.ort);
               if (!providerPostal && !providerCity && providerData.plzOrt) {
@@ -3800,8 +4024,17 @@
             if (!state) {
               return;
             }
+            var totalNetAmount = state.net;
+            var extraNet = Number.isFinite(state.extraItemsNet) ? state.extraItemsNet : 0;
+            var baseLineAmount = typeof state.mainNet === 'number' ? state.mainNet : totalNetAmount - extraNet;
+            if (!Number.isFinite(baseLineAmount)) {
+              baseLineAmount = totalNetAmount;
+            }
+            if (baseLineAmount < 0) {
+              baseLineAmount = 0;
+            }
             if (printOfferNetValue) {
-              printOfferNetValue.textContent = formatter.format(state.net);
+              printOfferNetValue.textContent = formatter.format(totalNetAmount);
             }
             var vatAmount = state.vatIncluded ? Math.max(state.gross - state.net, 0) : 0;
             if (printOfferVatValue) {
@@ -3822,12 +4055,11 @@
             if (printOfferQuantity) {
               printOfferQuantity.textContent = '1';
             }
-            var offerLineAmount = state.net;
             if (printOfferUnitPrice) {
-              printOfferUnitPrice.textContent = formatter.format(offerLineAmount);
+              printOfferUnitPrice.textContent = formatter.format(baseLineAmount);
             }
             if (printOfferLineTotal) {
-              printOfferLineTotal.textContent = formatter.format(offerLineAmount);
+              printOfferLineTotal.textContent = formatter.format(baseLineAmount);
             }
             var offerMeta = state.offer && state.offer.meta ? state.offer.meta : {};
             if (printOfferDeliveryInline) {
@@ -3903,6 +4135,14 @@
             var netAmount = state.net;
             var grossAmount = state.gross;
             var vatAmount = state.vatIncluded ? Math.max(grossAmount - netAmount, 0) : 0;
+            var extraNet = Number.isFinite(state.extraItemsNet) ? state.extraItemsNet : 0;
+            var baseLineAmount = typeof state.mainNet === 'number' ? state.mainNet : netAmount - extraNet;
+            if (!Number.isFinite(baseLineAmount)) {
+              baseLineAmount = netAmount;
+            }
+            if (baseLineAmount < 0) {
+              baseLineAmount = 0;
+            }
             var descriptionText = state.hasPartName ? state.partName : '3D-Druck gemäß Spezifikation';
             if (printInvoiceDescription) {
               printInvoiceDescription.textContent = descriptionText;
@@ -3911,10 +4151,10 @@
               printInvoiceQuantity.textContent = '1';
             }
             if (printInvoiceUnitPrice) {
-              printInvoiceUnitPrice.textContent = formatter.format(netAmount);
+              printInvoiceUnitPrice.textContent = formatter.format(baseLineAmount);
             }
             if (printInvoiceNetValue) {
-              printInvoiceNetValue.textContent = formatter.format(netAmount);
+              printInvoiceNetValue.textContent = formatter.format(baseLineAmount);
             }
             if (printInvoiceSubtotal) {
               printInvoiceSubtotal.textContent = formatter.format(netAmount);
@@ -4336,6 +4576,18 @@
               };
             }
 
+            var normalizedExtraItems = getNormalizedExtraItems();
+            var extraItemsNet = normalizedExtraItems.reduce(function (sum, entry) {
+              var value = Number.isFinite(entry.lineTotal) ? entry.lineTotal : 0;
+              return sum + value;
+            }, 0);
+            var baseNet = net;
+            var baseGross = gross;
+            var combinedNet = baseNet + extraItemsNet;
+            var combinedGross = vatIncluded ? combinedNet * 1.19 : combinedNet;
+            net = combinedNet;
+            gross = combinedGross;
+
             var chartEnabled = !resultChartToggle || !!resultChartToggle.checked;
 
             var materialLabel = materialSelect.options[materialSelect.selectedIndex]
@@ -4387,6 +4639,10 @@
               gross: gross,
               standardSubtotal: standardSubtotal,
               pro: proData,
+              extraItems: normalizedExtraItems,
+              extraItemsNet: extraItemsNet,
+              mainNet: baseNet,
+              mainGross: baseGross,
               partName: partNameTrimmed,
               hasPartName: partNameTrimmed.length > 0,
               chartEnabled: chartEnabled,
@@ -4906,6 +5162,7 @@
           syncPaidControls();
           clearInvoiceError();
           wireInputs();
+          initializeExtraItems();
 
           materialSelect.addEventListener('change', setMaterialDefaults);
           weightMode.addEventListener('change', updateModeVisibility);

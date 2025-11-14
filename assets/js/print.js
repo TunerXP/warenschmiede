@@ -88,6 +88,93 @@
     return percentIntegerFormatter.format(number);
   }
 
+  function formatQuantityDisplay(value) {
+    var number = typeof value === 'number' ? value : 0;
+    if (!Number.isFinite(number)) {
+      number = 0;
+    }
+    if (Math.abs(number - Math.round(number)) < 0.00001) {
+      return integerFormatter.format(Math.round(number));
+    }
+    return decimalFormatter.format(number);
+  }
+
+  function buildPositionRows(state) {
+    var rows = [];
+    var description = state && state.hasPartName ? state.partName : '3D-Druck gemäß Spezifikation';
+    var extrasRaw = state && Array.isArray(state.extraItems) ? state.extraItems : [];
+    var extras = extrasRaw.map(function (item) {
+      var quantity = Number.isFinite(item.quantity) ? item.quantity : 0;
+      var unitPrice = Number.isFinite(item.unitPrice) ? item.unitPrice : 0;
+      var lineTotal = Number.isFinite(item.lineTotal) ? item.lineTotal : quantity * unitPrice;
+      if (!Number.isFinite(lineTotal)) {
+        lineTotal = 0;
+      }
+      return {
+        description: item.description || '',
+        quantity: quantity,
+        unitPrice: unitPrice,
+        lineTotal: lineTotal
+      };
+    });
+    var extraTotal = Number.isFinite(state && state.extraItemsNet) ? state.extraItemsNet : extras.reduce(function (sum, item) {
+      return sum + (Number.isFinite(item.lineTotal) ? item.lineTotal : 0);
+    }, 0);
+    var mainNet = state && Number.isFinite(state.mainNet) ? state.mainNet : ((state && Number.isFinite(state.net)) ? state.net - extraTotal : 0);
+    if (!Number.isFinite(mainNet)) {
+      mainNet = state && Number.isFinite(state.net) ? state.net : 0;
+    }
+    if (mainNet < 0) {
+      mainNet = 0;
+    }
+    rows.push({
+      position: 1,
+      description: description || '–',
+      quantity: 1,
+      unitPrice: mainNet,
+      lineTotal: mainNet
+    });
+    extras.forEach(function (item, index) {
+      rows.push({
+        position: index + 2,
+        description: item.description || '–',
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        lineTotal: item.lineTotal
+      });
+    });
+    return rows;
+  }
+
+  function renderPositionTable(tbodyId, rows) {
+    var body = $(tbodyId);
+    if (!body) {
+      return;
+    }
+    while (body.firstChild) {
+      body.removeChild(body.firstChild);
+    }
+    rows.forEach(function (row) {
+      var tr = document.createElement('tr');
+      var posCell = document.createElement('td');
+      posCell.textContent = String(row.position);
+      var descriptionCell = document.createElement('td');
+      descriptionCell.textContent = row.description || '–';
+      var quantityCell = document.createElement('td');
+      quantityCell.textContent = formatQuantityDisplay(row.quantity);
+      var unitPriceCell = document.createElement('td');
+      unitPriceCell.textContent = formatCurrency(row.unitPrice);
+      var totalCell = document.createElement('td');
+      totalCell.textContent = formatCurrency(row.lineTotal);
+      tr.appendChild(posCell);
+      tr.appendChild(descriptionCell);
+      tr.appendChild(quantityCell);
+      tr.appendChild(unitPriceCell);
+      tr.appendChild(totalCell);
+      body.appendChild(tr);
+    });
+  }
+
   function formatMinutesDisplay(totalMinutes) {
     var rounded = Math.round(typeof totalMinutes === 'number' ? totalMinutes : 0);
     if (!rounded) {
@@ -368,12 +455,8 @@
 
     var vatAmount = payload.computed ? payload.computed.vatAmount : 0;
     var vatIncluded = !!state.vatIncluded && vatAmount > 0.0005;
-
-    var description = state.hasPartName ? state.partName : '3D-Druck gemäß Spezifikation';
-    setText('printOfferDescription', description || '–');
-    setText('printOfferQuantity', '1');
-    setText('printOfferUnitPrice', formatCurrency(state.net));
-    setText('printOfferLineTotal', formatCurrency(state.net));
+    var positionRows = buildPositionRows(state);
+    renderPositionTable('printOfferTableBody', positionRows);
     setText('printOfferSummaryNet', formatCurrency(state.net));
     setText('printOfferSummaryGross', formatCurrency(state.gross));
 
@@ -415,12 +498,8 @@
 
     var vatAmount = payload.computed ? payload.computed.vatAmount : 0;
     var vatIncluded = !!state.vatIncluded && vatAmount > 0.0005;
-
-    var description = state.hasPartName ? state.partName : '3D-Druck gemäß Spezifikation';
-    setText('printInvoiceDescription', description || '–');
-    setText('printInvoiceQuantity', '1');
-    setText('printInvoiceUnitPrice', formatCurrency(state.net));
-    setText('printInvoiceNet', formatCurrency(state.net));
+    var positionRows = buildPositionRows(state);
+    renderPositionTable('printInvoiceTableBody', positionRows);
     setText('printInvoiceSubtotal', formatCurrency(state.net));
     setText('printInvoiceVat', formatCurrency(vatAmount));
     setText('printInvoiceGross', formatCurrency(state.gross));
