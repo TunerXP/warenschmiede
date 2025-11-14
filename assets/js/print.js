@@ -397,31 +397,12 @@
     }
 
     setText('printOfferPaymentInline', normalizeString(docs.zahlungsbedingungen) || '–');
-    toggleOfferNote(payload);
+    renderOfferNote(payload);
   }
 
-  function toggleOfferNote(payload) {
-    var offerNote = '';
-    if (payload.computed && payload.computed.noteOffer) {
-      offerNote = normalizeString(payload.computed.noteOffer);
-    }
-    if (!offerNote) {
-      offerNote = normalizeString(payload.state && payload.state.notes ? payload.state.notes.offer : '');
-    }
-    var noteCard = $('printOfferNoteCard');
-    var noteValue = $('printOfferNoteValue');
-    if (!noteCard || !noteValue) {
-      return;
-    }
-    if (offerNote) {
-      noteValue.textContent = offerNote;
-      noteCard.hidden = false;
-      noteCard.setAttribute('aria-hidden', 'false');
-    } else {
-      noteValue.textContent = '';
-      noteCard.hidden = true;
-      noteCard.setAttribute('aria-hidden', 'true');
-    }
+  function renderOfferNote(payload) {
+    var offerNote = resolvePrintNote(payload, 'offer');
+    updateNoteBlock('printOfferNoteBlock', 'printOfferNoteValue', offerNote);
   }
 
   function renderInvoicePage(payload) {
@@ -508,26 +489,47 @@
       paidStamp.setAttribute('aria-hidden', paid ? 'false' : 'true');
     }
 
-    var invoiceNote = '';
-    if (payload.computed && payload.computed.noteInvoice) {
-      invoiceNote = normalizeString(payload.computed.noteInvoice);
-    }
-    if (!invoiceNote) {
-      invoiceNote = normalizeString(payload.state && payload.state.notes ? payload.state.notes.invoice : '');
-    }
-    var invoiceNoteCard = $('printInvoiceNoteCard');
-    var invoiceNoteValue = $('printInvoiceNoteValue');
-    if (invoiceNoteCard && invoiceNoteValue) {
-      if (invoiceNote) {
-        invoiceNoteValue.textContent = invoiceNote;
-        invoiceNoteCard.hidden = false;
-        invoiceNoteCard.setAttribute('aria-hidden', 'false');
-      } else {
-        invoiceNoteValue.textContent = '';
-        invoiceNoteCard.hidden = true;
-        invoiceNoteCard.setAttribute('aria-hidden', 'true');
+    renderInvoiceNote(payload);
+  }
+
+  function renderInvoiceNote(payload) {
+    var invoiceNote = resolvePrintNote(payload, 'invoice');
+    updateNoteBlock('printInvoiceNoteBlock', 'printInvoiceNoteValue', invoiceNote);
+  }
+
+  function resolvePrintNote(payload, type) {
+    var computed = (payload && payload.computed) || {};
+    var stateNotes = (payload && payload.state && payload.state.notes) || {};
+    var raw = '';
+    if (type === 'offer') {
+      raw = typeof computed.noteOffer === 'string' ? computed.noteOffer : '';
+      if (!raw && typeof stateNotes.offer === 'string') {
+        raw = stateNotes.offer;
+      }
+    } else if (type === 'invoice') {
+      raw = typeof computed.noteInvoice === 'string' ? computed.noteInvoice : '';
+      if (!raw && typeof stateNotes.invoice === 'string') {
+        raw = stateNotes.invoice;
       }
     }
+    return normalizeString(raw || '');
+  }
+
+  function updateNoteBlock(blockId, valueId, noteValue) {
+    var block = $(blockId);
+    var valueNode = $(valueId);
+    if (!block || !valueNode) {
+      return;
+    }
+    var hasText = !!noteValue;
+    valueNode.textContent = hasText ? noteValue : '–';
+    if (hasText) {
+      valueNode.classList.remove('print-note-text--placeholder');
+    } else {
+      valueNode.classList.add('print-note-text--placeholder');
+    }
+    block.hidden = false;
+    block.setAttribute('aria-hidden', 'false');
   }
 
   function renderResultPage(payload) {

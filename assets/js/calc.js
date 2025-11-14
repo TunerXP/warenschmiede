@@ -489,7 +489,7 @@
           var printOfferQuantity = document.getElementById('printOfferQuantity');
           var printOfferUnitPrice = document.getElementById('printOfferUnitPrice');
           var printOfferLineTotal = document.getElementById('printOfferLineTotal');
-          var printOfferNoteCard = document.getElementById('printOfferNoteCard');
+          var printOfferNoteCard = document.getElementById('printOfferNoteBlock');
           var printOfferNoteValue = document.getElementById('printOfferNoteValue');
           var printInvoiceDescription = document.getElementById('printInvoiceDescription');
           var printInvoiceQuantity = document.getElementById('printInvoiceQuantity');
@@ -504,7 +504,7 @@
           var printInvoicePaidDate = document.getElementById('printInvoicePaidDate');
           var printInvoiceDueLine = document.getElementById('printInvoiceDueLine');
           var printInvoiceDueDate = document.getElementById('printInvoiceDueDate');
-          var printInvoiceNoteCard = document.getElementById('printInvoiceNoteCard');
+          var printInvoiceNoteCard = document.getElementById('printInvoiceNoteBlock');
           var printInvoiceNoteValue = document.getElementById('printInvoiceNoteValue');
           var printInvoiceNetValue = document.getElementById('printInvoiceNet');
           var printFooterBrandElement = document.querySelector('#ws-print-footer .ws-brand');
@@ -3840,15 +3840,15 @@
             }
             if (printOfferNoteCard && printOfferNoteValue) {
               var note = state.notes && state.notes.offer ? state.notes.offer.toString().trim() : '';
-              if (note) {
-                printOfferNoteValue.textContent = note;
-                printOfferNoteCard.hidden = false;
-                printOfferNoteCard.setAttribute('aria-hidden', 'false');
+              var hasNote = !!note;
+              printOfferNoteValue.textContent = hasNote ? note : '–';
+              if (hasNote) {
+                printOfferNoteValue.classList.remove('print-note-text--placeholder');
               } else {
-                printOfferNoteValue.textContent = '';
-                printOfferNoteCard.hidden = true;
-                printOfferNoteCard.setAttribute('aria-hidden', 'true');
+                printOfferNoteValue.classList.add('print-note-text--placeholder');
               }
+              printOfferNoteCard.hidden = false;
+              printOfferNoteCard.setAttribute('aria-hidden', 'false');
             }
           }
 
@@ -3990,15 +3990,15 @@
             }
             if (printInvoiceNoteCard && printInvoiceNoteValue) {
               var invoiceNote = state.notes && state.notes.invoice ? state.notes.invoice.toString().trim() : '';
-              if (invoiceNote) {
-                printInvoiceNoteValue.textContent = invoiceNote;
-                printInvoiceNoteCard.hidden = false;
-                printInvoiceNoteCard.setAttribute('aria-hidden', 'false');
+              var hasInvoiceNote = !!invoiceNote;
+              printInvoiceNoteValue.textContent = hasInvoiceNote ? invoiceNote : '–';
+              if (hasInvoiceNote) {
+                printInvoiceNoteValue.classList.remove('print-note-text--placeholder');
               } else {
-                printInvoiceNoteValue.textContent = '';
-                printInvoiceNoteCard.hidden = true;
-                printInvoiceNoteCard.setAttribute('aria-hidden', 'true');
+                printInvoiceNoteValue.classList.add('print-note-text--placeholder');
               }
+              printInvoiceNoteCard.hidden = false;
+              printInvoiceNoteCard.setAttribute('aria-hidden', 'false');
             }
           }
 
