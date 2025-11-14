@@ -35,6 +35,12 @@
   --badge-th-fg: #0b3c8a;
   --badge-cu-bg: #ede9fe;
   --badge-cu-fg: #4c1d95;
+  --badge-mm-bg: #e6f4ff;
+  --badge-mm-fg: #0f4560;
+  --badge-tg-bg: #fef3c7;
+  --badge-tg-fg: #92400e;
+  --badge-gc-bg: #fee2e2;
+  --badge-gc-fg: #7f1d1d;
   --tooltip-trigger-bg: #f1f5f9;
   --tooltip-trigger-border: #cbd5e1;
   --tooltip-trigger-color: #0f172a;
@@ -91,6 +97,12 @@ html[data-theme="dark"] {
   --badge-th-fg: #e8f1ff;
   --badge-cu-bg: #a855f7;
   --badge-cu-fg: #f7ecff;
+  --badge-mm-bg: #1f9ac8;
+  --badge-mm-fg: #d8f1ff;
+  --badge-tg-bg: #f97316;
+  --badge-tg-fg: #1c0b02;
+  --badge-gc-bg: #ef4444;
+  --badge-gc-fg: #1b0202;
   --tooltip-trigger-bg: rgba(30, 41, 59, 0.9);
   --tooltip-trigger-border: rgba(148, 163, 184, 0.45);
   --tooltip-trigger-color: #e2e8f0;
@@ -1244,6 +1256,16 @@ img {
   grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
 }
 
+#druck-tipps .about-hero {
+  padding-bottom: clamp(2.5rem, 6vw, 4rem);
+}
+
+#druck-tipps .about-hero__grid {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: min(1280px, 100%);
+  margin-inline: auto;
+}
+
 #druck-kosten .about-hero__grid {
   grid-template-columns: minmax(0, 1fr);
   justify-items: center;
@@ -1254,6 +1276,14 @@ img {
   flex-direction: column;
   gap: var(--space-3);
   max-width: 640px;
+}
+
+#druck-tipps .about-hero__content {
+  max-width: none;
+}
+
+#druck-tipps .about-hero__content .hero-actions {
+  justify-content: flex-start;
 }
 
 #druck-kosten .about-hero__content {
@@ -2465,6 +2495,24 @@ address {
   border-color: transparent;
 }
 
+.badge-mm {
+  background: var(--badge-mm-bg);
+  color: var(--badge-mm-fg);
+  border-color: transparent;
+}
+
+.badge-tg {
+  background: var(--badge-tg-bg);
+  color: var(--badge-tg-fg);
+  border-color: transparent;
+}
+
+.badge-gc {
+  background: var(--badge-gc-bg);
+  color: var(--badge-gc-fg);
+  border-color: transparent;
+}
+
 .footer {
   padding-block: var(--space-5);
   color: var(--muted);
@@ -2611,6 +2659,28 @@ address {
   margin: 0;
   color: var(--text-muted);
   font-size: 0.95rem;
+}
+
+#ideen .container {
+  max-width: min(1280px, 100%);
+  padding-inline: clamp(var(--space-4), 4vw, var(--space-7));
+}
+
+.ideas-intro__inner,
+.ideas-resources__inner,
+.ideas-teaser__inner,
+.ideas-note__inner {
+  max-width: none;
+}
+
+.ideas-resources__hint {
+  margin: var(--space-3) 0 0;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.ideas-resources__hint a {
+  font-weight: 600;
 }
 
 .tips-disclaimer {
