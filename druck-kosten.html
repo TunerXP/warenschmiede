@@ -889,106 +889,178 @@
 
     <section id="guide" class="guide">
       <div class="container">
-        <h2 id="anleitung">Anleitung</h2>
+        <h2 id="anleitung">Anleitung – Kostenrechner Angebot &amp; Rechnung</h2>
 
-        <details open>
-          <summary>Einführung</summary>
-          <p>Der Warenschmiede 3D-Druck-Kostenrechner ermöglicht die präzise Kalkulation eines Druckprojekts mit realistischen Parametern (Material, Druckzeit, Energie, Fixkosten). Ergebnis sind druckfertige PDFs als <strong>Angebot</strong> oder <strong>Rechnung</strong>.</p>
-        </details>
-
-        <details open>
-          <summary>Schritt-für-Schritt</summary>
+        <div class="card">
+          <h3>Kurzanleitung (für Anfänger)</h3>
+          <p>Diese Schritte reichen, um schnell ein Angebot oder eine Rechnung zu erstellen:</p>
           <ol>
-            <li><strong>Teilename</strong> eintragen – erscheint in Position 1 in Angebot/Rechnung.</li>
-            <li><strong>Material</strong> wählen (PLA/PETG/ASA/TPU …) und ggf. Preis je kg anpassen.</li>
-            <li><strong>Druckzeit</strong> und Maschinen-/Energieparameter pflegen (Vorgaben sind vorkonfiguriert).</li>
-            <li><strong>Fixkosten/Marge</strong> optional anpassen (transparent, aber nur intern sichtbar).</li>
-            <li><strong>IBAN/BIC/Bank</strong> unter „Anbieter“ ausfüllen (Pflicht für Rechnung).</li>
-            <li>Bei Bedarf <strong>„Bereits bezahlt“</strong> aktivieren → Rechnung wird als <em>BEZAHLT</em> markiert (mit Datum) und statt „zahlbar bis“ erscheint der Bezahlt-Hinweis.</li>
-            <li>Zu den <a href="#ergebnis">Ergebnissen</a> springen und <strong>Kundenangebot drucken</strong> oder <strong>Rechnung drucken</strong> wählen.</li>
+            <li>
+              <strong>Anbieter &amp; Kunde ausfüllen</strong>
+              <ul>
+                <li>Deine eigenen Daten unter <strong>Anbieter</strong> eintragen</li>
+                <li>Kundendaten unter <strong>Kunde</strong> eintragen</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Projekt / Teilname eintragen</strong>
+              <ul>
+                <li>Kurz beschreiben, was gedruckt wird (z. B. „Test Modell v2“)</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Material auswählen</strong>
+              <ul>
+                <li>Im Feld <strong>Material</strong> ein passendes Filament wählen</li>
+                <li>In Klammern stehen Preisbereich und kurze Hinweise zur Verwendung</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Gewicht oder Länge eingeben</strong>
+              <ul>
+                <li>Entweder Gewicht (g) oder Länge (m) eintragen</li>
+                <li>Der Rechner berechnet automatisch die Kosten</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Laufzeit &amp; Stromkosten eintragen</strong>
+              <ul>
+                <li><strong>Druckdauer</strong> (Minuten)</li>
+                <li><strong>Strompreis</strong> (€/kWh)</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Optional: Weitere Positionen hinzufügen</strong>
+              <ul>
+                <li>Im Bereich Ergebnis auf <strong>„Weitere Position hinzufügen“</strong> klicken</li>
+                <li>Beschreibung, Menge und Einzelpreis eintragen</li>
+                <li>Die Position wird automatisch in die Tabelle übernommen</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Angebot oder Rechnung drucken</strong>
+              <ul>
+                <li>Im Ergebnis-Bereich auf <strong>„Kundenangebot drucken“</strong> oder <strong>„Rechnung drucken“</strong> klicken</li>
+                <li>Im Browser-Druckdialog Ziel „Als PDF speichern“ oder Drucker auswählen</li>
+              </ul>
+            </li>
           </ol>
-          <p><em>Hinweise:</em> Dieser Rechner erzeugt stets ein Angebot/eine Rechnung für genau eine kalkulierte Position. Sammelpositionen sind nicht vorgesehen.</p>
-        </details>
+        </div>
 
-        <details>
-          <summary>Drucken</summary>
-          <ul>
-            <li>Im Browser-Druckdialog bitte Kopf-/Fußzeilen deaktivieren.</li>
-            <li>Alle PDFs sind bewusst 1-seitig ausgelegt (keine leeren Folgeseiten).</li>
-            <li>Responsive Layout: Ausgabe ist auf Desktop, Tablet und Smartphone lesbar.</li>
-          </ul>
-        </details>
+        <div class="card">
+          <h3>Schritt-für-Schritt-Anleitung (detailliert)</h3>
+          <section>
+            <h4>A) Anbieter &amp; Kunde</h4>
+            <p>Diese Daten erscheinen im Kopf von Angebot und Rechnung.</p>
+            <p><strong>Anbieter</strong></p>
+            <ul>
+              <li>Firmenname / Name</li>
+              <li>Adresse</li>
+              <li>E-Mail und/oder Telefon</li>
+              <li>Bank und Steuer-ID (werden automatisch im unteren Bereich des Dokuments eingeblendet)</li>
+            </ul>
+            <p><strong>Kunde</strong></p>
+            <ul>
+              <li>Name bzw. Firma</li>
+              <li>Adresse</li>
+              <li>E-Mail oder Telefon (optional)</li>
+            </ul>
+            <p>Mit dem Haken <strong>„Daten im Browser merken“</strong> können Stammdaten lokal im Browser gespeichert werden.</p>
+          </section>
 
-        <h3 id="speichern-laden">🔐 Speichern &amp; Laden (empfohlen)</h3>
-        <p>Mit Speichern sicherst du deine komplette Kalkulation (inkl. Eingaben, Einstellungen, Notizen, Angebots-/Rechnungsdaten) als JSON-Datei.</p>
-        <p>Mit Laden holst du sie später 1:1 wieder zurück.</p>
+          <section>
+            <h4>B) Teilname / Projekt</h4>
+            <p>Im Feld <strong>„Teilename / Projekt“</strong> wird beschrieben, wofür der Druck ist, z. B.:</p>
+            <ul>
+              <li>„Test Modell v2“</li>
+              <li>„Halterung für Maschine X“</li>
+              <li>„Ersatzteil Kundenprojekt Müller“</li>
+            </ul>
+            <p>Dieser Text erscheint später als Beschreibung in der ersten Position.</p>
+          </section>
 
-        <h4>Vorteile</h4>
-        <ul>
-          <li>Angebote später weiterbearbeiten (Nummer, Preise, Notizen, Rechnungsstatus).</li>
-          <li>Archiv aufbauen (eine Datei pro Angebot/Rechnung).</li>
-          <li>Kein Copy-Paste, keine Screenshots – alles reproduzierbar.</li>
-        </ul>
+          <section>
+            <h4>C) Material auswählen</h4>
+            <p>Im Feld <strong>Material</strong> kann ein Filamenttyp gewählt werden. Jede Auswahl enthält:</p>
+            <ul>
+              <li>ungefähren Preisbereich pro kg</li>
+              <li>Kurzinfo zur Verwendung oder Besonderheit (z. B. robust, flexibel, Outdoor, braucht geschlossenen Druckraum)</li>
+            </ul>
+            <p>So können auch Einsteiger schnell ein passendes Material finden, ohne die ganzen technischen Details zu kennen.</p>
+          </section>
 
-        <h4>Dateiname</h4>
-        <p>Wird automatisch sinnvoll vorgeschlagen:</p>
-        <p><code>Kunde_Mueller_GmbH__ANG-2025-003.json</code> oder <code>Kunde_Mueller_GmbH__RE-2025-001.json</code></p>
-        <p>Fallback: <code>warenschmiede-save-YYYYMMDD-HHmm.json</code></p>
-        <p>Du kannst den Namen im Speicherdialog jederzeit ändern.</p>
+          <section>
+            <h4>D) Gewicht oder Länge</h4>
+            <p>Für die Berechnung reicht eine Angabe:</p>
+            <ul>
+              <li>Gewicht in Gramm oder</li>
+              <li>Länge in Meter</li>
+            </ul>
+            <p>Der Rechner berechnet automatisch:</p>
+            <ul>
+              <li>Materialkosten</li>
+              <li>Stromkosten</li>
+              <li>Gesamtkosten</li>
+            </ul>
+            <p>Wenn beide Felder ausgefüllt sind, wird die eingestellte Logik des Rechners verwendet (Codex bitte aktuelle Logik unverändert lassen).</p>
+          </section>
 
-        <h4>So geht’s</h4>
-        <ol>
-          <li>Klicke Speichern.</li>
-          <li>Wähle im Dialog den Ordner (z. B. Dokumente\Warenschmiede\Angebote\2025).</li>
-          <li>Bestätige – fertig.</li>
-          <li>Zum Wiederherstellen: Laden → Datei wählen.</li>
-        </ol>
+          <section>
+            <h4>E) Pro-Optionen (optional)</h4>
+            <p>Mit den Pro-Optionen können zusätzliche Faktoren berücksichtigt werden, z. B.:</p>
+            <ul>
+              <li>Nachbearbeitungszeit</li>
+              <li>Maschinen- und Wartungskosten</li>
+              <li>Aufschläge / Zuschläge</li>
+            </ul>
+            <p>Diese Felder sind optional und richten sich an Nutzer, die sehr genaue Kalkulationen benötigen. Für einfache Angebote können sie ignoriert werden.</p>
+          </section>
 
-        <h4>Tipps für den Alltag</h4>
-        <ul>
-          <li>Lege dir Ordner wie Angebote, Rechnungen, Kunden&lt;Name&gt; an.</li>
-          <li>Versionierung: bei Änderungen einfach erneut speichern (…_v2.json).</li>
-          <li>Für Rechnungen: erst „Bereits bezahlt“ setzen (falls zutreffend), dann speichern und PDF erzeugen.</li>
-        </ul>
+          <section>
+            <h4>F) Ergebnisbereich</h4>
+            <p>Im Bereich <strong>Ergebnis</strong> stehen:</p>
+            <ul>
+              <li>Gewicht und Länge</li>
+              <li>Material- und Stromkosten</li>
+              <li>Gesamtkosten (netto / brutto je nach Einstellung <strong>„Preise inkl. MwSt.“</strong>)</li>
+              <li>Buttons <strong>„Kundenangebot drucken“</strong> und <strong>„Rechnung drucken“</strong></li>
+              <li>Optional: weitere Positionen und Notizen</li>
+            </ul>
+            <p>Von hier aus wird die PDF erzeugt.</p>
+          </section>
+        </div>
 
-        <h2 id="glossar">Glossar</h2>
-        <dl class="glossary">
-          <dt>Angebot</dt>
-          <dd>Preisvorschlag mit Gültigkeitsdatum und Liefer-/Zahlungsbedingungen; ohne interne Kostenteile.</dd>
+        <div class="card">
+          <h3>Weitere Positionen &amp; Notizen</h3>
+          <section>
+            <h4>Weitere Positionen (optional)</h4>
+            <p>Im Ergebnisbereich gibt es den Button <strong>„Weitere Position hinzufügen“</strong>.</p>
+            <p>Nach einem Klick erscheinen drei Felder in einer Zeile:</p>
+            <ul>
+              <li><strong>Beschreibung</strong> – z. B. „LED-Band 2 m“ oder „Montagepauschale“</li>
+              <li><strong>Menge</strong> – Anzahl oder Länge</li>
+              <li><strong>Einzelpreis (netto)</strong> – Preis pro Stück / Einheit</li>
+            </ul>
+            <p>Die Positionsnummer (POS) wird automatisch vergeben. Alle zusätzlichen Positionen werden in Angebot und Rechnung genau so angezeigt und in die Zwischensumme / Gesamtsumme einberechnet.</p>
+            <p>Mit <strong>„Entfernen“</strong> kann eine Position wieder gelöscht werden.</p>
+          </section>
 
-          <dt>Rechnung</dt>
-          <dd>Forderungsdokument nach Leistungserbringung. Enthält Bankdaten und Zahlungsziel bzw. „Bezahlt“-Stempel bei aktivierter Option.</dd>
-
-          <dt>Angebotsnummer (ANG-…)</dt>
-          <dd>Eindeutige ID für Angebote. Dient auch als Dateiname.</dd>
-
-          <dt>Rechnungsnummer (RE-…)</dt>
-          <dd>Fortlaufend, eindeutig (rechtlich erforderlich). Ebenfalls als Dateiname genutzt.</dd>
-
-          <dt>Bezahlmarkierung („Bereits bezahlt“)</dt>
-          <dd>Markiert Rechnung als bezahlt und zeigt Zahlungsdatum statt „zahlbar bis“.</dd>
-
-          <dt>Nettopreise / Bruttopreise</dt>
-          <dd>Netto ohne MwSt., Brutto inkl. MwSt.</dd>
-
-          <dt>Kleinunternehmer-Hinweis (§19 UStG)</dt>
-          <dd>Es wird keine Umsatzsteuer ausgewiesen. Hinweis erscheint automatisch.</dd>
-
-          <dt>MwSt. (Mehrwertsteuer)</dt>
-          <dd>Umsatzsteuer (derzeit 19 %). Bei §19 UStG („Kleingewerbe“) wird keine MwSt. ausgewiesen.</dd>
-
-          <dt>§19 UStG</dt>
-          <dd>Umsatzsteuerbefreiung für Kleinunternehmer. Hinweis erscheint automatisch im Dokument.</dd>
-
-          <dt>Teilename</dt>
-          <dd>Produkt-/Positionsbezeichnung in Angebot/Rechnung (Position 1).</dd>
-
-          <dt>IBAN/BIC/Bank</dt>
-          <dd>Erforderlich für Rechnungen (Zahlungseingang).</dd>
-
-          <dt>Zahlungsziel</dt>
-          <dd>Frist (z. B. „14 Tage netto“), wird in der Rechnung ausgewiesen, sofern nicht „Bereits bezahlt“.</dd>
-        </dl>
+          <section>
+            <h4>Notizen</h4>
+            <p>Es gibt zwei Notizfelder:</p>
+            <ul>
+              <li><strong>Notiz – Angebot</strong></li>
+              <li><strong>Notiz – Rechnung</strong></li>
+            </ul>
+            <p>Diese Notizen werden jeweils in der entsprechenden PDF angezeigt, z. B. für:</p>
+            <ul>
+              <li>Zahlungsziele</li>
+              <li>Hinweise zu Toleranzen oder Oberflächen</li>
+              <li>Sonderabsprachen mit dem Kunden</li>
+            </ul>
+            <p>Die Notizfelder werden auch dann im Layout angezeigt, wenn keine Notiz eingetragen ist.</p>
+          </section>
+        </div>
 
         <p class="back-top"><a href="#top">Nach oben</a></p>
       </div>
