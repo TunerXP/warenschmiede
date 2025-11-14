@@ -27,8 +27,6 @@
 
   var PRINT_STORAGE_PREFIX = 'ws:print:';
   var PRINT_STORAGE_PARAM = 'k';
-  var PRINT_POPUP_EVENT_BLOCKED = 'ws:print-popup-blocked';
-  var PRINT_POPUP_EVENT_CLEAR = 'ws:print-popup-clear';
 
   function safeStorage(type) {
     try {
@@ -55,42 +53,21 @@
     var offer = byId('btnOffer');
     var invoice = byId('btnInvoice');
 
-    function dispatchPrintEvent(name, detail) {
-      if (!name) {
-        return;
+    function navigateToPrintPage(target) {
+      var url = '';
+      if (target === 'offer') {
+        url = buildOfferUrl();
+      } else if (target === 'invoice') {
+        url = buildInvoiceUrl();
       }
-      try {
-        var event;
-        if (typeof window.CustomEvent === 'function') {
-          event = new CustomEvent(name, { detail: detail || {} });
-        } else {
-          event = document.createEvent('CustomEvent');
-          event.initCustomEvent(name, false, false, detail || {});
-        }
-        window.dispatchEvent(event);
-      } catch (error) {
-        // ignore
-      }
-    }
-
-    var openPrint = function (url) {
       if (!url) {
         return;
       }
-      dispatchPrintEvent(PRINT_POPUP_EVENT_CLEAR);
-      try {
-        var win = window.open(url, '_blank', 'noopener');
-        if (!win) {
-          dispatchPrintEvent(PRINT_POPUP_EVENT_BLOCKED, { url: url });
-        }
-      } catch (error) {
-        console.error('openPrint error', error);
-        dispatchPrintEvent(PRINT_POPUP_EVENT_BLOCKED, { url: url, error: error });
-      }
-    };
+      window.location.href = url;
+    }
 
-    function attachPrintHandler(button, builder) {
-      if (!button || typeof builder !== 'function') {
+    function attachPrintHandler(button, target) {
+      if (!button || !target) {
         return;
       }
       if (button.dataset.printBound === '1') {
@@ -98,12 +75,12 @@
       }
       button.dataset.printBound = '1';
       button.addEventListener('click', function () {
-        openPrint(builder());
+        navigateToPrintPage(target);
       });
     }
 
-    attachPrintHandler(offer, buildOfferUrl);
-    attachPrintHandler(invoice, buildInvoiceUrl);
+    attachPrintHandler(offer, 'offer');
+    attachPrintHandler(invoice, 'invoice');
   });
 
   function initCalc() {
@@ -161,8 +138,6 @@
           var proStatusOutput = document.getElementById('proStatus');
           var printOfferButton = document.getElementById('btnOffer');
           var printInvoiceButton = document.getElementById('btnInvoice');
-          var printPopupHint = document.querySelector('[data-print-fallback]');
-          var printPopupLink = document.querySelector('[data-print-fallback-link]');
           var markInvoicePaidCheckbox = document.getElementById('markInvoicePaid');
           var paidDateInput = document.getElementById('paidDate');
           var invoiceErrorOutput = document.getElementById('invoiceError');
@@ -257,34 +232,6 @@
               hideToastMessage();
             }, 4200);
           }
-
-          function hidePrintPopupHint() {
-            if (!printPopupHint) {
-              return;
-            }
-            printPopupHint.hidden = true;
-            printPopupHint.setAttribute('aria-hidden', 'true');
-            if (printPopupLink) {
-              printPopupLink.removeAttribute('href');
-            }
-          }
-
-          function showPrintPopupHint(url) {
-            if (!printPopupHint) {
-              return;
-            }
-            if (printPopupLink) {
-              if (url) {
-                printPopupLink.href = url;
-              } else {
-                printPopupLink.removeAttribute('href');
-              }
-            }
-            printPopupHint.hidden = false;
-            printPopupHint.setAttribute('aria-hidden', 'false');
-          }
-
-          hidePrintPopupHint();
 
           function fallbackCopyUsingTextArea(text) {
             return new Promise(function (resolve, reject) {
@@ -5184,16 +5131,6 @@
               document.title = originalDocumentTitle;
               pendingPrintTitle = null;
             }
-          });
-
-          window.addEventListener(PRINT_POPUP_EVENT_CLEAR, function () {
-            hidePrintPopupHint();
-          });
-
-          window.addEventListener(PRINT_POPUP_EVENT_BLOCKED, function (event) {
-            var detail = event && event.detail ? event.detail : {};
-            showToastMessage('Bitte Pop-ups für warenschmiede.com erlauben.');
-            showPrintPopupHint(detail && detail.url ? detail.url : '');
           });
 
           function persistPrintPayloadForSession(target) {
