@@ -183,13 +183,17 @@
     </div>
   </nav>
 
-  <main id="druck-tipps" class="site-main" tabindex="-1">
+  <main id="druck-tipps" class="site-main druck-tipps-main" tabindex="-1">
     <section class="section about-hero" aria-labelledby="druck-tipps-heading">
       <div class="container about-hero__grid">
         <div class="about-hero__content">
           <p class="section-eyebrow">3D-Druck Wissen</p>
           <h1 id="druck-tipps-heading">Tipps &amp; Abläufe / Kosten – 3D-Druck einfach erklärt</h1>
           <p>Hier findest du meine Kurz-Anleitungen aus dem Alltag: So verhinderst du Warping, Stringing und andere Stolperfallen – ohne stundenlang Foren zu durchforsten.</p>
+          <div class="tips-disclaimer" role="note">
+            <span class="tips-disclaimer__icon" aria-hidden="true">ℹ️</span>
+            <p class="tips-disclaimer__text">Hinweis: Alle Tipps auf dieser Seite basieren auf meinen eigenen Druckergebnissen und typischen Erfahrungswerten aus der 3D-Druck-Community. Jeder Drucker, jedes Filament und jede Umgebung reagiert anders – es gibt keine Garantie, dass die Werte in jedem Setup exakt passen. Bitte teste Änderungen immer zuerst an kleinen Probestücken.</p>
+          </div>
           <div class="hero-actions">
             <a class="btn btn-primary" href="/kontakt.html#kontakt-heading">Projekt anfragen</a>
             <a class="btn btn-outline" href="/ablauf-anfrage.html">Ablauf ansehen</a>
@@ -204,7 +208,7 @@
           <h2 id="schnellhilfe-heading">Schnellhilfe für typische Fehler</h2>
           <p>Die Tabelle zeigt dir die häufigsten Probleme auf einen Blick – inklusive Ursache und schneller Lösung.</p>
         </div>
-        <div class="card">
+        <div class="card tips-card">
           <div class="mat-table">
             <table>
               <thead>
@@ -231,14 +235,49 @@
                   <td>Bettscheibe mit Isopropanol reinigen, Leveling prüfen, erste Schicht kalibrieren</td>
                 </tr>
                 <tr>
-                  <td>Layer-Shift</td>
-                  <td>Riemen locker oder Druckkopf stößt gegen Teil</td>
-                  <td>Riemenspannung kontrollieren, Z-Hop aktivieren, Bauteil in der Slicer-Vorschau prüfen</td>
+                  <td>Elefantenfuß (untere Schichten breiter)</td>
+                  <td>Bett zu heiß oder erste Schicht zu stark gequetscht; fehlender Brim oder zu langsame Kühlung</td>
+                  <td>Betttemperatur leicht senken, erste Schicht etwas höher setzen (Z-Offset anpassen), ggf. Brim nutzen; Kühlung nach den ersten Schichten erhöhen</td>
                 </tr>
                 <tr>
-                  <td>Elefantenfuß</td>
-                  <td>Erste Schicht zu heiß oder zu stark gequetscht</td>
-                  <td>Betttemperatur etwas senken, Z-Offset minimal erhöhen, Brim statt Raft einsetzen</td>
+                  <td>Rauhe Oberfläche / „Pickel“ an den Außenwänden</td>
+                  <td>Überextrusion, zu hohe Temperatur oder ungünstige Seam-Einstellung (Nahtstelle)</td>
+                  <td>Extrusion/Flow etwas reduzieren (z.&nbsp;B. auf 95–98&nbsp;%), Temperatur um 5–10&nbsp;°C senken, „Naht ausblenden“ oder „Naht an Ecke“ im Slicer testen</td>
+                </tr>
+                <tr>
+                  <td>Unterextrusion / Lücken in den Wänden</td>
+                  <td>Extruder fördert zu wenig (verschmutztes Zahnrad, verstopfte Düse, Filament klemmt)</td>
+                  <td>Düse reinigen, Filamentführung prüfen, Extruderzahnrad säubern, Flow leicht erhöhen und Testwürfel drucken</td>
+                </tr>
+                <tr>
+                  <td>Obere Schicht schließt nicht / Infill schimmert durch</td>
+                  <td>Zu wenig Top-Layer oder zu wenig Infill; zu hohe Geschwindigkeit bei den Deckschichten</td>
+                  <td>Anzahl der obersten Schichten erhöhen (z.&nbsp;B. 4–6 Layer), Infill auf 15–20&nbsp;% erhöhen, Top-Layer langsamer drucken</td>
+                </tr>
+                <tr>
+                  <td>Brücken hängen durch / Überhänge hängen stark</td>
+                  <td>Zu schnell, zu heiß oder zu wenig Lüfter beim Bridging; zu große Spannweiten</td>
+                  <td>Bridging-Geschwindigkeit reduzieren, Temperatur leicht senken, Lüfter bei Bridges erhöhen, ggf. Stützstrukturen oder kleinere Spannweiten planen</td>
+                </tr>
+                <tr>
+                  <td>Ghosting / Ringing (Nachschwingungen an Kanten)</td>
+                  <td>Drucker bewegt sich zu schnell, Mechanik schwingt (lockere Riemen, wackeliger Rahmen)</td>
+                  <td>Geschwindigkeit und Beschleunigung reduzieren, Riemenspannung prüfen, lockere Schrauben nachziehen, Drucker stabil aufstellen</td>
+                </tr>
+                <tr>
+                  <td>Schichtverschiebung (Layer-Shift)</td>
+                  <td>Stepper verliert Schritte (Kollision, zu hohe Geschwindigkeit, lockere Riemen)</td>
+                  <td>Geschwindigkeit reduzieren, prüfen ob Bauteil mit Düse oder Kabeln kollidiert, Riemen und Riemenscheiben kontrollieren</td>
+                </tr>
+                <tr>
+                  <td>Nylon-/PC-Teile matt, spröde, mit vielen Blasen</td>
+                  <td>Material ist feucht; Wasser verdampft im Druck und zerstört die Oberfläche</td>
+                  <td>Filament 4–6 Stunden bei 60–80&nbsp;°C trocknen (Herstellerangabe beachten), trocken lagern; erst danach erneut testen</td>
+                </tr>
+                <tr>
+                  <td>TPU verstopft oder kommt ungleichmäßig</td>
+                  <td>Zu schnell, zu starker Retract, Bowden-Setup zu „lose“ für flexibles Material</td>
+                  <td>Geschwindigkeit deutlich reduzieren (z.&nbsp;B. 20–30&nbsp;mm/s), Retraction stark verringern, fördern in gleichmäßigem Flow; bei Problemen Direktantrieb bevorzugen</td>
                 </tr>
               </tbody>
             </table>
@@ -263,11 +302,12 @@
           <h2 id="filament-heading">Filament lagern &amp; trocknen</h2>
           <p>Feuchtigkeit ist der größte Gegner sauberer Drucke. So bleibt dein Filament einsatzbereit.</p>
         </div>
-        <div class="card">
+        <div class="card tips-card">
           <ul>
             <li>Lagere Spulen luftdicht in Boxen mit Silica-Gel oder Reisbeuteln.</li>
             <li>Falls das Filament knistert oder blubbert, trockne es 4–6&nbsp;Stunden bei 45–55&nbsp;°C im Trockenofen oder Food-Dryer.</li>
             <li>Beschrifte Spulen mit Kaufdatum und Material, damit du ältere Rollen zuerst nutzt.</li>
+            <li>Nylon, PC und viele CF-Filamente reagieren besonders stark auf Feuchtigkeit – hier lohnt sich eine trockene Box oder ein Filamenttrockner.</li>
           </ul>
         </div>
         <div class="tip-box" role="note">
@@ -289,7 +329,7 @@
           <h2 id="druckbett-heading">Druckbett pflegen &amp; reinigen</h2>
           <p>Ein sauberes Druckbett sorgt für zuverlässige erste Schichten.</p>
         </div>
-        <div class="card">
+        <div class="card tips-card">
           <ul>
             <li>Reinige Glas- oder PEI-Platten regelmäßig mit Isopropanol (mind. 70&nbsp;%).</li>
             <li>Fasse das Bett nach der Reinigung nicht mehr mit bloßen Fingern an – fettfreie Handschuhe helfen.</li>
@@ -315,13 +355,18 @@
           <h2 id="temperatur-heading">Temperatur &amp; Lüfter – Faustregeln</h2>
           <p>Jedes Material reagiert anders. Diese Richtwerte sind mein Ausgangspunkt für stabile Ergebnisse.</p>
         </div>
-        <div class="card">
+        <div class="card tips-card">
           <ul>
             <li><strong>PLA:</strong> 200&nbsp;°C Düse, 60&nbsp;°C Bett, Lüfter nach der ersten Schicht auf 100&nbsp;%.</li>
             <li><strong>PETG:</strong> 235&nbsp;°C Düse, 80&nbsp;°C Bett, Lüfter maximal 40&nbsp;% für feste Layer.</li>
             <li><strong>ASA:</strong> 250&nbsp;°C Düse, 100&nbsp;°C Bett, Gehäuse geschlossen halten und Lüfter niedrig lassen.</li>
             <li><strong>TPU:</strong> 220&nbsp;°C Düse, 50&nbsp;°C Bett, Lüfter moderat (30&nbsp;%) und langsam drucken (20–30&nbsp;mm/s).</li>
+            <li><strong>Nylon (PA):</strong> 250–260&nbsp;°C Düse, 70–90&nbsp;°C Bett; möglichst trocken drucken, Gehäuse geschlossen und Lüfter eher niedrig.</li>
+            <li><strong>PC (Polycarbonat):</strong> 260–280&nbsp;°C Düse, 90–110&nbsp;°C Bett; geschlossener Bauraum empfohlen, Lüfter sehr gering oder aus.</li>
+            <li><strong>PLA Wood:</strong> 200–215&nbsp;°C Düse, 50–60&nbsp;°C Bett; langsamer drucken, ggf. 0,6&nbsp;mm Düse verwenden, um Verstopfungen zu vermeiden.</li>
+            <li><strong>CF-PLA / CF-PETG:</strong> Drucktemperatur am oberen Bereich der Herstellerangabe des Basisfilaments, Bett wie PLA/PETG; gehärtete Düse verwenden.</li>
           </ul>
+          <p class="tips-card__note">Diese Werte sind Startpunkte. Jeder Drucker und jedes Filament reagiert etwas anders – kleine Testteile helfen, den Sweet Spot zu finden.</p>
         </div>
         <div class="tip-box" role="note">
           <span class="tip-box__icon" aria-hidden="true">
@@ -352,6 +397,15 @@
             </svg>
           </span>
           <p class="tip-box__text"><strong>Düsengröße:</strong> 0,4&nbsp;mm Allround; 0,6&nbsp;mm schneller; 0,2&nbsp;mm feiner.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="tips-disclaimer" role="note">
+          <span class="tips-disclaimer__icon" aria-hidden="true">ℹ️</span>
+          <p class="tips-disclaimer__text">Hinweis: Alle Tipps auf dieser Seite basieren auf meinen eigenen Druckergebnissen und typischen Erfahrungswerten aus der 3D-Druck-Community. Jeder Drucker, jedes Filament und jede Umgebung reagiert anders – es gibt keine Garantie, dass die Werte in jedem Setup exakt passen. Bitte teste Änderungen immer zuerst an kleinen Probestücken.</p>
         </div>
       </div>
     </section>
