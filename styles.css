@@ -186,7 +186,8 @@ img {
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 1200;
+  z-index: 2600;
+  isolation: isolate;
   background: var(--surface);
   padding-block: var(--space-3);
   border-bottom: 1px solid var(--border);
@@ -499,7 +500,7 @@ img {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  z-index: 1210;
+  z-index: 20;
 }
 
 .nav-more-menu[hidden] {
@@ -2727,7 +2728,7 @@ address {
 
 .troubleshooting-hero .about-hero__content {
   gap: clamp(var(--space-3), 3vw, var(--space-4));
-  max-width: min(980px, 100%);
+  max-width: min(1120px, 100%);
 }
 
 .troubleshooting-nav {
@@ -2766,20 +2767,8 @@ address {
 .trouble-grid {
   display: grid;
   gap: clamp(var(--space-3), 3vw, var(--space-4));
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   margin-top: clamp(var(--space-3), 3vw, var(--space-4));
-}
-
-@media (min-width: 48rem) {
-  .trouble-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 75rem) {
-  .trouble-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 
 .trouble-card {
@@ -6853,7 +6842,7 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
 }
 
 .tech-hero__inner {
-  max-width: 980px;
+  max-width: min(1200px, 100%);
   text-align: center;
   margin-inline: auto;
   display: flex;
@@ -6874,6 +6863,7 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
 .tech-grid {
   display: grid;
   gap: var(--space-6);
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
 }
 
 .tech-card {
@@ -7026,12 +7016,6 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
 
 .note-box h2 {
   margin-top: 0;
-}
-
-@media (min-width: 64rem) {
-  .tech-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
 }
 
 /* Motion */
