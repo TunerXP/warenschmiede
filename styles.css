@@ -1929,13 +1929,14 @@ img {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  max-width: 720px;
+  max-width: 1120px;
 }
 
 .ki-hero__lede {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   color: var(--text-muted);
+  max-width: 72ch;
 }
 
 .ki-toc__nav {
@@ -1979,17 +1980,18 @@ img {
   text-decoration: underline;
 }
 
+
 .ki-section__inner {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  max-width: 760px;
+  gap: var(--space-4);
+  max-width: 1120px;
 }
 
 .ki-section__inner > p {
   margin: 0;
   color: var(--text-muted);
-}
+  }
 
 .ki-section__inner > p + p {
   margin-top: 0.5rem;
@@ -2035,14 +2037,103 @@ img {
   color: var(--text-muted);
 }
 
+
 .ki-uses li + li {
   margin-top: 0.4rem;
+}
+
+.ki-card-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.ki-link-card {
+  text-decoration: none;
+  color: inherit;
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.ki-link-card h3 {
+  font-size: 1.2rem;
+}
+
+.ki-link-card p {
+  margin: 0;
+}
+
+.ki-link-card:hover,
+.ki-link-card:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 12px 30px -20px rgba(15, 23, 42, 0.45);
+  transform: translateY(-2px);
+}
+
+.ki-two-column {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.prompt-rule-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.prompt-rule-list li {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.prompt-rule-list li span {
+  display: block;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.prompt-example-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.prompt-example {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.prompt-example__title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.prompt-example pre {
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.05);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  font-family: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.prompt-example code {
+  color: var(--text);
 }
 
 .ki-tool-grid {
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .ki-tool-card {
@@ -2052,6 +2143,21 @@ img {
 .ki-tool-card h3 {
   margin: 0;
   font-size: 1.2rem;
+}
+
+.ki-tool-card ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.ki-tool-card strong {
+  display: block;
+  color: var(--text);
+  margin-bottom: 0.25rem;
 }
 
 .ki-tool-usage,
@@ -2067,27 +2173,101 @@ img {
   color: var(--accent);
 }
 
-.ki-faq {
-  margin: 0;
+.faq-accordion {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-3);
 }
 
-.ki-faq > div {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  padding: 0;
+  overflow: hidden;
 }
 
-.ki-faq dt {
+.faq-item summary {
+  cursor: pointer;
+  list-style: none;
+  padding: var(--space-4);
+  font-weight: 600;
+}
+
+.faq-item[open] summary {
+  border-bottom: 1px solid var(--border);
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item p {
   margin: 0;
+  padding: var(--space-4);
+  padding-top: 0;
+  color: var(--text-muted);
+}
+
+.callout.note {
+  border-color: #60a5fa;
+  background: color-mix(in oklab, #60a5fa 12%, var(--card));
+}
+
+.ki-lexicon {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.ki-lexicon dt {
   font-weight: 700;
+  margin: 0;
   color: var(--text);
 }
 
-.ki-faq dd {
+.ki-lexicon dd {
   margin: 0;
   color: var(--text-muted);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  padding-bottom: var(--space-3);
+}
+
+.ki-lexicon dd:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.ki-lexicon__group {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: var(--space-4);
+  background: var(--card);
+}
+
+.ki-lexicon__group h2 {
+  margin-top: 0;
+  margin-bottom: var(--space-2);
+}
+
+.lex-contact,
+.lex-links {
+  margin-top: var(--space-5);
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-3);
+  color: var(--text-muted);
+}
+
+.lex-contact a,
+.lex-links a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.lex-contact a:hover,
+.lex-links a:hover,
+.lex-contact a:focus-visible,
+.lex-links a:focus-visible {
+  text-decoration: underline;
 }
 
 .ki-cta .hero-actions {
