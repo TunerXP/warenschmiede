@@ -186,7 +186,7 @@ img {
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1200;
   background: var(--surface);
   padding-block: var(--space-3);
   border-bottom: 1px solid var(--border);
@@ -499,7 +499,7 @@ img {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  z-index: 20;
+  z-index: 1210;
 }
 
 .nav-more-menu[hidden] {
@@ -2715,8 +2715,19 @@ address {
   line-height: 1.6;
 }
 
+.troubleshooting-hero {
+  padding-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+.troubleshooting-hero .about-hero__grid {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: min(1200px, 100%);
+  margin-inline: auto;
+}
+
 .troubleshooting-hero .about-hero__content {
   gap: clamp(var(--space-3), 3vw, var(--space-4));
+  max-width: min(980px, 100%);
 }
 
 .troubleshooting-nav {
@@ -2755,8 +2766,20 @@ address {
 .trouble-grid {
   display: grid;
   gap: clamp(var(--space-3), 3vw, var(--space-4));
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   margin-top: clamp(var(--space-3), 3vw, var(--space-4));
+}
+
+@media (min-width: 48rem) {
+  .trouble-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 75rem) {
+  .trouble-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .trouble-card {
