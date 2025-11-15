@@ -7216,9 +7216,17 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
   padding-block: clamp(var(--space-8), 7vw, var(--space-12));
 }
 
-.ki-max-width {
-  max-width: min(1200px, 100%);
+.container.ki-wide {
+  width: min(1320px, 100%);
+  max-width: none;
   margin-inline: auto;
+  padding-inline: clamp(var(--space-4), 5vw, var(--space-8));
+}
+
+@media only screen and (max-width: 640px) {
+  .container.ki-wide {
+    padding-inline: var(--space-4);
+  }
 }
 
 .ki-tools-hero {
@@ -7307,6 +7315,11 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
   font-size: 2.4rem;
 }
 
+.ki-section-intro {
+  margin: 0;
+  color: var(--text-subtle, var(--muted));
+}
+
 .ki-tool-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -7324,6 +7337,22 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
   box-shadow: 0 24px 60px -48px rgba(15, 23, 42, 0.6);
 }
 
+.ki-tool-card__lede {
+  margin: 0;
+  color: var(--text-subtle);
+}
+
+.ki-tool-card__meta {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-subtle);
+}
+
+.ki-tool-card__meta strong {
+  color: var(--text);
+}
+
 .ki-tool-card__head {
   display: flex;
   gap: var(--space-3);
@@ -7334,15 +7363,30 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
   line-height: 1;
 }
 
-.ki-tool-card__price span {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--muted);
+.ki-tool-card__body {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
-.ki-tool-card__url {
-  font-size: 0.9rem;
-  color: var(--muted);
+.ki-tool-card__body h4 {
+  margin-bottom: var(--space-2);
+}
+
+.ki-tool-card__body ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: var(--text-subtle);
+}
+
+.ki-tool-card__tag {
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  background: rgba(37, 99, 235, 0.08);
+  font-size: 0.95rem;
 }
 
 .ki-tool-card__cta {
@@ -7383,6 +7427,16 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
   font-size: 1rem;
 }
 
+.ki-price-note {
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  font-size: 0.95rem;
+  color: var(--text-subtle);
+}
+
 .ki-disclaimer-card {
   background: var(--surface);
   border: 1px solid var(--border-strong, var(--border));
@@ -7399,5 +7453,9 @@ body[print-mode='invoice'] .print-doc .calc-print__summary .calc-print__vat-note
 
   .ki-tool-card__head {
     flex-direction: column;
+  }
+
+  .ki-tool-card__body {
+    grid-template-columns: 1fr;
   }
 }
