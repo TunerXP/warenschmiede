@@ -217,6 +217,7 @@
             }
         }
 
+        
         .print-controls {
             text-align: center;
             padding: 6mm 0 0;
@@ -250,7 +251,7 @@
         </div>
         <div class="title-box">
             <div class="title-main" id="docTitle">Dokument</div>
-            <div class="title-sub">Erstellt mit dem Warenschmiede Dokumenten-Tool Light</div>
+            <!--<div class="title-sub">Erstellt mit dem Warenschmiede Dokumenten-Tool Light</div> -->
         </div>
     </div>
 
@@ -327,23 +328,27 @@
     </table>
 
     <div class="notes-section">
-        <div class="note-box" id="noteBox">
-            <strong>Hinweis / Notiz</strong><br>
-            <span id="noteText"></span>
-        </div>
-
-        <div class="paid-info" id="paidInfo" style="display:none;"></div>
-
-        <div class="bank-row" id="bankRow">
-            <div><span class="label">Bank:</span> <span id="bankNameOut"></span></div>
-            <div><span class="label">IBAN:</span> <span id="bankIbanOut"></span></div>
-            <div><span class="label">BIC:</span> <span id="bankBicOut"></span></div>
-        </div>
-
-        <div class="footer" id="footerText">
-            Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.
-        </div>
+    <div class="note-box" id="noteBox">
+        <strong>Hinweis / Notiz</strong><br>
+        <span id="noteText"></span>
     </div>
+
+    <div class="paid-info" id="paidInfo" style="display:none;"></div>
+
+    <div class="bank-row" id="bankRow">
+        <div><span class="label">Bank:</span> <span id="bankNameOut"></span></div>
+        <div><span class="label">IBAN:</span> <span id="bankIbanOut"></span></div>
+        <div><span class="label">BIC:</span> <span id="bankBicOut"></span></div>
+    </div>
+
+    <div class="footer" id="footerText">
+    Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.
+    Dieses Dokument kann aus mehreren Seiten bestehen. Bitte alle Seiten beachten.
+</div>
+
+</div>
+
+
 </div>
 
 <script>
@@ -458,31 +463,41 @@
         if (docLabelEl) docLabelEl.textContent = docNumberLabel;
 
         // Footer-Text abhängig vom Dokumenttyp
-        const footerEl = document.getElementById("footerText");
-        if (footerEl) {
-            if (docType === "lieferschein") {
-                footerEl.textContent =
-                    "Dies ist ein Lieferschein und keine Rechnung. Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.";
-            } else if (docType === "rechnung") {
-                footerEl.textContent =
-                    "Diese Rechnung wurde mit dem Warenschmiede Dokumenten-Tool Light erstellt. – Made in Germany.";
-            } else if (docType === "angebot") {
-                footerEl.textContent =
-                    "Dieses Angebot wurde mit dem Warenschmiede Dokumenten-Tool Light erstellt. – Made in Germany.";
-            } else if (docType === "bestellbestätigung" || docType === "bestellbestaetigung") {
-                footerEl.textContent =
-                    "Diese Bestellbestätigung wurde mit dem Warenschmiede Dokumenten-Tool Light erstellt. – Made in Germany.";
-            } else if (docType === "zahlungserinnerung") {
-                footerEl.textContent =
-                    "Dies ist eine freundliche Zahlungserinnerung zu einer offenen Rechnung. Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.";
-            } else if (docType === "mahnung") {
-                footerEl.textContent =
-                    "Dies ist eine Mahnung zu einer überfälligen Rechnung. Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.";
-            } else {
-                footerEl.textContent =
-                    "Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.";
-            }
-        }
+const footerEl = document.getElementById("footerText");
+if (footerEl) {
+    const multiPageHint = " Dieses Dokument kann aus mehreren Seiten bestehen. Bitte alle Seiten beachten.";
+
+    if (docType === "lieferschein") {
+        footerEl.textContent =
+            "Dies ist ein Lieferschein und keine Rechnung. Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany." +
+            multiPageHint;
+    } else if (docType === "rechnung") {
+        footerEl.textContent =
+            "Diese Rechnung wurde mit dem Warenschmiede Dokumenten-Tool Light erstellt. – Made in Germany." +
+            multiPageHint;
+    } else if (docType === "angebot") {
+        footerEl.textContent =
+            "Dieses Angebot wurde mit dem Warenschmiede Dokumenten-Tool Light erstellt. – Made in Germany." +
+            multiPageHint;
+    } else if (docType === "bestellbestaetigung" || docType === "bestellbestätigung") {
+        footerEl.textContent =
+            "Diese Bestellbestätigung wurde mit dem Warenschmiede Dokumenten-Tool Light erstellt. – Made in Germany." +
+            multiPageHint;
+    } else if (docType === "zahlungserinnerung") {
+        footerEl.textContent =
+            "Dies ist eine freundliche Zahlungserinnerung zu einer offenen Rechnung. Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany." +
+            multiPageHint;
+    } else if (docType === "mahnung") {
+        footerEl.textContent =
+            "Dies ist eine Mahnung zu einer überfälligen Rechnung. Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany." +
+            multiPageHint;
+    } else {
+        footerEl.textContent =
+            "Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany." +
+            multiPageHint;
+    }
+}
+
 
         // Anbieter / Kunde
         document.getElementById("anbieterText").innerHTML =
@@ -637,7 +652,7 @@
             if (footerEl2) {
                 footerEl2.textContent =
                     "Gemäß §19 UStG wird keine Umsatzsteuer ausgewiesen. " +
-                    "Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.";
+                    "Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany. Dieses Dokument kann aus mehreren Seiten bestehen. Bitte alle Seiten beachten.";
             }
         }
 
