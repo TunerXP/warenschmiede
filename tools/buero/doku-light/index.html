@@ -551,7 +551,7 @@
     </section>
 
     <!-- Block 4: Notiz & Aktionen + Logo -->
-    <section class="section" id="section-notes-actions">
+        <section class="section" id="section-notes-actions">
         <h2>4. Notizen &amp; Aktionen</h2>
 
         <h3>Logo (optional)</h3>
@@ -569,7 +569,8 @@
             </div>
         </div>
         <p class="badge-hinweis">
-            Das Logo wird lokal im Browser (localStorage) gespeichert und beim Drucken in den Dokumentkopf eingefügt.
+            Das Logo wird lokal im Browser (localStorage) gespeichert und beim
+            Drucken in den Dokumentkopf eingefügt.
             Es wird nicht auf einem Server gespeichert oder hochgeladen.
         </p>
 
@@ -586,22 +587,21 @@
             <button type="button" id="btnLoadFile">Datei laden</button>
         </div>
 
-        <h3 style="margin-top: 1.25rem;">Rechnung bezahlt</h3>
-        <div class="row">
-            <div class="field" style="max-width: 220px;">
-                <label>
-                    <input type="checkbox" id="isPaid" name="isPaid">
-                    &nbsp;Rechnung bezahlt
-                </label>
-            </div>
-            <div class="field" style="max-width: 220px;">
+        <h3>Rechnung bezahlt</h3>
+        <div class="paid-row">
+            <label class="checkbox-inline">
+                <input type="checkbox" id="isPaid">
+                Rechnung bezahlt
+            </label>
+            <div class="field" style="max-width: 200px;">
                 <label for="paidDate">Bezahlt am (optional)</label>
-                <input type="date" id="paidDate" name="paidDate">
+                <input type="date" id="paidDate">
             </div>
         </div>
-        <p class="badge-hinweis">
-            Diese Angabe ist vor allem für <strong>„Rechnung drucken“</strong> gedacht. Später können wir damit
-            einen „BEZAHLT“-Stempel und eine Fußzeile „Bereits bezahlt am …“ im PDF ausgeben.
+        <p class="form-hint">
+            Diese Angabe ist vor allem für „Rechnung drucken“ gedacht.
+            In der PDF wird dann ein „BEZAHLT“-Stempel und eine Zeile
+            „Bereits bezahlt am …“ angezeigt.
         </p>
 
         <h3 style="margin-top: 1.25rem;">Dokument erstellen / drucken</h3>
@@ -618,7 +618,19 @@
             Hinweis: Die Dokumente werden später über die Druckfunktion des Browsers (PDF-Export) erzeugt.
             Es erfolgt keine Speicherung auf einem Server.
         </p>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="referenceOffer">Bezug auf Angebot (optional)</label>
+                <input type="text" id="referenceOffer" placeholder="z. B. Angebots-Nr. 2025-001">
+                <p class="form-hint">
+                    Diese Angabe erscheint nur auf Rechnungen („Rechnung drucken“) als Zeile
+                    „Bezug auf Angebot: …“. Lasse das Feld leer, wenn du keinen Bezug herstellen möchtest.
+                </p>
+            </div>
+        </div>
     </section>
+
 
     <script src="doku-light.js"></script>
 </body>

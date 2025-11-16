@@ -252,6 +252,8 @@
             customerStreet: getVal("customerStreet"),
             customerZipCity: getVal("customerZipCity"),
             customerEmail: getVal("customerEmail"),
+            
+            referenceOffer: getVal("referenceOffer"),
 
             notes: getVal("notes"),
             isPaid: getChecked("isPaid"),
@@ -297,6 +299,8 @@
         setVal("customerStreet", data.customerStreet);
         setVal("customerZipCity", data.customerZipCity);
         setVal("customerEmail", data.customerEmail);
+
+        setVal("referenceOffer", data.referenceOffer);
 
         setVal("notes", data.notes);
         setChecked("isPaid", data.isPaid);

@@ -78,18 +78,16 @@
 
         .meta-row {
             display: flex;
-            flex-wrap: wrap;
             gap: 4mm;
-            margin-bottom: 8mm;
+            margin-top: 6mm;
+            font-size: 9pt;
         }
 
         .meta-box {
-            flex: 1;
-            min-width: 45mm;
+            flex: 1 1 0;
             border: 1px solid #e5e7eb;
             border-radius: 4px;
             padding: 3mm 4mm;
-            font-size: 8.5pt;
         }
 
         .meta-label {
@@ -103,26 +101,26 @@
             font-weight: 500;
         }
 
-        table.items {
+        table#itemsTable {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 4mm;
+            margin-top: 6mm;
             font-size: 9pt;
         }
 
-        table.items th,
-        table.items td {
+        table#itemsTable th,
+        table#itemsTable td {
             border: 1px solid #e5e7eb;
             padding: 2mm 2.5mm;
         }
 
-        table.items th {
+        table#itemsTable th {
             background: #f3f4f6;
             font-weight: 600;
             font-size: 8.5pt;
         }
 
-        table.items td.num {
+        table#itemsTable td.num {
             text-align: right;
             white-space: nowrap;
         }
@@ -280,6 +278,9 @@
             <div class="meta-label">Leistungsdatum</div>
             <div class="meta-value" id="metaService"></div>
         </div>
+    </div>
+
+    <div class="meta-row">
         <div class="meta-box">
             <div class="meta-label">Kunden-Bestellnummer</div>
             <div class="meta-value" id="metaCustomerOrder"></div>
@@ -290,15 +291,20 @@
         </div>
     </div>
 
-    <table class="items" id="itemsTable">
+    <div id="referenceOfferBox" style="margin-top: 4mm; font-size: 8.5pt; display: none;">
+        <strong>Bezug auf Angebot:</strong>
+        <span id="referenceOfferText"></span>
+    </div>
+
+    <table id="itemsTable">
         <thead>
         <tr>
-            <th style="width: 10mm;">Pos.</th>
+            <th style="width:10mm;">Pos.</th>
             <th>Beschreibung</th>
-            <th style="width: 18mm;">Menge</th>
-            <th style="width: 20mm;">Einheit</th>
-            <th style="width: 26mm;">Einzelpreis</th>
-            <th style="width: 26mm;">Summe</th>
+            <th style="width:18mm;">Menge</th>
+            <th style="width:20mm;">Einheit</th>
+            <th class="col-price" style="width:26mm;">Einzelpreis</th>
+            <th class="col-total" style="width:26mm;">Summe</th>
         </tr>
         </thead>
         <tbody>
@@ -335,7 +341,7 @@
         </div>
 
         <div class="footer" id="footerText">
-            Diese Rechnung wurde mit dem Warenschmiede Dokumenten-Tool Light erstellt. – Made in Germany.
+            Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.
         </div>
     </div>
 </div>
@@ -425,6 +431,7 @@
 
         let title = "Dokument";
         let docNumberLabel = "Dokument-Nr.";
+
         if (docType === "rechnung") {
             title = "Rechnung";
             docNumberLabel = "Rechnungs-Nr.";
@@ -434,7 +441,7 @@
         } else if (docType === "lieferschein") {
             title = "Lieferschein";
             docNumberLabel = "Lieferschein-Nr.";
-        } else if (docType === "bestellbestaetigung") {
+        } else if (docType === "bestellbestätigung" || docType === "bestellbestaetigung") {
             title = "Bestellbestätigung";
             docNumberLabel = "Bestellbestätigung-Nr.";
         } else if (docType === "zahlungserinnerung") {
@@ -449,6 +456,24 @@
         document.getElementById("docTitle").textContent = title;
         const docLabelEl = document.getElementById("metaDocNumberLabel");
         if (docLabelEl) docLabelEl.textContent = docNumberLabel;
+
+        // Footer-Text abhängig vom Dokumenttyp
+        const footerEl = document.getElementById("footerText");
+        if (footerEl) {
+            if (docType === "lieferschein") {
+                footerEl.textContent =
+                    "Dies ist ein Lieferschein und keine Rechnung. Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.";
+            } else if (docType === "rechnung") {
+                footerEl.textContent =
+                    "Diese Rechnung wurde mit dem Warenschmiede Dokumenten-Tool Light erstellt. – Made in Germany.";
+            } else if (docType === "angebot") {
+                footerEl.textContent =
+                    "Dieses Angebot wurde mit dem Warenschmiede Dokumenten-Tool Light erstellt. – Made in Germany.";
+            } else {
+                footerEl.textContent =
+                    "Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.";
+            }
+        }
 
         // Anbieter / Kunde
         document.getElementById("anbieterText").innerHTML =
@@ -492,6 +517,17 @@
         document.getElementById("metaPaymentTerms").textContent =
             textOrDash(data.paymentTerms);
 
+        // Bezug auf Angebot (optional) – nur auf Rechnungen anzeigen
+        const refOffer = (data.referenceOffer || "").trim();
+        if (docType === "rechnung" && refOffer) {
+            const refBox = document.getElementById("referenceOfferBox");
+            const refText = document.getElementById("referenceOfferText");
+            if (refBox && refText) {
+                refText.textContent = refOffer;
+                refBox.style.display = "block";
+            }
+        }
+
         // Positionen & Summen
         const tbody = document.querySelector("#itemsTable tbody");
         tbody.innerHTML = "";
@@ -532,8 +568,8 @@
                 tr.appendChild(td(name + (desc ? " – " + desc : "")));
                 tr.appendChild(td(qty ? String(qty) : "", "num"));
                 tr.appendChild(td(unitText));
-                tr.appendChild(td(price ? formatCurrency(price, currency) : "", "num"));
-                tr.appendChild(td(formatCurrency(gross, currency), "num"));
+                tr.appendChild(td(price ? formatCurrency(price, currency) : "", "num col-price"));
+                tr.appendChild(td(formatCurrency(gross, currency), "num col-total"));
 
                 tbody.appendChild(tr);
             });
@@ -568,14 +604,17 @@
         document.getElementById("bankIbanOut").textContent = textOrDash(data.bankIban);
         document.getElementById("bankBicOut").textContent = textOrDash(data.bankBic);
 
-        // Kleinunternehmer-Hinweis in Footer
-        if (data.isKleinunternehmer) {
-            document.getElementById("footerText").textContent =
-                "Gemäß §19 UStG wird keine Umsatzsteuer ausgewiesen. Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.";
+        // Kleinunternehmer-Hinweis im Footer – nur für Dokumente mit Preisen relevant
+        if (data.isKleinunternehmer && docType !== "lieferschein") {
+            const footerEl2 = document.getElementById("footerText");
+            if (footerEl2) {
+                footerEl2.textContent =
+                    "Gemäß §19 UStG wird keine Umsatzsteuer ausgewiesen. Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.";
+            }
         }
 
-        // Bezahlt?
-        if (data.isPaid) {
+        // Bezahlt-Stempel NUR bei Rechnung
+        if (docType === "rechnung" && data.isPaid) {
             const stamp = document.getElementById("paidStamp");
             const info = document.getElementById("paidInfo");
             if (stamp) stamp.style.display = "block";
@@ -584,6 +623,15 @@
                 info.textContent = "Bereits bezahlt am " +
                     (data.paidDate || "unbekanntem Datum") + ".";
             }
+        }
+
+        // Lieferschein: Spalten Preise/Summen + Gesamtsummen ausblenden
+        if (docType === "lieferschein") {
+            document.querySelectorAll(".col-price, .col-total").forEach(el => {
+                el.style.display = "none";
+            });
+            const sumTable = document.querySelector(".sum-table");
+            if (sumTable) sumTable.style.display = "none";
         }
 
         // Logo laden
