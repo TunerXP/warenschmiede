@@ -469,6 +469,15 @@
             } else if (docType === "angebot") {
                 footerEl.textContent =
                     "Dieses Angebot wurde mit dem Warenschmiede Dokumenten-Tool Light erstellt. – Made in Germany.";
+            } else if (docType === "bestellbestätigung" || docType === "bestellbestaetigung") {
+                footerEl.textContent =
+                    "Diese Bestellbestätigung wurde mit dem Warenschmiede Dokumenten-Tool Light erstellt. – Made in Germany.";
+            } else if (docType === "zahlungserinnerung") {
+                footerEl.textContent =
+                    "Dies ist eine freundliche Zahlungserinnerung zu einer offenen Rechnung. Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.";
+            } else if (docType === "mahnung") {
+                footerEl.textContent =
+                    "Dies ist eine Mahnung zu einer überfälligen Rechnung. Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.";
             } else {
                 footerEl.textContent =
                     "Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.";
@@ -517,9 +526,11 @@
         document.getElementById("metaPaymentTerms").textContent =
             textOrDash(data.paymentTerms);
 
-        // Bezug auf Angebot (optional) – nur auf Rechnungen anzeigen
+        // Bezug auf Angebot (optional) – für Rechnung & Bestellbestätigung
         const refOffer = (data.referenceOffer || "").trim();
-        if (docType === "rechnung" && refOffer) {
+        if ((docType === "rechnung" ||
+             docType === "bestellbestätigung" ||
+             docType === "bestellbestaetigung") && refOffer) {
             const refBox = document.getElementById("referenceOfferBox");
             const refText = document.getElementById("referenceOfferText");
             if (refBox && refText) {
@@ -590,11 +601,27 @@
         document.getElementById("sumGrossOut").textContent =
             formatCurrency(sumGross, currency);
 
-        // Notiz
-        const note = data.notes || "";
+        // Notiz (mit Standardtext für Zahlungserinnerung/Mahnung, wenn leer)
         const noteBox = document.getElementById("noteBox");
-        if (note.trim()) {
-            document.getElementById("noteText").textContent = note;
+        let noteTextValue = (data.notes || "").trim();
+
+        if (!noteTextValue) {
+            if (docType === "zahlungserinnerung") {
+                noteTextValue =
+                    "wir möchten Sie freundlich an die Begleichung der unten aufgeführten Rechnung erinnern. " +
+                    "Bitte überweisen Sie den offenen Betrag innerhalb der nächsten 7 Tage auf das angegebene Konto. " +
+                    "Sollte sich Ihre Zahlung mit diesem Schreiben gekreuzt haben, betrachten Sie diese Erinnerung bitte als gegenstandslos.";
+            } else if (docType === "mahnung") {
+                noteTextValue =
+                    "trotz unserer vorherigen Erinnerung ist der unten aufgeführte Rechnungsbetrag noch offen. " +
+                    "Wir bitten Sie, den fälligen Betrag umgehend zu überweisen. Sollte die Zahlung bereits erfolgt sein, " +
+                    "betrachten Sie dieses Schreiben bitte als gegenstandslos.";
+            }
+        }
+
+        if (noteTextValue) {
+            document.getElementById("noteText").textContent = noteTextValue;
+            noteBox.style.display = "block";
         } else {
             noteBox.style.display = "none";
         }
@@ -609,7 +636,8 @@
             const footerEl2 = document.getElementById("footerText");
             if (footerEl2) {
                 footerEl2.textContent =
-                    "Gemäß §19 UStG wird keine Umsatzsteuer ausgewiesen. Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.";
+                    "Gemäß §19 UStG wird keine Umsatzsteuer ausgewiesen. " +
+                    "Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.";
             }
         }
 
