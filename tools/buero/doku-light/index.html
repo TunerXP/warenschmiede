@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Dokumenten-Tool Light | Warenschmiede</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../../styles.css">
+    <style>
+        /* Basis-Layout */
+
+        body {
+            max-width: 1400px; /* Desktop-optimiert */
+            margin: 0 auto;
+            padding: 1.5rem;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        h1 {
+            margin-bottom: 0.5rem;
+        }
+
+        .section {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid;
+            overflow-x: visible;
+        }
+
+        .section h2 {
+            margin-top: 0;
+            font-size: 1.1rem;
+        }
+
+        h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .field {
+            flex: 1 1 220px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        textarea,
+        select {
+            padding: 0.35rem 0.45rem;
+            border-radius: 4px;
+            border: 1px solid;
+            font: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checkbox-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+        }
+
+        th,
+        td {
+            border: 1px solid;
+            padding: 0.35rem 0.4rem;
+            text-align: left;
+            box-sizing: border-box;
+        }
+
+        /* Positionstabelle – feste Breiten & passende Inputs */
+
+        #section-items > table:first-of-type {
+            table-layout: fixed;
+        }
+
+        #section-items td input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Spaltenaufteilung Positionen */
+        #section-items th:nth-child(1) { width: 5%; }   /* Pos. */
+        #section-items th:nth-child(2) { width: 23%; }  /* Bezeichnung */
+        #section-items th:nth-child(3) { width: 35%; }  /* Beschreibung */
+        #section-items th:nth-child(4) { width: 10%; }  /* Menge (breiter) */
+        #section-items th:nth-child(5) { width: 5%; }   /* Einheit (kompakt) */
+        #section-items th:nth-child(6) { width: 10%; }  /* Einzelpreis */
+        #section-items th:nth-child(7) { width: 5%; }   /* MwSt % */
+        #section-items th:nth-child(8) { width: 7%; }   /* Gesamt (etwas größer) */
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        button {
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            border: 1px solid;
+            cursor: pointer;
+        }
+
+        .sum-row {
+            text-align: right;
+        }
+
+        .sum-row td:first-child {
+            padding-right: 0.75rem;
+        }
+
+        .sum-row input {
+            width: 140px;
+            text-align: right;
+        }
+
+        .badge-hinweis {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .preset-row {
+            margin-top: 0.25rem;
+            font-size: 0.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .preset-label {
+            font-weight: 600;
+            margin-right: 0.25rem;
+        }
+
+        .preset-row button {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
+        }
+
+        /* Logo-Vorschau */
+
+        #logoPreviewContainer {
+            border: 1px dashed;
+            border-radius: 4px;
+            padding: 0.5rem;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            background: rgba(0,0,0,0.02);
+        }
+
+        #logoPreview {
+            max-height: 60px;
+            max-width: 220px;
+            object-fit: contain;
+        }
+
+        /* Dark / Light */
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: #f5f5f5;
+            }
+            .section {
+                background-color: rgba(0, 0, 0, 0.35);
+                border-color: #444;
+            }
+            input[type="text"],
+            input[type="number"],
+            input[type="date"],
+            textarea,
+            select {
+                background-color: rgba(255, 255, 255, 0.03);
+                border-color: #666;
+                color: #f5f5f5;
+            }
+            th {
+                background: #333;
+                color: #fff;
+                border-color: #444;
+            }
+            tbody td {
+                background-color: rgba(255, 255, 255, 0.02);
+                border-color: #444;
+            }
+            button {
+                background: #444;
+                color: #f5f5f5;
+                border-color: #777;
+            }
+            button:hover {
+                background: #555;
+            }
+            .badge-hinweis {
+                color: #bbb;
+            }
+            #logoPreviewContainer {
+                background: rgba(255,255,255,0.03);
+                border-color: #666;
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            body {
+                background-color: #f2f4f7;
+            }
+            .section {
+                background-color: #ffffff;
+                border-color: #ccc;
+            }
+            input[type="text"],
+            input[type="number"],
+            input[type="date"],
+            textarea,
+            select {
+                background-color: #ffffff;
+                border-color: #bbb;
+                color: #222;
+            }
+            th {
+                background: #e0e0e0;
+                color: #000;
+                border-color: #c4c4c4;
+            }
+            tbody td {
+                background-color: #fafafa;
+                border-color: #ddd;
+            }
+            button {
+                background: #444;
+                color: #f5f5f5;
+                border-color: #333;
+            }
+            button:hover {
+                background: #555;
+            }
+            .badge-hinweis {
+                color: #555;
+            }
+            #logoPreviewContainer {
+                background: #fafafa;
+                border-color: #bbb;
+            }
+        }
+
+        /* Kleine Bildschirme: Tabelle scrollbar machen */
+        @media (max-width: 900px) {
+            #section-items {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Dokumenten-Tool Light</h1>
+    <p>
+        Schnelle Erstellung von Angebot, Rechnung, Lieferschein, Bestellbestätigung
+        sowie später Zahlungserinnerung und Mahnung – ohne Speicherung auf einem Server, nur lokal im Browser.
+    </p>
+
+    <!-- Block 1: Dokument-Einstellungen -->
+    <section class="section" id="section-doc-settings">
+        <h2>1. Dokument-Einstellungen</h2>
+        <div class="row">
+            <div class="field">
+                <label for="docType">Dokumenttyp</label>
+                <select id="docType" name="docType">
+                    <option value="angebot">Angebot</option>
+                    <option value="rechnung">Rechnung</option>
+                    <option value="lieferschein">Lieferschein</option>
+                    <option value="bestellbestaetigung">Bestellbestätigung</option>
+                    <option value="zahlungserinnerung">Zahlungserinnerung</option>
+                    <option value="mahnung">Mahnung</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="docNumber">Dokument-Nr.</label>
+                <input type="text" id="docNumber" name="docNumber" placeholder="z. B. 2025-001">
+            </div>
+            <div class="field">
+                <label for="docDate">Datum</label>
+                <input type="date" id="docDate" name="docDate">
+            </div>
+            <div class="field">
+                <label for="paymentTerms">Zahlungsziel / Hinweis</label>
+                <input type="text" id="paymentTerms" name="paymentTerms" placeholder="z. B. zahlbar innerhalb von 14 Tagen">
+                <div class="preset-row">
+                    <span class="preset-label">Schnellauswahl (sofort einfügen):</span>
+                    <button type="button" class="preset-payment" data-text="sofort zu zahlen, ohne Abzug">Sofort</button>
+                    <button type="button" class="preset-payment" data-days="7" data-text="zahlbar innerhalb von 7 Tagen ohne Abzug">7 Tage</button>
+                    <button type="button" class="preset-payment" data-days="14" data-text="zahlbar innerhalb von 14 Tagen ohne Abzug">14 Tage</button>
+                    <button type="button" class="preset-payment" data-days="21" data-text="zahlbar innerhalb von 21 Tagen ohne Abzug">21 Tage</button>
+                    <button type="button" class="preset-payment" data-days="28" data-text="zahlbar innerhalb von 28 Tagen ohne Abzug">28 Tage</button>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 0.75rem;">
+            <div class="field">
+                <label for="currency">Währung</label>
+                <select id="currency" name="currency">
+                    <option value="EUR">EUR (€)</option>
+                    <option value="CHF">CHF</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="GBP">GBP (£)</option>
+                </select>
+                <p class="badge-hinweis">
+                    Standard ist EUR (&euro;). Die Auswahl ist gedacht für Nutzer aus anderen Ländern
+                    (z. B. Österreich, Schweiz), die ihre Dokumente in der jeweiligen Landeswährung erstellen möchten.
+                </p>
+            </div>
+            <div class="field">
+                <label for="customerOrderNumber">Kunden-Bestellnummer (optional)</label>
+                <input type="text" id="customerOrderNumber" name="customerOrderNumber" placeholder="z. B. Bestell-Nr. des Kunden">
+            </div>
+            <div class="field">
+                <label for="serviceDateFrom">Leistungsdatum von (optional)</label>
+                <input type="date" id="serviceDateFrom" name="serviceDateFrom">
+            </div>
+            <div class="field">
+                <label for="serviceDateTo">Leistungsdatum bis (optional)</label>
+                <input type="date" id="serviceDateTo" name="serviceDateTo">
+            </div>
+        </div>
+        <div class="checkbox-row">
+            <div>
+                <input type="checkbox" id="rememberDocSettings" name="rememberDocSettings">
+                <label for="rememberDocSettings">Dokument-Einstellungen im Browser merken</label>
+            </div>
+            <div>
+                <input type="checkbox" id="isKleinunternehmer" name="isKleinunternehmer">
+                <label for="isKleinunternehmer">
+                    Kleinunternehmer nach §19 UStG (keine MwSt separat ausweisen)
+                </label>
+            </div>
+        </div>
+    </section>
+
+    <!-- Block 1b: Bankdaten -->
+    <section class="section" id="section-bank">
+        <h2>1b. Bankdaten</h2>
+        <div class="row">
+            <div class="field">
+                <label for="bankHolder">Kontoinhaber</label>
+                <input type="text" id="bankHolder" name="bankHolder" placeholder="z. B. Marco Hoffmann">
+            </div>
+            <div class="field">
+                <label for="bankName">Bankname</label>
+                <input type="text" id="bankName" name="bankName" placeholder="z. B. Volksbank eG ...">
+            </div>
+        </div>
+        <div class="row">
+            <div class="field">
+                <label for="bankIban">IBAN</label>
+                <input type="text" id="bankIban" name="bankIban">
+            </div>
+            <div class="field">
+                <label for="bankBic">BIC</label>
+                <input type="text" id="bankBic" name="bankBic">
+            </div>
+        </div>
+        <div class="row">
+            <div class="field">
+                <label for="bankNote">Bank-Hinweis (optional)</label>
+                <input type="text" id="bankNote" name="bankNote" placeholder="z. B. Hinweise zu Auslandsüberweisungen / Gebühren">
+            </div>
+        </div>
+        <div class="checkbox-row">
+            <input type="checkbox" id="rememberBank" name="rememberBank">
+            <label for="rememberBank">Bankdaten im Browser merken</label>
+        </div>
+        <p class="badge-hinweis">
+            Die Bankdaten gelten unabhängig von der gewählten Währung. Bei Zahlungen in Fremdwährung
+            übernimmt in der Regel die Bank die Umrechnung. Konkrete Formulierungen zu Gebühren oder
+            Wechselkursen kannst du bei Bedarf mit deiner Bank oder deinem Steuerberater abstimmen.
+        </p>
+    </section>
+
+    <!-- Block 2: Anbieter & Kunde -->
+    <section class="section" id="section-parties">
+        <h2>2. Anbieter &amp; Kunde</h2>
+
+        <h3>Anbieter (Warenschmiede / Absender)</h3>
+        <div class="row">
+            <div class="field">
+                <label for="vendorName">Name</label>
+                <input type="text" id="vendorName" name="vendorName">
+            </div>
+            <div class="field">
+                <label for="vendorCompany">Firma (optional)</label>
+                <input type="text" id="vendorCompany" name="vendorCompany">
+            </div>
+            <div class="field">
+                <label for="vendorStreet">Straße / Nr.</label>
+                <input type="text" id="vendorStreet" name="vendorStreet">
+            </div>
+        </div>
+        <div class="row">
+            <div class="field">
+                <label for="vendorZipCity">PLZ / Ort</label>
+                <input type="text" id="vendorZipCity" name="vendorZipCity">
+            </div>
+            <div class="field">
+                <label for="vendorEmail">E-Mail</label>
+                <input type="text" id="vendorEmail" name="vendorEmail">
+            </div>
+            <div class="field">
+                <label for="vendorPhone">Telefon (optional)</label>
+                <input type="text" id="vendorPhone" name="vendorPhone">
+            </div>
+        </div>
+        <div class="row">
+            <div class="field">
+                <label for="vendorTaxNumber">Steuernummer (optional)</label>
+                <input type="text" id="vendorTaxNumber" name="vendorTaxNumber">
+            </div>
+            <div class="field">
+                <label for="vendorVatId">USt-IdNr. (optional)</label>
+                <input type="text" id="vendorVatId" name="vendorVatId">
+            </div>
+            <div class="field">
+                <label for="vendorTaxNote">Steuer-/Hinweiszeile</label>
+                <input type="text" id="vendorTaxNote" name="vendorTaxNote" placeholder="z. B. Preise inkl. 19 % MwSt oder §19 UStG">
+            </div>
+        </div>
+        <div class="checkbox-row">
+            <input type="checkbox" id="rememberVendor" name="rememberVendor">
+            <label for="rememberVendor">Anbieter-Daten im Browser merken</label>
+        </div>
+
+        <hr>
+
+        <h3>Kunde (Empfänger)</h3>
+        <div class="row">
+            <div class="field">
+                <label for="customerName">Name</label>
+                <input type="text" id="customerName" name="customerName">
+            </div>
+            <div class="field">
+                <label for="customerCompany">Firma (optional)</label>
+                <input type="text" id="customerCompany" name="customerCompany">
+            </div>
+            <div class="field">
+                <label for="customerNumber">Kundennummer (optional)</label>
+                <input type="text" id="customerNumber" name="customerNumber">
+            </div>
+        </div>
+        <div class="row">
+            <div class="field">
+                <label for="customerPerson">Ansprechpartner (optional)</label>
+                <input type="text" id="customerPerson" name="customerPerson">
+            </div>
+            <div class="field">
+                <label for="customerStreet">Straße / Nr.</label>
+                <input type="text" id="customerStreet" name="customerStreet">
+            </div>
+            <div class="field">
+                <label for="customerZipCity">PLZ / Ort</label>
+                <input type="text" id="customerZipCity" name="customerZipCity">
+            </div>
+        </div>
+        <div class="row">
+            <div class="field">
+                <label for="customerEmail">E-Mail (optional)</label>
+                <input type="text" id="customerEmail" name="customerEmail">
+            </div>
+        </div>
+        <div class="checkbox-row">
+            <input type="checkbox" id="rememberCustomer" name="rememberCustomer">
+            <label for="rememberCustomer">Kundendaten im Browser merken</label>
+        </div>
+    </section>
+
+    <!-- Block 3: Posten-Tabelle -->
+    <section class="section" id="section-items">
+        <h2>3. Positionen</h2>
+
+        <div class="badge-hinweis">
+            Füge alle Posten hinzu, die auf dem Dokument erscheinen sollen. Mengen und Preise können später
+            automatisch summiert werden.
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos.</th>
+                    <th>Bezeichnung</th>
+                    <th>Beschreibung / Details</th>
+                    <th>Menge</th>
+                    <th>Einheit</th>
+                    <th>Einzelpreis (netto)</th>
+                    <th>MwSt %</th>
+                    <th>Gesamt</th>
+                </tr>
+            </thead>
+            <tbody id="itemsBody">
+                <!-- Dynamische Zeilen – per JavaScript hinzufügen -->
+            </tbody>
+        </table>
+
+        <div class="actions">
+            <button type="button" id="btnAddItem">+ Position hinzufügen</button>
+            <button type="button" id="btnRemoveItem">Letzte Position entfernen</button>
+        </div>
+
+        <table style="margin-top: 0.75rem;">
+            <tbody>
+                <tr class="sum-row">
+                    <td>Zwischensumme netto:</td>
+                    <td><input type="text" id="sumNet" readonly></td>
+                </tr>
+                <tr class="sum-row">
+                    <td>Gesamt MwSt:</td>
+                    <td><input type="text" id="sumVat" readonly></td>
+                </tr>
+                <tr class="sum-row">
+                    <td>Gesamtsumme brutto:</td>
+                    <td><input type="text" id="sumGross" readonly></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Block 4: Notiz & Aktionen + Logo -->
+    <section class="section" id="section-notes-actions">
+        <h2>4. Notizen &amp; Aktionen</h2>
+
+        <h3>Logo (optional)</h3>
+        <div class="row">
+            <div class="field" style="max-width: 260px;">
+                <label for="logoInput">Logo-Datei auswählen (PNG/JPG, bleibt nur im Browser)</label>
+                <input type="file" id="logoInput" accept="image/*">
+                <button type="button" id="btnLogoRemove" style="margin-top:0.4rem;">Logo entfernen</button>
+            </div>
+            <div class="field">
+                <label>Vorschau (wird oben im Dokument angezeigt)</label>
+                <div id="logoPreviewContainer">
+                    <img id="logoPreview" alt="Logo-Vorschau">
+                </div>
+            </div>
+        </div>
+        <p class="badge-hinweis">
+            Das Logo wird lokal im Browser (localStorage) gespeichert und beim Drucken in den Dokumentkopf eingefügt.
+            Es wird nicht auf einem Server gespeichert oder hochgeladen.
+        </p>
+
+        <div class="field" style="margin-top:1rem;">
+            <label for="notes">Notizen / Hinweise (erscheinen im Dokument)</label>
+            <textarea id="notes" name="notes" placeholder="z. B. Gültigkeit des Angebots, Lieferhinweise, besondere Vereinbarungen ..."></textarea>
+        </div>
+
+        <h3>Speichern &amp; Laden</h3>
+        <div class="actions">
+            <button type="button" id="btnSaveBrowser">Daten im Browser speichern</button>
+            <button type="button" id="btnLoadBrowser">Browserdaten laden</button>
+            <button type="button" id="btnSaveFile">Als Datei speichern (.json)</button>
+            <button type="button" id="btnLoadFile">Datei laden</button>
+        </div>
+
+        <h3 style="margin-top: 1.25rem;">Rechnung bezahlt</h3>
+        <div class="row">
+            <div class="field" style="max-width: 220px;">
+                <label>
+                    <input type="checkbox" id="isPaid" name="isPaid">
+                    &nbsp;Rechnung bezahlt
+                </label>
+            </div>
+            <div class="field" style="max-width: 220px;">
+                <label for="paidDate">Bezahlt am (optional)</label>
+                <input type="date" id="paidDate" name="paidDate">
+            </div>
+        </div>
+        <p class="badge-hinweis">
+            Diese Angabe ist vor allem für <strong>„Rechnung drucken“</strong> gedacht. Später können wir damit
+            einen „BEZAHLT“-Stempel und eine Fußzeile „Bereits bezahlt am …“ im PDF ausgeben.
+        </p>
+
+        <h3 style="margin-top: 1.25rem;">Dokument erstellen / drucken</h3>
+        <div class="actions">
+            <button type="button" id="btnPrintAngebot">Angebot drucken</button>
+            <button type="button" id="btnPrintRechnung">Rechnung drucken</button>
+            <button type="button" id="btnPrintLieferschein">Lieferschein drucken</button>
+            <button type="button" id="btnPrintBestellung">Bestellbestätigung drucken</button>
+            <button type="button" id="btnPrintZahlungserinnerung">Zahlungserinnerung drucken</button>
+            <button type="button" id="btnPrintMahnung">Mahnung drucken</button>
+        </div>
+
+        <p class="badge-hinweis">
+            Hinweis: Die Dokumente werden später über die Druckfunktion des Browsers (PDF-Export) erzeugt.
+            Es erfolgt keine Speicherung auf einem Server.
+        </p>
+    </section>
+
+    <script src="doku-light.js"></script>
+</body>
+</html>

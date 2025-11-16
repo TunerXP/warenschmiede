@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Dokument – Druckansicht</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* A4 zentriert */
+
+        body {
+            background: #e5e7eb;
+            margin: 0;
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 12mm auto;
+            background: #ffffff;
+            box-shadow: 0 0 8px rgba(0,0,0,0.15);
+            padding: 18mm 18mm 16mm 18mm;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            margin: 0 0 10mm 0;
+            font-size: 22pt;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10mm;
+        }
+
+        .logo-box img {
+            max-height: 28mm;
+            max-width: 55mm;
+            object-fit: contain;
+        }
+
+        .party-box {
+            flex: 1 1 0;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            padding: 4mm;
+            font-size: 9pt;
+        }
+
+        .party-title {
+            font-weight: 600;
+            margin-bottom: 1.5mm;
+        }
+
+        .meta-row {
+            display: flex;
+            gap: 4mm;
+            margin-top: 6mm;
+            font-size: 9pt;
+        }
+
+        .meta-box {
+            flex: 1 1 0;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            padding: 3mm;
+        }
+
+        .meta-label {
+            font-size: 7.5pt;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #6b7280;
+            margin-bottom: 1mm;
+        }
+
+        .meta-value {
+            font-size: 9pt;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8mm;
+            font-size: 9pt;
+        }
+
+        th, td {
+            border: 1px solid #d1d5db;
+            padding: 2mm 2.5mm;
+            text-align: left;
+        }
+
+        th {
+            background: #f3f4f6;
+        }
+
+        td.num {
+            text-align: right;
+        }
+
+        .sum-table {
+            width: 50%;
+            margin-left: auto;
+            margin-top: 4mm;
+        }
+
+        .sum-table td.label {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .sum-table td.value {
+            text-align: right;
+        }
+
+        .note-box {
+            margin-top: 8mm;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            padding: 4mm;
+            font-size: 9pt;
+        }
+
+        .bank-row {
+            margin-top: 8mm;
+            font-size: 9pt;
+            display: flex;
+            gap: 4mm;
+        }
+
+        .bank-row span.label {
+            font-weight: 600;
+        }
+
+        .footer {
+            margin-top: 10mm;
+            font-size: 8pt;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        .paid-stamp {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-18deg);
+            font-size: 36pt;
+            font-weight: 800;
+            color: rgba(16, 185, 129, 0.18);
+            border: 3px solid rgba(16, 185, 129, 0.35);
+            padding: 8mm 18mm;
+            border-radius: 6mm;
+            text-transform: uppercase;
+        }
+
+        .paid-info {
+            margin-top: 4mm;
+            font-size: 9pt;
+        }
+
+        .page-wrapper {
+            position: relative;
+        }
+
+        @media print {
+            body {
+                background: #ffffff;
+            }
+            .page {
+                margin: 0;
+                box-shadow: none;
+            }
+            .print-controls {
+                display: none;
+            }
+        }
+
+        .print-controls {
+            text-align: center;
+            padding: 6mm 0 0;
+            font-size: 9pt;
+        }
+
+        .print-controls button {
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid #4b5563;
+            background: #374151;
+            color: #f9fafb;
+            cursor: pointer;
+        }
+
+        .print-controls button:hover {
+            background: #4b5563;
+        }
+    </style>
+</head>
+<body>
+<div class="print-controls">
+    <button onclick="window.print()">Jetzt drucken / als PDF speichern</button>
+</div>
+
+<div class="page-wrapper">
+    <div id="paidStamp" class="paid-stamp" style="display:none;">BEZAHLT</div>
+
+    <div class="page">
+        <div class="header-row">
+            <div class="logo-box">
+                <img id="logoImage" alt="">
+            </div>
+            <div style="flex:1;"></div>
+        </div>
+
+        <h1 id="docTitle">Dokument</h1>
+
+        <div class="header-row">
+            <div class="party-box" id="anbieterBox">
+                <div class="party-title">Anbieter</div>
+                <div id="anbieterText"></div>
+            </div>
+            <div class="party-box" id="kundeBox">
+                <div class="party-title">Kunde</div>
+                <div id="kundeText"></div>
+            </div>
+        </div>
+
+        <div class="meta-row">
+            <div class="meta-box">
+                <div class="meta-label">Dokument-Nr.</div>
+                <div class="meta-value" id="metaDocNumber"></div>
+            </div>
+            <div class="meta-box">
+                <div class="meta-label">Datum</div>
+                <div class="meta-value" id="metaDocDate"></div>
+            </div>
+            <div class="meta-box">
+                <div class="meta-label">Leistungsdatum</div>
+                <div class="meta-value" id="metaService"></div>
+            </div>
+        </div>
+
+        <div class="meta-row">
+            <div class="meta-box">
+                <div class="meta-label">Kunden-Bestellnummer</div>
+                <div class="meta-value" id="metaCustomerOrder"></div>
+            </div>
+            <div class="meta-box">
+                <div class="meta-label">Zahlungsziel / Hinweis</div>
+                <div class="meta-value" id="metaPaymentTerms"></div>
+            </div>
+        </div>
+
+        <table id="itemsTable">
+            <thead>
+            <tr>
+                <th style="width:6%;">Pos.</th>
+                <th style="width:40%;">Beschreibung</th>
+                <th style="width:12%;">Menge</th>
+                <th style="width:12%;">Einheit</th>
+                <th style="width:15%;">Einzelpreis</th>
+                <th style="width:15%;">Summe</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- dynamisch -->
+            </tbody>
+        </table>
+
+        <table class="sum-table">
+            <tbody>
+            <tr>
+                <td class="label">Zwischensumme netto:</td>
+                <td class="value" id="sumNetOut"></td>
+            </tr>
+            <tr id="rowVat">
+                <td class="label">MwSt gesamt:</td>
+                <td class="value" id="sumVatOut"></td>
+            </tr>
+            <tr>
+                <td class="label">Summe brutto:</td>
+                <td class="value" id="sumGrossOut"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="note-box" id="noteBox">
+            <strong>Hinweis / Notiz</strong><br>
+            <span id="noteText"></span>
+        </div>
+
+        <div class="paid-info" id="paidInfo" style="display:none;"></div>
+
+        <div class="bank-row" id="bankRow">
+            <div><span class="label">Bank:</span> <span id="bankNameOut"></span></div>
+            <div><span class="label">IBAN:</span> <span id="bankIbanOut"></span></div>
+            <div><span class="label">BIC:</span> <span id="bankBicOut"></span></div>
+        </div>
+
+        <div class="footer" id="footerText">
+            Diese Rechnung wurde mit dem Warenschmiede Dokumenten-Tool Light erstellt. – Made in Germany.
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const STORAGE_KEY_PRINT = "dokuLight-print-data";
+    const STORAGE_KEY_LOGO = "dokuLight-logo";
+
+    function formatCurrency(amount, currencyCode) {
+        const code = currencyCode || "EUR";
+        try {
+            return new Intl.NumberFormat("de-DE", {
+                style: "currency",
+                currency: code
+            }).format(amount);
+        } catch (_) {
+            return amount.toFixed(2) + " " + code;
+        }
+    }
+
+    function parseNumber(text) {
+        if (text == null) return 0;
+        if (typeof text === "number") return text || 0;
+        let t = String(text).trim();
+        if (!t) return 0;
+        t = t.replace(/\./g, "").replace(",", ".");
+        t = t.replace(/[^0-9.\-]/g, "");
+        const n = parseFloat(t);
+        return isNaN(n) ? 0 : n;
+    }
+
+    function textOrDash(value) {
+        return value ? value : "–";
+    }
+
+    function buildPartyText(name, company, street, zipCity, email, extraLine) {
+        const lines = [];
+        if (company) lines.push(company);
+        if (name) lines.push(name);
+        if (street) lines.push(street);
+        if (zipCity) lines.push(zipCity);
+        if (email) lines.push(email);
+        if (extraLine) lines.push(extraLine);
+        return lines.join("<br>");
+    }
+
+    function loadLogo() {
+        try {
+            const img = document.getElementById("logoImage");
+            const stored = localStorage.getItem(STORAGE_KEY_LOGO);
+            if (stored && img) {
+                img.src = stored;
+            }
+        } catch (e) {
+            console.warn("Logo konnte nicht geladen werden:", e);
+        }
+    }
+
+    function main() {
+        let raw;
+        try {
+            raw = localStorage.getItem(STORAGE_KEY_PRINT);
+        } catch (e) {
+            alert("Keine Druckdaten gefunden.");
+            return;
+        }
+        if (!raw) {
+            alert("Keine Druckdaten gefunden.");
+            return;
+        }
+
+        let data;
+        try {
+            data = JSON.parse(raw);
+        } catch (e) {
+            console.error(e);
+            alert("Druckdaten konnten nicht gelesen werden.");
+            return;
+        }
+
+        const currency = data.currency || "EUR";
+        const docType = (data.docTypeForPrint || data.docType || "rechnung").toLowerCase();
+
+        let title = "Dokument";
+        if (docType === "rechnung") title = "Rechnung";
+        else if (docType === "angebot") title = "Angebot";
+        else if (docType === "lieferschein") title = "Lieferschein";
+        else if (docType === "bestellbestaetigung") title = "Bestellbestätigung";
+        else if (docType === "zahlungserinnerung") title = "Zahlungserinnerung";
+        else if (docType === "mahnung") title = "Mahnung";
+
+        document.title = title + " – Druckansicht";
+        document.getElementById("docTitle").textContent = title;
+
+        // Anbieter / Kunde
+        document.getElementById("anbieterText").innerHTML =
+            buildPartyText(
+                data.vendorName,
+                data.vendorCompany,
+                data.vendorStreet,
+                data.vendorZipCity,
+                data.vendorEmail,
+                data.vendorTaxNote
+            );
+
+        document.getElementById("kundeText").innerHTML =
+            buildPartyText(
+                data.customerName,
+                data.customerCompany,
+                data.customerStreet,
+                data.customerZipCity,
+                data.customerEmail,
+                data.customerNumber ? "Kundennummer: " + data.customerNumber : ""
+            );
+
+        // Meta-Daten
+        document.getElementById("metaDocNumber").textContent = textOrDash(data.docNumber);
+        document.getElementById("metaDocDate").textContent = textOrDash(data.docDate);
+
+        let serviceText = "";
+        if (data.serviceDateFrom && data.serviceDateTo) {
+            serviceText = "von " + data.serviceDateFrom + " bis " + data.serviceDateTo;
+        } else if (data.serviceDateFrom) {
+            serviceText = data.serviceDateFrom;
+        } else if (data.serviceDateTo) {
+            serviceText = data.serviceDateTo;
+        } else {
+            serviceText = "–";
+        }
+        document.getElementById("metaService").textContent = serviceText;
+
+        document.getElementById("metaCustomerOrder").textContent =
+            textOrDash(data.customerOrderNumber);
+        document.getElementById("metaPaymentTerms").textContent =
+            textOrDash(data.paymentTerms);
+
+        // Positionen & Summen
+        const tbody = document.querySelector("#itemsTable tbody");
+        tbody.innerHTML = "";
+        let pos = 1;
+        let sumNet = 0;
+        let sumVat = 0;
+        let sumGross = 0;
+
+        if (Array.isArray(data.items)) {
+            data.items.forEach(item => {
+                const name = item.name || "";
+                const desc = item.desc || "";
+                const qty = parseNumber(item.qty);
+                const unitCount = parseNumber(item.unit);
+                const price = parseNumber(item.price);
+                const vatRate = data.isKleinunternehmer ? 0 : parseNumber(item.vat || 0);
+
+                if (!name && !desc && !qty && !price) return; // leere Zeilen skippen
+
+                const net = qty * unitCount * price;
+                const vat = net * (vatRate / 100);
+                const gross = net + vat;
+
+                sumNet += net;
+                sumVat += vat;
+                sumGross += gross;
+
+                const tr = document.createElement("tr");
+
+                function td(text, cls) {
+                    const td = document.createElement("td");
+                    if (cls) td.className = cls;
+                    td.textContent = text;
+                    return td;
+                }
+
+                tr.appendChild(td(String(pos++)));
+                tr.appendChild(td(name + (desc ? " – " + desc : "")));
+                tr.appendChild(td(qty ? String(qty) : "", "num"));
+                tr.appendChild(td(unitCount ? String(unitCount) : "", "num"));
+                tr.appendChild(td(price ? formatCurrency(price, currency) : "", "num"));
+                tr.appendChild(td(formatCurrency(gross, currency), "num"));
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById("sumNetOut").textContent =
+            formatCurrency(sumNet, currency);
+
+        if (data.isKleinunternehmer) {
+            document.getElementById("rowVat").style.display = "none";
+            sumVat = 0;
+        } else {
+            document.getElementById("rowVat").style.display = "";
+            document.getElementById("sumVatOut").textContent =
+                formatCurrency(sumVat, currency);
+        }
+
+        document.getElementById("sumGrossOut").textContent =
+            formatCurrency(sumGross, currency);
+
+        // Notiz
+        const note = data.notes || "";
+        const noteBox = document.getElementById("noteBox");
+        if (note.trim()) {
+            document.getElementById("noteText").textContent = note;
+        } else {
+            noteBox.style.display = "none";
+        }
+
+        // Bank
+        document.getElementById("bankNameOut").textContent = textOrDash(data.bankName);
+        document.getElementById("bankIbanOut").textContent = textOrDash(data.bankIban);
+        document.getElementById("bankBicOut").textContent = textOrDash(data.bankBic);
+
+        // Kleinunternehmer-Hinweis in Footer
+        if (data.isKleinunternehmer) {
+            document.getElementById("footerText").textContent =
+                "Gemäß §19 UStG wird keine Umsatzsteuer ausgewiesen. Dokument erstellt mit dem Warenschmiede Dokumenten-Tool Light – Made in Germany.";
+        }
+
+        // Bezahlt?
+        if (data.isPaid) {
+            const stamp = document.getElementById("paidStamp");
+            const info = document.getElementById("paidInfo");
+            if (stamp) stamp.style.display = "block";
+            if (info) {
+                info.style.display = "block";
+                info.textContent = "Bereits bezahlt am " +
+                    (data.paidDate || "unbekanntem Datum") + ".";
+            }
+        }
+
+        // Logo laden
+        loadLogo();
+    }
+
+    document.addEventListener("DOMContentLoaded", main);
+})();
+</script>
+</body>
+</html>
