@@ -21,123 +21,164 @@
             box-shadow: 0 0 8px rgba(0,0,0,0.15);
             padding: 18mm 18mm 16mm 18mm;
             box-sizing: border-box;
-        }
-
-        h1 {
-            margin: 0 0 10mm 0;
-            font-size: 22pt;
+            position: relative;
         }
 
         .header-row {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 10mm;
+            margin-bottom: 16mm;
         }
 
         .logo-box img {
             max-height: 28mm;
-            max-width: 55mm;
+            max-width: 60mm;
             object-fit: contain;
         }
 
+        .title-box {
+            text-align: right;
+        }
+
+        .title-main {
+            font-size: 18pt;
+            font-weight: 600;
+            margin-bottom: 4mm;
+        }
+
+        .title-sub {
+            font-size: 10pt;
+            color: #4b5563;
+        }
+
+        .two-column {
+            display: flex;
+            gap: 10mm;
+            margin-bottom: 10mm;
+        }
+
         .party-box {
-            flex: 1 1 0;
+            flex: 1;
+            border: 1px solid #e5e7eb;
             border-radius: 4px;
-            border: 1px solid #d1d5db;
-            padding: 4mm;
+            padding: 4mm 5mm;
             font-size: 9pt;
         }
 
         .party-title {
             font-weight: 600;
-            margin-bottom: 1.5mm;
+            margin-bottom: 1mm;
+            font-size: 9pt;
+        }
+
+        .party-text {
+            white-space: pre-line;
         }
 
         .meta-row {
             display: flex;
+            flex-wrap: wrap;
             gap: 4mm;
-            margin-top: 6mm;
-            font-size: 9pt;
+            margin-bottom: 8mm;
         }
 
         .meta-box {
-            flex: 1 1 0;
+            flex: 1;
+            min-width: 45mm;
+            border: 1px solid #e5e7eb;
             border-radius: 4px;
-            border: 1px solid #d1d5db;
-            padding: 3mm;
+            padding: 3mm 4mm;
+            font-size: 8.5pt;
         }
 
         .meta-label {
-            font-size: 7.5pt;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
+            font-size: 8pt;
             color: #6b7280;
             margin-bottom: 1mm;
         }
 
         .meta-value {
-            font-size: 9pt;
+            font-size: 9.5pt;
+            font-weight: 500;
         }
 
-        table {
+        table.items {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 8mm;
+            margin-top: 4mm;
             font-size: 9pt;
         }
 
-        th, td {
-            border: 1px solid #d1d5db;
+        table.items th,
+        table.items td {
+            border: 1px solid #e5e7eb;
             padding: 2mm 2.5mm;
-            text-align: left;
         }
 
-        th {
+        table.items th {
             background: #f3f4f6;
+            font-weight: 600;
+            font-size: 8.5pt;
         }
 
-        td.num {
+        table.items td.num {
             text-align: right;
+            white-space: nowrap;
         }
 
         .sum-table {
-            width: 50%;
+            width: 60mm;
             margin-left: auto;
             margin-top: 4mm;
+            border-collapse: collapse;
+            font-size: 9pt;
         }
 
-        .sum-table td.label {
-            text-align: right;
-            font-weight: 600;
+        .sum-table td {
+            padding: 2mm 2.5mm;
         }
 
-        .sum-table td.value {
+        .sum-table tr td:first-child {
             text-align: right;
+            color: #4b5563;
+            font-size: 8.5pt;
+        }
+
+        .sum-table tr td:last-child {
+            text-align: right;
+            min-width: 26mm;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .notes-section {
+            margin-top: 10mm;
+            font-size: 8.5pt;
         }
 
         .note-box {
-            margin-top: 8mm;
+            border: 1px solid #e5e7eb;
             border-radius: 4px;
-            border: 1px solid #d1d5db;
-            padding: 4mm;
-            font-size: 9pt;
+            padding: 3mm 4mm;
+            margin-top: 2mm;
+            white-space: pre-line;
         }
 
         .bank-row {
-            margin-top: 8mm;
-            font-size: 9pt;
             display: flex;
-            gap: 4mm;
+            gap: 6mm;
+            margin-top: 12mm;
+            font-size: 8.5pt;
         }
 
-        .bank-row span.label {
+        .bank-row .label {
             font-weight: 600;
+            margin-right: 1mm;
         }
 
         .footer {
             margin-top: 10mm;
-            font-size: 8pt;
+            font-size: 7.5pt;
             color: #6b7280;
             text-align: center;
         }
@@ -146,23 +187,23 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) rotate(-18deg);
-            font-size: 36pt;
+            transform: translate(-50%, -40%) rotate(-15deg);
+            font-size: 32pt;
             font-weight: 800;
-            color: rgba(16, 185, 129, 0.18);
-            border: 3px solid rgba(16, 185, 129, 0.35);
-            padding: 8mm 18mm;
-            border-radius: 6mm;
+            color: rgba(16, 185, 129, 0.12);
+            border: 3px solid rgba(16, 185, 129, 0.25);
+            padding: 6mm 14mm;
+            border-radius: 8px;
             text-transform: uppercase;
+            letter-spacing: 2px;
+            pointer-events: none;
         }
 
         .paid-info {
             margin-top: 4mm;
-            font-size: 9pt;
-        }
-
-        .page-wrapper {
-            position: relative;
+            font-size: 8.5pt;
+            font-style: italic;
+            color: #059669;
         }
 
         @media print {
@@ -203,89 +244,83 @@
     <button onclick="window.print()">Jetzt drucken / als PDF speichern</button>
 </div>
 
-<div class="page-wrapper">
-    <div id="paidStamp" class="paid-stamp" style="display:none;">BEZAHLT</div>
-
-    <div class="page">
-        <div class="header-row">
-            <div class="logo-box">
-                <img id="logoImage" alt="">
-            </div>
-            <div style="flex:1;"></div>
+<div class="page">
+    <div class="paid-stamp" id="paidStamp" style="display:none;">BEZAHLT</div>
+    <div class="header-row">
+        <div class="logo-box">
+            <img id="logoImg" alt="Logo">
         </div>
-
-        <h1 id="docTitle">Dokument</h1>
-
-        <div class="header-row">
-            <div class="party-box" id="anbieterBox">
-                <div class="party-title">Anbieter</div>
-                <div id="anbieterText"></div>
-            </div>
-            <div class="party-box" id="kundeBox">
-                <div class="party-title">Kunde</div>
-                <div id="kundeText"></div>
-            </div>
+        <div class="title-box">
+            <div class="title-main" id="docTitle">Dokument</div>
+            <div class="title-sub">Erstellt mit dem Warenschmiede Dokumenten-Tool Light</div>
         </div>
+    </div>
 
-        <div class="meta-row">
-            <div class="meta-box">
-                <div class="meta-label">Dokument-Nr.</div>
-                <div class="meta-value" id="metaDocNumber"></div>
-            </div>
-            <div class="meta-box">
-                <div class="meta-label">Datum</div>
-                <div class="meta-value" id="metaDocDate"></div>
-            </div>
-            <div class="meta-box">
-                <div class="meta-label">Leistungsdatum</div>
-                <div class="meta-value" id="metaService"></div>
-            </div>
+    <div class="two-column">
+        <div class="party-box">
+            <div class="party-title">Anbieter</div>
+            <div class="party-text" id="anbieterText"></div>
         </div>
-
-        <div class="meta-row">
-            <div class="meta-box">
-                <div class="meta-label">Kunden-Bestellnummer</div>
-                <div class="meta-value" id="metaCustomerOrder"></div>
-            </div>
-            <div class="meta-box">
-                <div class="meta-label">Zahlungsziel / Hinweis</div>
-                <div class="meta-value" id="metaPaymentTerms"></div>
-            </div>
+        <div class="party-box">
+            <div class="party-title">Kunde</div>
+            <div class="party-text" id="kundeText"></div>
         </div>
+    </div>
 
-        <table id="itemsTable">
-            <thead>
-            <tr>
-                <th style="width:6%;">Pos.</th>
-                <th style="width:40%;">Beschreibung</th>
-                <th style="width:12%;">Menge</th>
-                <th style="width:12%;">Einheit</th>
-                <th style="width:15%;">Einzelpreis</th>
-                <th style="width:15%;">Summe</th>
-            </tr>
-            </thead>
-            <tbody>
-            <!-- dynamisch -->
-            </tbody>
-        </table>
+    <div class="meta-row">
+        <div class="meta-box">
+            <div class="meta-label" id="metaDocNumberLabel">Dokument-Nr.</div>
+            <div class="meta-value" id="metaDocNumber"></div>
+        </div>
+        <div class="meta-box">
+            <div class="meta-label">Datum</div>
+            <div class="meta-value" id="metaDocDate"></div>
+        </div>
+        <div class="meta-box">
+            <div class="meta-label">Leistungsdatum</div>
+            <div class="meta-value" id="metaService"></div>
+        </div>
+        <div class="meta-box">
+            <div class="meta-label">Kunden-Bestellnummer</div>
+            <div class="meta-value" id="metaCustomerOrder"></div>
+        </div>
+        <div class="meta-box">
+            <div class="meta-label">Zahlungsziel / Hinweis</div>
+            <div class="meta-value" id="metaPaymentTerms"></div>
+        </div>
+    </div>
 
-        <table class="sum-table">
-            <tbody>
-            <tr>
-                <td class="label">Zwischensumme netto:</td>
-                <td class="value" id="sumNetOut"></td>
-            </tr>
-            <tr id="rowVat">
-                <td class="label">MwSt gesamt:</td>
-                <td class="value" id="sumVatOut"></td>
-            </tr>
-            <tr>
-                <td class="label">Summe brutto:</td>
-                <td class="value" id="sumGrossOut"></td>
-            </tr>
-            </tbody>
-        </table>
+    <table class="items" id="itemsTable">
+        <thead>
+        <tr>
+            <th style="width: 10mm;">Pos.</th>
+            <th>Beschreibung</th>
+            <th style="width: 18mm;">Menge</th>
+            <th style="width: 20mm;">Einheit</th>
+            <th style="width: 26mm;">Einzelpreis</th>
+            <th style="width: 26mm;">Summe</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 
+    <table class="sum-table">
+        <tr>
+            <td>Zwischensumme netto:</td>
+            <td id="sumNetOut">0,00 €</td>
+        </tr>
+        <tr id="rowVat">
+            <td>Gesamt MwSt:</td>
+            <td id="sumVatOut">0,00 €</td>
+        </tr>
+        <tr>
+            <td><strong>Summe brutto:</strong></td>
+            <td id="sumGrossOut"><strong>0,00 €</strong></td>
+        </tr>
+    </table>
+
+    <div class="notes-section">
         <div class="note-box" id="noteBox">
             <strong>Hinweis / Notiz</strong><br>
             <span id="noteText"></span>
@@ -325,10 +360,21 @@
     function parseNumber(text) {
         if (text == null) return 0;
         if (typeof text === "number") return text || 0;
+
         let t = String(text).trim();
         if (!t) return 0;
-        t = t.replace(/\./g, "").replace(",", ".");
+
+        const hasComma = t.indexOf(",") !== -1;
+
+        if (hasComma) {
+            // Deutsch: 1.234,56
+            t = t.replace(/\./g, "").replace(",", ".");
+        }
+
+        // Alle Zeichen außer Ziffern, Punkt und Minus entfernen
         t = t.replace(/[^0-9.\-]/g, "");
+        if (!t) return 0;
+
         const n = parseFloat(t);
         return isNaN(n) ? 0 : n;
     }
@@ -338,43 +384,35 @@
     }
 
     function buildPartyText(name, company, street, zipCity, email, extraLine) {
-        const lines = [];
-        if (company) lines.push(company);
-        if (name) lines.push(name);
-        if (street) lines.push(street);
-        if (zipCity) lines.push(zipCity);
-        if (email) lines.push(email);
-        if (extraLine) lines.push(extraLine);
-        return lines.join("<br>");
+        const parts = [];
+        if (company) parts.push(company);
+        if (name) parts.push(name);
+        if (street) parts.push(street);
+        if (zipCity) parts.push(zipCity);
+        if (email) parts.push(email);
+        if (extraLine) parts.push(extraLine);
+        return parts.join("\n");
     }
 
     function loadLogo() {
         try {
-            const img = document.getElementById("logoImage");
-            const stored = localStorage.getItem(STORAGE_KEY_LOGO);
-            if (stored && img) {
-                img.src = stored;
-            }
+            const raw = localStorage.getItem(STORAGE_KEY_LOGO);
+            if (!raw) return;
+            const img = document.getElementById("logoImg");
+            if (img) img.src = raw;
         } catch (e) {
             console.warn("Logo konnte nicht geladen werden:", e);
         }
     }
 
     function main() {
-        let raw;
-        try {
-            raw = localStorage.getItem(STORAGE_KEY_PRINT);
-        } catch (e) {
-            alert("Keine Druckdaten gefunden.");
-            return;
-        }
-        if (!raw) {
-            alert("Keine Druckdaten gefunden.");
-            return;
-        }
-
         let data;
         try {
+            const raw = localStorage.getItem(STORAGE_KEY_PRINT);
+            if (!raw) {
+                alert("Keine Druckdaten gefunden.");
+                return;
+            }
             data = JSON.parse(raw);
         } catch (e) {
             console.error(e);
@@ -386,15 +424,31 @@
         const docType = (data.docTypeForPrint || data.docType || "rechnung").toLowerCase();
 
         let title = "Dokument";
-        if (docType === "rechnung") title = "Rechnung";
-        else if (docType === "angebot") title = "Angebot";
-        else if (docType === "lieferschein") title = "Lieferschein";
-        else if (docType === "bestellbestaetigung") title = "Bestellbestätigung";
-        else if (docType === "zahlungserinnerung") title = "Zahlungserinnerung";
-        else if (docType === "mahnung") title = "Mahnung";
+        let docNumberLabel = "Dokument-Nr.";
+        if (docType === "rechnung") {
+            title = "Rechnung";
+            docNumberLabel = "Rechnungs-Nr.";
+        } else if (docType === "angebot") {
+            title = "Angebot";
+            docNumberLabel = "Angebots-Nr.";
+        } else if (docType === "lieferschein") {
+            title = "Lieferschein";
+            docNumberLabel = "Lieferschein-Nr.";
+        } else if (docType === "bestellbestaetigung") {
+            title = "Bestellbestätigung";
+            docNumberLabel = "Bestellbestätigung-Nr.";
+        } else if (docType === "zahlungserinnerung") {
+            title = "Zahlungserinnerung";
+            docNumberLabel = "Zahlungserinnerungs-Nr.";
+        } else if (docType === "mahnung") {
+            title = "Mahnung";
+            docNumberLabel = "Mahnungs-Nr.";
+        }
 
         document.title = title + " – Druckansicht";
         document.getElementById("docTitle").textContent = title;
+        const docLabelEl = document.getElementById("metaDocNumberLabel");
+        if (docLabelEl) docLabelEl.textContent = docNumberLabel;
 
         // Anbieter / Kunde
         document.getElementById("anbieterText").innerHTML =
@@ -405,7 +459,7 @@
                 data.vendorZipCity,
                 data.vendorEmail,
                 data.vendorTaxNote
-            );
+            ).replace(/\n/g, "<br>");
 
         document.getElementById("kundeText").innerHTML =
             buildPartyText(
@@ -415,7 +469,7 @@
                 data.customerZipCity,
                 data.customerEmail,
                 data.customerNumber ? "Kundennummer: " + data.customerNumber : ""
-            );
+            ).replace(/\n/g, "<br>");
 
         // Meta-Daten
         document.getElementById("metaDocNumber").textContent = textOrDash(data.docNumber);
@@ -451,13 +505,13 @@
                 const name = item.name || "";
                 const desc = item.desc || "";
                 const qty = parseNumber(item.qty);
-                const unitCount = parseNumber(item.unit);
+                const unitText = item.unit || "";
                 const price = parseNumber(item.price);
                 const vatRate = data.isKleinunternehmer ? 0 : parseNumber(item.vat || 0);
 
-                if (!name && !desc && !qty && !price) return; // leere Zeilen skippen
+                if (!name && !desc && !qty && !price) return; // leere Zeilen überspringen
 
-                const net = qty * unitCount * price;
+                const net = qty * price;
                 const vat = net * (vatRate / 100);
                 const gross = net + vat;
 
@@ -477,7 +531,7 @@
                 tr.appendChild(td(String(pos++)));
                 tr.appendChild(td(name + (desc ? " – " + desc : "")));
                 tr.appendChild(td(qty ? String(qty) : "", "num"));
-                tr.appendChild(td(unitCount ? String(unitCount) : "", "num"));
+                tr.appendChild(td(unitText));
                 tr.appendChild(td(price ? formatCurrency(price, currency) : "", "num"));
                 tr.appendChild(td(formatCurrency(gross, currency), "num"));
 
