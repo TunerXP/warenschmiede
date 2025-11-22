@@ -718,42 +718,70 @@
 
   <script>
     // Praxisnahe Richtwerte für ISO-Metrik-Gewinde (Regel- und gängige Feingewinde). Ohne Gewähr, bitte immer mit Norm/Zeichnung abgleichen.
-    var threadCatalog = [
-      { id: 'M1', d: 1, pitches: [{ value: '0.25', label: '0.25 (Regelgewinde)' }] },
-      { id: 'M1.2', d: 1.2, pitches: [{ value: '0.25', label: '0.25 (Regelgewinde)' }] },
-      { id: 'M1.4', d: 1.4, pitches: [{ value: '0.3', label: '0.3 (Regelgewinde)' }] },
-      { id: 'M1.6', d: 1.6, pitches: [{ value: '0.35', label: '0.35 (Regelgewinde)' }] },
-      { id: 'M1.8', d: 1.8, pitches: [{ value: '0.35', label: '0.35 (Regelgewinde)' }] },
-      { id: 'M2', d: 2, pitches: [{ value: '0.4', label: '0.4 (Regelgewinde)' }] },
-      { id: 'M2.2', d: 2.2, pitches: [{ value: '0.45', label: '0.45 (Regelgewinde)' }] },
-      { id: 'M2.5', d: 2.5, pitches: [{ value: '0.45', label: '0.45 (Regelgewinde)' }] },
-      { id: 'M3', d: 3, pitches: [{ value: '0.5', label: '0.5 (Regelgewinde)' }] },
-      { id: 'M3.5', d: 3.5, pitches: [{ value: '0.6', label: '0.6 (Regelgewinde)' }] },
-      { id: 'M4', d: 4, pitches: [{ value: '0.7', label: '0.7 (Regelgewinde)' }] },
-      { id: 'M4.5', d: 4.5, pitches: [{ value: '0.75', label: '0.75 (Regelgewinde)' }] },
-      { id: 'M5', d: 5, pitches: [{ value: '0.8', label: '0.8 (Regelgewinde)' }] },
-      { id: 'M6', d: 6, pitches: [{ value: '1.0', label: '1.0 (Regelgewinde)' }, { value: '0.75', label: '0.75' }] },
-      { id: 'M7', d: 7, pitches: [{ value: '1.0', label: '1.0 (Regelgewinde)' }] },
-      { id: 'M8', d: 8, pitches: [{ value: '1.25', label: '1.25 (Regelgewinde)' }, { value: '1.0', label: '1.0' }, { value: '0.75', label: '0.75' }] },
-      { id: 'M9', d: 9, pitches: [{ value: '1.25', label: '1.25 (Regelgewinde)' }] },
-      { id: 'M10', d: 10, pitches: [{ value: '1.5', label: '1.5 (Regelgewinde)' }, { value: '1.25', label: '1.25' }, { value: '1.0', label: '1.0' }] },
-      { id: 'M11', d: 11, pitches: [{ value: '1.5', label: '1.5 (Regelgewinde)' }] },
-      { id: 'M12', d: 12, pitches: [{ value: '1.75', label: '1.75 (Regelgewinde)' }, { value: '1.5', label: '1.5' }, { value: '1.25', label: '1.25' }] },
-      { id: 'M14', d: 14, pitches: [{ value: '2.0', label: '2.0 (Regelgewinde)' }, { value: '1.5', label: '1.5' }] },
-      { id: 'M16', d: 16, pitches: [{ value: '2.0', label: '2.0 (Regelgewinde)' }, { value: '1.5', label: '1.5' }] },
-      { id: 'M18', d: 18, pitches: [{ value: '2.5', label: '2.5 (Regelgewinde)' }, { value: '2.0', label: '2.0' }] },
-      { id: 'M20', d: 20, pitches: [{ value: '2.5', label: '2.5 (Regelgewinde)' }, { value: '2.0', label: '2.0' }, { value: '1.5', label: '1.5' }] },
-      { id: 'M22', d: 22, pitches: [{ value: '2.5', label: '2.5 (Regelgewinde)' }, { value: '2.0', label: '2.0' }] },
-      { id: 'M24', d: 24, pitches: [{ value: '3.0', label: '3.0 (Regelgewinde)' }, { value: '2.0', label: '2.0' }] },
-      { id: 'M27', d: 27, pitches: [{ value: '3.0', label: '3.0 (Regelgewinde)' }, { value: '2.0', label: '2.0' }] },
-      { id: 'M30', d: 30, pitches: [{ value: '3.5', label: '3.5 (Regelgewinde)' }, { value: '3.0', label: '3.0' }, { value: '2.0', label: '2.0' }] },
-      { id: 'M33', d: 33, pitches: [{ value: '3.5', label: '3.5 (Regelgewinde)' }] },
-      { id: 'M36', d: 36, pitches: [{ value: '4.0', label: '4.0 (Regelgewinde)' }] },
-      { id: 'M39', d: 39, pitches: [{ value: '4.0', label: '4.0 (Regelgewinde)' }] },
-      { id: 'M42', d: 42, pitches: [{ value: '4.5', label: '4.5 (Regelgewinde)' }] },
-      { id: 'M45', d: 45, pitches: [{ value: '4.5', label: '4.5 (Regelgewinde)' }] },
-      { id: 'M48', d: 48, pitches: [{ value: '5.0', label: '5.0 (Regelgewinde)' }] },
-      { id: 'M50', d: 50, pitches: [{ value: '5.0', label: '5.0 (Regelgewinde)' }] }
+    var defaultPitches = {
+      'M1': '0.25',
+      'M1.2': '0.25',
+      'M1.6': '0.35',
+      'M2': '0.40',
+      'M2.5': '0.45',
+      'M3': '0.50',
+      'M4': '0.70',
+      'M5': '0.80',
+      'M6': '1.00',
+      'M8': '1.25',
+      'M10': '1.50',
+      'M12': '1.75',
+      'M16': '2.00',
+      'M20': '2.50',
+      'M24': '3.00',
+      'M30': '3.50',
+      'M36': '4.00',
+      'M42': '4.50',
+      'M48': '5.00',
+      'M56': '5.50',
+      'M64': '6.00'
+    };
+
+    var threadDefinitions = [
+      { id: 'M1', d: 1, pitches: ['0.25'] },
+      { id: 'M1.2', d: 1.2, pitches: ['0.25'] },
+      { id: 'M1.4', d: 1.4, pitches: ['0.30'] },
+      { id: 'M1.6', d: 1.6, pitches: ['0.35'] },
+      { id: 'M1.8', d: 1.8, pitches: ['0.35'] },
+      { id: 'M2', d: 2, pitches: ['0.40'] },
+      { id: 'M2.2', d: 2.2, pitches: ['0.45'] },
+      { id: 'M2.5', d: 2.5, pitches: ['0.45'] },
+      { id: 'M3', d: 3, pitches: ['0.50'] },
+      { id: 'M3.5', d: 3.5, pitches: ['0.60'] },
+      { id: 'M4', d: 4, pitches: ['0.70'] },
+      { id: 'M4.5', d: 4.5, pitches: ['0.75'] },
+      { id: 'M5', d: 5, pitches: ['0.80'] },
+      { id: 'M6', d: 6, pitches: ['1.00', '0.75'] },
+      { id: 'M7', d: 7, pitches: ['1.00'] },
+      { id: 'M8', d: 8, pitches: ['1.25', '1.00', '0.75'] },
+      { id: 'M9', d: 9, pitches: ['1.25'] },
+      { id: 'M10', d: 10, pitches: ['1.50', '1.25', '1.00'] },
+      { id: 'M11', d: 11, pitches: ['1.50'] },
+      { id: 'M12', d: 12, pitches: ['1.75', '1.50', '1.25'] },
+      { id: 'M14', d: 14, pitches: ['2.00', '1.50'] },
+      { id: 'M16', d: 16, pitches: ['2.00', '1.50'] },
+      { id: 'M18', d: 18, pitches: ['2.50', '2.00'] },
+      { id: 'M20', d: 20, pitches: ['2.50', '2.00', '1.50'] },
+      { id: 'M22', d: 22, pitches: ['2.50', '2.00'] },
+      { id: 'M24', d: 24, pitches: ['3.00', '2.00'] },
+      { id: 'M27', d: 27, pitches: ['3.00', '2.00'] },
+      { id: 'M30', d: 30, pitches: ['3.50', '3.00', '2.00'] },
+      { id: 'M33', d: 33, pitches: ['3.50', '3.00'] },
+      { id: 'M36', d: 36, pitches: ['4.00', '3.00'] },
+      { id: 'M39', d: 39, pitches: ['4.00', '3.00'] },
+      { id: 'M42', d: 42, pitches: ['4.50', '4.00'] },
+      { id: 'M45', d: 45, pitches: ['4.50', '4.00'] },
+      { id: 'M48', d: 48, pitches: ['5.00', '4.00'] },
+      { id: 'M50', d: 50, pitches: ['5.00', '4.00'] },
+      { id: 'M52', d: 52, pitches: ['5.00', '4.00'] },
+      { id: 'M56', d: 56, pitches: ['5.50', '4.50'] },
+      { id: 'M60', d: 60, pitches: ['5.50', '4.50'] },
+      { id: 'M64', d: 64, pitches: ['6.00', '4.00'] }
     ];
 
     var toleranceFieldOptions = {
@@ -805,23 +833,23 @@
         var externalByPitch = {};
         var internalByPitch = {};
 
-        thread.pitches.forEach(function (pitchEntry) {
-          var pitchValue = Number.parseFloat(pitchEntry.value);
+        thread.pitches.forEach(function (pitchValueString) {
+          var pitchValue = Number.parseFloat(pitchValueString);
           if (!isFinite(pitchValue)) return;
 
           var threadParams = { d: thread.d, pitch: pitchValue };
 
           var externalEntries = {};
           Object.keys(externalToleranceConfig).forEach(function (key) {
-            externalEntries[key] = buildExternalTolerance(threadParams, externalToleranceConfig[key]);
+            externalEntries[key] = Object.assign({ nominal: thread.d }, buildExternalTolerance(threadParams, externalToleranceConfig[key]));
           });
-          externalByPitch[pitchEntry.value] = externalEntries;
+          externalByPitch[pitchValueString] = externalEntries;
 
           var internalEntries = {};
           Object.keys(internalToleranceConfig).forEach(function (key) {
-            internalEntries[key] = buildInternalTolerance(threadParams, internalToleranceConfig[key]);
+            internalEntries[key] = Object.assign({ nominal: thread.d }, buildInternalTolerance(threadParams, internalToleranceConfig[key]));
           });
-          internalByPitch[pitchEntry.value] = internalEntries;
+          internalByPitch[pitchValueString] = internalEntries;
         });
 
         dataset['Außengewinde'][thread.id] = externalByPitch;
@@ -830,7 +858,7 @@
       return dataset;
     }
 
-    var threadToleranceData = buildThreadToleranceData(threadCatalog);
+    var threadTolerances = buildThreadToleranceData(threadDefinitions);
 
     // Basis-Konvertierungen: jeder Wert wird auf eine Basiseinheit zurückgeführt und wieder verteilt.
     var conversionData = {
@@ -894,13 +922,13 @@
     var toleranceError = document.getElementById('tolerance-error');
 
     function findThreadById(id) {
-      return threadCatalog.find(function (item) { return item.id === id; }) || null;
+      return threadDefinitions.find(function (item) { return item.id === id; }) || null;
     }
 
     function populateToleranceSizes() {
       if (!toleranceSizeSelect) return;
       toleranceSizeSelect.innerHTML = '';
-      threadCatalog.forEach(function (thread) {
+      threadDefinitions.forEach(function (thread) {
         var option = document.createElement('option');
         option.value = thread.id;
         option.textContent = thread.id;
@@ -918,24 +946,23 @@
         return;
       }
 
-      thread.pitches.forEach(function (pitch) {
+      thread.pitches.forEach(function (pitchValue) {
         var option = document.createElement('option');
-        option.value = pitch.value;
-        option.textContent = pitch.label || pitch.value;
+        option.value = pitchValue;
+        var isDefault = defaultPitches[thread.id] === pitchValue;
+        option.textContent = isDefault ? pitchValue + ' (Regelgewinde)' : pitchValue;
         tolerancePitchSelect.appendChild(option);
       });
 
-      if (tolerancePitchSelect.options.length > 0) {
-        var restored = Array.from(tolerancePitchSelect.options).some(function (option) {
-          if (option.value === previous) {
-            tolerancePitchSelect.value = previous;
-            return true;
-          }
-          return false;
-        });
-        if (!restored) {
-          tolerancePitchSelect.value = tolerancePitchSelect.options[0].value;
-        }
+      var preferredPitch = defaultPitches[thread.id];
+      var availableValues = Array.from(tolerancePitchSelect.options).map(function (option) { return option.value; });
+
+      if (preferredPitch && availableValues.includes(preferredPitch)) {
+        tolerancePitchSelect.value = preferredPitch;
+      } else if (previous && availableValues.includes(previous)) {
+        tolerancePitchSelect.value = previous;
+      } else if (tolerancePitchSelect.options.length > 0) {
+        tolerancePitchSelect.value = tolerancePitchSelect.options[0].value;
       }
     }
 
@@ -968,11 +995,10 @@
       var selectedPitch = tolerancePitchSelect.value;
       var selectedField = toleranceFieldSelect.value;
       var threadInfo = findThreadById(selectedSize);
-      var toleranceEntry = threadToleranceData[selectedType]
-        && threadToleranceData[selectedType][selectedSize]
-        && threadToleranceData[selectedType][selectedSize][selectedPitch]
-        ? threadToleranceData[selectedType][selectedSize][selectedPitch][selectedField]
-        : null;
+      var toleranceEntry = (threadTolerances[selectedType]
+        && threadTolerances[selectedType][selectedSize]
+        && threadTolerances[selectedType][selectedSize][selectedPitch]
+        && threadTolerances[selectedType][selectedSize][selectedPitch][selectedField]) || null;
 
       toleranceThreadName.textContent = threadInfo && selectedPitch ? (threadInfo.id + ' × ' + formatForInput(selectedPitch)) : '–';
       toleranceThreadType.textContent = selectedType || '–';
@@ -983,7 +1009,7 @@
 
       var hasEntry = Boolean(toleranceEntry);
       if (toleranceError) {
-        toleranceError.textContent = hasEntry ? '' : 'Für diese Kombination aus Größe, Steigung und Toleranzfeld sind noch keine Werte hinterlegt.';
+        toleranceError.textContent = hasEntry ? '' : 'Für diese Kombination aus M-Größe, Steigung und Toleranzfeld sind noch keine Richtwerte hinterlegt.';
       }
 
       if (selectedType === 'Außengewinde') {
@@ -1064,7 +1090,7 @@
 
     if (toleranceTypeSelect && toleranceSizeSelect && toleranceFieldSelect && tolerancePitchSelect) {
       populateToleranceSizes();
-      var defaultToleranceThread = findThreadById('M8') || threadCatalog[0];
+      var defaultToleranceThread = findThreadById('M8') || threadDefinitions[0];
       var initialType = toleranceTypeSelect.value || 'Außengewinde';
       if (defaultToleranceThread) {
         toleranceSizeSelect.value = defaultToleranceThread.id;
