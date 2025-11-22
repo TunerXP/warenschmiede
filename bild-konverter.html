@@ -6,14 +6,18 @@
   <link rel="icon" type="image/png" href="/ws.png" sizes="32x32">
   <link rel="apple-touch-icon" href="/ws.png" sizes="180x180">
   <meta name="theme-color" content="#000000">
-  <title>Kontakt – Warenschmiede Donaueschingen</title>
-  <meta name="description" content="Kontakt für 3D-Druck, CAD und PC-Hilfe: Schreib eine E-Mail, WhatsApp oder ruf an – ich melde mich zeitnah bei dir.">
-  <meta name="keywords" content="Warenschmiede Kontakt, 3D Druck Anfrage, Donaueschingen Kontakt, Schnellkontakt 3D Druck, Angebot anfordern">
-  <meta name="geo.region" content="DE-BW">
-  <meta name="geo.placename" content="Donaueschingen">
-  <meta name="geo.position" content="47.953;8.499">
-  <meta name="ICBM" content="47.953,8.499">
-  <link rel="preload" as="image" href="assets/logo.svg">
+  <title>Bild-Konverter (PNG, JPG, WebP) – lokal im Browser | Warenschmiede</title>
+  <meta name="description" content="Bilder direkt im Browser zwischen PNG, JPG und WebP umwandeln – ohne Upload, ohne Tracking, komplett lokal.">
+  <meta name="robots" content="index,follow">
+  <meta name="color-scheme" content="light dark">
+  <link rel="canonical" href="https://www.warenschmiede.com/bild-konverter.html">
+  <meta property="og:title" content="Bild-Konverter (PNG, JPG, WebP) – lokal im Browser">
+  <meta property="og:description" content="Wandle deine Bilder ohne Upload um – kostenloser Browser-Konverter für PNG, JPG und WebP.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.warenschmiede.com/bild-konverter.html">
+  <meta property="og:site_name" content="Warenschmiede">
+  <meta property="og:locale" content="de_DE">
+  <meta name="twitter:card" content="summary_large_image">
   <script>
     (function () {
       var storageKey = 'theme-preference';
@@ -23,7 +27,7 @@
         if (stored === 'light' || stored === 'dark' || stored === 'system') {
           preference = stored;
         }
-      } catch (error) {}
+      } catch (error) { }
       var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
       var resolved = preference === 'dark'
         ? 'dark'
@@ -37,22 +41,102 @@
   </script>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="/assets/print.css?v=1.0.7" media="print">
-  <meta name="robots" content="index,follow">
-
-  <meta name="color-scheme" content="light dark">
-  <link rel="canonical" href="https://www.warenschmiede.com/kontakt.html">
-  <meta property="og:title" content="Kontakt – Warenschmiede Donaueschingen">
-  <meta property="og:description" content="Kontakt für 3D-Druck, CAD und PC-Hilfe: Schreib eine E-Mail, WhatsApp oder ruf an – ich melde mich zeitnah bei dir.">
-  <meta name="twitter:title" content="Kontakt – Warenschmiede Donaueschingen">
-  <meta name="twitter:description" content="Kontakt für 3D-Druck, CAD und PC-Hilfe: Schreib eine E-Mail, WhatsApp oder ruf an – ich melde mich zeitnah bei dir.">
-  <meta name="twitter:url" content="https://www.warenschmiede.com/kontakt.html">
-  <meta name="twitter:image" content="/assets/og/og-default.jpg">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.warenschmiede.com/kontakt.html">
-  <meta property="og:image" content="/assets/og/og-default.jpg">
-  <meta property="og:site_name" content="Warenschmiede">
-  <meta property="og:locale" content="de_DE">
-  <meta name="twitter:card" content="summary_large_image">
+  <style>
+    .converter-hero {
+      text-align: center;
+      max-width: 840px;
+      margin: 0 auto;
+    }
+    .converter-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 24px;
+      align-items: start;
+    }
+    .converter-panel {
+      padding: 1.25rem;
+    }
+    .converter-panel h2 {
+      margin-top: 0;
+    }
+    .converter-panel .form-group {
+      margin-bottom: 1rem;
+    }
+    .converter-panel label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+    .converter-panel input[type="file"],
+    .converter-panel select,
+    .converter-panel input[type="range"] {
+      width: 100%;
+    }
+    .converter-panel .helper-text {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+    .converter-preview {
+      display: grid;
+      gap: 0.75rem;
+    }
+    .preview-box {
+      border-radius: var(--radius-card);
+      border: 1px solid var(--border-color, #d9dde7);
+      padding: 0.75rem;
+      background: var(--card, #f5f7fb);
+    }
+    .preview-box img {
+      width: 100%;
+      max-height: 320px;
+      object-fit: contain;
+      display: block;
+      border-radius: 12px;
+      background: var(--surface, #fff);
+    }
+    .preview-meta {
+      display: grid;
+      gap: 0.35rem;
+      font-size: 0.95rem;
+    }
+    .converter-message {
+      padding: 0.75rem 0.9rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color, #d9dde7);
+      background: var(--surface, #fff);
+      color: var(--text);
+    }
+    .converter-message.is-error {
+      border-color: #e76f51;
+      background: #fff2ef;
+      color: #7a1b00;
+    }
+    .converter-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .converter-actions .btn {
+      margin: 0;
+    }
+    .quality-value {
+      font-weight: 600;
+      margin-left: 0.35rem;
+    }
+    .converter-note {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+    @media (max-width: 960px) {
+      .converter-grid {
+        grid-template-columns: 1fr;
+      }
+      .converter-hero {
+        text-align: left;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header" data-header>
@@ -216,87 +300,81 @@
     </div>
   </header>
 
-  <nav class="breadcrumbs" aria-label="Brotkrumen">
-    <div class="container breadcrumbs__container">
-      <ol class="breadcrumbs__list">
-        <li class="breadcrumbs__item"><a href="/index.html">Start</a></li>
-        <li class="breadcrumbs__item"><a href="/leistungen/3d-druck.html">3D-Druck</a></li>
-        <li class="breadcrumbs__item" aria-current="page">Kontakt</li>
-      </ol>
-    </div>
-  </nav>
+  <main id="inhalt" class="site-main" tabindex="-1">
+    <section class="section section-hero">
+      <div class="container converter-hero">
+        <p class="hero-eyebrow">Neu im Browser</p>
+        <h1>Bild-Konverter (PNG, JPG, WebP)</h1>
+        <p class="hero-lede">Wandelt Bilder direkt im Browser um – ohne Upload, ohne Werbung, ohne Tracking.</p>
+        <p class="hero-meta">Unterstützt JPG, PNG und WebP. Die Umwandlung läuft komplett lokal auf deinem Gerät.</p>
+      </div>
+    </section>
 
-  <main id="kontakt" class="site-main ws-content" tabindex="-1">
-    <section class="section section-contact ws-section" aria-labelledby="kontakt-heading">
+    <section class="section ws-section" aria-label="Hinweis zur lokalen Verarbeitung">
       <div class="container">
-        <div class="card ws-card quick-contact">
-          <div class="quick-contact__intro">
-            <div class="section-heading quick-contact__heading">
-              <p class="section-eyebrow">Kontakt</p>
-              <h1 id="kontakt-heading" class="ws-page-title">Schnellanfrage &amp; Kontakt</h1>
-              <p>Schick mir deine Idee oder Datei direkt per E-Mail oder WhatsApp. Ich antworte meistens am selben Abend.</p>
-            </div>
-          </div>
-          <div class="quick-contact__actions">
-            <a class="btn btn-primary quick-contact__cta" href="mailto:info@warenschmiede.com?subject=Anfrage%20an%20die%20Warenschmiede" data-label="fixed" aria-label="E-Mail schreiben an info@warenschmiede.com (öffnet dein Mailprogramm)">
-              <span class="quick-contact__icon" aria-hidden="true">✉️</span>
-              <span class="quick-contact__label">E-Mail schreiben</span>
-              <span class="sr-only"> an info@warenschmiede.com</span>
-            </a>
-            <a class="btn btn-primary quick-contact__cta quick-contact__cta--whatsapp" href="https://wa.me/4915141382732" data-wa-link rel="noopener noreferrer" data-label="fixed" aria-label="Per WhatsApp schreiben (öffnet Chat)">
-              <span class="quick-contact__icon" aria-hidden="true">💬</span>
-              <span class="quick-contact__label">Per WhatsApp schreiben</span>
-              <span class="sr-only"> per WhatsApp</span>
-            </a>
-            <a class="btn btn-primary quick-contact__cta quick-contact__cta--call" href="tel:+4915141382732" data-label="fixed" aria-label="Jetzt anrufen: 015141382732">
-              <span class="quick-contact__icon" aria-hidden="true">📞</span>
-              <span class="quick-contact__label">Jetzt anrufen</span>
-              <span class="sr-only"> unter 015141382732</span>
-            </a>
-            <p class="quick-contact__phone">015141382732</p>
-            <p class="quick-contact__availability">Telefonisch erreichbar Montag–Freitag, 19–21 Uhr. Ich rufe dich zurück, sofern die Nummer sichtbar und seriös ist.</p>
-          </div>
-          <p class="quick-contact__privacy">Deine Angaben nutze ich ausschließlich zur Bearbeitung deiner Anfrage. Es erfolgt keine Weitergabe an Dritte.</p>
+        <div class="callout note">
+          <h3>Alles passiert lokal in deinem Browser</h3>
+          <p>Deine Bilder werden nicht hochgeladen. Die Umwandlung erfolgt mit HTML5 Canvas direkt auf deinem Gerät. Es gibt keine Server-Speicherung, kein Tracking und keine Werbung.</p>
+          <p class="converter-note">Hinweis: Sehr große Dateien können je nach Gerät ein paar Sekunden benötigen.</p>
         </div>
       </div>
     </section>
 
-    <section class="section ws-section" aria-labelledby="kontakt-weitere-wege">
-      <div class="container">
-        <div class="section-heading">
-          <h2 id="kontakt-weitere-wege" class="ws-section-title">Weitere Wege &amp; rechtliche Infos</h2>
-          <p>Wenn du lieber anrufst oder Post schicken möchtest, findest du hier alle Angaben gesammelt.</p>
-        </div>
-        <div class="card ws-card">
-          <p><strong>E-Mail:</strong> <a href="mailto:info@warenschmiede.com">info@warenschmiede.com</a></p>
-          <p><strong>Telefon / WhatsApp:</strong> <a href="https://wa.me/4915141382732" data-wa-link rel="noopener">+49 151 41382732</a></p>
-          <p><strong>Adresse:</strong> Marco Hoffmann &ndash; Warenschmiede<br>Im Bohrer 7<br>78166 Donaueschingen, Deutschland</p>
-
-          <div class="route-section" aria-labelledby="wegbeschreibung-heading">
-            <h3 id="wegbeschreibung-heading" class="ws-subtitle">Wegbeschreibung</h3>
-            <p>Du findest mich in Donaueschingen. Parken in der Straße ist möglich &ndash; bitte melde dich kurz vorab per Telefon oder WhatsApp.</p>
-
-            <div class="map-container" data-map-container>
-              <div class="map-placeholder" data-map-placeholder>
-                <p class="map-placeholder__text">Karte aus Datenschutzgründen erst nach Klick laden.</p>
-                <button type="button" class="btn btn-primary" data-map-trigger data-label="fixed" aria-label="Karte öffnen (Anfahrtskarte laden)" title="Karte öffnen">Karte öffnen<span class="sr-only"> zur Anfahrtskarte</span></button>
-                <p class="map-placeholder__hint" data-map-notice>Mit Klick auf &bdquo;Karte öffnen&ldquo; werden Kartenkacheln von Drittanbietern geladen.</p>
-              </div>
-              <div class="map-canvas" data-map role="region" aria-label="Karte: Warenschmiede, Im Bohrer 7, 78166 Donaueschingen" tabindex="0"></div>
-            </div>
-
-            <div class="route-buttons">
-              <a class="btn btn-outline" href="https://www.google.com/maps/search/?api=1&amp;query=Im+Bohrer+7,+78166+Donaueschingen" target="_blank" rel="noopener noreferrer" data-label="fixed">In Google Maps öffnen</a>
-              <a class="btn btn-outline" href="https://maps.apple.com/?q=Im+Bohrer+7,+78166+Donaueschingen" target="_blank" rel="noopener noreferrer" data-label="fixed">In Apple Karten öffnen</a>
-            </div>
+    <section class="section ws-section" aria-labelledby="converter-heading">
+      <div class="container converter-grid">
+        <div class="ws-card converter-panel">
+          <h2 id="converter-heading" class="ws-section-title">1️⃣ Bild auswählen</h2>
+          <div class="form-group">
+            <label for="imageInput">Bilddatei (JPG, PNG oder WebP)</label>
+            <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp">
+            <p class="helper-text">Unterstützte Formate: JPG/JPEG, PNG, WebP</p>
           </div>
+
+          <h2 class="ws-section-title">2️⃣ Zielformat festlegen</h2>
+          <div class="form-group">
+            <label for="targetFormat">Zielformat</label>
+            <select id="targetFormat">
+              <option value="jpg">Nach JPG umwandeln</option>
+              <option value="png">Nach PNG umwandeln</option>
+              <option value="webp">Nach WebP umwandeln</option>
+            </select>
+            <p class="helper-text">Auch wenn das Eingabeformat gleich ist, kannst du die Qualität anpassen oder WebP erzeugen.</p>
+          </div>
+
+          <div class="form-group" id="qualityRow">
+            <label for="qualityInput">Qualität für JPG/WebP <span class="quality-value" id="qualityValue">80%</span></label>
+            <input type="range" id="qualityInput" min="30" max="100" step="5" value="80">
+            <p class="helper-text">60–80&nbsp;% ist oft ein guter Kompromiss zwischen Größe und Qualität. PNG wird immer verlustfrei gespeichert.</p>
+          </div>
+
+          <div class="converter-actions">
+            <button type="button" class="btn btn-primary" id="convertBtn">Bild umwandeln &amp; herunterladen</button>
+            <p class="converter-note">Wenn kein Bild geladen ist, erhältst du einen Hinweis.</p>
+          </div>
+          <div id="converterMessage" class="converter-message" aria-live="polite" hidden></div>
+        </div>
+
+        <div class="ws-card converter-panel converter-preview">
+          <h2 class="ws-section-title">3️⃣ Vorschau &amp; Details</h2>
+          <div class="preview-box" id="previewBox" hidden>
+            <img id="imagePreview" alt="Vorschau des hochgeladenen Bildes">
+            <div class="preview-meta" id="previewMeta"></div>
+          </div>
+          <p class="converter-note">Hinweis für ältere Browser: Falls dein Browser WebP nicht unterstützt, wähle JPG oder PNG. In diesem Fall erscheint eine Fehlermeldung.</p>
         </div>
       </div>
     </section>
 
+    <section class="section ws-section" aria-label="Datenschutz zum Bild-Konverter">
+      <div class="container">
+        <h2 class="ws-section-title">Datenschutz-Hinweis</h2>
+        <p>Der Bild-Konverter verarbeitet Dateien ausschließlich lokal in deinem Browser. Es findet kein Upload auf Server der Warenschmiede oder Dritter statt, es werden keine Kopien gespeichert oder ausgewertet. Du kannst die Seite einfach schließen und alle Daten sind verschwunden.</p>
+        <p>Damit ist die Nutzung im Sinne meiner <a href="/datenschutz.html">Datenschutzerklärung</a> unkritisch: keine Cookies, kein Tracking, keine Analyse.</p>
+      </div>
+    </section>
   </main>
 
-    <footer class="footer">
+  <footer class="footer">
     <div class="container">
       <div class="footer__inner">
         <div class="footer__brand">© 2025 Warenschmiede · Alle Rechte vorbehalten.</div>
@@ -314,114 +392,151 @@
   </footer>
   <script>
     (function () {
-      const trigger = document.querySelector('[data-map-trigger]');
-      const placeholder = document.querySelector('[data-map-placeholder]');
-      const mapCanvas = document.querySelector('[data-map]');
-      if (!trigger || !placeholder || !mapCanvas) {
-        return;
+      var fileInput = document.getElementById('imageInput');
+      var targetFormat = document.getElementById('targetFormat');
+      var qualityRow = document.getElementById('qualityRow');
+      var qualityInput = document.getElementById('qualityInput');
+      var qualityValue = document.getElementById('qualityValue');
+      var convertBtn = document.getElementById('convertBtn');
+      var previewBox = document.getElementById('previewBox');
+      var previewImg = document.getElementById('imagePreview');
+      var previewMeta = document.getElementById('previewMeta');
+      var messageBox = document.getElementById('converterMessage');
+      var loadedImage = null;
+      var supportedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      var webpSupport = (function () {
+        var canvas = document.createElement('canvas');
+        if (!canvas.toDataURL) return false;
+        try {
+          return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+        } catch (error) {
+          return false;
+        }
+      })();
+
+      function updateQualityLabel() {
+        qualityValue.textContent = qualityInput.value + '%';
       }
 
-      const leafletCss = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-      const leafletJs = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-      let leafletPromise;
-      let isLoading = false;
-      let isInitialized = false;
-      const buttonMarkup = trigger.innerHTML;
+      function showMessage(text, isError) {
+        messageBox.textContent = text;
+        messageBox.hidden = false;
+        messageBox.classList.toggle('is-error', Boolean(isError));
+      }
 
-      const loadStylesheet = (href) => {
-        return new Promise((resolve, reject) => {
-          const link = document.createElement('link');
-          link.rel = 'stylesheet';
-          link.href = href;
-          link.onload = resolve;
-          link.onerror = reject;
-          document.head.appendChild(link);
-        });
-      };
+      function resetPreview() {
+        previewBox.hidden = true;
+        previewImg.removeAttribute('src');
+        previewMeta.innerHTML = '';
+      }
 
-      const loadScript = (src) => {
-        return new Promise((resolve, reject) => {
-          const script = document.createElement('script');
-          script.src = src;
-          script.async = true;
-          script.onload = resolve;
-          script.onerror = reject;
-          document.body.appendChild(script);
-        });
-      };
+      function formatFileName(name) {
+        if (!name) return 'bild';
+        var parts = name.split('.');
+        if (parts.length === 1) return name;
+        parts.pop();
+        return parts.join('.') || 'bild';
+      }
 
-      const loadLeafletAssets = () => {
-        if (window.L && typeof window.L.map === 'function') {
-          return Promise.resolve();
-        }
-        if (!leafletPromise) {
-          leafletPromise = Promise.all([
-            loadStylesheet(leafletCss),
-            loadScript(leafletJs)
-          ]);
-        }
-        return leafletPromise;
-      };
-
-      const initialiseMap = () => {
-        const coordinates = [47.953, 8.499];
-        mapCanvas.classList.add('is-active');
-
-        const map = window.L.map(mapCanvas, {
-          center: coordinates,
-          zoom: 16,
-          scrollWheelZoom: false
-        });
-
-        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende'
-        }).addTo(map);
-
-        const marker = window.L.marker(coordinates)
-          .addTo(map)
-          .bindPopup('<strong>Warenschmiede</strong><br>Im Bohrer 7, 78166 Donaueschingen');
-
-        placeholder.setAttribute('hidden', 'hidden');
-        setTimeout(() => {
-          map.invalidateSize();
-          marker.openPopup();
-          if (typeof mapCanvas.focus === 'function') {
-            try {
-              mapCanvas.focus({ preventScroll: true });
-            } catch (error) {
-              mapCanvas.focus();
-            }
-          }
-        }, 150);
-
-        trigger.innerHTML = buttonMarkup;
-        isInitialized = true;
-        isLoading = false;
-      };
-
-      trigger.addEventListener('click', () => {
-        if (isInitialized || isLoading) {
+      fileInput.addEventListener('change', function (event) {
+        var file = event.target.files && event.target.files[0];
+        if (!file) {
+          loadedImage = null;
+          resetPreview();
+          showMessage('Bitte zuerst ein Bild auswählen.', true);
           return;
         }
 
-        isLoading = true;
-        trigger.disabled = true;
-        trigger.setAttribute('aria-disabled', 'true');
-        trigger.textContent = 'Karte wird geladen…';
+        if (supportedTypes.indexOf(file.type) === -1) {
+          loadedImage = null;
+          resetPreview();
+          showMessage('Dieses Format wird aktuell nicht unterstützt. Bitte wähle JPG, PNG oder WebP.', true);
+          fileInput.value = '';
+          return;
+        }
 
-        loadLeafletAssets()
-          .then(() => {
-            initialiseMap();
-          })
-          .catch(() => {
-            isLoading = false;
-            leafletPromise = undefined;
-            trigger.disabled = false;
-            trigger.removeAttribute('aria-disabled');
-            trigger.innerHTML = buttonMarkup;
-          });
+        var reader = new FileReader();
+        reader.onload = function (loadEvent) {
+          var dataUrl = loadEvent.target.result;
+          var img = new Image();
+          img.onload = function () {
+            loadedImage = {
+              file: file,
+              dataUrl: dataUrl,
+              width: img.naturalWidth,
+              height: img.naturalHeight
+            };
+            previewImg.src = dataUrl;
+            previewBox.hidden = false;
+            previewMeta.innerHTML = '<strong>Datei:</strong> ' + file.name + '<br>' +
+              '<strong>Format:</strong> ' + file.type.replace('image/', '').toUpperCase() + '<br>' +
+              '<strong>Abmessungen:</strong> ' + img.naturalWidth + ' × ' + img.naturalHeight + ' Pixel';
+            showMessage('Bild geladen. Du kannst jetzt das Zielformat wählen und umwandeln.', false);
+          };
+          img.onerror = function () {
+            loadedImage = null;
+            resetPreview();
+            showMessage('Das Bild konnte nicht geladen werden. Bitte probiere eine andere Datei.', true);
+          };
+          img.src = dataUrl;
+        };
+        reader.readAsDataURL(file);
       });
+
+      targetFormat.addEventListener('change', function (event) {
+        var value = event.target.value;
+        var needsQuality = value === 'jpg' || value === 'webp';
+        qualityRow.style.display = needsQuality ? 'block' : 'none';
+      });
+
+      qualityInput.addEventListener('input', updateQualityLabel);
+      updateQualityLabel();
+
+      convertBtn.addEventListener('click', function () {
+        if (!loadedImage) {
+          showMessage('Bitte zuerst ein Bild auswählen.', true);
+          return;
+        }
+
+        var target = targetFormat.value;
+        var mimeType = target === 'png' ? 'image/png' : target === 'webp' ? 'image/webp' : 'image/jpeg';
+        if (mimeType === 'image/webp' && !webpSupport) {
+          showMessage('Dein Browser unterstützt WebP anscheinend nicht. Bitte wähle JPG oder PNG.', true);
+          return;
+        }
+
+        var canvas = document.createElement('canvas');
+        canvas.width = loadedImage.width;
+        canvas.height = loadedImage.height;
+        var ctx = canvas.getContext('2d');
+        var img = new Image();
+        img.onload = function () {
+          ctx.drawImage(img, 0, 0);
+          var quality = mimeType === 'image/png' ? undefined : Number(qualityInput.value) / 100;
+          canvas.toBlob(function (blob) {
+            if (!blob) {
+              showMessage('Das gewünschte Zielformat wird von diesem Browser nicht unterstützt.', true);
+              return;
+            }
+            var baseName = formatFileName(loadedImage.file && loadedImage.file.name);
+            var extension = target === 'jpg' ? 'jpg' : target === 'webp' ? 'webp' : 'png';
+            var downloadName = baseName + '_converted.' + extension;
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = downloadName;
+            link.click();
+            URL.revokeObjectURL(url);
+            showMessage('Fertig! Dein Download startet gleich. Dateiname: ' + downloadName, false);
+          }, mimeType, quality);
+        };
+        img.onerror = function () {
+          showMessage('Beim Rendern ist etwas schiefgelaufen. Bitte lade das Bild erneut.', true);
+        };
+        img.src = loadedImage.dataUrl;
+      });
+
+      qualityRow.style.display = 'block';
     })();
   </script>
   <script src="assets/js/theme.js" defer></script>
