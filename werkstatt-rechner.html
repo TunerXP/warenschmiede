@@ -6,13 +6,13 @@
   <link rel="icon" type="image/png" href="/ws.png" sizes="32x32">
   <link rel="apple-touch-icon" href="/ws.png" sizes="180x180">
   <meta name="theme-color" content="#000000">
-  <title>Werkstatt-Rechner – Einheiten, Winkel &amp; Gehrungen | Warenschmiede</title>
-  <meta name="description" content="Praktische Werkstatt-Rechner für Einheiten, Winkel und Gehrungen. Läuft komplett im Browser – ohne Upload, ohne Tracking.">
+  <title>Werkstatt- &amp; Metall-Rechner | Warenschmiede</title>
+  <meta name="description" content="Kostenlose Werkstatt-Rechner für Einheiten, Winkel, Gewinde, Kernlöcher und Schnittdaten. Läuft vollständig im Browser, ohne Werbung und ohne Tracking.">
   <meta name="robots" content="index,follow">
   <meta name="color-scheme" content="light dark">
   <link rel="canonical" href="https://www.warenschmiede.com/werkstatt-rechner.html">
-  <meta property="og:title" content="Werkstatt-Rechner – Einheiten, Winkel &amp; Gehrungen">
-  <meta property="og:description" content="Schnelle Umrechnungen für Länge, Fläche, Volumen, Masse, Temperatur sowie Grad, Radiant und Gehrungen – direkt im Browser.">
+  <meta property="og:title" content="Werkstatt- &amp; Metall-Rechner | Warenschmiede">
+  <meta property="og:description" content="Werkstatt-Rechner für Einheiten, Winkel, Gewinde, Kernlöcher und Schnittdaten. Alle Funktionen laufen direkt im Browser, ohne Werbung oder Tracking.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.warenschmiede.com/werkstatt-rechner.html">
   <meta property="og:site_name" content="Warenschmiede">
@@ -569,6 +569,66 @@
     <section class="section">
       <div class="container">
         <div class="tool-card">
+          <h2>4. Gewinde-Toleranzrechner (Light)</h2>
+          <p class="helper-text"><strong>Wofür ist dieser Rechner?</strong><br>Zeigt dir für ausgewählte metrische ISO-Gewinde einfache Grenzmaße (min/max) für Innen- und Außengewinde. Du wählst Gewindegröße und Toleranzfeld – die Grenzmaße passen sich automatisch an. Nur als Orientierung gedacht, immer mit Norm oder Zeichnung abgleichen.</p>
+          <p class="helper-text result-note">Die Werte sind stark vereinfacht aus typischen Praxis-Tabellen abgeleitet und ersetzen keine Norm. Für sicherheitsrelevante Teile sind immer Normen und Zeichnungen maßgeblich.</p>
+
+          <div class="calculator-grid">
+            <div class="tool-card">
+              <h3>Eingaben</h3>
+              <div class="form-grid">
+                <div class="calc-field">
+                  <label for="tolerance-type">Gewindetyp</label>
+                  <select id="tolerance-type">
+                    <option value="Außengewinde">Außengewinde</option>
+                    <option value="Innengewinde">Innengewinde</option>
+                  </select>
+                </div>
+                <div class="calc-field">
+                  <label for="tolerance-size">Gewinde auswählen</label>
+                  <select id="tolerance-size"></select>
+                </div>
+                <div class="calc-field">
+                  <label for="tolerance-field">Toleranzfeld</label>
+                  <select id="tolerance-field"></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="tool-card">
+              <h3>Grenzmaße</h3>
+              <div class="result-box" aria-live="polite">
+                <p><strong>Gewindebezeichnung:</strong> <span id="tolerance-thread-name">–</span></p>
+                <p><strong>Gewindetyp:</strong> <span id="tolerance-thread-type">–</span></p>
+                <p><strong>Toleranzfeld:</strong> <span id="tolerance-field-label">–</span></p>
+                <p><strong>Nenndurchmesser d / D:</strong> <span id="tolerance-nominal">–</span> mm</p>
+                <div id="tolerance-outer-block">
+                  <p><strong>Außendurchmesser max:</strong> <span id="tolerance-outer-max">–</span> mm</p>
+                  <p><strong>Außendurchmesser min:</strong> <span id="tolerance-outer-min">–</span> mm</p>
+                  <p><strong>Kerndurchmesser max:</strong> <span id="tolerance-core-max">–</span> mm</p>
+                  <p><strong>Kerndurchmesser min:</strong> <span id="tolerance-core-min">–</span> mm</p>
+                </div>
+                <div id="tolerance-inner-block">
+                  <p><strong>Kerndurchmesser max:</strong> <span id="tolerance-inner-core-max">–</span> mm</p>
+                  <p><strong>Kerndurchmesser min:</strong> <span id="tolerance-inner-core-min">–</span> mm</p>
+                  <p><strong>Flankendurchmesser (Richtwert):</strong> <span id="tolerance-flank">–</span> mm</p>
+                </div>
+              </div>
+              <p class="helper-text result-note">Vereinfachte Richtwerte, keine vollständige Normübernahme. Für exakte Konstruktionen bitte ISO-Norm bzw. Gewindetabellen verwenden.</p>
+            </div>
+          </div>
+
+          <div class="example-note">
+            <strong>Beispiel:</strong>
+            <p class="helper-text">Du möchtest ein M12-Außengewinde mit Toleranz 6g fertigen. Wähle „Außengewinde“, M12 und 6g – der Rechner zeigt dir das einfache min./max.-Grenzmaß für den Außendurchmesser. So kannst du schneller prüfen, ob dein Istmaß im zulässigen Bereich liegt.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="tool-card">
           <h2>Schnittdaten-Rechner (Drehzahl &amp; Vorschub)</h2>
           <p class="helper-text"><strong>Wofür ist dieser Rechner?</strong><br>Hilft dir, aus Schnittgeschwindigkeit und Werkzeugdurchmesser die Spindeldrehzahl zu berechnen und daraus mit Zahnvorschub und Schneidenzahl eine Vorschubgeschwindigkeit abzuleiten. Praktisch für Drehen, Fräsen und Bohren.</p>
           <p class="helper-text result-note">Werte und Beispielrechnungen sind nur zur Orientierung gedacht. Konkrete Schnittwerte hängen von Maschine, Werkzeug, Material und Herstellerangaben ab – immer mit den Datenblättern abgleichen.</p>
@@ -620,6 +680,41 @@
           <div class="example-note">
             <strong>Beispiel:</strong>
             <p class="helper-text">Du möchtest mit einer VHM-Fräser Ø10 mm und einer Schnittgeschwindigkeit von 150 m/min arbeiten. Gib v<sub>c</sub> = 150 m/min und d = 10 mm ein – der Rechner liefert die Drehzahl n. Wenn dein Fräser 4 Schneiden hat und du mit f<sub>z</sub> = 0,05 mm/Zahn fahren möchtest, trägst du n, z = 4 und f<sub>z</sub> = 0,05 mm/Zahn ein – der Rechner zeigt dir v<sub>f</sub> in mm/min.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="tool-card">
+          <h2>5. Allgemeintoleranzen (Orientierung)</h2>
+          <p class="helper-text">Diese Übersicht soll dir ein Gefühl geben, wofür grobe, mittlere und feine Allgemeintoleranzen typisch verwendet werden. Die Tabelle ist bewusst allgemein gehalten und enthält keine exakten Normwerte. Konkrete Werte bitte bei Bedarf aus deiner eigenen Norm (z. B. ISO 2768) übernehmen.</p>
+          <div class="calculator-grid">
+            <div class="tool-card">
+              <h3>Grob</h3>
+              <ul class="helper-text">
+                <li><strong>Typische Teile:</strong> Schweißkonstruktionen, Brennteile, grobe Gestelle</li>
+                <li><strong>Hinweis Genauigkeit:</strong> große Spielräume, Hauptsache montagefähig</li>
+                <li><strong>Norm-Hinweis:</strong> Exakte Grenzwerte bitte aus der Norm entnehmen.</li>
+              </ul>
+            </div>
+            <div class="tool-card">
+              <h3>Mittel</h3>
+              <ul class="helper-text">
+                <li><strong>Typische Teile:</strong> Allgemeiner Maschinenbau, Dreh-/Frästeile ohne besondere Passungen</li>
+                <li><strong>Hinweis Genauigkeit:</strong> standardmäßige Passgenauigkeit</li>
+                <li><strong>Norm-Hinweis:</strong> Exakte Grenzwerte bitte aus der Norm entnehmen.</li>
+              </ul>
+            </div>
+            <div class="tool-card">
+              <h3>Fein</h3>
+              <ul class="helper-text">
+                <li><strong>Typische Teile:</strong> Passungen, Präzisionsbauteile, Lehrennähe</li>
+                <li><strong>Hinweis Genauigkeit:</strong> enge Toleranzen, höhere Fertigungskosten</li>
+                <li><strong>Norm-Hinweis:</strong> Exakte Grenzwerte bitte aus der Norm entnehmen.</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -686,6 +781,69 @@
       var form = Number.parseFloat((entry.d - entry.pitch * 0.65).toFixed(2));
       return Object.assign({}, entry, { cut: cut, form: form });
     });
+
+    var toleranceFieldOptions = {
+      'Außengewinde': ['6g', '6h', '7g', '7h'],
+      'Innengewinde': ['5H', '6H', '7H']
+    };
+
+    var externalToleranceConfig = {
+      '6g': { majorBase: 0.02, majorPitchFactor: 0.04, majorRange: 0.14, rangePitchFactor: 0.05, coreLift: 0.05, coreRange: 0.12, corePitchFactor: 0.04 },
+      '6h': { majorBase: 0.015, majorPitchFactor: 0.035, majorRange: 0.12, rangePitchFactor: 0.05, coreLift: 0.04, coreRange: 0.1, corePitchFactor: 0.03 },
+      '7g': { majorBase: 0.03, majorPitchFactor: 0.05, majorRange: 0.2, rangePitchFactor: 0.06, coreLift: 0.06, coreRange: 0.16, corePitchFactor: 0.05 },
+      '7h': { majorBase: 0.02, majorPitchFactor: 0.04, majorRange: 0.18, rangePitchFactor: 0.05, coreLift: 0.05, coreRange: 0.14, corePitchFactor: 0.04 }
+    };
+
+    var internalToleranceConfig = {
+      '5H': { coreLift: 0.08, coreRange: 0.1, corePitchFactor: 0.04, flankShift: 0.02 },
+      '6H': { coreLift: 0.1, coreRange: 0.12, corePitchFactor: 0.05, flankShift: 0.025 },
+      '7H': { coreLift: 0.12, coreRange: 0.16, corePitchFactor: 0.06, flankShift: 0.03 }
+    };
+
+    function roundTolerance(value) {
+      return Number.parseFloat(value.toFixed(3));
+    }
+
+    function buildExternalTolerance(thread, config) {
+      var pitch = thread.pitch;
+      var outerMax = roundTolerance(thread.d - (config.majorBase + pitch * config.majorPitchFactor));
+      var outerMin = roundTolerance(outerMax - (config.majorRange + pitch * config.rangePitchFactor));
+      var coreNominal = thread.d - 1.226 * pitch;
+      var coreMax = roundTolerance(coreNominal + (config.coreLift + pitch * 0.02));
+      var coreMin = roundTolerance(coreMax - (config.coreRange + pitch * config.corePitchFactor));
+      return { outerMax: outerMax, outerMin: outerMin, coreMax: coreMax, coreMin: coreMin };
+    }
+
+    function buildInternalTolerance(thread, config) {
+      var pitch = thread.pitch;
+      var minorNominal = thread.d - 1.0825 * pitch;
+      var flankNominal = thread.d - 0.6495 * pitch;
+      var coreMax = roundTolerance(minorNominal + (config.coreLift + pitch * 0.02));
+      var coreMin = roundTolerance(coreMax - (config.coreRange + pitch * config.corePitchFactor));
+      var flank = roundTolerance(flankNominal - (config.flankShift + pitch * 0.015));
+      return { coreMax: coreMax, coreMin: coreMin, flank: flank };
+    }
+
+    function buildThreadToleranceData() {
+      // Vereinfachte Richtwerte, keine vollständige Normübernahme. Für exakte Konstruktionen bitte ISO-Norm bzw. Gewindetabellen verwenden.
+      var dataset = { 'Außengewinde': {}, 'Innengewinde': {} };
+      threadData.forEach(function (thread) {
+        var externalEntries = {};
+        Object.keys(externalToleranceConfig).forEach(function (key) {
+          externalEntries[key] = buildExternalTolerance(thread, externalToleranceConfig[key]);
+        });
+        dataset['Außengewinde'][thread.id] = externalEntries;
+
+        var internalEntries = {};
+        Object.keys(internalToleranceConfig).forEach(function (key) {
+          internalEntries[key] = buildInternalTolerance(thread, internalToleranceConfig[key]);
+        });
+        dataset['Innengewinde'][thread.id] = internalEntries;
+      });
+      return dataset;
+    }
+
+    var threadToleranceData = buildThreadToleranceData();
 
     // Basis-Konvertierungen: jeder Wert wird auf eine Basiseinheit zurückgeführt und wieder verteilt.
     var conversionData = {
@@ -763,6 +921,85 @@
       });
     }
 
+    var toleranceTypeSelect = document.getElementById('tolerance-type');
+    var toleranceSizeSelect = document.getElementById('tolerance-size');
+    var toleranceFieldSelect = document.getElementById('tolerance-field');
+    var toleranceThreadName = document.getElementById('tolerance-thread-name');
+    var toleranceThreadType = document.getElementById('tolerance-thread-type');
+    var toleranceFieldLabel = document.getElementById('tolerance-field-label');
+    var toleranceNominal = document.getElementById('tolerance-nominal');
+    var toleranceOuterBlock = document.getElementById('tolerance-outer-block');
+    var toleranceInnerBlock = document.getElementById('tolerance-inner-block');
+    var toleranceOuterMax = document.getElementById('tolerance-outer-max');
+    var toleranceOuterMin = document.getElementById('tolerance-outer-min');
+    var toleranceCoreMax = document.getElementById('tolerance-core-max');
+    var toleranceCoreMin = document.getElementById('tolerance-core-min');
+    var toleranceInnerCoreMax = document.getElementById('tolerance-inner-core-max');
+    var toleranceInnerCoreMin = document.getElementById('tolerance-inner-core-min');
+    var toleranceFlank = document.getElementById('tolerance-flank');
+
+    function populateToleranceSizes() {
+      if (!toleranceSizeSelect) return;
+      toleranceSizeSelect.innerHTML = '';
+      threadData.forEach(function (thread) {
+        var option = document.createElement('option');
+        option.value = thread.id;
+        option.textContent = thread.id;
+        toleranceSizeSelect.appendChild(option);
+      });
+    }
+
+    function populateToleranceFields(type) {
+      if (!toleranceFieldSelect) return;
+      var options = toleranceFieldOptions[type] || [];
+      toleranceFieldSelect.innerHTML = '';
+      options.forEach(function (field) {
+        var option = document.createElement('option');
+        option.value = field;
+        option.textContent = field;
+        toleranceFieldSelect.appendChild(option);
+      });
+      if (toleranceFieldSelect.options.length > 0) {
+        toleranceFieldSelect.value = toleranceFieldSelect.options[0].value;
+      }
+    }
+
+    function toggleToleranceBlocks(type) {
+      if (!toleranceOuterBlock || !toleranceInnerBlock) return;
+      var isExternal = type === 'Außengewinde';
+      toleranceOuterBlock.style.display = isExternal ? 'block' : 'none';
+      toleranceInnerBlock.style.display = isExternal ? 'none' : 'block';
+    }
+
+    function updateToleranceResult() {
+      if (!toleranceTypeSelect || !toleranceSizeSelect || !toleranceFieldSelect) return;
+      var selectedType = toleranceTypeSelect.value;
+      var selectedSize = toleranceSizeSelect.value;
+      var selectedField = toleranceFieldSelect.value;
+      var threadInfo = threadData.find(function (item) { return item.id === selectedSize; }) || null;
+      var toleranceEntry = threadToleranceData[selectedType] && threadToleranceData[selectedType][selectedSize]
+        ? threadToleranceData[selectedType][selectedSize][selectedField]
+        : null;
+
+      toleranceThreadName.textContent = threadInfo ? threadInfo.id + ' × ' + formatForInput(threadInfo.pitch) : '–';
+      toleranceThreadType.textContent = selectedType || '–';
+      toleranceFieldLabel.textContent = selectedField || '–';
+      toleranceNominal.textContent = threadInfo ? formatForInput(threadInfo.d) : '–';
+
+      toggleToleranceBlocks(selectedType);
+
+      if (selectedType === 'Außengewinde') {
+        toleranceOuterMax.textContent = toleranceEntry ? formatForInput(toleranceEntry.outerMax) : '–';
+        toleranceOuterMin.textContent = toleranceEntry ? formatForInput(toleranceEntry.outerMin) : '–';
+        toleranceCoreMax.textContent = toleranceEntry ? formatForInput(toleranceEntry.coreMax) : '–';
+        toleranceCoreMin.textContent = toleranceEntry ? formatForInput(toleranceEntry.coreMin) : '–';
+      } else {
+        toleranceInnerCoreMax.textContent = toleranceEntry ? formatForInput(toleranceEntry.coreMax) : '–';
+        toleranceInnerCoreMin.textContent = toleranceEntry ? formatForInput(toleranceEntry.coreMin) : '–';
+        toleranceFlank.textContent = toleranceEntry ? formatForInput(toleranceEntry.flank) : '–';
+      }
+    }
+
     function setActiveGroup(category) {
       var groups = document.querySelectorAll('.unit-group');
       groups.forEach(function (group) {
@@ -837,6 +1074,26 @@
       threadSelect.addEventListener('change', function (event) {
         updateThreadResult(event.target.value);
       });
+    }
+
+    if (toleranceTypeSelect && toleranceSizeSelect && toleranceFieldSelect) {
+      populateToleranceSizes();
+      var defaultToleranceThread = threadData.find(function (item) { return item.id === 'M8'; }) || threadData[0];
+      if (defaultToleranceThread) {
+        toleranceSizeSelect.value = defaultToleranceThread.id;
+      }
+      populateToleranceFields(toleranceTypeSelect.value || 'Außengewinde');
+      toggleToleranceBlocks(toleranceTypeSelect.value || 'Außengewinde');
+      updateToleranceResult();
+
+      toleranceTypeSelect.addEventListener('change', function (event) {
+        populateToleranceFields(event.target.value);
+        toggleToleranceBlocks(event.target.value);
+        updateToleranceResult();
+      });
+
+      toleranceSizeSelect.addEventListener('change', updateToleranceResult);
+      toleranceFieldSelect.addEventListener('change', updateToleranceResult);
     }
 
     var spindleVcInput = document.getElementById('cutting-vc');
