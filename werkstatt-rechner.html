@@ -59,6 +59,11 @@
       justify-content: center;
       margin-top: 1rem;
     }
+    .info-box--subtle {
+      background: var(--card, #f5f7fb);
+      align-items: flex-start;
+      text-align: left;
+    }
     .tool-grid {
       display: grid;
       grid-template-columns: 1.05fr 0.95fr;
@@ -113,6 +118,17 @@
     }
     .helper-text {
       font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+    .helper-text strong {
+      color: var(--text, #000);
+    }
+    .example-note {
+      background: var(--surface, #fff);
+      border: 1px dashed var(--border-color, #d9dde7);
+      border-radius: 10px;
+      padding: 0.75rem 0.85rem;
+      margin: 0.25rem 0 0.65rem;
       color: var(--text-muted);
     }
     .result-box {
@@ -336,6 +352,13 @@
           <span aria-hidden="true">ℹ️</span>
           <span>Hinweis: Alle Berechnungen erfolgen nur in deinem Browser. Es werden keine Daten an Warenschmiede oder Dritte übertragen.</span>
         </div>
+        <div class="info-box info-box--subtle" role="note">
+          <span aria-hidden="true">🧭</span>
+          <div>
+            <strong>Wie du diese Seite nutzt</strong>
+            <p class="helper-text">Die Rechner sind als kleine Helfer für Alltag, Werkstatt und Konstruktion gedacht. Du kannst einzelne Bereiche unabhängig voneinander verwenden. Alle Eingaben bleiben auf deinem Gerät – es wird nichts gespeichert oder übertragen.</p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -345,6 +368,11 @@
           <p class="section-eyebrow">Schritt 1</p>
           <h2>1. Einheiten-Rechner (Mechanik &amp; Alltag)</h2>
           <p>Gib einen Wert ein, wähle die passende Größe und alle relevanten Einheiten rechnen sich live mit.</p>
+          <p class="helper-text"><strong>Wofür ist dieser Rechner?</strong><br>Hilft dir, typische Maße im Kopf nicht umrechnen zu müssen – z. B. Millimeter zu Zentimeter, Meter oder Zoll. Praktisch für Zeichnungen, SolidWorks-Skizzen, 3D-Druck und Werkstatt-Notizen.</p>
+          <div class="example-note">
+            <strong>Beispiel:</strong>
+            <p class="helper-text">Du misst ein Teil mit 68 mm und willst wissen, wie viele Zoll das ungefähr sind. Gib 68 mm ein – die anderen Felder füllen sich automatisch mit cm, m und inch.</p>
+          </div>
           <div class="form-grid">
             <div class="form-row">
               <label for="unitCategory">Größe auswählen</label>
@@ -355,7 +383,7 @@
                 <option value="mass">Masse</option>
                 <option value="temperature">Temperatur</option>
               </select>
-              <p class="helper-text">Typische Werkstatt- und Alltagswerte – mm/cm/m/inch, Flächen, Volumen, Gewicht und °C/°F.</p>
+              <p class="helper-text">Typische Werkstatt- und Alltagswerte – mm/cm/m/inch, Flächen, Volumen, Gewicht und °C/°F. Du kannst jeden Bereich einzeln nutzen.</p>
             </div>
 
             <div class="unit-group is-active" data-category="length">
@@ -446,10 +474,12 @@
           <p class="section-eyebrow">Schritt 2</p>
           <h2>2. Winkel- &amp; Gehrungs-Rechner</h2>
           <p>Hilft bei Gehrungen, Rahmenkonstruktionen und einfachen Dreiecken – praktisch für Zuschnitte oder schnelle Skizzen.</p>
+          <p class="helper-text"><strong>Wofür ist dieser Rechner?</strong><br>Unterstützt dich bei Gehrungen, Rahmenkonstruktionen und einfachen Dreiecken. Du kannst Winkel teilen, Grad in Radiant umrechnen oder eine fehlende Seite im rechtwinkligen Dreieck berechnen.</p>
 
           <div class="angle-grid">
             <div class="tool-card">
               <h3>Grad ↔ Radiant</h3>
+              <p class="helper-text">Beispiel: In vielen technischen Formeln (z. B. in der Programmierung oder bei trigonometrischen Funktionen) werden Radiant statt Grad verwendet. Gib einen Winkel in Grad ein und lass ihn in Radiant umrechnen – oder umgekehrt.</p>
               <p class="helper-text">Kurzformel: rad = grad · π / 180 | grad = rad · 180 / π</p>
               <div class="form-grid">
                 <div class="form-row">
@@ -465,6 +495,7 @@
 
             <div class="tool-card">
               <h3>Gehrungsrechner (Winkel teilen)</h3>
+              <p class="helper-text">Beispiel: Du möchtest einen Rahmen mit einem Innenwinkel von 90° bauen. Gib 90° und 2 Teile ein – der Rechner zeigt dir den Gehrungswinkel pro Seite (45°).</p>
               <p class="helper-text">Gesamtwinkel eingeben, Anzahl der Teile wählen – das Tool teilt den Winkel gleichmäßig.</p>
               <div class="form-grid">
                 <div class="form-row">
@@ -485,6 +516,7 @@
 
             <div class="tool-card">
               <h3>Rechtwinkliges Dreieck (Pythagoras)</h3>
+              <p class="helper-text">Beispiel: Du planst eine schräge Verstrebung und kennst zwei Seiten. Wähle „Katheten a &amp; b → Hypotenuse“, gib die beiden Längen ein – der Rechner ermittelt die Hypotenuse für dich.</p>
               <p class="helper-text">Berechnet die fehlende Seite: c² = a² + b². Für Kathete + Hypotenuse wird b = √(c² − a²).</p>
               <div class="form-grid">
                 <div class="form-row">
@@ -506,6 +538,44 @@
                 <div class="result-box" id="triangle-result" aria-live="polite">Fehlende Seite folgt hier.</div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="tool-card">
+          <p class="section-eyebrow">Schritt 3</p>
+          <h2>3. Gewinde- &amp; Kernloch-Rechner (metrisch)</h2>
+          <p class="helper-text"><strong>Wofür ist dieser Rechner?</strong><br>Zeigt dir für metrische ISO-Gewinde (Regelgewinde) den Nenndurchmesser, die Steigung und das passende Kernloch für Schneid- oder Formgewinde. Praktisch für Bohrungen, Gewindebohrer-Auswahl und Konstruktionsmaße.</p>
+          <p class="helper-text">Werte nach typischen Tabellen für ISO-Metrik-Regelgewinde (ohne Gewähr, bitte bei sicherheitsrelevanten Teilen immer mit Norm oder Zeichnung abgleichen).</p>
+          <div class="form-grid">
+            <div class="form-row">
+              <label for="thread-select">Gewinde auswählen</label>
+              <select id="thread-select">
+                <option value="M3">M3</option>
+                <option value="M4">M4</option>
+                <option value="M5">M5</option>
+                <option value="M6">M6</option>
+                <option value="M8">M8</option>
+                <option value="M10">M10</option>
+                <option value="M12">M12</option>
+                <option value="M16">M16</option>
+              </select>
+            </div>
+
+            <div class="result-box" aria-live="polite">
+              <p><strong>Gewinde:</strong> <span id="thread-name">–</span></p>
+              <p><strong>Nenndurchmesser d:</strong> <span id="thread-d">–</span> mm</p>
+              <p><strong>Steigung P:</strong> <span id="thread-p">–</span> mm</p>
+              <p><strong>Kernloch-Ø Schneidgewinde:</strong> <span id="thread-cut">–</span> mm</p>
+              <p><strong>Kernloch-Ø Formgewinde:</strong> <span id="thread-form">–</span> mm</p>
+            </div>
+          </div>
+          <div class="example-note">
+            <strong>Beispiel:</strong>
+            <p class="helper-text">Du möchtest ein M8-Gewinde schneiden. Wähle M8 – der Rechner zeigt dir den Nenndurchmesser, die Steigung und den Kernloch-Bohrdurchmesser. So findest du schneller den passenden Bohrer.</p>
           </div>
         </div>
       </div>
@@ -532,6 +602,18 @@
   </footer>
 
   <script>
+    // Typische Praxis-Werte für ISO-Metrik-Regelgewinde (Regelgewinde, ohne Gewähr)
+    var threadData = {
+      M3: { d: 3, pitch: 0.5, cut: 2.5, form: 2.7 },
+      M4: { d: 4, pitch: 0.7, cut: 3.3, form: 3.6 },
+      M5: { d: 5, pitch: 0.8, cut: 4.2, form: 4.5 },
+      M6: { d: 6, pitch: 1.0, cut: 5.0, form: 5.4 },
+      M8: { d: 8, pitch: 1.25, cut: 6.8, form: 7.0 },
+      M10: { d: 10, pitch: 1.5, cut: 8.5, form: 9.0 },
+      M12: { d: 12, pitch: 1.75, cut: 10.2, form: 10.8 },
+      M16: { d: 16, pitch: 2.0, cut: 14.0, form: 14.7 }
+    };
+
     // Basis-Konvertierungen: jeder Wert wird auf eine Basiseinheit zurückgeführt und wieder verteilt.
     var conversionData = {
       length: {
@@ -572,6 +654,30 @@
       if (!isFinite(value)) return '';
       if (Math.abs(value) < 1e-8) return '0';
       return Number.parseFloat(value.toFixed(6)).toString();
+    }
+
+    var threadName = document.getElementById('thread-name');
+    var threadD = document.getElementById('thread-d');
+    var threadP = document.getElementById('thread-p');
+    var threadCut = document.getElementById('thread-cut');
+    var threadForm = document.getElementById('thread-form');
+    var threadSelect = document.getElementById('thread-select');
+
+    function displayThreadValue(value, fallbackText) {
+      if (typeof value === 'number' && isFinite(value)) {
+        return formatForInput(value);
+      }
+      return fallbackText || '–';
+    }
+
+    function updateThreadResult(size) {
+      var data = threadData[size];
+      if (!data) return;
+      threadName.textContent = size + ' × ' + formatForInput(data.pitch);
+      threadD.textContent = formatForInput(data.d);
+      threadP.textContent = formatForInput(data.pitch);
+      threadCut.textContent = displayThreadValue(data.cut);
+      threadForm.textContent = displayThreadValue(data.form, '– (nicht hinterlegt)');
     }
 
     function setActiveGroup(category) {
@@ -637,6 +743,13 @@
         convertUnits(category, unit, event.target.value);
       });
     });
+
+    if (threadSelect) {
+      updateThreadResult(threadSelect.value);
+      threadSelect.addEventListener('change', function (event) {
+        updateThreadResult(event.target.value);
+      });
+    }
 
     // Grad ↔ Radiant
     var degInput = document.getElementById('deg-input');
