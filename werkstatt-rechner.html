@@ -137,6 +137,41 @@
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       align-items: start;
     }
+    .tolerance-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      align-items: start;
+    }
+    .tolerance-card {
+      background: var(--surface);
+      border: 1px solid var(--control-border);
+      border-radius: 16px;
+      padding: var(--space-4);
+      box-shadow: var(--shadow-soft);
+    }
+    .tolerance-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+    }
+    .tolerance-table th,
+    .tolerance-table td {
+      padding: 0.35rem 0.5rem;
+      text-align: left;
+      font-size: 0.95rem;
+      border-bottom: 1px solid var(--control-border);
+    }
+    .tolerance-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .tolerance-table tr:last-child td {
+      border-bottom: none;
+    }
+    .tolerance-note {
+      margin-top: 0.75rem;
+    }
     @media (max-width: 960px) {
       .tool-grid {
         grid-template-columns: 1fr;
@@ -666,32 +701,160 @@
     <section class="section">
       <div class="container">
         <div class="tool-card">
-          <h2>5. Allgemeintoleranzen (Orientierung)</h2>
-          <p class="helper-text">Diese Übersicht soll dir ein Gefühl geben, wofür grobe, mittlere und feine Allgemeintoleranzen typisch verwendet werden. Die Tabelle ist bewusst allgemein gehalten und enthält keine exakten Normwerte. Konkrete Werte bitte bei Bedarf aus deiner eigenen Norm (z. B. ISO 2768) übernehmen.</p>
-          <div class="calculator-grid">
-            <div class="tool-card">
-              <h3>Grob</h3>
-              <ul class="helper-text">
-                <li><strong>Typische Teile:</strong> Schweißkonstruktionen, Brennteile, grobe Gestelle</li>
-                <li><strong>Hinweis Genauigkeit:</strong> große Spielräume, Hauptsache montagefähig</li>
-                <li><strong>Norm-Hinweis:</strong> Exakte Grenzwerte bitte aus der Norm entnehmen.</li>
-              </ul>
+          <h2>5. Allgemeintoleranzen (Richtwerte nach DIN ISO 2768-1 – stark vereinfacht)</h2>
+          <p class="helper-text">Diese Übersicht gibt dir ein Gefühl, welche Toleranzen bei fein (f), mittel (m), grob (c) und sehr grob (v) typisch sind. Die Werte sind stark vereinfachte Richtwerte nach DIN ISO 2768-1 und dienen nur als Orientierung. Für konkrete Zeichnungen gilt immer deine maßgebliche Norm bzw. die Original-DIN.</p>
+          <div class="tolerance-grid">
+            <div class="tolerance-card">
+              <h3>Fein (f)</h3>
+              <table class="tolerance-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Nennmaß (mm)</th>
+                    <th scope="col">Richtwert</th>
+                  </tr>
+                </thead>
+                <tbody class="helper-text">
+                  <tr>
+                    <td>&gt;0,5 – 3</td>
+                    <td>±0,05 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;3 – 6</td>
+                    <td>±0,05 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;6 – 30</td>
+                    <td>±0,10 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;30 – 120</td>
+                    <td>±0,20 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;120 – 400</td>
+                    <td>±0,30 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;400 – 1000</td>
+                    <td>±0,50 mm</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="helper-text tolerance-note">Hinweis: Stark vereinfachter Auszug aus DIN ISO 2768-1. Exakte Grenzwerte und größere Nennmaßbereiche bitte der Original-Norm entnehmen.</p>
             </div>
-            <div class="tool-card">
-              <h3>Mittel</h3>
-              <ul class="helper-text">
-                <li><strong>Typische Teile:</strong> Allgemeiner Maschinenbau, Dreh-/Frästeile ohne besondere Passungen</li>
-                <li><strong>Hinweis Genauigkeit:</strong> standardmäßige Passgenauigkeit</li>
-                <li><strong>Norm-Hinweis:</strong> Exakte Grenzwerte bitte aus der Norm entnehmen.</li>
-              </ul>
+            <div class="tolerance-card">
+              <h3>Mittel (m)</h3>
+              <table class="tolerance-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Nennmaß (mm)</th>
+                    <th scope="col">Richtwert</th>
+                  </tr>
+                </thead>
+                <tbody class="helper-text">
+                  <tr>
+                    <td>&gt;0,5 – 3</td>
+                    <td>±0,10 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;3 – 6</td>
+                    <td>±0,10 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;6 – 30</td>
+                    <td>±0,20 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;30 – 120</td>
+                    <td>±0,50 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;120 – 400</td>
+                    <td>±0,80 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;400 – 1000</td>
+                    <td>±1,20 mm</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="helper-text tolerance-note">Hinweis: Stark vereinfachter Auszug aus DIN ISO 2768-1. Exakte Grenzwerte und größere Nennmaßbereiche bitte der Original-Norm entnehmen.</p>
             </div>
-            <div class="tool-card">
-              <h3>Fein</h3>
-              <ul class="helper-text">
-                <li><strong>Typische Teile:</strong> Passungen, Präzisionsbauteile, Lehrennähe</li>
-                <li><strong>Hinweis Genauigkeit:</strong> enge Toleranzen, höhere Fertigungskosten</li>
-                <li><strong>Norm-Hinweis:</strong> Exakte Grenzwerte bitte aus der Norm entnehmen.</li>
-              </ul>
+            <div class="tolerance-card">
+              <h3>Grob (c)</h3>
+              <table class="tolerance-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Nennmaß (mm)</th>
+                    <th scope="col">Richtwert</th>
+                  </tr>
+                </thead>
+                <tbody class="helper-text">
+                  <tr>
+                    <td>&gt;0,5 – 3</td>
+                    <td>±0,20 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;3 – 6</td>
+                    <td>±0,30 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;6 – 30</td>
+                    <td>±0,50 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;30 – 120</td>
+                    <td>±1,20 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;120 – 400</td>
+                    <td>±2,00 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;400 – 1000</td>
+                    <td>±3,00 mm</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="helper-text tolerance-note">Hinweis: Stark vereinfachter Auszug aus DIN ISO 2768-1. Exakte Grenzwerte und größere Nennmaßbereiche bitte der Original-Norm entnehmen.</p>
+            </div>
+            <div class="tolerance-card">
+              <h3>Sehr grob (v)</h3>
+              <table class="tolerance-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Nennmaß (mm)</th>
+                    <th scope="col">Richtwert</th>
+                  </tr>
+                </thead>
+                <tbody class="helper-text">
+                  <tr>
+                    <td>&gt;0,5 – 3</td>
+                    <td>–</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;3 – 6</td>
+                    <td>±0,50 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;6 – 30</td>
+                    <td>±1,00 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;30 – 120</td>
+                    <td>±2,50 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;120 – 400</td>
+                    <td>±4,00 mm</td>
+                  </tr>
+                  <tr>
+                    <td>&gt;400 – 1000</td>
+                    <td>±6,00 mm</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="helper-text tolerance-note">Hinweis: Stark vereinfachter Auszug aus DIN ISO 2768-1. Exakte Grenzwerte und größere Nennmaßbereiche bitte der Original-Norm entnehmen.</p>
             </div>
           </div>
         </div>
