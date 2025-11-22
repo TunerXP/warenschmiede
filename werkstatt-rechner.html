@@ -48,19 +48,20 @@
       margin: 0 auto;
     }
     .info-box {
-      border: 1px solid var(--border-color, #d9dde7);
-      background: var(--surface, #fff);
+      border: 1px solid var(--control-border);
+      background: var(--surface);
       padding: 1rem 1.1rem;
-      border-radius: var(--radius-card);
+      border-radius: 14px;
       color: var(--text-muted);
       display: flex;
       gap: 0.75rem;
       align-items: center;
       justify-content: center;
       margin-top: 1rem;
+      box-shadow: 0 12px 30px -22px rgba(15, 23, 42, 0.45);
     }
     .info-box--subtle {
-      background: var(--card, #f5f7fb);
+      background: var(--surface-muted);
       align-items: flex-start;
       text-align: left;
     }
@@ -71,29 +72,18 @@
       align-items: start;
     }
     .tool-card {
-      background: var(--card, #f5f7fb);
-      border: 1px solid var(--border-color, #d9dde7);
-      border-radius: var(--radius-card);
-      padding: 1.25rem;
-      box-shadow: var(--shadow-sm);
+      background: var(--surface);
+      border: 1px solid var(--control-border);
+      border-radius: 16px;
+      padding: var(--space-5);
+      box-shadow: var(--shadow-soft);
     }
     .tool-card h2, .tool-card h3 {
       margin-top: 0;
     }
     .form-grid {
       display: grid;
-      gap: 0.85rem;
-    }
-    .form-row {
-      display: grid;
-      gap: 0.35rem;
-    }
-    .form-row label {
-      font-weight: 600;
-    }
-    .form-row input[type="number"],
-    .form-row select {
-      width: 100%;
+      gap: var(--space-3);
     }
     .unit-group {
       display: none;
@@ -124,21 +114,28 @@
       color: var(--text, #000);
     }
     .example-note {
-      background: var(--surface, #fff);
-      border: 1px dashed var(--border-color, #d9dde7);
-      border-radius: 10px;
+      background: var(--surface-muted);
+      border: 1px solid var(--control-border);
+      border-radius: 12px;
       padding: 0.75rem 0.85rem;
       margin: 0.25rem 0 0.65rem;
       color: var(--text-muted);
     }
     .result-box {
-      border: 1px dashed var(--border-color, #d9dde7);
-      background: var(--surface, #fff);
+      border: 1px dashed var(--control-border);
+      background: var(--surface);
       padding: 0.75rem;
       border-radius: 12px;
     }
     .btn-inline {
       margin-top: 0.5rem;
+      align-self: flex-start;
+    }
+    .calculator-grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      align-items: start;
     }
     @media (max-width: 960px) {
       .tool-grid {
@@ -365,7 +362,6 @@
     <section class="section">
       <div class="container tool-grid">
         <div class="tool-card">
-          <p class="section-eyebrow">Schritt 1</p>
           <h2>1. Einheiten-Rechner (Mechanik &amp; Alltag)</h2>
           <p>Gib einen Wert ein, wähle die passende Größe und alle relevanten Einheiten rechnen sich live mit.</p>
           <p class="helper-text"><strong>Wofür ist dieser Rechner?</strong><br>Hilft dir, typische Maße im Kopf nicht umrechnen zu müssen – z. B. Millimeter zu Zentimeter, Meter oder Zoll. Praktisch für Zeichnungen, SolidWorks-Skizzen, 3D-Druck und Werkstatt-Notizen.</p>
@@ -374,7 +370,7 @@
             <p class="helper-text">Du misst ein Teil mit 68 mm und willst wissen, wie viele Zoll das ungefähr sind. Gib 68 mm ein – die anderen Felder füllen sich automatisch mit cm, m und inch.</p>
           </div>
           <div class="form-grid">
-            <div class="form-row">
+            <div class="calc-field">
               <label for="unitCategory">Größe auswählen</label>
               <select id="unitCategory">
                 <option value="length">Länge</option>
@@ -388,19 +384,19 @@
 
             <div class="unit-group is-active" data-category="length">
               <div class="unit-grid">
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="length-mm">Millimeter (mm)</label>
                   <input type="number" id="length-mm" inputmode="decimal" placeholder="z. B. 120" data-category="length" data-unit="mm">
                 </div>
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="length-cm">Zentimeter (cm)</label>
                   <input type="number" id="length-cm" inputmode="decimal" placeholder="z. B. 12" data-category="length" data-unit="cm">
                 </div>
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="length-m">Meter (m)</label>
                   <input type="number" id="length-m" inputmode="decimal" placeholder="z. B. 1.2" data-category="length" data-unit="m">
                 </div>
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="length-inch">Zoll (inch)</label>
                   <input type="number" id="length-inch" inputmode="decimal" placeholder="z. B. 4.72" data-category="length" data-unit="inch" step="0.01">
                 </div>
@@ -409,15 +405,15 @@
 
             <div class="unit-group" data-category="area">
               <div class="unit-grid">
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="area-mm2">Quadratmillimeter (mm²)</label>
                   <input type="number" id="area-mm2" inputmode="decimal" placeholder="z. B. 2500" data-category="area" data-unit="mm2">
                 </div>
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="area-cm2">Quadratzentimeter (cm²)</label>
                   <input type="number" id="area-cm2" inputmode="decimal" placeholder="z. B. 25" data-category="area" data-unit="cm2">
                 </div>
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="area-m2">Quadratmeter (m²)</label>
                   <input type="number" id="area-m2" inputmode="decimal" placeholder="z. B. 0.0025" data-category="area" data-unit="m2" step="0.0001">
                 </div>
@@ -426,15 +422,15 @@
 
             <div class="unit-group" data-category="volume">
               <div class="unit-grid">
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="volume-cm3">Kubikzentimeter (cm³)</label>
                   <input type="number" id="volume-cm3" inputmode="decimal" placeholder="z. B. 125" data-category="volume" data-unit="cm3">
                 </div>
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="volume-liter">Liter (L)</label>
                   <input type="number" id="volume-liter" inputmode="decimal" placeholder="z. B. 0.125" data-category="volume" data-unit="liter" step="0.001">
                 </div>
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="volume-m3">Kubikmeter (m³)</label>
                   <input type="number" id="volume-m3" inputmode="decimal" placeholder="optional: 0.000125" data-category="volume" data-unit="m3" step="0.000001">
                 </div>
@@ -443,11 +439,11 @@
 
             <div class="unit-group" data-category="mass">
               <div class="unit-grid">
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="mass-g">Gramm (g)</label>
                   <input type="number" id="mass-g" inputmode="decimal" placeholder="z. B. 750" data-category="mass" data-unit="g">
                 </div>
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="mass-kg">Kilogramm (kg)</label>
                   <input type="number" id="mass-kg" inputmode="decimal" placeholder="z. B. 0.75" data-category="mass" data-unit="kg" step="0.001">
                 </div>
@@ -456,11 +452,11 @@
 
             <div class="unit-group" data-category="temperature">
               <div class="unit-grid">
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="temp-c">Grad Celsius (°C)</label>
                   <input type="number" id="temp-c" inputmode="decimal" placeholder="z. B. 20" data-category="temperature" data-unit="c">
                 </div>
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="temp-f">Grad Fahrenheit (°F)</label>
                   <input type="number" id="temp-f" inputmode="decimal" placeholder="z. B. 68" data-category="temperature" data-unit="f">
                 </div>
@@ -471,7 +467,6 @@
         </div>
 
         <div class="tool-card">
-          <p class="section-eyebrow">Schritt 2</p>
           <h2>2. Winkel- &amp; Gehrungs-Rechner</h2>
           <p>Hilft bei Gehrungen, Rahmenkonstruktionen und einfachen Dreiecken – praktisch für Zuschnitte oder schnelle Skizzen.</p>
           <p class="helper-text"><strong>Wofür ist dieser Rechner?</strong><br>Unterstützt dich bei Gehrungen, Rahmenkonstruktionen und einfachen Dreiecken. Du kannst Winkel teilen, Grad in Radiant umrechnen oder eine fehlende Seite im rechtwinkligen Dreieck berechnen.</p>
@@ -482,11 +477,11 @@
               <p class="helper-text">Beispiel: In vielen technischen Formeln (z. B. in der Programmierung oder bei trigonometrischen Funktionen) werden Radiant statt Grad verwendet. Gib einen Winkel in Grad ein und lass ihn in Radiant umrechnen – oder umgekehrt.</p>
               <p class="helper-text">Kurzformel: rad = grad · π / 180 | grad = rad · 180 / π</p>
               <div class="form-grid">
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="deg-input">Winkel in Grad</label>
                   <input type="number" id="deg-input" inputmode="decimal" placeholder="z. B. 90" step="0.01">
                 </div>
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="rad-input">Winkel in Radiant</label>
                   <input type="number" id="rad-input" inputmode="decimal" placeholder="z. B. 1.57" step="0.0001">
                 </div>
@@ -498,11 +493,11 @@
               <p class="helper-text">Beispiel: Du möchtest einen Rahmen mit einem Innenwinkel von 90° bauen. Gib 90° und 2 Teile ein – der Rechner zeigt dir den Gehrungswinkel pro Seite (45°).</p>
               <p class="helper-text">Gesamtwinkel eingeben, Anzahl der Teile wählen – das Tool teilt den Winkel gleichmäßig.</p>
               <div class="form-grid">
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="miter-total">Gesamtwinkel in Grad</label>
                   <input type="number" id="miter-total" inputmode="decimal" placeholder="z. B. 90" step="0.1">
                 </div>
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="miter-parts">Anzahl der Teile</label>
                   <input type="number" id="miter-parts" inputmode="decimal" min="1" placeholder="z. B. 2" step="1">
                 </div>
@@ -519,18 +514,18 @@
               <p class="helper-text">Beispiel: Du planst eine schräge Verstrebung und kennst zwei Seiten. Wähle „Katheten a &amp; b → Hypotenuse“, gib die beiden Längen ein – der Rechner ermittelt die Hypotenuse für dich.</p>
               <p class="helper-text">Berechnet die fehlende Seite: c² = a² + b². Für Kathete + Hypotenuse wird b = √(c² − a²).</p>
               <div class="form-grid">
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="triangle-mode">Berechnungsart</label>
                   <select id="triangle-mode">
                     <option value="legs">Katheten a &amp; b → Hypotenuse</option>
                     <option value="leg-hyp">Kathete &amp; Hypotenuse → fehlende Kathete</option>
                   </select>
                 </div>
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="triangle-a">Kathete a</label>
                   <input type="number" id="triangle-a" inputmode="decimal" placeholder="z. B. 30" step="0.01">
                 </div>
-                <div class="form-row">
+                <div class="calc-field">
                   <label for="triangle-b">Kathete b / Hypotenuse c</label>
                   <input type="number" id="triangle-b" inputmode="decimal" placeholder="z. B. 40" step="0.01">
                 </div>
@@ -546,23 +541,13 @@
     <section class="section">
       <div class="container">
         <div class="tool-card">
-          <p class="section-eyebrow">Schritt 3</p>
           <h2>3. Gewinde- &amp; Kernloch-Rechner (metrisch)</h2>
           <p class="helper-text"><strong>Wofür ist dieser Rechner?</strong><br>Zeigt dir für metrische ISO-Gewinde (Regelgewinde) den Nenndurchmesser, die Steigung und das passende Kernloch für Schneid- oder Formgewinde. Praktisch für Bohrungen, Gewindebohrer-Auswahl und Konstruktionsmaße.</p>
           <p class="helper-text">Werte nach typischen Tabellen für ISO-Metrik-Regelgewinde (ohne Gewähr, bitte bei sicherheitsrelevanten Teilen immer mit Norm oder Zeichnung abgleichen).</p>
           <div class="form-grid">
-            <div class="form-row">
+            <div class="calc-field">
               <label for="thread-select">Gewinde auswählen</label>
-              <select id="thread-select">
-                <option value="M3">M3</option>
-                <option value="M4">M4</option>
-                <option value="M5">M5</option>
-                <option value="M6">M6</option>
-                <option value="M8">M8</option>
-                <option value="M10">M10</option>
-                <option value="M12">M12</option>
-                <option value="M16">M16</option>
-              </select>
+              <select id="thread-select"></select>
             </div>
 
             <div class="result-box" aria-live="polite">
@@ -580,39 +565,127 @@
         </div>
       </div>
     </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="tool-card">
+          <h2>Schnittdaten-Rechner (Drehzahl &amp; Vorschub)</h2>
+          <p class="helper-text"><strong>Wofür ist dieser Rechner?</strong><br>Hilft dir, aus Schnittgeschwindigkeit und Werkzeugdurchmesser die Spindeldrehzahl zu berechnen und daraus mit Zahnvorschub und Schneidenzahl eine Vorschubgeschwindigkeit abzuleiten. Praktisch für Drehen, Fräsen und Bohren.</p>
+          <p class="helper-text result-note">Werte und Beispielrechnungen sind nur zur Orientierung gedacht. Konkrete Schnittwerte hängen von Maschine, Werkzeug, Material und Herstellerangaben ab – immer mit den Datenblättern abgleichen.</p>
+          <div class="calculator-grid">
+            <div class="tool-card">
+              <h3>Drehzahl berechnen</h3>
+              <p class="helper-text">Formel: <strong>n = (1000 · v<sub>c</sub>) / (π · d)</strong></p>
+              <div class="form-grid">
+                <div class="calc-field">
+                  <label for="cutting-vc">Schnittgeschwindigkeit v<sub>c</sub> (m/min)</label>
+                  <input type="number" inputmode="decimal" id="cutting-vc" placeholder="z. B. 150">
+                </div>
+                <div class="calc-field">
+                  <label for="cutting-diameter">Werkzeugdurchmesser d (mm)</label>
+                  <input type="number" inputmode="decimal" id="cutting-diameter" placeholder="z. B. 10">
+                </div>
+                <button class="btn btn-primary btn-inline" type="button" id="spindle-btn">Drehzahl berechnen</button>
+                <div class="result-box" aria-live="polite">
+                  <p><strong>Drehzahl n:</strong> <span id="spindle-speed-result">–</span> 1/min</p>
+                  <p class="helper-text" id="spindle-speed-error"></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="tool-card">
+              <h3>Vorschubgeschwindigkeit berechnen</h3>
+              <p class="helper-text">Formel: <strong>v<sub>f</sub> = n · z · f<sub>z</sub></strong></p>
+              <div class="form-grid">
+                <div class="calc-field">
+                  <label for="feed-n">Drehzahl n (1/min)</label>
+                  <input type="number" inputmode="decimal" id="feed-n" placeholder="z. B. 4775">
+                </div>
+                <div class="calc-field">
+                  <label for="feed-z">Schneidenzahl z</label>
+                  <input type="number" inputmode="decimal" id="feed-z" placeholder="z. B. 4" min="1" step="1">
+                </div>
+                <div class="calc-field">
+                  <label for="feed-fz">Zahnvorschub f<sub>z</sub> (mm/Zahn)</label>
+                  <input type="number" inputmode="decimal" id="feed-fz" placeholder="z. B. 0.05" step="0.001">
+                </div>
+                <button class="btn btn-primary btn-inline" type="button" id="feed-btn">Vorschub berechnen</button>
+                <div class="result-box" aria-live="polite">
+                  <p><strong>Vorschub v<sub>f</sub>:</strong> <span id="feed-result">–</span> mm/min</p>
+                  <p class="helper-text" id="feed-error"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="example-note">
+            <strong>Beispiel:</strong>
+            <p class="helper-text">Du möchtest mit einer VHM-Fräser Ø10 mm und einer Schnittgeschwindigkeit von 150 m/min arbeiten. Gib v<sub>c</sub> = 150 m/min und d = 10 mm ein – der Rechner liefert die Drehzahl n. Wenn dein Fräser 4 Schneiden hat und du mit f<sub>z</sub> = 0,05 mm/Zahn fahren möchtest, trägst du n, z = 4 und f<sub>z</sub> = 0,05 mm/Zahn ein – der Rechner zeigt dir v<sub>f</sub> in mm/min.</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <footer class="site-footer">
+  <footer class="footer">
     <div class="container">
-      <div class="footer-grid">
-        <div>
-          <h2 class="footer-title">Warenschmiede</h2>
-          <p>3D-Druck &amp; Werkzeugideen aus Donaueschingen. Alle Rechner laufen lokal im Browser.</p>
-        </div>
-        <div>
-          <h2 class="footer-title">Kontakt</h2>
-          <p><a href="mailto:hi@warenschmiede.com">hi@warenschmiede.com</a><br><a href="https://wa.me/4917611743087">WhatsApp: 0176 11743087</a></p>
-        </div>
-        <div>
-          <h2 class="footer-title">Rechtliches</h2>
-          <p><a href="/impressum.html">Impressum</a><br><a href="/datenschutz.html">Datenschutz</a></p>
+      <div class="footer__inner">
+        <div class="footer__brand">© 2025 Warenschmiede · Alle Rechte vorbehalten.</div>
+        <nav class="footer__links" aria-label="Rechtliches &amp; Kontakt">
+          <a href="/impressum.html">Impressum</a>
+          <a href="/datenschutz.html">Datenschutzerklärung</a>
+          <a href="/kontakt.html">Kontakt</a>
+        </nav>
+        <div class="footer__notes">
+          <p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
+          <p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
         </div>
       </div>
     </div>
   </footer>
 
   <script>
-    // Typische Praxis-Werte für ISO-Metrik-Regelgewinde (Regelgewinde, ohne Gewähr)
-    var threadData = {
-      M3: { d: 3, pitch: 0.5, cut: 2.5, form: 2.7 },
-      M4: { d: 4, pitch: 0.7, cut: 3.3, form: 3.6 },
-      M5: { d: 5, pitch: 0.8, cut: 4.2, form: 4.5 },
-      M6: { d: 6, pitch: 1.0, cut: 5.0, form: 5.4 },
-      M8: { d: 8, pitch: 1.25, cut: 6.8, form: 7.0 },
-      M10: { d: 10, pitch: 1.5, cut: 8.5, form: 9.0 },
-      M12: { d: 12, pitch: 1.75, cut: 10.2, form: 10.8 },
-      M16: { d: 16, pitch: 2.0, cut: 14.0, form: 14.7 }
-    };
+    // Typische Praxiswerte für ISO-Metrik-Regelgewinde (ohne Gewähr, bitte mit Norm/Zeichnung abgleichen)
+    var threadData = [
+      { id: 'M1', d: 1, pitch: 0.25 },
+      { id: 'M1.2', d: 1.2, pitch: 0.25 },
+      { id: 'M1.4', d: 1.4, pitch: 0.3 },
+      { id: 'M1.6', d: 1.6, pitch: 0.35 },
+      { id: 'M1.8', d: 1.8, pitch: 0.35 },
+      { id: 'M2', d: 2, pitch: 0.4 },
+      { id: 'M2.2', d: 2.2, pitch: 0.45 },
+      { id: 'M2.5', d: 2.5, pitch: 0.45 },
+      { id: 'M3', d: 3, pitch: 0.5 },
+      { id: 'M3.5', d: 3.5, pitch: 0.6 },
+      { id: 'M4', d: 4, pitch: 0.7 },
+      { id: 'M4.5', d: 4.5, pitch: 0.75 },
+      { id: 'M5', d: 5, pitch: 0.8 },
+      { id: 'M6', d: 6, pitch: 1.0 },
+      { id: 'M7', d: 7, pitch: 1.0 },
+      { id: 'M8', d: 8, pitch: 1.25 },
+      { id: 'M9', d: 9, pitch: 1.25 },
+      { id: 'M10', d: 10, pitch: 1.5 },
+      { id: 'M11', d: 11, pitch: 1.5 },
+      { id: 'M12', d: 12, pitch: 1.75 },
+      { id: 'M14', d: 14, pitch: 2.0 },
+      { id: 'M16', d: 16, pitch: 2.0 },
+      { id: 'M18', d: 18, pitch: 2.5 },
+      { id: 'M20', d: 20, pitch: 2.5 },
+      { id: 'M22', d: 22, pitch: 2.5 },
+      { id: 'M24', d: 24, pitch: 3.0 },
+      { id: 'M27', d: 27, pitch: 3.0 },
+      { id: 'M30', d: 30, pitch: 3.5 },
+      { id: 'M33', d: 33, pitch: 3.5 },
+      { id: 'M36', d: 36, pitch: 4.0 },
+      { id: 'M39', d: 39, pitch: 4.0 },
+      { id: 'M42', d: 42, pitch: 4.5 },
+      { id: 'M45', d: 45, pitch: 4.5 },
+      { id: 'M48', d: 48, pitch: 5.0 },
+      { id: 'M50', d: 50, pitch: 5.0 }
+    ].map(function (entry) {
+      var cut = Number.parseFloat((entry.d - entry.pitch).toFixed(2));
+      var form = Number.parseFloat((entry.d - entry.pitch * 0.65).toFixed(2));
+      return Object.assign({}, entry, { cut: cut, form: form });
+    });
 
     // Basis-Konvertierungen: jeder Wert wird auf eine Basiseinheit zurückgeführt und wieder verteilt.
     var conversionData = {
@@ -671,13 +744,23 @@
     }
 
     function updateThreadResult(size) {
-      var data = threadData[size];
+      var data = threadData.find(function (item) { return item.id === size; });
       if (!data) return;
-      threadName.textContent = size + ' × ' + formatForInput(data.pitch);
+      threadName.textContent = data.id + ' × ' + formatForInput(data.pitch);
       threadD.textContent = formatForInput(data.d);
       threadP.textContent = formatForInput(data.pitch);
       threadCut.textContent = displayThreadValue(data.cut);
       threadForm.textContent = displayThreadValue(data.form, '– (nicht hinterlegt)');
+    }
+
+    function populateThreadOptions() {
+      if (!threadSelect) return;
+      threadData.forEach(function (thread) {
+        var option = document.createElement('option');
+        option.value = thread.id;
+        option.textContent = thread.id;
+        threadSelect.appendChild(option);
+      });
     }
 
     function setActiveGroup(category) {
@@ -745,10 +828,72 @@
     });
 
     if (threadSelect) {
-      updateThreadResult(threadSelect.value);
+      populateThreadOptions();
+      var defaultThread = threadData.find(function (item) { return item.id === 'M6'; }) || threadData[0];
+      if (defaultThread) {
+        threadSelect.value = defaultThread.id;
+        updateThreadResult(defaultThread.id);
+      }
       threadSelect.addEventListener('change', function (event) {
         updateThreadResult(event.target.value);
       });
+    }
+
+    var spindleVcInput = document.getElementById('cutting-vc');
+    var spindleDiameterInput = document.getElementById('cutting-diameter');
+    var spindleResult = document.getElementById('spindle-speed-result');
+    var spindleError = document.getElementById('spindle-speed-error');
+    var feedNInput = document.getElementById('feed-n');
+    var feedZInput = document.getElementById('feed-z');
+    var feedFzInput = document.getElementById('feed-fz');
+    var feedResult = document.getElementById('feed-result');
+    var feedError = document.getElementById('feed-error');
+
+    function calculateSpindleSpeed() {
+      if (!spindleVcInput || !spindleDiameterInput || !spindleResult || !spindleError) return;
+      var vc = parseFloat(spindleVcInput.value);
+      var diameter = parseFloat(spindleDiameterInput.value);
+
+      if (!isFinite(vc) || vc <= 0 || !isFinite(diameter) || diameter <= 0) {
+        spindleResult.textContent = '–';
+        spindleError.textContent = 'Bitte gültige Werte für v_c und d eingeben.';
+        return;
+      }
+
+      var speed = Math.round((1000 * vc) / (Math.PI * diameter));
+      spindleResult.textContent = formatForInput(speed);
+      spindleError.textContent = '';
+      if (feedNInput) {
+        feedNInput.value = formatForInput(speed);
+      }
+    }
+
+    function calculateFeedRate() {
+      if (!feedNInput || !feedZInput || !feedFzInput || !feedResult || !feedError) return;
+      var n = parseFloat(feedNInput.value);
+      var z = parseFloat(feedZInput.value);
+      var fz = parseFloat(feedFzInput.value);
+
+      if (!isFinite(n) || n <= 0 || !isFinite(z) || z <= 0 || !isFinite(fz) || fz <= 0) {
+        feedResult.textContent = '–';
+        feedError.textContent = 'Bitte n, z und f_z größer 0 eingeben.';
+        return;
+      }
+
+      var vf = n * z * fz;
+      feedResult.textContent = formatForInput(vf);
+      feedError.textContent = '';
+    }
+
+    var spindleButton = document.getElementById('spindle-btn');
+    var feedButton = document.getElementById('feed-btn');
+
+    if (spindleButton) {
+      spindleButton.addEventListener('click', calculateSpindleSpeed);
+    }
+
+    if (feedButton) {
+      feedButton.addEventListener('click', calculateFeedRate);
     }
 
     // Grad ↔ Radiant
