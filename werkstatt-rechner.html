@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" type="image/png" href="/ws.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/ws.png" sizes="180x180">
+  <meta name="theme-color" content="#000000">
+  <title>Werkstatt-Rechner – Einheiten, Winkel &amp; Gehrungen | Warenschmiede</title>
+  <meta name="description" content="Praktische Werkstatt-Rechner für Einheiten, Winkel und Gehrungen. Läuft komplett im Browser – ohne Upload, ohne Tracking.">
+  <meta name="robots" content="index,follow">
+  <meta name="color-scheme" content="light dark">
+  <link rel="canonical" href="https://www.warenschmiede.com/werkstatt-rechner.html">
+  <meta property="og:title" content="Werkstatt-Rechner – Einheiten, Winkel &amp; Gehrungen">
+  <meta property="og:description" content="Schnelle Umrechnungen für Länge, Fläche, Volumen, Masse, Temperatur sowie Grad, Radiant und Gehrungen – direkt im Browser.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.warenschmiede.com/werkstatt-rechner.html">
+  <meta property="og:site_name" content="Warenschmiede">
+  <meta property="og:locale" content="de_DE">
+  <meta name="twitter:card" content="summary_large_image">
+  <script>
+    (function () {
+      var storageKey = 'theme-preference';
+      var preference = 'system';
+      try {
+        var stored = localStorage.getItem(storageKey);
+        if (stored === 'light' || stored === 'dark' || stored === 'system') {
+          preference = stored;
+        }
+      } catch (error) { }
+      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+      var resolved = preference === 'dark'
+        ? 'dark'
+        : preference === 'light'
+          ? 'light'
+          : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
+      var root = document.documentElement;
+      root.dataset.theme = resolved;
+      root.dataset.themePreference = preference;
+    })();
+  </script>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/assets/print.css?v=1.0.7" media="print">
+  <style>
+    .tool-hero {
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .info-box {
+      border: 1px solid var(--border-color, #d9dde7);
+      background: var(--surface, #fff);
+      padding: 1rem 1.1rem;
+      border-radius: var(--radius-card);
+      color: var(--text-muted);
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .tool-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 24px;
+      align-items: start;
+    }
+    .tool-card {
+      background: var(--card, #f5f7fb);
+      border: 1px solid var(--border-color, #d9dde7);
+      border-radius: var(--radius-card);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .tool-card h2, .tool-card h3 {
+      margin-top: 0;
+    }
+    .form-grid {
+      display: grid;
+      gap: 0.85rem;
+    }
+    .form-row {
+      display: grid;
+      gap: 0.35rem;
+    }
+    .form-row label {
+      font-weight: 600;
+    }
+    .form-row input[type="number"],
+    .form-row select {
+      width: 100%;
+    }
+    .unit-group {
+      display: none;
+    }
+    .unit-group.is-active {
+      display: grid;
+      gap: 0.7rem;
+    }
+    .unit-grid {
+      display: grid;
+      gap: 0.65rem;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+    .result-note {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .angle-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .helper-text {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+    .result-box {
+      border: 1px dashed var(--border-color, #d9dde7);
+      background: var(--surface, #fff);
+      padding: 0.75rem;
+      border-radius: 12px;
+    }
+    .btn-inline {
+      margin-top: 0.5rem;
+    }
+    @media (max-width: 960px) {
+      .tool-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+    <symbol id="icon-printer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6.75 15.75h-1.5a1.5 1.5 0 0 1-1.5-1.5v-4.5a1.5 1.5 0 0 1 1.5-1.5h13.5a1.5 1.5 0 0 1 1.5 1.5v4.5a1.5 1.5 0 0 1-1.5 1.5h-1.5" />
+      <path d="M7.5 8.25v-3h9v3" />
+      <rect x="7.5" y="15.75" width="9" height="4.5" rx="1" />
+      <path d="M16.5 12.75h0" />
+    </symbol>
+    <symbol id="icon-clip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 10v7a4 4 0 0 0 8 0V7a2.5 2.5 0 1 0-5 0v8a1 1 0 0 0 2 0v-7" />
+    </symbol>
+    <symbol id="icon-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4.75 19.25h14.5" />
+      <rect x="5.75" y="11.25" width="3.5" height="7.5" rx="1" />
+      <rect x="10.25" y="6.25" width="3.5" height="12.5" rx="1" />
+      <rect x="14.75" y="9.25" width="3.5" height="9.5" rx="1" />
+    </symbol>
+    <symbol id="icon-laptop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6.75 5.25h10.5a1.5 1.5 0 0 1 1.5 1.5v7.75a1.5 1.5 0 0 1-1.5 1.5H6.75a1.5 1.5 0 0 1-1.5-1.5V6.75a1.5 1.5 0 0 1 1.5-1.5z" />
+      <path d="M4.25 17.75h15.5" />
+      <path d="M3.5 18.75h17" />
+    </symbol>
+  </svg>
+  <noscript>
+    <style>
+      .card__icon--svg { display: none !important; }
+      .card__icon--fallback { display: inline-flex !important; }
+    </style>
+  </noscript>
+  <header class="site-header" data-header>
+    <div class="container header-grid">
+      <div class="brand">
+        <a class="brand-link" href="/index.html#start">
+          <img src="/assets/images/warenschmiede_logo.png" alt="Warenschmiede Logo" class="brand-logo" width="453" height="276" fetchpriority="high">
+          <div class="brand-text">
+            <span class="brand-name">Warenschmiede</span>
+            <span class="brand-tagline">3D-Druck · Made in Germany</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="main-nav" aria-label="Hauptnavigation">
+        <div class="nav-menu" id="primary-navigation" data-nav-menu>
+          <ul class="nav-list" id="navList">
+            <li class="nav-item nav-fixed">
+              <a class="nav-link" href="/index.html#start" data-nav-link data-section="start" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html"><span class="nav-ico" aria-hidden="true">🏠</span>Start</a>
+            </li>
+
+            <!-- Neuer Dropdown: Rechner & Tools -->
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-highlight nav-tools" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                <span class="nav-ico" aria-hidden="true">🧮</span>Rechner &amp; Tools ▾
+              </button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/druck-kosten.html" data-nav-link data-path="/druck-kosten , /druck-kosten.html">
+                    <span class="nav-ico" aria-hidden="true">🧮</span>3D-Druck-Kostenrechner
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="nav-link"
+                    href="/tools/buero/doku-light/"
+                    data-nav-link
+                    data-path="/tools/buero/doku-light , /tools/buero/doku-light/ , /tools/buero/doku-light/index.html"
+                  >
+                    <span class="nav-ico" aria-hidden="true">📄</span>Dokumenten-Tool Light
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/bild-konverter.html" data-nav-link data-path="/bild-konverter , /bild-konverter.html">
+                    <span class="nav-ico" aria-hidden="true">🖼️</span>Bild-Konverter
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/werkstatt-rechner.html" data-nav-link data-path="/werkstatt-rechner , /werkstatt-rechner.html">
+                    <span class="nav-ico" aria-hidden="true">🛠️</span>Werkstatt-Rechner
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🧰</span>Leistungen ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/leistungen/3d-druck.html" data-nav-link data-path="/leistungen/3d-druck , /leistungen/3d-druck.html"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druckauftrag</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/leistungen/cad-prototyping.html" data-nav-link data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html"><span class="nav-ico" aria-hidden="true">📐</span>CAD &amp; Prototyping</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/leistungen/pc-hilfe.html" data-nav-link data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html"><span class="nav-ico" aria-hidden="true">💻</span>PC-Hilfe</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🤖</span>Über KI ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/ki/index.html" data-nav-link data-path="/ki , /ki/ , /ki/index.html"><span class="nav-ico" aria-hidden="true">📖</span>Einführung &amp; Grundlagen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/prompts.html" data-nav-link data-path="/ki/prompts , /ki/prompts.html"><span class="nav-ico" aria-hidden="true">✍️</span>Prompts für den Alltag</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/tools.html" data-nav-link data-path="/ki/tools , /ki/tools.html"><span class="nav-ico" aria-hidden="true">🛠️</span>KI-Werkzeuge</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/so-arbeitest-du-mit-ki.html" data-nav-link data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html"><span class="nav-ico" aria-hidden="true">🧭</span>So arbeitest du mit KI</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/programme-die-du-brauchst.html" data-nav-link data-path="/ki/programme-die-du-brauchst , /ki/programme-die-du-brauchst.html"><span class="nav-ico" aria-hidden="true">💾</span>Programme, die du brauchst</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/chancen-und-risiken.html" data-nav-link data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html"><span class="nav-ico" aria-hidden="true">⚖️</span>KI: Chancen &amp; Risiken</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/faq.html" data-nav-link data-path="/ki/faq , /ki/faq.html"><span class="nav-ico" aria-hidden="true">🔒</span>KI-FAQ &amp; Sicherheit</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/lexikon.html" data-nav-link data-path="/ki/lexikon , /ki/lexikon.html"><span class="nav-ico" aria-hidden="true">🔤</span>KI-Lexikon</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">✉️</span>Kontakt ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/kontakt.html" data-nav-link data-path="/kontakt , /kontakt.html , /warenschmiede/kontakt , /warenschmiede/kontakt.html"><span class="nav-ico" aria-hidden="true">📧</span>Kontakt aufnehmen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ablauf-anfrage.html" data-nav-link data-path="/ablauf-anfrage , /ablauf-anfrage.html"><span class="nav-ico" aria-hidden="true">📝</span>Ablauf &amp; Anfrage</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/impressum.html" data-nav-link data-path="/impressum , /impressum.html , /warenschmiede/impressum , /warenschmiede/impressum.html"><span class="nav-ico" aria-hidden="true">⚖️</span>Impressum</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ueber-mich.html" data-nav-link data-path="/ueber-mich , /ueber-mich.html , /warenschmiede/ueber-mich.html , /about , /about.html , /warenschmiede/about.html"><span class="nav-ico" aria-hidden="true">👤</span>Über mich</a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druck ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/technologien.html" data-nav-link data-path="/technologien , /technologien.html"><span class="nav-ico" aria-hidden="true">🧪</span>FDM / SLA / SLS – Technologien</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/fehlerdatenbank.html" data-nav-link data-path="/fehlerdatenbank , /fehlerdatenbank.html"><span class="nav-ico" aria-hidden="true">🛠️</span>Fehler &amp; Troubleshooting</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ideenquellen.html" data-nav-link data-path="/ideenquellen , /ideenquellen.html , /ideen , /ideen/ , /ideen/index.html"><span class="nav-ico" aria-hidden="true">💡</span>Ideenquellen &amp; Portale</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/material.html" data-nav-link data-path="/material.html"><span class="nav-ico" aria-hidden="true">📚</span>Materialwissen &amp; Vergleiche</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/druck-tipps.html" data-nav-link data-path="/druck-tipps , /druck-tipps.html"><span class="nav-ico" aria-hidden="true">🧭</span>Tipps &amp; Abläufe / Kosten</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/druck-kosten.html" data-nav-link data-path="/druck-kosten , /druck-kosten.html"><span class="nav-ico" aria-hidden="true">🧮</span>Kosten &amp; Kalkulation</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/slicer-einstellungen.html" data-nav-link data-path="/slicer-einstellungen , /slicer-einstellungen.html"><span class="nav-ico" aria-hidden="true">⚙️</span>Slicer &amp; Einstellungen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/3ddruck-faq.html" data-nav-link data-path="/3ddruck-faq , /3ddruck-faq.html"><span class="nav-ico" aria-hidden="true">❓</span>Neu beim 3D-Druck?</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/wartung-reinigung.html" data-nav-link data-path="/wartung-reinigung , /wartung-reinigung.html"><span class="nav-ico" aria-hidden="true">🧼</span>Wartung &amp; Reinigung</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="header-actions">
+        <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Design umschalten: Hell/Dunkel" title="Design umschalten: Hell/Dunkel" aria-pressed="false">
+          <span id="themeIcon" aria-hidden="true">🖥️</span>
+          <span class="theme-toggle__text" id="themeToggleText" aria-live="polite">Helles Design</span>
+        </button>
+
+        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
+          <span class="sr-only">Menü öffnen</span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="site-main" tabindex="-1">
+    <section class="section section-hero">
+      <div class="container tool-hero">
+        <p class="hero-eyebrow">Neu &amp; kostenlos</p>
+        <h1>Werkstatt- &amp; Metall-Rechner</h1>
+        <p class="hero-lede">Praktische Helfer für Alltag und Konstruktion – Einheiten, Winkel und Gehrungen schnell berechnen. Läuft komplett im Browser, ohne Werbung, ohne Tracking.</p>
+        <div class="info-box" role="note">
+          <span aria-hidden="true">ℹ️</span>
+          <span>Hinweis: Alle Berechnungen erfolgen nur in deinem Browser. Es werden keine Daten an Warenschmiede oder Dritte übertragen.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container tool-grid">
+        <div class="tool-card">
+          <p class="section-eyebrow">Schritt 1</p>
+          <h2>1. Einheiten-Rechner (Mechanik &amp; Alltag)</h2>
+          <p>Gib einen Wert ein, wähle die passende Größe und alle relevanten Einheiten rechnen sich live mit.</p>
+          <div class="form-grid">
+            <div class="form-row">
+              <label for="unitCategory">Größe auswählen</label>
+              <select id="unitCategory">
+                <option value="length">Länge</option>
+                <option value="area">Fläche</option>
+                <option value="volume">Volumen</option>
+                <option value="mass">Masse</option>
+                <option value="temperature">Temperatur</option>
+              </select>
+              <p class="helper-text">Typische Werkstatt- und Alltagswerte – mm/cm/m/inch, Flächen, Volumen, Gewicht und °C/°F.</p>
+            </div>
+
+            <div class="unit-group is-active" data-category="length">
+              <div class="unit-grid">
+                <div class="form-row">
+                  <label for="length-mm">Millimeter (mm)</label>
+                  <input type="number" id="length-mm" inputmode="decimal" placeholder="z. B. 120" data-category="length" data-unit="mm">
+                </div>
+                <div class="form-row">
+                  <label for="length-cm">Zentimeter (cm)</label>
+                  <input type="number" id="length-cm" inputmode="decimal" placeholder="z. B. 12" data-category="length" data-unit="cm">
+                </div>
+                <div class="form-row">
+                  <label for="length-m">Meter (m)</label>
+                  <input type="number" id="length-m" inputmode="decimal" placeholder="z. B. 1.2" data-category="length" data-unit="m">
+                </div>
+                <div class="form-row">
+                  <label for="length-inch">Zoll (inch)</label>
+                  <input type="number" id="length-inch" inputmode="decimal" placeholder="z. B. 4.72" data-category="length" data-unit="inch" step="0.01">
+                </div>
+              </div>
+            </div>
+
+            <div class="unit-group" data-category="area">
+              <div class="unit-grid">
+                <div class="form-row">
+                  <label for="area-mm2">Quadratmillimeter (mm²)</label>
+                  <input type="number" id="area-mm2" inputmode="decimal" placeholder="z. B. 2500" data-category="area" data-unit="mm2">
+                </div>
+                <div class="form-row">
+                  <label for="area-cm2">Quadratzentimeter (cm²)</label>
+                  <input type="number" id="area-cm2" inputmode="decimal" placeholder="z. B. 25" data-category="area" data-unit="cm2">
+                </div>
+                <div class="form-row">
+                  <label for="area-m2">Quadratmeter (m²)</label>
+                  <input type="number" id="area-m2" inputmode="decimal" placeholder="z. B. 0.0025" data-category="area" data-unit="m2" step="0.0001">
+                </div>
+              </div>
+            </div>
+
+            <div class="unit-group" data-category="volume">
+              <div class="unit-grid">
+                <div class="form-row">
+                  <label for="volume-cm3">Kubikzentimeter (cm³)</label>
+                  <input type="number" id="volume-cm3" inputmode="decimal" placeholder="z. B. 125" data-category="volume" data-unit="cm3">
+                </div>
+                <div class="form-row">
+                  <label for="volume-liter">Liter (L)</label>
+                  <input type="number" id="volume-liter" inputmode="decimal" placeholder="z. B. 0.125" data-category="volume" data-unit="liter" step="0.001">
+                </div>
+                <div class="form-row">
+                  <label for="volume-m3">Kubikmeter (m³)</label>
+                  <input type="number" id="volume-m3" inputmode="decimal" placeholder="optional: 0.000125" data-category="volume" data-unit="m3" step="0.000001">
+                </div>
+              </div>
+            </div>
+
+            <div class="unit-group" data-category="mass">
+              <div class="unit-grid">
+                <div class="form-row">
+                  <label for="mass-g">Gramm (g)</label>
+                  <input type="number" id="mass-g" inputmode="decimal" placeholder="z. B. 750" data-category="mass" data-unit="g">
+                </div>
+                <div class="form-row">
+                  <label for="mass-kg">Kilogramm (kg)</label>
+                  <input type="number" id="mass-kg" inputmode="decimal" placeholder="z. B. 0.75" data-category="mass" data-unit="kg" step="0.001">
+                </div>
+              </div>
+            </div>
+
+            <div class="unit-group" data-category="temperature">
+              <div class="unit-grid">
+                <div class="form-row">
+                  <label for="temp-c">Grad Celsius (°C)</label>
+                  <input type="number" id="temp-c" inputmode="decimal" placeholder="z. B. 20" data-category="temperature" data-unit="c">
+                </div>
+                <div class="form-row">
+                  <label for="temp-f">Grad Fahrenheit (°F)</label>
+                  <input type="number" id="temp-f" inputmode="decimal" placeholder="z. B. 68" data-category="temperature" data-unit="f">
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="result-note">Tipp: Ändere einfach einen Wert – alle anderen Felder füllen sich automatisch. Die Formeln sind als Kommentare im Code dokumentiert.</p>
+        </div>
+
+        <div class="tool-card">
+          <p class="section-eyebrow">Schritt 2</p>
+          <h2>2. Winkel- &amp; Gehrungs-Rechner</h2>
+          <p>Hilft bei Gehrungen, Rahmenkonstruktionen und einfachen Dreiecken – praktisch für Zuschnitte oder schnelle Skizzen.</p>
+
+          <div class="angle-grid">
+            <div class="tool-card">
+              <h3>Grad ↔ Radiant</h3>
+              <p class="helper-text">Kurzformel: rad = grad · π / 180 | grad = rad · 180 / π</p>
+              <div class="form-grid">
+                <div class="form-row">
+                  <label for="deg-input">Winkel in Grad</label>
+                  <input type="number" id="deg-input" inputmode="decimal" placeholder="z. B. 90" step="0.01">
+                </div>
+                <div class="form-row">
+                  <label for="rad-input">Winkel in Radiant</label>
+                  <input type="number" id="rad-input" inputmode="decimal" placeholder="z. B. 1.57" step="0.0001">
+                </div>
+              </div>
+            </div>
+
+            <div class="tool-card">
+              <h3>Gehrungsrechner (Winkel teilen)</h3>
+              <p class="helper-text">Gesamtwinkel eingeben, Anzahl der Teile wählen – das Tool teilt den Winkel gleichmäßig.</p>
+              <div class="form-grid">
+                <div class="form-row">
+                  <label for="miter-total">Gesamtwinkel in Grad</label>
+                  <input type="number" id="miter-total" inputmode="decimal" placeholder="z. B. 90" step="0.1">
+                </div>
+                <div class="form-row">
+                  <label for="miter-parts">Anzahl der Teile</label>
+                  <input type="number" id="miter-parts" inputmode="decimal" min="1" placeholder="z. B. 2" step="1">
+                </div>
+                <div class="result-box">
+                  <p><strong>Innenwinkel je Teil:</strong> <span id="miter-internal">–</span>°</p>
+                  <p><strong>Gehrungswinkel für den Zuschnitt:</strong> <span id="miter-angle">–</span>°</p>
+                  <p class="helper-text">Beispiel: 90° Gesamt / 2 Teile = 45° Innenwinkel → 22,5° Gehrung pro Seite.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="tool-card">
+              <h3>Rechtwinkliges Dreieck (Pythagoras)</h3>
+              <p class="helper-text">Berechnet die fehlende Seite: c² = a² + b². Für Kathete + Hypotenuse wird b = √(c² − a²).</p>
+              <div class="form-grid">
+                <div class="form-row">
+                  <label for="triangle-mode">Berechnungsart</label>
+                  <select id="triangle-mode">
+                    <option value="legs">Katheten a &amp; b → Hypotenuse</option>
+                    <option value="leg-hyp">Kathete &amp; Hypotenuse → fehlende Kathete</option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <label for="triangle-a">Kathete a</label>
+                  <input type="number" id="triangle-a" inputmode="decimal" placeholder="z. B. 30" step="0.01">
+                </div>
+                <div class="form-row">
+                  <label for="triangle-b">Kathete b / Hypotenuse c</label>
+                  <input type="number" id="triangle-b" inputmode="decimal" placeholder="z. B. 40" step="0.01">
+                </div>
+                <button class="btn btn-primary btn-inline" type="button" id="triangle-calc">Berechnen</button>
+                <div class="result-box" id="triangle-result" aria-live="polite">Fehlende Seite folgt hier.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h2 class="footer-title">Warenschmiede</h2>
+          <p>3D-Druck &amp; Werkzeugideen aus Donaueschingen. Alle Rechner laufen lokal im Browser.</p>
+        </div>
+        <div>
+          <h2 class="footer-title">Kontakt</h2>
+          <p><a href="mailto:hi@warenschmiede.com">hi@warenschmiede.com</a><br><a href="https://wa.me/4917611743087">WhatsApp: 0176 11743087</a></p>
+        </div>
+        <div>
+          <h2 class="footer-title">Rechtliches</h2>
+          <p><a href="/impressum.html">Impressum</a><br><a href="/datenschutz.html">Datenschutz</a></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Basis-Konvertierungen: jeder Wert wird auf eine Basiseinheit zurückgeführt und wieder verteilt.
+    var conversionData = {
+      length: {
+        base: 'm',
+        units: {
+          mm: 0.001, // 1 mm = 0,001 m
+          cm: 0.01,  // 1 cm = 0,01 m
+          m: 1,
+          inch: 0.0254 // 1 inch = 0,0254 m
+        }
+      },
+      area: {
+        base: 'm2',
+        units: {
+          mm2: 0.000001, // 1 mm² = 1e-6 m²
+          cm2: 0.0001,   // 1 cm² = 1e-4 m²
+          m2: 1
+        }
+      },
+      volume: {
+        base: 'liter',
+        units: {
+          cm3: 0.001,     // 1 cm³ = 0,001 Liter
+          liter: 1,
+          m3: 1000        // 1 m³ = 1000 Liter
+        }
+      },
+      mass: {
+        base: 'kg',
+        units: {
+          g: 0.001,   // 1 g = 0,001 kg
+          kg: 1
+        }
+      }
+    };
+
+    function formatForInput(value) {
+      if (!isFinite(value)) return '';
+      if (Math.abs(value) < 1e-8) return '0';
+      return Number.parseFloat(value.toFixed(6)).toString();
+    }
+
+    function setActiveGroup(category) {
+      var groups = document.querySelectorAll('.unit-group');
+      groups.forEach(function (group) {
+        var isActive = group.dataset.category === category;
+        group.classList.toggle('is-active', isActive);
+        if (isActive) {
+          // leeren, damit der Nutzer neu startet
+          group.querySelectorAll('input').forEach(function (input) {
+            input.value = '';
+          });
+        }
+      });
+    }
+
+    function convertUnits(category, changedUnit, rawValue) {
+      if (category === 'temperature') {
+        handleTemperature(changedUnit, rawValue);
+        return;
+      }
+
+      var value = parseFloat(rawValue);
+      if (Number.isNaN(value)) return;
+      var config = conversionData[category];
+      var baseValue = value * config.units[changedUnit];
+
+      var inputs = document.querySelectorAll('input[data-category="' + category + '"]');
+      inputs.forEach(function (input) {
+        var unit = input.dataset.unit;
+        if (unit === changedUnit) return;
+        var converted = baseValue / config.units[unit];
+        input.value = formatForInput(converted);
+      });
+    }
+
+    function handleTemperature(changedUnit, rawValue) {
+      var value = parseFloat(rawValue);
+      if (Number.isNaN(value)) return;
+
+      var cInput = document.getElementById('temp-c');
+      var fInput = document.getElementById('temp-f');
+
+      if (changedUnit === 'c') {
+        // °F = °C · 9/5 + 32
+        var fVal = (value * 9 / 5) + 32;
+        fInput.value = formatForInput(fVal);
+      } else {
+        // °C = (°F − 32) · 5/9
+        var cVal = (value - 32) * 5 / 9;
+        cInput.value = formatForInput(cVal);
+      }
+    }
+
+    document.getElementById('unitCategory').addEventListener('change', function (event) {
+      setActiveGroup(event.target.value);
+    });
+
+    document.querySelectorAll('.unit-group input').forEach(function (input) {
+      input.addEventListener('input', function (event) {
+        var category = event.target.dataset.category;
+        var unit = event.target.dataset.unit;
+        convertUnits(category, unit, event.target.value);
+      });
+    });
+
+    // Grad ↔ Radiant
+    var degInput = document.getElementById('deg-input');
+    var radInput = document.getElementById('rad-input');
+
+    degInput.addEventListener('input', function (event) {
+      var value = parseFloat(event.target.value);
+      if (Number.isNaN(value)) return;
+      var radians = value * Math.PI / 180;
+      radInput.value = formatForInput(radians);
+    });
+
+    radInput.addEventListener('input', function (event) {
+      var value = parseFloat(event.target.value);
+      if (Number.isNaN(value)) return;
+      var degrees = value * 180 / Math.PI;
+      degInput.value = formatForInput(degrees);
+    });
+
+    // Gehrungsrechner: Gesamtwinkel / Teile = Innenwinkel, Gehrungswinkel = Innenwinkel / 2
+    var totalInput = document.getElementById('miter-total');
+    var partsInput = document.getElementById('miter-parts');
+    var miterInternal = document.getElementById('miter-internal');
+    var miterAngle = document.getElementById('miter-angle');
+
+    function updateMiter() {
+      var total = parseFloat(totalInput.value);
+      var parts = parseFloat(partsInput.value);
+      if (Number.isNaN(total) || Number.isNaN(parts) || parts <= 0) {
+        miterInternal.textContent = '–';
+        miterAngle.textContent = '–';
+        return;
+      }
+      var internal = total / parts;
+      var miter = internal / 2;
+      miterInternal.textContent = formatForInput(internal);
+      miterAngle.textContent = formatForInput(miter);
+    }
+
+    totalInput.addEventListener('input', updateMiter);
+    partsInput.addEventListener('input', updateMiter);
+
+    // Pythagoras: c² = a² + b², b = √(c² − a²)
+    var triangleMode = document.getElementById('triangle-mode');
+    var triangleA = document.getElementById('triangle-a');
+    var triangleB = document.getElementById('triangle-b');
+    var triangleResult = document.getElementById('triangle-result');
+    document.getElementById('triangle-calc').addEventListener('click', function () {
+      var mode = triangleMode.value;
+      var a = parseFloat(triangleA.value);
+      var b = parseFloat(triangleB.value);
+      if (Number.isNaN(a) || Number.isNaN(b)) {
+        triangleResult.textContent = 'Bitte beide Seiten eingeben.';
+        return;
+      }
+
+      if (mode === 'legs') {
+        var c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+        triangleResult.textContent = 'Hypotenuse c = ' + formatForInput(c) + ' (rechtwinkliges Dreieck).';
+      } else {
+        if (b <= a) {
+          triangleResult.textContent = 'Die Hypotenuse muss größer als die Kathete sein.';
+          return;
+        }
+        var missing = Math.sqrt(Math.pow(b, 2) - Math.pow(a, 2));
+        triangleResult.textContent = 'Fehlende Kathete = ' + formatForInput(missing) + ' (rechtwinkliges Dreieck).';
+      }
+    });
+  </script>
+  <script src="assets/js/theme.js" defer></script>
+  <script src="assets/js/header.js" defer></script>
+  <script src="assets/js/whatsapp.js" defer></script>
+</body>
+</html>
