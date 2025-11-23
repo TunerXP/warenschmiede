@@ -577,14 +577,21 @@
       <div class="container">
         <div class="tool-card">
           <h2>3. Gewinde-Toleranzrechner (Light)</h2>
-          <p class="helper-text"><strong>Wofür ist dieser Rechner?</strong><br>Zeigt dir für ausgewählte metrische ISO-Gewinde einfache Grenzmaße (min/max) für Innen- und Außengewinde. Du wählst Gewindegröße, Steigung und Toleranzfeld – die Grenzmaße passen sich automatisch an. Nur als Orientierung gedacht, immer mit Norm oder Zeichnung abgleichen.</p>
-          <p class="helper-text">Du kannst neben der Gewindegröße auch unterschiedliche Steigungen auswählen (Regelgewinde und gängige Feingewinde).</p>
+          <p class="helper-text"><strong>Wofür ist dieser Rechner?</strong><br>Zeigt dir für ausgewählte metrische ISO-Gewinde einfache Grenzmaße (min/max) für Innen- und Außengewinde. Du wählst Gewindeserie, Gewindegröße (mit Steigung) und Toleranzfeld – die Grenzmaße passen sich automatisch an. Nur als Orientierung gedacht, immer mit Norm oder Zeichnung abgleichen.</p>
+          <p class="helper-text">Steigung und Größe wählst du direkt über die Gewindeliste (Regelgewinde und gängige Feingewinde).</p>
           <p class="helper-text result-note">Die Werte sind stark vereinfacht aus typischen Praxis-Tabellen abgeleitet und ersetzen keine Norm. Für sicherheitsrelevante Teile sind immer Normen und Zeichnungen maßgeblich.</p>
 
           <div class="calculator-grid">
             <div class="tool-card">
               <h3>Eingaben</h3>
               <div class="form-grid">
+                <div class="calc-field">
+                  <label for="tolerance-series">Gewinde-Serie</label>
+                  <select id="tolerance-series">
+                    <option value="isoMetricCoarse">ISO-Metrisch (Regelgewinde)</option>
+                    <option value="isoMetricFine">ISO-Metrisch (Feingewinde)</option>
+                  </select>
+                </div>
                 <div class="calc-field">
                   <label for="tolerance-type">Gewindetyp</label>
                   <select id="tolerance-type">
@@ -593,12 +600,8 @@
                   </select>
                 </div>
                 <div class="calc-field">
-                  <label for="tolerance-size">Gewinde auswählen</label>
-                  <select id="tolerance-size"></select>
-                </div>
-                <div class="calc-field">
-                  <label for="tolerance-pitch">Steigung P (mm)</label>
-                  <select id="tolerance-pitch"></select>
+                  <label for="tolerance-thread">Gewinde auswählen</label>
+                  <select id="tolerance-thread"></select>
                 </div>
                 <div class="calc-field">
                   <label for="tolerance-field">Toleranzfeld</label>
@@ -623,7 +626,6 @@
                 <div id="tolerance-inner-block">
                   <p><strong>Kerndurchmesser max:</strong> <span id="tolerance-inner-core-max">–</span> mm</p>
                   <p><strong>Kerndurchmesser min:</strong> <span id="tolerance-inner-core-min">–</span> mm</p>
-                  <p><strong>Flankendurchmesser (Richtwert):</strong> <span id="tolerance-flank">–</span> mm</p>
                 </div>
                 <p class="helper-text" id="tolerance-error"></p>
               </div>
@@ -879,149 +881,144 @@
     </div>
   </footer>
 
-  <script>
-    // Praxisnahe Richtwerte für ISO-Metrik-Gewinde (Regel- und gängige Feingewinde). Ohne Gewähr, bitte immer mit Norm/Zeichnung abgleichen.
-    var defaultPitches = {
-      'M1': '0.25',
-      'M1.2': '0.25',
-      'M1.6': '0.35',
-      'M2': '0.40',
-      'M2.5': '0.45',
-      'M3': '0.50',
-      'M4': '0.70',
-      'M5': '0.80',
-      'M6': '1.00',
-      'M8': '1.25',
-      'M10': '1.50',
-      'M12': '1.75',
-      'M16': '2.00',
-      'M20': '2.50',
-      'M24': '3.00',
-      'M30': '3.50',
-      'M36': '4.00',
-      'M42': '4.50',
-      'M48': '5.00',
-      'M56': '5.50',
-      'M64': '6.00'
-    };
+    <script>
+      // Praxisnahe Richtwerte für ISO-Metrik-Gewinde (Regel- und gängige Feingewinde). Ohne Gewähr, bitte immer mit Norm/Zeichnung abgleichen.
 
-    var threadDefinitions = [
-      { id: 'M1', d: 1, pitches: ['0.25'] },
-      { id: 'M1.2', d: 1.2, pitches: ['0.25'] },
-      { id: 'M1.4', d: 1.4, pitches: ['0.30'] },
-      { id: 'M1.6', d: 1.6, pitches: ['0.35'] },
-      { id: 'M1.8', d: 1.8, pitches: ['0.35'] },
-      { id: 'M2', d: 2, pitches: ['0.40'] },
-      { id: 'M2.2', d: 2.2, pitches: ['0.45'] },
-      { id: 'M2.5', d: 2.5, pitches: ['0.45'] },
-      { id: 'M3', d: 3, pitches: ['0.50'] },
-      { id: 'M3.5', d: 3.5, pitches: ['0.60'] },
-      { id: 'M4', d: 4, pitches: ['0.70'] },
-      { id: 'M4.5', d: 4.5, pitches: ['0.75'] },
-      { id: 'M5', d: 5, pitches: ['0.80'] },
-      { id: 'M6', d: 6, pitches: ['1.00', '0.75'] },
-      { id: 'M7', d: 7, pitches: ['1.00'] },
-      { id: 'M8', d: 8, pitches: ['1.25', '1.00', '0.75'] },
-      { id: 'M9', d: 9, pitches: ['1.25'] },
-      { id: 'M10', d: 10, pitches: ['1.50', '1.25', '1.00'] },
-      { id: 'M11', d: 11, pitches: ['1.50'] },
-      { id: 'M12', d: 12, pitches: ['1.75', '1.50', '1.25'] },
-      { id: 'M14', d: 14, pitches: ['2.00', '1.50'] },
-      { id: 'M16', d: 16, pitches: ['2.00', '1.50'] },
-      { id: 'M18', d: 18, pitches: ['2.50', '2.00'] },
-      { id: 'M20', d: 20, pitches: ['2.50', '2.00', '1.50'] },
-      { id: 'M22', d: 22, pitches: ['2.50', '2.00'] },
-      { id: 'M24', d: 24, pitches: ['3.00', '2.00'] },
-      { id: 'M27', d: 27, pitches: ['3.00', '2.00'] },
-      { id: 'M30', d: 30, pitches: ['3.50', '3.00', '2.00'] },
-      { id: 'M33', d: 33, pitches: ['3.50', '3.00'] },
-      { id: 'M36', d: 36, pitches: ['4.00', '3.00'] },
-      { id: 'M39', d: 39, pitches: ['4.00', '3.00'] },
-      { id: 'M42', d: 42, pitches: ['4.50', '4.00'] },
-      { id: 'M45', d: 45, pitches: ['4.50', '4.00'] },
-      { id: 'M48', d: 48, pitches: ['5.00', '4.00'] },
-      { id: 'M50', d: 50, pitches: ['5.00', '4.00'] },
-      { id: 'M52', d: 52, pitches: ['5.00', '4.00'] },
-      { id: 'M56', d: 56, pitches: ['5.50', '4.50'] },
-      { id: 'M60', d: 60, pitches: ['5.50', '4.50'] },
-      { id: 'M64', d: 64, pitches: ['6.00', '4.00'] }
-    ];
+      var toleranceFieldOptions = {
+        'Außengewinde': ['6g', '6h'],
+        'Innengewinde': ['6H']
+      };
 
-    var toleranceFieldOptions = {
-      'Außengewinde': ['6g', '6h', '7g', '7h'],
-      'Innengewinde': ['5H', '6H', '7H']
-    };
+      var toleranceConfig = {
+        external: {
+          '6g': { majorBase: 0.02, majorPitchFactor: 0.04, majorRange: 0.14, rangePitchFactor: 0.05, coreLift: 0.05, coreRange: 0.12, corePitchFactor: 0.04 },
+          '6h': { majorBase: 0.015, majorPitchFactor: 0.035, majorRange: 0.12, rangePitchFactor: 0.05, coreLift: 0.04, coreRange: 0.1, corePitchFactor: 0.03 }
+        },
+        internal: {
+          '6H': { coreLift: 0.1, coreRange: 0.12, corePitchFactor: 0.05 }
+        }
+      };
 
-    var externalToleranceConfig = {
-      '6g': { majorBase: 0.02, majorPitchFactor: 0.04, majorRange: 0.14, rangePitchFactor: 0.05, coreLift: 0.05, coreRange: 0.12, corePitchFactor: 0.04 },
-      '6h': { majorBase: 0.015, majorPitchFactor: 0.035, majorRange: 0.12, rangePitchFactor: 0.05, coreLift: 0.04, coreRange: 0.1, corePitchFactor: 0.03 },
-      '7g': { majorBase: 0.03, majorPitchFactor: 0.05, majorRange: 0.2, rangePitchFactor: 0.06, coreLift: 0.06, coreRange: 0.16, corePitchFactor: 0.05 },
-      '7h': { majorBase: 0.02, majorPitchFactor: 0.04, majorRange: 0.18, rangePitchFactor: 0.05, coreLift: 0.05, coreRange: 0.14, corePitchFactor: 0.04 }
-    };
+      function roundTolerance(value) {
+        return Number.parseFloat(value.toFixed(3));
+      }
 
-    var internalToleranceConfig = {
-      '5H': { coreLift: 0.08, coreRange: 0.1, corePitchFactor: 0.04, flankShift: 0.02 },
-      '6H': { coreLift: 0.1, coreRange: 0.12, corePitchFactor: 0.05, flankShift: 0.025 },
-      '7H': { coreLift: 0.12, coreRange: 0.16, corePitchFactor: 0.06, flankShift: 0.03 }
-    };
+      function formatDisplayValue(value) {
+        if (!isFinite(value)) return '';
+        return Number.parseFloat(value.toString()).toString().replace('.', ',');
+      }
 
-    function roundTolerance(value) {
-      return Number.parseFloat(value.toFixed(3));
-    }
+      function buildExternalLimits(nominal, pitch, config) {
+        var outerMax = roundTolerance(nominal - (config.majorBase + pitch * config.majorPitchFactor));
+        var outerMin = roundTolerance(outerMax - (config.majorRange + pitch * config.rangePitchFactor));
+        var coreNominal = nominal - 1.226 * pitch;
+        var coreMax = roundTolerance(coreNominal + (config.coreLift + pitch * 0.02));
+        var coreMin = roundTolerance(coreMax - (config.coreRange + pitch * config.corePitchFactor));
+        return { outerMax: outerMax, outerMin: outerMin, coreMax: coreMax, coreMin: coreMin };
+      }
 
-    function buildExternalTolerance(thread, config) {
-      var pitch = thread.pitch;
-      var outerMax = roundTolerance(thread.d - (config.majorBase + pitch * config.majorPitchFactor));
-      var outerMin = roundTolerance(outerMax - (config.majorRange + pitch * config.rangePitchFactor));
-      var coreNominal = thread.d - 1.226 * pitch;
-      var coreMax = roundTolerance(coreNominal + (config.coreLift + pitch * 0.02));
-      var coreMin = roundTolerance(coreMax - (config.coreRange + pitch * config.corePitchFactor));
-      return { outerMax: outerMax, outerMin: outerMin, coreMax: coreMax, coreMin: coreMin };
-    }
+      function buildInternalLimits(nominal, pitch, config) {
+        var minorNominal = nominal - 1.0825 * pitch;
+        var coreMax = roundTolerance(minorNominal + (config.coreLift + pitch * 0.02));
+        var coreMin = roundTolerance(coreMax - (config.coreRange + pitch * config.corePitchFactor));
+        return { coreMax: coreMax, coreMin: coreMin };
+      }
 
-    function buildInternalTolerance(thread, config) {
-      var pitch = thread.pitch;
-      var minorNominal = thread.d - 1.0825 * pitch;
-      var flankNominal = thread.d - 0.6495 * pitch;
-      var coreMax = roundTolerance(minorNominal + (config.coreLift + pitch * 0.02));
-      var coreMin = roundTolerance(coreMax - (config.coreRange + pitch * config.corePitchFactor));
-      var flank = roundTolerance(flankNominal - (config.flankShift + pitch * 0.015));
-      return { coreMax: coreMax, coreMin: coreMin, flank: flank };
-    }
+      function formatIdNumber(value) {
+        return value % 1 === 0 ? value.toFixed(0) : value.toString();
+      }
 
-    function buildThreadToleranceData(catalog) {
-      // Vereinfachte Richtwerte, keine vollständige Normübernahme. Für exakte Konstruktionen bitte ISO-Norm bzw. Gewindetabellen verwenden.
-      var dataset = { 'Außengewinde': {}, 'Innengewinde': {} };
-      catalog.forEach(function (thread) {
-        var externalByPitch = {};
-        var internalByPitch = {};
+      function buildThreadEntry(spec) {
+        var nominal = spec.d;
+        var pitch = spec.pitch;
+        var id = 'M' + formatIdNumber(nominal) + 'x' + formatIdNumber(pitch);
+        var designation = 'M' + formatDisplayValue(nominal) + ' × ' + formatDisplayValue(pitch);
 
-        thread.pitches.forEach(function (pitchValueString) {
-          var pitchValue = Number.parseFloat(pitchValueString);
-          if (!isFinite(pitchValue)) return;
-
-          var threadParams = { d: thread.d, pitch: pitchValue };
-
-          var externalEntries = {};
-          Object.keys(externalToleranceConfig).forEach(function (key) {
-            externalEntries[key] = Object.assign({ nominal: thread.d }, buildExternalTolerance(threadParams, externalToleranceConfig[key]));
-          });
-          externalByPitch[pitchValueString] = externalEntries;
-
-          var internalEntries = {};
-          Object.keys(internalToleranceConfig).forEach(function (key) {
-            internalEntries[key] = Object.assign({ nominal: thread.d }, buildInternalTolerance(threadParams, internalToleranceConfig[key]));
-          });
-          internalByPitch[pitchValueString] = internalEntries;
+        var externalLimits = {};
+        Object.keys(toleranceConfig.external).forEach(function (field) {
+          externalLimits[field] = Object.assign({ nominal: nominal }, buildExternalLimits(nominal, pitch, toleranceConfig.external[field]));
         });
 
-        dataset['Außengewinde'][thread.id] = externalByPitch;
-        dataset['Innengewinde'][thread.id] = internalByPitch;
-      });
-      return dataset;
-    }
+        var internalLimits = {};
+        Object.keys(toleranceConfig.internal).forEach(function (field) {
+          internalLimits[field] = Object.assign({ nominal: nominal }, buildInternalLimits(nominal, pitch, toleranceConfig.internal[field]));
+        });
 
-    var threadTolerances = buildThreadToleranceData(threadDefinitions);
+        return {
+          id: id,
+          designation: designation,
+          nominalDiameter: nominal,
+          pitch: pitch,
+          limits: {
+            external: externalLimits,
+            internal: internalLimits
+          }
+        };
+      }
+
+      function buildThreadSeries(definitions) {
+        return definitions.map(function (spec) { return buildThreadEntry(spec); });
+      }
+
+      var threadSeries = {
+        isoMetricCoarse: buildThreadSeries([
+          { d: 1, pitch: 0.25 },
+          { d: 1.2, pitch: 0.25 },
+          { d: 1.4, pitch: 0.3 },
+          { d: 1.6, pitch: 0.35 },
+          { d: 1.8, pitch: 0.35 },
+          { d: 2, pitch: 0.4 },
+          { d: 2.2, pitch: 0.45 },
+          { d: 2.5, pitch: 0.45 },
+          { d: 3, pitch: 0.5 },
+          { d: 3.5, pitch: 0.6 },
+          { d: 4, pitch: 0.7 },
+          { d: 4.5, pitch: 0.75 },
+          { d: 5, pitch: 0.8 },
+          { d: 6, pitch: 1 },
+          { d: 7, pitch: 1 },
+          { d: 8, pitch: 1.25 },
+          { d: 9, pitch: 1.25 },
+          { d: 10, pitch: 1.5 },
+          { d: 11, pitch: 1.5 },
+          { d: 12, pitch: 1.75 },
+          { d: 14, pitch: 2 },
+          { d: 16, pitch: 2 },
+          { d: 18, pitch: 2.5 },
+          { d: 20, pitch: 2.5 },
+          { d: 22, pitch: 2.5 },
+          { d: 24, pitch: 3 },
+          { d: 27, pitch: 3 },
+          { d: 30, pitch: 3.5 },
+          { d: 33, pitch: 3.5 },
+          { d: 36, pitch: 4 },
+          { d: 39, pitch: 4 },
+          { d: 42, pitch: 4.5 },
+          { d: 45, pitch: 4.5 },
+          { d: 48, pitch: 5 },
+          { d: 50, pitch: 5 },
+          { d: 52, pitch: 5 },
+          { d: 56, pitch: 5.5 },
+          { d: 60, pitch: 5.5 },
+          { d: 64, pitch: 6 }
+        ]),
+        isoMetricFine: buildThreadSeries([
+          { d: 6, pitch: 0.75 },
+          { d: 8, pitch: 1 },
+          { d: 10, pitch: 1.25 },
+          { d: 12, pitch: 1.5 },
+          { d: 14, pitch: 1.5 },
+          { d: 16, pitch: 1.5 },
+          { d: 18, pitch: 1.5 },
+          { d: 20, pitch: 1.5 },
+          { d: 22, pitch: 1.5 },
+          { d: 24, pitch: 2 },
+          { d: 27, pitch: 2 },
+          { d: 30, pitch: 2 },
+          { d: 33, pitch: 2 },
+          { d: 36, pitch: 3 }
+        ])
+      };
 
     // Basis-Konvertierungen: jeder Wert wird auf eine Basiseinheit zurückgeführt und wieder verteilt.
     var conversionData = {
@@ -1065,69 +1062,53 @@
       return Number.parseFloat(value.toFixed(6)).toString();
     }
 
-    var toleranceTypeSelect = document.getElementById('tolerance-type');
-    var toleranceSizeSelect = document.getElementById('tolerance-size');
-    var tolerancePitchSelect = document.getElementById('tolerance-pitch');
-    var toleranceFieldSelect = document.getElementById('tolerance-field');
-    var toleranceThreadName = document.getElementById('tolerance-thread-name');
-    var toleranceThreadType = document.getElementById('tolerance-thread-type');
-    var toleranceFieldLabel = document.getElementById('tolerance-field-label');
-    var toleranceNominal = document.getElementById('tolerance-nominal');
+      var toleranceSeriesSelect = document.getElementById('tolerance-series');
+      var toleranceTypeSelect = document.getElementById('tolerance-type');
+      var toleranceThreadSelect = document.getElementById('tolerance-thread');
+      var toleranceFieldSelect = document.getElementById('tolerance-field');
+      var toleranceThreadName = document.getElementById('tolerance-thread-name');
+      var toleranceThreadType = document.getElementById('tolerance-thread-type');
+      var toleranceFieldLabel = document.getElementById('tolerance-field-label');
+      var toleranceNominal = document.getElementById('tolerance-nominal');
     var toleranceOuterBlock = document.getElementById('tolerance-outer-block');
     var toleranceInnerBlock = document.getElementById('tolerance-inner-block');
     var toleranceOuterMax = document.getElementById('tolerance-outer-max');
-    var toleranceOuterMin = document.getElementById('tolerance-outer-min');
-    var toleranceCoreMax = document.getElementById('tolerance-core-max');
-    var toleranceCoreMin = document.getElementById('tolerance-core-min');
-    var toleranceInnerCoreMax = document.getElementById('tolerance-inner-core-max');
-    var toleranceInnerCoreMin = document.getElementById('tolerance-inner-core-min');
-    var toleranceFlank = document.getElementById('tolerance-flank');
-    var toleranceError = document.getElementById('tolerance-error');
+      var toleranceOuterMin = document.getElementById('tolerance-outer-min');
+      var toleranceCoreMax = document.getElementById('tolerance-core-max');
+      var toleranceCoreMin = document.getElementById('tolerance-core-min');
+      var toleranceInnerCoreMax = document.getElementById('tolerance-inner-core-max');
+      var toleranceInnerCoreMin = document.getElementById('tolerance-inner-core-min');
+      var toleranceError = document.getElementById('tolerance-error');
 
-    function findThreadById(id) {
-      return threadDefinitions.find(function (item) { return item.id === id; }) || null;
-    }
-
-    function populateToleranceSizes() {
-      if (!toleranceSizeSelect) return;
-      toleranceSizeSelect.innerHTML = '';
-      threadDefinitions.forEach(function (thread) {
-        var option = document.createElement('option');
-        option.value = thread.id;
-        option.textContent = thread.id;
-        toleranceSizeSelect.appendChild(option);
-      });
-    }
-
-    function populateTolerancePitches(size) {
-      if (!tolerancePitchSelect) return;
-      var thread = findThreadById(size);
-      var previous = tolerancePitchSelect.value;
-      tolerancePitchSelect.innerHTML = '';
-
-      if (!thread) {
-        return;
+      function getThreadsForSeries(seriesKey) {
+        var series = threadSeries[seriesKey];
+        return series ? series.threads : [];
       }
 
-      thread.pitches.forEach(function (pitchValue) {
-        var option = document.createElement('option');
-        option.value = pitchValue;
-        var isDefault = defaultPitches[thread.id] === pitchValue;
-        option.textContent = isDefault ? pitchValue + ' (Regelgewinde)' : pitchValue;
-        tolerancePitchSelect.appendChild(option);
-      });
-
-      var preferredPitch = defaultPitches[thread.id];
-      var availableValues = Array.from(tolerancePitchSelect.options).map(function (option) { return option.value; });
-
-      if (preferredPitch && availableValues.includes(preferredPitch)) {
-        tolerancePitchSelect.value = preferredPitch;
-      } else if (previous && availableValues.includes(previous)) {
-        tolerancePitchSelect.value = previous;
-      } else if (tolerancePitchSelect.options.length > 0) {
-        tolerancePitchSelect.value = tolerancePitchSelect.options[0].value;
+      function findThreadById(threads, id) {
+        return threads.find(function (item) { return item.id === id; }) || null;
       }
-    }
+
+      function populateThreadOptions(seriesKey) {
+        if (!toleranceThreadSelect) return;
+        var threads = getThreadsForSeries(seriesKey);
+        var previous = toleranceThreadSelect.value;
+        toleranceThreadSelect.innerHTML = '';
+
+        threads.forEach(function (thread) {
+          var option = document.createElement('option');
+          option.value = thread.id;
+          option.textContent = thread.designation;
+          toleranceThreadSelect.appendChild(option);
+        });
+
+        var availableIds = threads.map(function (thread) { return thread.id; });
+        if (previous && availableIds.includes(previous)) {
+          toleranceThreadSelect.value = previous;
+        } else if (threads.length > 0) {
+          toleranceThreadSelect.value = threads[0].id;
+        }
+      }
 
     function populateToleranceFields(type) {
       if (!toleranceFieldSelect) return;
@@ -1151,41 +1132,53 @@
       toleranceInnerBlock.style.display = isExternal ? 'none' : 'block';
     }
 
-    function updateToleranceResult() {
-      if (!toleranceTypeSelect || !toleranceSizeSelect || !toleranceFieldSelect || !tolerancePitchSelect) return;
-      var selectedType = toleranceTypeSelect.value;
-      var selectedSize = toleranceSizeSelect.value;
-      var selectedPitch = tolerancePitchSelect.value;
-      var selectedField = toleranceFieldSelect.value;
-      var threadInfo = findThreadById(selectedSize);
-      var toleranceEntry = (threadTolerances[selectedType]
-        && threadTolerances[selectedType][selectedSize]
-        && threadTolerances[selectedType][selectedSize][selectedPitch]
-        && threadTolerances[selectedType][selectedSize][selectedPitch][selectedField]) || null;
+      function updateToleranceResult() {
+        if (!toleranceTypeSelect || !toleranceThreadSelect || !toleranceFieldSelect || !toleranceSeriesSelect) return;
+        var selectedType = toleranceTypeSelect.value;
+        var selectedField = toleranceFieldSelect.value;
+        var seriesKey = toleranceSeriesSelect.value || 'isoMetricCoarse';
+        var threads = getThreadsForSeries(seriesKey);
+        var selectedThreadId = toleranceThreadSelect.value;
+        var threadInfo = findThreadById(threads, selectedThreadId) || (threads.length ? threads[0] : null);
 
-      toleranceThreadName.textContent = threadInfo && selectedPitch ? (threadInfo.id + ' × ' + formatForInput(selectedPitch)) : '–';
-      toleranceThreadType.textContent = selectedType || '–';
-      toleranceFieldLabel.textContent = selectedField || '–';
-      toleranceNominal.textContent = threadInfo ? formatForInput(threadInfo.d) : '–';
+        if (threadInfo && threadInfo.id !== selectedThreadId) {
+          toleranceThreadSelect.value = threadInfo.id;
+        }
 
-      toggleToleranceBlocks(selectedType);
+        var toleranceEntry = null;
+        if (threadInfo) {
+          var limitGroup = selectedType === 'Außengewinde' ? threadInfo.limits.external : threadInfo.limits.internal;
+          toleranceEntry = limitGroup ? limitGroup[selectedField] : null;
+        }
 
-      var hasEntry = Boolean(toleranceEntry);
-      if (toleranceError) {
-        toleranceError.textContent = hasEntry ? '' : 'Für diese Kombination aus M-Größe, Steigung und Toleranzfeld sind noch keine Richtwerte hinterlegt.';
+        toleranceThreadName.textContent = threadInfo ? threadInfo.designation : '–';
+        toleranceThreadType.textContent = selectedType || '–';
+        toleranceFieldLabel.textContent = selectedField || '–';
+        toleranceNominal.textContent = threadInfo ? formatForInput(threadInfo.nominalDiameter) : '–';
+
+        toggleToleranceBlocks(selectedType);
+
+        var hasEntry = Boolean(toleranceEntry);
+        if (toleranceError) {
+          toleranceError.textContent = hasEntry ? '' : 'Diese Kombination ist noch nicht hinterlegt.';
+        }
+
+        if (selectedType === 'Außengewinde') {
+          toleranceOuterMax.textContent = hasEntry ? formatForInput(toleranceEntry.outerMax) : '–';
+          toleranceOuterMin.textContent = hasEntry ? formatForInput(toleranceEntry.outerMin) : '–';
+          toleranceCoreMax.textContent = hasEntry ? formatForInput(toleranceEntry.coreMax) : '–';
+          toleranceCoreMin.textContent = hasEntry ? formatForInput(toleranceEntry.coreMin) : '–';
+          toleranceInnerCoreMax.textContent = '–';
+          toleranceInnerCoreMin.textContent = '–';
+        } else {
+          toleranceInnerCoreMax.textContent = hasEntry ? formatForInput(toleranceEntry.coreMax) : '–';
+          toleranceInnerCoreMin.textContent = hasEntry ? formatForInput(toleranceEntry.coreMin) : '–';
+          toleranceOuterMax.textContent = '–';
+          toleranceOuterMin.textContent = '–';
+          toleranceCoreMax.textContent = '–';
+          toleranceCoreMin.textContent = '–';
+        }
       }
-
-      if (selectedType === 'Außengewinde') {
-        toleranceOuterMax.textContent = hasEntry ? formatForInput(toleranceEntry.outerMax) : '–';
-        toleranceOuterMin.textContent = hasEntry ? formatForInput(toleranceEntry.outerMin) : '–';
-        toleranceCoreMax.textContent = hasEntry ? formatForInput(toleranceEntry.coreMax) : '–';
-        toleranceCoreMin.textContent = hasEntry ? formatForInput(toleranceEntry.coreMin) : '–';
-      } else {
-        toleranceInnerCoreMax.textContent = hasEntry ? formatForInput(toleranceEntry.coreMax) : '–';
-        toleranceInnerCoreMin.textContent = hasEntry ? formatForInput(toleranceEntry.coreMin) : '–';
-        toleranceFlank.textContent = hasEntry ? formatForInput(toleranceEntry.flank) : '–';
-      }
-    }
 
     function setActiveGroup(category) {
       var groups = document.querySelectorAll('.unit-group');
@@ -1251,32 +1244,28 @@
       });
     });
 
-    if (toleranceTypeSelect && toleranceSizeSelect && toleranceFieldSelect && tolerancePitchSelect) {
-      populateToleranceSizes();
-      var defaultToleranceThread = findThreadById('M8') || threadDefinitions[0];
-      var initialType = toleranceTypeSelect.value || 'Außengewinde';
-      if (defaultToleranceThread) {
-        toleranceSizeSelect.value = defaultToleranceThread.id;
-        populateTolerancePitches(defaultToleranceThread.id);
+      if (toleranceSeriesSelect && toleranceThreadSelect && toleranceFieldSelect && toleranceTypeSelect) {
+        var initialSeries = toleranceSeriesSelect.value || 'isoMetricCoarse';
+        var initialType = toleranceTypeSelect.value || 'Außengewinde';
+        populateThreadOptions(initialSeries);
+        populateToleranceFields(initialType);
+        toggleToleranceBlocks(initialType);
+        updateToleranceResult();
+
+        toleranceSeriesSelect.addEventListener('change', function (event) {
+          populateThreadOptions(event.target.value);
+          updateToleranceResult();
+        });
+
+        toleranceTypeSelect.addEventListener('change', function (event) {
+          populateToleranceFields(event.target.value);
+          toggleToleranceBlocks(event.target.value);
+          updateToleranceResult();
+        });
+
+        toleranceThreadSelect.addEventListener('change', updateToleranceResult);
+        toleranceFieldSelect.addEventListener('change', updateToleranceResult);
       }
-      populateToleranceFields(initialType);
-      toggleToleranceBlocks(initialType);
-      updateToleranceResult();
-
-      toleranceTypeSelect.addEventListener('change', function (event) {
-        populateToleranceFields(event.target.value);
-        toggleToleranceBlocks(event.target.value);
-        updateToleranceResult();
-      });
-
-      toleranceSizeSelect.addEventListener('change', function (event) {
-        populateTolerancePitches(event.target.value);
-        updateToleranceResult();
-      });
-
-      tolerancePitchSelect.addEventListener('change', updateToleranceResult);
-      toleranceFieldSelect.addEventListener('change', updateToleranceResult);
-    }
 
     var spindleVcInput = document.getElementById('cutting-vc');
     var spindleDiameterInput = document.getElementById('cutting-diameter');
