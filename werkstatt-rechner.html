@@ -253,12 +253,17 @@
       border: 1px solid var(--control-border);
       border-radius: 12px;
       padding: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .thread-helper-diagram svg {
+    .thread-helper-diagram__image {
       width: 100%;
+      max-width: 100%;
       height: auto;
       display: block;
+      object-fit: contain;
     }
 
     .thread-helper-values {
@@ -793,30 +798,15 @@
             <div class="tool-card thread-helper-card" aria-label="Bohrer- und Senkungsrichtwerte">
               <h3 class="tool-card-title">Bohrer &amp; Senkung (DIN 912, Richtwerte)</h3>
               <div class="thread-helper-diagram">
-                <svg viewBox="0 0 520 220" role="img" aria-labelledby="thread-helper-title">
-                  <title id="thread-helper-title">Schematische Darstellung einer Zylinderschraube mit Durchgangsloch und Senkung</title>
-                  <defs>
-                    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"></path>
-                    </marker>
-                  </defs>
-                  <rect x="40" y="110" width="440" height="36" rx="6" fill="var(--surface)" stroke="var(--control-border)" stroke-width="2"></rect>
-                  <rect x="140" y="92" width="70" height="72" fill="var(--surface-muted)" stroke="var(--control-border)" stroke-width="2"></rect>
-                  <rect x="160" y="64" width="30" height="36" rx="8" fill="var(--surface)" stroke="var(--control-border)" stroke-width="2"></rect>
-                  <rect x="210" y="118" width="250" height="20" fill="var(--surface-muted)" stroke="var(--control-border)" stroke-width="2"></rect>
-                  <rect x="94" y="126" width="46" height="12" fill="var(--surface)" stroke="var(--control-border)" stroke-width="2"></rect>
-                  <line x1="240" y1="60" x2="240" y2="34" stroke="currentColor" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"></line>
-                  <text x="246" y="30" font-size="14" fill="currentColor">d_k</text>
-                  <line x1="285" y1="160" x2="285" y2="188" stroke="currentColor" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"></line>
-                  <text x="292" y="196" font-size="14" fill="currentColor">k</text>
-                  <line x1="115" y1="170" x2="115" y2="194" stroke="currentColor" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"></line>
-                  <text x="122" y="202" font-size="14" fill="currentColor">d_s</text>
-                  <line x1="94" y1="182" x2="46" y2="182" stroke="currentColor" stroke-width="2"></line>
-                  <line x1="140" y1="182" x2="190" y2="182" stroke="currentColor" stroke-width="2"></line>
-                  <line x1="210" y1="182" x2="460" y2="182" stroke="currentColor" stroke-width="2"></line>
-                  <line x1="160" y1="34" x2="320" y2="34" stroke="currentColor" stroke-width="2"></line>
-                  <line x1="160" y1="60" x2="320" y2="60" stroke="currentColor" stroke-width="2"></line>
-                </svg>
+                <!--
+                  Hinweis: Dieses Bild ist ein Platzhalter. Bei Bedarf durch eine eigene DIN- oder Schrauben-Skizze ersetzen,
+                  z.B. über src="/assets/img/schraube-din912-metric.svg".
+                -->
+                <img
+                  src="/assets/img/placeholder-schraube-din912.svg"
+                  alt="Schematische Schraube mit Durchgangsloch und Senkung; Bezeichnungen dk, ds und k"
+                  class="thread-helper-diagram__image"
+                >
               </div>
               <dl class="thread-helper-values">
                 <div>
