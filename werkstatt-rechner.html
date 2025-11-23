@@ -7,12 +7,12 @@
   <link rel="apple-touch-icon" href="/ws.png" sizes="180x180">
   <meta name="theme-color" content="#000000">
   <title>Werkstatt- &amp; Metall-Rechner | Warenschmiede</title>
-  <meta name="description" content="Kostenlose Werkstatt-Rechner für Einheiten, Gewinde, Kernlöcher und Schnittdaten. Läuft vollständig im Browser, ohne Werbung und ohne Tracking.">
+  <meta name="description" content="Werkstatt-Rechner für Einheiten, Schnittdaten und ISO-Gewinde – inklusive Grenzmaße, Kernloch, DIN-Toleranzen und Richtwert-Tabellen. Läuft komplett im Browser ohne Tracking.">
   <meta name="robots" content="index,follow">
   <meta name="color-scheme" content="light dark">
   <link rel="canonical" href="https://www.warenschmiede.com/werkstatt-rechner.html">
   <meta property="og:title" content="Werkstatt- &amp; Metall-Rechner | Warenschmiede">
-  <meta property="og:description" content="Werkstatt-Rechner für Einheiten, Gewinde, Kernlöcher und Schnittdaten. Alle Funktionen laufen direkt im Browser, ohne Werbung oder Tracking.">
+  <meta property="og:description" content="Werkstatt-Rechner für Einheiten, Schnittdaten und ISO-Gewinde inkl. Grenzmaße, Kernloch und DIN-Toleranzen. Läuft direkt im Browser – keine Werbung, kein Tracking.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.warenschmiede.com/werkstatt-rechner.html">
   <meta property="og:site_name" content="Warenschmiede">
@@ -89,7 +89,8 @@
       padding: 0.35rem 0.75rem;
       cursor: pointer;
       font-weight: 600;
-      transition: background-color 120ms ease, border-color 120ms ease;
+      transition: background-color 120ms ease, border-color 120ms ease, transform 160ms ease;
+      margin-left: auto;
     }
     .tool-info-toggle:hover,
     .tool-info-toggle:focus-visible {
@@ -109,9 +110,16 @@
       border: 1px dashed var(--control-border);
       border-radius: 12px;
       background: var(--surface);
+      transition: max-height 180ms ease, opacity 180ms ease, padding 180ms ease;
     }
     .tool-info-content.is-collapsed {
-      display: none;
+      display: block;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-color: transparent;
     }
     .tools-wrapper {
       max-width: min(1400px, 100%);
@@ -181,6 +189,18 @@
     }
     .tool-nav {
       margin-top: var(--space-4);
+    }
+
+    .tool-top-nav {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+    }
+
+    .tool-top-nav .btn {
+      justify-content: center;
+      width: 100%;
     }
     .calculator-grid {
       display: grid;
@@ -460,6 +480,13 @@
           </div>
         </div>
 
+        <div class="tool-top-nav" aria-label="Schnellzugriff auf die Rechner">
+          <a class="btn btn-secondary" href="#einheiten-rechner">Zu Einheiten-Rechner</a>
+          <a class="btn btn-secondary" href="#schnittdaten-rechner">Zu Schnittdaten</a>
+          <a class="btn btn-secondary" href="#gewinde-toleranzrechner">Zu Gewinden &amp; Kernloch</a>
+          <a class="btn btn-secondary" href="#allgemeintoleranzen">Zu Allgemeintoleranzen</a>
+        </div>
+
         <div class="ki-tools-toc" id="rechner-uebersicht" aria-label="Schnellnavigation">
           <p class="section-eyebrow">Direkt zu</p>
           <ul class="ki-tools-toc__list">
@@ -484,8 +511,8 @@
             </button>
           </div>
           <div id="info-einheiten" class="tool-info-content is-collapsed">
-            <p>Gib einen Wert ein, wähle die passende Größe und alle relevanten Einheiten rechnen sich live mit.</p>
-            <p class="helper-text">Hilft dir, typische Maße im Kopf nicht mehr umrechnen zu müssen – zum Beispiel Millimeter in Zentimeter, Meter oder Zoll. Praktisch für Zeichnungen, SolidWorks-Skizzen, 3D-Druck und Werkstatt-Notizen. Du gibst einen Wert ein, die anderen Einheiten rechnen sich automatisch mit.</p>
+            <p class="helper-text">Rechnet typische Werkstatt-Maße automatisch um – mm, cm, Meter, Zoll, Flächen, Volumen, Gewicht, °C/°F. Ideal für Zeichnungen, 3D-Druck und CNC.</p>
+            <p class="helper-text">Wähle die Größe, gib einen Wert ein und die übrigen Einheiten folgen direkt. Alle Berechnungen laufen nur im Browser.</p>
           </div>
           <div class="example-note">
             <strong>Beispiel:</strong>
@@ -600,9 +627,9 @@
             </button>
           </div>
           <div id="info-tolerance" class="tool-info-content is-collapsed">
-            <p class="helper-text">Gibt dir einfache Grenzmaße (min/max) für ausgewählte ISO-Gewinde. Du wählst Gewindeserie, Gewindetyp, Größe und Toleranzfeld – der Rechner zeigt dir eine grobe Orientierung, ob ein Istmaß in den Bereich passt. Die Werte sind bewusst vereinfacht und ersetzen keine vollständige Normtabelle. Für Passungen und sicherheitskritische Teile immer die ISO-Norm bzw. Gewindetabellen verwenden.</p>
-            <p class="helper-text">Steigung und Größe wählst du direkt über die Gewindeliste (Regelgewinde und gängige Feingewinde).</p>
-            <p class="helper-text result-note">Die Werte sind stark vereinfacht aus typischen Praxis-Tabellen abgeleitet und ersetzen keine Norm. Für sicherheitsrelevante Teile sind immer Normen und Zeichnungen maßgeblich.</p>
+            <p class="helper-text">Zeigt typische Grenzmaße für ISO-Metrische Regel- und Feingewinde. Vereinfachte Praxiswerte, keine vollständige Normübernahme.</p>
+            <p class="helper-text">Wähle Serie, Gewindetyp, Größe und Toleranzfeld. Steigung und Nenndurchmesser sind in der Liste hinterlegt – Kernloch = Nenndurchmesser minus Steigung.</p>
+            <p class="helper-text result-note">Für sicherheitskritische Anwendungen immer vollständige Normtabellen (DIN 13 / ISO) heranziehen.</p>
           </div>
 
           <div class="calculator-grid">
@@ -641,6 +668,7 @@
                 <p><strong>Gewindetyp:</strong> <span id="tolerance-thread-type">–</span></p>
                 <p><strong>Toleranzfeld:</strong> <span id="tolerance-field-label">–</span></p>
                 <p><strong>Nenndurchmesser d / D:</strong> <span id="tolerance-nominal">–</span> mm</p>
+                <p><strong>Kernloch-Bohrung (Näherung):</strong> <span id="tolerance-core-hole">–</span> mm</p>
                 <div id="tolerance-outer-block">
                   <p><strong>Außendurchmesser max:</strong> <span id="tolerance-outer-max">–</span> mm</p>
                   <p><strong>Außendurchmesser min:</strong> <span id="tolerance-outer-min">–</span> mm</p>
@@ -679,8 +707,8 @@
             </button>
           </div>
           <div id="info-cutting" class="tool-info-content is-collapsed">
-            <p class="helper-text">Hilft dir beim Drehen, Fräsen und Bohren: Aus der Schnittgeschwindigkeit und dem Werkzeugdurchmesser berechnest du die Spindeldrehzahl. Aus Drehzahl, Schneidenzahl und Zahnvorschub bekommst du die Vorschubgeschwindigkeit. Zusätzlich kannst du aus vorhandener Drehzahl und Werkzeug-Ø die aktuelle Schnittgeschwindigkeit v<sub>c</sub> ermitteln – ideal, wenn du nur n und d kennst und wissen willst, wie „schnell“ du gerade im Schnitt unterwegs bist.</p>
-            <p class="helper-text result-note">Werte und Beispielrechnungen sind nur zur Orientierung gedacht. Konkrete Schnittwerte hängen von Maschine, Werkzeug, Material und Herstellerangaben ab – immer mit den Datenblättern abgleichen.</p>
+            <p class="helper-text">Berechnet Drehzahl, Vorschub und Schnittgeschwindigkeit. Richtwerte – bitte Material- und Werkzeugdatenblatt dazu beachten.</p>
+            <p class="helper-text result-note">Nutze die Formeln für Drehen, Fräsen und Bohren. Ergebnisse dienen der Orientierung und müssen mit den Herstellerempfehlungen abgeglichen werden.</p>
           </div>
           <div class="calculator-grid">
             <div class="tool-card">
@@ -772,6 +800,7 @@
               <p class="helper-text">Diese Übersicht soll dir ein Gefühl geben, wofür grobe, mittlere und feine Allgemeintoleranzen typischerweise verwendet werden. Die Beispiele orientieren sich an ISO 2768, enthalten aber keine vollständigen Normwerte. Exakte Grenzmaße bitte immer aus deiner gültigen Norm bzw. Zeichnung übernehmen.</p>
               <p class="helper-text tolerance-note">Hinweis: Stark vereinfachter Auszug aus DIN ISO 2768-1. Exakte Grenzwerte und größere Nennmaßbereiche bitte der Original-Norm entnehmen.</p>
             </div>
+          <p class="helper-text tolerance-note"><strong>Richtwerte nach DIN ISO 2768-1. Für vollständige Grenzmaße bitte Norm einsehen.</strong></p>
           <div class="tolerance-grid">
             <div class="tolerance-card">
               <h3>Fein (f)</h3>
@@ -797,15 +826,15 @@
                   </tr>
                   <tr>
                     <td>&gt;30 – 120</td>
-                    <td>±0,20 mm</td>
+                    <td>±0,15 mm</td>
                   </tr>
                   <tr>
                     <td>&gt;120 – 400</td>
-                    <td>±0,30 mm</td>
+                    <td>±0,20 mm</td>
                   </tr>
                   <tr>
                     <td>&gt;400 – 1000</td>
-                    <td>±0,50 mm</td>
+                    <td>±0,30 mm</td>
                   </tr>
                 </tbody>
               </table>
@@ -835,15 +864,15 @@
                   </tr>
                   <tr>
                     <td>&gt;30 – 120</td>
-                    <td>±0,50 mm</td>
+                    <td>±0,30 mm</td>
                   </tr>
                   <tr>
                     <td>&gt;120 – 400</td>
-                    <td>±0,80 mm</td>
+                    <td>±0,50 mm</td>
                   </tr>
                   <tr>
                     <td>&gt;400 – 1000</td>
-                    <td>±1,20 mm</td>
+                    <td>±0,80 mm</td>
                   </tr>
                 </tbody>
               </table>
@@ -873,15 +902,15 @@
                   </tr>
                   <tr>
                     <td>&gt;30 – 120</td>
-                    <td>±1,20 mm</td>
+                    <td>±0,80 mm</td>
                   </tr>
                   <tr>
                     <td>&gt;120 – 400</td>
-                    <td>±2,00 mm</td>
+                    <td>±1,20 mm</td>
                   </tr>
                   <tr>
                     <td>&gt;400 – 1000</td>
-                    <td>±3,00 mm</td>
+                    <td>±2,00 mm</td>
                   </tr>
                 </tbody>
               </table>
@@ -911,15 +940,15 @@
                   </tr>
                   <tr>
                     <td>&gt;30 – 120</td>
-                    <td>±2,50 mm</td>
+                    <td>±1,50 mm</td>
                   </tr>
                   <tr>
                     <td>&gt;120 – 400</td>
-                    <td>±4,00 mm</td>
+                    <td>±2,50 mm</td>
                   </tr>
                   <tr>
                     <td>&gt;400 – 1000</td>
-                    <td>±6,00 mm</td>
+                    <td>±4,00 mm</td>
                   </tr>
                 </tbody>
               </table>
@@ -937,6 +966,8 @@
                   <th scope="col">&gt;3–6 mm</th>
                   <th scope="col">&gt;6–30 mm</th>
                   <th scope="col">&gt;30–120 mm</th>
+                  <th scope="col">&gt;120–400 mm</th>
+                  <th scope="col">&gt;400–1000 mm</th>
                 </tr>
               </thead>
               <tbody class="helper-text">
@@ -945,24 +976,47 @@
                   <td>±0,05 mm</td>
                   <td>±0,05 mm</td>
                   <td>±0,10 mm</td>
+                  <td>±0,15 mm</td>
                   <td>±0,20 mm</td>
+                  <td>±0,30 mm</td>
                 </tr>
                 <tr>
                   <td><strong>m (mittel)</strong></td>
                   <td>±0,10 mm</td>
                   <td>±0,10 mm</td>
                   <td>±0,20 mm</td>
+                  <td>±0,30 mm</td>
                   <td>±0,50 mm</td>
+                  <td>±0,80 mm</td>
                 </tr>
                 <tr>
                   <td><strong>c (grob)</strong></td>
                   <td>±0,20 mm</td>
                   <td>±0,30 mm</td>
                   <td>±0,50 mm</td>
+                  <td>±0,80 mm</td>
                   <td>±1,20 mm</td>
+                  <td>±2,00 mm</td>
+                </tr>
+                <tr>
+                  <td><strong>v (sehr grob)</strong></td>
+                  <td>–</td>
+                  <td>±0,50 mm</td>
+                  <td>±1,00 mm</td>
+                  <td>±1,50 mm</td>
+                  <td>±2,50 mm</td>
+                  <td>±4,00 mm</td>
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div class="helper-text tolerance-note">
+            <p><strong>Normquellen &amp; Tabellen:</strong></p>
+            <ul>
+              <li><a href="https://www.epe.ed.tum.de/fileadmin/w00bzo/ewt/Werkstatt/Allgemeintoleranzen_nach_DIN_ISO_2768.pdf" rel="noopener" target="_blank">DIN ISO 2768-1 (PDF-Auszug, TUM)</a></li>
+              <li><a href="https://www.alle-meine-vorlagen.de/metrisches-gewinde-tabelle-von-m1-bis-m64/" rel="noopener" target="_blank">ISO-Gewinde Tabellen (DIN 13)</a></li>
+              <li><a href="https://www.europa-lehrmittel.de/Ausbildung/Metalltechnik/Tabellenbuecher/" rel="noopener" target="_blank">Tabellenbuch Metall (offizieller Shop)</a></li>
+            </ul>
           </div>
           <div class="tool-nav">
             <a class="btn btn-utility btn-sm" href="#rechner-uebersicht">Zur Rechner-Auswahl</a>
@@ -1008,6 +1062,10 @@
           var targetId = toggle.getAttribute('aria-controls');
           var content = targetId ? document.getElementById(targetId) : null;
 
+          if (content) {
+            content.style.maxHeight = '0px';
+          }
+
           toggle.addEventListener('click', function () {
             var isExpanded = toggle.getAttribute('aria-expanded') === 'true';
             var nextState = !isExpanded;
@@ -1015,6 +1073,8 @@
             toggle.classList.toggle('is-open', nextState);
             if (content) {
               content.classList.toggle('is-collapsed', !nextState);
+              content.style.maxHeight = nextState ? content.scrollHeight + 'px' : '0px';
+              content.style.opacity = nextState ? '1' : '0';
             }
           });
         });
@@ -1024,11 +1084,11 @@
       var toleranceConfig = {
         outer: {
           '6g': { majorBase: 0.02, majorPitchFactor: 0.04, majorRange: 0.14, rangePitchFactor: 0.05, coreLift: 0.05, coreRange: 0.12, corePitchFactor: 0.04 },
-          '8g': { majorBase: 0.04, majorPitchFactor: 0.05, majorRange: 0.18, rangePitchFactor: 0.06, coreLift: 0.06, coreRange: 0.16, corePitchFactor: 0.05 }
+          '6e': { majorBase: 0.015, majorPitchFactor: 0.035, majorRange: 0.12, rangePitchFactor: 0.045, coreLift: 0.04, coreRange: 0.1, corePitchFactor: 0.035 },
+          'g': { majorBase: 0.02, majorPitchFactor: 0.04, majorRange: 0.14, rangePitchFactor: 0.05, coreLift: 0.05, coreRange: 0.12, corePitchFactor: 0.04 }
         },
         inner: {
-          '6H': { coreLift: 0.1, coreRange: 0.12, corePitchFactor: 0.05 },
-          '7H': { coreLift: 0.14, coreRange: 0.16, corePitchFactor: 0.06 }
+          '6H': { coreLift: 0.1, coreRange: 0.12, corePitchFactor: 0.05 }
         }
       };
 
@@ -1162,6 +1222,7 @@
       var toleranceThreadType = document.getElementById('tolerance-thread-type');
       var toleranceFieldLabel = document.getElementById('tolerance-field-label');
       var toleranceNominal = document.getElementById('tolerance-nominal');
+      var toleranceCoreHole = document.getElementById('tolerance-core-hole');
       var toleranceOuterBlock = document.getElementById('tolerance-outer-block');
       var toleranceInnerBlock = document.getElementById('tolerance-inner-block');
       var toleranceOuterMax = document.getElementById('tolerance-outer-max');
@@ -1243,6 +1304,7 @@
         toleranceThreadType.textContent = '–';
         toleranceFieldLabel.textContent = '–';
         toleranceNominal.textContent = '–';
+        toleranceCoreHole.textContent = '–';
         toleranceOuterMax.textContent = '–';
         toleranceOuterMin.textContent = '–';
         toleranceCoreMax.textContent = '–';
@@ -1277,6 +1339,7 @@
         toleranceThreadType.textContent = toleranceTypeSelect.value || '–';
         toleranceFieldLabel.textContent = fieldKey || '–';
         toleranceNominal.textContent = formatDisplayValue(threadInfo.d_nominal);
+        toleranceCoreHole.textContent = formatDisplayValue(threadInfo.d_nominal - threadInfo.pitch);
 
         if (!toleranceEntry) {
           toleranceOuterMax.textContent = '–';
@@ -1483,6 +1546,38 @@
       cuttingSpeedButton.addEventListener('click', calculateCuttingSpeed);
     }
 
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "Werkstatt-Rechner verwenden",
+      "description": "So nutzt du die Einheiten-, Gewinde- und Schnittdaten-Rechner auf warenschmiede.com.",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "name": "Rechner auswählen",
+          "text": "Oben einen Schnellzugriff anklicken oder in der Übersicht den passenden Rechner wählen (Einheiten, Gewinde, Schnittdaten, Allgemeintoleranzen)."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Werte eingeben",
+          "text": "Im Formular die geforderten Größen eintragen: z. B. mm, Zoll, Gewindeserie und Toleranzfeld oder v_c, Drehzahl und Schneidenzahl."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Ergebnisse prüfen",
+          "text": "Die Ergebnisse erscheinen sofort im Ausgabeblock – inkl. Kernloch-Näherung und Richtwert-Toleranzen. Für sicherheitskritische Teile bitte immer Normtabellen prüfen."
+        }
+      ],
+      "tool": [
+        "Einheiten-Rechner",
+        "Gewinde-Toleranzrechner",
+        "Schnittdaten-Rechner",
+        "DIN ISO 2768-1 Richtwerttabelle"
+      ],
+      "url": "https://www.warenschmiede.com/werkstatt-rechner.html"
+    }
   </script>
   <script src="assets/js/theme.js" defer></script>
   <script src="assets/js/header.js" defer></script>
