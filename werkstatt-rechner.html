@@ -114,7 +114,7 @@
       display: none;
     }
     .tools-wrapper {
-      max-width: 1120px;
+      max-width: min(1400px, 100%);
       margin: 0 auto;
       padding-inline: var(--space-5);
       display: flex;
@@ -181,9 +181,21 @@
     }
     .calculator-grid {
       display: grid;
-      gap: 20px;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: var(--space-4);
+      grid-template-columns: 1fr;
       align-items: start;
+    }
+
+    @media (min-width: 768px) {
+      .calculator-grid {
+        grid-template-columns: repeat(2, minmax(320px, 1fr));
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .calculator-grid {
+        grid-template-columns: repeat(3, minmax(320px, 1fr));
+      }
     }
     .tolerance-grid {
       display: grid;
@@ -429,7 +441,7 @@
 
   <main class="site-main" tabindex="-1">
     <section class="section section-hero">
-      <div class="container tool-hero">
+      <div class="container container--calc-wide tool-hero">
         <p class="hero-eyebrow">Neu &amp; kostenlos</p>
         <h1>Werkstatt- &amp; Metall-Rechner</h1>
         <p class="hero-lede">Praktische Helfer für Alltag und Konstruktion – Einheiten umrechnen, Gewinde-Toleranzen prüfen und Schnittdaten abschätzen. Läuft komplett im Browser, ohne Werbung, ohne Tracking.</p>
@@ -449,7 +461,7 @@
 
     <div class="tools-wrapper">
       <section class="section">
-        <div class="container tool-grid">
+        <div class="container container--calc-wide tool-grid">
         <div class="tool-card">
           <div class="tool-header">
             <h2>1. Einheiten-Rechner (Mechanik &amp; Alltag)</h2>
@@ -638,7 +650,7 @@
       </section>
 
       <section class="section">
-        <div class="container">
+        <div class="container container--calc-wide">
         <div class="tool-card">
           <div class="tool-header">
             <h2>3. Schnittdaten-Rechner (Drehzahl &amp; Vorschub)</h2>
@@ -725,7 +737,7 @@
       </section>
 
       <section class="section">
-        <div class="container">
+        <div class="container container--calc-wide">
           <div class="tool-card">
             <div class="tool-header">
               <h2>4. Allgemeintoleranzen (Richtwerte nach DIN ISO 2768-1 – stark vereinfacht)</h2>
