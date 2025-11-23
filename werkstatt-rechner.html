@@ -534,6 +534,10 @@
             <div class="unit-group is-active" data-category="length">
               <div class="unit-grid">
                 <div class="calc-field">
+                  <label for="length-um">Mikrometer (µm)</label>
+                  <input type="number" id="length-um" inputmode="decimal" placeholder="z. B. 500" data-category="length" data-unit="um">
+                </div>
+                <div class="calc-field">
                   <label for="length-mm">Millimeter (mm)</label>
                   <input type="number" id="length-mm" inputmode="decimal" placeholder="z. B. 120" data-category="length" data-unit="mm">
                 </div>
@@ -550,6 +554,7 @@
                   <input type="number" id="length-inch" inputmode="decimal" placeholder="z. B. 4.72" data-category="length" data-unit="inch" step="0.01">
                 </div>
               </div>
+              <button class="btn btn-utility btn-sm btn-inline reset-btn" type="button" data-category="length">Felder zurücksetzen</button>
             </div>
 
             <div class="unit-group" data-category="area">
@@ -563,16 +568,25 @@
                   <input type="number" id="area-cm2" inputmode="decimal" placeholder="z. B. 25" data-category="area" data-unit="cm2">
                 </div>
                 <div class="calc-field">
+                  <label for="area-dm2">Quadratdezimeter (dm²)</label>
+                  <input type="number" id="area-dm2" inputmode="decimal" placeholder="z. B. 0.25" data-category="area" data-unit="dm2" step="0.001">
+                </div>
+                <div class="calc-field">
                   <label for="area-m2">Quadratmeter (m²)</label>
                   <input type="number" id="area-m2" inputmode="decimal" placeholder="z. B. 0.0025" data-category="area" data-unit="m2" step="0.0001">
                 </div>
               </div>
+              <button class="btn btn-utility btn-sm btn-inline reset-btn" type="button" data-category="area">Felder zurücksetzen</button>
             </div>
 
             <div class="unit-group" data-category="volume">
               <div class="unit-grid">
                 <div class="calc-field">
-                  <label for="volume-cm3">Kubikzentimeter (cm³)</label>
+                  <label for="volume-ml">Milliliter (ml)</label>
+                  <input type="number" id="volume-ml" inputmode="decimal" placeholder="z. B. 125" data-category="volume" data-unit="ml" step="0.1">
+                </div>
+                <div class="calc-field">
+                  <label for="volume-cm3">Kubikzentimeter (cm³ / ccm)</label>
                   <input type="number" id="volume-cm3" inputmode="decimal" placeholder="z. B. 125" data-category="volume" data-unit="cm3">
                 </div>
                 <div class="calc-field">
@@ -584,10 +598,15 @@
                   <input type="number" id="volume-m3" inputmode="decimal" placeholder="optional: 0.000125" data-category="volume" data-unit="m3" step="0.000001">
                 </div>
               </div>
+              <button class="btn btn-utility btn-sm btn-inline reset-btn" type="button" data-category="volume">Felder zurücksetzen</button>
             </div>
 
             <div class="unit-group" data-category="mass">
               <div class="unit-grid">
+                <div class="calc-field">
+                  <label for="mass-mg">Milligramm (mg)</label>
+                  <input type="number" id="mass-mg" inputmode="decimal" placeholder="z. B. 250000" data-category="mass" data-unit="mg">
+                </div>
                 <div class="calc-field">
                   <label for="mass-g">Gramm (g)</label>
                   <input type="number" id="mass-g" inputmode="decimal" placeholder="z. B. 750" data-category="mass" data-unit="g">
@@ -596,7 +615,20 @@
                   <label for="mass-kg">Kilogramm (kg)</label>
                   <input type="number" id="mass-kg" inputmode="decimal" placeholder="z. B. 0.75" data-category="mass" data-unit="kg" step="0.001">
                 </div>
+                <div class="calc-field">
+                  <label for="mass-t">Tonne (t)</label>
+                  <input type="number" id="mass-t" inputmode="decimal" placeholder="z. B. 0.001" data-category="mass" data-unit="t" step="0.0001">
+                </div>
+                <div class="calc-field">
+                  <label for="mass-oz">Unze (oz)</label>
+                  <input type="number" id="mass-oz" inputmode="decimal" placeholder="optional: 26.455" data-category="mass" data-unit="oz" step="0.001">
+                </div>
+                <div class="calc-field">
+                  <label for="mass-lb">Pfund (lb)</label>
+                  <input type="number" id="mass-lb" inputmode="decimal" placeholder="optional: 1.653" data-category="mass" data-unit="lb" step="0.001">
+                </div>
               </div>
+              <button class="btn btn-utility btn-sm btn-inline reset-btn" type="button" data-category="mass">Felder zurücksetzen</button>
             </div>
 
             <div class="unit-group" data-category="temperature">
@@ -610,6 +642,7 @@
                   <input type="number" id="temp-f" inputmode="decimal" placeholder="z. B. 68" data-category="temperature" data-unit="f">
                 </div>
               </div>
+              <button class="btn btn-utility btn-sm btn-inline reset-btn" type="button" data-category="temperature">Felder zurücksetzen</button>
             </div>
           </div>
           <p class="result-note">Tipp: Ändere einfach einen Wert – alle anderen Felder füllen sich automatisch. Die Formeln sind als Kommentare im Code dokumentiert.</p>
@@ -1181,10 +1214,15 @@
       var threadData = buildThreadData(threadSeriesDefinitions);
 
       // Basis-Konvertierungen: jeder Wert wird auf eine Basiseinheit zurückgeführt und wieder verteilt.
+      // Neu hinzugefügt: µm für Länge, dm² für Fläche, ml & cm³ (ccm) für Volumen sowie mg/t/oz/lb für Masse.
+      // Die Masse-Faktoren für Unze (oz) und Pfund (lb) orientieren sich an den gängigen US-Umrechnungen:
+      // 1 oz = 28,349523125 g, 1 lb = 453,59237 g (Quelle: NIST).
+      // Der Rechner bildet bewusst nur einen Grundstock typischer Werkstatt- und Alltagseinheiten ab.
       var conversionData = {
         length: {
           base: 'm',
           units: {
+            um: 0.000001,
             mm: 0.001,
             cm: 0.01,
             m: 1,
@@ -1196,12 +1234,14 @@
           units: {
             mm2: 0.000001,
             cm2: 0.0001,
+            dm2: 0.01,
             m2: 1
           }
         },
         volume: {
           base: 'liter',
           units: {
+            ml: 0.001,
             cm3: 0.001,
             liter: 1,
             m3: 1000
@@ -1210,8 +1250,12 @@
         mass: {
           base: 'kg',
           units: {
+            mg: 0.000001,
             g: 0.001,
-            kg: 1
+            kg: 1,
+            t: 1000,
+            oz: 0.028349523125,
+            lb: 0.45359237
           }
         }
       };
@@ -1374,6 +1418,14 @@
         if (toleranceError) toleranceError.textContent = '';
       }
 
+    function clearCategoryInputs(category) {
+      var group = document.querySelector('.unit-group[data-category="' + category + '"]');
+      if (!group) return;
+      group.querySelectorAll('input').forEach(function (input) {
+        input.value = '';
+      });
+    }
+
     function setActiveGroup(category) {
       var groups = document.querySelectorAll('.unit-group');
       groups.forEach(function (group) {
@@ -1381,9 +1433,7 @@
         group.classList.toggle('is-active', isActive);
         if (isActive) {
           // leeren, damit der Nutzer neu startet
-          group.querySelectorAll('input').forEach(function (input) {
-            input.value = '';
-          });
+          clearCategoryInputs(category);
         }
       });
     }
@@ -1435,6 +1485,13 @@
         var category = event.target.dataset.category;
         var unit = event.target.dataset.unit;
         convertUnits(category, unit, event.target.value);
+      });
+    });
+
+    document.querySelectorAll('.reset-btn').forEach(function (button) {
+      button.addEventListener('click', function (event) {
+        var category = event.target.dataset.category;
+        clearCategoryInputs(category);
       });
     });
 
