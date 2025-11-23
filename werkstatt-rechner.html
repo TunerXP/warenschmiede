@@ -71,6 +71,48 @@
       gap: 24px;
       align-items: start;
     }
+    .tool-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .tool-info-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border: 1px solid var(--control-border);
+      background: var(--surface-muted);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 120ms ease, border-color 120ms ease;
+    }
+    .tool-info-toggle:hover,
+    .tool-info-toggle:focus-visible {
+      background: var(--surface);
+      border-color: var(--focus);
+    }
+    .tool-info-toggle-icon {
+      display: inline-block;
+      transition: transform 120ms ease;
+    }
+    .tool-info-toggle[aria-expanded="true"] .tool-info-toggle-icon {
+      transform: rotate(90deg);
+    }
+    .tool-info-content {
+      margin-top: 0.5rem;
+      padding: 0.75rem;
+      border: 1px dashed var(--control-border);
+      border-radius: 12px;
+      background: var(--surface);
+    }
+    .tool-info-content.is-collapsed {
+      display: none;
+    }
     .tools-wrapper {
       max-width: 1120px;
       margin: 0 auto;
@@ -409,9 +451,17 @@
       <section class="section">
         <div class="container tool-grid">
         <div class="tool-card">
-          <h2>1. Einheiten-Rechner (Mechanik &amp; Alltag)</h2>
-          <p>Gib einen Wert ein, wähle die passende Größe und alle relevanten Einheiten rechnen sich live mit.</p>
-          <p class="helper-text"><strong>Wofür ist dieser Rechner?</strong><br>Hilft dir, typische Maße im Kopf nicht umrechnen zu müssen – z. B. Millimeter zu Zentimeter, Meter oder Zoll. Praktisch für Zeichnungen, SolidWorks-Skizzen, 3D-Druck und Werkstatt-Notizen.</p>
+          <div class="tool-header">
+            <h2>1. Einheiten-Rechner (Mechanik &amp; Alltag)</h2>
+            <button class="tool-info-toggle" type="button" aria-expanded="false" aria-controls="info-einheiten">
+              <span class="tool-info-toggle-label">Warum dieser Rechner?</span>
+              <span class="tool-info-toggle-icon" aria-hidden="true">▶</span>
+            </button>
+          </div>
+          <div id="info-einheiten" class="tool-info-content is-collapsed">
+            <p>Gib einen Wert ein, wähle die passende Größe und alle relevanten Einheiten rechnen sich live mit.</p>
+            <p class="helper-text">Hilft dir, typische Maße im Kopf nicht mehr umrechnen zu müssen – zum Beispiel Millimeter in Zentimeter, Meter oder Zoll. Praktisch für Zeichnungen, SolidWorks-Skizzen, 3D-Druck und Werkstatt-Notizen. Du gibst einen Wert ein, die anderen Einheiten rechnen sich automatisch mit.</p>
+          </div>
           <div class="example-note">
             <strong>Beispiel:</strong>
             <p class="helper-text">Du misst ein Teil mit 68 mm und willst wissen, wie viele Zoll das ungefähr sind. Gib 68 mm ein – die anderen Felder füllen sich automatisch mit cm, m und inch.</p>
@@ -514,10 +564,18 @@
         </div>
 
         <div class="tool-card">
-          <h2>2. Gewinde-Toleranzrechner (Light)</h2>
-          <p class="helper-text"><strong>Wofür ist dieser Rechner?</strong><br>Zeigt dir für ausgewählte metrische ISO-Gewinde einfache Grenzmaße (min/max) für Innen- und Außengewinde. Du wählst Gewindeserie, Gewindegröße (mit Steigung) und Toleranzfeld – die Grenzmaße passen sich automatisch an. Nur als Orientierung gedacht, immer mit Norm oder Zeichnung abgleichen.</p>
-          <p class="helper-text">Steigung und Größe wählst du direkt über die Gewindeliste (Regelgewinde und gängige Feingewinde).</p>
-          <p class="helper-text result-note">Die Werte sind stark vereinfacht aus typischen Praxis-Tabellen abgeleitet und ersetzen keine Norm. Für sicherheitsrelevante Teile sind immer Normen und Zeichnungen maßgeblich.</p>
+          <div class="tool-header">
+            <h2>2. Gewinde-Toleranzrechner (Light)</h2>
+            <button class="tool-info-toggle" type="button" aria-expanded="false" aria-controls="info-tolerance">
+              <span class="tool-info-toggle-label">Warum dieser Rechner?</span>
+              <span class="tool-info-toggle-icon" aria-hidden="true">▶</span>
+            </button>
+          </div>
+          <div id="info-tolerance" class="tool-info-content is-collapsed">
+            <p class="helper-text">Gibt dir einfache Grenzmaße (min/max) für ausgewählte ISO-Gewinde. Du wählst Gewindeserie, Gewindetyp, Größe und Toleranzfeld – der Rechner zeigt dir eine grobe Orientierung, ob ein Istmaß in den Bereich passt. Die Werte sind bewusst vereinfacht und ersetzen keine vollständige Normtabelle. Für Passungen und sicherheitskritische Teile immer die ISO-Norm bzw. Gewindetabellen verwenden.</p>
+            <p class="helper-text">Steigung und Größe wählst du direkt über die Gewindeliste (Regelgewinde und gängige Feingewinde).</p>
+            <p class="helper-text result-note">Die Werte sind stark vereinfacht aus typischen Praxis-Tabellen abgeleitet und ersetzen keine Norm. Für sicherheitsrelevante Teile sind immer Normen und Zeichnungen maßgeblich.</p>
+          </div>
 
           <div class="calculator-grid">
             <div class="tool-card">
@@ -582,9 +640,17 @@
       <section class="section">
         <div class="container">
         <div class="tool-card">
-          <h2>3. Schnittdaten-Rechner (Drehzahl &amp; Vorschub)</h2>
-          <p class="helper-text"><strong>Wofür ist dieser Rechner?</strong><br>Hilft dir, aus Schnittgeschwindigkeit und Werkzeugdurchmesser die Spindeldrehzahl zu berechnen und daraus mit Zahnvorschub und Schneidenzahl eine Vorschubgeschwindigkeit abzuleiten. Praktisch für Drehen, Fräsen und Bohren.</p>
-          <p class="helper-text result-note">Werte und Beispielrechnungen sind nur zur Orientierung gedacht. Konkrete Schnittwerte hängen von Maschine, Werkzeug, Material und Herstellerangaben ab – immer mit den Datenblättern abgleichen.</p>
+          <div class="tool-header">
+            <h2>3. Schnittdaten-Rechner (Drehzahl &amp; Vorschub)</h2>
+            <button class="tool-info-toggle" type="button" aria-expanded="false" aria-controls="info-cutting">
+              <span class="tool-info-toggle-label">Warum dieser Rechner?</span>
+              <span class="tool-info-toggle-icon" aria-hidden="true">▶</span>
+            </button>
+          </div>
+          <div id="info-cutting" class="tool-info-content is-collapsed">
+            <p class="helper-text">Hilft dir beim Drehen, Fräsen und Bohren: Aus der Schnittgeschwindigkeit und dem Werkzeugdurchmesser berechnest du die Spindeldrehzahl. Aus Drehzahl, Schneidenzahl und Zahnvorschub bekommst du die Vorschubgeschwindigkeit. Zusätzlich kannst du aus vorhandener Drehzahl und Werkzeug-Ø die aktuelle Schnittgeschwindigkeit v<sub>c</sub> ermitteln – ideal, wenn du nur n und d kennst und wissen willst, wie „schnell“ du gerade im Schnitt unterwegs bist.</p>
+            <p class="helper-text result-note">Werte und Beispielrechnungen sind nur zur Orientierung gedacht. Konkrete Schnittwerte hängen von Maschine, Werkzeug, Material und Herstellerangaben ab – immer mit den Datenblättern abgleichen.</p>
+          </div>
           <div class="calculator-grid">
             <div class="tool-card">
               <h3>Drehzahl berechnen</h3>
@@ -629,6 +695,26 @@
                 </div>
               </div>
             </div>
+
+            <div class="tool-card">
+              <h3>Schnittgeschwindigkeit berechnen</h3>
+              <p class="helper-text">Berechnet die Schnittgeschwindigkeit v<sub>c</sub> aus Drehzahl und Werkzeugdurchmesser. Praktisch, wenn nur n und d bekannt sind und du wissen möchtest, mit welcher Schnittgeschwindigkeit du gerade arbeitest.</p>
+              <div class="form-grid">
+                <div class="calc-field">
+                  <label for="cutting-n">Drehzahl n (1/min)</label>
+                  <input type="number" inputmode="decimal" id="cutting-n" placeholder="z. B. 3500">
+                </div>
+                <div class="calc-field">
+                  <label for="cutting-tool-diameter">Werkzeugdurchmesser d (mm)</label>
+                  <input type="number" inputmode="decimal" id="cutting-tool-diameter" placeholder="z. B. 10">
+                </div>
+                <button class="btn btn-primary btn-inline" type="button" id="cutting-speed-btn">Schnittgeschwindigkeit berechnen</button>
+                <div class="result-box" aria-live="polite">
+                  <p><strong>Schnittgeschwindigkeit v<sub>c</sub>:</strong> <span id="cutting-speed-result">–</span> m/min</p>
+                  <p class="helper-text" id="cutting-speed-error"></p>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="example-note">
             <strong>Beispiel:</strong>
@@ -641,8 +727,17 @@
       <section class="section">
         <div class="container">
           <div class="tool-card">
-            <h2>4. Allgemeintoleranzen (Richtwerte nach DIN ISO 2768-1 – stark vereinfacht)</h2>
-            <p class="helper-text">Diese Übersicht gibt dir ein Gefühl, welche Toleranzen bei fein (f), mittel (m), grob (c) und sehr grob (v) typisch sind. Die Werte sind stark vereinfachte Richtwerte nach DIN ISO 2768-1 und dienen nur als Orientierung. Für konkrete Zeichnungen gilt immer deine maßgebliche Norm bzw. die Original-DIN.</p>
+            <div class="tool-header">
+              <h2>4. Allgemeintoleranzen (Richtwerte nach DIN ISO 2768-1 – stark vereinfacht)</h2>
+              <button class="tool-info-toggle" type="button" aria-expanded="false" aria-controls="info-general-tolerance">
+                <span class="tool-info-toggle-label">Warum dieser Rechner?</span>
+                <span class="tool-info-toggle-icon" aria-hidden="true">▶</span>
+              </button>
+            </div>
+            <div id="info-general-tolerance" class="tool-info-content is-collapsed">
+              <p class="helper-text">Diese Übersicht soll dir ein Gefühl geben, wofür grobe, mittlere und feine Allgemeintoleranzen typischerweise verwendet werden. Die Beispiele orientieren sich an ISO 2768, enthalten aber keine vollständigen Normwerte. Exakte Grenzmaße bitte immer aus deiner gültigen Norm bzw. Zeichnung übernehmen.</p>
+              <p class="helper-text tolerance-note">Hinweis: Stark vereinfachter Auszug aus DIN ISO 2768-1. Exakte Grenzwerte und größere Nennmaßbereiche bitte der Original-Norm entnehmen.</p>
+            </div>
           <div class="tolerance-grid">
             <div class="tolerance-card">
               <h3>Fein (f)</h3>
@@ -868,6 +963,24 @@
       function formatDisplayValue(value) {
         if (!isFinite(value)) return '–';
         return Number.parseFloat(value.toString()).toString().replace('.', ',');
+      }
+
+      function initToolInfoToggles() {
+        var toggles = document.querySelectorAll('.tool-info-toggle');
+        toggles.forEach(function (toggle) {
+          var targetId = toggle.getAttribute('aria-controls');
+          var content = targetId ? document.getElementById(targetId) : null;
+
+          toggle.addEventListener('click', function () {
+            var isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+            var nextState = !isExpanded;
+            toggle.setAttribute('aria-expanded', String(nextState));
+            toggle.classList.toggle('is-open', nextState);
+            if (content) {
+              content.classList.toggle('is-collapsed', !nextState);
+            }
+          });
+        });
       }
 
       // Vereinfachte Praxiswerte für Gewinde-Toleranzen (ISO-Metrisch)
@@ -1223,6 +1336,8 @@
       });
     });
 
+    initToolInfoToggles();
+
       if (toleranceSeriesSelect && toleranceThreadSelect && toleranceFieldSelect && toleranceTypeSelect) {
         var initialSeries = toleranceSeriesSelect.value || Object.keys(threadData)[0];
         var initialTypeKey = mapTypeToKey(toleranceTypeSelect.value || 'Außengewinde');
@@ -1257,6 +1372,10 @@
     var feedFzInput = document.getElementById('feed-fz');
     var feedResult = document.getElementById('feed-result');
     var feedError = document.getElementById('feed-error');
+    var cuttingSpeedNInput = document.getElementById('cutting-n');
+    var cuttingSpeedDiameterInput = document.getElementById('cutting-tool-diameter');
+    var cuttingSpeedResult = document.getElementById('cutting-speed-result');
+    var cuttingSpeedError = document.getElementById('cutting-speed-error');
 
     function calculateSpindleSpeed() {
       if (!spindleVcInput || !spindleDiameterInput || !spindleResult || !spindleError) return;
@@ -1294,8 +1413,26 @@
       feedError.textContent = '';
     }
 
+    function calculateCuttingSpeed() {
+      if (!cuttingSpeedNInput || !cuttingSpeedDiameterInput || !cuttingSpeedResult || !cuttingSpeedError) return;
+      var n = parseFloat(cuttingSpeedNInput.value);
+      var diameter = parseFloat(cuttingSpeedDiameterInput.value);
+
+      if (!isFinite(n) || n <= 0 || !isFinite(diameter) || diameter <= 0) {
+        cuttingSpeedResult.textContent = '–';
+        cuttingSpeedError.textContent = 'Bitte gültige Werte für n und d eingeben.';
+        return;
+      }
+
+      var vc = (n * Math.PI * diameter) / 1000;
+      var roundedVc = Math.round(vc * 10) / 10;
+      cuttingSpeedResult.textContent = formatForInput(roundedVc);
+      cuttingSpeedError.textContent = '';
+    }
+
     var spindleButton = document.getElementById('spindle-btn');
     var feedButton = document.getElementById('feed-btn');
+    var cuttingSpeedButton = document.getElementById('cutting-speed-btn');
 
     if (spindleButton) {
       spindleButton.addEventListener('click', calculateSpindleSpeed);
@@ -1303,6 +1440,10 @@
 
     if (feedButton) {
       feedButton.addEventListener('click', calculateFeedRate);
+    }
+
+    if (cuttingSpeedButton) {
+      cuttingSpeedButton.addEventListener('click', calculateCuttingSpeed);
     }
 
   </script>
