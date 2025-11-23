@@ -1079,14 +1079,18 @@
       }
 
       // Vereinfachte Praxiswerte für Gewinde-Toleranzen (ISO-Metrisch)
+      // - Feingewinde ab M4 aufwärts (Light-Auswahl, keine Vollständigkeit)
+      // - Unterstützte Toleranzfelder: 6H / 7H (innen) sowie 6g / 6h / 8g (außen)
+      //   Zusätzliche Größen/Felder können bei Bedarf über toleranceConfig und threadSeriesDefinitions ergänzt werden.
       var toleranceConfig = {
         outer: {
           '6g': { majorBase: 0.02, majorPitchFactor: 0.04, majorRange: 0.14, rangePitchFactor: 0.05, coreLift: 0.05, coreRange: 0.12, corePitchFactor: 0.04 },
-          '6e': { majorBase: 0.015, majorPitchFactor: 0.035, majorRange: 0.12, rangePitchFactor: 0.045, coreLift: 0.04, coreRange: 0.1, corePitchFactor: 0.035 },
-          'g': { majorBase: 0.02, majorPitchFactor: 0.04, majorRange: 0.14, rangePitchFactor: 0.05, coreLift: 0.05, coreRange: 0.12, corePitchFactor: 0.04 }
+          '6h': { majorBase: 0.015, majorPitchFactor: 0.035, majorRange: 0.12, rangePitchFactor: 0.045, coreLift: 0.045, coreRange: 0.1, corePitchFactor: 0.035 },
+          '8g': { majorBase: 0.025, majorPitchFactor: 0.045, majorRange: 0.16, rangePitchFactor: 0.055, coreLift: 0.055, coreRange: 0.13, corePitchFactor: 0.045 }
         },
         inner: {
-          '6H': { coreLift: 0.1, coreRange: 0.12, corePitchFactor: 0.05 }
+          '6H': { coreLift: 0.1, coreRange: 0.12, corePitchFactor: 0.05 },
+          '7H': { coreLift: 0.12, coreRange: 0.16, corePitchFactor: 0.06 }
         }
       };
 
@@ -1104,10 +1108,10 @@
           { d: 56, pitch: 5.5 }, { d: 60, pitch: 5.5 }, { d: 64, pitch: 6 }
         ],
         'ISO-Metrisch (Feingewinde)': [
-          { d: 6, pitch: 0.75 }, { d: 8, pitch: 1 }, { d: 10, pitch: 1.25 }, { d: 12, pitch: 1.5 },
-          { d: 14, pitch: 1.5 }, { d: 16, pitch: 1.5 }, { d: 18, pitch: 1.5 }, { d: 20, pitch: 1.5 },
-          { d: 22, pitch: 1.5 }, { d: 24, pitch: 2 }, { d: 27, pitch: 2 }, { d: 30, pitch: 2 },
-          { d: 33, pitch: 2 }, { d: 36, pitch: 3 }
+          { d: 4, pitch: 0.5 }, { d: 5, pitch: 0.5 }, { d: 6, pitch: 0.75 }, { d: 8, pitch: 1 },
+          { d: 10, pitch: 1.25 }, { d: 12, pitch: 1.5 }, { d: 14, pitch: 1.5 }, { d: 16, pitch: 1.5 },
+          { d: 18, pitch: 1.5 }, { d: 20, pitch: 1.5 }, { d: 22, pitch: 1.5 }, { d: 24, pitch: 2 },
+          { d: 27, pitch: 2 }, { d: 30, pitch: 2 }, { d: 33, pitch: 2 }, { d: 36, pitch: 3 }
         ]
       };
 
@@ -1346,7 +1350,7 @@
           toleranceCoreMin.textContent = '–';
           toleranceInnerCoreMax.textContent = '–';
           toleranceInnerCoreMin.textContent = '–';
-          if (toleranceError) toleranceError.textContent = 'Für diese Kombination sind aktuell keine Werte hinterlegt.';
+          if (toleranceError) toleranceError.textContent = 'Für diese Kombination liegen im Rechner keine Richtwerte vor – bitte Tabellenbuch/Norm verwenden.';
           return;
         }
 
