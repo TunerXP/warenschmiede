@@ -67,9 +67,20 @@
     }
     .tool-grid {
       display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
+      grid-template-columns: 1fr;
       gap: 24px;
       align-items: start;
+    }
+    .tools-wrapper {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding-inline: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+    .tools-wrapper .tool-card {
+      width: 100%;
     }
     .tool-card {
       background: var(--surface);
@@ -170,6 +181,11 @@
     @media (max-width: 960px) {
       .tool-grid {
         grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 640px) {
+      .tools-wrapper {
+        padding-inline: var(--space-4);
       }
     }
   </style>
@@ -389,8 +405,9 @@
       </div>
     </section>
 
-    <section class="section">
-      <div class="container tool-grid">
+    <div class="tools-wrapper">
+      <section class="section">
+        <div class="container tool-grid">
         <div class="tool-card">
           <h2>1. Einheiten-Rechner (Mechanik &amp; Alltag)</h2>
           <p>Gib einen Wert ein, wähle die passende Größe und alle relevanten Einheiten rechnen sich live mit.</p>
@@ -559,11 +576,11 @@
             <p class="helper-text">Du möchtest ein M12-Außengewinde mit Toleranz 6g fertigen. Wähle „Außengewinde“, M12 und 6g – der Rechner zeigt dir das einfache min./max.-Grenzmaß für den Außendurchmesser. So kannst du schneller prüfen, ob dein Istmaß im zulässigen Bereich liegt.</p>
           </div>
         </div>
-      </div>
-    </section>
+        </div>
+      </section>
 
-    <section class="section">
-      <div class="container">
+      <section class="section">
+        <div class="container">
         <div class="tool-card">
           <h2>3. Schnittdaten-Rechner (Drehzahl &amp; Vorschub)</h2>
           <p class="helper-text"><strong>Wofür ist dieser Rechner?</strong><br>Hilft dir, aus Schnittgeschwindigkeit und Werkzeugdurchmesser die Spindeldrehzahl zu berechnen und daraus mit Zahnvorschub und Schneidenzahl eine Vorschubgeschwindigkeit abzuleiten. Praktisch für Drehen, Fräsen und Bohren.</p>
@@ -618,14 +635,14 @@
             <p class="helper-text">Du möchtest mit einer VHM-Fräser Ø10 mm und einer Schnittgeschwindigkeit von 150 m/min arbeiten. Gib v<sub>c</sub> = 150 m/min und d = 10 mm ein – der Rechner liefert die Drehzahl n. Wenn dein Fräser 4 Schneiden hat und du mit f<sub>z</sub> = 0,05 mm/Zahn fahren möchtest, trägst du n, z = 4 und f<sub>z</sub> = 0,05 mm/Zahn ein – der Rechner zeigt dir v<sub>f</sub> in mm/min.</p>
           </div>
         </div>
-      </div>
-    </section>
+        </div>
+      </section>
 
-    <section class="section">
-      <div class="container">
-        <div class="tool-card">
-          <h2>4. Allgemeintoleranzen (Richtwerte nach DIN ISO 2768-1 – stark vereinfacht)</h2>
-          <p class="helper-text">Diese Übersicht gibt dir ein Gefühl, welche Toleranzen bei fein (f), mittel (m), grob (c) und sehr grob (v) typisch sind. Die Werte sind stark vereinfachte Richtwerte nach DIN ISO 2768-1 und dienen nur als Orientierung. Für konkrete Zeichnungen gilt immer deine maßgebliche Norm bzw. die Original-DIN.</p>
+      <section class="section">
+        <div class="container">
+          <div class="tool-card">
+            <h2>4. Allgemeintoleranzen (Richtwerte nach DIN ISO 2768-1 – stark vereinfacht)</h2>
+            <p class="helper-text">Diese Übersicht gibt dir ein Gefühl, welche Toleranzen bei fein (f), mittel (m), grob (c) und sehr grob (v) typisch sind. Die Werte sind stark vereinfachte Richtwerte nach DIN ISO 2768-1 und dienen nur als Orientierung. Für konkrete Zeichnungen gilt immer deine maßgebliche Norm bzw. die Original-DIN.</p>
           <div class="tolerance-grid">
             <div class="tolerance-card">
               <h3>Fein (f)</h3>
@@ -821,6 +838,7 @@
         </div>
       </div>
     </section>
+    </div>
   </main>
 
   <footer class="footer">
