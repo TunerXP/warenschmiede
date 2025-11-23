@@ -21,12 +21,18 @@ Um ein Icon auszutauschen, die gewünschte Datei dort ersetzen und den Dateiname
 
 ## SEO-Monitoring & Sitemap
 
-Für einen schnellen lokalen Check steht das Skript `seo_monitor.py` im Projektroot bereit. Es sammelt alle HTML-Dateien, erzeugt daraus automatisch eine aktuelle `sitemap.xml` und schreibt die Ergebnisse der Title/Description-Prüfung sowie optionaler Link-Checks in `seo-report.txt`.
+Das Skript `seo_monitor.py` prüft alle HTML-Seiten auf fehlende oder zu lange Titles/Descriptions, erkennt doppelte Inhalte, kontrolliert interne Links und schreibt die Ergebnisse in `seo-report.txt` (mit Zeitstempel). Interne Tool-Seiten bleiben dabei zwar analysiert, aber absichtlich aus der Sitemap herausgehalten, damit sie nicht öffentlich indexiert werden.
 
-**Ausführen:**
+**Nur Analyse ausführen (sitemap.xml bleibt unverändert):**
 
 ```bash
 python seo_monitor.py
 ```
 
-Die Ausgabe bestätigt die Anzahl der gefundenen Seiten. Die erzeugte `sitemap.xml` kann anschließend wie gewohnt in der Google Search Console eingereicht werden.
+**Analyse + Sitemap aktualisieren:**
+
+```bash
+python seo_monitor.py --write-sitemap
+```
+
+Im ersten Fall wird ausschließlich `seo-report.txt` ergänzt und eine kurze Zusammenfassung in der Konsole ausgegeben. Im zweiten Fall wird zusätzlich eine neue `sitemap.xml` im Projektroot erzeugt, die alle öffentlichen Seiten inkl. `lastmod`- und `priority`-Angaben enthält.
