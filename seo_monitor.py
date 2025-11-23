@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import datetime as _dt
 import os
 from html.parser import HTMLParser
@@ -12,6 +13,13 @@ from urllib.parse import urlparse
 
 BASE_URL = "https://www.warenschmiede.com"
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
+EXCLUDED_SITEMAP_PATHS = {
+    "druck/angebot.html",
+    "druck/ergebnis.html",
+    "druck/rechnung.html",
+    "druck/selftest.html",
+    "tools/buero/doku-light.html",
+}
 
 
 class SeoParser(HTMLParser):
@@ -25,6 +33,7 @@ class SeoParser(HTMLParser):
         self.links: List[str] = []
         self.canonical: str | None = None
         self.is_redirect = False
+        self.robots_directives: set[str] = set()
 
     def handle_starttag(self, tag: str, attrs: List[Tuple[str, str | None]]) -> None:
         if tag.lower() == "title":
@@ -36,6 +45,12 @@ class SeoParser(HTMLParser):
             name = attributes.get("name", "").lower()
             if name == "description" and "content" in attributes:
                 self.meta_description = attributes["content"].strip()
+            if name == "robots" and "content" in attributes:
+                content = attributes["content"].lower()
+                for directive in content.replace(";", ",").split(","):
+                    cleaned = directive.strip()
+                    if cleaned:
+                        self.robots_directives.add(cleaned)
             http_equiv = attributes.get("http-equiv", "").lower()
             if http_equiv == "refresh":
                 self.is_redirect = True
@@ -91,6 +106,30 @@ def html_path_to_url(path: str) -> str:
     return f"{BASE_URL}/{path}"
 
 
+def get_lastmod(path: str) -> str:
+    full_path = os.path.join(REPO_ROOT, path)
+    timestamp = os.path.getmtime(full_path)
+    return _dt.datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d")
+
+
+def get_priority(path: str) -> float:
+    basename = os.path.basename(path)
+    if path == "index.html":
+        return 1.0
+    if basename in {
+        "about.html",
+        "leistungen.html",
+        "material.html",
+        "3ddruck.html",
+        "werkstatt-rechner.html",
+        "bild-konverter.html",
+    }:
+        return 0.8
+    if path.startswith("ki/"):
+        return 0.7
+    return 0.5
+
+
 def generate_sitemap(html_files: Iterable[str]) -> None:
     lines = [
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
@@ -99,8 +138,12 @@ def generate_sitemap(html_files: Iterable[str]) -> None:
 
     for path in html_files:
         url = html_path_to_url(path)
+        lastmod = get_lastmod(path)
+        priority = get_priority(path)
         lines.append("  <url>")
         lines.append(f"    <loc>{url}</loc>")
+        lines.append(f"    <lastmod>{lastmod}</lastmod>")
+        lines.append(f"    <priority>{priority:.1f}</priority>")
         lines.append("  </url>")
 
     lines.append("</urlset>")
@@ -108,6 +151,27 @@ def generate_sitemap(html_files: Iterable[str]) -> None:
     sitemap_path = os.path.join(REPO_ROOT, "sitemap.xml")
     with open(sitemap_path, "w", encoding="utf-8") as sitemap_file:
         sitemap_file.write("\n".join(lines) + "\n")
+
+
+def should_exclude_from_sitemap(path: str, robots_directives: set[str]) -> bool:
+    if path in EXCLUDED_SITEMAP_PATHS:
+        return True
+    normalized_directives = {directive.lower() for directive in robots_directives}
+    if "noindex" in normalized_directives:
+        return True
+    return False
+
+
+def collect_sitemap_candidates(
+    html_files: Iterable[str], robots_index_map: Dict[str, set[str]]
+) -> List[str]:
+    sitemap_candidates: List[str] = []
+    for path in html_files:
+        robots_directives = robots_index_map.get(path, set())
+        if should_exclude_from_sitemap(path, robots_directives):
+            continue
+        sitemap_candidates.append(path)
+    return sitemap_candidates
 
 
 def normalize_href(href: str) -> str | None:
@@ -144,7 +208,9 @@ def resolve_local_path(source: str, target: str) -> str | None:
     return candidate
 
 
-def analyse_file(path: str) -> Tuple[str, str | None, List[str], str | None, bool]:
+def analyse_file(
+    path: str,
+) -> Tuple[str, str | None, List[str], str | None, bool, set[str]]:
     full_path = os.path.join(REPO_ROOT, path)
     with open(full_path, "r", encoding="utf-8") as handle:
         content = handle.read()
@@ -153,7 +219,14 @@ def analyse_file(path: str) -> Tuple[str, str | None, List[str], str | None, boo
     parser.feed(content)
     parser.close()
 
-    return parser.title, parser.meta_description, parser.links, parser.canonical, parser.is_redirect
+    return (
+        parser.title,
+        parser.meta_description,
+        parser.links,
+        parser.canonical,
+        parser.is_redirect,
+        parser.robots_directives,
+    )
 
 
 def analyse_html_files(html_files: Iterable[str]):
@@ -163,9 +236,11 @@ def analyse_html_files(html_files: Iterable[str]):
     canonical_issues: List[str] = []
     title_map: Dict[str, List[str]] = defaultdict(list)
     description_map: Dict[str, List[str]] = defaultdict(list)
+    robots_index_map: Dict[str, set[str]] = {}
 
     for path in html_files:
-        title, description, links, canonical, is_redirect = analyse_file(path)
+        title, description, links, canonical, is_redirect, robots_directives = analyse_file(path)
+        robots_index_map[path] = robots_directives
 
         if not title:
             title_issues.append(f"{path}: fehlender <title>")
@@ -218,6 +293,7 @@ def analyse_html_files(html_files: Iterable[str]):
         canonical_issues,
         duplicate_title_issues,
         duplicate_description_issues,
+        robots_index_map,
     )
 
 
@@ -287,8 +363,15 @@ def write_report(
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Lokales SEO-Monitoring")
+    parser.add_argument(
+        "--write-sitemap",
+        action="store_true",
+        help="aktualisiert sitemap.xml zusätzlich zur Analyse",
+    )
+    args = parser.parse_args()
+
     html_files = collect_html_files()
-    generate_sitemap(html_files)
     timestamp = _dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     (
         title_issues,
@@ -297,6 +380,7 @@ def main() -> None:
         canonical_issues,
         duplicate_title_issues,
         duplicate_description_issues,
+        robots_index_map,
     ) = analyse_html_files(html_files)
     write_report(
         timestamp,
@@ -307,7 +391,24 @@ def main() -> None:
         duplicate_title_issues,
         duplicate_description_issues,
     )
-    print(f"Sitemap.xml neu erstellt ({len(html_files)} Seiten) – {timestamp}")
+    sitemap_entries: List[str] = []
+    if args.write_sitemap:
+        sitemap_entries = collect_sitemap_candidates(html_files, robots_index_map)
+        generate_sitemap(sitemap_entries)
+
+    seo_issue_count = (
+        len(title_issues)
+        + len(description_issues)
+        + len(duplicate_title_issues)
+        + len(duplicate_description_issues)
+    )
+    print(
+        f"Zusammenfassung: {len(html_files)} Seiten geprüft, {seo_issue_count} Title/Description-Probleme, {len(broken_links)} defekte interne Links."
+    )
+    if args.write_sitemap:
+        print(f"Sitemap.xml neu erstellt ({len(sitemap_entries)} Seiten) – {timestamp}")
+    else:
+        print("Sitemap.xml unverändert (Analyse-Modus).")
 
 
 if __name__ == "__main__":
