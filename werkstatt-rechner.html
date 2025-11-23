@@ -220,6 +220,31 @@
         grid-template-columns: repeat(3, minmax(320px, 1fr));
       }
     }
+
+    .cutting-calculator-grid {
+      align-items: stretch;
+    }
+
+    .cutting-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .cutting-form-grid {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .cutting-card .result-box {
+      margin-top: auto;
+    }
+
+    .cutting-reset-wrapper {
+      margin-top: 0.5rem;
+    }
     .tolerance-grid {
       display: grid;
       gap: 16px;
@@ -743,11 +768,11 @@
             <p class="helper-text">Berechnet Drehzahl, Vorschub und Schnittgeschwindigkeit. Richtwerte – bitte Material- und Werkzeugdatenblatt dazu beachten.</p>
             <p class="helper-text result-note">Nutze die Formeln für Drehen, Fräsen und Bohren. Ergebnisse dienen der Orientierung und müssen mit den Herstellerempfehlungen abgeglichen werden.</p>
           </div>
-          <div class="calculator-grid">
-            <div class="tool-card">
+          <div class="calculator-grid cutting-calculator-grid">
+            <div class="tool-card cutting-card">
               <h3>Drehzahl berechnen</h3>
               <p class="helper-text">Formel: <strong>n = (1000 · v<sub>c</sub>) / (π · d)</strong></p>
-              <div class="form-grid">
+              <div class="form-grid cutting-form-grid">
                 <div class="calc-field">
                   <label for="cutting-vc">Schnittgeschwindigkeit v<sub>c</sub> (m/min)</label>
                   <input type="number" inputmode="decimal" id="cutting-vc" placeholder="z. B. 150">
@@ -764,10 +789,10 @@
               </div>
             </div>
 
-            <div class="tool-card">
+            <div class="tool-card cutting-card">
               <h3>Vorschubgeschwindigkeit berechnen</h3>
               <p class="helper-text">Formel: <strong>v<sub>f</sub> = n · z · f<sub>z</sub></strong></p>
-              <div class="form-grid">
+              <div class="form-grid cutting-form-grid">
                 <div class="calc-field">
                   <label for="feed-n">Drehzahl n (1/min)</label>
                   <input type="number" inputmode="decimal" id="feed-n" placeholder="z. B. 4775">
@@ -788,10 +813,10 @@
               </div>
             </div>
 
-            <div class="tool-card">
+            <div class="tool-card cutting-card">
               <h3>Schnittgeschwindigkeit berechnen</h3>
               <p class="helper-text">Berechnet die Schnittgeschwindigkeit v<sub>c</sub> aus Drehzahl und Werkzeugdurchmesser. Praktisch, wenn nur n und d bekannt sind und du wissen möchtest, mit welcher Schnittgeschwindigkeit du gerade arbeitest.</p>
-              <div class="form-grid">
+              <div class="form-grid cutting-form-grid">
                 <div class="calc-field">
                   <label for="cutting-n">Drehzahl n (1/min)</label>
                   <input type="number" inputmode="decimal" id="cutting-n" placeholder="z. B. 3500">
@@ -807,6 +832,9 @@
                 </div>
               </div>
             </div>
+          </div>
+          <div class="cutting-reset-wrapper">
+            <button class="btn btn-utility" type="button" id="cutting-reset-btn">Felder zurücksetzen</button>
           </div>
           <div class="example-note">
             <strong>Beispiel:</strong>
@@ -1522,6 +1550,8 @@
         toleranceFieldSelect.addEventListener('change', updateToleranceResult);
       }
 
+    var cuttingState = { vc: null, n: null, d: null, z: null, fz: null, vf: null };
+
     var spindleVcInput = document.getElementById('cutting-vc');
     var spindleDiameterInput = document.getElementById('cutting-diameter');
     var spindleResult = document.getElementById('spindle-speed-result');
@@ -1535,6 +1565,47 @@
     var cuttingSpeedDiameterInput = document.getElementById('cutting-tool-diameter');
     var cuttingSpeedResult = document.getElementById('cutting-speed-result');
     var cuttingSpeedError = document.getElementById('cutting-speed-error');
+    var cuttingResetButton = document.getElementById('cutting-reset-btn');
+
+    function isFiniteNumber(value) {
+      return isFinite(value) && value !== null;
+    }
+
+    function setInputValue(input, value) {
+      if (!input) return;
+      if (isFiniteNumber(value)) {
+        input.value = formatForInput(value);
+      } else {
+        input.value = '';
+      }
+    }
+
+    function setResultText(target, value) {
+      if (!target) return;
+      target.textContent = isFiniteNumber(value) ? formatForInput(value) : '–';
+    }
+
+    function clearCuttingErrors() {
+      if (spindleError) spindleError.textContent = '';
+      if (feedError) feedError.textContent = '';
+      if (cuttingSpeedError) cuttingSpeedError.textContent = '';
+    }
+
+    function updateCuttingUIFromState() {
+      setInputValue(spindleVcInput, cuttingState.vc);
+      setInputValue(spindleDiameterInput, cuttingState.d);
+      setInputValue(feedNInput, cuttingState.n);
+      setInputValue(feedZInput, cuttingState.z);
+      setInputValue(feedFzInput, cuttingState.fz);
+      setInputValue(cuttingSpeedNInput, cuttingState.n);
+      setInputValue(cuttingSpeedDiameterInput, cuttingState.d);
+
+      setResultText(spindleResult, cuttingState.n);
+      setResultText(feedResult, cuttingState.vf);
+      setResultText(cuttingSpeedResult, cuttingState.vc);
+
+      clearCuttingErrors();
+    }
 
     function calculateSpindleSpeed() {
       if (!spindleVcInput || !spindleDiameterInput || !spindleResult || !spindleError) return;
@@ -1548,11 +1619,11 @@
       }
 
       var speed = Math.round((1000 * vc) / (Math.PI * diameter));
-      spindleResult.textContent = formatForInput(speed);
+      cuttingState.vc = vc;
+      cuttingState.d = diameter;
+      cuttingState.n = speed;
       spindleError.textContent = '';
-      if (feedNInput) {
-        feedNInput.value = formatForInput(speed);
-      }
+      updateCuttingUIFromState();
     }
 
     function calculateFeedRate() {
@@ -1568,8 +1639,12 @@
       }
 
       var vf = n * z * fz;
-      feedResult.textContent = formatForInput(vf);
+      cuttingState.n = n;
+      cuttingState.z = z;
+      cuttingState.fz = fz;
+      cuttingState.vf = vf;
       feedError.textContent = '';
+      updateCuttingUIFromState();
     }
 
     function calculateCuttingSpeed() {
@@ -1585,8 +1660,21 @@
 
       var vc = (n * Math.PI * diameter) / 1000;
       var roundedVc = Math.round(vc * 10) / 10;
-      cuttingSpeedResult.textContent = formatForInput(roundedVc);
+      cuttingState.vc = roundedVc;
+      cuttingState.n = n;
+      cuttingState.d = diameter;
       cuttingSpeedError.textContent = '';
+      updateCuttingUIFromState();
+    }
+
+    function resetCuttingCalculator() {
+      cuttingState.vc = null;
+      cuttingState.n = null;
+      cuttingState.d = null;
+      cuttingState.z = null;
+      cuttingState.fz = null;
+      cuttingState.vf = null;
+      updateCuttingUIFromState();
     }
 
     var spindleButton = document.getElementById('spindle-btn');
@@ -1603,6 +1691,10 @@
 
     if (cuttingSpeedButton) {
       cuttingSpeedButton.addEventListener('click', calculateCuttingSpeed);
+    }
+
+    if (cuttingResetButton) {
+      cuttingResetButton.addEventListener('click', resetCuttingCalculator);
     }
 
   </script>
