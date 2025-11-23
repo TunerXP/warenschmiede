@@ -242,6 +242,60 @@
       margin-top: auto;
     }
 
+    .thread-helper-card {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .thread-helper-diagram {
+      background: var(--surface-muted);
+      border: 1px solid var(--control-border);
+      border-radius: 12px;
+      padding: 0.75rem;
+    }
+
+    .thread-helper-diagram svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .thread-helper-values {
+      display: grid;
+      gap: 0.5rem;
+      margin: 0;
+    }
+
+    .thread-helper-values div {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .thread-helper-values dt {
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .thread-helper-values dd {
+      margin: 0;
+      color: var(--text);
+    }
+
+    .thread-helper-note {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .thread-helper-hint {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
     .cutting-reset-wrapper {
       margin-top: 0.5rem;
     }
@@ -735,6 +789,56 @@
               </div>
               <p class="helper-text result-note">Vereinfachte Richtwerte, keine vollständige Normübernahme. Für exakte Konstruktionen bitte ISO-Norm bzw. Gewindetabellen verwenden.</p>
             </div>
+
+            <div class="tool-card thread-helper-card" aria-label="Bohrer- und Senkungsrichtwerte">
+              <h3 class="tool-card-title">Bohrer &amp; Senkung (DIN 912, Richtwerte)</h3>
+              <div class="thread-helper-diagram">
+                <svg viewBox="0 0 520 220" role="img" aria-labelledby="thread-helper-title">
+                  <title id="thread-helper-title">Schematische Darstellung einer Zylinderschraube mit Durchgangsloch und Senkung</title>
+                  <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"></path>
+                    </marker>
+                  </defs>
+                  <rect x="40" y="110" width="440" height="36" rx="6" fill="var(--surface)" stroke="var(--control-border)" stroke-width="2"></rect>
+                  <rect x="140" y="92" width="70" height="72" fill="var(--surface-muted)" stroke="var(--control-border)" stroke-width="2"></rect>
+                  <rect x="160" y="64" width="30" height="36" rx="8" fill="var(--surface)" stroke="var(--control-border)" stroke-width="2"></rect>
+                  <rect x="210" y="118" width="250" height="20" fill="var(--surface-muted)" stroke="var(--control-border)" stroke-width="2"></rect>
+                  <rect x="94" y="126" width="46" height="12" fill="var(--surface)" stroke="var(--control-border)" stroke-width="2"></rect>
+                  <line x1="240" y1="60" x2="240" y2="34" stroke="currentColor" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"></line>
+                  <text x="246" y="30" font-size="14" fill="currentColor">d_k</text>
+                  <line x1="285" y1="160" x2="285" y2="188" stroke="currentColor" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"></line>
+                  <text x="292" y="196" font-size="14" fill="currentColor">k</text>
+                  <line x1="115" y1="170" x2="115" y2="194" stroke="currentColor" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"></line>
+                  <text x="122" y="202" font-size="14" fill="currentColor">d_s</text>
+                  <line x1="94" y1="182" x2="46" y2="182" stroke="currentColor" stroke-width="2"></line>
+                  <line x1="140" y1="182" x2="190" y2="182" stroke="currentColor" stroke-width="2"></line>
+                  <line x1="210" y1="182" x2="460" y2="182" stroke="currentColor" stroke-width="2"></line>
+                  <line x1="160" y1="34" x2="320" y2="34" stroke="currentColor" stroke-width="2"></line>
+                  <line x1="160" y1="60" x2="320" y2="60" stroke="currentColor" stroke-width="2"></line>
+                </svg>
+              </div>
+              <dl class="thread-helper-values">
+                <div>
+                  <dt>Kernloch-Bohrer</dt>
+                  <dd><span data-thread-core-drill>–</span> mm</dd>
+                </div>
+                <div>
+                  <dt>Durchgangsloch-Bohrer</dt>
+                  <dd><span data-thread-clearance-drill>–</span> mm</dd>
+                </div>
+                <div>
+                  <dt>Kopf-Ø dk (DIN 912)</dt>
+                  <dd><span data-thread-head-diameter>–</span> mm</dd>
+                </div>
+                <div>
+                  <dt>empf. Senkungstiefe k</dt>
+                  <dd><span data-thread-countersink-depth>–</span> mm</dd>
+                </div>
+              </dl>
+              <p class="thread-helper-hint" id="thread-helper-hint" aria-live="polite"></p>
+              <p class="tool-note thread-helper-note">Richtwerte für Standard-Zylinderschrauben DIN 912 (Durchgangsloch). Für sicherheitskritische Anwendungen bitte Tabellenbuch oder Herstellerdaten verwenden.</p>
+            </div>
           </div>
 
           <div class="example-note">
@@ -1149,6 +1253,26 @@
         }
       };
 
+      var THREAD_HOLE_DATA = {
+        "M3": { coreDrill: 2.5, clearanceDrill: 3.4, headDiameter: 5.5, countersinkDepth: 3 },
+        "M4": { coreDrill: 3.3, clearanceDrill: 4.5, headDiameter: 7, countersinkDepth: 4 },
+        "M5": { coreDrill: 4.2, clearanceDrill: 5.5, headDiameter: 8.5, countersinkDepth: 5 },
+        "M6": { coreDrill: 5, clearanceDrill: 6.6, headDiameter: 10, countersinkDepth: 6 },
+        "M8": { coreDrill: 6.8, clearanceDrill: 9, headDiameter: 13, countersinkDepth: 8 },
+        "M10": { coreDrill: 8.5, clearanceDrill: 11, headDiameter: 16, countersinkDepth: 10 },
+        "M12": { coreDrill: 10.2, clearanceDrill: 13.5, headDiameter: 18, countersinkDepth: 12 },
+        "M14": { coreDrill: 12, clearanceDrill: 15.5, headDiameter: 21, countersinkDepth: 14 },
+        "M16": { coreDrill: 14, clearanceDrill: 17.5, headDiameter: 24, countersinkDepth: 16 },
+        "M18": { coreDrill: 15.5, clearanceDrill: 20, headDiameter: 27, countersinkDepth: 18 },
+        "M20": { coreDrill: 17.5, clearanceDrill: 22, headDiameter: 30, countersinkDepth: 20 },
+        "M22": { coreDrill: 19.5, clearanceDrill: 24, headDiameter: 33, countersinkDepth: 22 },
+        "M24": { coreDrill: 21, clearanceDrill: 26, headDiameter: 36, countersinkDepth: 24 },
+        "M27": { coreDrill: 24, clearanceDrill: 30, headDiameter: 40, countersinkDepth: 27 },
+        "M30": { coreDrill: 26.5, clearanceDrill: 33, headDiameter: 45, countersinkDepth: 30 },
+        "M33": { coreDrill: 29.5, clearanceDrill: 36, headDiameter: 50, countersinkDepth: 33 },
+        "M36": { coreDrill: 32, clearanceDrill: 39, headDiameter: 54, countersinkDepth: 36 }
+      };
+
       var threadSeriesDefinitions = {
         'ISO-Metrisch (Regelgewinde)': [
           { d: 1, pitch: 0.25 }, { d: 1.2, pitch: 0.25 }, { d: 1.4, pitch: 0.3 }, { d: 1.6, pitch: 0.35 },
@@ -1300,6 +1424,11 @@
       var toleranceInnerCoreMax = document.getElementById('tolerance-inner-core-max');
       var toleranceInnerCoreMin = document.getElementById('tolerance-inner-core-min');
       var toleranceError = document.getElementById('tolerance-error');
+      var threadHelperCore = document.querySelector('[data-thread-core-drill]');
+      var threadHelperClearance = document.querySelector('[data-thread-clearance-drill]');
+      var threadHelperHead = document.querySelector('[data-thread-head-diameter]');
+      var threadHelperCountersink = document.querySelector('[data-thread-countersink-depth]');
+      var threadHelperHint = document.getElementById('thread-helper-hint');
 
       function mapTypeToKey(typeLabel) {
         return typeLabel === 'Innengewinde' ? 'inner' : 'outer';
@@ -1379,8 +1508,26 @@
         toleranceCoreMin.textContent = '–';
         toleranceInnerCoreMax.textContent = '–';
         toleranceInnerCoreMin.textContent = '–';
+        updateThreadHelper(null);
         if (toleranceError) {
           toleranceError.textContent = message || '';
+        }
+      }
+
+      function updateThreadHelper(threadInfo) {
+        if (!threadHelperCore || !threadHelperClearance || !threadHelperHead || !threadHelperCountersink) return;
+        var baseId = threadInfo ? ('M' + formatIdNumber(threadInfo.d_nominal)) : '';
+        var holeData = baseId ? THREAD_HOLE_DATA[baseId] : null;
+        var computedCore = threadInfo ? threadInfo.d_nominal - threadInfo.pitch : NaN;
+        var coreValue = isFinite(computedCore) ? computedCore : (holeData ? holeData.coreDrill : NaN);
+
+        threadHelperCore.textContent = formatDisplayValue(coreValue);
+        threadHelperClearance.textContent = formatDisplayValue(holeData && holeData.clearanceDrill);
+        threadHelperHead.textContent = formatDisplayValue(holeData && holeData.headDiameter);
+        threadHelperCountersink.textContent = formatDisplayValue(holeData && holeData.countersinkDepth);
+
+        if (threadHelperHint) {
+          threadHelperHint.textContent = holeData ? '' : 'Für dieses Gewinde sind keine Bohrer-Richtwerte im Rechner hinterlegt.';
         }
       }
 
@@ -1408,6 +1555,7 @@
         toleranceFieldLabel.textContent = fieldKey || '–';
         toleranceNominal.textContent = formatDisplayValue(threadInfo.d_nominal);
         toleranceCoreHole.textContent = formatDisplayValue(threadInfo.d_nominal - threadInfo.pitch);
+        updateThreadHelper(threadInfo);
 
         if (!toleranceEntry) {
           toleranceOuterMax.textContent = '–';
