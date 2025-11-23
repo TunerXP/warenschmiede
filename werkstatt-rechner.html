@@ -110,16 +110,12 @@
       border: 1px dashed var(--control-border);
       border-radius: 12px;
       background: var(--surface);
-      transition: max-height 180ms ease, opacity 180ms ease, padding 180ms ease;
+      transition: opacity 180ms ease;
     }
+    /* Fix: Werkstatt-Rechner – Warum-dieser-Rechner-Box komplett sichtbar */
     .tool-info-content.is-collapsed {
-      display: block;
-      max-height: 0;
-      overflow: hidden;
+      display: none;
       opacity: 0;
-      padding-top: 0;
-      padding-bottom: 0;
-      border-color: transparent;
     }
     .tools-wrapper {
       max-width: min(1400px, 100%);
@@ -1013,9 +1009,7 @@
           <div class="helper-text tolerance-note">
             <p><strong>Normquellen &amp; Tabellen:</strong></p>
             <ul>
-              <li><a href="https://www.epe.ed.tum.de/fileadmin/w00bzo/ewt/Werkstatt/Allgemeintoleranzen_nach_DIN_ISO_2768.pdf" rel="noopener" target="_blank">DIN ISO 2768-1 (PDF-Auszug, TUM)</a></li>
-              <li><a href="https://www.alle-meine-vorlagen.de/metrisches-gewinde-tabelle-von-m1-bis-m64/" rel="noopener" target="_blank">ISO-Gewinde Tabellen (DIN 13)</a></li>
-              <li><a href="https://www.europa-lehrmittel.de/Ausbildung/Metalltechnik/Tabellenbuecher/" rel="noopener" target="_blank">Tabellenbuch Metall (offizieller Shop)</a></li>
+              <li><a href="https://www.europa-lehrmittel.de/Ausbildung/Metalltechnik/Tabellenbuecher/?srsltid=AfmBOoplyFaH-LaJU2w87ZCIgxzAMeH3CrhUg4K6kcC6vexDR6CDoZ-Q" rel="noopener" target="_blank">Tabellenbuch Metall (offizieller Shop)</a></li>
             </ul>
           </div>
           <div class="tool-nav">
@@ -1063,7 +1057,7 @@
           var content = targetId ? document.getElementById(targetId) : null;
 
           if (content) {
-            content.style.maxHeight = '0px';
+            content.setAttribute('aria-hidden', 'true');
           }
 
           toggle.addEventListener('click', function () {
@@ -1073,8 +1067,8 @@
             toggle.classList.toggle('is-open', nextState);
             if (content) {
               content.classList.toggle('is-collapsed', !nextState);
-              content.style.maxHeight = nextState ? content.scrollHeight + 'px' : '0px';
               content.style.opacity = nextState ? '1' : '0';
+              content.setAttribute('aria-hidden', String(!nextState));
             }
           });
         });
