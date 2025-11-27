@@ -339,6 +339,46 @@
     .tolerance-note {
       margin-top: 0.75rem;
     }
+
+    /* --- NEU: Styles für Elektro-Helfer Visualisierungen --- */
+    .electro-viz-container {
+      background: #1e293b; /* Slate-800 für Kontrast */
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      margin-bottom: 1rem;
+      min-height: 140px;
+    }
+    .warning-box {
+      background-color: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #b91c1c; /* Rot */
+      padding: 0.5rem;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      display: none; /* Initial versteckt */
+    }
+    .warning-box.is-visible {
+      display: block;
+    }
+    /* Flex-Input für Presets */
+    .input-with-preset {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .input-with-preset input {
+      flex: 1;
+    }
+    .input-with-preset select {
+      width: auto;
+      max-width: 140px;
+      font-size: 0.9rem;
+    }
+
     @media (max-width: 960px) {
       .tool-grid {
         grid-template-columns: 1fr;
@@ -556,14 +596,6 @@
           <span aria-hidden="true">ℹ️</span>
           <span>Hinweis: Alle Berechnungen erfolgen nur in deinem Browser. Es werden keine Daten an Warenschmiede oder Dritte übertragen.</span>
         </div>
-        <div class="info-box info-box--subtle" role="note">
-          <span aria-hidden="true">🧭</span>
-          <div>
-            <strong>Wie du diese Seite nutzt</strong>
-            <p class="helper-text">Die Rechner sind als kleine Helfer für Alltag, Werkstatt und Konstruktion gedacht. Du kannst einzelne Bereiche unabhängig voneinander verwenden. Alle Eingaben bleiben auf deinem Gerät – es wird nichts gespeichert oder übertragen.</p>
-          </div>
-        </div>
-
         
         <div class="ki-tools-toc" id="rechner-uebersicht" aria-label="Schnellnavigation">
           <p class="section-eyebrow">Direkt zu</p>
@@ -572,13 +604,17 @@
               <a class="ki-tools-toc__link" href="#einheiten-rechner">Einheiten-Rechner</a>
             </li>
             <li class="ki-tools-toc__item">
-              <a class="ki-tools-toc__link" href="#gewinde-toleranzrechner">Gewinde-Toleranzrechner</a>
+              <a class="ki-tools-toc__link" href="#gewinde-toleranzrechner">Gewinde-Toleranzen</a>
             </li>
             <li class="ki-tools-toc__item">
-              <a class="ki-tools-toc__link" href="#schnittdaten-rechner">Schnittdaten-Rechner</a>
+              <a class="ki-tools-toc__link" href="#schnittdaten-rechner">Schnittdaten</a>
             </li>
             <li class="ki-tools-toc__item">
               <a class="ki-tools-toc__link" href="#allgemeintoleranzen">Allgemeintoleranzen</a>
+            </li>
+            <!-- NEU: Link im TOC -->
+            <li class="ki-tools-toc__item">
+              <a class="ki-tools-toc__link" href="#elektro-helfer">Elektro-Helfer (Neu!)</a>
             </li>
           </ul>
         </div>
@@ -1179,6 +1215,180 @@
         </div>
       </div>
     </section>
+
+      <!-- ========================================== -->
+      <!-- NEUE SEKTION: 5. ELEKTRO-HELFER -->
+      <!-- ========================================== -->
+      <section class="section">
+        <div class="container container--calc-wide">
+          <div class="tool-card">
+            <div class="tool-header">
+              <h2 id="elektro-helfer" data-section-target>5. Elektro-Helfer (Maker &amp; 3D-Druck)</h2>
+              <button class="tool-info-toggle" type="button" aria-expanded="false" aria-controls="info-electro">
+                <span class="tool-info-toggle-label">Warum diese Tools?</span>
+                <span class="tool-info-toggle-icon" aria-hidden="true">▶</span>
+              </button>
+            </div>
+            <div id="info-electro" class="tool-info-content is-collapsed">
+              <p class="helper-text">Nützliche Rechner für Arduino, LEDs und Verkabelung in deinen 3D-Druck-Projekten. Einfache Praxiswerte für Maker.</p>
+            </div>
+
+            <div class="calculator-grid">
+              
+              <!-- TOOL 1: LED VORWIDERSTAND -->
+              <div class="tool-card">
+                <h3>LED Vorwiderstand</h3>
+                <p class="helper-text">Berechnet den passenden Widerstand (E12-Reihe).</p>
+                
+                <div class="electro-viz-container">
+                   <!-- SVG Circuit Visualization -->
+                   <svg width="200" height="100" viewBox="0 0 200 100" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="20" y1="50" x2="20" y2="80" stroke="#94a3b8" />
+                      <line x1="10" y1="20" x2="30" y2="20" stroke="#cbd5e1" stroke-width="3" />
+                      <text x="10" y="15" fill="#94a3b8" stroke="none" font-size="10">V+</text>
+                      <rect x="50" y="40" width="40" height="20" rx="2" stroke="#cbd5e1" />
+                      <text x="70" y="35" text-anchor="middle" fill="#94a3b8" stroke="none" font-size="10" id="svg-res-val">R?</text>
+                      <line x1="20" y1="50" x2="50" y2="50" stroke="#cbd5e1" />
+                      <line x1="90" y1="50" x2="130" y2="50" stroke="#cbd5e1" />
+                      <!-- LED Symbol -->
+                      <path d="M130 50 L150 50" stroke="#cbd5e1" />
+                      <path d="M150 35 L150 65 L170 50 Z" fill="none" stroke="#cbd5e1" id="svg-led-symbol"/>
+                      <line x1="170" y1="35" x2="170" y2="65" stroke="#cbd5e1" />
+                   </svg>
+                </div>
+
+                <div class="form-grid">
+                  <div class="calc-field">
+                    <label>Versorgungsspannung (V)</label>
+                    <div class="input-with-preset">
+                      <input type="number" id="led-u-source" placeholder="z.B. 5 oder 12" step="0.1">
+                      <select id="led-u-source-preset">
+                        <option value="">Presets...</option>
+                        <option value="3.3">3.3V (Arduino)</option>
+                        <option value="5">5V (USB)</option>
+                        <option value="9">9V (Block)</option>
+                        <option value="12">12V (Netzteil)</option>
+                        <option value="24">24V (Ind.)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="calc-field">
+                    <label>LED Spannung (V)</label>
+                    <div class="input-with-preset">
+                      <input type="number" id="led-u-led" placeholder="z.B. 2.1" step="0.1">
+                      <select id="led-u-led-preset">
+                        <option value="">Farbe...</option>
+                        <option value="1.6">Rot (1.6V)</option>
+                        <option value="2.0">Orange (2.0V)</option>
+                        <option value="2.1">Grün (2.1V)</option>
+                        <option value="3.0">Blau (3.0V)</option>
+                        <option value="3.2">Weiß (3.2V)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="calc-field">
+                    <label>LED Strom (mA)</label>
+                    <input type="number" id="led-i" placeholder="z.B. 20" value="20">
+                  </div>
+                  <button class="btn btn-primary btn-inline" id="led-calc-btn">Berechnen</button>
+                  
+                  <div class="result-box" aria-live="polite">
+                    <p><strong>Widerstand (Exakt):</strong> <span id="led-res-exact">–</span> Ω</p>
+                    <p><strong>Empfohlen (E12):</strong> <span id="led-res-std" style="color: var(--focus);">–</span> Ω</p>
+                    <p><strong>Verlustleistung:</strong> <span id="led-power">–</span> mW</p>
+                    <div id="led-warning" class="warning-box">Achtung: Widerstand wird heiß (>0.25W)!</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TOOL 2: AKKULAUFZEIT -->
+              <div class="tool-card">
+                <h3>Akkulaufzeit</h3>
+                <p class="helper-text">Wie lange hält die Batterie (inkl. Realitätsfaktor)?</p>
+                
+                <div class="form-grid">
+                  <div class="calc-field">
+                    <label>Kapazität (mAh)</label>
+                    <div class="input-with-preset">
+                      <input type="number" id="batt-cap" placeholder="z.B. 2500">
+                      <select id="batt-cap-preset">
+                        <option value="">Typ...</option>
+                        <option value="220">CR2032 (220)</option>
+                        <option value="550">9V Block (550)</option>
+                        <option value="1200">AAA (1200)</option>
+                        <option value="2500">AA (2500)</option>
+                        <option value="3000">18650 (3000)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="calc-field">
+                    <label>Verbrauch (mA)</label>
+                    <div class="input-with-preset">
+                      <input type="number" id="batt-curr" placeholder="z.B. 100">
+                      <select id="batt-curr-preset">
+                        <option value="">Last...</option>
+                        <option value="20">LED (20mA)</option>
+                        <option value="50">Arduino (50mA)</option>
+                        <option value="80">ESP32 (80mA)</option>
+                        <option value="200">DC Motor (200mA)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="calc-field" style="flex-direction: row; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="batt-real" checked style="width: auto;">
+                    <label for="batt-real" style="margin:0;">Realistisch (Faktor 0.7)</label>
+                  </div>
+                  
+                  <button class="btn btn-primary btn-inline" id="batt-calc-btn">Berechnen</button>
+
+                  <div class="result-box" aria-live="polite">
+                    <p><strong>Laufzeit ca.:</strong></p>
+                    <p style="font-size: 1.5rem; font-weight: bold;"><span id="batt-hours">–</span> Stunden</p>
+                    <p class="helper-text"><span id="batt-days">–</span> Tage</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TOOL 3: KABEL-QUERSCHNITT (SAFETY) -->
+              <div class="tool-card">
+                <h3>Kabel-Querschnitt (Safety)</h3>
+                <p class="helper-text">Sicherer Mindestquerschnitt basierend auf Stromstärke (Konservative Schätzung für Maker/Modellbau).</p>
+                
+                <div class="form-grid">
+                  <div class="calc-field">
+                    <label>Max. Stromstärke (Ampere)</label>
+                    <div class="input-with-preset">
+                      <input type="number" id="cable-curr" placeholder="z.B. 10" step="0.5">
+                      <select id="cable-curr-preset">
+                        <option value="">Typ...</option>
+                        <option value="0.5">USB/Signal (0.5A)</option>
+                        <option value="2">LED-Strip (2A)</option>
+                        <option value="10">3D-Drucker (10A)</option>
+                        <option value="16">Steckdose (16A)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <p class="helper-text" style="font-size: 0.85rem;">Gilt für kurze Strecken (< 2m), Einzelader, freiliegend.</p>
+                  
+                  <button class="btn btn-primary btn-inline" id="cable-calc-btn">Prüfen</button>
+
+                  <div class="result-box" aria-live="polite">
+                    <p><strong>Empfohlener Querschnitt:</strong></p>
+                    <p style="font-size: 1.4rem; font-weight: bold; color: var(--focus);"><span id="cable-mm2">–</span> mm²</p>
+                    <p><strong>AWG (ca.):</strong> <span id="cable-awg">–</span></p>
+                    <p class="helper-text" id="cable-note"></p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="tool-nav">
+              <a class="btn btn-utility btn-sm" href="#rechner-uebersicht">Nach oben</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
   </main>
 
@@ -1236,9 +1446,6 @@
       }
 
       // Vereinfachte Praxiswerte für Gewinde-Toleranzen (ISO-Metrisch)
-      // - Feingewinde ab M4 aufwärts (Light-Auswahl, keine Vollständigkeit)
-      // - Unterstützte Toleranzfelder: 6H / 7H (innen) sowie 6g / 6h / 8g (außen)
-      //   Zusätzliche Größen/Felder können bei Bedarf über toleranceConfig und threadSeriesDefinitions ergänzt werden.
       var toleranceConfig = {
         outer: {
           '6g': { majorBase: 0.02, majorPitchFactor: 0.04, majorRange: 0.14, rangePitchFactor: 0.05, coreLift: 0.05, coreRange: 0.12, corePitchFactor: 0.04 },
@@ -1357,11 +1564,6 @@
 
       var threadData = buildThreadData(threadSeriesDefinitions);
 
-      // Basis-Konvertierungen: jeder Wert wird auf eine Basiseinheit zurückgeführt und wieder verteilt.
-      // Neu hinzugefügt: µm für Länge, dm² für Fläche, ml & cm³ (ccm) für Volumen sowie mg/t/oz/lb für Masse.
-      // Die Masse-Faktoren für Unze (oz) und Pfund (lb) orientieren sich an den gängigen US-Umrechnungen:
-      // 1 oz = 28,349523125 g, 1 lb = 453,59237 g (Quelle: NIST).
-      // Der Rechner bildet bewusst nur einen Grundstock typischer Werkstatt- und Alltagseinheiten ab.
       var conversionData = {
         length: {
           base: 'm',
@@ -1836,6 +2038,127 @@
     if (cuttingResetButton) {
       cuttingResetButton.addEventListener('click', resetCuttingCalculator);
     }
+
+    /* =========================================
+       NEUE LOGIK: ELEKTRO-HELFER MIT PRESETS
+       ========================================= */
+
+    // 1. LED Calculator Logic
+    document.getElementById('led-u-source-preset').addEventListener('change', function() {
+        if(this.value) document.getElementById('led-u-source').value = this.value;
+    });
+    
+    document.getElementById('led-u-led-preset').addEventListener('change', function() {
+        if(this.value) {
+            document.getElementById('led-u-led').value = this.value;
+            // Visual Update
+            var ledSymbol = document.getElementById('svg-led-symbol');
+            var val = parseFloat(this.value);
+            if(val < 2.0) ledSymbol.setAttribute('fill', '#ef4444'); 
+            else if(val < 2.4) ledSymbol.setAttribute('fill', '#eab308'); 
+            else if(val < 2.9) ledSymbol.setAttribute('fill', '#22c55e'); 
+            else ledSymbol.setAttribute('fill', '#3b82f6'); 
+        }
+    });
+
+    document.getElementById('led-calc-btn').addEventListener('click', function() {
+        var uSource = parseFloat(document.getElementById('led-u-source').value);
+        var uLed = parseFloat(document.getElementById('led-u-led').value);
+        var iLed = parseFloat(document.getElementById('led-i').value);
+
+        if(!uSource || !uLed || !iLed) return;
+
+        // Visualisierung (Fallback falls kein Preset genutzt)
+        var ledSymbol = document.getElementById('svg-led-symbol');
+        if(uLed < 2.0) ledSymbol.setAttribute('fill', '#ef4444');
+        else if(uLed < 2.4) ledSymbol.setAttribute('fill', '#eab308');
+        else if(uLed < 2.9) ledSymbol.setAttribute('fill', '#22c55e');
+        else ledSymbol.setAttribute('fill', '#3b82f6');
+
+        var rExact = (uSource - uLed) / (iLed / 1000);
+        if(rExact < 0) rExact = 0;
+
+        var e12 = [10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68, 82];
+        var rStd = rExact;
+        var found = false;
+        for(var m=0; m<7; m++) {
+            var mult = Math.pow(10, m);
+            for(var k=0; k<e12.length; k++) {
+                var val = e12[k] * mult;
+                if(val >= rExact) {
+                    rStd = val;
+                    found = true;
+                    break;
+                }
+            }
+            if(found) break;
+        }
+
+        var p = (iLed/1000) * (iLed/1000) * rStd;
+        var pMw = p * 1000;
+
+        document.getElementById('led-res-exact').textContent = rExact.toFixed(1);
+        document.getElementById('led-res-std').textContent = rStd;
+        document.getElementById('led-power').textContent = pMw.toFixed(0);
+        document.getElementById('svg-res-val').textContent = rStd + "Ω";
+
+        var warn = document.getElementById('led-warning');
+        if(pMw > 250) warn.classList.add('is-visible');
+        else warn.classList.remove('is-visible');
+    });
+
+    // 2. Akku Calculator Logic
+    document.getElementById('batt-cap-preset').addEventListener('change', function() {
+        if(this.value) document.getElementById('batt-cap').value = this.value;
+    });
+    
+    document.getElementById('batt-curr-preset').addEventListener('change', function() {
+        if(this.value) document.getElementById('batt-curr').value = this.value;
+    });
+
+    document.getElementById('batt-calc-btn').addEventListener('click', function() {
+        var cap = parseFloat(document.getElementById('batt-cap').value);
+        var curr = parseFloat(document.getElementById('batt-curr').value);
+        var real = document.getElementById('batt-real').checked;
+
+        if(!cap || !curr) return;
+
+        var eff = real ? 0.7 : 1.0;
+        var hours = (cap / curr) * eff;
+        var days = hours / 24;
+
+        document.getElementById('batt-hours').textContent = hours.toFixed(1);
+        document.getElementById('batt-days').textContent = days < 1 ? "< 1" : days.toFixed(1);
+    });
+
+    // 3. Kabel Calculator Logic
+    document.getElementById('cable-curr-preset').addEventListener('change', function() {
+        if(this.value) document.getElementById('cable-curr').value = this.value;
+    });
+
+    document.getElementById('cable-calc-btn').addEventListener('click', function() {
+        var amps = parseFloat(document.getElementById('cable-curr').value);
+        if(!amps) return;
+
+        var mm2 = 0;
+        var awg = "-";
+        
+        // Konservativere Werte (Sicherer für Dauerbetrieb)
+        if (amps <= 3) { mm2 = 0.25; awg = "24"; }
+        else if (amps <= 6) { mm2 = 0.50; awg = "20"; }
+        else if (amps <= 10) { mm2 = 1.00; awg = "17"; }  // Kaltgeräte oft 0.75-1.0
+        else if (amps <= 16) { mm2 = 1.50; awg = "16"; }  // Standard Steckdose
+        else if (amps <= 25) { mm2 = 2.50; awg = "14"; }  // Herdanschluss / CEE Blau
+        else if (amps <= 32) { mm2 = 4.00; awg = "12"; }  // CEE Rot 32A (teilw. 6mm2)
+        else { mm2 = 6.00; awg = "10"; }
+
+        document.getElementById('cable-mm2').textContent = mm2;
+        document.getElementById('cable-awg').textContent = awg;
+        
+        var note = document.getElementById('cable-note');
+        if(amps > 16) note.textContent = "Hinweis: Bei hohen Strömen (>16A) unbedingt CEE-Stecker oder Festanschluss prüfen!";
+        else note.textContent = "";
+    });
 
   </script>
   <script type="application/ld+json">
