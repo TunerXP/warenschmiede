@@ -1,520 +1,736 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Master Pro</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- QR Code Styling Library (M�chtige Engine) -->
-    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
-
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a; /* Slate 900 */
-            color: #e2e8f0;
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" type="image/png" href="/ws.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/ws.png" sizes="180x180">
+  <meta name="theme-color" content="#000000">
+  <title>QR-Code Generator – Warenschmiede Tools</title>
+  <meta name="description" content="QRCode Master Pro: QR-Codes für Links, WLAN, vCards oder Texte erstellen – alles lokal im Browser.">
+  <meta name="robots" content="index,follow">
+  <meta name="color-scheme" content="light dark">
+  <link rel="canonical" href="https://www.warenschmiede.com/tools/buero/doku-light/QRCodeMasterPro.html">
+  <meta property="og:title" content="QR-Code Generator – Warenschmiede Tools">
+  <meta property="og:description" content="QRCode Master Pro: QR-Codes für Links, WLAN, vCards oder Texte erstellen – alles lokal im Browser.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.warenschmiede.com/tools/buero/doku-light/QRCodeMasterPro.html">
+  <meta property="og:image" content="/assets/og/og-default.jpg">
+  <meta property="og:site_name" content="Warenschmiede">
+  <meta property="og:locale" content="de_DE">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="QR-Code Generator – Warenschmiede Tools">
+  <meta name="twitter:description" content="QRCode Master Pro: QR-Codes für Links, WLAN, vCards oder Texte erstellen – alles lokal im Browser.">
+  <meta name="twitter:url" content="https://www.warenschmiede.com/tools/buero/doku-light/QRCodeMasterPro.html">
+  <meta name="twitter:image" content="/assets/og/og-default.jpg">
+  <script>
+    (function () {
+      var storageKey = 'theme-preference';
+      var preference = 'system';
+      try {
+        var stored = localStorage.getItem(storageKey);
+        if (stored === 'light' || stored === 'dark' || stored === 'system') {
+          preference = stored;
         }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
+      } catch (error) { }
+      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+      var resolved = preference === 'dark'
+        ? 'dark'
+        : preference === 'light'
+          ? 'light'
+          : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
+      var root = document.documentElement;
+      root.dataset.theme = resolved;
+      root.dataset.themePreference = preference;
+    })();
+  </script>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/assets/print.css?v=1.0.7" media="print">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Oswald:wght@500;700&family=Orbitron:wght@500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = { corePlugins: { preflight: false } };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+  <style>
+    .qr-tool {
+      font-family: 'Inter', sans-serif;
+      background-color: #0f172a;
+      color: #e2e8f0;
+    }
 
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
-        }
+    .converter-hero {
+      text-align: center;
+      max-width: 840px;
+      margin: 0 auto;
+    }
 
-        ::-webkit-scrollbar-thumb {
-            background: #475569;
-            border-radius: 3px;
-        }
+    @media (max-width: 960px) {
+      .converter-hero {
+        text-align: left;
+      }
+    }
 
-        .input-label {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: #94a3b8;
-            margin-bottom: 0.25rem;
-        }
+    .qr-tool ::-webkit-scrollbar {
+      width: 6px;
+    }
 
-        .input-field {
-            width: 100%;
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 0.5rem;
-            padding: 0.5rem 0.75rem;
-            color: white;
-            font-size: 0.875rem;
-            transition: all 0.2s;
-        }
+    .qr-tool ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
 
-            .input-field:focus {
-                outline: none;
-                border-color: #3b82f6;
-                box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-            }
+    .qr-tool ::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 3px;
+    }
 
-        .tab-btn.active {
-            background-color: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
-        }
-    </style>
+    .qr-tool .input-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 0.25rem;
+    }
+
+    .qr-tool .input-field {
+      width: 100%;
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      color: white;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+
+    .qr-tool .input-field:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    .qr-tool .tab-btn.active {
+      background-color: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+    }
+  </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
+<body>
+  <header class="site-header" data-header>
+    <div class="container header-grid">
+      <div class="brand">
+        <a class="brand-link" href="/index.html#start">
+          <img src="/assets/images/warenschmiede_logo.png" alt="Warenschmiede Logo" class="brand-logo" width="453" height="276" fetchpriority="high">
+          <div class="brand-text">
+            <span class="brand-name">Warenschmiede</span>
+            <span class="brand-tagline">3D-Druck · Made in Germany</span>
+          </div>
+        </a>
+      </div>
 
-    <!-- Header -->
-    <header class="bg-slate-800 border-b border-slate-700 h-16 shrink-0 flex items-center justify-between px-6 z-20">
-        <div class="flex items-center gap-3">
-            <div class="bg-blue-600 p-2 rounded-lg text-white shadow-lg shadow-blue-500/20">
-                <i class="ph ph-qr-code text-xl"></i>
-            </div>
-            <div>
-                <h1 class="font-bold text-white tracking-wide text-lg">QR Master <span class="text-blue-400 font-normal text-xs align-top">PRO</span></h1>
-            </div>
+      <nav class="main-nav" aria-label="Hauptnavigation">
+        <div class="nav-menu" id="primary-navigation" data-nav-menu>
+          <ul class="nav-list" id="navList">
+            <li class="nav-item nav-fixed">
+              <a class="nav-link" href="/index.html#start" data-nav-link data-section="start" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html"><span class="nav-ico" aria-hidden="true">🏠</span>Start</a>
+            </li>
+
+            <!-- Neuer Dropdown: Rechner & Tools -->
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-highlight nav-tools" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                <span class="nav-ico" aria-hidden="true">🧮</span>Rechner &amp; Tools ▾
+              </button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/druck-kosten.html" data-nav-link data-path="/druck-kosten , /druck-kosten.html">
+                    <span class="nav-ico" aria-hidden="true">🧮</span>3D-Druck-Kostenrechner
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="nav-link"
+                    href="/tools/buero/doku-light/"
+                    data-nav-link
+                    data-path="/tools/buero/doku-light , /tools/buero/doku-light/ , /tools/buero/doku-light/index.html"
+                  >
+                    <span class="nav-ico" aria-hidden="true">📄</span>Dokumenten-Tool Light
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/bild-konverter.html" data-nav-link data-path="/bild-konverter , /bild-konverter.html">
+                    <span class="nav-ico" aria-hidden="true">🖼️</span>Bild-Konverter
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/tools/buero/doku-light/QRCodeMasterPro.html" data-nav-link data-path="/tools/buero/doku-light/QRCodeMasterPro , /tools/buero/doku-light/QRCodeMasterPro.html">
+                    <span class="nav-ico" aria-hidden="true">🔳</span>QR-Code Generator
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/werkstatt-rechner.html" data-nav-link data-path="/werkstatt-rechner , /werkstatt-rechner.html">
+                    <span class="nav-ico" aria-hidden="true">🛠️</span>Werkstatt-Rechner
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🧰</span>Leistungen ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/leistungen/3d-druck.html" data-nav-link data-path="/leistungen/3d-druck , /leistungen/3d-druck.html"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druckauftrag</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/leistungen/cad-prototyping.html" data-nav-link data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html"><span class="nav-ico" aria-hidden="true">📐</span>CAD &amp; Prototyping</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/leistungen/pc-hilfe.html" data-nav-link data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html"><span class="nav-ico" aria-hidden="true">💻</span>PC-Hilfe</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🤖</span>Über KI ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/ki/index.html" data-nav-link data-path="/ki , /ki/ , /ki/index.html"><span class="nav-ico" aria-hidden="true">📖</span>Einführung &amp; Grundlagen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/prompts.html" data-nav-link data-path="/ki/prompts , /ki/prompts.html"><span class="nav-ico" aria-hidden="true">✍️</span>Prompts für den Alltag</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/tools.html" data-nav-link data-path="/ki/tools , /ki/tools.html"><span class="nav-ico" aria-hidden="true">🛠️</span>KI-Werkzeuge</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/so-arbeitest-du-mit-ki.html" data-nav-link data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html"><span class="nav-ico" aria-hidden="true">🧭</span>So arbeitest du mit KI</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/programme-die-du-brauchst.html" data-nav-link data-path="/ki/programme-die-du-brauchst , /ki/programme-die-du-brauchst.html"><span class="nav-ico" aria-hidden="true">💾</span>Programme, die du brauchst</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/chancen-und-risiken.html" data-nav-link data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html"><span class="nav-ico" aria-hidden="true">⚖️</span>KI: Chancen &amp; Risiken</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/faq.html" data-nav-link data-path="/ki/faq , /ki/faq.html"><span class="nav-ico" aria-hidden="true">🔒</span>KI-FAQ &amp; Sicherheit</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/lexikon.html" data-nav-link data-path="/ki/lexikon , /ki/lexikon.html"><span class="nav-ico" aria-hidden="true">🔤</span>KI-Lexikon</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">✉️</span>Kontakt ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/kontakt.html" data-nav-link data-path="/kontakt , /kontakt.html , /warenschmiede/kontakt , /warenschmiede/kontakt.html"><span class="nav-ico" aria-hidden="true">📧</span>Kontakt aufnehmen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ablauf-anfrage.html" data-nav-link data-path="/ablauf-anfrage , /ablauf-anfrage.html"><span class="nav-ico" aria-hidden="true">📝</span>Ablauf &amp; Anfrage</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/impressum.html" data-nav-link data-path="/impressum , /impressum.html , /warenschmiede/impressum , /warenschmiede/impressum.html"><span class="nav-ico" aria-hidden="true">⚖️</span>Impressum</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ueber-mich.html" data-nav-link data-path="/ueber-mich , /ueber-mich.html , /warenschmiede/ueber-mich.html , /about , /about.html , /warenschmiede/about.html"><span class="nav-ico" aria-hidden="true">👤</span>Über mich</a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druck ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/technologien.html" data-nav-link data-path="/technologien , /technologien.html"><span class="nav-ico" aria-hidden="true">🧪</span>FDM / SLA / SLS – Technologien</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/fehlerdatenbank.html" data-nav-link data-path="/fehlerdatenbank , /fehlerdatenbank.html"><span class="nav-ico" aria-hidden="true">🛠️</span>Fehler &amp; Troubleshooting</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ideenquellen.html" data-nav-link data-path="/ideenquellen , /ideenquellen.html , /ideen , /ideen/ , /ideen/index.html"><span class="nav-ico" aria-hidden="true">💡</span>Ideenquellen &amp; Portale</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/material.html" data-nav-link data-path="/material.html"><span class="nav-ico" aria-hidden="true">📚</span>Materialwissen &amp; Vergleiche</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/druck-tipps.html" data-nav-link data-path="/druck-tipps , /druck-tipps.html"><span class="nav-ico" aria-hidden="true">🧭</span>Tipps &amp; Abläufe / Kosten</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/druck-kosten.html" data-nav-link data-path="/druck-kosten , /druck-kosten.html"><span class="nav-ico" aria-hidden="true">🧮</span>Kosten &amp; Kalkulation</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/slicer-einstellungen.html" data-nav-link data-path="/slicer-einstellungen , /slicer-einstellungen.html"><span class="nav-ico" aria-hidden="true">⚙️</span>Slicer &amp; Einstellungen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/3ddruck-faq.html" data-nav-link data-path="/3ddruck-faq , /3ddruck-faq.html"><span class="nav-ico" aria-hidden="true">❓</span>Neu beim 3D-Druck?</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/wartung-reinigung.html" data-nav-link data-path="/wartung-reinigung , /wartung-reinigung.html"><span class="nav-ico" aria-hidden="true">🧼</span>Wartung &amp; Reinigung</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
         </div>
-        <div class="flex items-center gap-4 text-xs text-slate-400 hidden sm:flex">
-            <span class="flex items-center gap-1"><i class="ph ph-wifi-high text-blue-500"></i> WiFi Ready</span>
-            <span class="flex items-center gap-1"><i class="ph ph-address-book text-emerald-500"></i> vCard Pro</span>
-            <span class="flex items-center gap-1"><i class="ph ph-bezier-curve text-purple-500"></i> SVG Export</span>
-        </div>
-    </header>
+      </nav>
 
-    <!-- Main Layout -->
-    <div class="flex flex-1 overflow-hidden flex-col lg:flex-row">
+      <div class="header-actions">
+        <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Design umschalten: Hell/Dunkel" title="Design umschalten: Hell/Dunkel" aria-pressed="false">
+          <span id="themeIcon" aria-hidden="true">🖥️</span>
+          <span class="theme-toggle__text" id="themeToggleText" aria-live="polite">Helles Design</span>
+        </button>
 
-        <!-- Left Column: Content (Was soll rein?) -->
-        <div class="w-full lg:w-1/3 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 overflow-y-auto bg-slate-900">
-            <h2 class="text-xs font-bold text-blue-400 uppercase mb-4 flex items-center gap-2">
-                <i class="ph ph-pencil-simple"></i> 1. Inhalt w�hlen
-            </h2>
+        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
+          <span class="sr-only">Menü öffnen</span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </header>
 
-            <!-- Tabs -->
-            <div class="grid grid-cols-5 gap-2 mb-6">
-                <button onclick="setMode('url')" class="tab-btn active flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
+  <main id="inhalt" class="site-main" tabindex="-1">
+    <section class="section section-hero">
+      <div class="container converter-hero">
+        <p class="hero-eyebrow">QR-Code Tool</p>
+        <h1>QR-Code Generator (QRCode Master Pro)</h1>
+        <p class="hero-lede">Erstelle sofort scannbare QR-Codes für Links, WLAN, vCards, E-Mails oder Texte – Design, Farben und Logos inklusive.</p>
+        <p class="hero-meta">Die Generierung läuft vollständig lokal in deinem Browser. Keine Uploads, keine Speicherung, keine Server.</p>
+      </div>
+    </section>
+
+    <section class="section ws-section" aria-label="QR-Code Generator">
+      <div class="container">
+        <div class="ws-card">
+          <div class="qr-tool rounded-2xl shadow-2xl overflow-hidden border border-slate-800">
+            <div class="bg-slate-800 border-b border-slate-700 h-16 shrink-0 flex items-center justify-between px-6 z-20">
+              <div class="flex items-center gap-3">
+                <div class="bg-blue-600 p-2 rounded-lg text-white shadow-lg shadow-blue-500/20">
+                  <i class="ph ph-qr-code text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-xs text-slate-400">QRCode Master Pro</p>
+                  <h2 class="font-bold text-white tracking-wide text-lg">QR-Code Generator</h2>
+                </div>
+              </div>
+              <div class="hidden sm:flex items-center gap-4 text-xs text-slate-400">
+                <span class="flex items-center gap-1"><i class="ph ph-wifi-high text-blue-500"></i> WiFi Ready</span>
+                <span class="flex items-center gap-1"><i class="ph ph-address-book text-emerald-500"></i> vCard Pro</span>
+                <span class="flex items-center gap-1"><i class="ph ph-bezier-curve text-purple-500"></i> SVG Export</span>
+              </div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row" style="min-height: 640px;">
+              <div class="w-full lg:w-1/3 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 overflow-y-auto bg-slate-900">
+                <h3 class="text-xs font-bold text-blue-400 uppercase mb-4 flex items-center gap-2">
+                  <i class="ph ph-pencil-simple"></i> 1. Inhalt wählen
+                </h3>
+
+                <div class="grid grid-cols-5 gap-2 mb-6">
+                  <button onclick="setMode(event, 'url')" class="tab-btn active flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
                     <i class="ph ph-link text-lg"></i> Link
-                </button>
-                <button onclick="setMode('wifi')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
+                  </button>
+                  <button onclick="setMode(event, 'wifi')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
                     <i class="ph ph-wifi-high text-lg"></i> WiFi
-                </button>
-                <button onclick="setMode('vcard')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
+                  </button>
+                  <button onclick="setMode(event, 'vcard')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
                     <i class="ph ph-user-circle text-lg"></i> vCard
-                </button>
-                <button onclick="setMode('email')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
+                  </button>
+                  <button onclick="setMode(event, 'email')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
                     <i class="ph ph-envelope text-lg"></i> Mail
-                </button>
-                <button onclick="setMode('text')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
+                  </button>
+                  <button onclick="setMode(event, 'text')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
                     <i class="ph ph-text-t text-lg"></i> Text
-                </button>
-            </div>
+                  </button>
+                </div>
 
-            <!-- Input Forms (Dynamic) -->
-            <div id="forms-container" class="space-y-4">
-
-                <!-- URL Form -->
-                <div id="form-url" class="form-section">
+                <div id="forms-container" class="space-y-4">
+                  <div id="form-url" class="form-section">
                     <label class="input-label">Webseite URL</label>
                     <input type="url" id="inp-url" class="input-field" placeholder="https://deine-seite.de" value="https://marco-hoffmann.de" oninput="updateQR()">
-                    <p class="text-[10px] text-slate-500 mt-1">Tipp: Auch gut f�r Montageanleitungen oder YouTube Videos.</p>
-                </div>
+                    <p class="text-[10px] text-slate-500 mt-1">Tipp: Auch gut für Montageanleitungen oder YouTube Videos.</p>
+                  </div>
 
-                <!-- WiFi Form -->
-                <div id="form-wifi" class="form-section hidden space-y-3">
+                  <div id="form-wifi" class="form-section hidden space-y-3">
                     <div>
-                        <label class="input-label">SSID (WLAN Name)</label>
-                        <input type="text" id="inp-wifi-ssid" class="input-field" placeholder="Mein WLAN" oninput="updateQR()">
+                      <label class="input-label">SSID (WLAN Name)</label>
+                      <input type="text" id="inp-wifi-ssid" class="input-field" placeholder="Mein WLAN" oninput="updateQR()">
                     </div>
                     <div>
-                        <label class="input-label">Passwort</label>
-                        <div class="relative">
-                            <input type="text" id="inp-wifi-pass" class="input-field" placeholder="Geheim123" oninput="updateQR()">
-                            <i class="ph ph-eye absolute right-3 top-3 text-slate-500 cursor-pointer hover:text-white" onclick="togglePassVisibility()"></i>
-                        </div>
+                      <label class="input-label">Passwort</label>
+                      <div class="relative">
+                        <input type="text" id="inp-wifi-pass" class="input-field" placeholder="Geheim123" oninput="updateQR()">
+                        <i class="ph ph-eye absolute right-3 top-3 text-slate-500 cursor-pointer hover:text-white" onclick="togglePassVisibility()"></i>
+                      </div>
                     </div>
                     <div>
-                        <label class="input-label">Verschl�sselung</label>
-                        <select id="inp-wifi-type" class="input-field" onchange="updateQR()">
-                            <option value="WPA">WPA/WPA2 (Standard)</option>
-                            <option value="WEP">WEP (Alt)</option>
-                            <option value="nopass">Kein Passwort (Offen)</option>
-                        </select>
+                      <label class="input-label">Verschlüsselung</label>
+                      <select id="inp-wifi-type" class="input-field" onchange="updateQR()">
+                        <option value="WPA">WPA/WPA2 (Standard)</option>
+                        <option value="WEP">WEP (Alt)</option>
+                        <option value="nopass">Kein Passwort (Offen)</option>
+                      </select>
                     </div>
-                </div>
+                  </div>
 
-                <!-- vCard Form -->
-                <div id="form-vcard" class="form-section hidden space-y-3">
+                  <div id="form-vcard" class="form-section hidden space-y-3">
                     <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="input-label">Vorname</label>
-                            <input type="text" id="inp-vc-first" class="input-field" placeholder="Marco" oninput="updateQR()">
-                        </div>
-                        <div>
-                            <label class="input-label">Nachname</label>
-                            <input type="text" id="inp-vc-last" class="input-field" placeholder="Hoffmann" oninput="updateQR()">
-                        </div>
+                      <div>
+                        <label class="input-label">Vorname</label>
+                        <input type="text" id="inp-vc-first" class="input-field" placeholder="Marco" oninput="updateQR()">
+                      </div>
+                      <div>
+                        <label class="input-label">Nachname</label>
+                        <input type="text" id="inp-vc-last" class="input-field" placeholder="Hoffmann" oninput="updateQR()">
+                      </div>
                     </div>
                     <div>
-                        <label class="input-label">Firma / Titel</label>
-                        <input type="text" id="inp-vc-org" class="input-field" placeholder="Hoffmann 3D Prints" oninput="updateQR()">
+                      <label class="input-label">Firma / Titel</label>
+                      <input type="text" id="inp-vc-org" class="input-field" placeholder="Hoffmann 3D Prints" oninput="updateQR()">
                     </div>
                     <div>
-                        <label class="input-label">Telefon</label>
-                        <input type="tel" id="inp-vc-phone" class="input-field" placeholder="+49 123 456789" oninput="updateQR()">
+                      <label class="input-label">Telefon</label>
+                      <input type="tel" id="inp-vc-phone" class="input-field" placeholder="+49 123 456789" oninput="updateQR()">
                     </div>
                     <div>
-                        <label class="input-label">E-Mail</label>
-                        <input type="email" id="inp-vc-email" class="input-field" placeholder="marco@example.com" oninput="updateQR()">
+                      <label class="input-label">E-Mail</label>
+                      <input type="email" id="inp-vc-email" class="input-field" placeholder="marco@example.com" oninput="updateQR()">
                     </div>
                     <div>
-                        <label class="input-label">Webseite</label>
-                        <input type="text" id="inp-vc-web" class="input-field" placeholder="www.deine-seite.de" oninput="updateQR()">
+                      <label class="input-label">Webseite</label>
+                      <input type="text" id="inp-vc-web" class="input-field" placeholder="www.deine-seite.de" oninput="updateQR()">
                     </div>
-                </div>
+                  </div>
 
-                <!-- Email Form -->
-                <div id="form-email" class="form-section hidden space-y-3">
+                  <div id="form-email" class="form-section hidden space-y-3">
                     <div>
-                        <label class="input-label">Empf�nger E-Mail</label>
-                        <input type="email" id="inp-mail-to" class="input-field" placeholder="anfrage@firma.de" oninput="updateQR()">
+                      <label class="input-label">Empfänger E-Mail</label>
+                      <input type="email" id="inp-mail-to" class="input-field" placeholder="anfrage@firma.de" oninput="updateQR()">
                     </div>
                     <div>
-                        <label class="input-label">Betreff</label>
-                        <input type="text" id="inp-mail-sub" class="input-field" placeholder="Anfrage 3D Druck" oninput="updateQR()">
+                      <label class="input-label">Betreff</label>
+                      <input type="text" id="inp-mail-sub" class="input-field" placeholder="Anfrage 3D Druck" oninput="updateQR()">
                     </div>
                     <div>
-                        <label class="input-label">Nachricht (Vorschau)</label>
-                        <textarea id="inp-mail-body" rows="3" class="input-field" placeholder="Hallo, ich h�tte gerne..." oninput="updateQR()"></textarea>
+                      <label class="input-label">Nachricht (Vorschau)</label>
+                      <textarea id="inp-mail-body" rows="3" class="input-field" placeholder="Hallo, ich hätte gerne..." oninput="updateQR()"></textarea>
                     </div>
-                </div>
+                  </div>
 
-                <!-- Text Form -->
-                <div id="form-text" class="form-section hidden">
+                  <div id="form-text" class="form-section hidden">
                     <label class="input-label">Freitext</label>
                     <textarea id="inp-text" rows="4" class="input-field" placeholder="Einfacher Text, Seriennummern, Notizen..." oninput="updateQR()"></textarea>
+                  </div>
                 </div>
+              </div>
 
-            </div>
-        </div>
+              <div class="w-full lg:w-1/3 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 overflow-y-auto bg-slate-800">
+                <h3 class="text-xs font-bold text-purple-400 uppercase mb-4 flex items-center gap-2">
+                  <i class="ph ph-paint-brush-broad"></i> 2. Design Studio
+                </h3>
 
-        <!-- Middle Column: Design (Wie soll's aussehen?) -->
-        <div class="w-full lg:w-1/3 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 overflow-y-auto bg-slate-800">
-            <h2 class="text-xs font-bold text-purple-400 uppercase mb-4 flex items-center gap-2">
-                <i class="ph ph-paint-brush-broad"></i> 2. Design Studio
-            </h2>
-
-            <div class="space-y-6">
-
-                <!-- Dots Style -->
-                <div class="space-y-3">
+                <div class="space-y-6">
+                  <div class="space-y-3">
                     <label class="input-label text-slate-300">Punkte Stil</label>
                     <div class="grid grid-cols-3 gap-2">
-                        <button onclick="setDotType('square')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Eckig</button>
-                        <button onclick="setDotType('dots')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Punkte</button>
-                        <button onclick="setDotType('rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Rund</button>
-                        <button onclick="setDotType('extra-rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Soft</button>
-                        <button onclick="setDotType('classy')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Classy</button>
-                        <button onclick="setDotType('classy-rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Classy R</button>
+                      <button onclick="setDotType('square')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Eckig</button>
+                      <button onclick="setDotType('dots')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Punkte</button>
+                      <button onclick="setDotType('rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Rund</button>
+                      <button onclick="setDotType('extra-rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Soft</button>
+                      <button onclick="setDotType('classy')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Classy</button>
+                      <button onclick="setDotType('classy-rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Classy R</button>
                     </div>
-                </div>
+                  </div>
 
-                <!-- Colors -->
-                <div class="space-y-3 pt-4 border-t border-slate-700">
+                  <div class="space-y-3 pt-4 border-t border-slate-700">
                     <label class="input-label text-slate-300">Farben</label>
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[10px] text-slate-500 uppercase block mb-1">Code Farbe</label>
-                            <div class="flex gap-2">
-                                <input type="color" id="col-fg" value="#000000" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
-                            </div>
+                      <div>
+                        <label class="text-[10px] text-slate-500 uppercase block mb-1">Code Farbe</label>
+                        <div class="flex gap-2">
+                          <input type="color" id="col-fg" value="#000000" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
                         </div>
-                        <div>
-                            <label class="text-[10px] text-slate-500 uppercase block mb-1">Hintergrund</label>
-                            <div class="flex gap-2">
-                                <input type="color" id="col-bg" value="#ffffff" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
-                            </div>
+                      </div>
+                      <div>
+                        <label class="text-[10px] text-slate-500 uppercase block mb-1">Hintergrund</label>
+                        <div class="flex gap-2">
+                          <input type="color" id="col-bg" value="#ffffff" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
                         </div>
+                      </div>
                     </div>
 
-                    <!-- Gradient Toggle -->
                     <div class="flex items-center gap-2 mt-2">
-                        <input type="checkbox" id="use-gradient" onchange="toggleGradient()" class="rounded bg-slate-700 border-slate-500 text-blue-600 focus:ring-blue-500">
-                        <label for="use-gradient" class="text-xs text-slate-300 select-none">Farbverlauf nutzen</label>
+                      <input type="checkbox" id="use-gradient" onchange="toggleGradient()" class="rounded bg-slate-700 border-slate-500 text-blue-600 focus:ring-blue-500">
+                      <label for="use-gradient" class="text-xs text-slate-300 select-none">Farbverlauf nutzen</label>
                     </div>
 
                     <div id="gradient-ui" class="hidden mt-2">
-                        <label class="text-[10px] text-slate-500 uppercase block mb-1">Zweite Farbe</label>
-                        <input type="color" id="col-fg2" value="#3b82f6" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
+                      <label class="text-[10px] text-slate-500 uppercase block mb-1">Zweite Farbe</label>
+                      <input type="color" id="col-fg2" value="#3b82f6" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
                     </div>
-                </div>
+                  </div>
 
-                <!-- Logo -->
-                <div class="space-y-3 pt-4 border-t border-slate-700">
-                    <label class="input-label text-slate-300">Logo & Icon</label>
+                  <div class="space-y-3 pt-4 border-t border-slate-700">
+                    <label class="input-label text-slate-300">Logo &amp; Icon</label>
 
                     <div class="flex gap-2 mb-2">
-                        <label class="flex-1 cursor-pointer bg-slate-700 hover:bg-slate-600 text-white py-2 rounded text-xs text-center border border-slate-600 transition-colors">
-                            <i class="ph ph-upload-simple"></i> Upload
-                            <input type="file" id="logo-upload" class="hidden" accept="image/*" onchange="handleLogoUpload(this)">
-                        </label>
-                        <button onclick="clearLogo()" class="px-3 bg-slate-700 hover:bg-slate-600 text-red-400 rounded border border-slate-600"><i class="ph ph-trash"></i></button>
+                      <label class="flex-1 cursor-pointer bg-slate-700 hover:bg-slate-600 text-white py-2 rounded text-xs text-center border border-slate-600 transition-colors">
+                        <i class="ph ph-upload-simple"></i> Upload
+                        <input type="file" id="logo-upload" class="hidden" accept="image/*" onchange="handleLogoUpload(this)">
+                      </label>
+                      <button onclick="clearLogo()" class="px-3 bg-slate-700 hover:bg-slate-600 text-red-400 rounded border border-slate-600"><i class="ph ph-trash"></i></button>
                     </div>
 
-                    <p class="text-[10px] text-slate-500 mb-2">Oder Preset w�hlen:</p>
+                    <p class="text-[10px] text-slate-500 mb-2">Oder Preset wählen:</p>
                     <div class="grid grid-cols-5 gap-2">
-                        <!-- Icons via URL (using simple reliable icons for demo) -->
-                        <button onclick="setPresetLogo('wifi')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-wifi-high text-xl"></i></button>
-                        <button onclick="setPresetLogo('cube')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-cube text-xl"></i></button>
-                        <button onclick="setPresetLogo('facebook')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-facebook-logo text-xl"></i></button>
-                        <button onclick="setPresetLogo('instagram')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-instagram-logo text-xl"></i></button>
-                        <button onclick="setPresetLogo('whatsapp')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-whatsapp-logo text-xl"></i></button>
+                      <button onclick="setPresetLogo('wifi')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-wifi-high text-xl"></i></button>
+                      <button onclick="setPresetLogo('cube')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-cube text-xl"></i></button>
+                      <button onclick="setPresetLogo('facebook')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-facebook-logo text-xl"></i></button>
+                      <button onclick="setPresetLogo('instagram')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-instagram-logo text-xl"></i></button>
+                      <button onclick="setPresetLogo('whatsapp')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-whatsapp-logo text-xl"></i></button>
                     </div>
-                </div>
+                  </div>
 
-                <!-- Corners -->
-                <div class="space-y-3 pt-4 border-t border-slate-700">
+                  <div class="space-y-3 pt-4 border-t border-slate-700">
                     <label class="input-label text-slate-300">Ecken (Marker)</label>
                     <div class="grid grid-cols-3 gap-2">
-                        <button onclick="setCornerType('square')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Eckig</button>
-                        <button onclick="setCornerType('dot')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Punkt</button>
-                        <button onclick="setCornerType('extra-rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Rund</button>
+                      <button onclick="setCornerType('square')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Eckig</button>
+                      <button onclick="setCornerType('dot')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Punkt</button>
+                      <button onclick="setCornerType('extra-rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Rund</button>
                     </div>
                     <div>
-                        <label class="text-[10px] text-slate-500 uppercase block mb-1">Marker Farbe</label>
-                        <input type="color" id="col-eye" value="#000000" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
+                      <label class="text-[10px] text-slate-500 uppercase block mb-1">Marker Farbe</label>
+                      <input type="color" id="col-eye" value="#000000" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="w-full lg:w-1/3 p-6 bg-slate-900 flex flex-col items-center justify-center relative">
+                <div class="absolute top-6 left-6">
+                  <h3 class="text-xs font-bold text-emerald-400 uppercase flex items-center gap-2">
+                    <i class="ph ph-eye"></i> Vorschau
+                  </h3>
                 </div>
 
-            </div>
-        </div>
+                <div class="bg-white/5 p-8 rounded-2xl shadow-2xl border border-white/10 mb-8 transition-transform hover:scale-[1.02]">
+                  <div id="canvas-wrapper"></div>
+                </div>
 
-        <!-- Right Column: Result (Ergebnis) -->
-        <div class="w-full lg:w-1/3 p-6 bg-slate-900 flex flex-col items-center justify-center relative">
-
-            <div class="absolute top-6 left-6">
-                <h2 class="text-xs font-bold text-emerald-400 uppercase flex items-center gap-2">
-                    <i class="ph ph-eye"></i> Vorschau
-                </h2>
-            </div>
-
-            <!-- Canvas Container -->
-            <div id="qr-container" class="bg-white/5 p-8 rounded-2xl shadow-2xl border border-white/10 mb-8 transition-transform hover:scale-[1.02]">
-                <div id="canvas-wrapper"></div>
-            </div>
-
-            <!-- Download Actions -->
-            <div class="w-full max-w-xs space-y-3">
-                <button onclick="downloadQR('png')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
+                <div class="w-full max-w-xs space-y-3">
+                  <button onclick="downloadQR('png')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
                     <i class="ph ph-download-simple text-xl"></i>
                     Download PNG
-                </button>
-                <div class="grid grid-cols-2 gap-3">
+                  </button>
+                  <div class="grid grid-cols-2 gap-3">
                     <button onclick="downloadQR('jpeg')" class="bg-slate-800 hover:bg-slate-700 text-white py-2 rounded-lg border border-slate-700 transition-colors text-sm">
-                        JPG
+                      JPG
                     </button>
                     <button onclick="downloadQR('svg')" class="bg-slate-800 hover:bg-slate-700 text-white py-2 rounded-lg border border-slate-700 transition-colors text-sm flex items-center justify-center gap-1">
-                        <i class="ph ph-bezier-curve"></i> SVG
+                      <i class="ph ph-bezier-curve"></i> SVG
                     </button>
+                  </div>
                 </div>
+
+                <p class="text-xs text-slate-500 mt-8 text-center px-4">
+                  SVG ist Vektor-basiert. Perfekt für den Import in CAD-Software (SolidWorks) oder für Großformat-Druck.
+                </p>
+              </div>
             </div>
-
-            <p class="text-xs text-slate-500 mt-8 text-center px-4">
-                SVG ist Vektor-basiert. Perfekt f�r den Import in CAD-Software (SolidWorks) oder f�r Gro�format-Druck.
-            </p>
-
+          </div>
         </div>
+      </div>
+    </section>
+  </main>
 
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__brand">© 2025 Warenschmiede · Alle Rechte vorbehalten.</div>
+        <nav class="footer__links" aria-label="Rechtliches &amp; Kontakt">
+          <a href="/impressum.html">Impressum</a>
+          <a href="/datenschutz.html">Datenschutzerklärung</a>
+          <a href="/kontakt.html">Kontakt</a>
+        </nav>
+        <div class="footer__notes">
+          <p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
+          <p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
+        </div>
+      </div>
     </div>
+  </footer>
 
-    <script>
-        // Init QR Code Styling instance
-        let qrCode = new QRCodeStyling({
-            width: 300,
-            height: 300,
-            type: "svg",
-            data: "https://marco-hoffmann.de",
-            image: "",
-            dotsOptions: {
-                color: "#000000",
-                type: "rounded"
-            },
-            backgroundOptions: {
-                color: "#ffffff",
-            },
-            imageOptions: {
-                crossOrigin: "anonymous",
-                margin: 5
-            }
-        });
+  <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+  <script>
+    let qrCode = new QRCodeStyling({
+      width: 300,
+      height: 300,
+      type: "svg",
+      data: "https://marco-hoffmann.de",
+      image: "",
+      dotsOptions: {
+        color: "#000000",
+        type: "rounded"
+      },
+      backgroundOptions: {
+        color: "#ffffff",
+      },
+      imageOptions: {
+        crossOrigin: "anonymous",
+        margin: 5
+      }
+    });
 
-        // Config State
-        let currentMode = 'url';
-        let logoUrl = "";
+    let currentMode = 'url';
+    let logoUrl = "";
 
-        // Setup on Load
-        document.getElementById('canvas-wrapper').innerHTML = "";
-        qrCode.append(document.getElementById('canvas-wrapper'));
+    document.getElementById('canvas-wrapper').innerHTML = "";
+    qrCode.append(document.getElementById('canvas-wrapper'));
 
-        // --- Core Functions ---
+    function setMode(ev, mode) {
+      currentMode = mode;
 
-        function setMode(mode) {
-            currentMode = mode;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      if (ev && ev.currentTarget) {
+        ev.currentTarget.classList.add('active');
+      }
 
-            // UI Tabs
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+      document.querySelectorAll('.form-section').forEach(el => el.classList.add('hidden'));
 
-            // Hide all forms
-            document.querySelectorAll('.form-section').forEach(el => el.classList.add('hidden'));
+      const active = document.getElementById(`form-${mode}`);
+      if (active) {
+        active.classList.remove('hidden');
+      }
 
-            // Show active form
-            document.getElementById(`form-${mode}`).classList.remove('hidden');
+      updateQR();
+    }
 
-            updateQR();
-        }
+    function updateQR() {
+      const data = generateDataString();
 
-        function updateQR() {
-            const data = generateDataString();
+      const fg = document.getElementById('col-fg').value;
+      const bg = document.getElementById('col-bg').value;
+      const useGrad = document.getElementById('use-gradient').checked;
+      const fg2 = document.getElementById('col-fg2').value;
+      const eyeColor = document.getElementById('col-eye').value;
 
-            // Colors
-            const fg = document.getElementById('col-fg').value;
-            const bg = document.getElementById('col-bg').value;
-            const useGrad = document.getElementById('use-gradient').checked;
-            const fg2 = document.getElementById('col-fg2').value;
-            const eyeColor = document.getElementById('col-eye').value;
+      let dotsOptions = {
+        color: fg,
+        type: qrCode._options.dotsOptions.type
+      };
 
-            let dotsOptions = {
-                color: fg,
-                type: qrCode._options.dotsOptions.type // Keep current shape
-            };
+      if (useGrad) {
+        dotsOptions.gradient = {
+          type: "linear",
+          rotation: 45,
+          colorStops: [{ offset: 0, color: fg }, { offset: 1, color: fg2 }]
+        };
+      }
 
-            if (useGrad) {
-                dotsOptions.gradient = {
-                    type: "linear",
-                    rotation: 45,
-                    colorStops: [{ offset: 0, color: fg }, { offset: 1, color: fg2 }]
-                };
-            }
+      qrCode.update({
+        data: data,
+        dotsOptions: dotsOptions,
+        backgroundOptions: { color: bg },
+        cornersSquareOptions: { color: eyeColor, type: qrCode._options.cornersSquareOptions?.type },
+        cornersDotOptions: { color: eyeColor },
+        image: logoUrl
+      });
+    }
 
-            // Apply Updates
-            qrCode.update({
-                data: data,
-                dotsOptions: dotsOptions,
-                backgroundOptions: { color: bg },
-                cornersSquareOptions: { color: eyeColor, type: qrCode._options.cornersSquareOptions?.type },
-                cornersDotOptions: { color: eyeColor },
-                image: logoUrl
-            });
-        }
+    function generateDataString() {
+      switch (currentMode) {
+        case 'url':
+          return document.getElementById('inp-url').value || "https://example.com";
 
-        function generateDataString() {
-            switch(currentMode) {
-                case 'url':
-                    return document.getElementById('inp-url').value || "https://example.com";
+        case 'wifi':
+          const ssid = document.getElementById('inp-wifi-ssid').value;
+          const pass = document.getElementById('inp-wifi-pass').value;
+          const type = document.getElementById('inp-wifi-type').value;
+          return `WIFI:T:${type};S:${ssid};P:${pass};;`;
 
-                case 'wifi':
-                    const ssid = document.getElementById('inp-wifi-ssid').value;
-                    const pass = document.getElementById('inp-wifi-pass').value;
-                    const type = document.getElementById('inp-wifi-type').value;
-                    // WIFI Format: WIFI:T:WPA;S:MyNetwork;P:MyPass;;
-                    return `WIFI:T:${type};S:${ssid};P:${pass};;`;
+        case 'vcard':
+          const n = document.getElementById('inp-vc-last').value;
+          const fn = document.getElementById('inp-vc-first').value;
+          const org = document.getElementById('inp-vc-org').value;
+          const tel = document.getElementById('inp-vc-phone').value;
+          const mail = document.getElementById('inp-vc-email').value;
+          const web = document.getElementById('inp-vc-web').value;
 
-                case 'vcard':
-                    const n = document.getElementById('inp-vc-last').value;
-                    const fn = document.getElementById('inp-vc-first').value;
-                    const org = document.getElementById('inp-vc-org').value;
-                    const tel = document.getElementById('inp-vc-phone').value;
-                    const mail = document.getElementById('inp-vc-email').value;
-                    const web = document.getElementById('inp-vc-web').value;
+          return `BEGIN:VCARD\nVERSION:3.0\nN:${n};${fn}\nFN:${fn} ${n}\nORG:${org}\nTEL:${tel}\nEMAIL:${mail}\nURL:${web}\nEND:VCARD`;
 
-                    return `BEGIN:VCARD
-VERSION:3.0
-N:${n};${fn}
-FN:${fn} ${n}
-ORG:${org}
-TEL:${tel}
-EMAIL:${mail}
-URL:${web}
-END:VCARD`;
+        case 'email':
+          const mailto = document.getElementById('inp-mail-to').value;
+          const sub = document.getElementById('inp-mail-sub').value;
+          const body = document.getElementById('inp-mail-body').value;
+          return `mailto:${mailto}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
 
-                case 'email':
-                    const mailto = document.getElementById('inp-mail-to').value;
-                    const sub = document.getElementById('inp-mail-sub').value;
-                    const body = document.getElementById('inp-mail-body').value;
-                    return `mailto:${mailto}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
+        case 'text':
+          return document.getElementById('inp-text').value || "Hallo Welt";
 
-                case 'text':
-                    return document.getElementById('inp-text').value || "Hallo Welt";
+        default: return "Error";
+      }
+    }
 
-                default: return "Error";
-            }
-        }
+    function setDotType(type) {
+      qrCode.update({ dotsOptions: { type: type } });
+    }
 
-        // --- Styling Functions ---
+    function setCornerType(type) {
+      qrCode.update({ cornersSquareOptions: { type: type } });
+    }
 
-        function setDotType(type) {
-            qrCode.update({ dotsOptions: { type: type } });
-        }
+    function toggleGradient() {
+      const useGrad = document.getElementById('use-gradient').checked;
+      const ui = document.getElementById('gradient-ui');
+      if (useGrad) ui.classList.remove('hidden');
+      else ui.classList.add('hidden');
+      updateQR();
+    }
 
-        function setCornerType(type) {
-            qrCode.update({ cornersSquareOptions: { type: type } });
-        }
+    function togglePassVisibility() {
+      const inp = document.getElementById('inp-wifi-pass');
+      if (inp.type === "text") inp.type = "password";
+      else inp.type = "text";
+    }
 
-        function toggleGradient() {
-            const useGrad = document.getElementById('use-gradient').checked;
-            const ui = document.getElementById('gradient-ui');
-            if(useGrad) ui.classList.remove('hidden');
-            else ui.classList.add('hidden');
-            updateQR();
-        }
+    function handleLogoUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
 
-        function togglePassVisibility() {
-            const inp = document.getElementById('inp-wifi-pass');
-            if(inp.type === "text") inp.type = "password";
-            else inp.type = "text";
-        }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        logoUrl = e.target.result;
+        updateQR();
+      };
+      reader.readAsDataURL(file);
+    }
 
-        // --- Logo Functions ---
+    function setPresetLogo(type) {
+      const icons = {
+        wifi: "https://cdn-icons-png.flaticon.com/512/93/93158.png",
+        cube: "https://cdn-icons-png.flaticon.com/512/103/103903.png",
+        facebook: "https://cdn-icons-png.flaticon.com/512/5968/5968764.png",
+        instagram: "https://cdn-icons-png.flaticon.com/512/3955/3955024.png",
+        whatsapp: "https://cdn-icons-png.flaticon.com/512/3670/3670051.png"
+      };
+      logoUrl = icons[type];
+      updateQR();
+    }
 
-        function handleLogoUpload(input) {
-            const file = input.files[0];
-            if(!file) return;
+    function clearLogo() {
+      logoUrl = "";
+      updateQR();
+    }
 
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                logoUrl = e.target.result;
-                updateQR();
-            };
-            reader.readAsDataURL(file);
-        }
+    function downloadQR(ext) {
+      qrCode.download({ name: "my-qr-code", extension: ext });
+    }
 
-        function setPresetLogo(type) {
-            // Using simple base64 or external URLs for presets to keep single file
-            // Here we use reliable external icons, but normally base64 is better for offline
-            const icons = {
-                wifi: "https://cdn-icons-png.flaticon.com/512/93/93158.png",
-                cube: "https://cdn-icons-png.flaticon.com/512/103/103903.png", // Generic cube
-                facebook: "https://cdn-icons-png.flaticon.com/512/5968/5968764.png",
-                instagram: "https://cdn-icons-png.flaticon.com/512/3955/3955024.png",
-                whatsapp: "https://cdn-icons-png.flaticon.com/512/3670/3670051.png"
-            };
-            logoUrl = icons[type];
-            updateQR();
-        }
-
-        function clearLogo() {
-            logoUrl = "";
-            updateQR();
-        }
-
-        // --- Download ---
-
-        function downloadQR(ext) {
-            qrCode.download({ name: "my-qr-code", extension: ext });
-        }
-
-    </script>
+    updateQR();
+  </script>
+  <script src="/assets/js/theme.js" defer></script>
+  <script src="/assets/js/header.js" defer></script>
+  <script src="/assets/js/whatsapp.js" defer></script>
 </body>
 </html>
