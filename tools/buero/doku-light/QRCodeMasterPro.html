@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Master Pro</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- QR Code Styling Library (Mächtige Engine) -->
+    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            color: #e2e8f0;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 0.25rem;
+        }
+
+        .input-field {
+            width: 100%;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            color: white;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+            .input-field:focus {
+                outline: none;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+            }
+
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 h-16 shrink-0 flex items-center justify-between px-6 z-20">
+        <div class="flex items-center gap-3">
+            <div class="bg-blue-600 p-2 rounded-lg text-white shadow-lg shadow-blue-500/20">
+                <i class="ph ph-qr-code text-xl"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-white tracking-wide text-lg">QR Master <span class="text-blue-400 font-normal text-xs align-top">PRO</span></h1>
+            </div>
+        </div>
+        <div class="flex items-center gap-4 text-xs text-slate-400 hidden sm:flex">
+            <span class="flex items-center gap-1"><i class="ph ph-wifi-high text-blue-500"></i> WiFi Ready</span>
+            <span class="flex items-center gap-1"><i class="ph ph-address-book text-emerald-500"></i> vCard Pro</span>
+            <span class="flex items-center gap-1"><i class="ph ph-bezier-curve text-purple-500"></i> SVG Export</span>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="flex flex-1 overflow-hidden flex-col lg:flex-row">
+
+        <!-- Left Column: Content (Was soll rein?) -->
+        <div class="w-full lg:w-1/3 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 overflow-y-auto bg-slate-900">
+            <h2 class="text-xs font-bold text-blue-400 uppercase mb-4 flex items-center gap-2">
+                <i class="ph ph-pencil-simple"></i> 1. Inhalt wählen
+            </h2>
+
+            <!-- Tabs -->
+            <div class="grid grid-cols-5 gap-2 mb-6">
+                <button onclick="setMode('url')" class="tab-btn active flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
+                    <i class="ph ph-link text-lg"></i> Link
+                </button>
+                <button onclick="setMode('wifi')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
+                    <i class="ph ph-wifi-high text-lg"></i> WiFi
+                </button>
+                <button onclick="setMode('vcard')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
+                    <i class="ph ph-user-circle text-lg"></i> vCard
+                </button>
+                <button onclick="setMode('email')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
+                    <i class="ph ph-envelope text-lg"></i> Mail
+                </button>
+                <button onclick="setMode('text')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
+                    <i class="ph ph-text-t text-lg"></i> Text
+                </button>
+            </div>
+
+            <!-- Input Forms (Dynamic) -->
+            <div id="forms-container" class="space-y-4">
+
+                <!-- URL Form -->
+                <div id="form-url" class="form-section">
+                    <label class="input-label">Webseite URL</label>
+                    <input type="url" id="inp-url" class="input-field" placeholder="https://deine-seite.de" value="https://marco-hoffmann.de" oninput="updateQR()">
+                    <p class="text-[10px] text-slate-500 mt-1">Tipp: Auch gut für Montageanleitungen oder YouTube Videos.</p>
+                </div>
+
+                <!-- WiFi Form -->
+                <div id="form-wifi" class="form-section hidden space-y-3">
+                    <div>
+                        <label class="input-label">SSID (WLAN Name)</label>
+                        <input type="text" id="inp-wifi-ssid" class="input-field" placeholder="Mein WLAN" oninput="updateQR()">
+                    </div>
+                    <div>
+                        <label class="input-label">Passwort</label>
+                        <div class="relative">
+                            <input type="text" id="inp-wifi-pass" class="input-field" placeholder="Geheim123" oninput="updateQR()">
+                            <i class="ph ph-eye absolute right-3 top-3 text-slate-500 cursor-pointer hover:text-white" onclick="togglePassVisibility()"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="input-label">Verschlüsselung</label>
+                        <select id="inp-wifi-type" class="input-field" onchange="updateQR()">
+                            <option value="WPA">WPA/WPA2 (Standard)</option>
+                            <option value="WEP">WEP (Alt)</option>
+                            <option value="nopass">Kein Passwort (Offen)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- vCard Form -->
+                <div id="form-vcard" class="form-section hidden space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="input-label">Vorname</label>
+                            <input type="text" id="inp-vc-first" class="input-field" placeholder="Marco" oninput="updateQR()">
+                        </div>
+                        <div>
+                            <label class="input-label">Nachname</label>
+                            <input type="text" id="inp-vc-last" class="input-field" placeholder="Hoffmann" oninput="updateQR()">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="input-label">Firma / Titel</label>
+                        <input type="text" id="inp-vc-org" class="input-field" placeholder="Hoffmann 3D Prints" oninput="updateQR()">
+                    </div>
+                    <div>
+                        <label class="input-label">Telefon</label>
+                        <input type="tel" id="inp-vc-phone" class="input-field" placeholder="+49 123 456789" oninput="updateQR()">
+                    </div>
+                    <div>
+                        <label class="input-label">E-Mail</label>
+                        <input type="email" id="inp-vc-email" class="input-field" placeholder="marco@example.com" oninput="updateQR()">
+                    </div>
+                    <div>
+                        <label class="input-label">Webseite</label>
+                        <input type="text" id="inp-vc-web" class="input-field" placeholder="www.deine-seite.de" oninput="updateQR()">
+                    </div>
+                </div>
+
+                <!-- Email Form -->
+                <div id="form-email" class="form-section hidden space-y-3">
+                    <div>
+                        <label class="input-label">Empfänger E-Mail</label>
+                        <input type="email" id="inp-mail-to" class="input-field" placeholder="anfrage@firma.de" oninput="updateQR()">
+                    </div>
+                    <div>
+                        <label class="input-label">Betreff</label>
+                        <input type="text" id="inp-mail-sub" class="input-field" placeholder="Anfrage 3D Druck" oninput="updateQR()">
+                    </div>
+                    <div>
+                        <label class="input-label">Nachricht (Vorschau)</label>
+                        <textarea id="inp-mail-body" rows="3" class="input-field" placeholder="Hallo, ich hätte gerne..." oninput="updateQR()"></textarea>
+                    </div>
+                </div>
+
+                <!-- Text Form -->
+                <div id="form-text" class="form-section hidden">
+                    <label class="input-label">Freitext</label>
+                    <textarea id="inp-text" rows="4" class="input-field" placeholder="Einfacher Text, Seriennummern, Notizen..." oninput="updateQR()"></textarea>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Middle Column: Design (Wie soll's aussehen?) -->
+        <div class="w-full lg:w-1/3 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 overflow-y-auto bg-slate-800">
+            <h2 class="text-xs font-bold text-purple-400 uppercase mb-4 flex items-center gap-2">
+                <i class="ph ph-paint-brush-broad"></i> 2. Design Studio
+            </h2>
+
+            <div class="space-y-6">
+
+                <!-- Dots Style -->
+                <div class="space-y-3">
+                    <label class="input-label text-slate-300">Punkte Stil</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setDotType('square')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Eckig</button>
+                        <button onclick="setDotType('dots')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Punkte</button>
+                        <button onclick="setDotType('rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Rund</button>
+                        <button onclick="setDotType('extra-rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Soft</button>
+                        <button onclick="setDotType('classy')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Classy</button>
+                        <button onclick="setDotType('classy-rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Classy R</button>
+                    </div>
+                </div>
+
+                <!-- Colors -->
+                <div class="space-y-3 pt-4 border-t border-slate-700">
+                    <label class="input-label text-slate-300">Farben</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] text-slate-500 uppercase block mb-1">Code Farbe</label>
+                            <div class="flex gap-2">
+                                <input type="color" id="col-fg" value="#000000" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-500 uppercase block mb-1">Hintergrund</label>
+                            <div class="flex gap-2">
+                                <input type="color" id="col-bg" value="#ffffff" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gradient Toggle -->
+                    <div class="flex items-center gap-2 mt-2">
+                        <input type="checkbox" id="use-gradient" onchange="toggleGradient()" class="rounded bg-slate-700 border-slate-500 text-blue-600 focus:ring-blue-500">
+                        <label for="use-gradient" class="text-xs text-slate-300 select-none">Farbverlauf nutzen</label>
+                    </div>
+
+                    <div id="gradient-ui" class="hidden mt-2">
+                        <label class="text-[10px] text-slate-500 uppercase block mb-1">Zweite Farbe</label>
+                        <input type="color" id="col-fg2" value="#3b82f6" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
+                    </div>
+                </div>
+
+                <!-- Logo -->
+                <div class="space-y-3 pt-4 border-t border-slate-700">
+                    <label class="input-label text-slate-300">Logo & Icon</label>
+
+                    <div class="flex gap-2 mb-2">
+                        <label class="flex-1 cursor-pointer bg-slate-700 hover:bg-slate-600 text-white py-2 rounded text-xs text-center border border-slate-600 transition-colors">
+                            <i class="ph ph-upload-simple"></i> Upload
+                            <input type="file" id="logo-upload" class="hidden" accept="image/*" onchange="handleLogoUpload(this)">
+                        </label>
+                        <button onclick="clearLogo()" class="px-3 bg-slate-700 hover:bg-slate-600 text-red-400 rounded border border-slate-600"><i class="ph ph-trash"></i></button>
+                    </div>
+
+                    <p class="text-[10px] text-slate-500 mb-2">Oder Preset wählen:</p>
+                    <div class="grid grid-cols-5 gap-2">
+                        <!-- Icons via URL (using simple reliable icons for demo) -->
+                        <button onclick="setPresetLogo('wifi')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-wifi-high text-xl"></i></button>
+                        <button onclick="setPresetLogo('cube')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-cube text-xl"></i></button>
+                        <button onclick="setPresetLogo('facebook')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-facebook-logo text-xl"></i></button>
+                        <button onclick="setPresetLogo('instagram')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-instagram-logo text-xl"></i></button>
+                        <button onclick="setPresetLogo('whatsapp')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-whatsapp-logo text-xl"></i></button>
+                    </div>
+                </div>
+
+                <!-- Corners -->
+                <div class="space-y-3 pt-4 border-t border-slate-700">
+                    <label class="input-label text-slate-300">Ecken (Marker)</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setCornerType('square')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Eckig</button>
+                        <button onclick="setCornerType('dot')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Punkt</button>
+                        <button onclick="setCornerType('extra-rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Rund</button>
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-500 uppercase block mb-1">Marker Farbe</label>
+                        <input type="color" id="col-eye" value="#000000" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Right Column: Result (Ergebnis) -->
+        <div class="w-full lg:w-1/3 p-6 bg-slate-900 flex flex-col items-center justify-center relative">
+
+            <div class="absolute top-6 left-6">
+                <h2 class="text-xs font-bold text-emerald-400 uppercase flex items-center gap-2">
+                    <i class="ph ph-eye"></i> Vorschau
+                </h2>
+            </div>
+
+            <!-- Canvas Container -->
+            <div id="qr-container" class="bg-white/5 p-8 rounded-2xl shadow-2xl border border-white/10 mb-8 transition-transform hover:scale-[1.02]">
+                <div id="canvas-wrapper"></div>
+            </div>
+
+            <!-- Download Actions -->
+            <div class="w-full max-w-xs space-y-3">
+                <button onclick="downloadQR('png')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
+                    <i class="ph ph-download-simple text-xl"></i>
+                    Download PNG
+                </button>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="downloadQR('jpeg')" class="bg-slate-800 hover:bg-slate-700 text-white py-2 rounded-lg border border-slate-700 transition-colors text-sm">
+                        JPG
+                    </button>
+                    <button onclick="downloadQR('svg')" class="bg-slate-800 hover:bg-slate-700 text-white py-2 rounded-lg border border-slate-700 transition-colors text-sm flex items-center justify-center gap-1">
+                        <i class="ph ph-bezier-curve"></i> SVG
+                    </button>
+                </div>
+            </div>
+
+            <p class="text-xs text-slate-500 mt-8 text-center px-4">
+                SVG ist Vektor-basiert. Perfekt für den Import in CAD-Software (SolidWorks) oder für Großformat-Druck.
+            </p>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Init QR Code Styling instance
+        let qrCode = new QRCodeStyling({
+            width: 300,
+            height: 300,
+            type: "svg",
+            data: "https://marco-hoffmann.de",
+            image: "",
+            dotsOptions: {
+                color: "#000000",
+                type: "rounded"
+            },
+            backgroundOptions: {
+                color: "#ffffff",
+            },
+            imageOptions: {
+                crossOrigin: "anonymous",
+                margin: 5
+            }
+        });
+
+        // Config State
+        let currentMode = 'url';
+        let logoUrl = "";
+
+        // Setup on Load
+        document.getElementById('canvas-wrapper').innerHTML = "";
+        qrCode.append(document.getElementById('canvas-wrapper'));
+
+        // --- Core Functions ---
+
+        function setMode(mode) {
+            currentMode = mode;
+
+            // UI Tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Hide all forms
+            document.querySelectorAll('.form-section').forEach(el => el.classList.add('hidden'));
+
+            // Show active form
+            document.getElementById(`form-${mode}`).classList.remove('hidden');
+
+            updateQR();
+        }
+
+        function updateQR() {
+            const data = generateDataString();
+
+            // Colors
+            const fg = document.getElementById('col-fg').value;
+            const bg = document.getElementById('col-bg').value;
+            const useGrad = document.getElementById('use-gradient').checked;
+            const fg2 = document.getElementById('col-fg2').value;
+            const eyeColor = document.getElementById('col-eye').value;
+
+            let dotsOptions = {
+                color: fg,
+                type: qrCode._options.dotsOptions.type // Keep current shape
+            };
+
+            if (useGrad) {
+                dotsOptions.gradient = {
+                    type: "linear",
+                    rotation: 45,
+                    colorStops: [{ offset: 0, color: fg }, { offset: 1, color: fg2 }]
+                };
+            }
+
+            // Apply Updates
+            qrCode.update({
+                data: data,
+                dotsOptions: dotsOptions,
+                backgroundOptions: { color: bg },
+                cornersSquareOptions: { color: eyeColor, type: qrCode._options.cornersSquareOptions?.type },
+                cornersDotOptions: { color: eyeColor },
+                image: logoUrl
+            });
+        }
+
+        function generateDataString() {
+            switch(currentMode) {
+                case 'url':
+                    return document.getElementById('inp-url').value || "https://example.com";
+
+                case 'wifi':
+                    const ssid = document.getElementById('inp-wifi-ssid').value;
+                    const pass = document.getElementById('inp-wifi-pass').value;
+                    const type = document.getElementById('inp-wifi-type').value;
+                    // WIFI Format: WIFI:T:WPA;S:MyNetwork;P:MyPass;;
+                    return `WIFI:T:${type};S:${ssid};P:${pass};;`;
+
+                case 'vcard':
+                    const n = document.getElementById('inp-vc-last').value;
+                    const fn = document.getElementById('inp-vc-first').value;
+                    const org = document.getElementById('inp-vc-org').value;
+                    const tel = document.getElementById('inp-vc-phone').value;
+                    const mail = document.getElementById('inp-vc-email').value;
+                    const web = document.getElementById('inp-vc-web').value;
+
+                    return `BEGIN:VCARD
+VERSION:3.0
+N:${n};${fn}
+FN:${fn} ${n}
+ORG:${org}
+TEL:${tel}
+EMAIL:${mail}
+URL:${web}
+END:VCARD`;
+
+                case 'email':
+                    const mailto = document.getElementById('inp-mail-to').value;
+                    const sub = document.getElementById('inp-mail-sub').value;
+                    const body = document.getElementById('inp-mail-body').value;
+                    return `mailto:${mailto}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
+
+                case 'text':
+                    return document.getElementById('inp-text').value || "Hallo Welt";
+
+                default: return "Error";
+            }
+        }
+
+        // --- Styling Functions ---
+
+        function setDotType(type) {
+            qrCode.update({ dotsOptions: { type: type } });
+        }
+
+        function setCornerType(type) {
+            qrCode.update({ cornersSquareOptions: { type: type } });
+        }
+
+        function toggleGradient() {
+            const useGrad = document.getElementById('use-gradient').checked;
+            const ui = document.getElementById('gradient-ui');
+            if(useGrad) ui.classList.remove('hidden');
+            else ui.classList.add('hidden');
+            updateQR();
+        }
+
+        function togglePassVisibility() {
+            const inp = document.getElementById('inp-wifi-pass');
+            if(inp.type === "text") inp.type = "password";
+            else inp.type = "text";
+        }
+
+        // --- Logo Functions ---
+
+        function handleLogoUpload(input) {
+            const file = input.files[0];
+            if(!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                logoUrl = e.target.result;
+                updateQR();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function setPresetLogo(type) {
+            // Using simple base64 or external URLs for presets to keep single file
+            // Here we use reliable external icons, but normally base64 is better for offline
+            const icons = {
+                wifi: "https://cdn-icons-png.flaticon.com/512/93/93158.png",
+                cube: "https://cdn-icons-png.flaticon.com/512/103/103903.png", // Generic cube
+                facebook: "https://cdn-icons-png.flaticon.com/512/5968/5968764.png",
+                instagram: "https://cdn-icons-png.flaticon.com/512/3955/3955024.png",
+                whatsapp: "https://cdn-icons-png.flaticon.com/512/3670/3670051.png"
+            };
+            logoUrl = icons[type];
+            updateQR();
+        }
+
+        function clearLogo() {
+            logoUrl = "";
+            updateQR();
+        }
+
+        // --- Download ---
+
+        function downloadQR(ext) {
+            qrCode.download({ name: "my-qr-code", extension: ext });
+        }
+
+    </script>
+</body>
+</html>
