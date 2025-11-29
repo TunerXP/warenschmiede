@@ -45,6 +45,7 @@
   </script>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="/assets/print.css?v=1.0.7" media="print">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Oswald:wght@500;700&family=Orbitron:wght@500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
   <script>
     window.tailwind = window.tailwind || {};
     window.tailwind.config = { corePlugins: { preflight: false } };
@@ -111,6 +112,33 @@
     .gif-studio .frames-scroll::-webkit-scrollbar-thumb {
       background: #475569;
       border-radius: 4px;
+    }
+
+    .banner-builder-root {
+      font-family: 'Inter', sans-serif;
+      background-color: #0f172a;
+      color: #e2e8f0;
+    }
+
+    .banner-builder-root .canvas-container-wrapper {
+      background-image: linear-gradient(45deg, #1e293b 25%, transparent 25%), linear-gradient(-45deg, #1e293b 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1e293b 75%), linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    }
+
+    .banner-builder-root ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .banner-builder-root ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+
+    .banner-builder-root ::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 3px;
     }
   </style>
 </head>
@@ -519,6 +547,148 @@
       </div>
     </section>
 
+    <section id="banner-builder" class="section ws-section" aria-label="Banner Builder PRO">
+      <div class="container">
+        <div class="converter-hero">
+          <p class="eyebrow">Banner Builder</p>
+          <h2 class="ws-section-title">Banner Builder – Web-Banner im Browser gestalten</h2>
+          <p>Gestalte simple Website-Banner direkt im Browser. Alles läuft lokal – ideal für schnelle Header, CTA-Boxen oder Social-Teaser.</p>
+        </div>
+
+        <div class="banner-builder-root mt-10 rounded-3xl border border-slate-800 shadow-xl overflow-hidden">
+          <div class="bg-slate-800/60 border-b border-slate-700 flex items-center justify-between px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="bg-indigo-600 p-2 rounded-lg">
+                <i class="ph ph-paint-brush-broad text-xl text-white"></i>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-wide text-slate-300 font-semibold">Canvas-Designer</p>
+                <h3 class="font-bold text-lg text-white tracking-wide">Banner Builder PRO</h3>
+              </div>
+            </div>
+
+            <button onclick="bannerDownload()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
+              <i class="ph ph-download-simple text-lg"></i> Speichern (PNG)
+            </button>
+          </div>
+
+          <div class="flex flex-col lg:flex-row h-full overflow-hidden">
+            <div class="w-full lg:w-80 bg-slate-800 border-b lg:border-b-0 lg:border-r border-slate-700 flex flex-col overflow-y-auto shrink-0 z-10">
+              <div class="p-5 border-b border-slate-700">
+                <h3 class="text-xs font-bold text-slate-400 uppercase mb-3 flex items-center gap-2">
+                  <i class="ph ph-ruler"></i> Größe
+                </h3>
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                  <button onclick="bannerResizeCanvas(1200, 400)" class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors">
+                    <span class="block font-bold text-white">Hero Groß</span>
+                    <span class="text-slate-400">1200 x 400</span>
+                  </button>
+                  <button onclick="bannerResizeCanvas(800, 200)" class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors">
+                    <span class="block font-bold text-white">Header Blog</span>
+                    <span class="text-slate-400">800 x 200</span>
+                  </button>
+                  <button onclick="bannerResizeCanvas(300, 250)" class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors">
+                    <span class="block font-bold text-white">Sidebar Box</span>
+                    <span class="text-slate-400">300 x 250</span>
+                  </button>
+                  <button onclick="bannerResizeCanvas(1080, 1080)" class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors">
+                    <span class="block font-bold text-white">Instagram/Quadrat</span>
+                    <span class="text-slate-400">1080 x 1080</span>
+                  </button>
+                </div>
+                <div class="flex gap-2 items-center text-xs">
+                  <input type="number" id="banner-custom-w" value="800" class="w-16 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-white">
+                  <span class="text-slate-500">x</span>
+                  <input type="number" id="banner-custom-h" value="400" class="w-16 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-white">
+                  <button onclick="bannerApplyCustomSize()" class="ml-auto text-indigo-400 hover:text-indigo-300">Setzen</button>
+                </div>
+              </div>
+
+              <div class="p-5 border-b border-slate-700 space-y-3">
+                <h3 class="text-xs font-bold text-slate-400 uppercase mb-1 flex items-center gap-2">
+                  <i class="ph ph-plus-circle"></i> Hinzufügen
+                </h3>
+
+                <button onclick="bannerAddText()" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm">
+                  <i class="ph ph-text-t text-lg text-indigo-400"></i> Text
+                </button>
+
+                <label class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm cursor-pointer">
+                  <i class="ph ph-image text-lg text-emerald-400"></i> Bild hochladen
+                  <input type="file" id="banner-img-upload" class="hidden" accept="image/*" onchange="bannerHandleImageUpload(this)">
+                </label>
+
+                <button onclick="bannerAddRect()" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm">
+                  <i class="ph ph-square text-lg text-blue-400"></i> Box
+                </button>
+
+                <button onclick="bannerAddButton()" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm">
+                  <i class="ph ph-hand-pointing text-lg text-amber-400"></i> Button
+                </button>
+              </div>
+
+              <div class="p-5 flex-1" id="banner-properties-panel">
+                <h3 class="text-xs font-bold text-slate-400 uppercase mb-4 flex items-center gap-2">
+                  <i class="ph ph-sliders"></i> Eigenschaften
+                </h3>
+
+                <div id="banner-no-selection" class="text-slate-500 text-sm italic text-center py-4">
+                  Wähle ein Element auf der Leinwand aus.
+                </div>
+
+                <div id="banner-selection-controls" class="hidden space-y-4">
+                  <div>
+                    <label class="block text-xs text-slate-400 mb-1">Farbe</label>
+                    <div class="flex gap-2">
+                      <input type="color" id="banner-color-picker" class="h-8 w-full bg-transparent cursor-pointer rounded overflow-hidden" onchange="bannerUpdateColor(this.value)">
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs text-slate-400 mb-1 flex justify-between">
+                      <span>Deckkraft</span> <span id="banner-opacity-val">100%</span>
+                    </label>
+                    <input type="range" min="0" max="1" step="0.1" value="1" class="w-full h-1 bg-slate-600 rounded appearance-none" oninput="bannerUpdateOpacity(this.value)">
+                  </div>
+
+                  <div id="banner-text-controls" class="hidden space-y-4 pt-4 border-t border-slate-700">
+                    <div>
+                      <label class="block text-xs text-slate-400 mb-1">Schriftart</label>
+                      <select id="banner-font-family" onchange="bannerUpdateFont(this.value)" class="w-full bg-slate-900 border border-slate-600 text-white text-sm rounded p-2">
+                        <option value="Inter">Standard (Inter)</option>
+                        <option value="Oswald">Oswald (Modern)</option>
+                        <option value="Bebas Neue">Bebas (Plakat)</option>
+                        <option value="Orbitron">Orbitron (Sci-Fi/Gaming)</option>
+                      </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                      <button onclick="bannerToggleBold()" class="bg-slate-700 p-2 rounded hover:bg-slate-600 text-white"><i class="ph ph-text-b"></i> Fett</button>
+                      <button onclick="bannerToggleItalic()" class="bg-slate-700 p-2 rounded hover:bg-slate-600 text-white"><i class="ph ph-text-italic"></i> Kursiv</button>
+                    </div>
+                  </div>
+
+                  <div class="pt-4 border-t border-slate-700 grid grid-cols-2 gap-2">
+                    <button onclick="bannerBringForward()" class="bg-slate-700 hover:bg-slate-600 text-xs p-2 rounded text-white">Ebene hoch</button>
+                    <button onclick="bannerSendBack()" class="bg-slate-700 hover:bg-slate-600 text-xs p-2 rounded text-white">Ebene runter</button>
+                  </div>
+
+                  <button onclick="bannerDeleteObject()" class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/50 py-2 rounded text-sm mt-4 transition-colors">
+                    <i class="ph ph-trash"></i> Entfernen
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex-1 bg-slate-900 overflow-auto flex items-center justify-center p-8 canvas-container-wrapper relative">
+              <div class="shadow-2xl border border-slate-700 relative max-w-full overflow-auto">
+                <canvas id="banner-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="section ws-section" aria-label="Datenschutz zum Bild-Konverter">
       <div class="container">
         <h2 class="ws-section-title">Datenschutz-Hinweis</h2>
@@ -548,6 +718,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
   <script>
     // State
     let files = [];
@@ -1103,6 +1274,235 @@
       updateFrameList();
       setupWorker();
     })();
+  </script>
+  <script>
+    const bannerCanvas = new fabric.Canvas('banner-canvas', {
+      backgroundColor: '#1e293b',
+      preserveObjectStacking: true
+    });
+
+    const bannerSelectionControls = document.getElementById('banner-selection-controls');
+    const bannerNoSelection = document.getElementById('banner-no-selection');
+    const bannerColorPicker = document.getElementById('banner-color-picker');
+    const bannerTextControls = document.getElementById('banner-text-controls');
+    const bannerOpacityVal = document.getElementById('banner-opacity-val');
+
+    bannerResizeCanvas(800, 400);
+
+    function bannerResizeCanvas(w, h) {
+      bannerCanvas.setWidth(w);
+      bannerCanvas.setHeight(h);
+
+      document.getElementById('banner-custom-w').value = w;
+      document.getElementById('banner-custom-h').value = h;
+    }
+
+    function bannerApplyCustomSize() {
+      const w = parseInt(document.getElementById('banner-custom-w').value, 10);
+      const h = parseInt(document.getElementById('banner-custom-h').value, 10);
+      if (!Number.isNaN(w) && !Number.isNaN(h) && w > 0 && h > 0) {
+        bannerResizeCanvas(w, h);
+      }
+    }
+
+    function bannerAddText() {
+      const text = new fabric.IText('Dein Text', {
+        left: 50,
+        top: 50,
+        fontFamily: 'Inter',
+        fill: '#ffffff',
+        fontSize: 40
+      });
+      bannerCanvas.add(text);
+      bannerCanvas.setActiveObject(text);
+    }
+
+    function bannerAddRect() {
+      const rect = new fabric.Rect({
+        left: 100,
+        top: 100,
+        fill: '#4f46e5',
+        width: 200,
+        height: 100,
+        rx: 10,
+        ry: 10
+      });
+      bannerCanvas.add(rect);
+      bannerCanvas.setActiveObject(rect);
+    }
+
+    function bannerAddButton() {
+      const rect = new fabric.Rect({
+        fill: '#10b981',
+        width: 150,
+        height: 50,
+        rx: 25,
+        ry: 25,
+        originX: 'center',
+        originY: 'center'
+      });
+
+      const text = new fabric.IText('Hier klicken', {
+        fontSize: 18,
+        fontFamily: 'Inter',
+        fill: '#ffffff',
+        originX: 'center',
+        originY: 'center'
+      });
+
+      const group = new fabric.Group([rect, text], {
+        left: 150,
+        top: 150
+      });
+
+      bannerCanvas.add(group);
+      bannerCanvas.setActiveObject(group);
+    }
+
+    function bannerHandleImageUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const imgObj = new Image();
+        imgObj.src = e.target.result;
+        imgObj.onload = function () {
+          const imgInstance = new fabric.Image(imgObj);
+
+          if (imgInstance.width > 500) {
+            imgInstance.scaleToWidth(400);
+          }
+
+          imgInstance.set({
+            left: 100,
+            top: 100
+          });
+
+          bannerCanvas.add(imgInstance);
+          bannerCanvas.setActiveObject(imgInstance);
+          input.value = '';
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+
+    bannerCanvas.on('selection:created', bannerUpdateControls);
+    bannerCanvas.on('selection:updated', bannerUpdateControls);
+    bannerCanvas.on('selection:cleared', () => {
+      bannerSelectionControls.classList.add('hidden');
+      bannerNoSelection.classList.remove('hidden');
+    });
+
+    function bannerUpdateControls() {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (!activeObj) return;
+
+      bannerNoSelection.classList.add('hidden');
+      bannerSelectionControls.classList.remove('hidden');
+
+      const fillColor = activeObj.fill || '#ffffff';
+      const opacityValue = typeof activeObj.opacity === 'number' ? activeObj.opacity : 1;
+      bannerColorPicker.value = fillColor;
+      bannerOpacityVal.textContent = Math.round(opacityValue * 100) + '%';
+
+      if (activeObj.type === 'i-text' || activeObj.type === 'text') {
+        bannerTextControls.classList.remove('hidden');
+        document.getElementById('banner-font-family').value = activeObj.fontFamily || 'Inter';
+      } else {
+        bannerTextControls.classList.add('hidden');
+      }
+    }
+
+    function bannerUpdateColor(color) {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj) {
+        activeObj.set('fill', color);
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerUpdateOpacity(val) {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj) {
+        const parsed = parseFloat(val);
+        activeObj.set('opacity', parsed);
+        bannerOpacityVal.textContent = Math.round(parsed * 100) + '%';
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerUpdateFont(font) {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj && (activeObj.type === 'i-text' || activeObj.type === 'text')) {
+        activeObj.set('fontFamily', font);
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerToggleBold() {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj && (activeObj.type === 'i-text' || activeObj.type === 'text')) {
+        activeObj.set('fontWeight', activeObj.fontWeight === 'bold' ? 'normal' : 'bold');
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerToggleItalic() {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj && (activeObj.type === 'i-text' || activeObj.type === 'text')) {
+        activeObj.set('fontStyle', activeObj.fontStyle === 'italic' ? 'normal' : 'italic');
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerBringForward() {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj) {
+        bannerCanvas.bringForward(activeObj);
+        bannerCanvas.discardActiveObject();
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerSendBack() {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj) {
+        bannerCanvas.sendBackwards(activeObj);
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerDeleteObject() {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj) {
+        bannerCanvas.remove(activeObj);
+        bannerCanvas.discardActiveObject();
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerDownload() {
+      bannerCanvas.discardActiveObject();
+      bannerCanvas.requestRenderAll();
+
+      const link = document.createElement('a');
+      link.download = 'banner_design.png';
+      link.href = bannerCanvas.toDataURL({
+        format: 'png',
+        quality: 1
+      });
+      link.click();
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        const activeObj = bannerCanvas.getActiveObject();
+        if (activeObj && !activeObj.isEditing) {
+          bannerDeleteObject();
+        }
+      }
+    });
   </script>
   <script src="assets/js/theme.js" defer></script>
   <script src="assets/js/header.js" defer></script>
