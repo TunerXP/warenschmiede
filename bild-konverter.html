@@ -45,100 +45,49 @@
   </script>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="/assets/print.css?v=1.0.7" media="print">
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = { corePlugins: { preflight: false } };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .converter-hero {
       text-align: center;
       max-width: 840px;
       margin: 0 auto;
     }
-    .converter-grid {
-      display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
-      gap: 24px;
-      align-items: start;
-    }
-    .converter-panel {
-      padding: 1.25rem;
-    }
-    .converter-panel h2 {
-      margin-top: 0;
-    }
-    .converter-panel .form-group {
-      margin-bottom: 1rem;
-    }
-    .converter-panel label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 0.35rem;
-    }
-    .converter-panel input[type="file"],
-    .converter-panel select,
-    .converter-panel input[type="range"] {
-      width: 100%;
-    }
-    .converter-panel .helper-text {
-      font-size: 0.95rem;
-      color: var(--text-muted);
-    }
-    .converter-preview {
-      display: grid;
-      gap: 0.75rem;
-    }
-    .preview-box {
-      border-radius: var(--radius-card);
-      border: 1px solid var(--border-color, #d9dde7);
-      padding: 0.75rem;
-      background: var(--card, #f5f7fb);
-    }
-    .preview-box img {
-      width: 100%;
-      max-height: 320px;
-      object-fit: contain;
-      display: block;
-      border-radius: 12px;
-      background: var(--surface, #fff);
-    }
-    .preview-meta {
-      display: grid;
-      gap: 0.35rem;
-      font-size: 0.95rem;
-    }
-    .converter-message {
-      padding: 0.75rem 0.9rem;
-      border-radius: 12px;
-      border: 1px solid var(--border-color, #d9dde7);
-      background: var(--surface, #fff);
-      color: var(--text);
-    }
-    .converter-message.is-error {
-      border-color: #e76f51;
-      background: #fff2ef;
-      color: #7a1b00;
-    }
-    .converter-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      align-items: center;
-    }
-    .converter-actions .btn {
-      margin: 0;
-    }
-    .quality-value {
-      font-weight: 600;
-      margin-left: 0.35rem;
-    }
-    .converter-note {
-      font-size: 0.95rem;
-      color: var(--text-muted);
-    }
+
     @media (max-width: 960px) {
-      .converter-grid {
-        grid-template-columns: 1fr;
-      }
       .converter-hero {
         text-align: left;
       }
+    }
+
+    .pro-converter .drop-zone {
+      transition: all 0.3s ease;
+      background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%233B82F6FF' stroke-width='2' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+    }
+
+    .pro-converter .drop-zone.dragover {
+      background-color: #1e293b;
+      transform: scale(1.01);
+    }
+
+    .pro-converter ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .pro-converter ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+
+    .pro-converter ::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 4px;
+    }
+
+    .pro-converter ::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
     }
   </style>
 </head>
@@ -313,8 +262,8 @@
     <section class="section section-hero">
       <div class="container converter-hero">
         <p class="hero-eyebrow">Neu im Browser</p>
-        <h1>Bild-Konverter (PNG, JPG, WebP)</h1>
-        <p class="hero-lede">Wandelt Bilder direkt im Browser um – ohne Upload, ohne Werbung, ohne Tracking.</p>
+        <h1>Pro Bild Konverter (PNG, JPG, WebP)</h1>
+        <p class="hero-lede">Erweiterter Bild-Konverter mit Batch-Funktion, Qualitätsregler und ZIP-Download – alles direkt im Browser.</p>
         <p class="hero-meta">Unterstützt JPG, PNG und WebP. Die Umwandlung läuft komplett lokal auf deinem Gerät.</p>
       </div>
     </section>
@@ -330,46 +279,110 @@
     </section>
 
     <section class="section ws-section" aria-labelledby="converter-heading">
-      <div class="container converter-grid">
-        <div class="ws-card converter-panel">
-          <h2 id="converter-heading" class="ws-section-title">1️⃣ Bild auswählen</h2>
-          <div class="form-group">
-            <label for="imageInput">Bilddatei (JPG, PNG oder WebP)</label>
-            <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp">
-            <p class="helper-text">Unterstützte Formate: JPG/JPEG, PNG, WebP</p>
-          </div>
-
-          <h2 class="ws-section-title">2️⃣ Zielformat festlegen</h2>
-          <div class="form-group">
-            <label for="targetFormat">Zielformat</label>
-            <select id="targetFormat">
-              <option value="jpg">Nach JPG umwandeln</option>
-              <option value="png">Nach PNG umwandeln</option>
-              <option value="webp">Nach WebP umwandeln</option>
-            </select>
-            <p class="helper-text">Auch wenn das Eingabeformat gleich ist, kannst du die Qualität anpassen oder WebP erzeugen.</p>
-          </div>
-
-          <div class="form-group" id="qualityRow">
-            <label for="qualityInput">Qualität für JPG/WebP <span class="quality-value" id="qualityValue">80%</span></label>
-            <input type="range" id="qualityInput" min="30" max="100" step="5" value="80">
-            <p class="helper-text">60–80&nbsp;% ist oft ein guter Kompromiss zwischen Größe und Qualität. PNG wird immer verlustfrei gespeichert.</p>
-          </div>
-
-          <div class="converter-actions">
-            <button type="button" class="btn btn-primary" id="convertBtn">Bild umwandeln &amp; herunterladen</button>
-            <p class="converter-note">Wenn kein Bild geladen ist, erhältst du einen Hinweis.</p>
-          </div>
-          <div id="converterMessage" class="converter-message" aria-live="polite" hidden></div>
+      <div class="container">
+        <div class="ws-card" style="margin-bottom: 1.5rem;">
+          <h2 id="converter-heading" class="ws-section-title">Der Pro-Modus für deine Bildkonvertierungen</h2>
+          <p>Der klassische Bild-Konverter ist jetzt umgezogen: Mit dem Pro Bild Konverter kannst du mehrere Dateien gleichzeitig umwandeln, die Qualität steuern, bei Bedarf skalieren und alles als ZIP herunterladen. Die Basis bleibt gleich: kein Upload, keine Server-Speicherung – alles bleibt lokal.</p>
         </div>
+        <div class="pro-converter">
+          <div class="w-full max-w-6xl mx-auto bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 flex justify-between items-center">
+              <div>
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                  <i class="ph ph-arrows-left-right text-3xl"></i> Pro Bild Konverter
+                </h2>
+                <p class="text-blue-100 text-sm mt-1">Konvertieren, Komprimieren &amp; Skalieren – lokal im Browser</p>
+              </div>
+              <div class="hidden sm:block text-right">
+                <span class="text-xs bg-white/20 px-2 py-1 rounded text-white">Version 2.0</span>
+              </div>
+            </div>
 
-        <div class="ws-card converter-panel converter-preview">
-          <h2 class="ws-section-title">3️⃣ Vorschau &amp; Details</h2>
-          <div class="preview-box" id="previewBox" hidden>
-            <img id="imagePreview" alt="Vorschau des hochgeladenen Bildes">
-            <div class="preview-meta" id="previewMeta"></div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 h-full lg:h-[700px]">
+              <div class="lg:col-span-1 bg-slate-800 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 flex flex-col gap-6 overflow-y-auto">
+                <div class="space-y-3">
+                  <label class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Ziel-Format</label>
+                  <div class="grid grid-cols-3 gap-2">
+                    <button onclick="setFormat('image/jpeg', 'jpg')" class="format-btn active bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-sm font-medium transition-colors" data-format="jpg">JPG</button>
+                    <button onclick="setFormat('image/png', 'png')" class="format-btn bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 rounded-lg text-sm font-medium transition-colors" data-format="png">PNG</button>
+                    <button onclick="setFormat('image/webp', 'webp')" class="format-btn bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 rounded-lg text-sm font-medium transition-colors" data-format="webp">WEBP</button>
+                  </div>
+                </div>
+
+                <div class="space-y-3" id="quality-container">
+                  <div class="flex justify-between">
+                    <label class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Qualität</label>
+                    <span id="quality-value" class="text-sm font-mono text-blue-400">90%</span>
+                  </div>
+                  <input type="range" id="quality" min="10" max="100" value="90" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                  <p class="text-xs text-slate-500">Niedrigere Qualität = kleinere Dateigröße (nur JPG/WEBP).</p>
+                </div>
+
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between">
+                    <label class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Größe ändern</label>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" id="resize-toggle" class="sr-only peer">
+                      <div class="w-11 h-6 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                  </div>
+
+                  <div id="resize-options" class="hidden space-y-2 pt-2 transition-all">
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="ph ph-arrows-out-line-horizontal text-slate-400"></i>
+                      </div>
+                      <input type="number" id="max-width" placeholder="Max Breite (px)" class="bg-slate-700 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 placeholder-slate-400">
+                    </div>
+                    <p class="text-xs text-slate-500">Seitenverhältnis wird beibehalten.</p>
+                  </div>
+                </div>
+
+                <div class="mt-auto pt-6 border-t border-slate-700">
+                  <button onclick="processAll()" id="convert-btn" disabled class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
+                    <i class="ph ph-play-circle text-xl"></i>
+                    <span>Alle konvertieren</span>
+                  </button>
+                  <button onclick="downloadAllZip()" id="zip-btn" class="hidden w-full mt-3 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
+                    <i class="ph ph-download-simple text-xl"></i>
+                    <span>Als ZIP herunterladen</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="lg:col-span-2 bg-slate-900/50 p-6 flex flex-col h-full relative">
+                <div id="drop-zone" class="drop-zone w-full h-48 rounded-2xl flex flex-col justify-center items-center cursor-pointer mb-6 group hover:bg-slate-800/50 transition-colors relative">
+                  <input type="file" id="file-input" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                  <div class="text-center z-0 pointer-events-none">
+                    <div class="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                      <i class="ph ph-cloud-arrow-up text-3xl text-blue-400"></i>
+                    </div>
+                    <p class="text-lg text-slate-300 font-medium">Bilder hier ablegen</p>
+                    <p class="text-sm text-slate-500 mt-1">oder klicken zum Auswählen</p>
+                  </div>
+                </div>
+
+                <div class="flex justify-between items-center mb-3">
+                  <h3 class="text-slate-400 text-sm font-semibold uppercase tracking-wider">Warteschlange <span id="file-count" class="bg-slate-700 text-white px-2 py-0.5 rounded-full text-xs ml-2">0</span></h3>
+                  <button onclick="clearAll()" class="text-xs text-red-400 hover:text-red-300 flex items-center gap-1">
+                    <i class="ph ph-trash"></i> Alle löschen
+                  </button>
+                </div>
+
+                <div id="file-list" class="flex-1 overflow-y-auto space-y-3 pr-2">
+                  <div id="empty-state" class="h-full flex flex-col items-center justify-center text-slate-600 pb-10">
+                    <i class="ph ph-images text-5xl mb-3 opacity-50"></i>
+                    <p>Noch keine Bilder ausgewählt.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <p class="converter-note">Hinweis für ältere Browser: Falls dein Browser WebP nicht unterstützt, wähle JPG oder PNG. In diesem Fall erscheint eine Fehlermeldung.</p>
+        </div>
+        <div id="processing-overlay" class="fixed inset-0 bg-slate-900/90 z-50 hidden flex flex-col items-center justify-center">
+          <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <h2 class="text-2xl font-bold text-white">Verarbeite...</h2>
+          <p class="text-slate-400 mt-2" id="progress-text">0 / 0 fertig</p>
         </div>
       </div>
     </section>
@@ -399,154 +412,241 @@
       </div>
     </div>
   </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script>
-    (function () {
-      var fileInput = document.getElementById('imageInput');
-      var targetFormat = document.getElementById('targetFormat');
-      var qualityRow = document.getElementById('qualityRow');
-      var qualityInput = document.getElementById('qualityInput');
-      var qualityValue = document.getElementById('qualityValue');
-      var convertBtn = document.getElementById('convertBtn');
-      var previewBox = document.getElementById('previewBox');
-      var previewImg = document.getElementById('imagePreview');
-      var previewMeta = document.getElementById('previewMeta');
-      var messageBox = document.getElementById('converterMessage');
-      var loadedImage = null;
-      var supportedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-      var webpSupport = (function () {
-        var canvas = document.createElement('canvas');
-        if (!canvas.toDataURL) return false;
+    // State
+    let files = [];
+    let convertedFiles = [];
+    let settings = {
+      mimeType: 'image/jpeg',
+      extension: 'jpg',
+      quality: 0.9,
+      resize: false,
+      maxWidth: 1920
+    };
+
+    // DOM Elements
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const fileList = document.getElementById('file-list');
+    const emptyState = document.getElementById('empty-state');
+    const fileCount = document.getElementById('file-count');
+    const convertBtn = document.getElementById('convert-btn');
+    const zipBtn = document.getElementById('zip-btn');
+    const qualitySlider = document.getElementById('quality');
+    const qualityValue = document.getElementById('quality-value');
+    const resizeToggle = document.getElementById('resize-toggle');
+    const resizeOptions = document.getElementById('resize-options');
+    const maxWidthInput = document.getElementById('max-width');
+    const processingOverlay = document.getElementById('processing-overlay');
+    const progressText = document.getElementById('progress-text');
+
+    qualitySlider.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value, 10);
+      settings.quality = val / 100;
+      qualityValue.textContent = val + '%';
+    });
+
+    resizeToggle.addEventListener('change', (e) => {
+      settings.resize = e.target.checked;
+      if (e.target.checked) {
+        resizeOptions.classList.remove('hidden');
+      } else {
+        resizeOptions.classList.add('hidden');
+      }
+    });
+
+    maxWidthInput.addEventListener('input', (e) => {
+      settings.maxWidth = parseInt(e.target.value, 10) || 1920;
+    });
+
+    function setFormat(mime, ext) {
+      settings.mimeType = mime;
+      settings.extension = ext;
+
+      document.querySelectorAll('.format-btn').forEach(btn => {
+        if (btn.dataset.format === ext) {
+          btn.classList.remove('bg-slate-700', 'text-slate-200');
+          btn.classList.add('bg-blue-600', 'text-white');
+        } else {
+          btn.classList.add('bg-slate-700', 'text-slate-200');
+          btn.classList.remove('bg-blue-600', 'text-white');
+        }
+      });
+
+      const qualityContainer = document.getElementById('quality-container');
+      if (ext === 'png') {
+        qualityContainer.classList.add('opacity-50', 'pointer-events-none');
+      } else {
+        qualityContainer.classList.remove('opacity-50', 'pointer-events-none');
+      }
+    }
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      handleFiles(e.target.files);
+      fileInput.value = '';
+    });
+
+    function handleFiles(newFiles) {
+      const validFiles = Array.from(newFiles).filter(file => file.type.startsWith('image/'));
+      if (validFiles.length === 0) return;
+
+      files = [...files, ...validFiles];
+      convertedFiles = [];
+      zipBtn.classList.add('hidden');
+      updateUI();
+    }
+
+    function updateUI() {
+      fileList.innerHTML = '';
+      fileCount.textContent = files.length;
+      convertBtn.disabled = files.length === 0;
+
+      if (files.length === 0) {
+        fileList.appendChild(emptyState);
+        return;
+      }
+
+      files.forEach((file, index) => {
+        const li = document.createElement('div');
+        li.className = 'bg-slate-800 p-3 rounded-xl flex items-center gap-4 animate-[fadeIn_0.3s_ease-out]';
+
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.className = 'w-12 h-12 object-cover rounded-lg bg-slate-700';
+        img.onload = () => URL.revokeObjectURL(img.src);
+
+        const info = document.createElement('div');
+        info.className = 'flex-1 min-w-0';
+        info.innerHTML = `
+                    <p class="text-sm font-medium text-white truncate">${file.name}</p>
+                    <p class="text-xs text-slate-500">${(file.size / 1024).toFixed(1)} KB &bull; ${file.type.split('/')[1].toUpperCase()}</p>
+                `;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'text-slate-500 hover:text-red-400 p-2 transition-colors';
+        removeBtn.innerHTML = '<i class="ph ph-x"></i>';
+        removeBtn.onclick = () => removeFile(index);
+
+        li.appendChild(img);
+        li.appendChild(info);
+        li.appendChild(removeBtn);
+        fileList.appendChild(li);
+      });
+    }
+
+    function removeFile(index) {
+      files.splice(index, 1);
+      updateUI();
+    }
+
+    function clearAll() {
+      files = [];
+      convertedFiles = [];
+      zipBtn.classList.add('hidden');
+      updateUI();
+    }
+
+    async function processAll() {
+      if (files.length === 0) return;
+
+      processingOverlay.classList.remove('hidden');
+      convertedFiles = [];
+
+      for (let i = 0; i < files.length; i++) {
+        progressText.textContent = `${i + 1} / ${files.length} werden verarbeitet...`;
         try {
-          return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
-        } catch (error) {
-          return false;
+          const blob = await convertSingleFile(files[i]);
+          convertedFiles.push({
+            name: files[i].name.split('.')[0] + '.' + settings.extension,
+            blob: blob
+          });
+        } catch (err) {
+          console.error('Fehler bei Bild:', files[i].name, err);
         }
-      })();
-
-      function updateQualityLabel() {
-        qualityValue.textContent = qualityInput.value + '%';
       }
 
-      function showMessage(text, isError) {
-        messageBox.textContent = text;
-        messageBox.hidden = false;
-        messageBox.classList.toggle('is-error', Boolean(isError));
+      processingOverlay.classList.add('hidden');
+
+      if (convertedFiles.length > 0) {
+        zipBtn.classList.remove('hidden');
+        alert(`Fertig! ${convertedFiles.length} Bilder konvertiert.`);
       }
+    }
 
-      function resetPreview() {
-        previewBox.hidden = true;
-        previewImg.removeAttribute('src');
-        previewMeta.innerHTML = '';
-      }
-
-      function formatFileName(name) {
-        if (!name) return 'bild';
-        var parts = name.split('.');
-        if (parts.length === 1) return name;
-        parts.pop();
-        return parts.join('.') || 'bild';
-      }
-
-      fileInput.addEventListener('change', function (event) {
-        var file = event.target.files && event.target.files[0];
-        if (!file) {
-          loadedImage = null;
-          resetPreview();
-          showMessage('Bitte zuerst ein Bild auswählen.', true);
-          return;
-        }
-
-        if (supportedTypes.indexOf(file.type) === -1) {
-          loadedImage = null;
-          resetPreview();
-          showMessage('Dieses Format wird aktuell nicht unterstützt. Bitte wähle JPG, PNG oder WebP.', true);
-          fileInput.value = '';
-          return;
-        }
-
-        var reader = new FileReader();
-        reader.onload = function (loadEvent) {
-          var dataUrl = loadEvent.target.result;
-          var img = new Image();
-          img.onload = function () {
-            loadedImage = {
-              file: file,
-              dataUrl: dataUrl,
-              width: img.naturalWidth,
-              height: img.naturalHeight
-            };
-            previewImg.src = dataUrl;
-            previewBox.hidden = false;
-            previewMeta.innerHTML = '<strong>Datei:</strong> ' + file.name + '<br>' +
-              '<strong>Format:</strong> ' + file.type.replace('image/', '').toUpperCase() + '<br>' +
-              '<strong>Abmessungen:</strong> ' + img.naturalWidth + ' × ' + img.naturalHeight + ' Pixel';
-            showMessage('Bild geladen. Du kannst jetzt das Zielformat wählen und umwandeln.', false);
-          };
-          img.onerror = function () {
-            loadedImage = null;
-            resetPreview();
-            showMessage('Das Bild konnte nicht geladen werden. Bitte probiere eine andere Datei.', true);
-          };
-          img.src = dataUrl;
-        };
+    function convertSingleFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
         reader.readAsDataURL(file);
-      });
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
 
-      targetFormat.addEventListener('change', function (event) {
-        var value = event.target.value;
-        var needsQuality = value === 'jpg' || value === 'webp';
-        qualityRow.style.display = needsQuality ? 'block' : 'none';
-      });
-
-      qualityInput.addEventListener('input', updateQualityLabel);
-      updateQualityLabel();
-
-      convertBtn.addEventListener('click', function () {
-        if (!loadedImage) {
-          showMessage('Bitte zuerst ein Bild auswählen.', true);
-          return;
-        }
-
-        var target = targetFormat.value;
-        var mimeType = target === 'png' ? 'image/png' : target === 'webp' ? 'image/webp' : 'image/jpeg';
-        if (mimeType === 'image/webp' && !webpSupport) {
-          showMessage('Dein Browser unterstützt WebP anscheinend nicht. Bitte wähle JPG oder PNG.', true);
-          return;
-        }
-
-        var canvas = document.createElement('canvas');
-        canvas.width = loadedImage.width;
-        canvas.height = loadedImage.height;
-        var ctx = canvas.getContext('2d');
-        var img = new Image();
-        img.onload = function () {
-          ctx.drawImage(img, 0, 0);
-          var quality = mimeType === 'image/png' ? undefined : Number(qualityInput.value) / 100;
-          canvas.toBlob(function (blob) {
-            if (!blob) {
-              showMessage('Das gewünschte Zielformat wird von diesem Browser nicht unterstützt.', true);
-              return;
+            if (settings.resize && width > settings.maxWidth) {
+              height = Math.round(height * (settings.maxWidth / width));
+              width = settings.maxWidth;
             }
-            var baseName = formatFileName(loadedImage.file && loadedImage.file.name);
-            var extension = target === 'jpg' ? 'jpg' : target === 'webp' ? 'webp' : 'png';
-            var downloadName = baseName + '_converted.' + extension;
-            var url = URL.createObjectURL(blob);
-            var link = document.createElement('a');
-            link.href = url;
-            link.download = downloadName;
-            link.click();
-            URL.revokeObjectURL(url);
-            showMessage('Fertig! Dein Download startet gleich. Dateiname: ' + downloadName, false);
-          }, mimeType, quality);
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+
+            if (settings.extension === 'jpg' || settings.extension === 'jpeg') {
+              ctx.fillStyle = '#FFFFFF';
+              ctx.fillRect(0, 0, width, height);
+            }
+
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob((blob) => {
+              if (blob) resolve(blob);
+              else reject(new Error('Canvas conversion failed'));
+            }, settings.mimeType, settings.quality);
+          };
+          img.onerror = reject;
         };
-        img.onerror = function () {
-          showMessage('Beim Rendern ist etwas schiefgelaufen. Bitte lade das Bild erneut.', true);
-        };
-        img.src = loadedImage.dataUrl;
+        reader.onerror = reject;
+      });
+    }
+
+    function downloadAllZip() {
+      if (convertedFiles.length === 0) return;
+
+      const zip = new JSZip();
+      const folder = zip.folder('konvertierte_bilder');
+
+      convertedFiles.forEach(file => {
+        folder.file(file.name, file.blob);
       });
 
-      qualityRow.style.display = 'block';
-    })();
+      zip.generateAsync({ type: 'blob' })
+        .then(function (content) {
+          saveAs(content, 'bilder_konvertiert.zip');
+        });
+    }
+
+    setFormat('image/jpeg', 'jpg');
   </script>
   <script src="assets/js/theme.js" defer></script>
   <script src="assets/js/header.js" defer></script>
