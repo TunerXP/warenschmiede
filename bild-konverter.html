@@ -237,7 +237,7 @@
                 </li>
                 <li>
                   <a class="nav-link" href="/bild-konverter.html" data-nav-link data-path="/bild-konverter , /bild-konverter.html">
-                    <span class="nav-ico" aria-hidden="true">🖼️</span>Bild-Konverter
+                    <span class="nav-ico" aria-hidden="true">🖼️</span>Bilder Tools
                   </a>
                 </li>
                 <li>
@@ -409,7 +409,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 h-full lg:h-[700px]">
               <div class="lg:col-span-1 bg-slate-800 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 flex flex-col gap-6 overflow-y-auto">
                 <div class="space-y-3">
-                  <label class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Ziel-Format</label>
+                  <label class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Ziel-Format</label>
                   <div class="grid grid-cols-3 gap-2">
                     <button onclick="setFormat('image/jpeg', 'jpg')" class="format-btn active bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-sm font-medium transition-colors" data-format="jpg">JPG</button>
                     <button onclick="setFormat('image/png', 'png')" class="format-btn bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 rounded-lg text-sm font-medium transition-colors" data-format="png">PNG</button>
@@ -419,16 +419,16 @@
 
                 <div class="space-y-3" id="quality-container">
                   <div class="flex justify-between">
-                    <label class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Qualität</label>
+                    <label class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Qualität</label>
                     <span id="quality-value" class="text-sm font-mono text-blue-400">90%</span>
                   </div>
                   <input type="range" id="quality" min="10" max="100" value="90" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-blue-500">
-                  <p class="text-xs text-slate-500">Niedrigere Qualität = kleinere Dateigröße (nur JPG/WEBP).</p>
+                  <p class="text-xs text-slate-300">Niedrigere Qualität = kleinere Dateigröße (nur JPG/WEBP).</p>
                 </div>
 
                 <div class="space-y-3">
                   <div class="flex items-center justify-between">
-                    <label class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Größe ändern</label>
+                    <label class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Größe ändern</label>
                     <label class="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" id="resize-toggle" class="sr-only peer">
                       <div class="w-11 h-6 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
@@ -438,16 +438,16 @@
                   <div id="resize-options" class="hidden space-y-2 pt-2 transition-all">
                     <div class="relative">
                       <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="ph ph-arrows-out-line-horizontal text-slate-400"></i>
+                        <i class="ph ph-arrows-out-line-horizontal text-slate-300"></i>
                       </div>
                       <input type="number" id="max-width" placeholder="Max Breite (px)" class="bg-slate-700 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 placeholder-slate-400">
                     </div>
-                    <p class="text-xs text-slate-500">Seitenverhältnis wird beibehalten.</p>
+                    <p class="text-xs text-slate-300">Seitenverhältnis wird beibehalten.</p>
                   </div>
                 </div>
 
                 <div class="mt-auto pt-6 border-t border-slate-700">
-                  <button onclick="processAll()" id="convert-btn" disabled class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
+                  <button onclick="processAll()" id="convert-btn" disabled class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
                     <i class="ph ph-play-circle text-xl"></i>
                     <span>Alle konvertieren</span>
                   </button>
@@ -465,20 +465,20 @@
                     <div class="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                       <i class="ph ph-cloud-arrow-up text-3xl text-blue-400"></i>
                     </div>
-                    <p class="text-lg text-slate-300 font-medium">Bilder hier ablegen</p>
-                    <p class="text-sm text-slate-500 mt-1">oder klicken zum Auswählen</p>
+                    <p class="text-lg text-slate-100 font-medium">Bilder hier ablegen</p>
+                    <p class="text-sm text-slate-300 mt-1">oder klicken zum Auswählen</p>
                   </div>
                 </div>
 
                 <div class="flex justify-between items-center mb-3">
-                  <h3 class="text-slate-400 text-sm font-semibold uppercase tracking-wider">Warteschlange <span id="converter-file-count" class="bg-slate-700 text-white px-2 py-0.5 rounded-full text-xs ml-2">0</span></h3>
+                  <h3 class="text-slate-200 text-sm font-semibold uppercase tracking-wider">Warteschlange <span id="converter-file-count" class="bg-slate-700 text-white px-2 py-0.5 rounded-full text-xs ml-2">0</span></h3>
                   <button onclick="clearAll()" class="text-xs text-red-400 hover:text-red-300 flex items-center gap-1">
                     <i class="ph ph-trash"></i> Alle löschen
                   </button>
                 </div>
 
                 <div id="converter-file-list" class="flex-1 overflow-y-auto space-y-3 pr-2">
-                  <div id="converter-empty-state" class="h-full flex flex-col items-center justify-center text-slate-600 pb-10">
+                  <div id="converter-empty-state" class="h-full flex flex-col items-center justify-center text-slate-300 pb-10">
                     <i class="ph ph-images text-5xl mb-3 opacity-50"></i>
                     <p>Noch keine Bilder ausgewählt.</p>
                   </div>
@@ -490,7 +490,7 @@
         <div id="processing-overlay" class="fixed inset-0 bg-slate-900/90 z-50 hidden flex flex-col items-center justify-center">
           <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
           <h2 class="text-2xl font-bold text-white">Verarbeite...</h2>
-          <p class="text-slate-400 mt-2" id="progress-text">0 / 0 fertig</p>
+          <p class="text-slate-200 mt-2" id="progress-text">0 / 0 fertig</p>
         </div>
       </div>
     </section>
@@ -506,34 +506,34 @@
         <div class="gif-studio bg-slate-900/60 border border-slate-800 rounded-3xl shadow-xl p-6 lg:p-8 mt-10">
           <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
             <div class="lg:col-span-2 bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex flex-col gap-6">
-              <div class="flex items-start justify-between gap-3">
-                <div>
-                  <p class="text-sm uppercase tracking-wide text-blue-400 font-semibold">Einstellungen</p>
-                  <p class="text-slate-300">Steuer die Geschwindigkeit und Breite deines GIFs.</p>
-                </div>
-                <div class="px-3 py-1 rounded-full bg-slate-800 text-xs text-slate-400 border border-slate-700">Made in Germany</div>
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <p class="text-sm uppercase tracking-wide text-blue-400 font-semibold">Einstellungen</p>
+                    <p class="text-slate-200">Steuer die Geschwindigkeit und Breite deines GIFs.</p>
+                  </div>
+                <div class="px-3 py-1 rounded-full bg-slate-800 text-xs text-slate-200 border border-slate-700">Made in Germany</div>
               </div>
 
               <div class="space-y-3">
                 <div class="flex items-center justify-between">
-                  <label for="delay-slider" class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Verzögerung</label>
+                  <label for="delay-slider" class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Verzögerung</label>
                   <span id="gif-delay-value" class="text-sm font-mono text-blue-400">120 ms</span>
                 </div>
                 <input id="delay-slider" type="range" min="20" max="500" value="120" step="10" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500" />
-                <p class="text-xs text-slate-500">Kleine Werte = schnelleres GIF.</p>
+                <p class="text-xs text-slate-300">Kleine Werte = schnelleres GIF.</p>
               </div>
 
               <div class="space-y-3">
                 <div class="flex items-center justify-between">
-                  <label for="width-slider" class="text-sm font-semibold text-slate-400 uppercase tracking-wider">GIF Breite</label>
+                  <label for="width-slider" class="text-sm font-semibold text-slate-200 uppercase tracking-wider">GIF Breite</label>
                   <span id="gif-width-value" class="text-sm font-mono text-blue-400">640 px</span>
                 </div>
                 <input id="width-slider" type="range" min="320" max="1600" value="640" step="10" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500" />
-                <p class="text-xs text-slate-500">Die Höhe wird automatisch passend skaliert.</p>
+                <p class="text-xs text-slate-300">Die Höhe wird automatisch passend skaliert.</p>
               </div>
 
               <div class="space-y-2 pt-2 border-t border-slate-800">
-                <button id="generate-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2" disabled>
+                <button id="generate-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2" disabled>
                   <i class="ph ph-magic-wand text-xl"></i>
                   <span>GIF-Modul lädt…</span>
                 </button>
@@ -543,11 +543,11 @@
                 </button>
               </div>
 
-              <div id="render-status" class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-sm text-slate-300 hidden">
+              <div id="render-status" class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-sm text-slate-100 hidden">
                 Wird erstellt… das kann ein paar Sekunden dauern, abhängig von Anzahl und Größe der Bilder.
               </div>
 
-              <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-sm text-slate-400 flex items-start gap-3">
+              <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-sm text-slate-200 flex items-start gap-3">
                 <i class="ph ph-lightbulb text-xl text-amber-400"></i>
                 <p>Lege Bilder einfach per Drag &amp; Drop ab. Perfekt, um ein SolidWorks-Feature als Daumenkino zu zeigen.</p>
               </div>
@@ -560,8 +560,8 @@
                   <div class="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
                     <i class="ph ph-frames text-3xl text-blue-400"></i>
                   </div>
-                  <p class="text-lg text-slate-200 font-medium">Bilder hier ablegen</p>
-                  <p class="text-sm text-slate-500 mt-1">oder klicken zum Auswählen</p>
+                  <p class="text-lg text-slate-100 font-medium">Bilder hier ablegen</p>
+                  <p class="text-sm text-slate-300 mt-1">oder klicken zum Auswählen</p>
                 </div>
               </div>
 
@@ -579,7 +579,7 @@
                     <p class="text-sm">Wird erstellt…</p>
                   </div>
                   <img id="gif-preview" src="" alt="GIF Vorschau" class="hidden max-h-[360px] w-auto rounded-lg shadow-lg" loading="lazy" />
-                  <div id="preview-placeholder" class="text-center text-slate-500 flex flex-col items-center gap-2">
+                  <div id="preview-placeholder" class="text-center text-slate-300 flex flex-col items-center gap-2">
                     <i class="ph ph-monitor-play text-4xl"></i>
                     <p>GIF Vorschau erscheint hier nach dem Rendern.</p>
                   </div>
@@ -590,10 +590,10 @@
             <div class="lg:col-span-1 bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex flex-col">
               <div class="flex items-center justify-between mb-3">
                 <h3 class="text-slate-200 font-semibold flex items-center gap-2"><i class="ph ph-film-script text-blue-400"></i> Frames</h3>
-                <span class="bg-slate-800 text-slate-300 text-xs px-2 py-1 rounded-full border border-slate-700" id="frame-count">0</span>
+                <span class="bg-slate-800 text-slate-100 text-xs px-2 py-1 rounded-full border border-slate-700" id="frame-count">0</span>
               </div>
               <div id="frames-container" class="frames-scroll flex-1 space-y-3 overflow-y-auto pr-2">
-                <div id="empty-state" class="h-full flex flex-col items-center justify-center text-slate-600">
+                <div id="empty-state" class="h-full flex flex-col items-center justify-center text-slate-300">
                   <i class="ph ph-images text-4xl mb-2 opacity-60"></i>
                   <p>Noch keine Frames geladen.</p>
                 </div>
@@ -632,37 +632,37 @@
           <div class="flex flex-col lg:flex-row h-full overflow-hidden">
             <div class="w-full lg:w-80 bg-slate-800 border-b lg:border-b-0 lg:border-r border-slate-700 flex flex-col overflow-y-auto shrink-0 z-10">
               <div class="p-5 border-b border-slate-700">
-                <h3 class="text-xs font-bold text-slate-400 uppercase mb-3 flex items-center gap-2">
+                <h3 class="text-xs font-bold text-slate-200 uppercase mb-3 flex items-center gap-2">
                   <i class="ph ph-ruler"></i> Größe
                 </h3>
                 <div class="grid grid-cols-2 gap-2 mb-3">
                   <button onclick="bannerResizeCanvas(1200, 400)" class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors">
                     <span class="block font-bold text-white">Hero Groß</span>
-                    <span class="text-slate-400">1200 x 400</span>
+                    <span class="text-slate-300">1200 x 400</span>
                   </button>
                   <button onclick="bannerResizeCanvas(800, 200)" class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors">
                     <span class="block font-bold text-white">Header Blog</span>
-                    <span class="text-slate-400">800 x 200</span>
+                    <span class="text-slate-300">800 x 200</span>
                   </button>
                   <button onclick="bannerResizeCanvas(300, 250)" class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors">
                     <span class="block font-bold text-white">Sidebar Box</span>
-                    <span class="text-slate-400">300 x 250</span>
+                    <span class="text-slate-300">300 x 250</span>
                   </button>
                   <button onclick="bannerResizeCanvas(1080, 1080)" class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors">
                     <span class="block font-bold text-white">Instagram/Quadrat</span>
-                    <span class="text-slate-400">1080 x 1080</span>
+                    <span class="text-slate-300">1080 x 1080</span>
                   </button>
                 </div>
                 <div class="flex gap-2 items-center text-xs">
                   <input type="number" id="banner-custom-w" value="800" class="w-16 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-white">
-                  <span class="text-slate-500">x</span>
+                  <span class="text-slate-300">x</span>
                   <input type="number" id="banner-custom-h" value="400" class="w-16 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-white">
                   <button onclick="bannerApplyCustomSize()" class="ml-auto text-indigo-400 hover:text-indigo-300">Setzen</button>
                 </div>
               </div>
 
               <div class="p-5 border-b border-slate-700 space-y-3">
-                <h3 class="text-xs font-bold text-slate-400 uppercase mb-1 flex items-center gap-2">
+                <h3 class="text-xs font-bold text-slate-200 uppercase mb-1 flex items-center gap-2">
                   <i class="ph ph-plus-circle"></i> Hinzufügen
                 </h3>
 
@@ -685,24 +685,24 @@
               </div>
 
               <div class="p-5 flex-1" id="banner-properties-panel">
-                <h3 class="text-xs font-bold text-slate-400 uppercase mb-4 flex items-center gap-2">
+                <h3 class="text-xs font-bold text-slate-200 uppercase mb-4 flex items-center gap-2">
                   <i class="ph ph-sliders"></i> Eigenschaften
                 </h3>
 
-                <div id="banner-no-selection" class="text-slate-500 text-sm italic text-center py-4">
+                <div id="banner-no-selection" class="text-slate-300 text-sm italic text-center py-4">
                   Wähle ein Element auf der Leinwand aus.
                 </div>
 
                 <div id="banner-selection-controls" class="hidden space-y-4">
                   <div>
-                    <label class="block text-xs text-slate-400 mb-1">Farbe</label>
+                    <label class="block text-xs text-slate-200 mb-1">Farbe</label>
                     <div class="flex gap-2">
                       <input type="color" id="banner-color-picker" class="h-8 w-full bg-transparent cursor-pointer rounded overflow-hidden" onchange="bannerUpdateColor(this.value)">
                     </div>
                   </div>
 
                   <div>
-                    <label class="block text-xs text-slate-400 mb-1 flex justify-between">
+                    <label class="block text-xs text-slate-200 mb-1 flex justify-between">
                       <span>Deckkraft</span> <span id="banner-opacity-val">100%</span>
                     </label>
                     <input type="range" min="0" max="1" step="0.1" value="1" class="w-full h-1 bg-slate-600 rounded appearance-none" oninput="bannerUpdateOpacity(this.value)">
@@ -710,7 +710,7 @@
 
                   <div id="banner-text-controls" class="hidden space-y-4 pt-4 border-t border-slate-700">
                     <div>
-                      <label class="block text-xs text-slate-400 mb-1">Schriftart</label>
+                      <label class="block text-xs text-slate-200 mb-1">Schriftart</label>
                       <select id="banner-font-family" onchange="bannerUpdateFont(this.value)" class="w-full bg-slate-900 border border-slate-600 text-white text-sm rounded p-2">
                         <option value="Inter">Standard (Inter)</option>
                         <option value="Oswald">Oswald (Modern)</option>
@@ -762,7 +762,7 @@
               </div>
               <div>
                 <h3 class="font-bold text-white text-lg">SafeShare Map</h3>
-                <p class="text-slate-400 text-xs">Visualisiere versteckte Orte</p>
+                <p class="text-slate-200 text-xs">Visualisiere versteckte Orte</p>
               </div>
             </div>
 
@@ -774,14 +774,14 @@
                   <i class="ph ph-crosshair text-3xl text-indigo-400"></i>
                 </div>
                 <p class="text-slate-300 font-medium">Foto hier analysieren</p>
-                <p class="text-slate-500 text-xs mt-1">S23 Ultra Fotos funktionieren am besten</p>
+                <p class="text-slate-300 text-xs mt-1">S23 Ultra Fotos funktionieren am besten</p>
               </div>
 
               <img id="ss-preview-img" class="absolute inset-0 w-full h-full object-contain z-10 hidden bg-black/80 backdrop-blur-sm" alt="SafeShare Vorschaubild">
               <div id="ss-scan-line" class="scan-line z-10"></div>
             </div>
 
-            <div id="ss-file-name" class="text-center text-xs text-slate-500 mt-2 h-4"></div>
+            <div id="ss-file-name" class="text-center text-xs text-slate-300 mt-2 h-4"></div>
           </div>
 
           <div class="w-full lg:w-7/12 p-6 flex flex-col bg-slate-800">
@@ -803,11 +803,11 @@
 
                 <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 grid grid-cols-2 gap-4 text-xs font-mono text-slate-300">
                   <div>
-                    <span class="text-slate-500 block">Breitengrad (Lat)</span>
+                    <span class="text-slate-300 block">Breitengrad (Lat)</span>
                     <span id="ss-lat-display">--</span>
                   </div>
                   <div>
-                    <span class="text-slate-500 block">Längengrad (Lng)</span>
+                    <span class="text-slate-300 block">Längengrad (Lng)</span>
                     <span id="ss-lng-display">--</span>
                   </div>
                 </div>
@@ -816,36 +816,36 @@
               <div id="ss-safe-state" class="hidden flex flex-col items-center justify-center text-center p-6 border border-emerald-900/30 bg-emerald-900/10 rounded-xl mb-6">
                 <i class="ph ph-shield-check text-6xl text-emerald-500 mb-4"></i>
                 <h3 class="text-white font-bold text-xl">Keine GPS Daten</h3>
-                <p class="text-slate-400 text-sm mt-2">Dieses Bild enthält keinen Standort.</p>
+                <p class="text-slate-200 text-sm mt-2">Dieses Bild enthält keinen Standort.</p>
               </div>
 
               <div id="ss-metadata-section" class="hidden bg-slate-900 rounded-xl p-4 border border-slate-700 mb-4">
-                <h4 class="text-xs font-bold text-slate-400 uppercase mb-3 pb-2 border-b border-slate-800 flex items-center gap-2">
+                <h4 class="text-xs font-bold text-slate-200 uppercase mb-3 pb-2 border-b border-slate-800 flex items-center gap-2">
                   <i class="ph ph-info"></i> Bild Details
                 </h4>
                 <div class="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
-                  <div class="text-slate-500 text-xs">Kamera / Gerät</div>
+                  <div class="text-slate-300 text-xs">Kamera / Gerät</div>
                   <div id="ss-meta-model" class="text-slate-200 text-right font-medium truncate">-</div>
 
-                  <div class="text-slate-500 text-xs">Aufnahmedatum</div>
+                  <div class="text-slate-300 text-xs">Aufnahmedatum</div>
                   <div id="ss-meta-date" class="text-slate-200 text-right font-medium truncate">-</div>
 
-                  <div class="text-slate-500 text-xs">Software</div>
+                  <div class="text-slate-300 text-xs">Software</div>
                   <div id="ss-meta-soft" class="text-slate-200 text-right font-medium truncate">-</div>
 
-                  <div class="text-slate-500 text-xs">Einstellungen</div>
+                  <div class="text-slate-300 text-xs">Einstellungen</div>
                   <div id="ss-meta-settings" class="text-slate-200 text-right font-mono text-xs truncate">-</div>
                 </div>
               </div>
 
               <div id="ss-initial-state" class="h-full flex flex-col items-center justify-center text-center p-6 opacity-50">
-                <i class="ph ph-map-trifold text-6xl text-slate-600 mb-4"></i>
-                <p class="text-slate-400 text-sm">Lade ein Bild hoch, um zu sehen,<br>wo es aufgenommen wurde.</p>
+                <i class="ph ph-map-trifold text-6xl text-slate-500 mb-4"></i>
+                <p class="text-slate-200 text-sm">Lade ein Bild hoch, um zu sehen,<br>wo es aufgenommen wurde.</p>
               </div>
             </div>
 
             <div class="mt-4 pt-4 border-t border-slate-700 flex gap-3 shrink-0">
-              <button id="ss-clean-btn" disabled onclick="cleanImage()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
+              <button id="ss-clean-btn" disabled onclick="cleanImage()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
                 <i class="ph ph-eraser"></i>
                 <span>GPS & Daten löschen</span>
               </button>
@@ -1193,11 +1193,11 @@
         info.className = 'flex-1 min-w-0';
         info.innerHTML = `
                     <p class="text-sm font-medium text-white truncate">${file.name}</p>
-                    <p class="text-xs text-slate-500">${(file.size / 1024).toFixed(1)} KB &bull; ${file.type.split('/')[1].toUpperCase()}</p>
+                    <p class="text-xs text-slate-300">${(file.size / 1024).toFixed(1)} KB &bull; ${file.type.split('/')[1].toUpperCase()}</p>
                 `;
 
         const removeBtn = document.createElement('button');
-        removeBtn.className = 'text-slate-500 hover:text-red-400 p-2 transition-colors';
+        removeBtn.className = 'text-slate-300 hover:text-red-300 p-2 transition-colors';
         removeBtn.innerHTML = '<i class="ph ph-x"></i>';
         removeBtn.onclick = () => removeFile(index);
 
@@ -1408,11 +1408,11 @@
           info.className = 'flex-1 min-w-0';
           info.innerHTML = `
             <p class="text-sm font-medium text-white truncate">Frame ${index + 1}</p>
-            <p class="text-xs text-slate-500 truncate">${frame.file.name}</p>
+            <p class="text-xs text-slate-300 truncate">${frame.file.name}</p>
           `;
 
           const removeBtn = document.createElement('button');
-          removeBtn.className = 'text-slate-500 hover:text-red-400 p-2 transition-colors';
+          removeBtn.className = 'text-slate-300 hover:text-red-300 p-2 transition-colors';
           removeBtn.innerHTML = '<i class="ph ph-trash"></i>';
           removeBtn.addEventListener('click', () => removeFrame(index));
 
