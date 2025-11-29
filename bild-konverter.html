@@ -45,6 +45,7 @@
   </script>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="/assets/print.css?v=1.0.7" media="print">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Oswald:wght@500;700&family=Orbitron:wght@500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
   <script>
     window.tailwind = window.tailwind || {};
@@ -139,6 +140,57 @@
     .banner-builder-root ::-webkit-scrollbar-thumb {
       background: #475569;
       border-radius: 3px;
+    }
+
+    .safeshare-root {
+      font-family: 'Inter', sans-serif;
+      color: #e2e8f0;
+    }
+
+    .safeshare-root .scan-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: #f43f5e;
+      box-shadow: 0 0 15px #f43f5e;
+      animation: scan 2s linear infinite;
+      display: none;
+    }
+
+    @keyframes scan {
+      0% {
+        top: 0%;
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      90% {
+        opacity: 1;
+      }
+
+      100% {
+        top: 100%;
+        opacity: 0;
+      }
+    }
+
+    .safeshare-root .map-container {
+      height: 300px;
+      width: 100%;
+      border-radius: 0.75rem;
+      z-index: 1;
+    }
+
+    .safeshare-root .leaflet-layer,
+    .safeshare-root .leaflet-control-zoom-in,
+    .safeshare-root .leaflet-control-zoom-out,
+    .safeshare-root .leaflet-control-attribution {
+      filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
     }
   </style>
 </head>
@@ -689,6 +741,115 @@
       </div>
     </section>
 
+    <section id="safeshare-section" class="section ws-section mt-16" aria-label="SafeShare – EXIF/GPS-Checker">
+      <div class="container">
+        <div class="converter-hero">
+          <h2 class="ws-section-title">SafeShare – Versteckte GPS-Daten prüfen</h2>
+          <p>Finde heraus, ob deine Fotos geheime Standortdaten enthalten und lösche sie mit einem Klick. Alles läuft lokal in deinem Browser – keine Uploads, keine versteckten Kopien.</p>
+          <p>SafeShare zeigt dir Koordinaten auf der Karte an, gibt dir einen Direktlink zu Google Maps und erstellt auf Wunsch eine bereinigte JPG-Version.</p>
+        </div>
+
+        <div class="safeshare-root w-full max-w-5xl mx-auto bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700 flex flex-col lg:flex-row mt-10">
+          <div class="w-full lg:w-5/12 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 bg-slate-900/50">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="bg-indigo-500/10 p-2 rounded-lg text-indigo-400">
+                <i class="ph ph-map-pin text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-white text-lg">SafeShare Map</h3>
+                <p class="text-slate-400 text-xs">Visualisiere versteckte Orte</p>
+              </div>
+            </div>
+
+            <div id="ss-drop-zone" class="w-full aspect-square bg-slate-800 rounded-xl border-2 border-dashed border-slate-600 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500 transition-colors relative overflow-hidden group">
+              <input type="file" id="ss-file-input" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/jpeg, image/jpg, image/png">
+
+              <div id="ss-placeholder" class="text-center pointer-events-none transition-opacity duration-300">
+                <div class="w-16 h-16 rounded-full bg-indigo-500/20 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                  <i class="ph ph-crosshair text-3xl text-indigo-400"></i>
+                </div>
+                <p class="text-slate-300 font-medium">Foto hier analysieren</p>
+                <p class="text-slate-500 text-xs mt-1">S23 Ultra Fotos funktionieren am besten</p>
+              </div>
+
+              <img id="ss-preview-img" class="absolute inset-0 w-full h-full object-contain z-10 hidden bg-black/80 backdrop-blur-sm" alt="SafeShare Vorschaubild">
+              <div id="ss-scan-line" class="scan-line z-10"></div>
+            </div>
+
+            <div id="ss-file-name" class="text-center text-xs text-slate-500 mt-2 h-4"></div>
+          </div>
+
+          <div class="w-full lg:w-7/12 p-6 flex flex-col bg-slate-800">
+            <div class="flex-grow overflow-y-auto pr-2">
+              <div id="ss-map-wrapper" class="hidden flex-col gap-4 mb-6">
+                <div class="flex justify-between items-center">
+                  <h3 class="text-red-400 font-bold text-sm uppercase flex items-center gap-2 animate-pulse">
+                    <i class="ph ph-warning-circle"></i> Standort gefunden!
+                  </h3>
+                  <a id="ss-gmaps-link" target="_blank" class="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                    In Google Maps öffnen <i class="ph ph-arrow-square-out"></i>
+                  </a>
+                </div>
+
+                <div class="relative rounded-xl overflow-hidden border border-red-900/40 bg-slate-900">
+                  <div class="absolute inset-0 bg-gradient-to-b from-red-500/10 to-transparent pointer-events-none"></div>
+                  <div id="ss-map" class="map-container"></div>
+                </div>
+
+                <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 grid grid-cols-2 gap-4 text-xs font-mono text-slate-300">
+                  <div>
+                    <span class="text-slate-500 block">Breitengrad (Lat)</span>
+                    <span id="ss-lat-display">--</span>
+                  </div>
+                  <div>
+                    <span class="text-slate-500 block">Längengrad (Lng)</span>
+                    <span id="ss-lng-display">--</span>
+                  </div>
+                </div>
+              </div>
+
+              <div id="ss-safe-state" class="hidden flex flex-col items-center justify-center text-center p-6 border border-emerald-900/30 bg-emerald-900/10 rounded-xl mb-6">
+                <i class="ph ph-shield-check text-6xl text-emerald-500 mb-4"></i>
+                <h3 class="text-white font-bold text-xl">Keine GPS Daten</h3>
+                <p class="text-slate-400 text-sm mt-2">Dieses Bild enthält keinen Standort.</p>
+              </div>
+
+              <div id="ss-metadata-section" class="hidden bg-slate-900 rounded-xl p-4 border border-slate-700 mb-4">
+                <h4 class="text-xs font-bold text-slate-400 uppercase mb-3 pb-2 border-b border-slate-800 flex items-center gap-2">
+                  <i class="ph ph-info"></i> Bild Details
+                </h4>
+                <div class="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+                  <div class="text-slate-500 text-xs">Kamera / Gerät</div>
+                  <div id="ss-meta-model" class="text-slate-200 text-right font-medium truncate">-</div>
+
+                  <div class="text-slate-500 text-xs">Aufnahmedatum</div>
+                  <div id="ss-meta-date" class="text-slate-200 text-right font-medium truncate">-</div>
+
+                  <div class="text-slate-500 text-xs">Software</div>
+                  <div id="ss-meta-soft" class="text-slate-200 text-right font-medium truncate">-</div>
+
+                  <div class="text-slate-500 text-xs">Einstellungen</div>
+                  <div id="ss-meta-settings" class="text-slate-200 text-right font-mono text-xs truncate">-</div>
+                </div>
+              </div>
+
+              <div id="ss-initial-state" class="h-full flex flex-col items-center justify-center text-center p-6 opacity-50">
+                <i class="ph ph-map-trifold text-6xl text-slate-600 mb-4"></i>
+                <p class="text-slate-400 text-sm">Lade ein Bild hoch, um zu sehen,<br>wo es aufgenommen wurde.</p>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-slate-700 flex gap-3 shrink-0">
+              <button id="ss-clean-btn" disabled onclick="cleanImage()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
+                <i class="ph ph-eraser"></i>
+                <span>GPS & Daten löschen</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="section ws-section" aria-label="Datenschutz zum Bild-Konverter">
       <div class="container">
         <h2 class="ws-section-title">Datenschutz-Hinweis</h2>
@@ -714,11 +875,197 @@
       </div>
     </div>
   </footer>
+  <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+  <script>
+    const ssFileInput = document.getElementById('ss-file-input');
+    const ssPreviewImg = document.getElementById('ss-preview-img');
+    const ssScanLine = document.getElementById('ss-scan-line');
+    const ssMapWrapper = document.getElementById('ss-map-wrapper');
+    const ssSafeState = document.getElementById('ss-safe-state');
+    const ssInitialState = document.getElementById('ss-initial-state');
+    const ssMetadataSection = document.getElementById('ss-metadata-section');
+    const ssCleanBtn = document.getElementById('ss-clean-btn');
+    const ssFileNameDisplay = document.getElementById('ss-file-name');
+    const ssPlaceholder = document.getElementById('ss-placeholder');
+
+    const ssLatDisplay = document.getElementById('ss-lat-display');
+    const ssLngDisplay = document.getElementById('ss-lng-display');
+    const ssGmapsLink = document.getElementById('ss-gmaps-link');
+
+    const ssMetaModel = document.getElementById('ss-meta-model');
+    const ssMetaDate = document.getElementById('ss-meta-date');
+    const ssMetaSoft = document.getElementById('ss-meta-soft');
+    const ssMetaSettings = document.getElementById('ss-meta-settings');
+
+    let ssMap = null;
+    let ssOriginalFile = null;
+
+    ssFileInput?.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      ssOriginalFile = file;
+      ssFileNameDisplay.textContent = file.name;
+
+      resetUI();
+
+      const url = URL.createObjectURL(file);
+      ssPreviewImg.src = url;
+      ssPreviewImg.classList.remove('hidden');
+      ssPlaceholder.classList.add('opacity-0');
+
+      ssScanLine.style.display = 'block';
+
+      setTimeout(() => {
+        analyzeImage(file);
+      }, 800);
+    });
+
+    function analyzeImage(file) {
+      EXIF.getData(file, function () {
+        const lat = EXIF.getTag(this, 'GPSLatitude');
+        const latRef = EXIF.getTag(this, 'GPSLatitudeRef');
+        const lng = EXIF.getTag(this, 'GPSLongitude');
+        const lngRef = EXIF.getTag(this, 'GPSLongitudeRef');
+
+        ssScanLine.style.display = 'none';
+        ssInitialState.classList.add('hidden');
+
+        if (lat && lng) {
+          const decimalLat = convertDMSToDD(lat, latRef);
+          const decimalLng = convertDMSToDD(lng, lngRef);
+          showMap(decimalLat, decimalLng);
+        } else {
+          ssSafeState.classList.remove('hidden');
+        }
+
+        updateMetadataDisplay(this);
+
+        ssCleanBtn.disabled = false;
+      });
+    }
+
+    function updateMetadataDisplay(exifData) {
+      const make = EXIF.getTag(exifData, 'Make') || '';
+      const model = EXIF.getTag(exifData, 'Model') || 'Unbekannt';
+      const date = EXIF.getTag(exifData, 'DateTimeOriginal') || EXIF.getTag(exifData, 'DateTime') || '-';
+      const software = EXIF.getTag(exifData, 'Software') || '-';
+
+      const iso = EXIF.getTag(exifData, 'ISOSpeedRatings');
+      const fnum = EXIF.getTag(exifData, 'FNumber');
+      const exp = EXIF.getTag(exifData, 'ExposureTime');
+
+      const settingsText = [];
+      if (fnum) settingsText.push(`f/${fnum}`);
+      if (exp) {
+        if (exp < 1) settingsText.push(`1/${Math.round(1 / exp)}s`);
+        else settingsText.push(`${exp}s`);
+      }
+      if (iso) settingsText.push(`ISO${iso}`);
+
+      ssMetaModel.textContent = `${make} ${model}`.trim();
+      ssMetaDate.textContent = date;
+      ssMetaSoft.textContent = software;
+      ssMetaSettings.textContent = settingsText.length > 0 ? settingsText.join('  ') : 'Keine Daten';
+
+      ssMetadataSection.classList.remove('hidden');
+    }
+
+    function convertDMSToDD(dms, ref) {
+      let dd = dms[0] + dms[1] / 60 + dms[2] / 3600;
+      if (ref === 'S' || ref === 'W') {
+        dd = dd * -1;
+      }
+      return dd;
+    }
+
+    function showMap(lat, lng) {
+      ssMapWrapper.classList.remove('hidden');
+      ssMapWrapper.classList.add('flex');
+
+      ssLatDisplay.textContent = lat.toFixed(6);
+      ssLngDisplay.textContent = lng.toFixed(6);
+
+      ssGmapsLink.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+
+      if (!ssMap) {
+        ssMap = L.map('ss-map').setView([lat, lng], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: ' OpenStreetMap'
+        }).addTo(ssMap);
+      } else {
+        ssMap.setView([lat, lng], 13);
+        ssMap.eachLayer((layer) => {
+          if (layer instanceof L.Marker) {
+            ssMap.removeLayer(layer);
+          }
+        });
+      }
+
+      L.marker([lat, lng]).addTo(ssMap)
+        .bindPopup('Foto Aufnahmeort')
+        .openPopup();
+
+      setTimeout(() => { ssMap.invalidateSize(); }, 100);
+    }
+
+    function cleanImage() {
+      if (!ssOriginalFile) return;
+
+      ssCleanBtn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Reinige...';
+
+      const reader = new FileReader();
+      reader.readAsDataURL(ssOriginalFile);
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+
+          canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'SAFE_' + ssOriginalFile.name.replace(/\.[^/.]+$/, '') + '.jpg';
+            link.click();
+
+            ssCleanBtn.innerHTML = '<i class="ph ph-check"></i> Erledigt!';
+            setTimeout(() => {
+              ssCleanBtn.innerHTML = '<i class="ph ph-eraser"></i> GPS & Daten löschen';
+            }, 2000);
+
+          }, 'image/jpeg', 0.95);
+        };
+      };
+    }
+
+    function resetUI() {
+      ssMapWrapper.classList.add('hidden');
+      ssMapWrapper.classList.remove('flex');
+      ssSafeState.classList.add('hidden');
+      ssMetadataSection.classList.add('hidden');
+      ssInitialState.classList.remove('hidden');
+      ssCleanBtn.disabled = true;
+      if (ssMap) {
+        ssMap.eachLayer((layer) => {
+          if (layer instanceof L.Marker) {
+            ssMap.removeLayer(layer);
+          }
+        });
+      }
+    }
+  </script>
   <script>
     // State
     let files = [];
