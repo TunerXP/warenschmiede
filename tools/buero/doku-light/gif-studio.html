@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marco's GIF Studio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- GIF.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            color: #e2e8f0;
+        }
+
+        .drop-zone {
+            transition: all 0.3s ease;
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%238B5CF6' stroke-width='2' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+        }
+
+            .drop-zone.dragover {
+                background-color: #1e293b;
+                transform: scale(1.01);
+                border-color: #A78BFA;
+            }
+        /* Grid Layout for Frames */
+        .frames-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-6xl bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
+
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-violet-600 to-indigo-600 p-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="ph ph-film-strip text-3xl"></i> GIF Studio
+                </h1>
+                <p class="text-violet-100 text-sm mt-1">Bilder zum Leben erwecken &bull; Daumenkino-Generator</p>
+            </div>
+            <!-- Settings Hint -->
+            <div class="hidden sm:flex gap-4 text-xs font-mono text-violet-200">
+                <span class="bg-white/10 px-2 py-1 rounded">Max Frames: Unbegrenzt</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 h-full lg:h-[750px]">
+
+            <!-- Left: Settings & Preview (4 Cols) -->
+            <div class="lg:col-span-4 bg-slate-800 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 flex flex-col gap-6 overflow-y-auto">
+
+                <!-- Preview Area -->
+                <div class="bg-slate-900 rounded-xl p-4 flex flex-col items-center justify-center min-h-[250px] border border-slate-700 relative">
+                    <img id="gif-preview" class="max-w-full max-h-[200px] object-contain hidden rounded shadow-lg" alt="GIF Vorschau">
+                    <div id="preview-placeholder" class="text-slate-500 text-center">
+                        <i class="ph ph-play-circle text-4xl mb-2 opacity-50"></i>
+                        <p class="text-sm">Vorschau erscheint hier</p>
+                    </div>
+
+                    <!-- Download Btn (Hidden initially) -->
+                    <a id="download-btn" class="hidden mt-4 bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold py-2 px-4 rounded-lg transition-all flex items-center gap-2">
+                        <i class="ph ph-download-simple"></i> GIF Speichern
+                    </a>
+                </div>
+
+                <!-- Controls -->
+                <div class="space-y-6">
+
+                    <!-- Speed Control -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <label class="text-sm font-semibold text-slate-400">Geschwindigkeit (Delay)</label>
+                            <span id="delay-val" class="text-sm font-mono text-violet-400">500ms</span>
+                        </div>
+                        <input type="range" id="delay-slider" min="50" max="2000" step="50" value="500" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-violet-500">
+                        <p class="text-xs text-slate-500 mt-1 flex justify-between">
+                            <span>Schnell (0.05s)</span>
+                            <span>Langsam (2s)</span>
+                        </p>
+                    </div>
+
+                    <!-- Size Control -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <label class="text-sm font-semibold text-slate-400">GIF Breite</label>
+                            <span id="width-val" class="text-sm font-mono text-violet-400">500px</span>
+                        </div>
+                        <input type="range" id="width-slider" min="200" max="1200" step="50" value="500" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-violet-500">
+                        <p class="text-xs text-slate-500 mt-1">Kleiner lädt schneller auf der Homepage.</p>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button onclick="createGIF()" id="generate-btn" disabled class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 mt-4">
+                        <i class="ph ph-magic-wand text-xl"></i>
+                        <span>GIF Erstellen</span>
+                    </button>
+
+                    <div id="loading-bar" class="hidden w-full bg-slate-700 rounded-full h-2.5 mt-2">
+                        <div class="bg-emerald-500 h-2.5 rounded-full animate-pulse" style="width: 100%"></div>
+                        <p class="text-center text-xs text-slate-400 mt-1">Rendere Frames...</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Right: Frame Timeline & Upload (8 Cols) -->
+            <div class="lg:col-span-8 bg-slate-900/50 p-6 flex flex-col h-full relative">
+
+                <!-- Drop Zone -->
+                <div id="drop-zone" class="drop-zone h-32 rounded-2xl flex flex-col justify-center items-center cursor-pointer mb-6 group hover:bg-slate-800/50 transition-colors relative">
+                    <input type="file" id="file-input" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                    <div class="text-center z-0 pointer-events-none">
+                        <div class="flex items-center justify-center gap-3">
+                            <i class="ph ph-images text-3xl text-violet-400 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-lg text-slate-300 font-medium">Bilder hinzufügen</span>
+                        </div>
+                        <p class="text-sm text-slate-500 mt-1">Reihenfolge kannst du unten anpassen (Löschen & Neu laden)</p>
+                    </div>
+                </div>
+
+                <!-- Frame List Header -->
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-slate-400 text-sm font-semibold uppercase tracking-wider">Frames (Bilder) <span id="frame-count" class="bg-slate-700 text-white px-2 py-0.5 rounded-full text-xs ml-2">0</span></h3>
+                    <button onclick="clearFrames()" class="text-xs text-red-400 hover:text-red-300 flex items-center gap-1">
+                        <i class="ph ph-trash"></i> Alle löschen
+                    </button>
+                </div>
+
+                <!-- Frame Grid -->
+                <div id="frames-container" class="frames-grid flex-1 overflow-y-auto pr-2 content-start">
+                    <!-- Empty State -->
+                    <div id="empty-state" class="col-span-full h-40 flex flex-col items-center justify-center text-slate-600 border-2 border-dashed border-slate-700 rounded-xl">
+                        <p>Noch keine Frames.</p>
+                        <p class="text-xs mt-1">Lad deine SolidWorks Screenshots hier rein.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data & Elements
+        let frames = []; // Array of Image Objects
+        let gifWorkerUrl = null;
+
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const framesContainer = document.getElementById('frames-container');
+        const emptyState = document.getElementById('empty-state');
+        const frameCountLabel = document.getElementById('frame-count');
+
+        // Settings Elements
+        const delaySlider = document.getElementById('delay-slider');
+        const delayVal = document.getElementById('delay-val');
+        const widthSlider = document.getElementById('width-slider');
+        const widthVal = document.getElementById('width-val');
+
+        // Output Elements
+        const generateBtn = document.getElementById('generate-btn');
+        const loadingBar = document.getElementById('loading-bar');
+        const previewImg = document.getElementById('gif-preview');
+        const previewPlaceholder = document.getElementById('preview-placeholder');
+        const downloadBtn = document.getElementById('download-btn');
+
+        // --- Worker Fetching Logic ---
+        // GIF.js needs a worker file. To keep this single-file, we fetch the worker code from CDN
+        // and create a local Blob URL.
+        async function setupWorker() {
+            try {
+                const response = await fetch('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js');
+                const workerScript = await response.text();
+                const blob = new Blob([workerScript], { type: 'application/javascript' });
+                gifWorkerUrl = URL.createObjectURL(blob);
+            } catch (e) {
+                console.error("Worker konnte nicht geladen werden", e);
+                alert("Fehler: Konnte GIF-Modul nicht laden. Bitte Internetverbindung prüfen.");
+            }
+        }
+        setupWorker();
+
+        // --- Event Listeners ---
+
+        delaySlider.addEventListener('input', (e) => {
+            delayVal.textContent = `${e.target.value}ms`;
+        });
+
+        widthSlider.addEventListener('input', (e) => {
+            widthVal.textContent = `${e.target.value}px`;
+        });
+
+        // Drag & Drop
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+            fileInput.value = '';
+        });
+
+        // --- Logic ---
+
+        function handleFiles(fileList) {
+            const newFiles = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+            if (newFiles.length === 0) return;
+
+            // Process each file
+            newFiles.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        addFrame(img, file.name);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function addFrame(imgObj, name) {
+            frames.push(imgObj);
+            renderFramesUI();
+        }
+
+        function renderFramesUI() {
+            framesContainer.innerHTML = '';
+            frameCountLabel.textContent = frames.length;
+            generateBtn.disabled = frames.length < 2;
+
+            if (frames.length === 0) {
+                framesContainer.appendChild(emptyState);
+                return;
+            }
+
+            frames.forEach((img, index) => {
+                const div = document.createElement('div');
+                div.className = 'relative group aspect-square bg-slate-800 rounded-lg overflow-hidden border border-slate-700 shadow-sm hover:border-violet-500 transition-colors cursor-pointer';
+
+                // Image
+                const thumb = img.cloneNode();
+                thumb.className = 'w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity';
+
+                // Badge Number
+                const badge = document.createElement('span');
+                badge.className = 'absolute top-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded font-mono';
+                badge.textContent = index + 1;
+
+                // Delete Overlay
+                const deleteOverlay = document.createElement('div');
+                deleteOverlay.className = 'absolute inset-0 bg-red-500/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity';
+                deleteOverlay.innerHTML = '<i class="ph ph-trash text-white text-2xl"></i>';
+                deleteOverlay.onclick = () => removeFrame(index);
+
+                div.appendChild(thumb);
+                div.appendChild(badge);
+                div.appendChild(deleteOverlay);
+                framesContainer.appendChild(div);
+            });
+        }
+
+        function removeFrame(index) {
+            frames.splice(index, 1);
+            renderFramesUI();
+        }
+
+        function clearFrames() {
+            frames = [];
+            renderFramesUI();
+            resetPreview();
+        }
+
+        function resetPreview() {
+            previewImg.classList.add('hidden');
+            previewPlaceholder.classList.remove('hidden');
+            downloadBtn.classList.add('hidden');
+        }
+
+        // --- GIF Generation Core ---
+
+        function createGIF() {
+            if (!gifWorkerUrl) {
+                alert("GIF Modul lädt noch... bitte kurz warten.");
+                return;
+            }
+            if (frames.length < 2) return;
+
+            // UI Feedback
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<span class="animate-spin">Wait</span>';
+            loadingBar.classList.remove('hidden');
+
+            const width = parseInt(widthSlider.value);
+            const delay = parseInt(delaySlider.value);
+
+            // Initialize GIF.js
+            const gif = new GIF({
+                workers: 2,
+                quality: 10, // 10 is good default (lower is better but slower)
+                workerScript: gifWorkerUrl,
+                width: width,
+                height: width * (frames[0].height / frames[0].width) // Maintain aspect ratio based on first frame
+            });
+
+            // Add Frames
+            frames.forEach(img => {
+                // Create canvas for resizing
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                // Calculate height keeping aspect ratio
+                const scaleFactor = width / img.width;
+                const newHeight = img.height * scaleFactor;
+
+                canvas.width = width;
+                canvas.height = newHeight;
+
+                // Fill white background for transparent images (optional, good for consistency)
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                gif.addFrame(canvas, {delay: delay});
+            });
+
+            // On Finish
+            gif.on('finished', function(blob) {
+                const url = URL.createObjectURL(blob);
+
+                // Update Preview
+                previewImg.src = url;
+                previewImg.classList.remove('hidden');
+                previewPlaceholder.classList.add('hidden');
+
+                // Update Download Link
+                downloadBtn.href = url;
+                downloadBtn.download = `animation_${Date.now()}.gif`;
+                downloadBtn.classList.remove('hidden');
+
+                // Reset UI
+                loadingBar.classList.add('hidden');
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="ph ph-magic-wand text-xl"></i><span>GIF Erstellen</span>';
+            });
+
+            gif.render();
+        }
+
+    </script>
+</body>
+</html>
