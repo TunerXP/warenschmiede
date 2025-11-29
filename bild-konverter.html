@@ -470,7 +470,7 @@
 
             <div class="lg:col-span-2 flex flex-col gap-4">
               <div id="drop-zone" class="gif-drop-zone w-full h-52 rounded-2xl flex flex-col justify-center items-center cursor-pointer bg-slate-900/50 border border-slate-800/80 hover:bg-slate-800/60 transition-colors relative">
-                <input id="file-input" type="file" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                <input id="gif-file-input" type="file" multiple accept="image/*" class="hidden" />
                 <div class="text-center z-0 pointer-events-none">
                   <div class="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
                     <i class="ph ph-frames text-3xl text-blue-400"></i>
@@ -784,7 +784,7 @@
   <script>
     (() => {
       const dropZone = document.getElementById('drop-zone');
-      const fileInput = document.getElementById('file-input');
+      const gifFileInput = document.getElementById('gif-file-input');
       const framesContainer = document.getElementById('frames-container');
       const emptyState = document.getElementById('empty-state');
       const frameCount = document.getElementById('frame-count');
@@ -1070,12 +1070,12 @@
       });
 
       dropZone.addEventListener('click', () => {
-        fileInput.click();
+        gifFileInput.click();
       });
 
-      fileInput.addEventListener('change', (e) => {
+      gifFileInput.addEventListener('change', (e) => {
         addFiles(e.target.files);
-        fileInput.value = '';
+        gifFileInput.value = '';
       });
 
       delaySlider.addEventListener('input', (e) => {
