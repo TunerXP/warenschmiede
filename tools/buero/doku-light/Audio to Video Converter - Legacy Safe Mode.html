@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio to Video Converter (Compat Edition)</title>
+    <title>Audio to Video Converter (Vintage)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- FFmpeg Wrapper (Version 0.11.0 - The Golden Standard for ST) -->
-    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.0/dist/ffmpeg.min.js"></script>
+    <!-- FFmpeg Wrapper (Version 0.9.8 - Die Älteste & Stabilste) -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.9.8/dist/ffmpeg.min.js"></script>
 
     <style>
         body {
@@ -42,11 +42,11 @@
         
         <!-- Header -->
         <div class="text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-600/20 text-emerald-500 mb-4">
-                <i class="ph ph-video-camera text-4xl"></i>
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-600/20 text-purple-500 mb-4">
+                <i class="ph ph-wrench text-4xl"></i>
             </div>
             <h1 class="text-2xl font-bold text-white">Audio zu Video</h1>
-            <p class="text-slate-400 text-sm mt-2">Server Edition (Stable 0.11.0/0.11.1)</p>
+            <p class="text-slate-400 text-sm mt-2">Vintage Edition (v0.9.8 / Core 0.8.5)</p>
         </div>
 
         <!-- 1. Upload Audio -->
@@ -92,7 +92,7 @@
                 <div class="w-full bg-slate-700 rounded-full h-2.5 overflow-hidden">
                     <div id="progress-bar" class="bg-blue-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
                 </div>
-                <p class="text-[10px] text-slate-500 text-center">Tipp: Je kleiner die MP3 (kurzes Lied), desto schneller geht es.</p>
+                <p class="text-[10px] text-slate-500 text-center">Das kann je nach Länge des Liedes ein paar Minuten dauern.</p>
             </div>
 
             <!-- Download Link (Hidden initially) -->
@@ -167,25 +167,24 @@
             progressContainer.classList.remove('hidden');
             downloadLink.classList.add('hidden');
             logArea.classList.remove('hidden');
-            logArea.textContent = "Starte...";
+            logArea.textContent = "Starte (Vintage Mode)...";
 
             try {
                 const { createFFmpeg, fetchFile } = FFmpeg;
                 
                 if (!ffmpeg) {
-                    // FIX: Using version 0.11.0 for wrapper and 0.11.1 for core-st.
-                    // This combination is verified to fix the "proxy_main" error.
-                    logArea.textContent = "Lade Single-Threaded Core v0.11.1...";
-                    
+                    // EXTREM WICHTIG: Explizite Core-URL für 0.9.8 -> Core 0.8.5
+                    // Diese Version ist Single-Threaded und nutzt KEIN SharedArrayBuffer.
+                    // Das sollte überall laufen.
                     ffmpeg = createFFmpeg({ 
                         log: true,
-                        corePath: 'https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js',
+                        corePath: 'https://unpkg.com/@ffmpeg/core@0.8.5/dist/ffmpeg-core.js',
                         progress: ({ ratio }) => {
                             const percent = Math.round(ratio * 100);
                             progressBar.style.width = `${percent}%`;
                             document.getElementById('progress-percent').textContent = `${percent}%`;
                             
-                            if(percent < 100) statusText.textContent = "Verarbeite (" + percent + "%) ...";
+                            if(percent < 100) statusText.textContent = "Rendere Video (" + percent + "%) ...";
                             else statusText.textContent = "Finalisiere...";
                         }
                     });
@@ -199,9 +198,10 @@
                 ffmpeg.FS('writeFile', 'audio.mp3', await fetchFile(audioFile));
                 ffmpeg.FS('writeFile', 'image.jpg', await fetchFile(imageFile));
 
-                logArea.textContent = "Starte Encoding (Das dauert kurz)...";
+                logArea.textContent = "Starte Encoding... (Geduld bitte)";
 
-                // Standard Youtube preset
+                // Run FFmpeg Command
+                // Gleicher Command wie immer, nur der "Motor" ist älter und robuster
                 await ffmpeg.run(
                     '-loop', '1', 
                     '-i', 'image.jpg', 
@@ -209,7 +209,7 @@
                     '-c:v', 'libx264', 
                     '-tune', 'stillimage', 
                     '-c:a', 'aac', 
-                    '-b:a', '192k', 
+                    '-b:a', '128k', 
                     '-pix_fmt', 'yuv420p', 
                     '-shortest', 
                     '-preset', 'ultrafast',
@@ -235,7 +235,9 @@
                 logArea.textContent = "FEHLER: " + err.message;
                 logArea.classList.add('text-red-500', 'font-bold');
                 convertBtn.innerHTML = "Fehler";
-                alert("Es gab einen Fehler. Prüfe bitte, ob die MP3-Datei beschädigt ist oder versuche es neu.");
+                
+                // Falls es immer noch nicht geht, ist es vermutlich ein Netzwerkproblem beim Laden der .wasm Datei vom CDN
+                alert("Fehler! Tipp: Öffne die Entwicklerkonsole (F12), um Details zu sehen. Es könnte sein, dass dein Server das Nachladen der Skripte blockiert.");
             }
         }
     </script>
