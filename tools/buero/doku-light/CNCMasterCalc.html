@@ -54,43 +54,87 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
   <style>
+    .cnc-calc {
+      color: var(--text);
+    }
+
     .cnc-calc .input-field {
       width: 100%;
       border-radius: 0.75rem;
       padding: 0.7rem 0.85rem;
       font-size: 0.95rem;
       line-height: 1.35;
-      border: 1px solid transparent;
+      border: 1px solid var(--control-border);
+      background-color: var(--surface);
+      color: var(--text);
+      box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 10%, transparent);
       transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
     }
 
     .cnc-calc .input-field:focus {
       outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
     }
 
-    html[data-theme="light"] .cnc-calc .input-field {
-      background-color: var(--surface);
-      border-color: var(--control-border);
-      color: var(--text);
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
-    }
-
-    html[data-theme="light"] .cnc-calc .input-field:focus {
-      border-color: var(--focus-ring);
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--focus-ring) 35%, transparent);
-    }
-
-    html[data-theme="light"] .cnc-calc .input-field::placeholder {
+    .cnc-calc .input-field::placeholder {
       color: var(--text-muted);
     }
 
-    html[data-theme="light"] .cnc-calc .input-label,
-    html[data-theme="light"] .cnc-calc .input-prefix {
+    .cnc-calc .input-label,
+    .cnc-calc .input-prefix {
       color: var(--text-subtle);
     }
 
     .cnc-calc .input-prefix {
       pointer-events: none;
+    }
+
+    .cnc-calc .bg-gray-800,
+    .cnc-calc .bg-gray-700 {
+      background-color: var(--surface-muted) !important;
+    }
+
+    .cnc-calc .bg-gray-900 {
+      background-color: var(--surface) !important;
+    }
+
+    .cnc-calc .bg-gray-900\/50,
+    .cnc-calc .bg-gray-800\/50,
+    .cnc-calc .bg-gray-700\/50 {
+      background-color: color-mix(in srgb, var(--surface) 85%, transparent) !important;
+    }
+
+    .cnc-calc .border-gray-600,
+    .cnc-calc .border-gray-700,
+    .cnc-calc .border-gray-700\/50,
+    .cnc-calc .border-gray-800,
+    .cnc-calc .divide-gray-700 > :not([hidden]) ~ :not([hidden]) {
+      border-color: color-mix(in srgb, var(--control-border) 90%, transparent) !important;
+    }
+
+    .cnc-calc .text-white,
+    .cnc-calc .text-gray-300,
+    .cnc-calc .text-gray-200 {
+      color: var(--text) !important;
+    }
+
+    .cnc-calc .text-gray-400,
+    .cnc-calc .text-gray-700 {
+      color: var(--text-subtle) !important;
+    }
+
+    .cnc-calc .text-gray-500,
+    .cnc-calc .text-gray-600,
+    .cnc-calc .hover\:text-white:hover {
+      color: var(--text-muted) !important;
+    }
+
+    .cnc-calc .hover\:bg-gray-600:hover,
+    .cnc-calc .hover\:bg-gray-700:hover,
+    .cnc-calc .hover\:bg-gray-700\/50:hover,
+    .cnc-calc .hover\:bg-gray-800:hover {
+      background-color: color-mix(in srgb, var(--surface) 70%, var(--surface-muted) 30%) !important;
     }
   </style>
 </head>
