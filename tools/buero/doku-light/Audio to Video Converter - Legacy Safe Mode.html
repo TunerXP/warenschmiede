@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio to Video Converter (Network Edition)</title>
+    <title>Audio to Video Converter (Architect Edition)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- FFmpeg Wrapper v0.9.8 -->
-    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.9.8/dist/ffmpeg.min.js"></script>
+    <!-- FFmpeg Wrapper v0.10.1 (Stable for ST) -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.10.1/dist/ffmpeg.min.js"></script>
 
     <style>
         body {
@@ -37,22 +37,15 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <!-- Server Switcher -->
-    <div class="absolute top-4 right-4 flex gap-2 text-xs">
-        <span class="text-slate-500 py-1">Engine Server:</span>
-        <button onclick="setServer('unpkg')" id="btn-unpkg" class="bg-blue-600 text-white px-2 py-1 rounded">Server A (Unpkg)</button>
-        <button onclick="setServer('jsdelivr')" id="btn-jsdelivr" class="bg-slate-700 text-slate-300 px-2 py-1 rounded hover:bg-slate-600">Server B (jsDelivr)</button>
-    </div>
-
     <div class="w-full max-w-2xl bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700 p-8 space-y-8">
         
         <!-- Header -->
         <div class="text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-600/20 text-pink-500 mb-4">
-                <i class="ph ph-network text-4xl"></i>
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-cyan-600/20 text-cyan-500 mb-4">
+                <i class="ph ph-compass-tool text-4xl"></i>
             </div>
             <h1 class="text-2xl font-bold text-white">Audio zu Video</h1>
-            <p class="text-slate-400 text-sm mt-2">Network Edition (v0.9.8)</p>
+            <p class="text-slate-400 text-sm mt-2">Architect Edition (Explicit Paths)</p>
         </div>
 
         <!-- 1. Upload Audio -->
@@ -85,19 +78,14 @@
         <!-- 3. Action Area -->
         <div class="pt-4 border-t border-slate-700">
             
-            <!-- Status / Log Box -->
-            <div id="status-box" class="hidden mb-4 bg-black/50 rounded-lg p-3 text-xs font-mono text-cyan-400 border border-slate-600 h-24 overflow-y-auto">
-                <div id="log-content">Warte auf Start...</div>
-            </div>
-
-            <!-- Progress Bar Engine Download -->
-            <div id="dl-progress-container" class="hidden mb-4">
-                <div class="flex justify-between text-xs text-slate-400 mb-1">
-                    <span>Lade Video-Engine (25MB)...</span>
-                    <span id="dl-percent">0%</span>
+            <!-- Progress Bar -->
+            <div id="progress-container" class="hidden mt-4 space-y-2">
+                <div class="flex justify-between text-xs text-slate-400">
+                    <span id="status-text">Initialisiere...</span>
+                    <span id="progress-percent">0%</span>
                 </div>
-                <div class="w-full bg-slate-700 rounded-full h-1.5">
-                    <div id="dl-bar" class="bg-pink-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                <div class="w-full bg-slate-700 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-cyan-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
                 </div>
             </div>
 
@@ -113,48 +101,36 @@
 
     </div>
 
-    <script>
-        // --- Config ---
-        let currentServer = 'unpkg';
-        const servers = {
-            unpkg: 'https://unpkg.com/@ffmpeg/core@0.9.8/dist/ffmpeg-core.js',
-            jsdelivr: 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.9.8/dist/ffmpeg-core.js'
-        };
+    <!-- Live Log Area -->
+    <div class="w-full max-w-2xl mt-4">
+        <p class="text-xs text-slate-500 uppercase font-bold mb-2">System Protokoll:</p>
+        <div id="log-area" class="w-full h-40 bg-black rounded-lg border border-slate-700 p-3 text-[10px] font-mono text-cyan-400 overflow-y-auto whitespace-pre-wrap">Warte auf Eingabe...</div>
+    </div>
 
-        // --- Elements ---
+    <script>
         const audioInput = document.getElementById('audio-input');
         const audioLabel = document.getElementById('audio-label');
         const imageInput = document.getElementById('image-input');
         const imageLabel = document.getElementById('image-label');
         const imagePreview = document.getElementById('image-preview');
         const convertBtn = document.getElementById('convert-btn');
-        const statusBox = document.getElementById('status-box');
-        const logContent = document.getElementById('log-content');
-        const dlContainer = document.getElementById('dl-progress-container');
-        const dlBar = document.getElementById('dl-bar');
-        const dlPercent = document.getElementById('dl-percent');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const statusText = document.getElementById('status-text');
         const downloadLink = document.getElementById('download-link');
+        const logArea = document.getElementById('log-area');
 
         let audioFile = null;
         let imageFile = null;
         let ffmpeg = null;
 
-        // --- Server Switcher ---
-        function setServer(srv) {
-            currentServer = srv;
-            document.getElementById('btn-unpkg').className = srv === 'unpkg' ? 'bg-blue-600 text-white px-2 py-1 rounded' : 'bg-slate-700 text-slate-300 px-2 py-1 rounded hover:bg-slate-600';
-            document.getElementById('btn-jsdelivr').className = srv === 'jsdelivr' ? 'bg-blue-600 text-white px-2 py-1 rounded' : 'bg-slate-700 text-slate-300 px-2 py-1 rounded hover:bg-slate-600';
-            log(`Server gewechselt zu: ${srv.toUpperCase()}`);
-        }
-
-        // --- Logger ---
         function log(msg) {
             const time = new Date().toLocaleTimeString();
-            logContent.innerHTML += `<div><span class="text-slate-500">[${time}]</span> ${msg}</div>`;
-            statusBox.scrollTop = statusBox.scrollHeight;
+            logArea.innerHTML += `[${time}] ${msg}\n`;
+            logArea.scrollTop = logArea.scrollHeight;
         }
 
-        // --- File Inputs ---
+        // --- File Handling ---
         audioInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(file) {
@@ -182,84 +158,71 @@
             }
         }
 
-        // --- Main Process ---
+        // --- Conversion Logic ---
         async function startProcess() {
             convertBtn.disabled = true;
             convertBtn.classList.remove('animate-pulse');
-            statusBox.classList.remove('hidden');
+            progressContainer.classList.remove('hidden');
             downloadLink.classList.add('hidden');
             
             try {
                 const { createFFmpeg, fetchFile } = FFmpeg;
 
+                // Explizite Pfade zu JS und WASM (Version 0.10.1 von UNPKG)
+                // Wir nutzen hier NICHT core-st, sondern den Standard Core v0.10.1, da dieser
+                // oft robuster ist, wenn wir die Pfade manuell setzen.
+                // Falls das scheitert, ist der Browser zu strikt für WASM.
+                const corePath = 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js';
+                // Der Wrapper sucht automatisch nach .wasm am gleichen Ort, aber wir definieren es sicherheitshalber nicht um,
+                // da unpkg die Struktur korrekt hat.
+                
                 if (!ffmpeg) {
-                    const coreURL = servers[currentServer];
-                    log(`Lade Engine von ${currentServer}...`);
-                    dlContainer.classList.remove('hidden');
-
-                    // 1. Manually fetch core to show progress (browser fetch doesn't always show progress for scripts easily, but FFmpeg logger helps)
-                    ffmpeg = createFFmpeg({
+                    log(`Initialisiere FFmpeg v0.10.1...`);
+                    log(`Core Path: ${corePath}`);
+                    
+                    ffmpeg = createFFmpeg({ 
                         log: true,
-                        corePath: coreURL,
+                        corePath: corePath,
                         logger: ({ message }) => {
-                            // Try to detect download progress messages from browser if any (rare)
-                            // Mostly capture FFmpeg internal logs
                             if(message.includes("frame=") || message.includes("size=")) {
-                                // Encoding progress
-                                log(message); 
+                                log("FFmpeg: " + message);
                             }
                         },
                         progress: ({ ratio }) => {
-                            // This is encoding progress usually
-                            const p = Math.round(ratio * 100);
-                            convertBtn.innerText = `Erstelle Video: ${p}%`;
+                            const percent = Math.round(ratio * 100);
+                            progressBar.style.width = `${percent}%`;
+                            document.getElementById('progress-percent').textContent = `${percent}%`;
+                            if(percent >= 100) statusText.textContent = "Finalisiere...";
+                            else statusText.textContent = "Verarbeite...";
                         }
                     });
-
-                    // Fake download progress visualizer (since we can't hook into script tag download easily)
-                    let fakeP = 0;
-                    const fakeInterval = setInterval(() => {
-                        if(fakeP < 90) {
-                            fakeP += Math.random() * 5;
-                            dlBar.style.width = Math.min(fakeP, 90) + "%";
-                            dlPercent.innerText = Math.round(Math.min(fakeP, 90)) + "%";
-                        }
-                    }, 500);
-
-                    await ffmpeg.load();
                     
-                    clearInterval(fakeInterval);
-                    dlBar.style.width = "100%";
-                    dlPercent.innerText = "100%";
-                    log("Engine geladen! (v0.9.8)");
-                    setTimeout(() => dlContainer.classList.add('hidden'), 1000);
+                    await ffmpeg.load();
+                    log("Engine erfolgreich geladen!");
                 }
 
-                // 2. Write Files
                 log("Kopiere Dateien...");
                 ffmpeg.FS('writeFile', 'input.mp3', await fetchFile(audioFile));
                 ffmpeg.FS('writeFile', 'input.jpg', await fetchFile(imageFile));
 
-                // 3. Run
                 log("Starte Encoding...");
-                
-                // Optimized command for YouTube (Fast decode/encode)
-                // -shortest: Stop when shortest input (audio) ends (since image loops forever)
+                statusText.textContent = "Encoding läuft...";
+
                 await ffmpeg.run(
                     '-loop', '1',
                     '-i', 'input.jpg',
                     '-i', 'input.mp3',
-                    '-c:a', 'copy', // Copy audio (super fast, no re-encoding of MP3)
-                    '-c:v', 'libx264', // Encode Video
-                    '-tune', 'stillimage',
-                    '-pix_fmt', 'yuv420p',
-                    '-shortest',
+                    '-c:a', 'copy', 
+                    '-c:v', 'libx264', 
+                    '-tune', 'stillimage', 
+                    '-pix_fmt', 'yuv420p', 
+                    '-shortest', 
+                    '-preset', 'ultrafast',
                     'output.mp4'
                 );
 
-                log("Encoding fertig!");
-
-                // 4. Output
+                log("Fertig!");
+                
                 const data = ffmpeg.FS('readFile', 'output.mp4');
                 const blob = new Blob([data.buffer], { type: 'video/mp4' });
                 const url = URL.createObjectURL(blob);
@@ -272,14 +235,16 @@
                 convertBtn.classList.add('bg-emerald-600');
 
                 // Cleanup
-                ffmpeg.FS('unlink', 'input.mp3');
-                ffmpeg.FS('unlink', 'input.jpg');
-                ffmpeg.FS('unlink', 'output.mp4');
+                try {
+                    ffmpeg.FS('unlink', 'input.mp3');
+                    ffmpeg.FS('unlink', 'input.jpg');
+                    ffmpeg.FS('unlink', 'output.mp4');
+                } catch(e) {}
 
             } catch (err) {
                 console.error(err);
                 log(`<span class="text-red-400">FEHLER: ${err.message}</span>`);
-                alert("Fehler! Wenn es hängt, versuche oben rechts 'Server B' auszuwählen.");
+                alert("Ein Fehler ist aufgetreten: " + err.message + "\n\nMöglicherweise blockiert dein Browser oder Server das Laden der WASM-Datei.");
                 convertBtn.innerText = "Fehler - Neu versuchen";
                 convertBtn.disabled = false;
             }
