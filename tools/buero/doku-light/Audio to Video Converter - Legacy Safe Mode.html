@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio to Video Converter (Manual Loader)</title>
+    <title>Audio to Video Converter (Resilient)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- FFmpeg Wrapper v0.9.8 -->
-    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.9.8/dist/ffmpeg.min.js"></script>
+    <!-- FFmpeg Wrapper (0.11.6) -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
 
     <style>
         body {
@@ -41,11 +41,11 @@
         
         <!-- Header -->
         <div class="text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-teal-600/20 text-teal-500 mb-4">
-                <i class="ph ph-download-simple text-4xl"></i>
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-violet-600/20 text-violet-500 mb-4">
+                <i class="ph ph-arrows-merge text-4xl"></i>
             </div>
             <h1 class="text-2xl font-bold text-white">Audio zu Video</h1>
-            <p class="text-slate-400 text-sm mt-2">Manual Loader Edition (v0.9.8)</p>
+            <p class="text-slate-400 text-sm mt-2">Resilient Edition (Auto-Fallback)</p>
         </div>
 
         <!-- 1. Upload Audio -->
@@ -56,7 +56,7 @@
             <div id="audio-drop" class="drop-zone h-24 rounded-xl flex flex-col items-center justify-center cursor-pointer relative group">
                 <input type="file" id="audio-input" accept="audio/mp3, audio/mpeg, audio/wav" class="absolute inset-0 opacity-0 cursor-pointer z-10">
                 <div id="audio-label" class="text-center pointer-events-none">
-                    <p class="text-slate-400 text-sm group-hover:text-blue-400 transition-colors">MP3 hier ablegen</p>
+                    <p class="text-slate-400 text-sm group-hover:text-blue-400 transition-colors">Hier klicken oder MP3 reinziehen</p>
                 </div>
             </div>
         </div>
@@ -78,25 +78,14 @@
         <!-- 3. Action Area -->
         <div class="pt-4 border-t border-slate-700">
             
-            <!-- Engine Download Progress -->
-            <div id="engine-dl-container" class="hidden mb-4 p-4 bg-slate-900 rounded-lg border border-slate-600">
-                <div class="flex justify-between text-xs text-slate-300 mb-2">
-                    <span id="dl-status-text">Lade Engine (25 MB)...</span>
-                    <span id="dl-percent-text">0%</span>
-                </div>
-                <div class="w-full bg-slate-700 rounded-full h-2">
-                    <div id="dl-bar" class="bg-teal-500 h-2 rounded-full transition-all duration-100" style="width: 0%"></div>
-                </div>
-            </div>
-
-            <!-- Encoding Progress -->
+            <!-- Progress Bar -->
             <div id="progress-container" class="hidden mt-4 space-y-2">
                 <div class="flex justify-between text-xs text-slate-400">
-                    <span id="status-text">Starte...</span>
+                    <span id="status-text">Initialisiere...</span>
                     <span id="progress-percent">0%</span>
                 </div>
                 <div class="w-full bg-slate-700 rounded-full h-2.5 overflow-hidden">
-                    <div id="progress-bar" class="bg-blue-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    <div id="progress-bar" class="bg-violet-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
                 </div>
             </div>
 
@@ -115,7 +104,7 @@
     <!-- Live Log Area -->
     <div class="w-full max-w-2xl mt-4">
         <p class="text-xs text-slate-500 uppercase font-bold mb-2">System Protokoll:</p>
-        <div id="log-area" class="w-full h-40 bg-black rounded-lg border border-slate-700 p-3 text-[10px] font-mono text-teal-400 overflow-y-auto whitespace-pre-wrap">Warte auf Eingabe...</div>
+        <div id="log-area" class="w-full h-40 bg-black rounded-lg border border-slate-700 p-3 text-[10px] font-mono text-violet-400 overflow-y-auto whitespace-pre-wrap">Bereit.</div>
     </div>
 
     <script>
@@ -125,10 +114,6 @@
         const imageLabel = document.getElementById('image-label');
         const imagePreview = document.getElementById('image-preview');
         const convertBtn = document.getElementById('convert-btn');
-        const engineDlContainer = document.getElementById('engine-dl-container');
-        const dlBar = document.getElementById('dl-bar');
-        const dlPercentText = document.getElementById('dl-percent-text');
-        const dlStatusText = document.getElementById('dl-status-text');
         const progressContainer = document.getElementById('progress-container');
         const progressBar = document.getElementById('progress-bar');
         const statusText = document.getElementById('status-text');
@@ -139,9 +124,11 @@
         let imageFile = null;
         let ffmpeg = null;
 
-        // URLs for v0.9.8
-        const CORE_JS_URL = 'https://unpkg.com/@ffmpeg/core@0.9.8/dist/ffmpeg-core.js';
-        const CORE_WASM_URL = 'https://unpkg.com/@ffmpeg/core@0.9.8/dist/ffmpeg-core.wasm';
+        // URLs for v0.11.6 ST
+        const SERVERS = [
+            'https://unpkg.com/@ffmpeg/core-st@0.11.6/dist/ffmpeg-core.js',
+            'https://cdn.jsdelivr.net/npm/@ffmpeg/core-st@0.11.6/dist/ffmpeg-core.js'
+        ];
 
         function log(msg) {
             const time = new Date().toLocaleTimeString();
@@ -177,84 +164,18 @@
             }
         }
 
-        // --- Manual Downloader ---
-        async function downloadFile(url, progressCallback) {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP Error ${response.status} für ${url}`);
+        // --- Robust Loader ---
+        async function loadFFmpeg() {
+            const { createFFmpeg } = FFmpeg;
             
-            const contentLength = response.headers.get('content-length');
-            const total = parseInt(contentLength, 10);
-            let loaded = 0;
-
-            const reader = response.body.getReader();
-            const chunks = [];
-
-            while(true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                chunks.push(value);
-                loaded += value.length;
-                if(total) progressCallback(loaded / total);
-            }
-
-            const blob = new Blob(chunks);
-            return URL.createObjectURL(blob);
-        }
-
-        // --- Conversion Logic ---
-        async function startProcess() {
-            convertBtn.disabled = true;
-            convertBtn.classList.remove('animate-pulse');
-            progressContainer.classList.add('hidden');
-            downloadLink.classList.add('hidden');
-            
-            try {
-                const { createFFmpeg, fetchFile } = FFmpeg;
-
-                if (!ffmpeg) {
-                    engineDlContainer.classList.remove('hidden');
-                    
-                    // 1. Download JS Core
-                    dlStatusText.textContent = "Lade Core Skript...";
-                    log("Starte Download: ffmpeg-core.js");
-                    const coreJsBlobUrl = await downloadFile(CORE_JS_URL, (p) => {
-                        // JS is small, ignore progress
-                    });
-
-                    // 2. Download WASM Core (Heavy!)
-                    dlStatusText.textContent = "Lade Engine (25MB)...";
-                    log("Starte Download: ffmpeg-core.wasm");
-                    const wasmBlobUrl = await downloadFile(CORE_WASM_URL, (p) => {
-                        const pct = Math.round(p * 100);
-                        dlBar.style.width = `${pct}%`;
-                        dlPercentText.innerText = `${pct}%`;
-                    });
-                    
-                    log("Download komplett. Initialisiere FFmpeg...");
-                    dlStatusText.textContent = "Starte Engine...";
-
-                    ffmpeg = createFFmpeg({ 
+            for (const url of SERVERS) {
+                log(`Versuche Engine zu laden von: ${new URL(url).hostname}...`);
+                try {
+                    const instance = createFFmpeg({
                         log: true,
-                        corePath: coreJsBlobUrl, // Use local blob
-                        // We need to intercept the worker creation or let it find the wasm?
-                        // v0.9.8 usually expects wasm at the same path.
-                        // Hack: We rely on the fact that 0.9.8 core.js looks for .wasm relative to itself.
-                        // Since we use blob URL for JS, it might fail to find wasm blob.
-                        // BUT: createFFmpeg allows us to override logging. 
-                        // Actually, for v0.9.8, we might need to rely on the default loader IF we patch the URL.
-                        // Let's try the standard load first with explicit path if the manual blob fails logic.
-                        
-                        // REVERT TO STANDARD LOAD BUT WITH LOGGING
-                        // The manual download confirmed we CAN fetch the files.
-                        // Now we let createFFmpeg load them cleanly from UNPKG to avoid Blob-Path issues
-                        // but since we know they are fetchable, it should work.
-                        // IF BLOB FAILS, we use the standard way:
-                        corePath: CORE_JS_URL,
-                        
+                        corePath: url,
                         logger: ({ message }) => {
-                            if(message.includes("frame=") || message.includes("size=")) {
-                                log("FFmpeg: " + message);
-                            }
+                            if(message.includes("frame=") || message.includes("size=")) log("FFmpeg: " + message);
                         },
                         progress: ({ ratio }) => {
                             const percent = Math.round(ratio * 100);
@@ -265,28 +186,46 @@
                         }
                     });
                     
-                    await ffmpeg.load();
-                    engineDlContainer.classList.add('hidden');
-                    log("Engine erfolgreich geladen!");
+                    await instance.load();
+                    log("ERFOLG! Engine geladen.");
+                    return instance;
+                } catch (e) {
+                    log(`FEHLER bei ${new URL(url).hostname}: ${e.message}`);
+                    log("Versuche nächsten Server...");
+                }
+            }
+            throw new Error("Alle Server fehlgeschlagen. Bitte prüfe AdBlocker/Firewall.");
+        }
+
+        // --- Conversion Logic ---
+        async function startProcess() {
+            convertBtn.disabled = true;
+            convertBtn.classList.remove('animate-pulse');
+            progressContainer.classList.remove('hidden');
+            downloadLink.classList.add('hidden');
+            
+            try {
+                const { fetchFile } = FFmpeg;
+
+                if (!ffmpeg) {
+                    ffmpeg = await loadFFmpeg();
                 }
 
-                // Show Encoding Progress UI
-                progressContainer.classList.remove('hidden');
-                
-                log("Kopiere Dateien...");
-                ffmpeg.FS('writeFile', 'input.mp3', await fetchFile(audioFile));
-                ffmpeg.FS('writeFile', 'input.jpg', await fetchFile(imageFile));
+                log("Schreibe Dateien...");
+                ffmpeg.FS('writeFile', 'audio.mp3', await fetchFile(audioFile));
+                ffmpeg.FS('writeFile', 'image.jpg', await fetchFile(imageFile));
 
                 log("Starte Encoding...");
                 statusText.textContent = "Encoding läuft...";
 
                 await ffmpeg.run(
                     '-loop', '1',
-                    '-i', 'input.jpg',
-                    '-i', 'input.mp3',
-                    '-c:a', 'copy', 
+                    '-i', 'image.jpg',
+                    '-i', 'audio.mp3', 
                     '-c:v', 'libx264', 
                     '-tune', 'stillimage', 
+                    '-c:a', 'aac', 
+                    '-b:a', '192k', 
                     '-pix_fmt', 'yuv420p', 
                     '-shortest', 
                     '-preset', 'ultrafast',
@@ -308,15 +247,15 @@
 
                 // Cleanup
                 try {
-                    ffmpeg.FS('unlink', 'input.mp3');
-                    ffmpeg.FS('unlink', 'input.jpg');
+                    ffmpeg.FS('unlink', 'audio.mp3');
+                    ffmpeg.FS('unlink', 'image.jpg');
                     ffmpeg.FS('unlink', 'output.mp4');
                 } catch(e) {}
 
             } catch (err) {
                 console.error(err);
-                log(`<span class="text-red-400">FEHLER: ${err.message}</span>`);
-                alert("Ein Fehler ist aufgetreten: " + err.message);
+                log(`<span class="text-red-400">ABBRUCH: ${err.message}</span>`);
+                alert("Konnte die Engine nicht laden. Wenn du AdBlocker nutzt, deaktiviere sie bitte für diese Seite.");
                 convertBtn.innerText = "Fehler - Neu versuchen";
                 convertBtn.disabled = false;
             }
