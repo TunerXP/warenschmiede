@@ -53,6 +53,46 @@
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+  <style>
+    .cnc-calc .input-field {
+      width: 100%;
+      border-radius: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      border: 1px solid transparent;
+      transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+    }
+
+    .cnc-calc .input-field:focus {
+      outline: none;
+    }
+
+    html[data-theme="light"] .cnc-calc .input-field {
+      background-color: var(--surface);
+      border-color: var(--control-border);
+      color: var(--text);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+    }
+
+    html[data-theme="light"] .cnc-calc .input-field:focus {
+      border-color: var(--focus-ring);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--focus-ring) 35%, transparent);
+    }
+
+    html[data-theme="light"] .cnc-calc .input-field::placeholder {
+      color: var(--text-muted);
+    }
+
+    html[data-theme="light"] .cnc-calc .input-label,
+    html[data-theme="light"] .cnc-calc .input-prefix {
+      color: var(--text-subtle);
+    }
+
+    .cnc-calc .input-prefix {
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
   <header class="site-header" data-header>
@@ -249,7 +289,7 @@
   <main id="inhalt" class="site-main" tabindex="-1">
     <section class="section ws-section" aria-label="CNC MasterCalc">
       <div class="container">
-<div class="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+<div class="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-6 cnc-calc">
 
         <!-- LEFT COLUMN: Calculator -->
         <div class="lg:col-span-5 space-y-6">
@@ -334,12 +374,12 @@
                 </div>
 
                 <!-- Tool Data (Global) -->
-                <div class="bg-gray-900/50 p-3 rounded border border-gray-700/50 flex gap-4 mb-6 transition-all duration-300">
+                <div class="bg-gray-900/50 p-3 rounded border border-gray-700/50 grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 transition-all duration-300 items-end">
                     <div class="flex-1">
                         <label class="input-label">Durchmesser (D)</label>
                         <div class="relative">
                             <input type="number" id="inp-d" value="10" class="input-field pl-8" oninput="calcFromTool()">
-                            <span class="absolute left-2 top-2 text-gray-500">Ø</span>
+                            <span class="input-prefix absolute left-2 top-1/2 -translate-y-1/2 text-gray-500">Ø</span>
                         </div>
                     </div>
                     <!-- Z-Input container with transition -->
@@ -347,7 +387,7 @@
                         <label class="input-label" id="lbl-z">Zähnezahl (Z)</label>
                         <div class="relative">
                             <input type="number" id="inp-z" value="4" class="input-field pl-8" oninput="calcFromTool()">
-                            <span class="absolute left-2 top-2 text-gray-500">#</span>
+                            <span class="input-prefix absolute left-2 top-1/2 -translate-y-1/2 text-gray-500">#</span>
                         </div>
                     </div>
                 </div>
