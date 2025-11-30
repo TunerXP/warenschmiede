@@ -136,6 +136,14 @@
     .cnc-calc .hover\:bg-gray-800:hover {
       background-color: color-mix(in srgb, var(--surface) 70%, var(--surface-muted) 30%) !important;
     }
+
+    /* CNCMasterCalc – vertikale Ausrichtung für D/Z-Eingaben */
+    .mastercalc-input {
+      height: 2.75rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+      box-sizing: border-box;
+    }
   </style>
 </head>
 <body>
@@ -422,7 +430,7 @@
                     <div class="flex-1">
                         <label class="input-label">Durchmesser (D)</label>
                         <div class="relative">
-                            <input type="number" id="inp-d" value="10" class="input-field pl-8" oninput="calcFromTool()">
+                            <input type="number" id="inp-d" value="10" class="input-field pl-8 mastercalc-input" oninput="calcFromTool()">
                             <span class="input-prefix absolute left-2 top-1/2 -translate-y-1/2 text-gray-500">Ø</span>
                         </div>
                     </div>
@@ -430,7 +438,7 @@
                     <div class="flex-1 transition-all duration-300" id="z-container">
                         <label class="input-label" id="lbl-z">Zähnezahl (Z)</label>
                         <div class="relative">
-                            <input type="number" id="inp-z" value="4" class="input-field pl-8" oninput="calcFromTool()">
+                            <input type="number" id="inp-z" value="4" class="input-field pl-8 mastercalc-input" oninput="calcFromTool()">
                             <span class="input-prefix absolute left-2 top-1/2 -translate-y-1/2 text-gray-500">#</span>
                         </div>
                     </div>
