@@ -1,157 +1,255 @@
-﻿<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CNC MasterCalc Pro</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #111827; /* Gray 900 */
-            color: #e5e7eb;
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" type="image/png" href="/ws.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/ws.png" sizes="180x180">
+  <meta name="theme-color" content="#000000">
+  <title>CNCMasterCalc – CNC- & Maschinenrechner | Warenschmiede Tools</title>
+  <meta name="description" content="Schnittwerte, Drehzahl, Vorschub und Werkzeugfaktoren für CNC-Bearbeitungen direkt im Browser berechnen.">
+  <meta name="robots" content="index,follow">
+  <meta name="color-scheme" content="light dark">
+  <link rel="canonical" href="https://www.warenschmiede.com/tools/buero/doku-light/CNCMasterCalc.html">
+  <meta property="og:title" content="CNCMasterCalc – CNC- & Maschinenrechner | Warenschmiede Tools">
+  <meta property="og:description" content="Schnittwerte, Drehzahl, Vorschub und Werkzeugfaktoren für CNC-Bearbeitungen direkt im Browser berechnen.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.warenschmiede.com/tools/buero/doku-light/CNCMasterCalc.html">
+  <meta property="og:image" content="/assets/og/og-default.jpg">
+  <meta property="og:site_name" content="Warenschmiede">
+  <meta property="og:locale" content="de_DE">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CNCMasterCalc – CNC- & Maschinenrechner | Warenschmiede Tools">
+  <meta name="twitter:description" content="Schnittwerte, Drehzahl, Vorschub und Werkzeugfaktoren für CNC-Bearbeitungen direkt im Browser berechnen.">
+  <meta name="twitter:url" content="https://www.warenschmiede.com/tools/buero/doku-light/CNCMasterCalc.html">
+  <meta name="twitter:image" content="/assets/og/og-default.jpg">
+  <script>
+    (function () {
+      var storageKey = 'theme-preference';
+      var preference = 'system';
+      try {
+        var stored = localStorage.getItem(storageKey);
+        if (stored === 'light' || stored === 'dark' || stored === 'system') {
+          preference = stored;
         }
-
-        /* Input Styles */
-        .input-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #9ca3af;
-            font-weight: 700;
-            margin-bottom: 4px;
-            display: block;
-        }
-
-        /* Unified Input Field Look */
-        .input-field {
-            background-color: #1f2937;
-            border: 1px solid #374151;
-            color: white;
-            border-radius: 0.375rem;
-            width: 100%;
-            padding: 0.5rem;
-            font-family: 'Courier New', monospace;
-            transition: all 0.2s;
-            font-weight: bold;
-        }
-
-            .input-field:disabled {
-                opacity: 0.3;
-                cursor: not-allowed;
-            }
-
-            .input-field:focus {
-                border-color: #f97316;
-                box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
-                outline: none;
-                background-color: #374151;
-            }
-
-        /* Special Colors for different sections */
-        .input-vc {
-            border-left: 3px solid #f97316;
-        }
-
-        .input-mac {
-            border-left: 3px solid #3b82f6;
-        }
-
-        /* Material Buttons */
-        .mat-btn {
-            @apply border border-gray-600 bg-gray-800 rounded p-3 text-xs text-gray-300 hover:bg-gray-700 hover:border-gray-500 transition-all font-bold shadow-sm;
-        }
-
-            .mat-btn.active {
-                @apply bg-orange-600 text-white border-orange-500 shadow-orange-500/20 shadow-lg transform scale-105;
-            }
-
-        /* Toggle Buttons (Operation & Type) */
-        .toggle-btn {
-            @apply flex-1 py-3 px-2 text-xs font-bold text-gray-300 bg-gray-800 border border-gray-600 rounded-lg hover:bg-gray-700 transition-all shadow-md flex justify-center items-center gap-2;
-        }
-
-        .op-btn.active {
-            @apply bg-emerald-600 text-white border-emerald-500 shadow-lg shadow-emerald-500/30 ring-1 ring-emerald-400 transform -translate-y-0.5;
-        }
-
-        .type-btn.active {
-            @apply bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-500/30 ring-1 ring-indigo-400 transform -translate-y-0.5;
-        }
-
-        /* Tool Grid */
-        .tool-slot {
-            @apply bg-gray-800 border border-gray-700 rounded p-2 text-center cursor-pointer hover:border-orange-500 transition-all relative;
-        }
-
-            .tool-slot.active {
-                @apply border-orange-500 bg-gray-700 ring-1 ring-orange-500;
-            }
-
-            .tool-slot.empty {
-                @apply opacity-50 border-dashed;
-            }
-
-        /* Modal & Helpers */
-        .modal-overlay {
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(4px);
-        }
-
-        .info-glass {
-            background: rgba(31, 41, 55, 0.7);
-            border-left: 4px solid #6366f1;
-            backdrop-filter: blur(4px);
-        }
-
-        .arrow-icon {
-            transition: transform 0.2s;
-        }
-
-        .input-field:focus ~ .arrow-icon {
-            color: white;
-            transform: scale(1.2);
-        }
-
-        /* Tab Navigation in Help Modal */
-        .help-tab {
-            @apply pb-2 border-b-2 border-transparent text-gray-400 text-sm font-bold cursor-pointer transition-colors px-4;
-        }
-
-            .help-tab.active {
-                @apply border-orange-500 text-white;
-            }
-
-        /* Content Sections */
-        .help-content {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-            .help-content.active {
-                display: block;
-            }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(5px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
+      } catch (error) { }
+      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+      var resolved = preference === 'dark'
+        ? 'dark'
+        : preference === 'light'
+          ? 'light'
+          : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
+      var root = document.documentElement;
+      root.dataset.theme = resolved;
+      root.dataset.themePreference = preference;
+    })();
+  </script>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/assets/print.css?v=1.0.7" media="print">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Oswald:wght@500;700&family=Orbitron:wght@500;700&family=Bebas+Neue&family=Kalam:wght@300;400;700&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = { corePlugins: { preflight: false } };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
 </head>
-<body class="min-h-screen p-4 lg:p-8 flex justify-center">
+<body>
+  <header class="site-header" data-header>
+    <div class="ws-nav-container header-grid">
+      <div class="brand">
+        <a class="brand-link" href="/index.html#start">
+          <img src="/assets/images/warenschmiede_logo.png" alt="Warenschmiede Logo" class="brand-logo" width="453" height="276" fetchpriority="high">
+          <div class="brand-text">
+            <span class="brand-name">Warenschmiede</span>
+            <span class="brand-tagline">3D-Druck · Made in Germany</span>
+          </div>
+        </a>
+      </div>
 
-    <div class="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <nav class="main-nav" aria-label="Hauptnavigation">
+        <div class="nav-menu" id="primary-navigation" data-nav-menu>
+          <ul class="nav-list" id="navList">
+            <li class="nav-item nav-fixed">
+              <a class="nav-link" href="/index.html#start" data-nav-link data-section="start" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html"><span class="nav-ico" aria-hidden="true">🏠</span>Start</a>
+            </li>
+
+            <!-- Neuer Dropdown: Rechner & Tools -->
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-highlight nav-tools" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                <span class="nav-ico" aria-hidden="true">🧮</span>Rechner &amp; Tools ▾
+              </button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/druck-kosten.html" data-nav-link data-path="/druck-kosten , /druck-kosten.html">
+                    <span class="nav-ico" aria-hidden="true">🧮</span>3D-Druck-Kostenrechner
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="nav-link"
+                    href="/tools/buero/doku-light/"
+                    data-nav-link
+                    data-path="/tools/buero/doku-light , /tools/buero/doku-light/ , /tools/buero/doku-light/index.html"
+                  >
+                    <span class="nav-ico" aria-hidden="true">📄</span>Dokumenten-Tool Light
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="nav-link"
+                    href="/tools/buero/doku-light/Audio to Video Converter - Legacy Safe Mode.html"
+                    data-nav-link
+                    data-path="/tools/buero/doku-light/Audio%20to%20Video%20Converter%20-%20Legacy%20Safe%20Mode.html , /tools/buero/doku-light/Audio to Video Converter - Legacy Safe Mode.html"
+                  >
+                    <span class="nav-ico" aria-hidden="true">🎧</span>Audio-to-Video Konverter (Legacy)
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/bild-konverter.html" data-nav-link data-path="/bild-konverter , /bild-konverter.html">
+                    <span class="nav-ico" aria-hidden="true">🖼️</span>Bilder Tools
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/tools/buero/doku-light/QRCodeMasterPro.html" data-nav-link data-path="/tools/buero/doku-light/QRCodeMasterPro , /tools/buero/doku-light/QRCodeMasterPro.html">
+                    <span class="nav-ico" aria-hidden="true">🔳</span>QR-Code Generator
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/tools/buero/doku-light/ReceiptWriterPro.html" data-nav-link data-path="/tools/buero/doku-light/ReceiptWriterPro , /tools/buero/doku-light/ReceiptWriterPro.html">
+                    <span class="nav-ico" aria-hidden="true">🧾</span>Quittungs-Generator
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/tools/buero/doku-light/CNCMasterCalc.html" data-nav-link data-path="/tools/buero/doku-light/CNCMasterCalc , /tools/buero/doku-light/CNCMasterCalc.html">
+                    <span class="nav-ico" aria-hidden="true">⚙️</span>CNCMasterCalc
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/werkstatt-rechner.html" data-nav-link data-path="/werkstatt-rechner , /werkstatt-rechner.html">
+                    <span class="nav-ico" aria-hidden="true">🛠️</span>Werkstatt-Rechner
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🧰</span>Leistungen ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/leistungen/3d-druck.html" data-nav-link data-path="/leistungen/3d-druck , /leistungen/3d-druck.html"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druckauftrag</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/leistungen/cad-prototyping.html" data-nav-link data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html"><span class="nav-ico" aria-hidden="true">📐</span>CAD &amp; Prototyping</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/leistungen/pc-hilfe.html" data-nav-link data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html"><span class="nav-ico" aria-hidden="true">💻</span>PC-Hilfe</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🤖</span>Über KI ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/ki/index.html" data-nav-link data-path="/ki , /ki/ , /ki/index.html"><span class="nav-ico" aria-hidden="true">📖</span>Einführung &amp; Grundlagen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/prompts.html" data-nav-link data-path="/ki/prompts , /ki/prompts.html"><span class="nav-ico" aria-hidden="true">✍️</span>Prompts für den Alltag</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/tools.html" data-nav-link data-path="/ki/tools , /ki/tools.html"><span class="nav-ico" aria-hidden="true">🛠️</span>KI-Werkzeuge</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/so-arbeitest-du-mit-ki.html" data-nav-link data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html"><span class="nav-ico" aria-hidden="true">🧭</span>So arbeitest du mit KI</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/programme-die-du-brauchst.html" data-nav-link data-path="/ki/programme-die-du-brauchst , /ki/programme-die-du-brauchst.html"><span class="nav-ico" aria-hidden="true">💾</span>Programme, die du brauchst</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/chancen-und-risiken.html" data-nav-link data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html"><span class="nav-ico" aria-hidden="true">⚖️</span>KI: Chancen &amp; Risiken</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/faq.html" data-nav-link data-path="/ki/faq , /ki/faq.html"><span class="nav-ico" aria-hidden="true">🔒</span>KI-FAQ &amp; Sicherheit</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/lexikon.html" data-nav-link data-path="/ki/lexikon , /ki/lexikon.html"><span class="nav-ico" aria-hidden="true">🔤</span>KI-Lexikon</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">✉️</span>Kontakt ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/kontakt.html" data-nav-link data-path="/kontakt , /kontakt.html , /warenschmiede/kontakt , /warenschmiede/kontakt.html"><span class="nav-ico" aria-hidden="true">📧</span>Kontakt aufnehmen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ablauf-anfrage.html" data-nav-link data-path="/ablauf-anfrage , /ablauf-anfrage.html"><span class="nav-ico" aria-hidden="true">📝</span>Ablauf &amp; Anfrage</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/impressum.html" data-nav-link data-path="/impressum , /impressum.html , /warenschmiede/impressum , /warenschmiede/impressum.html"><span class="nav-ico" aria-hidden="true">⚖️</span>Impressum</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ueber-mich.html" data-nav-link data-path="/ueber-mich , /ueber-mich.html , /warenschmiede/ueber-mich.html , /about , /about.html , /warenschmiede/about.html"><span class="nav-ico" aria-hidden="true">👤</span>Über mich</a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druck ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/technologien.html" data-nav-link data-path="/technologien , /technologien.html"><span class="nav-ico" aria-hidden="true">🧪</span>FDM / SLA / SLS – Technologien</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/fehlerdatenbank.html" data-nav-link data-path="/fehlerdatenbank , /fehlerdatenbank.html"><span class="nav-ico" aria-hidden="true">🛠️</span>Fehler &amp; Troubleshooting</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ideenquellen.html" data-nav-link data-path="/ideenquellen , /ideenquellen.html , /ideen , /ideen/ , /ideen/index.html"><span class="nav-ico" aria-hidden="true">💡</span>Ideenquellen &amp; Portale</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/material.html" data-nav-link data-path="/material.html"><span class="nav-ico" aria-hidden="true">📚</span>Materialwissen &amp; Vergleiche</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/druck-tipps.html" data-nav-link data-path="/druck-tipps , /druck-tipps.html"><span class="nav-ico" aria-hidden="true">🧭</span>Tipps &amp; Abläufe / Kosten</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/druck-kosten.html" data-nav-link data-path="/druck-kosten , /druck-kosten.html"><span class="nav-ico" aria-hidden="true">🧮</span>Kosten &amp; Kalkulation</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/slicer-einstellungen.html" data-nav-link data-path="/slicer-einstellungen , /slicer-einstellungen.html"><span class="nav-ico" aria-hidden="true">⚙️</span>Slicer &amp; Einstellungen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/3ddruck-faq.html" data-nav-link data-path="/3ddruck-faq , /3ddruck-faq.html"><span class="nav-ico" aria-hidden="true">❓</span>Neu beim 3D-Druck?</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/wartung-reinigung.html" data-nav-link data-path="/wartung-reinigung , /wartung-reinigung.html"><span class="nav-ico" aria-hidden="true">🧼</span>Wartung &amp; Reinigung</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="header-actions">
+        <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Design umschalten: Hell/Dunkel" title="Design umschalten: Hell/Dunkel" aria-pressed="false">
+          <span id="themeIcon" aria-hidden="true">🖥️</span>
+          <span class="theme-toggle__text" id="themeToggleText" aria-live="polite">Helles Design</span>
+        </button>
+
+        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
+          <span class="sr-only">Menü öffnen</span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="inhalt" class="site-main" tabindex="-1">
+    <section class="section ws-section" aria-label="CNC MasterCalc">
+      <div class="container">
+<div class="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         <!-- LEFT COLUMN: Calculator -->
         <div class="lg:col-span-5 space-y-6">
@@ -952,5 +1050,29 @@
         }
         function closeModal() { document.getElementById('tool-modal').classList.add('hidden'); }
     </script>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__brand">© 2025 Warenschmiede · Alle Rechte vorbehalten.</div>
+        <nav class="footer__links" aria-label="Rechtliches &amp; Kontakt">
+          <a href="/impressum.html">Impressum</a>
+          <a href="/datenschutz.html">Datenschutzerklärung</a>
+          <a href="/kontakt.html">Kontakt</a>
+        </nav>
+        <div class="footer__notes">
+          <p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
+          <p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/theme.js" defer></script>
+  <script src="/assets/js/header.js" defer></script>
+  <script src="/assets/js/whatsapp.js" defer></script>
 </body>
 </html>
