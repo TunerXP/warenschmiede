@@ -5,6 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Warenschmiede | Kalkulator V2.18</title>
 
+    <script>
+        (function () {
+            var storageKey = 'theme-preference';
+            var preference = 'system';
+            try {
+                var stored = localStorage.getItem(storageKey);
+                if (stored === 'light' || stored === 'dark' || stored === 'system') {
+                    preference = stored;
+                }
+            } catch (error) { }
+            var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+            var resolved = preference === 'dark'
+                ? 'dark'
+                : preference === 'light'
+                    ? 'light'
+                    : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
+            var root = document.documentElement;
+            root.dataset.theme = resolved;
+            root.dataset.themePreference = preference;
+        })();
+    </script>
+
+    <link rel="stylesheet" href="/styles.css">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -531,7 +555,132 @@
         }
     </script>
 </head>
-<body class="h-screen overflow-hidden flex" x-data="appData()" x-init="initApp()">
+<body class="min-h-screen flex flex-col" x-data="appData()" x-init="initApp()">
+  <header class="site-header" data-header>
+    <div class="ws-nav-container header-grid">
+      <div class="brand">
+        <a class="brand-link" href="/index.html#start">
+          <img src="/assets/images/warenschmiede_logo.png" alt="Warenschmiede Logo" class="brand-logo" width="453" height="276" fetchpriority="high">
+          <div class="brand-text">
+            <span class="brand-name">Warenschmiede</span>
+            <span class="brand-tagline">3D-Druck · Made in Germany</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="main-nav" aria-label="Hauptnavigation">
+        <div class="nav-menu" id="primary-navigation" data-nav-menu>
+          <ul class="nav-list" id="navList">
+            <li class="nav-item nav-fixed">
+              <a class="nav-link" href="/index.html#start" data-nav-link data-section="start" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html"><span class="nav-ico" aria-hidden="true">🏠</span>Start</a>
+            </li>
+
+            <!-- Neuer Dropdown: Rechner & Tools -->
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-highlight nav-tools" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                <span class="nav-ico" aria-hidden="true">🧮</span>Rechner &amp; Tools ▾
+              </button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/tools/kostenrechner-v2.html" data-nav-link data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html">
+                    <span class="nav-ico" aria-hidden="true">🧮</span>Kostenrechner V2
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="nav-link"
+                    href="/tools/buero/doku-light/"
+                    data-nav-link
+                    data-path="/tools/buero/doku-light , /tools/buero/doku-light/ , /tools/buero/doku-light/index.html"
+                  >
+                    <span class="nav-ico" aria-hidden="true">📄</span>Dokumenten-Tool Light
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="nav-link"
+                    href="/tools/buero/doku-light/Audio to Video Converter - Legacy Safe Mode.html"
+                    data-nav-link
+                    data-path="/tools/buero/doku-light/Audio%20to%20Video%20Converter%20-%20Legacy%20Safe%20Mode.html , /tools/buero/doku-light/Audio to Video Converter - Legacy Safe Mode.html"
+                  >
+                    <span class="nav-ico" aria-hidden="true">🎧</span>Audio-to-Video Konverter (Legacy)
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/bild-konverter.html" data-nav-link data-path="/bild-konverter , /bild-konverter.html">
+                    <span class="nav-ico" aria-hidden="true">🖼️</span>Bilder Tools
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/tools/buero/doku-light/QRCodeMasterPro.html" data-nav-link data-path="/tools/buero/doku-light/QRCodeMasterPro , /tools/buero/doku-light/QRCodeMasterPro.html">
+                    <span class="nav-ico" aria-hidden="true">🔳</span>QR-Code Generator
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/tools/buero/doku-light/ReceiptWriterPro.html" data-nav-link data-path="/tools/buero/doku-light/ReceiptWriterPro , /tools/buero/doku-light/ReceiptWriterPro.html">
+                    <span class="nav-ico" aria-hidden="true">🧾</span>Quittungs-Generator
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/tools/buero/doku-light/CNCMasterCalc.html" data-nav-link data-path="/tools/buero/doku-light/CNCMasterCalc , /tools/buero/doku-light/CNCMasterCalc.html">
+                    <span class="nav-ico" aria-hidden="true">⚙️</span>CNCMasterCalc
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/werkstatt-rechner.html" data-nav-link data-path="/werkstatt-rechner , /werkstatt-rechner.html">
+                    <span class="nav-ico" aria-hidden="true">🛠️</span>Werkstatt-Rechner
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/druck-kosten.html" data-nav-link data-path="/druck-kosten , /druck-kosten.html">
+                    <span class="nav-ico" aria-hidden="true">💰</span>Druckkosten-Kalkulator
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item nav-more nav-dropdown" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                <span class="nav-ico" aria-hidden="true">🧭</span>Mehr ▾
+              </button>
+              <ul class="nav-more-menu" hidden>
+                <li><a class="nav-link" href="/ablauf-anfrage.html" data-nav-link data-path="/ablauf-anfrage , /ablauf-anfrage.html"><span class="nav-ico" aria-hidden="true">🧭</span>Ablauf der Anfrage</a></li>
+                <li><a class="nav-link" href="/ideenquellen.html" data-nav-link data-path="/ideenquellen , /ideenquellen.html"><span class="nav-ico" aria-hidden="true">🧠</span>Ideenquellen</a></li>
+                <li><a class="nav-link" href="/druck-tipps.html" data-nav-link data-path="/druck-tipps , /druck-tipps.html"><span class="nav-ico" aria-hidden="true">💡</span>Drucktipps</a></li>
+                <li><a class="nav-link" href="/materialien.html" data-nav-link data-path="/materialien , /materialien.html"><span class="nav-ico" aria-hidden="true">🧵</span>Materialien</a></li>
+                <li><a class="nav-link" href="/druck-kosten.html#faq" data-nav-link data-path="/druck-kosten , /druck-kosten.html"><span class="nav-ico" aria-hidden="true">❓</span>FAQ</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-item"><a class="nav-link" href="/leistungen.html#referenzen" data-nav-link data-section="referenzen" data-path="/leistungen , /leistungen.html">Referenzen</a></li>
+            <li class="nav-item"><a class="nav-link" href="/leistungen.html" data-nav-link data-section="leistungen" data-path="/leistungen , /leistungen.html">Leistungen</a></li>
+            <li class="nav-item"><a class="nav-link" href="/ablauf-anfrage.html" data-nav-link data-section="ablauf" data-path="/ablauf-anfrage , /ablauf-anfrage.html">Ablauf</a></li>
+            <li class="nav-item"><a class="nav-link" href="/ueber-mich.html" data-nav-link data-section="ueber-mich" data-path="/ueber-mich , /ueber-mich.html">Über mich</a></li>
+            <li class="nav-item nav-highlight"><a class="nav-link" href="/kontakt.html" data-nav-link data-section="kontakt" data-path="/kontakt , /kontakt.html">Kontakt</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="header-actions">
+        <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Design umschalten: Hell/Dunkel" title="Design umschalten: Hell/Dunkel" aria-pressed="false">
+          <span id="themeIcon" aria-hidden="true">🖥️</span>
+          <span class="theme-toggle__text" id="themeToggleText" aria-live="polite">Helles Design</span>
+        </button>
+
+        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
+          <span class="sr-only">Menü öffnen</span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="inhalt" class="site-main flex-1" tabindex="-1">
+    <section class="section ws-section" aria-label="Kostenrechner V2">
+      <div class="container">
+        <div class="calc-shell h-screen overflow-hidden flex">
 
     <!-- LINKS: EINGABEN -->
     <aside class="w-[550px] bg-gray-50 border-r border-gray-300 flex flex-col h-full no-print z-20 shadow-2xl shrink-0">
@@ -1002,5 +1151,30 @@
             </div>
         </template>
     </main>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__brand">© 2025 Warenschmiede · Alle Rechte vorbehalten.</div>
+        <nav class="footer__links" aria-label="Rechtliches &amp; Kontakt">
+          <a href="/impressum.html">Impressum</a>
+          <a href="/datenschutz.html">Datenschutzerklärung</a>
+          <a href="/kontakt.html">Kontakt</a>
+        </nav>
+        <div class="footer__notes">
+          <p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
+          <p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/theme.js" defer></script>
+  <script src="/assets/js/header.js" defer></script>
+  <script src="/assets/js/whatsapp.js" defer></script>
 </body>
 </html>
