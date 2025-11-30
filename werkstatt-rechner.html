@@ -340,7 +340,7 @@
       margin-top: 0.75rem;
     }
 
-    /* --- NEU: Styles für Elektro-Helfer Visualisierungen --- */
+    /* --- Styles für Elektro-Helfer Visualisierungen --- */
     .electro-viz-container {
       background: #1e293b; /* Slate-800 für Kontrast */
       border-radius: 12px;
@@ -378,6 +378,12 @@
       max-width: 140px;
       font-size: 0.9rem;
     }
+    
+    /* AWG Table Styling */
+    .awg-table { width: 100%; text-align: left; border-collapse: collapse; }
+    .awg-table th { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--control-border); padding: 4px; }
+    .awg-table td { padding: 6px 4px; border-bottom: 1px solid var(--control-border); font-variant-numeric: tabular-nums; }
+    .awg-table tr:last-child td { border-bottom: none; }
 
     @media (max-width: 960px) {
       .tool-grid {
@@ -461,23 +467,8 @@
                   </a>
                 </li>
                 <li>
-                  <a
-                    class="nav-link"
-                    href="/tools/buero/doku-light/Audio to Video Converter - Legacy Safe Mode.html"
-                    data-nav-link
-                    data-path="/tools/buero/doku-light/Audio%20to%20Video%20Converter%20-%20Legacy%20Safe%20Mode.html , /tools/buero/doku-light/Audio to Video Converter - Legacy Safe Mode.html"
-                  >
-                    <span class="nav-ico" aria-hidden="true">🎧</span>Audio-to-Video Konverter (Legacy)
-                  </a>
-                </li>
-                <li>
                   <a class="nav-link" href="/bild-konverter.html" data-nav-link data-path="/bild-konverter , /bild-konverter.html">
-                    <span class="nav-ico" aria-hidden="true">🖼️</span>Bilder Tools
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/tools/buero/doku-light/QRCodeMasterPro.html" data-nav-link data-path="/tools/buero/doku-light/QRCodeMasterPro , /tools/buero/doku-light/QRCodeMasterPro.html">
-                    <span class="nav-ico" aria-hidden="true">🔳</span>QR-Code Generator
+                    <span class="nav-ico" aria-hidden="true">🖼️</span>Bild-Konverter
                   </a>
                 </li>
                 <li>
@@ -627,7 +618,6 @@
             <li class="ki-tools-toc__item">
               <a class="ki-tools-toc__link" href="#allgemeintoleranzen">Allgemeintoleranzen</a>
             </li>
-            <!-- NEU: Link im TOC -->
             <li class="ki-tools-toc__item">
               <a class="ki-tools-toc__link" href="#elektro-helfer">Elektro-Helfer (Neu!)</a>
             </li>
@@ -637,6 +627,7 @@
     </section>
 
     <div class="tools-wrapper">
+      <!-- EXISTING SECTIONS 1-4 (UNVERÄNDERT) -->
       <section class="section">
         <div class="container container--calc-wide tool-grid">
         <div class="tool-card">
@@ -857,10 +848,6 @@
             <div class="tool-card thread-helper-card" aria-label="Bohrer- und Senkungsrichtwerte">
               <h3 class="tool-card-title">Bohrer &amp; Senkung (DIN 912, Richtwerte)</h3>
               <div class="thread-helper-diagram">
-                <!--
-                  Hinweis: Dieses Bild ist ein Platzhalter. Bei Bedarf durch eine eigene DIN- oder Schrauben-Skizze ersetzen,
-                  z.B. über src="/assets/img/schraube-din912-metric.svg".
-                -->
                 <img
                   src="/assets/img/placeholder-schraube-din912.png"
                   alt="Schematische Schraube mit Durchgangsloch und Senkung; Bezeichnungen dk, ds und k"
@@ -1232,7 +1219,7 @@
     </section>
 
       <!-- ========================================== -->
-      <!-- NEUE SEKTION: 5. ELEKTRO-HELFER -->
+      <!-- SEKTION: 5. ELEKTRO-HELFER -->
       <!-- ========================================== -->
       <section class="section">
         <div class="container container--calc-wide">
@@ -1245,7 +1232,7 @@
               </button>
             </div>
             <div id="info-electro" class="tool-info-content is-collapsed">
-              <p class="helper-text">Nützliche Rechner für Arduino, LEDs und Verkabelung in deinen 3D-Druck-Projekten. Einfache Praxiswerte für Maker.</p>
+              <p class="helper-text">Nützliche Rechner für Arduino, LEDs, Verkabelung und Sensoren in deinen 3D-Druck-Projekten.</p>
             </div>
 
             <div class="calculator-grid">
@@ -1367,7 +1354,7 @@
               <!-- TOOL 3: KABEL-QUERSCHNITT (SAFETY) -->
               <div class="tool-card">
                 <h3>Kabel-Querschnitt (Safety)</h3>
-                <p class="helper-text">Sicherer Mindestquerschnitt basierend auf Stromstärke (Konservative Schätzung für Maker/Modellbau).</p>
+                <p class="helper-text">Sicherer Mindestquerschnitt basierend auf Stromstärke (Konservative Schätzung für Maker).</p>
                 
                 <div class="form-grid">
                   <div class="calc-field">
@@ -1394,6 +1381,98 @@
                     <p class="helper-text" id="cable-note"></p>
                   </div>
                 </div>
+              </div>
+
+              <!-- TOOL 4: SPANNUNGSTEILER (LEVEL SHIFTER) -->
+              <div class="tool-card">
+                <h3>Spannungsteiler (Level Shifter)</h3>
+                <p class="helper-text">Wandle 24V (z.B. induktiver Sensor) in 5V/3.3V Signale um.</p>
+                
+                <div class="electro-viz-container">
+                   <!-- SVG Voltage Divider -->
+                   <svg width="200" height="120" viewBox="0 0 200 120" fill="none" stroke="currentColor" stroke-width="2">
+                      <text x="10" y="20" fill="#94a3b8" stroke="none" font-size="10">Vin</text>
+                      <line x1="30" y1="20" x2="70" y2="20" stroke="#cbd5e1" />
+                      <!-- R1 -->
+                      <rect x="70" y="10" width="40" height="20" rx="2" stroke="#cbd5e1" />
+                      <text x="90" y="25" text-anchor="middle" fill="#94a3b8" stroke="none" font-size="9">R1</text>
+                      
+                      <line x1="110" y1="20" x2="140" y2="20" stroke="#cbd5e1" />
+                      <line x1="140" y1="20" x2="140" y2="50" stroke="#cbd5e1" />
+                      
+                      <!-- Vout Point -->
+                      <circle cx="140" cy="20" r="3" fill="#3b82f6" stroke="none"/>
+                      <text x="150" y="20" fill="#3b82f6" stroke="none" font-size="12" font-weight="bold">Vout</text>
+
+                      <!-- R2 -->
+                      <rect x="120" y="50" width="40" height="20" rx="2" stroke="#cbd5e1" />
+                      <text x="140" y="65" text-anchor="middle" fill="#94a3b8" stroke="none" font-size="9">R2</text>
+                      
+                      <line x1="140" y1="70" x2="140" y2="100" stroke="#cbd5e1" />
+                      <text x="140" y="115" text-anchor="middle" fill="#94a3b8" stroke="none" font-size="10">GND</text>
+                   </svg>
+                </div>
+
+                <div class="form-grid">
+                  <div class="calc-field">
+                    <label>Eingangsspannung (Vin)</label>
+                    <div class="input-with-preset">
+                      <input type="number" id="div-vin" placeholder="z.B. 24" step="0.1">
+                      <select id="div-vin-preset">
+                        <option value="">Typ...</option>
+                        <option value="12">12V Netzteil</option>
+                        <option value="24">24V Netzteil</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="calc-field">
+                    <label>Widerstand R1 (Ohm)</label>
+                    <input type="number" id="div-r1" placeholder="z.B. 10000 (10k)">
+                  </div>
+                  <div class="calc-field">
+                    <label>Widerstand R2 (Ohm)</label>
+                    <input type="number" id="div-r2" placeholder="z.B. 4700 (4.7k)">
+                  </div>
+                  <button class="btn btn-primary btn-inline" id="div-calc-btn">Berechnen</button>
+                  
+                  <div class="result-box" aria-live="polite">
+                    <p><strong>Ausgangsspannung (Vout):</strong></p>
+                    <p style="font-size: 1.5rem; font-weight: bold; color: var(--focus);"><span id="div-vout">–</span> V</p>
+                    <div id="div-warning" class="warning-box">Achtung: Spannung zu hoch für Arduino/ESP (>5V)!</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TOOL 5: AWG TABELLE -->
+              <div class="tool-card">
+                <h3>AWG zu mm² (Referenz)</h3>
+                <p class="helper-text">Schnellübersicht für Kabel-Importe.</p>
+                
+                <div style="overflow-x:auto;">
+                  <table class="awg-table">
+                    <thead>
+                      <tr>
+                        <th>AWG</th>
+                        <th>mm²</th>
+                        <th>Ø mm</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>30</td><td>0.05</td><td>0.25</td></tr>
+                      <tr><td>28</td><td>0.08</td><td>0.32</td></tr>
+                      <tr><td>26</td><td>0.13</td><td>0.40</td></tr>
+                      <tr><td>24</td><td>0.20</td><td>0.51</td></tr>
+                      <tr><td>22</td><td>0.33</td><td>0.64</td></tr>
+                      <tr><td>20</td><td>0.52</td><td>0.81</td></tr>
+                      <tr><td>18</td><td>0.82</td><td>1.02</td></tr>
+                      <tr><td>16</td><td>1.31</td><td>1.29</td></tr>
+                      <tr><td>14</td><td>2.08</td><td>1.63</td></tr>
+                      <tr><td>12</td><td>3.31</td><td>2.05</td></tr>
+                      <tr><td>10</td><td>5.26</td><td>2.59</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p class="helper-text" style="font-size:0.8rem; margin-top:0.5rem;">Werte sind gerundet. Ø = Leiterdurchmesser ohne Isolierung.</p>
               </div>
 
             </div>
@@ -2159,20 +2238,48 @@
         var awg = "-";
         
         // Konservativere Werte (Sicherer für Dauerbetrieb)
+        // Quelle angelehnt an VDE 0298-4 (für Verlegeart Einzelader in Luft, gerundet)
+        // 0.5mm² -> ca 9A
+        // 0.75mm² -> ca 12A
+        // 1.0mm² -> ca 15A
+        // 1.5mm² -> ca 19A (Standard 16A Absicherung)
+        
         if (amps <= 3) { mm2 = 0.25; awg = "24"; }
         else if (amps <= 6) { mm2 = 0.50; awg = "20"; }
-        else if (amps <= 10) { mm2 = 1.00; awg = "17"; }  // Kaltgeräte oft 0.75-1.0
-        else if (amps <= 16) { mm2 = 1.50; awg = "16"; }  // Standard Steckdose
-        else if (amps <= 25) { mm2 = 2.50; awg = "14"; }  // Herdanschluss / CEE Blau
-        else if (amps <= 32) { mm2 = 4.00; awg = "12"; }  // CEE Rot 32A (teilw. 6mm2)
+        else if (amps <= 10) { mm2 = 1.00; awg = "17"; }  
+        else if (amps <= 16) { mm2 = 1.50; awg = "16"; }  
+        else if (amps <= 25) { mm2 = 2.50; awg = "14"; }  
+        else if (amps <= 32) { mm2 = 4.00; awg = "12"; }  
         else { mm2 = 6.00; awg = "10"; }
 
-        document.getElementById('cable-mm2').textContent = mm2;
+        document.getElementById('cable-mm2').textContent = mm2.toFixed(2).replace('.', ',');
         document.getElementById('cable-awg').textContent = awg;
         
         var note = document.getElementById('cable-note');
         if(amps > 16) note.textContent = "Hinweis: Bei hohen Strömen (>16A) unbedingt CEE-Stecker oder Festanschluss prüfen!";
         else note.textContent = "";
+    });
+
+    // 4. Spannungsteiler Logic
+    document.getElementById('div-vin-preset').addEventListener('change', function() {
+        if(this.value) document.getElementById('div-vin').value = this.value;
+    });
+
+    document.getElementById('div-calc-btn').addEventListener('click', function() {
+        var vin = parseFloat(document.getElementById('div-vin').value);
+        var r1 = parseFloat(document.getElementById('div-r1').value);
+        var r2 = parseFloat(document.getElementById('div-r2').value);
+
+        if(!vin || !r1 || !r2) return;
+
+        // Vout = Vin * (R2 / (R1 + R2))
+        var vout = vin * (r2 / (r1 + r2));
+        
+        document.getElementById('div-vout').textContent = vout.toFixed(2).replace('.', ',');
+
+        var warn = document.getElementById('div-warning');
+        if(vout > 5.2) warn.classList.add('is-visible');
+        else warn.classList.remove('is-visible');
     });
 
   </script>
