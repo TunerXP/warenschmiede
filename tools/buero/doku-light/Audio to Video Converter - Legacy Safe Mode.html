@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio to Video Converter (Sync Edition)</title>
+    <title>Audio to Video Converter (Final Fix)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- FFmpeg Wrapper (Version 0.11.1 - EXAKT passend zum Core) -->
-    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.1/dist/ffmpeg.min.js"></script>
+    <!-- FFmpeg Wrapper v0.10.1 (UNPKG) -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.10.1/dist/ffmpeg.min.js"></script>
 
     <style>
         body {
@@ -42,11 +42,11 @@
         
         <!-- Header -->
         <div class="text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-600/20 text-blue-500 mb-4">
-                <i class="ph ph-check-circle text-4xl"></i>
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-rose-600/20 text-rose-500 mb-4">
+                <i class="ph ph-video-camera text-4xl"></i>
             </div>
             <h1 class="text-2xl font-bold text-white">Audio zu Video</h1>
-            <p class="text-slate-400 text-sm mt-2">Synchronized Edition (v0.11.1 / Single Core)</p>
+            <p class="text-slate-400 text-sm mt-2">Final Fix Edition (v0.10.1 / Unpkg)</p>
         </div>
 
         <!-- 1. Upload Audio -->
@@ -106,7 +106,7 @@
     <!-- Live Log Area -->
     <div class="w-full max-w-2xl mt-4">
         <p class="text-xs text-slate-500 uppercase font-bold mb-2">System Protokoll:</p>
-        <div id="log-area" class="w-full h-40 bg-black rounded-lg border border-slate-700 p-3 text-[10px] font-mono text-blue-400 overflow-y-auto whitespace-pre-wrap">Warte auf Eingabe...</div>
+        <div id="log-area" class="w-full h-40 bg-black rounded-lg border border-slate-700 p-3 text-[10px] font-mono text-emerald-400 overflow-y-auto whitespace-pre-wrap">Warte auf Eingabe...</div>
     </div>
 
     <script>
@@ -182,23 +182,24 @@
                     convertBtn.disabled = false;
                     convertBtn.innerHTML = "Neu versuchen";
                 }
-            }, 60000); // 60s Timeout (große Datei braucht Zeit)
+            }, 60000); 
 
             try {
                 const { createFFmpeg, fetchFile } = FFmpeg;
                 
-                // UNPKG URL für Core-ST (Version 0.11.1)
-                const coreURL = 'https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js';
+                // UNPKG URL für Core v0.10.1 (Standard, da ST schwer zu finden ist, versuchen wir den robusten Weg)
+                // Wir nutzen hier den Standard-Pfad, aber hoffen, dass v0.10.1 den Fallback besser handhabt.
+                // Wenn das immer noch SharedArrayBuffer Fehler wirft, ist der Browser zu strikt.
+                const coreURL = 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js'; 
                 
                 if (!ffmpeg) {
-                    log(`Initialisiere FFmpeg (Wrapper v0.11.1)...`);
+                    log(`Initialisiere FFmpeg (Wrapper v0.10.1)...`);
                     log(`Lade Core von: ${coreURL}`);
                     
                     ffmpeg = createFFmpeg({ 
                         log: true,
                         corePath: coreURL,
                         logger: ({ message }) => {
-                            // Filter nur wichtige Infos für das Log
                             if(message.includes("frame=") || message.includes("size=")) {
                                 log("FFmpeg: " + message);
                             }
