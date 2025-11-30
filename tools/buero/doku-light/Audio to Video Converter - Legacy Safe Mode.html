@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio to Video Converter (GitHub Edition)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- FFmpeg Wrapper (0.11.6) -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            color: #e2e8f0;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+
+        .drop-zone {
+            transition: all 0.3s ease;
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23475569' stroke-width='2' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+        }
+
+            .drop-zone:hover {
+                border-color: #3b82f6;
+                background-color: rgba(59, 130, 246, 0.05);
+            }
+
+            .drop-zone.active {
+                border-color: #10b981;
+                background-color: rgba(16, 185, 129, 0.1);
+            }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="w-full max-w-2xl bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700 p-8 space-y-8">
+
+        <!-- Header -->
+        <div class="text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-600/20 text-indigo-500 mb-4">
+                <i class="ph ph-rocket-launch text-4xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-white">Audio zu Video</h1>
+            <p class="text-slate-400 text-sm mt-2">GitHub Ready Edition (Single Core)</p>
+        </div>
+
+        <!-- Warnung für Desktop-Nutzer -->
+        <div id="desktop-warning" class="hidden bg-amber-500/10 border border-amber-500/50 rounded-lg p-3 text-amber-200 text-xs text-center">
+            <i class="ph ph-warning-circle text-lg mb-1 block"></i>
+            Achtung: Dieses Tool funktioniert möglicherweise nicht direkt vom Desktop (file://).<br>Bitte lade es auf einen Webserver (GitHub Pages) hoch!
+        </div>
+
+        <!-- 1. Upload Audio -->
+        <div class="space-y-2">
+            <label class="text-sm font-bold text-slate-300 uppercase flex items-center gap-2">
+                <i class="ph ph-music-note text-blue-400"></i> 1. MP3 Datei wählen
+            </label>
+            <div id="audio-drop" class="drop-zone h-24 rounded-xl flex flex-col items-center justify-center cursor-pointer relative group">
+                <input type="file" id="audio-input" accept="audio/mp3, audio/mpeg, audio/wav" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                <div id="audio-label" class="text-center pointer-events-none">
+                    <p class="text-slate-400 text-sm group-hover:text-blue-400 transition-colors">Hier klicken oder MP3 reinziehen</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Upload Image -->
+        <div class="space-y-2">
+            <label class="text-sm font-bold text-slate-300 uppercase flex items-center gap-2">
+                <i class="ph ph-image text-emerald-400"></i> 2. Hintergrundbild wählen
+            </label>
+            <div id="image-drop" class="drop-zone h-24 rounded-xl flex flex-col items-center justify-center cursor-pointer relative group">
+                <input type="file" id="image-input" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                <div id="image-label" class="text-center pointer-events-none">
+                    <p class="text-slate-400 text-sm group-hover:text-emerald-400 transition-colors">Hier klicken oder Bild (1920x1080) reinziehen</p>
+                </div>
+                <img id="image-preview" class="absolute inset-0 w-full h-full object-cover rounded-xl opacity-50 hidden pointer-events-none">
+            </div>
+        </div>
+
+        <!-- 3. Convert Button & Progress -->
+        <div class="pt-4 border-t border-slate-700">
+            <button id="convert-btn" onclick="startConversion()" disabled class="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 text-lg">
+                <i class="ph ph-magic-wand"></i>
+                Video Erstellen (MP4)
+            </button>
+
+            <!-- Progress Bar (Hidden initially) -->
+            <div id="progress-container" class="hidden mt-4 space-y-2">
+                <div class="flex justify-between text-xs text-slate-400">
+                    <span id="status-text">Lade Encoder...</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-blue-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 text-center">Das kann je nach Länge des Liedes ein paar Minuten dauern.</p>
+            </div>
+
+            <!-- Download Link (Hidden initially) -->
+            <a id="download-link" class="hidden w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 text-center cursor-pointer">
+                <i class="ph ph-download-simple text-xl"></i>
+                Video Herunterladen
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Error/Log Message Area -->
+    <div id="log-area" class="w-full max-w-2xl mt-4 text-xs font-mono text-slate-500 text-center hidden"></div>
+
+    <script>
+        // Check if running locally
+        if (window.location.protocol === 'file:') {
+            document.getElementById('desktop-warning').classList.remove('hidden');
+        }
+
+        // Elements
+        const audioInput = document.getElementById('audio-input');
+        const audioLabel = document.getElementById('audio-label');
+        const imageInput = document.getElementById('image-input');
+        const imageLabel = document.getElementById('image-label');
+        const imagePreview = document.getElementById('image-preview');
+        const convertBtn = document.getElementById('convert-btn');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const statusText = document.getElementById('status-text');
+        const downloadLink = document.getElementById('download-link');
+        const logArea = document.getElementById('log-area');
+
+        let audioFile = null;
+        let imageFile = null;
+        let ffmpeg = null;
+
+        // --- File Handling ---
+
+        audioInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                audioFile = file;
+                audioLabel.innerHTML = `<p class="text-white font-bold">${file.name}</p><p class="text-xs text-slate-400">${(file.size / 1024 / 1024).toFixed(2)} MB</p>`;
+                checkReady();
+            }
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                imageFile = file;
+                imageLabel.classList.add('hidden');
+                const url = URL.createObjectURL(file);
+                imagePreview.src = url;
+                imagePreview.classList.remove('hidden');
+                checkReady();
+            }
+        });
+
+        function checkReady() {
+            if (audioFile && imageFile) {
+                convertBtn.disabled = false;
+                convertBtn.classList.add('animate-pulse');
+            }
+        }
+
+        // --- Conversion Logic ---
+
+        async function startConversion() {
+            if (!audioFile || !imageFile) return;
+
+            // UI Updates
+            convertBtn.disabled = true;
+            convertBtn.classList.remove('animate-pulse');
+            convertBtn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Verarbeite...';
+            progressContainer.classList.remove('hidden');
+            downloadLink.classList.add('hidden');
+            logArea.classList.remove('hidden');
+            logArea.textContent = "Initialisiere Single-Threaded Core (GitHub Compatible)...";
+
+            try {
+                const { createFFmpeg, fetchFile } = FFmpeg;
+
+                if (!ffmpeg) {
+                    // WICHTIG: Wir laden explizit die 'core-st' (Single Threaded) Version von unpkg
+                    // Dies ist entscheidend für GitHub Pages, da dort keine Cross-Origin-Headers gesetzt sind.
+                    ffmpeg = createFFmpeg({
+                        log: true,
+                        corePath: 'https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js',
+                        progress: ({ ratio }) => {
+                            const percent = Math.round(ratio * 100);
+                            progressBar.style.width = `${percent}%`;
+                            document.getElementById('progress-percent').textContent = `${percent}%`;
+
+                            if (percent < 100) statusText.textContent = "Rendere Video (" + percent + "%) ...";
+                            else statusText.textContent = "Finalisiere Datei...";
+                        }
+                    });
+
+                    await ffmpeg.load();
+                }
+
+                logArea.textContent = "Lade Dateien...";
+
+                ffmpeg.FS('writeFile', 'audio.mp3', await fetchFile(audioFile));
+                ffmpeg.FS('writeFile', 'image.jpg', await fetchFile(imageFile));
+
+                logArea.textContent = "Starte Encoding... (Lehne dich zurück)";
+
+                // Run FFmpeg Command
+                // -preset ultrafast: Wichtig für Geschwindigkeit im Browser
+                // -threads 1: Wichtig für Single-Threaded Umgebung
+                await ffmpeg.run(
+                    '-loop', '1',
+                    '-i', 'image.jpg',
+                    '-i', 'audio.mp3',
+                    '-c:v', 'libx264',
+                    '-tune', 'stillimage',
+                    '-c:a', 'aac',
+                    '-b:a', '128k',
+                    '-pix_fmt', 'yuv420p',
+                    '-shortest',
+                    '-preset', 'ultrafast',
+                    'output.mp4'
+                );
+
+                logArea.textContent = "Fertig! Erstelle Download-Link...";
+
+                // Read Result
+                const data = ffmpeg.FS('readFile', 'output.mp4');
+
+                // Create Blob & Link
+                const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
+                const videoUrl = URL.createObjectURL(videoBlob);
+
+                downloadLink.href = videoUrl;
+                downloadLink.download = `video_${audioFile.name.split('.')[0]}.mp4`;
+                downloadLink.classList.remove('hidden');
+
+                // Reset UI
+                convertBtn.innerHTML = '<i class="ph ph-check-circle"></i> Fertig!';
+                statusText.textContent = "Abgeschlossen";
+                progressBar.classList.add('bg-emerald-500');
+
+            } catch (err) {
+                console.error(err);
+                logArea.textContent = "FEHLER: " + err.message + "\n(Läuft das Tool auf einem Server?)";
+                logArea.classList.add('text-red-500', 'font-bold');
+                convertBtn.innerHTML = "Fehler aufgetreten";
+                alert("Fehler! Wenn du das hier auf dem Desktop siehst: Lade die Datei bitte auf GitHub hoch. Browser blockieren diese Funktion lokal.");
+            }
+        }
+    </script>
+</body>
+</html>
