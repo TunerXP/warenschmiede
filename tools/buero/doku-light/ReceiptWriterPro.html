@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt Writer Pro - Digitale Quittung</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- HTML2PDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Handwriting Font (Google Fonts) -->
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            color: #e2e8f0;
+        }
+
+        /* Receipt Paper Style - Fixed to A5 Dimensions */
+        .receipt-paper {
+            width: 210mm;
+            height: 148mm; /* Exactly half A4 */
+            background: #fffdf5;
+            color: #1e293b;
+            margin: 0 auto;
+            padding: 10mm;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden; /* Prevent spillover */
+        }
+
+        /* Handwriting Style */
+        .handwritten {
+            font-family: 'Kalam', cursive;
+            color: #1e3a8a; /* Blue Ink Color */
+            font-size: 1.2rem;
+            border: none;
+            background: transparent;
+            width: 100%;
+            padding: 0 5px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+            .handwritten:hover, .handwritten:focus {
+                background: rgba(30, 58, 138, 0.05);
+                border-bottom: 1px dashed #93c5fd;
+            }
+
+        .handwritten-static {
+            font-family: 'Kalam', cursive;
+            color: #1e3a8a;
+        }
+
+        /* Form Lines */
+        .form-line {
+            border-bottom: 1px solid #94a3b8;
+            padding-bottom: 2px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .form-label {
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-right: 8px;
+            white-space: nowrap;
+        }
+
+        /* Mobile Scale */
+        @media (max-width: 800px) {
+            .receipt-wrapper {
+                transform: scale(0.45);
+                transform-origin: top left;
+                width: 210mm;
+                margin-bottom: -80mm;
+            }
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 h-16 shrink-0 flex items-center justify-between px-4 z-20">
+        <div class="flex items-center gap-3">
+            <div class="bg-amber-600 p-2 rounded-lg text-white shadow-lg">
+                <i class="ph ph-receipt text-xl"></i>
+            </div>
+            <h1 class="font-bold text-white text-sm md:text-lg">Receipt Writer <span class="text-amber-400 font-normal text-xs align-top">PRO</span></h1>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="newReceipt()" class="bg-slate-700 hover:bg-slate-600 text-white p-2 rounded-lg transition-colors" title="Neue Quittung (+1)">
+                <i class="ph ph-plus-circle text-xl text-emerald-400"></i>
+            </button>
+            <button onclick="saveToLocal()" class="p-2 text-slate-400 hover:text-white transition-colors" title="Speichern">
+                <i class="ph ph-floppy-disk text-xl"></i>
+            </button>
+            <button onclick="generatePDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-3 rounded-lg flex items-center gap-2 transition-all shadow-lg text-xs md:text-sm">
+                <i class="ph ph-file-pdf text-lg"></i>
+                <span class="hidden md:inline">Drucken (A4)</span>
+                <span class="md:hidden">PDF</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+
+        <!-- Left Sidebar (Desktop Only) -->
+        <div class="w-80 bg-slate-900 border-r border-slate-700 p-6 overflow-y-auto shrink-0 z-10 hidden lg:block">
+            <h2 class="text-xs font-bold text-amber-500 uppercase mb-4 flex items-center gap-2">
+                <i class="ph ph-pen-nib"></i> Eingabe
+            </h2>
+
+            <div class="space-y-6">
+                <!-- Schnell-Eingabe -->
+                <div class="space-y-3">
+                    <label class="block text-xs font-bold text-slate-500 uppercase" id="lbl-amount">Betrag (Brutto)</label>
+                    <input type="number" id="inp-amount" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-white text-lg font-mono text-right" placeholder="0.00" step="0.01" oninput="updateAmountInput(this.value)">
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-xs font-bold text-slate-500 uppercase">Von (Empf&auml;nger)</label>
+                    <input type="text" id="inp-from" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-white text-sm" placeholder="Kunde Name" oninput="updateField('rec-from', this.value)">
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-xs font-bold text-slate-500 uppercase">F&uuml;r (Leistung)</label>
+                    <textarea id="inp-for" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-white text-sm h-20" placeholder="3D Druck, Reparatur..." oninput="updateField('rec-for', this.value)"></textarea>
+                </div>
+
+                <!-- Settings -->
+                <div class="pt-4 border-t border-slate-800 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-slate-400">Kleinunternehmer (§19)</span>
+                        <input type="checkbox" id="toggle-tax" checked class="accent-amber-500 h-4 w-4" onchange="toggleTaxMode()">
+                    </div>
+                    <p class="text-[10px] text-slate-500" id="tax-hint">Wenn an, wird MwSt. gestrichen.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Area: Preview -->
+        <div class="flex-1 bg-slate-800 overflow-auto p-4 md:p-8 flex justify-center items-center">
+
+            <div id="receipt-wrapper" class="receipt-wrapper">
+
+                <!-- THE RECEIPT -->
+                <div id="receipt" class="receipt-paper">
+
+                    <!-- Top Row: Title & No -->
+                    <div class="flex justify-between items-start mb-6 border-b-2 border-slate-800 pb-2">
+                        <div>
+                            <h1 class="text-3xl font-black uppercase tracking-widest text-slate-800">Quittung</h1>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-wide mt-1">Receipt / Re&ccedil;u</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-bold text-slate-400">Nr. <span id="rec-no" class="text-slate-800 font-mono ml-1">Q-2025-001</span></div>
+                            <div class="mt-2 text-right">
+                                <span class="text-xs font-bold text-slate-400 mr-2">Betrag:</span>
+                                <div class="inline-block border-2 border-slate-800 px-3 py-1 bg-white min-w-[120px] relative">
+                                    <!-- Hide typed amount, only show handwritten -->
+                                    <span class="text-xl font-bold font-mono text-transparent relative z-10" id="rec-amount-box-hidden">0,00</span>
+                                    <span class="absolute top-0 right-1 text-xs font-bold text-slate-400">&euro;</span>
+
+                                    <!-- Handwriting Overlay -->
+                                    <div id="hw-amount-box" class="absolute inset-0 flex items-center justify-center handwritten-static text-2xl" style="transform: rotate(-2deg); top: -2px;">0,00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Form Fields -->
+                    <div class="space-y-4">
+
+                        <div class="form-line">
+                            <span class="form-label">Von (Empf&auml;nger):</span>
+                            <input type="text" id="rec-from" class="handwritten" placeholder="Name des Kunden" oninput="document.getElementById('inp-from').value = this.value">
+                        </div>
+
+                        <div class="form-line bg-slate-100/50">
+                            <span class="form-label">Betrag in Worten:</span>
+                            <input type="text" id="rec-words" class="handwritten italic" placeholder="--- null ---" readonly>
+                        </div>
+
+                        <div class="form-line">
+                            <span class="form-label">F&uuml;r (Leistung):</span>
+                            <input type="text" id="rec-for" class="handwritten" placeholder="3D Druck Teile..." oninput="document.getElementById('inp-for').value = this.value">
+                        </div>
+
+                    </div>
+
+                    <!-- Tax Table & Footer -->
+                    <div class="mt-8 flex justify-between items-end">
+
+                        <!-- Tax Block -->
+                        <div class="w-1/3 text-xs border border-slate-400 p-2 relative">
+                            <div class="flex justify-between border-b border-slate-300 pb-1 mb-1">
+                                <span>Netto</span>
+                                <span id="tax-net" class="handwritten-static text-sm"></span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-300 pb-1 mb-1">
+                                <span>+ <span id="vat-rate">19</span>% MwSt</span>
+                                <span id="tax-val" class="handwritten-static text-sm"></span>
+                            </div>
+                            <div class="flex justify-between font-bold">
+                                <span>Gesamt</span>
+                                <span id="tax-gross" class="handwritten-static text-sm"></span>
+                            </div>
+
+                            <!-- Cross out for Small Business -->
+                            <div id="tax-cross" class="absolute inset-0 flex items-center justify-center pointer-events-none hidden">
+                                <div class="w-full h-0.5 bg-slate-800 rotate-12 absolute"></div>
+                                <div class="w-full h-0.5 bg-slate-800 -rotate-12 absolute"></div>
+                            </div>
+                        </div>
+
+                        <!-- Date & Signature -->
+                        <div class="w-1/2 flex flex-col gap-4">
+                            <div class="form-line">
+                                <span class="form-label">Ort, Datum:</span>
+                                <input type="text" id="rec-date" class="handwritten text-center" value="Musterstadt, 29.11.2025">
+                            </div>
+                            <div class="form-line relative h-12">
+                                <span class="form-label absolute bottom-0 left-0">Unterschrift:</span>
+                                <input type="text" id="rec-sign" class="handwritten text-center text-2xl" style="font-family: 'Nothing You Could Do', cursive;" value="Max Mustermann">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Footer Info (Flexbox for perfect centering) -->
+                    <div class="absolute bottom-4 left-10mm right-10mm text-[9px] text-slate-400 border-t border-slate-200 pt-1 flex justify-center items-center gap-2">
+                        <span id="footer-note" class="hidden">Hinweis: Steuerfreie Leistung gem&auml;&szlig; &sect; 19 UStG (Kleinunternehmer).</span>
+                        <span class="text-slate-300">Quittungsvorlage von warenschmiede.com</span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- SAFE CHARACTERS ---
+        const CHAR = {
+            euro: String.fromCharCode(8364)
+        };
+
+        // --- Data ---
+        let receiptData = {
+            no: "Q-2025-001",
+            inputAmount: 0,
+            finalAmount: 0,
+            from: "",
+            for: "",
+            date: new Date().toLocaleDateString('de-DE'),
+            place: "Musterstadt",
+            sign: "Max Mustermann",
+            isSmallBiz: true
+        };
+
+        const STORAGE_KEY = 'receipt_writer_v4'; // Increased version to clear old cache
+
+        // Init
+        loadFromLocal();
+        updateUI();
+
+        // --- Core Functions ---
+
+        function updateAmountInput(val) {
+            receiptData.inputAmount = parseFloat(val) || 0;
+            recalcAmounts();
+        }
+
+        function recalcAmounts() {
+            if (receiptData.isSmallBiz) {
+                // Kleinunternehmer: Eingabe = Endbetrag
+                receiptData.finalAmount = receiptData.inputAmount;
+            } else {
+                // Steuerpflichtig: Eingabe = Netto -> +19% rechnen
+                receiptData.finalAmount = receiptData.inputAmount * 1.19;
+            }
+
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const amountStr = receiptData.finalAmount.toFixed(2).replace('.', ',');
+
+            // 1. Update Box
+            document.getElementById('hw-amount-box').textContent = amountStr;
+
+            // 2. Number to Words
+            document.getElementById('rec-words').value = numberToWords(receiptData.finalAmount);
+
+            // 3. Tax Table & Footer Logic
+            const netEl = document.getElementById('tax-net');
+            const valEl = document.getElementById('tax-val');
+            const grossEl = document.getElementById('tax-gross');
+            const footerNote = document.getElementById('footer-note');
+            const taxCross = document.getElementById('tax-cross');
+
+            grossEl.textContent = amountStr + ' ' + CHAR.euro;
+
+            if (receiptData.isSmallBiz) {
+                // Crossed out & Note Visible
+                taxCross.classList.remove('hidden');
+                footerNote.style.display = 'inline';
+
+                netEl.textContent = "---";
+                valEl.textContent = "---";
+            } else {
+                // Calc & Note Hidden
+                taxCross.classList.add('hidden');
+                footerNote.style.display = 'none'; // Forced hide via style
+
+                const net = receiptData.inputAmount;
+                const tax = receiptData.finalAmount - net;
+
+                netEl.textContent = net.toFixed(2).replace('.', ',') + ' ' + CHAR.euro;
+                valEl.textContent = tax.toFixed(2).replace('.', ',') + ' ' + CHAR.euro;
+            }
+        }
+
+        function updateField(id, val) {
+            document.getElementById(id).value = val;
+            if (id === 'rec-from') receiptData.from = val;
+            if (id === 'rec-for') receiptData.for = val;
+        }
+
+        function toggleTaxMode() {
+            receiptData.isSmallBiz = document.getElementById('toggle-tax').checked;
+
+            // Update Label Text
+            const lbl = document.getElementById('lbl-amount');
+            const hint = document.getElementById('tax-hint');
+
+            if (receiptData.isSmallBiz) {
+                lbl.textContent = "Betrag (Brutto)";
+                hint.textContent = "MwSt wird gestrichen.";
+            } else {
+                lbl.textContent = "Betrag (Netto)";
+                hint.textContent = "19% MwSt werden dazu gerechnet.";
+            }
+
+            recalcAmounts();
+        }
+
+        function newReceipt() {
+            const match = receiptData.no.match(/(\d+)$/);
+            if (match) {
+                const num = parseInt(match[1]) + 1;
+                receiptData.no = receiptData.no.replace(/\d+$/, num.toString().padStart(match[1].length, '0'));
+            }
+            receiptData.inputAmount = 0;
+            receiptData.finalAmount = 0;
+            receiptData.from = "";
+            receiptData.for = "";
+
+            document.getElementById('inp-amount').value = "";
+            document.getElementById('inp-from').value = "";
+            document.getElementById('inp-for').value = "";
+
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('rec-no').textContent = receiptData.no;
+            document.getElementById('rec-date').value = receiptData.place + ", " + receiptData.date;
+            document.getElementById('rec-sign').value = receiptData.sign;
+            document.getElementById('rec-from').value = receiptData.from;
+            document.getElementById('rec-for').value = receiptData.for;
+            document.getElementById('toggle-tax').checked = receiptData.isSmallBiz;
+
+            document.getElementById('inp-from').value = receiptData.from;
+            document.getElementById('inp-for').value = receiptData.for;
+            if (receiptData.inputAmount > 0) {
+                document.getElementById('inp-amount').value = receiptData.inputAmount;
+            }
+
+            toggleTaxMode();
+        }
+
+        // --- Helpers ---
+
+        function numberToWords(amount) {
+            amount = Math.round(amount * 100) / 100;
+            const euro = Math.floor(amount);
+            const cent = Math.round((amount - euro) * 100);
+
+            const ones = ["", "Eins", "Zwei", "Drei", "Vier", "Fünf", "Sechs", "Sieben", "Acht", "Neun", "Zehn", "Elf", "Zwölf", "Dreizehn", "Vierzehn", "Fünfzehn", "Sechzehn", "Siebzehn", "Achtzehn", "Neunzehn"];
+            const tens = ["", "", "Zwanzig", "Dreißig", "Vierzig", "Fünfzig", "Sechzig", "Siebzig", "Achtzig", "Neunzehn"];
+
+            function convertChunk(n) {
+                if (n === 0) return "";
+                if (n < 20) return ones[n];
+                const t = Math.floor(n / 10);
+                const r = n % 10;
+                if (r === 0) return tens[t];
+                let oneStr = ones[r];
+                if (r === 1) oneStr = "Ein";
+                return oneStr + "und" + tens[t].toLowerCase();
+            }
+
+            let text = "";
+            if (euro === 0) text = "Null";
+            else if (euro < 100) text = convertChunk(euro);
+            else {
+                const h = Math.floor(euro / 100);
+                const rest = euro % 100;
+                text = ones[h] + "hundert" + (rest > 0 ? convertChunk(rest).toLowerCase() : "");
+            }
+
+            if (euro >= 1000) text = euro.toString();
+
+            return `${text} --- ${cent.toString().padStart(2, '0')}/100`;
+        }
+
+        function generatePDF() {
+            const element = document.getElementById('receipt');
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => input.setAttribute('value', input.value));
+
+            const opt = {
+                margin: 0,
+                filename: `Quittung_${receiptData.no}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function saveToLocal() {
+            receiptData.from = document.getElementById('rec-from').value;
+            receiptData.for = document.getElementById('rec-for').value;
+            receiptData.sign = document.getElementById('rec-sign').value;
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(receiptData));
+
+            const btn = document.querySelector('button[onclick="saveToLocal()"]');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="ph ph-check text-emerald-500 text-xl"></i>';
+            setTimeout(() => btn.innerHTML = originalHTML, 2000);
+        }
+
+        function loadFromLocal() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                const loaded = JSON.parse(stored);
+                loaded.date = new Date().toLocaleDateString('de-DE');
+                receiptData = { ...receiptData, ...loaded };
+            }
+        }
+
+    </script>
+</body>
+</html>
