@@ -4107,6 +4107,32 @@ a:focus-visible {
   min-width: clamp(200px, 32vw, 240px);
 }
 
+.home-rechner-banners {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.home-rechner-banners .home-rechner-banner {
+  margin: 0;
+  height: 100%;
+  align-items: flex-start;
+  text-align: left;
+  flex-direction: column;
+}
+
+.home-rechner-banners .home-rechner-banner__icon {
+  margin-inline-end: 0;
+}
+
+.home-rechner-banners .home-rechner-banner__cta {
+  align-self: flex-start;
+  width: auto;
+  min-width: 0;
+}
+
 @media only screen and (max-width: 51.99rem) {
   .home-rechner-banner__cta {
     width: 100%;
@@ -4130,6 +4156,10 @@ a:focus-visible {
 
 @media only screen and (min-width: 48rem) {
   .services {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-rechner-banners {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -4161,6 +4191,10 @@ a:focus-visible {
 
   .home-rechner-banner {
     padding: clamp(2rem, 3vw, 2.75rem);
+  }
+
+  .home-rechner-banners {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .service-card--projects {
