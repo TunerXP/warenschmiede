@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio to Video Converter (jsDelivr Retro)</title>
+    <title>Audio to Video Converter (Network Edition)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- FFmpeg Wrapper v0.9.8 via jsDelivr (Schneller & Stabiler) -->
-    <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.9.8/dist/ffmpeg.min.js"></script>
+    <!-- FFmpeg Wrapper v0.9.8 -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.9.8/dist/ffmpeg.min.js"></script>
 
     <style>
         body {
@@ -17,7 +17,6 @@
             background-color: #0f172a; /* Slate 900 */
             color: #e2e8f0;
         }
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #1e293b; }
         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
@@ -38,26 +37,33 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
+    <!-- Server Switcher -->
+    <div class="absolute top-4 right-4 flex gap-2 text-xs">
+        <span class="text-slate-500 py-1">Engine Server:</span>
+        <button onclick="setServer('unpkg')" id="btn-unpkg" class="bg-blue-600 text-white px-2 py-1 rounded">Server A (Unpkg)</button>
+        <button onclick="setServer('jsdelivr')" id="btn-jsdelivr" class="bg-slate-700 text-slate-300 px-2 py-1 rounded hover:bg-slate-600">Server B (jsDelivr)</button>
+    </div>
+
     <div class="w-full max-w-2xl bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700 p-8 space-y-8">
         
         <!-- Header -->
         <div class="text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-cyan-600/20 text-cyan-500 mb-4">
-                <i class="ph ph-lightning text-4xl"></i>
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-600/20 text-pink-500 mb-4">
+                <i class="ph ph-network text-4xl"></i>
             </div>
             <h1 class="text-2xl font-bold text-white">Audio zu Video</h1>
-            <p class="text-slate-400 text-sm mt-2">jsDelivr Retro Edition (v0.9.8)</p>
+            <p class="text-slate-400 text-sm mt-2">Network Edition (v0.9.8)</p>
         </div>
 
         <!-- 1. Upload Audio -->
         <div class="space-y-2">
             <label class="text-sm font-bold text-slate-300 uppercase flex items-center gap-2">
-                <i class="ph ph-music-note text-blue-400"></i> 1. MP3 Datei wählen
+                <i class="ph ph-music-note text-blue-400"></i> 1. MP3 Datei
             </label>
             <div id="audio-drop" class="drop-zone h-24 rounded-xl flex flex-col items-center justify-center cursor-pointer relative group">
                 <input type="file" id="audio-input" accept="audio/mp3, audio/mpeg, audio/wav" class="absolute inset-0 opacity-0 cursor-pointer z-10">
                 <div id="audio-label" class="text-center pointer-events-none">
-                    <p class="text-slate-400 text-sm group-hover:text-blue-400 transition-colors">Hier klicken oder MP3 reinziehen</p>
+                    <p class="text-slate-400 text-sm group-hover:text-blue-400 transition-colors">MP3 hier ablegen</p>
                 </div>
             </div>
         </div>
@@ -65,183 +71,217 @@
         <!-- 2. Upload Image -->
         <div class="space-y-2">
             <label class="text-sm font-bold text-slate-300 uppercase flex items-center gap-2">
-                <i class="ph ph-image text-emerald-400"></i> 2. Hintergrundbild wählen
+                <i class="ph ph-image text-emerald-400"></i> 2. Bild (16:9 empfohlen)
             </label>
             <div id="image-drop" class="drop-zone h-24 rounded-xl flex flex-col items-center justify-center cursor-pointer relative group">
                 <input type="file" id="image-input" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
                 <div id="image-label" class="text-center pointer-events-none">
-                    <p class="text-slate-400 text-sm group-hover:text-emerald-400 transition-colors">Hier klicken oder Bild (1920x1080) reinziehen</p>
+                    <p class="text-slate-400 text-sm group-hover:text-emerald-400 transition-colors">Bild hier ablegen</p>
                 </div>
                 <img id="image-preview" class="absolute inset-0 w-full h-full object-cover rounded-xl opacity-50 hidden pointer-events-none">
             </div>
         </div>
 
-        <!-- 3. Convert Button & Progress -->
+        <!-- 3. Action Area -->
         <div class="pt-4 border-t border-slate-700">
-            <button id="convert-btn" onclick="startConversion()" disabled class="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 text-lg">
-                <i class="ph ph-magic-wand"></i>
-                Video Erstellen (MP4)
-            </button>
+            
+            <!-- Status / Log Box -->
+            <div id="status-box" class="hidden mb-4 bg-black/50 rounded-lg p-3 text-xs font-mono text-cyan-400 border border-slate-600 h-24 overflow-y-auto">
+                <div id="log-content">Warte auf Start...</div>
+            </div>
 
-            <!-- Progress Bar -->
-            <div id="progress-container" class="hidden mt-4 space-y-2">
-                <div class="flex justify-between text-xs text-slate-400">
-                    <span id="status-text">Initialisiere...</span>
-                    <span id="progress-percent">0%</span>
+            <!-- Progress Bar Engine Download -->
+            <div id="dl-progress-container" class="hidden mb-4">
+                <div class="flex justify-between text-xs text-slate-400 mb-1">
+                    <span>Lade Video-Engine (25MB)...</span>
+                    <span id="dl-percent">0%</span>
                 </div>
-                <div class="w-full bg-slate-700 rounded-full h-2.5 overflow-hidden">
-                    <div id="progress-bar" class="bg-blue-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                <div class="w-full bg-slate-700 rounded-full h-1.5">
+                    <div id="dl-bar" class="bg-pink-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
                 </div>
             </div>
 
+            <button id="convert-btn" onclick="startProcess()" disabled class="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 text-lg">
+                <i class="ph ph-play"></i> Starten
+            </button>
+
             <!-- Download Link -->
             <a id="download-link" class="hidden w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 text-center cursor-pointer">
-                <i class="ph ph-download-simple text-xl"></i>
-                Video Herunterladen
+                <i class="ph ph-download-simple text-xl"></i> Video Speichern
             </a>
         </div>
 
     </div>
 
-    <!-- Live Log Area -->
-    <div class="w-full max-w-2xl mt-4">
-        <p class="text-xs text-slate-500 uppercase font-bold mb-2">System Protokoll:</p>
-        <div id="log-area" class="w-full h-40 bg-black rounded-lg border border-slate-700 p-3 text-[10px] font-mono text-cyan-400 overflow-y-auto whitespace-pre-wrap">Bereit (v0.9.8 jsDelivr).</div>
-    </div>
-
     <script>
+        // --- Config ---
+        let currentServer = 'unpkg';
+        const servers = {
+            unpkg: 'https://unpkg.com/@ffmpeg/core@0.9.8/dist/ffmpeg-core.js',
+            jsdelivr: 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.9.8/dist/ffmpeg-core.js'
+        };
+
+        // --- Elements ---
         const audioInput = document.getElementById('audio-input');
         const audioLabel = document.getElementById('audio-label');
         const imageInput = document.getElementById('image-input');
         const imageLabel = document.getElementById('image-label');
         const imagePreview = document.getElementById('image-preview');
         const convertBtn = document.getElementById('convert-btn');
-        const progressContainer = document.getElementById('progress-container');
-        const progressBar = document.getElementById('progress-bar');
-        const statusText = document.getElementById('status-text');
+        const statusBox = document.getElementById('status-box');
+        const logContent = document.getElementById('log-content');
+        const dlContainer = document.getElementById('dl-progress-container');
+        const dlBar = document.getElementById('dl-bar');
+        const dlPercent = document.getElementById('dl-percent');
         const downloadLink = document.getElementById('download-link');
-        const logArea = document.getElementById('log-area');
 
         let audioFile = null;
         let imageFile = null;
         let ffmpeg = null;
 
-        function log(msg) {
-            const time = new Date().toLocaleTimeString();
-            logArea.innerHTML += `[${time}] ${msg}\n`;
-            logArea.scrollTop = logArea.scrollHeight;
+        // --- Server Switcher ---
+        function setServer(srv) {
+            currentServer = srv;
+            document.getElementById('btn-unpkg').className = srv === 'unpkg' ? 'bg-blue-600 text-white px-2 py-1 rounded' : 'bg-slate-700 text-slate-300 px-2 py-1 rounded hover:bg-slate-600';
+            document.getElementById('btn-jsdelivr').className = srv === 'jsdelivr' ? 'bg-blue-600 text-white px-2 py-1 rounded' : 'bg-slate-700 text-slate-300 px-2 py-1 rounded hover:bg-slate-600';
+            log(`Server gewechselt zu: ${srv.toUpperCase()}`);
         }
 
-        // --- File Handling ---
+        // --- Logger ---
+        function log(msg) {
+            const time = new Date().toLocaleTimeString();
+            logContent.innerHTML += `<div><span class="text-slate-500">[${time}]</span> ${msg}</div>`;
+            statusBox.scrollTop = statusBox.scrollHeight;
+        }
+
+        // --- File Inputs ---
         audioInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
-            if (file) {
+            if(file) {
                 audioFile = file;
-                audioLabel.innerHTML = `<p class="text-white font-bold">${file.name}</p><p class="text-xs text-slate-400">${(file.size / 1024 / 1024).toFixed(2)} MB</p>`;
+                audioLabel.innerHTML = `<span class="text-white font-bold">${file.name}</span>`;
                 checkReady();
             }
         });
 
         imageInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
-            if (file) {
+            if(file) {
                 imageFile = file;
                 imageLabel.classList.add('hidden');
-                const url = URL.createObjectURL(file);
-                imagePreview.src = url;
+                imagePreview.src = URL.createObjectURL(file);
                 imagePreview.classList.remove('hidden');
                 checkReady();
             }
         });
 
         function checkReady() {
-            if (audioFile && imageFile) {
+            if(audioFile && imageFile) {
                 convertBtn.disabled = false;
                 convertBtn.classList.add('animate-pulse');
             }
         }
 
-        // --- Conversion Logic (v0.9.8 via jsDelivr) ---
-        async function startConversion() {
-            if (!audioFile || !imageFile) return;
-
+        // --- Main Process ---
+        async function startProcess() {
             convertBtn.disabled = true;
             convertBtn.classList.remove('animate-pulse');
-            convertBtn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Arbeite...';
-            progressContainer.classList.remove('hidden');
+            statusBox.classList.remove('hidden');
             downloadLink.classList.add('hidden');
             
             try {
                 const { createFFmpeg, fetchFile } = FFmpeg;
-                
-                // Explizit jsDelivr URL für Core 0.9.8
-                const coreURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.9.8/dist/ffmpeg-core.js';
-                
+
                 if (!ffmpeg) {
-                    log(`Lade FFmpeg v0.9.8...`);
-                    log(`Core URL: ${coreURL}`);
-                    
-                    ffmpeg = createFFmpeg({ 
+                    const coreURL = servers[currentServer];
+                    log(`Lade Engine von ${currentServer}...`);
+                    dlContainer.classList.remove('hidden');
+
+                    // 1. Manually fetch core to show progress (browser fetch doesn't always show progress for scripts easily, but FFmpeg logger helps)
+                    ffmpeg = createFFmpeg({
                         log: true,
                         corePath: coreURL,
                         logger: ({ message }) => {
+                            // Try to detect download progress messages from browser if any (rare)
+                            // Mostly capture FFmpeg internal logs
                             if(message.includes("frame=") || message.includes("size=")) {
-                                log("FFmpeg: " + message);
+                                // Encoding progress
+                                log(message); 
                             }
                         },
                         progress: ({ ratio }) => {
-                            const percent = Math.round(ratio * 100);
-                            progressBar.style.width = `${percent}%`;
-                            document.getElementById('progress-percent').textContent = `${percent}%`;
-                            if(percent >= 100) statusText.textContent = "Finalisiere...";
-                            else statusText.textContent = "Verarbeite...";
+                            // This is encoding progress usually
+                            const p = Math.round(ratio * 100);
+                            convertBtn.innerText = `Erstelle Video: ${p}%`;
                         }
                     });
-                    
+
+                    // Fake download progress visualizer (since we can't hook into script tag download easily)
+                    let fakeP = 0;
+                    const fakeInterval = setInterval(() => {
+                        if(fakeP < 90) {
+                            fakeP += Math.random() * 5;
+                            dlBar.style.width = Math.min(fakeP, 90) + "%";
+                            dlPercent.innerText = Math.round(Math.min(fakeP, 90)) + "%";
+                        }
+                    }, 500);
+
                     await ffmpeg.load();
-                    log("Engine geladen! (0.9.8 via jsDelivr)");
+                    
+                    clearInterval(fakeInterval);
+                    dlBar.style.width = "100%";
+                    dlPercent.innerText = "100%";
+                    log("Engine geladen! (v0.9.8)");
+                    setTimeout(() => dlContainer.classList.add('hidden'), 1000);
                 }
 
-                log("Lade Dateien...");
-                ffmpeg.FS('writeFile', 'audio.mp3', await fetchFile(audioFile));
-                ffmpeg.FS('writeFile', 'image.jpg', await fetchFile(imageFile));
+                // 2. Write Files
+                log("Kopiere Dateien...");
+                ffmpeg.FS('writeFile', 'input.mp3', await fetchFile(audioFile));
+                ffmpeg.FS('writeFile', 'input.jpg', await fetchFile(imageFile));
 
-                log("Starte Encoding (Das dauert!)...");
-                statusText.textContent = "Encoding läuft...";
-
-                // Vereinfachter Command für 0.9.8
+                // 3. Run
+                log("Starte Encoding...");
+                
+                // Optimized command for YouTube (Fast decode/encode)
+                // -shortest: Stop when shortest input (audio) ends (since image loops forever)
                 await ffmpeg.run(
-                    '-loop', '1', 
-                    '-i', 'image.jpg', 
-                    '-i', 'audio.mp3', 
-                    '-c:v', 'libx264', 
-                    '-tune', 'stillimage', 
-                    '-c:a', 'aac', 
-                    '-b:a', '128k', 
-                    '-pix_fmt', 'yuv420p', 
-                    '-shortest', 
+                    '-loop', '1',
+                    '-i', 'input.jpg',
+                    '-i', 'input.mp3',
+                    '-c:a', 'copy', // Copy audio (super fast, no re-encoding of MP3)
+                    '-c:v', 'libx264', // Encode Video
+                    '-tune', 'stillimage',
+                    '-pix_fmt', 'yuv420p',
+                    '-shortest',
                     'output.mp4'
                 );
 
-                log("Fertig!");
-                
-                const data = ffmpeg.FS('readFile', 'output.mp4');
-                const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
-                const videoUrl = URL.createObjectURL(videoBlob);
+                log("Encoding fertig!");
 
-                downloadLink.href = videoUrl;
+                // 4. Output
+                const data = ffmpeg.FS('readFile', 'output.mp4');
+                const blob = new Blob([data.buffer], { type: 'video/mp4' });
+                const url = URL.createObjectURL(blob);
+
+                downloadLink.href = url;
                 downloadLink.download = `video_${audioFile.name.split('.')[0]}.mp4`;
                 downloadLink.classList.remove('hidden');
                 
-                convertBtn.innerHTML = '<i class="ph ph-check-circle"></i> Fertig!';
-                statusText.textContent = "Abgeschlossen";
-                progressBar.classList.add('bg-emerald-500');
+                convertBtn.innerText = "Fertig!";
+                convertBtn.classList.add('bg-emerald-600');
+
+                // Cleanup
+                ffmpeg.FS('unlink', 'input.mp3');
+                ffmpeg.FS('unlink', 'input.jpg');
+                ffmpeg.FS('unlink', 'output.mp4');
 
             } catch (err) {
                 console.error(err);
-                log(`FEHLER: ${err.message}`);
-                convertBtn.innerHTML = "Fehler";
-                alert("Ein Fehler ist aufgetreten: " + err.message);
+                log(`<span class="text-red-400">FEHLER: ${err.message}</span>`);
+                alert("Fehler! Wenn es hängt, versuche oben rechts 'Server B' auszuwählen.");
+                convertBtn.innerText = "Fehler - Neu versuchen";
+                convertBtn.disabled = false;
             }
         }
     </script>
