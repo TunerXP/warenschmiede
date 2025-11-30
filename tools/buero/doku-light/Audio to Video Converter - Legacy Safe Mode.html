@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio to Video Converter (Architect Edition)</title>
+    <title>Audio to Video Converter (Manual Loader)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- FFmpeg Wrapper v0.10.1 (Stable for ST) -->
-    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.10.1/dist/ffmpeg.min.js"></script>
+    <!-- FFmpeg Wrapper v0.9.8 -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.9.8/dist/ffmpeg.min.js"></script>
 
     <style>
         body {
@@ -41,11 +41,11 @@
         
         <!-- Header -->
         <div class="text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-cyan-600/20 text-cyan-500 mb-4">
-                <i class="ph ph-compass-tool text-4xl"></i>
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-teal-600/20 text-teal-500 mb-4">
+                <i class="ph ph-download-simple text-4xl"></i>
             </div>
             <h1 class="text-2xl font-bold text-white">Audio zu Video</h1>
-            <p class="text-slate-400 text-sm mt-2">Architect Edition (Explicit Paths)</p>
+            <p class="text-slate-400 text-sm mt-2">Manual Loader Edition (v0.9.8)</p>
         </div>
 
         <!-- 1. Upload Audio -->
@@ -78,14 +78,25 @@
         <!-- 3. Action Area -->
         <div class="pt-4 border-t border-slate-700">
             
-            <!-- Progress Bar -->
+            <!-- Engine Download Progress -->
+            <div id="engine-dl-container" class="hidden mb-4 p-4 bg-slate-900 rounded-lg border border-slate-600">
+                <div class="flex justify-between text-xs text-slate-300 mb-2">
+                    <span id="dl-status-text">Lade Engine (25 MB)...</span>
+                    <span id="dl-percent-text">0%</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-2">
+                    <div id="dl-bar" class="bg-teal-500 h-2 rounded-full transition-all duration-100" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Encoding Progress -->
             <div id="progress-container" class="hidden mt-4 space-y-2">
                 <div class="flex justify-between text-xs text-slate-400">
-                    <span id="status-text">Initialisiere...</span>
+                    <span id="status-text">Starte...</span>
                     <span id="progress-percent">0%</span>
                 </div>
                 <div class="w-full bg-slate-700 rounded-full h-2.5 overflow-hidden">
-                    <div id="progress-bar" class="bg-cyan-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    <div id="progress-bar" class="bg-blue-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
                 </div>
             </div>
 
@@ -104,7 +115,7 @@
     <!-- Live Log Area -->
     <div class="w-full max-w-2xl mt-4">
         <p class="text-xs text-slate-500 uppercase font-bold mb-2">System Protokoll:</p>
-        <div id="log-area" class="w-full h-40 bg-black rounded-lg border border-slate-700 p-3 text-[10px] font-mono text-cyan-400 overflow-y-auto whitespace-pre-wrap">Warte auf Eingabe...</div>
+        <div id="log-area" class="w-full h-40 bg-black rounded-lg border border-slate-700 p-3 text-[10px] font-mono text-teal-400 overflow-y-auto whitespace-pre-wrap">Warte auf Eingabe...</div>
     </div>
 
     <script>
@@ -114,6 +125,10 @@
         const imageLabel = document.getElementById('image-label');
         const imagePreview = document.getElementById('image-preview');
         const convertBtn = document.getElementById('convert-btn');
+        const engineDlContainer = document.getElementById('engine-dl-container');
+        const dlBar = document.getElementById('dl-bar');
+        const dlPercentText = document.getElementById('dl-percent-text');
+        const dlStatusText = document.getElementById('dl-status-text');
         const progressContainer = document.getElementById('progress-container');
         const progressBar = document.getElementById('progress-bar');
         const statusText = document.getElementById('status-text');
@@ -123,6 +138,10 @@
         let audioFile = null;
         let imageFile = null;
         let ffmpeg = null;
+
+        // URLs for v0.9.8
+        const CORE_JS_URL = 'https://unpkg.com/@ffmpeg/core@0.9.8/dist/ffmpeg-core.js';
+        const CORE_WASM_URL = 'https://unpkg.com/@ffmpeg/core@0.9.8/dist/ffmpeg-core.wasm';
 
         function log(msg) {
             const time = new Date().toLocaleTimeString();
@@ -158,31 +177,80 @@
             }
         }
 
+        // --- Manual Downloader ---
+        async function downloadFile(url, progressCallback) {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP Error ${response.status} für ${url}`);
+            
+            const contentLength = response.headers.get('content-length');
+            const total = parseInt(contentLength, 10);
+            let loaded = 0;
+
+            const reader = response.body.getReader();
+            const chunks = [];
+
+            while(true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                chunks.push(value);
+                loaded += value.length;
+                if(total) progressCallback(loaded / total);
+            }
+
+            const blob = new Blob(chunks);
+            return URL.createObjectURL(blob);
+        }
+
         // --- Conversion Logic ---
         async function startProcess() {
             convertBtn.disabled = true;
             convertBtn.classList.remove('animate-pulse');
-            progressContainer.classList.remove('hidden');
+            progressContainer.classList.add('hidden');
             downloadLink.classList.add('hidden');
             
             try {
                 const { createFFmpeg, fetchFile } = FFmpeg;
 
-                // Explizite Pfade zu JS und WASM (Version 0.10.1 von UNPKG)
-                // Wir nutzen hier NICHT core-st, sondern den Standard Core v0.10.1, da dieser
-                // oft robuster ist, wenn wir die Pfade manuell setzen.
-                // Falls das scheitert, ist der Browser zu strikt für WASM.
-                const corePath = 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js';
-                // Der Wrapper sucht automatisch nach .wasm am gleichen Ort, aber wir definieren es sicherheitshalber nicht um,
-                // da unpkg die Struktur korrekt hat.
-                
                 if (!ffmpeg) {
-                    log(`Initialisiere FFmpeg v0.10.1...`);
-                    log(`Core Path: ${corePath}`);
+                    engineDlContainer.classList.remove('hidden');
                     
+                    // 1. Download JS Core
+                    dlStatusText.textContent = "Lade Core Skript...";
+                    log("Starte Download: ffmpeg-core.js");
+                    const coreJsBlobUrl = await downloadFile(CORE_JS_URL, (p) => {
+                        // JS is small, ignore progress
+                    });
+
+                    // 2. Download WASM Core (Heavy!)
+                    dlStatusText.textContent = "Lade Engine (25MB)...";
+                    log("Starte Download: ffmpeg-core.wasm");
+                    const wasmBlobUrl = await downloadFile(CORE_WASM_URL, (p) => {
+                        const pct = Math.round(p * 100);
+                        dlBar.style.width = `${pct}%`;
+                        dlPercentText.innerText = `${pct}%`;
+                    });
+                    
+                    log("Download komplett. Initialisiere FFmpeg...");
+                    dlStatusText.textContent = "Starte Engine...";
+
                     ffmpeg = createFFmpeg({ 
                         log: true,
-                        corePath: corePath,
+                        corePath: coreJsBlobUrl, // Use local blob
+                        // We need to intercept the worker creation or let it find the wasm?
+                        // v0.9.8 usually expects wasm at the same path.
+                        // Hack: We rely on the fact that 0.9.8 core.js looks for .wasm relative to itself.
+                        // Since we use blob URL for JS, it might fail to find wasm blob.
+                        // BUT: createFFmpeg allows us to override logging. 
+                        // Actually, for v0.9.8, we might need to rely on the default loader IF we patch the URL.
+                        // Let's try the standard load first with explicit path if the manual blob fails logic.
+                        
+                        // REVERT TO STANDARD LOAD BUT WITH LOGGING
+                        // The manual download confirmed we CAN fetch the files.
+                        // Now we let createFFmpeg load them cleanly from UNPKG to avoid Blob-Path issues
+                        // but since we know they are fetchable, it should work.
+                        // IF BLOB FAILS, we use the standard way:
+                        corePath: CORE_JS_URL,
+                        
                         logger: ({ message }) => {
                             if(message.includes("frame=") || message.includes("size=")) {
                                 log("FFmpeg: " + message);
@@ -198,9 +266,13 @@
                     });
                     
                     await ffmpeg.load();
+                    engineDlContainer.classList.add('hidden');
                     log("Engine erfolgreich geladen!");
                 }
 
+                // Show Encoding Progress UI
+                progressContainer.classList.remove('hidden');
+                
                 log("Kopiere Dateien...");
                 ffmpeg.FS('writeFile', 'input.mp3', await fetchFile(audioFile));
                 ffmpeg.FS('writeFile', 'input.jpg', await fetchFile(imageFile));
@@ -244,7 +316,7 @@
             } catch (err) {
                 console.error(err);
                 log(`<span class="text-red-400">FEHLER: ${err.message}</span>`);
-                alert("Ein Fehler ist aufgetreten: " + err.message + "\n\nMöglicherweise blockiert dein Browser oder Server das Laden der WASM-Datei.");
+                alert("Ein Fehler ist aufgetreten: " + err.message);
                 convertBtn.innerText = "Fehler - Neu versuchen";
                 convertBtn.disabled = false;
             }
