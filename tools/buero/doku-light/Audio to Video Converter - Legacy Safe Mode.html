@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio to Video Converter (Bulletproof)</title>
+    <title>Audio to Video Converter (Sync Edition)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- FFmpeg Wrapper (Version 0.10.1 via jsDelivr) -->
-    <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.10.1/dist/ffmpeg.min.js"></script>
+    <!-- FFmpeg Wrapper (Version 0.11.1 - EXAKT passend zum Core) -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.1/dist/ffmpeg.min.js"></script>
 
     <style>
         body {
@@ -42,11 +42,11 @@
         
         <!-- Header -->
         <div class="text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-cyan-600/20 text-cyan-500 mb-4">
-                <i class="ph ph-shield-check-fill text-4xl"></i>
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-600/20 text-blue-500 mb-4">
+                <i class="ph ph-check-circle text-4xl"></i>
             </div>
             <h1 class="text-2xl font-bold text-white">Audio zu Video</h1>
-            <p class="text-slate-400 text-sm mt-2">Bulletproof Edition (v0.10.1 via jsDelivr)</p>
+            <p class="text-slate-400 text-sm mt-2">Synchronized Edition (v0.11.1 / Single Core)</p>
         </div>
 
         <!-- 1. Upload Audio -->
@@ -106,7 +106,7 @@
     <!-- Live Log Area -->
     <div class="w-full max-w-2xl mt-4">
         <p class="text-xs text-slate-500 uppercase font-bold mb-2">System Protokoll:</p>
-        <div id="log-area" class="w-full h-40 bg-black rounded-lg border border-slate-700 p-3 text-[10px] font-mono text-cyan-400 overflow-y-auto whitespace-pre-wrap">Bereit.</div>
+        <div id="log-area" class="w-full h-40 bg-black rounded-lg border border-slate-700 p-3 text-[10px] font-mono text-blue-400 overflow-y-auto whitespace-pre-wrap">Warte auf Eingabe...</div>
     </div>
 
     <script>
@@ -127,7 +127,6 @@
         let imageFile = null;
         let ffmpeg = null;
 
-        // Helper: Log
         function log(msg) {
             const time = new Date().toLocaleTimeString();
             logArea.innerHTML += `[${time}] ${msg}\n`;
@@ -171,34 +170,39 @@
 
             convertBtn.disabled = true;
             convertBtn.classList.remove('animate-pulse');
-            convertBtn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Arbeite...';
+            convertBtn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Lade...';
             progressContainer.classList.remove('hidden');
             downloadLink.classList.add('hidden');
             
-            // Timeout Watchdog (25 Sekunden)
+            // Timeout Watchdog
             const timeoutId = setTimeout(() => {
                 if(!downloadLink.href && !logArea.innerHTML.includes("Fertig")) {
-                    log("TIMEOUT: Download der Engine dauert zu lange.");
-                    alert("Timeout! Der Browser konnte die Video-Engine nicht schnell genug laden. Prüfe deine Verbindung.");
+                    log("TIMEOUT: Verbindung zu langsam?");
+                    alert("Timeout! Bitte Seite neu laden und Internet prüfen.");
                     convertBtn.disabled = false;
-                    convertBtn.innerHTML = "Erneut versuchen";
+                    convertBtn.innerHTML = "Neu versuchen";
                 }
-            }, 25000);
+            }, 60000); // 60s Timeout (große Datei braucht Zeit)
 
             try {
                 const { createFFmpeg, fetchFile } = FFmpeg;
                 
-                // Wir nutzen jsDelivr für maximale Geschwindigkeit und Stabilität
-                const coreURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core-st@0.10.1/dist/ffmpeg-core.js';
+                // UNPKG URL für Core-ST (Version 0.11.1)
+                const coreURL = 'https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js';
                 
                 if (!ffmpeg) {
-                    log(`Initialisiere FFmpeg v0.10.1...`);
+                    log(`Initialisiere FFmpeg (Wrapper v0.11.1)...`);
                     log(`Lade Core von: ${coreURL}`);
                     
                     ffmpeg = createFFmpeg({ 
                         log: true,
                         corePath: coreURL,
-                        logger: ({ message }) => log("FFmpeg: " + message),
+                        logger: ({ message }) => {
+                            // Filter nur wichtige Infos für das Log
+                            if(message.includes("frame=") || message.includes("size=")) {
+                                log("FFmpeg: " + message);
+                            }
+                        },
                         progress: ({ ratio }) => {
                             const percent = Math.round(ratio * 100);
                             progressBar.style.width = `${percent}%`;
@@ -209,18 +213,17 @@
                     });
                     
                     await ffmpeg.load();
-                    clearTimeout(timeoutId); // Load success, cancel watchdog
-                    log("Engine erfolgreich geladen! (Puh!)");
+                    clearTimeout(timeoutId); 
+                    log("Engine erfolgreich geladen! Startklar.");
                 }
 
-                log("Schreibe Dateien in Speicher...");
+                log("Schreibe Dateien in virtuelles Dateisystem...");
                 ffmpeg.FS('writeFile', 'audio.mp3', await fetchFile(audioFile));
                 ffmpeg.FS('writeFile', 'image.jpg', await fetchFile(imageFile));
 
-                log("Starte Encoding... (Kann bei großen MP3s dauern)");
+                log("Starte Encoding... (Das dauert jetzt!)");
                 statusText.textContent = "Encoding läuft...";
 
-                // Robust Command
                 await ffmpeg.run(
                     '-loop', '1', 
                     '-i', 'image.jpg', 
@@ -253,16 +256,8 @@
                 clearTimeout(timeoutId);
                 console.error(err);
                 log(`KRITISCHER FEHLER: ${err.message}`);
-                
-                // Spezielle Hilfe für den Nutzer
-                if(err.message.includes("SharedArrayBuffer")) {
-                    log("HINWEIS: SharedArrayBuffer Fehler. (Sollte mit dieser Version eigentlich nicht passieren)");
-                } else if(err.message.includes("fetch")) {
-                    log("HINWEIS: Netzwerkfehler beim Laden der Engine.");
-                }
-
                 convertBtn.innerHTML = "Fehler";
-                alert("Fehler aufgetreten. Siehe Protokoll.");
+                alert("Fehler aufgetreten. Bitte Protokoll prüfen.");
             }
         }
     </script>
