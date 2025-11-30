@@ -1,0 +1,956 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CNC MasterCalc Pro</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* Gray 900 */
+            color: #e5e7eb;
+        }
+
+        /* Input Styles */
+        .input-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #9ca3af;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        /* Unified Input Field Look */
+        .input-field {
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            color: white;
+            border-radius: 0.375rem;
+            width: 100%;
+            padding: 0.5rem;
+            font-family: 'Courier New', monospace;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+
+            .input-field:disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+            }
+
+            .input-field:focus {
+                border-color: #f97316;
+                box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+                outline: none;
+                background-color: #374151;
+            }
+
+        /* Special Colors for different sections */
+        .input-vc {
+            border-left: 3px solid #f97316;
+        }
+
+        .input-mac {
+            border-left: 3px solid #3b82f6;
+        }
+
+        /* Material Buttons */
+        .mat-btn {
+            @apply border border-gray-600 bg-gray-800 rounded p-3 text-xs text-gray-300 hover:bg-gray-700 hover:border-gray-500 transition-all font-bold shadow-sm;
+        }
+
+            .mat-btn.active {
+                @apply bg-orange-600 text-white border-orange-500 shadow-orange-500/20 shadow-lg transform scale-105;
+            }
+
+        /* Toggle Buttons (Operation & Type) */
+        .toggle-btn {
+            @apply flex-1 py-3 px-2 text-xs font-bold text-gray-300 bg-gray-800 border border-gray-600 rounded-lg hover:bg-gray-700 transition-all shadow-md flex justify-center items-center gap-2;
+        }
+
+        .op-btn.active {
+            @apply bg-emerald-600 text-white border-emerald-500 shadow-lg shadow-emerald-500/30 ring-1 ring-emerald-400 transform -translate-y-0.5;
+        }
+
+        .type-btn.active {
+            @apply bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-500/30 ring-1 ring-indigo-400 transform -translate-y-0.5;
+        }
+
+        /* Tool Grid */
+        .tool-slot {
+            @apply bg-gray-800 border border-gray-700 rounded p-2 text-center cursor-pointer hover:border-orange-500 transition-all relative;
+        }
+
+            .tool-slot.active {
+                @apply border-orange-500 bg-gray-700 ring-1 ring-orange-500;
+            }
+
+            .tool-slot.empty {
+                @apply opacity-50 border-dashed;
+            }
+
+        /* Modal & Helpers */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+        }
+
+        .info-glass {
+            background: rgba(31, 41, 55, 0.7);
+            border-left: 4px solid #6366f1;
+            backdrop-filter: blur(4px);
+        }
+
+        .arrow-icon {
+            transition: transform 0.2s;
+        }
+
+        .input-field:focus ~ .arrow-icon {
+            color: white;
+            transform: scale(1.2);
+        }
+
+        /* Tab Navigation in Help Modal */
+        .help-tab {
+            @apply pb-2 border-b-2 border-transparent text-gray-400 text-sm font-bold cursor-pointer transition-colors px-4;
+        }
+
+            .help-tab.active {
+                @apply border-orange-500 text-white;
+            }
+
+        /* Content Sections */
+        .help-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+            .help-content.active {
+                display: block;
+            }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 lg:p-8 flex justify-center">
+
+    <div class="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- LEFT COLUMN: Calculator -->
+        <div class="lg:col-span-5 space-y-6">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="bg-gradient-to-br from-orange-500 to-red-600 p-2.5 rounded-lg shadow-lg">
+                        <i class="ph ph-gear-six text-2xl text-white animate-[spin_12s_linear_infinite]"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white tracking-wide">MasterCalc PRO</h1>
+                        <p class="text-gray-500 text-[10px] uppercase tracking-wider">Smart-Link Technologie</p>
+                    </div>
+                </div>
+                <button onclick="openHelpModal()" class="w-10 h-10 rounded-full bg-gray-800 border border-gray-600 hover:border-white hover:text-white text-gray-400 transition-all flex items-center justify-center shadow-lg group" title="Grundlagen & Hilfe">
+                    <i class="ph ph-graduation-cap text-xl text-orange-400 group-hover:scale-110 transition-transform"></i>
+                </button>
+            </div>
+
+            <!-- Calculator Panel -->
+            <div class="bg-gray-800 rounded-xl border border-gray-700 p-5 shadow-2xl">
+
+                <!-- 0. Operation Selector -->
+                <div class="mb-6 border-b border-gray-700/50 pb-6">
+                    <h2 class="text-sm font-extrabold text-white uppercase tracking-wider border-l-4 border-emerald-500 pl-2 leading-none mb-3">
+                        Wähle die Bearbeitung
+                    </h2>
+                    <div class="flex gap-3" role="group">
+                        <button onclick="setOperation('milling')" class="toggle-btn op-btn active" id="btn-op-milling">
+                            <i class="ph ph-asterisk-simple text-lg"></i> Fräsen
+                        </button>
+                        <button onclick="setOperation('drilling')" class="toggle-btn op-btn" id="btn-op-drilling">
+                            <i class="ph ph-arrow-fat-line-down text-lg"></i> Bohren
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 1. Tool Type Selector -->
+                <div class="mb-8 border-b border-gray-700/50 pb-8">
+                    <div class="flex justify-between items-end mb-3">
+                        <h2 class="text-sm font-extrabold text-white uppercase tracking-wider border-l-4 border-indigo-500 pl-2 leading-none">
+                            Wähle Werkzeug-Typ
+                        </h2>
+                        <span id="type-factor-display" class="bg-gray-900 px-2 py-1 rounded text-indigo-400 text-[9px] border border-gray-700 font-mono">Faktor: 1.0</span>
+                    </div>
+
+                    <div class="flex gap-3" role="group">
+                        <button onclick="setToolType('vhm')" class="toggle-btn type-btn active" id="btn-vhm">
+                            <i class="ph ph-lightning text-lg"></i> VHM / HM
+                        </button>
+                        <button onclick="setToolType('wp')" class="toggle-btn type-btn" id="btn-wp">
+                            <i class="ph ph-hexagon text-lg"></i> Wendeplatte
+                        </button>
+                        <button onclick="setToolType('hss')" class="toggle-btn type-btn" id="btn-hss">
+                            <i class="ph ph-circle-notch text-lg"></i> HSS
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. Materials -->
+                <div class="mb-4">
+                    <h2 class="text-sm font-extrabold text-white uppercase tracking-wider border-l-4 border-orange-500 pl-2 leading-none mb-3">
+                        Wähle dein Material
+                    </h2>
+                    <div class="grid grid-cols-4 gap-3">
+                        <button onclick="setMat('st37')" class="mat-btn" id="mat-st37">St37</button>
+                        <button onclick="setMat('st52')" class="mat-btn active" id="mat-st52">St52</button>
+                        <button onclick="setMat('werkzeug')" class="mat-btn" id="mat-werkzeug">W-Stahl</button>
+                        <button onclick="setMat('va')" class="mat-btn" id="mat-va">VA</button>
+                        <button onclick="setMat('alu')" class="mat-btn" id="mat-alu">Alu</button>
+                        <button onclick="setMat('messing')" class="mat-btn" id="mat-messing">Messing</button>
+                        <button onclick="setMat('kunststoff')" class="mat-btn" id="mat-kunststoff">Plastic</button>
+                        <button onclick="setMat('holz')" class="mat-btn" id="mat-holz">Holz</button>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC INFO BAR -->
+                <div id="material-hint" class="mb-8 info-glass p-3 rounded text-xs text-indigo-200 flex items-start gap-2 animate-[fadeIn_0.5s_ease]">
+                    <i class="ph ph-info text-lg mt-0.5 text-indigo-400"></i>
+                    <span id="hint-text">Baustahl St52: Standardmaterial. Gut zerspanbar. Bei VHM trocken oder mit Luft kühlen.</span>
+                </div>
+
+                <!-- Tool Data (Global) -->
+                <div class="bg-gray-900/50 p-3 rounded border border-gray-700/50 flex gap-4 mb-6 transition-all duration-300">
+                    <div class="flex-1">
+                        <label class="input-label">Durchmesser (D)</label>
+                        <div class="relative">
+                            <input type="number" id="inp-d" value="10" class="input-field pl-8" oninput="calcFromTool()">
+                            <span class="absolute left-2 top-2 text-gray-500">Ø</span>
+                        </div>
+                    </div>
+                    <!-- Z-Input container with transition -->
+                    <div class="flex-1 transition-all duration-300" id="z-container">
+                        <label class="input-label" id="lbl-z">Zähnezahl (Z)</label>
+                        <div class="relative">
+                            <input type="number" id="inp-z" value="4" class="input-field pl-8" oninput="calcFromTool()">
+                            <span class="absolute left-2 top-2 text-gray-500">#</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- The Smart Calculation Grid -->
+                <div class="grid grid-cols-[1fr_auto_1fr] gap-4 items-center relative">
+
+                    <!-- Left Header -->
+                    <div class="text-center text-[10px] font-bold text-orange-500 uppercase border-b border-orange-500/30 pb-1 mb-2">Schnittdaten</div>
+                    <div></div>
+                    <!-- Right Header -->
+                    <div class="text-center text-[10px] font-bold text-blue-500 uppercase border-b border-blue-500/30 pb-1 mb-2">Maschinendaten</div>
+
+                    <!-- Row 1: Speed -->
+                    <div class="relative group">
+                        <label class="input-label text-orange-400">Schnittgeschw. ($v_c$)</label>
+                        <input type="number" id="inp-vc" value="150" class="input-field input-vc text-center" oninput="calcFromVc()">
+                        <span class="text-[9px] text-gray-500 absolute right-2 bottom-2 pointer-events-none">m/min</span>
+                    </div>
+
+                    <div class="text-gray-600 flex justify-center">
+                        <i class="ph ph-arrows-left-right text-xl arrow-icon"></i>
+                    </div>
+
+                    <div class="relative group">
+                        <label class="input-label text-blue-400">Drehzahl ($n$)</label>
+                        <input type="number" id="inp-n" class="input-field input-mac text-center" oninput="calcFromN()">
+                        <span class="text-[9px] text-gray-500 absolute right-2 bottom-2 pointer-events-none">U/min</span>
+                    </div>
+
+                    <!-- Row 2: Feed -->
+                    <div class="relative group mt-2">
+                        <!-- Label changes dynamically -->
+                        <label class="input-label text-orange-400" id="lbl-fz">Zahnvorschub ($f_z$)</label>
+                        <input type="number" id="inp-fz" value="0.05" step="0.01" class="input-field input-vc text-center" oninput="calcFromFz()">
+                        <span class="text-[9px] text-gray-500 absolute right-2 bottom-2 pointer-events-none">mm</span>
+                    </div>
+
+                    <div class="text-gray-600 flex justify-center mt-2">
+                        <i class="ph ph-arrows-left-right text-xl arrow-icon"></i>
+                    </div>
+
+                    <div class="relative group mt-2">
+                        <label class="input-label text-blue-400">Vorschub ($v_f$)</label>
+                        <input type="number" id="inp-vf" class="input-field input-mac text-center" oninput="calcFromVf()">
+                        <span class="text-[9px] text-gray-500 absolute right-2 bottom-2 pointer-events-none">mm/min</span>
+                    </div>
+
+                </div>
+
+                <!-- Info Box -->
+                <div class="mt-8 bg-gray-900 rounded p-3 border border-gray-700 text-xs font-mono space-y-2">
+                    <div class="flex justify-between border-b border-gray-800 pb-2">
+                        <span class="text-gray-500">Zeitspanvolumen (Q):</span>
+                        <span id="res-q" class="text-yellow-500 font-bold">0 cm³/min</span>
+                    </div>
+                    <div class="text-[10px] text-gray-500 leading-relaxed" id="formula-display">
+                        <span class="text-orange-400 font-bold">$n = \frac{v_c \cdot 1000}{\pi \cdot d}$</span> &nbsp;|&nbsp;
+                        <span class="text-blue-400 font-bold">$v_f = n \cdot z \cdot f_z$</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Tool Magazine -->
+        <div class="lg:col-span-7 flex flex-col h-full">
+
+            <div class="bg-gray-800 rounded-xl border border-gray-700 p-5 shadow-2xl flex-1 flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-sm font-bold text-gray-300 uppercase tracking-wide flex items-center gap-2">
+                        <i class="ph ph-toolbox text-orange-500"></i> Werkzeug Magazin
+                    </h2>
+
+                    <button onclick="openNcModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded text-xs font-bold cursor-pointer flex items-center gap-2 transition-colors shadow-lg">
+                        <i class="ph ph-file-code text-lg"></i> NC-Editor / Import
+                    </button>
+                </div>
+
+                <!-- Grid -->
+                <div class="grid grid-cols-4 sm:grid-cols-6 gap-2 overflow-y-auto pr-1" id="tool-grid" style="max-height: 600px;">
+                    <!-- JS generates buttons here -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- IMPROVED HELP MODAL (AZUBI HANDBOOK) -->
+    <div id="help-modal" class="fixed inset-0 z-[60] hidden modal-overlay flex items-center justify-center p-4">
+        <div class="bg-gray-800 w-full max-w-3xl h-[80vh] rounded-xl shadow-2xl border border-gray-600 flex flex-col animate-[fadeIn_0.2s_ease-out]">
+            <!-- Header -->
+            <div class="bg-gray-900 px-6 py-4 rounded-t-xl border-b border-gray-700 flex justify-between items-center shrink-0">
+                <h3 class="text-white font-bold flex items-center gap-2 text-lg">
+                    <i class="ph ph-book-bookmark text-orange-500"></i> CNC Handbuch für Azubis
+                </h3>
+                <button onclick="closeHelpModal()" class="text-gray-500 hover:text-white transition-colors"><i class="ph ph-x text-2xl"></i></button>
+            </div>
+
+            <!-- Navigation -->
+            <div class="bg-gray-900/50 px-6 pt-2 flex gap-4 border-b border-gray-700 shrink-0">
+                <button onclick="switchHelpTab('basics')" class="help-tab active" id="tab-basics">Grundbegriffe</button>
+                <button onclick="switchHelpTab('tech')" class="help-tab" id="tab-tech">Frästechnologie</button>
+                <button onclick="switchHelpTab('cooling')" class="help-tab" id="tab-cooling">Kühlschmierstoff</button>
+                <button onclick="switchHelpTab('trouble')" class="help-tab" id="tab-trouble">Troubleshooting</button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-6 overflow-y-auto flex-1 text-gray-300 bg-gray-800">
+
+                <!-- TAB 1: GRUNDBEGRIFFE -->
+                <div id="content-basics" class="help-content active space-y-6">
+                    <h4 class="font-bold text-white text-base border-l-4 border-orange-500 pl-2">Das Magische Dreieck der Zerspanung</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-900 p-4 rounded border border-gray-700">
+                            <strong class="text-orange-400 block mb-1">$v_c$ (Schnittgeschwindigkeit)</strong>
+                            <p class="text-xs leading-relaxed mb-2">Wie schnell die Schneide durch das Material "rast". Einheit: m/min.</p>
+                            <p class="text-[10px] text-gray-500">Hartes Material = Niedriges Vc<br>Weiches Material = Hohes Vc</p>
+                        </div>
+                        <div class="bg-gray-900 p-4 rounded border border-gray-700">
+                            <strong class="text-blue-400 block mb-1">$n$ (Drehzahl)</strong>
+                            <p class="text-xs leading-relaxed mb-2">Wie oft sich die Spindel pro Minute dreht. Ergibt sich aus Vc und Durchmesser.</p>
+                            <p class="text-[10px] text-gray-500">Kleiner Fräser = Hohe Drehzahl<br>Großer Fräser = Niedrige Drehzahl</p>
+                        </div>
+                        <div class="bg-gray-900 p-4 rounded border border-gray-700">
+                            <strong class="text-orange-400 block mb-1">$f_z$ (Zahnvorschub)</strong>
+                            <p class="text-xs leading-relaxed mb-2">Die Dicke des Spans, den <b>ein</b> Zahn abschält. Wichtig für die Belastung der Schneide.</p>
+                            <p class="text-[10px] text-gray-500">Zu wenig = Reiben (Hitze)<br>Zu viel = Zahnbruch</p>
+                        </div>
+                        <div class="bg-gray-900 p-4 rounded border border-gray-700">
+                            <strong class="text-blue-400 block mb-1">$v_f$ (Vorschubgeschwindigkeit)</strong>
+                            <p class="text-xs leading-relaxed mb-2">Die Geschwindigkeit, mit der der Tisch fährt. Das ist der <b>F-Wert</b> im Programm.</p>
+                            <code class="text-[10px] text-green-400 bg-black p-1 rounded">F = n * z * fz</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: TECHNOLOGIE -->
+                <div id="content-tech" class="help-content space-y-6">
+                    <h4 class="font-bold text-white text-base border-l-4 border-indigo-500 pl-2">Gleichlauf vs. Gegenlauf</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Gleichlauf -->
+                        <div class="bg-gray-900/50 p-4 rounded border border-gray-700 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] px-2 py-0.5 rounded-bl">Standard</div>
+                            <strong class="text-white block mb-2">Gleichlauf (Climb Milling)</strong>
+                            <div class="h-20 bg-gray-800 mb-3 rounded border border-dashed border-gray-600 flex items-center justify-center text-xs text-gray-500">
+                                [Skizze: Span dick -> dünn]
+                            </div>
+                            <ul class="list-disc pl-4 text-xs space-y-1 text-gray-400">
+                                <li>Span wird von <b>dick nach dünn</b> geschnitten (Kommaspan).</li>
+                                <li>Beste Oberfläche.</li>
+                                <li>Geringerer Verschleiß.</li>
+                                <li><strong class="text-emerald-400">Standard bei CNC-Maschinen!</strong></li>
+                            </ul>
+                        </div>
+                        <!-- Gegenlauf -->
+                        <div class="bg-gray-900/50 p-4 rounded border border-gray-700 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 bg-red-600 text-white text-[10px] px-2 py-0.5 rounded-bl">Ausnahme</div>
+                            <strong class="text-white block mb-2">Gegenlauf (Conventional)</strong>
+                            <div class="h-20 bg-gray-800 mb-3 rounded border border-dashed border-gray-600 flex items-center justify-center text-xs text-gray-500">
+                                [Skizze: Span dünn -> dick]
+                            </div>
+                            <ul class="list-disc pl-4 text-xs space-y-1 text-gray-400">
+                                <li>Span wird von <b>dünn nach dick</b> geschnitten.</li>
+                                <li>Schneide reibt erst (hoher Verschleiß!).</li>
+                                <li>Zieht Werkstück evtl. aus der Spannung.</li>
+                                <li>Nur bei: Gusskruste oder Spiel in der Spindel (alte Maschinen).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: KÜHLUNG -->
+                <div id="content-cooling" class="help-content space-y-6">
+                    <h4 class="font-bold text-white text-base border-l-4 border-blue-500 pl-2">Wann nehme ich welches Kühlmittel?</h4>
+                    <div class="overflow-hidden rounded-lg border border-gray-700">
+                        <table class="w-full text-left text-xs text-gray-400">
+                            <thead class="bg-gray-900 text-gray-200 uppercase font-bold">
+                                <tr>
+                                    <th class="px-4 py-3">Material</th>
+                                    <th class="px-4 py-3">VHM Werkzeug</th>
+                                    <th class="px-4 py-3">HSS Werkzeug</th>
+                                    <th class="px-4 py-3">Grund</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-700 bg-gray-800">
+                                <tr class="hover:bg-gray-700/50">
+                                    <td class="px-4 py-3 font-bold text-white">Stahl (Allgemein)</td>
+                                    <td class="px-4 py-3"><span class="text-yellow-400">Trocken / Luft</span></td>
+                                    <td class="px-4 py-3"><span class="text-blue-400">Emulsion (Viel!)</span></td>
+                                    <td class="px-4 py-3">VHM verträgt Thermoschock nicht (Risse). HSS glüht sonst aus.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-700/50">
+                                    <td class="px-4 py-3 font-bold text-white">Aluminium</td>
+                                    <td class="px-4 py-3"><span class="text-blue-400">Emulsion (Fett!)</span></td>
+                                    <td class="px-4 py-3"><span class="text-blue-400">Emulsion / Spiritus</span></td>
+                                    <td class="px-4 py-3">Verhindert Aufbauschneiden (Alu klebt am Fräser).</td>
+                                </tr>
+                                <tr class="hover:bg-gray-700/50">
+                                    <td class="px-4 py-3 font-bold text-white">Edelstahl (VA)</td>
+                                    <td class="px-4 py-3"><span class="text-blue-400">Emulsion (Hochdruck)</span></td>
+                                    <td class="px-4 py-3"><span class="text-blue-400">Öl / Emulsion</span></td>
+                                    <td class="px-4 py-3">Kühlung und Schmierung extrem wichtig gegen Kaltverfestigung.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-700/50">
+                                    <td class="px-4 py-3 font-bold text-white">Kunststoff</td>
+                                    <td class="px-4 py-3"><span class="text-cyan-400">Druckluft / Wasser</span></td>
+                                    <td class="px-4 py-3"><span class="text-cyan-400">Luft / Wasser</span></td>
+                                    <td class="px-4 py-3">Späne müssen weg, damit sie nicht verschweißen.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 4: TROUBLESHOOTING -->
+                <div id="content-trouble" class="help-content space-y-6">
+                    <h4 class="font-bold text-white text-base border-l-4 border-red-500 pl-2">Hilfe, es läuft nicht!</h4>
+                    <div class="space-y-4">
+                        <div class="bg-gray-900 p-4 rounded border-l-4 border-red-500">
+                            <strong class="text-white block">Maschine rattert (Vibrationen)</strong>
+                            <p class="text-xs text-gray-400 mt-1">Ursachen: Werkstück locker? Auskraglänge zu groß? Drehzahl zu hoch?</p>
+                            <div class="mt-2 text-xs font-bold text-emerald-400">Lösung: Vorschub erhöhen (Schnittdruck aufbauen) oder Drehzahl senken. Kürzer spannen!</div>
+                        </div>
+                        <div class="bg-gray-900 p-4 rounded border-l-4 border-yellow-500">
+                            <strong class="text-white block">Oberfläche schlecht</strong>
+                            <p class="text-xs text-gray-400 mt-1">Ursachen: Späne werden nochmal geschnitten? Gegenlauf gefräst?</p>
+                            <div class="mt-2 text-xs font-bold text-emerald-400">Lösung: Schlichtspan (wenig seitliche Zustellung) im Gleichlauf. Späne wegblasen.</div>
+                        </div>
+                        <div class="bg-gray-900 p-4 rounded border-l-4 border-blue-500">
+                            <strong class="text-white block">Bohrer verläuft / Loch zu groß</strong>
+                            <p class="text-xs text-gray-400 mt-1">Ursachen: Nicht zentriert? Bohrer stumpf? Unsymmetrischer Anschliff?</p>
+                            <div class="mt-2 text-xs font-bold text-emerald-400">Lösung: NC-Anbohrer verwenden (90° oder 120°). Bohrer prüfen.</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="p-4 border-t border-gray-700 bg-gray-900 rounded-b-xl text-right shrink-0">
+                <button onclick="closeHelpModal()" class="px-6 py-2 rounded bg-indigo-600 hover:bg-indigo-500 text-sm text-white font-bold transition-colors shadow-lg">Verstanden & Schließen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NC Editor Modal (Existing) -->
+    <div id="nc-modal" class="fixed inset-0 z-50 hidden modal-overlay flex items-center justify-center p-4">
+        <div class="bg-gray-800 w-full max-w-4xl h-5/6 rounded-xl shadow-2xl border border-gray-600 flex flex-col animate-[fadeIn_0.2s_ease-out]">
+            <div class="bg-gray-900 p-4 rounded-t-xl border-b border-gray-700 flex justify-between items-center shrink-0">
+                <h3 class="text-white font-bold flex items-center gap-2 text-sm uppercase tracking-wider">
+                    <i class="ph ph-code-block text-indigo-500 text-lg"></i> NC-Code Viewer
+                </h3>
+                <button onclick="closeNcModal()" class="text-gray-500 hover:text-white transition-colors"><i class="ph ph-x text-2xl"></i></button>
+            </div>
+            <div class="flex-1 relative bg-[#1e1e1e]">
+                <textarea id="nc-content" class="w-full h-full bg-transparent text-gray-300 font-mono text-sm p-4 resize-none focus:outline-none leading-relaxed" spellcheck="false" placeholder="Lade eine Datei oder füge deinen G-Code hier ein..."></textarea>
+            </div>
+            <div class="p-4 border-t border-gray-700 bg-gray-900 rounded-b-xl flex justify-between items-center shrink-0">
+                <div class="text-xs text-gray-500 flex items-center gap-2">
+                    <i class="ph ph-info"></i>
+                    <span>Analysiert T-Nummern und Kommentare</span>
+                </div>
+                <div class="flex gap-3">
+                    <label class="px-4 py-2.5 rounded bg-gray-700 hover:bg-gray-600 text-xs text-white cursor-pointer transition-colors font-bold flex items-center gap-2">
+                        <i class="ph ph-folder-open text-lg"></i> Datei laden...
+                        <input type="file" class="hidden" accept=".nc,.tap,.gcode,.txt,.mpf,.h" onchange="handleNCFile(this)">
+                    </label>
+                    <button onclick="parseCurrentNC()" class="px-4 py-2.5 rounded bg-indigo-600 hover:bg-indigo-500 text-xs text-white font-bold transition-colors flex items-center gap-2 shadow-lg shadow-indigo-500/20">
+                        <i class="ph ph-magic-wand text-lg"></i> Werkzeuge suchen & Importieren
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Tool Modal (Existing) -->
+    <div id="tool-modal" class="fixed inset-0 z-50 hidden modal-overlay flex items-center justify-center p-4">
+        <div class="bg-gray-800 w-full max-w-md rounded-xl shadow-2xl border border-gray-600 transform scale-100 transition-transform">
+            <div class="bg-gray-900 p-4 rounded-t-xl border-b border-gray-700 flex justify-between items-center">
+                <h3 class="text-white font-bold flex items-center gap-2"><i class="ph ph-pencil-simple text-orange-500"></i> Werkzeug T<span id="modal-title-t">1</span></h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-white"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div><label class="input-label">Bezeichnung</label><input type="text" id="tool-name" class="input-field" placeholder="z.B. Schruppfräser"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="input-label">Durchmesser (mm)</label><input type="number" id="tool-d" class="input-field"></div>
+                    <div><label class="input-label">Länge (mm)</label><input type="number" id="tool-l" class="input-field"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="input-label">Zähne (Z)</label><input type="number" id="tool-z" class="input-field"></div>
+                    <div>
+                        <label class="input-label">Typ</label>
+                        <select id="tool-type" class="input-field bg-gray-900">
+                            <option value="VHM">VHM</option>
+                            <option value="HM">HM</option>
+                            <option value="HSS">HSS</option>
+                            <option value="MK">Messkopf</option>
+                            <option value="Bohrer">Bohrer</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between border border-gray-700 p-3 rounded bg-gray-900/50">
+                    <span class="text-sm text-gray-300">Beschichtet</span><input type="checkbox" id="tool-coated" class="w-5 h-5 accent-orange-500">
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-700 bg-gray-900/50 rounded-b-xl flex justify-between">
+                <button onclick="clearTool()" class="text-red-400 text-xs hover:text-red-300 px-3 py-2">Löschen</button>
+                <div class="flex gap-2">
+                    <button onclick="closeModal()" class="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 text-xs text-white">Abbruch</button>
+                    <button onclick="saveTool()" class="px-4 py-2 rounded bg-orange-600 hover:bg-orange-500 text-xs text-white font-bold">Speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Config ---
+        const materials = {
+            st37: { vc: 220, fz: 0.06, info: "Baustahl St37: Weich und schmierend. Hohe Aufbauschneiden-Gefahr. Kühlung empfohlen." },
+            st52: { vc: 180, fz: 0.05, info: "Baustahl St52: Standardmaterial. Gut zerspanbar. Bei VHM trocken oder mit Luft kühlen (Thermoschock vermeiden)." },
+            werkzeug: { vc: 120, fz: 0.04, info: "Werkzeugstahl: Hart und abrasiv. Beschichtete Werkzeuge verwenden. Schnittdruck beachten." },
+            va: { vc: 80, fz: 0.03, info: "Edelstahl (VA): Neigt zur Kaltverfestigung. Nicht auf der Stelle reiben! Immer im Schnitt bleiben. Kühlung!" },
+            alu: { vc: 400, fz: 0.1, info: "Aluminium: Sehr weich, klebt extrem. Scharfe, polierte Schneiden verwenden. Viel Emulsion oder MMS!" },
+            messing: { vc: 200, fz: 0.06, info: "Messing: Kurzbrechende Späne. Neigt zum Einhaken bei Bohrern (Anschliff beachten)." },
+            kunststoff: { vc: 300, fz: 0.1, info: "Kunststoff: Schmilzt schnell. Sehr scharfe Schneiden (Einschneider). Druckluftkühlung." },
+            holz: { vc: 800, fz: 0.15, info: "Holz: Extrem hohe Drehzahlen nötig. Absaugung wichtig (Staub)." }
+        };
+
+        let activeToolSlot = null;
+        let toolMagazine = JSON.parse(localStorage.getItem('cnc_tools_pro') || 'null');
+        if (!toolMagazine) toolMagazine = Array(36).fill(null);
+
+        // State
+        let currentOperation = 'milling'; // milling, drilling
+        let currentToolType = 'vhm'; // vhm, wp, hss
+        let currentMaterial = 'st52'; // default
+
+        // --- Init ---
+        // Restore calculation
+        setMat('st52');
+        renderGrid();
+
+        // --- Logic: Set Operation ---
+        function setOperation(op) {
+            currentOperation = op;
+            // UI Update
+            document.querySelectorAll('.op-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-op-' + op).classList.add('active');
+
+            // Toggle Z-Input Visibility & Label
+            const zContainer = document.getElementById('z-container');
+            const fzLabel = document.getElementById('lbl-fz');
+            const formulaDisplay = document.getElementById('formula-display');
+
+            if (op === 'drilling') {
+                // Disable/Hide Z
+                zContainer.style.opacity = '0.3';
+                zContainer.style.pointerEvents = 'none';
+                fzLabel.innerText = "Vorschub / U ($f_n$)";
+                formulaDisplay.innerHTML = `<span class="text-orange-400 font-bold">$n = \\frac{v_c \\cdot 1000}{\\pi \\cdot d}$</span> &nbsp;|&nbsp; <span class="text-blue-400 font-bold">$v_f = n \\cdot f_n$</span>`;
+            } else {
+                // Enable Z
+                zContainer.style.opacity = '1';
+                zContainer.style.pointerEvents = 'auto';
+                fzLabel.innerText = "Zahnvorschub ($f_z$)";
+                formulaDisplay.innerHTML = `<span class="text-orange-400 font-bold">$n = \\frac{v_c \\cdot 1000}{\\pi \\cdot d}$</span> &nbsp;|&nbsp; <span class="text-blue-400 font-bold">$v_f = n \\cdot z \\cdot f_z$</span>`;
+            }
+
+            // Recalculate with new logic
+            setMat(currentMaterial);
+        }
+
+        // --- Logic: Set Tool Type ---
+        function setToolType(type) {
+            currentToolType = type;
+            // UI Update
+            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + type).classList.add('active');
+
+            // Re-apply material to trigger recalculation with new factors
+            setMat(currentMaterial);
+            updateFactorDisplay();
+        }
+
+        function updateFactorDisplay() {
+            let text = "VHM Basis";
+            if (currentToolType === 'hss') text = "Vc -65%, f -20%";
+            if (currentToolType === 'wp') text = "Vc -10%, f +50%";
+            document.getElementById('type-factor-display').innerText = text;
+        }
+
+        // --- Smart Calculation ---
+        function getToolData() {
+            return {
+                d: parseFloat(document.getElementById('inp-d').value) || 10,
+                z: parseFloat(document.getElementById('inp-z').value) || 4
+            };
+        }
+
+        function calcFromVc() {
+            const { d } = getToolData();
+            const vc = parseFloat(document.getElementById('inp-vc').value) || 0;
+            if (d > 0) {
+                const n = (vc * 1000) / (Math.PI * d);
+                document.getElementById('inp-n').value = Math.round(n);
+                calcFromN(true);
+            }
+            updateQ();
+        }
+
+        function calcFromN(skipVcUpdate = false) {
+            const { d, z } = getToolData();
+            const n = parseFloat(document.getElementById('inp-n').value) || 0;
+            if (!skipVcUpdate && d > 0) {
+                const vc = (Math.PI * d * n) / 1000;
+                document.getElementById('inp-vc').value = Math.round(vc);
+            }
+            const f_val = parseFloat(document.getElementById('inp-fz').value) || 0; // fz or fn
+
+            let vf = 0;
+            if (currentOperation === 'drilling') {
+                vf = n * f_val; // vf = n * fn
+            } else {
+                vf = n * z * f_val; // vf = n * z * fz
+            }
+
+            document.getElementById('inp-vf').value = Math.round(vf);
+            updateQ();
+        }
+
+        function calcFromFz() {
+            // Input changed (either fz or fn) -> calculate vf
+            const { z } = getToolData();
+            const n = parseFloat(document.getElementById('inp-n').value) || 0;
+            const f_val = parseFloat(document.getElementById('inp-fz').value) || 0;
+
+            let vf = 0;
+            if (currentOperation === 'drilling') {
+                vf = n * f_val;
+            } else {
+                vf = n * z * f_val;
+            }
+
+            document.getElementById('inp-vf').value = Math.round(vf);
+            updateQ();
+        }
+
+        function calcFromVf() {
+            const { z } = getToolData();
+            const n = parseFloat(document.getElementById('inp-n').value) || 0;
+            const vf = parseFloat(document.getElementById('inp-vf').value) || 0;
+
+            if (n > 0) {
+                let f_val = 0;
+                if (currentOperation === 'drilling') {
+                    f_val = vf / n; // fn = vf / n
+                } else {
+                    if (z > 0) f_val = vf / (n * z); // fz = vf / (n * z)
+                }
+                document.getElementById('inp-fz').value = f_val.toFixed(4);
+            }
+            updateQ();
+        }
+
+        function calcFromTool() {
+            calcFromVc(); // Recalc n from vc & D
+            calcFromFz(); // Recalc vf from n & f
+        }
+
+        function updateQ() {
+            const { d } = getToolData();
+            const vf = parseFloat(document.getElementById('inp-vf').value) || 0;
+            const vol = (d * (d * 0.5) * vf) / 1000;
+            document.getElementById('res-q').innerText = Math.round(vol) + " cm³/min";
+        }
+
+        function setMat(key) {
+            currentMaterial = key;
+            const mat = materials[key];
+
+            // Highlight Button
+            document.querySelectorAll('.mat-btn').forEach(b => b.classList.remove('active'));
+            const btn = document.getElementById('mat-' + key);
+            if (btn) btn.classList.add('active');
+
+            // Apply Factors
+            let vcFactor = 1.0;
+            let fzFactor = 1.0; // Base factor for material
+
+            // 1. Tool Type Factor
+            if (currentToolType === 'hss') {
+                vcFactor *= 0.35;
+                fzFactor *= 0.8;
+            } else if (currentToolType === 'wp') {
+                vcFactor *= 0.9;
+                fzFactor *= 1.5;
+            }
+
+            // 2. Operation Factor (Drilling is slower, feed works differently)
+            if (currentOperation === 'drilling') {
+                vcFactor *= 0.7; // Drilling roughly 30% slower than milling for same tool/mat
+                // Feed logic change: Drilling feed is related to Diameter ~ D/60
+            }
+
+            // Set Vc
+            document.getElementById('inp-vc').value = Math.round(mat.vc * vcFactor);
+
+            // Set Feed (Complex logic)
+            const { d } = getToolData();
+            let finalFeed = 0;
+
+            if (currentOperation === 'drilling') {
+                // Rule of thumb for Drilling Feed: D / 50 to D / 100 depending on material
+                // We base it on diameter directly
+                let baseFn = d / 60;
+                if (key === 'alu') baseFn = d / 40;
+                if (key === 'va') baseFn = d / 80;
+
+                // Adjust for tool type (HSS vs VHM)
+                if (currentToolType === 'hss') baseFn *= 0.8;
+
+                finalFeed = baseFn;
+            } else {
+                // Milling Logic (Base fz scaled slightly by Dia)
+                let diaFactor = d / 10;
+                if (diaFactor < 0.5) diaFactor = 0.5;
+                if (diaFactor > 1.5) diaFactor = 1.5;
+                finalFeed = mat.fz * diaFactor * fzFactor;
+            }
+
+            document.getElementById('inp-fz').value = finalFeed.toFixed(3);
+
+            // Update Info Bar text
+            const infoBox = document.getElementById('material-hint');
+            const infoText = document.getElementById('hint-text');
+
+            let extraHint = "";
+            if (currentToolType === 'hss') extraHint += " (HSS kühlen!)";
+            if (currentOperation === 'drilling') extraHint += " (Bohren: Späne brechen/entleeren)";
+
+            infoText.innerText = mat.info + extraHint;
+
+            infoBox.classList.remove('animate-[fadeIn_0.5s_ease]');
+            void infoBox.offsetWidth; // trigger reflow
+            infoBox.classList.add('animate-[fadeIn_0.5s_ease]');
+
+            calcFromVc();
+            calcFromN(); // Trigger calc
+        }
+
+        // --- HELP MODAL LOGIC ---
+        function openHelpModal() { document.getElementById('help-modal').classList.remove('hidden'); }
+        function closeHelpModal() { document.getElementById('help-modal').classList.add('hidden'); }
+
+        function switchHelpTab(tabId) {
+            // Update Tabs
+            document.querySelectorAll('.help-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            // Update Content
+            document.querySelectorAll('.help-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('content-' + tabId).classList.add('active');
+        }
+
+        // --- NC Editor & Parsing ---
+        function openNcModal() { document.getElementById('nc-modal').classList.remove('hidden'); }
+        function closeNcModal() { document.getElementById('nc-modal').classList.add('hidden'); }
+        function handleNCFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) { document.getElementById('nc-content').value = e.target.result; };
+            reader.readAsText(file);
+            input.value = '';
+        }
+        function parseCurrentNC() {
+            const gcode = document.getElementById('nc-content').value;
+            if (!gcode) { alert("Editor ist leer!"); return; }
+            const lines = gcode.split('\n');
+            let toolsFound = 0;
+            lines.forEach(line => {
+                const toolMatch = line.match(/T\s*(\d+)/i);
+                if (toolMatch) {
+                    const tNum = parseInt(toolMatch[1]);
+                    if (tNum > 0 && tNum <= 36) {
+                        const slotIndex = tNum - 1;
+                        let diameter = 0;
+                        let teeth = 4;
+                        const diaMatch = line.match(/(?:D|Ø|DIA)\s*=?\s*(\d+(\.\d+)?)/i);
+                        if (diaMatch) diameter = parseFloat(diaMatch[1]);
+                        const zMatch = line.match(/Z\s*=?\s*(\d+)/i);
+                        if (zMatch) teeth = parseInt(zMatch[1]);
+                        let name = `Import T${tNum}`;
+                        const commentMatch = line.match(/\((.*?)\)/);
+                        if (commentMatch) {
+                            let rawName = commentMatch[1].trim();
+                            rawName = rawName.replace(/MSG|Tool|Select/gi, "").trim();
+                            if (rawName.length > 0) name = rawName;
+                        }
+                        if (diameter > 0 || !toolMagazine[slotIndex]) {
+                            toolMagazine[slotIndex] = {
+                                name: name, d: diameter || 10, l: 0, z: teeth, type: diameter < 3 ? 'Bohrer' : 'VHM', coated: true
+                            };
+                            toolsFound++;
+                        }
+                    }
+                }
+            });
+            if (toolsFound > 0) {
+                localStorage.setItem('cnc_tools_pro', JSON.stringify(toolMagazine));
+                renderGrid();
+                alert(`${toolsFound} Werkzeug(e) gefunden und importiert!`);
+                closeNcModal();
+            } else {
+                alert("Keine Werkzeug-Infos (T...) im Code gefunden.");
+            }
+        }
+
+        // --- Grid & Tool Management ---
+        function renderGrid() {
+            const grid = document.getElementById('tool-grid');
+            grid.innerHTML = '';
+            toolMagazine.forEach((tool, index) => {
+                const div = document.createElement('div');
+                const slotNum = index + 1;
+                if (tool) {
+                    const isActive = activeToolSlot === index;
+                    div.className = `tool-slot ${isActive ? 'active' : ''}`;
+                    const lengthInfo = tool.l ? `L${tool.l}` : '';
+                    div.innerHTML = `
+                                <div class="text-[10px] font-bold ${isActive ? 'text-white' : 'text-orange-500'} mb-1">T${slotNum}</div>
+                                <div class="text-xs text-white font-bold truncate" title="${tool.name}">${tool.name}</div>
+                                <div class="text-[10px] text-gray-400">Ø${tool.d} | Z${tool.z} ${lengthInfo ? '| ' + lengthInfo : ''}</div>
+                                <div class="text-[9px] text-gray-500 mt-1">${tool.type} ${tool.coated ? 'Besch.' : ''}</div>
+                            `;
+                    div.onclick = () => loadTool(index);
+                    div.oncontextmenu = (e) => { e.preventDefault(); editTool(index); };
+                } else {
+                    div.className = `tool-slot empty hover:bg-gray-800 hover:border-gray-500 hover:opacity-100`;
+                    div.innerHTML = `<div class="text-[10px] font-bold text-gray-600 mb-1">T${slotNum}</div><div class="text-2xl text-gray-700"><i class="ph ph-plus"></i></div>`;
+                    div.onclick = () => editTool(index);
+                }
+                grid.appendChild(div);
+            });
+        }
+        function editTool(index) {
+            activeToolSlot = index;
+            const tool = toolMagazine[index];
+            document.getElementById('modal-title-t').innerText = index + 1;
+            if (tool) {
+                document.getElementById('tool-name').value = tool.name;
+                document.getElementById('tool-d').value = tool.d;
+                document.getElementById('tool-l').value = tool.l || '';
+                document.getElementById('tool-z').value = tool.z;
+                document.getElementById('tool-type').value = tool.type || 'VHM';
+                document.getElementById('tool-coated').checked = tool.coated || false;
+            } else {
+                document.getElementById('tool-name').value = '';
+                document.getElementById('tool-d').value = '';
+                document.getElementById('tool-l').value = '';
+                document.getElementById('tool-z').value = '4';
+                document.getElementById('tool-type').value = 'VHM';
+                document.getElementById('tool-coated').checked = true;
+            }
+            document.getElementById('tool-modal').classList.remove('hidden');
+        }
+        function saveTool() {
+            if (activeToolSlot === null) return;
+            const name = document.getElementById('tool-name').value || `Werkzeug T${activeToolSlot + 1}`;
+            const d = parseFloat(document.getElementById('tool-d').value) || 0;
+            const l = parseFloat(document.getElementById('tool-l').value) || 0;
+            const z = parseFloat(document.getElementById('tool-z').value) || 0;
+            const type = document.getElementById('tool-type').value;
+            const coated = document.getElementById('tool-coated').checked;
+            if (d === 0) { alert("Durchmesser fehlt!"); return; }
+            toolMagazine[activeToolSlot] = { name, d, l, z, type, coated };
+            localStorage.setItem('cnc_tools_pro', JSON.stringify(toolMagazine));
+            closeModal();
+            renderGrid();
+            loadTool(activeToolSlot);
+        }
+        function clearTool() {
+            if (activeToolSlot === null) return;
+            if (confirm("Löschen?")) {
+                toolMagazine[activeToolSlot] = null;
+                localStorage.setItem('cnc_tools_pro', JSON.stringify(toolMagazine));
+                closeModal();
+                renderGrid();
+            }
+        }
+        function loadTool(index) {
+            const tool = toolMagazine[index];
+            if (!tool) return;
+            document.getElementById('inp-d').value = tool.d;
+            document.getElementById('inp-z').value = tool.z;
+            activeToolSlot = index;
+            renderGrid();
+            calcFromTool();
+        }
+        function closeModal() { document.getElementById('tool-modal').classList.add('hidden'); }
+    </script>
+</body>
+</html>
