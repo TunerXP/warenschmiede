@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio to Video Converter (Blob Patcher)</title>
+    <title>Audio to Video Converter (Infinity)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- FFmpeg Wrapper v0.9.8 -->
-    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.9.8/dist/ffmpeg.min.js"></script>
+    <!-- FFmpeg Wrapper (v0.11.6) -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
 
     <style>
         body {
@@ -41,11 +41,11 @@
         
         <!-- Header -->
         <div class="text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-600/20 text-red-500 mb-4">
-                <i class="ph ph-first-aid-kit text-4xl"></i>
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-600/20 text-indigo-500 mb-4">
+                <i class="ph ph-infinity text-4xl"></i>
             </div>
             <h1 class="text-2xl font-bold text-white">Audio zu Video</h1>
-            <p class="text-slate-400 text-sm mt-2">Blob Patcher Edition (Ultimate Fix)</p>
+            <p class="text-slate-400 text-sm mt-2">Infinity Edition (Manual ST-Loader)</p>
         </div>
 
         <!-- 1. Upload Audio -->
@@ -80,24 +80,22 @@
             
             <!-- Download Status -->
             <div id="dl-container" class="hidden mb-4 space-y-3 p-4 bg-slate-900 rounded-lg border border-slate-600">
-                <!-- JS Status -->
                 <div>
                     <div class="flex justify-between text-xs text-slate-400 mb-1">
-                        <span>Lade Steuer-Datei (JS)...</span>
+                        <span>Lade Engine Core (JS)...</span>
                         <span id="js-percent">0%</span>
                     </div>
                     <div class="w-full bg-slate-700 rounded-full h-1.5">
                         <div id="js-bar" class="bg-yellow-500 h-1.5 rounded-full transition-all duration-100" style="width: 0%"></div>
                     </div>
                 </div>
-                <!-- WASM Status -->
                 <div>
                     <div class="flex justify-between text-xs text-slate-400 mb-1">
-                        <span>Lade Maschinen-Code (25 MB)...</span>
+                        <span>Lade Engine Binary (WASM)...</span>
                         <span id="wasm-percent">0%</span>
                     </div>
                     <div class="w-full bg-slate-700 rounded-full h-1.5">
-                        <div id="wasm-bar" class="bg-red-500 h-1.5 rounded-full transition-all duration-100" style="width: 0%"></div>
+                        <div id="wasm-bar" class="bg-indigo-500 h-1.5 rounded-full transition-all duration-100" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
@@ -128,7 +126,7 @@
     <!-- Live Log Area -->
     <div class="w-full max-w-2xl mt-4">
         <p class="text-xs text-slate-500 uppercase font-bold mb-2">System Protokoll:</p>
-        <div id="log-area" class="w-full h-48 bg-black rounded-lg border border-slate-700 p-3 text-[10px] font-mono text-green-400 overflow-y-auto whitespace-pre-wrap">Warte auf Eingabe...</div>
+        <div id="log-area" class="w-full h-48 bg-black rounded-lg border border-slate-700 p-3 text-[10px] font-mono text-indigo-400 overflow-y-auto whitespace-pre-wrap">Bereit für Start.</div>
     </div>
 
     <script>
@@ -149,9 +147,9 @@
         let imageFile = null;
         let ffmpeg = null;
 
-        // URLs (jsDelivr ist meist am schnellsten)
-        const URL_JS = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.8.5/dist/ffmpeg-core.js';
-        const URL_WASM = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.8.5/dist/ffmpeg-core.wasm';
+        // URLs for v0.11.6 Single Threaded (WICHTIG: core-st!)
+        const URL_JS = 'https://unpkg.com/@ffmpeg/core-st@0.11.6/dist/ffmpeg-core.js';
+        const URL_WASM = 'https://unpkg.com/@ffmpeg/core-st@0.11.6/dist/ffmpeg-core.wasm';
 
         function log(msg) {
             const time = new Date().toLocaleTimeString();
@@ -187,11 +185,12 @@
             }
         }
 
-        // --- Downloader ---
+        // --- Robust Downloader ---
         async function fetchWithProgress(url, barId, percentId) {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP ${response.status} beim Laden von ${url}`);
             
+            // Handle gzip/compression where content-length might be missing or smaller than body
             const contentLength = response.headers.get('content-length');
             const total = contentLength ? parseInt(contentLength, 10) : 0;
             let loaded = 0;
@@ -206,11 +205,19 @@
                 loaded += value.length;
                 
                 if (total) {
-                    const pct = Math.round((loaded / total) * 100);
+                    // Cap at 100% to avoid visual glitches if size is mismatched
+                    const pct = Math.min(100, Math.round((loaded / total) * 100));
                     document.getElementById(barId).style.width = pct + "%";
                     document.getElementById(percentId).innerText = pct + "%";
+                } else {
+                    // Indeterminate state if no size header
+                    document.getElementById(percentId).innerText = "Lade...";
                 }
             }
+
+            // Force 100% visual completion
+            document.getElementById(barId).style.width = "100%";
+            document.getElementById(percentId).innerText = "100%";
 
             return new Blob(chunks);
         }
@@ -220,44 +227,62 @@
             convertBtn.disabled = true;
             convertBtn.classList.remove('animate-pulse');
             dlContainer.classList.remove('hidden');
+            progressContainer.classList.add('hidden');
+            downloadLink.classList.add('hidden');
             
             try {
                 const { createFFmpeg, fetchFile } = FFmpeg;
 
                 if (!ffmpeg) {
-                    log("--- Start Engine Download ---");
+                    log("--- Start Engine Download (Manual) ---");
                     
-                    // 1. Download WASM
-                    log("Lade WASM Datei...");
+                    // 1. Download WASM (Single Threaded)
+                    log(`Lade WASM: ${URL_WASM}`);
                     const wasmBlob = await fetchWithProgress(URL_WASM, 'wasm-bar', 'wasm-percent');
                     const wasmUrl = URL.createObjectURL(wasmBlob);
-                    log("WASM geladen und Blob erstellt.");
-
-                    // 2. Download JS
-                    log("Lade JS Datei...");
+                    
+                    // 2. Download JS (Single Threaded)
+                    log(`Lade JS: ${URL_JS}`);
                     const jsBlob = await fetchWithProgress(URL_JS, 'js-bar', 'js-percent');
-                    let jsText = await jsBlob.text();
-                    log("JS geladen.");
+                    
+                    // Create Blob URL for JS
+                    // Note: modern createFFmpeg allows blob URLs for corePath
+                    const jsUrl = URL.createObjectURL(jsBlob);
 
-                    // 3. PATCHING THE CODE
-                    // Wir suchen im JS-Code nach dem Pfad zur .wasm Datei und ersetzen ihn hart
-                    // mit unserer lokalen Blob-URL. Das zwingt ihn, die lokale Datei zu nutzen.
-                    // Übliche Variable in emscripten: "ffmpeg-core.wasm"
-                    log("Patche Pfade im JS-Code...");
-                    // Dieser Replace ist etwas generisch, aber sollte für v0.8.5 funktionieren
+                    // 3. Init FFmpeg
+                    log("Initialisiere FFmpeg mit lokalen Blobs...");
+                    
+                    ffmpeg = createFFmpeg({ 
+                        log: true,
+                        corePath: jsUrl, // Load the JS we just downloaded
+                        // We provide a worker handler to intercept requests if needed, 
+                        // but usually v0.11.6 finds the wasm if we configure it right.
+                        // However, with Blob URLs, relative paths break.
+                        // WE NEED TO TELL IT WHERE THE WASM IS.
+                        // Unfortunately createFFmpeg v0.11.x config is tricky with blobs.
+                        // WORKAROUND: We assume standard loading first. 
+                        // If we use the Blob approach for corePath, we must ensure it finds the WASM.
+                        // We can't easily patch the WASM path into the JS blob without parsing it.
+                        // SO: We use the direct URL for corePath, but rely on browser cache since we just fetched it.
+                        // Wait... we can patch it!
+                    });
+                    
+                    // PATCHING STRATEGY:
+                    // Let's modify the JS blob content to point to our WASM blob
+                    let jsText = await new Response(jsBlob).text();
+                    // The core script usually looks for "ffmpeg-core.wasm"
+                    // We replace that string with our blob URL
+                    // This is specific to v0.11.x structure
                     if(jsText.includes("ffmpeg-core.wasm")) {
-                        jsText = jsText.split("ffmpeg-core.wasm").join(wasmUrl);
-                        log("Pfad erfolgreich gepatcht!");
-                    } else {
-                        log("WARNUNG: Konnte Pfad im Code nicht finden. Versuche es trotzdem...");
+                        log("Patche WASM Pfad im Code...");
+                        jsText = jsText.replace(/ffmpeg-core\.wasm/g, wasmUrl);
                     }
-
+                    
                     const patchedJsBlob = new Blob([jsText], { type: 'application/javascript' });
                     const patchedJsUrl = URL.createObjectURL(patchedJsBlob);
-
-                    // 4. Init FFmpeg mit gepatchtem Core
-                    log("Initialisiere FFmpeg mit gepatchtem Core...");
-                    ffmpeg = createFFmpeg({ 
+                    
+                    // Re-create instance with patched JS
+                    ffmpeg = createFFmpeg({
                         log: true,
                         corePath: patchedJsUrl,
                         logger: ({ message }) => {
@@ -271,10 +296,10 @@
                             else statusText.textContent = "Verarbeite...";
                         }
                     });
-                    
+
                     await ffmpeg.load();
                     dlContainer.classList.add('hidden');
-                    log("Engine läuft! Starte Encoding...");
+                    log("Engine läuft! (Single Threaded)");
                 }
 
                 progressContainer.classList.remove('hidden');
@@ -283,14 +308,15 @@
                 ffmpeg.FS('writeFile', 'input.mp3', await fetchFile(audioFile));
                 ffmpeg.FS('writeFile', 'input.jpg', await fetchFile(imageFile));
 
-                log("Encoding Prozess läuft...");
+                log("Encoding Prozess läuft... (Single Core Mode)");
                 statusText.textContent = "Encoding läuft...";
 
+                // Optimized command
                 await ffmpeg.run(
                     '-loop', '1',
                     '-i', 'input.jpg',
                     '-i', 'input.mp3',
-                    '-c:a', 'copy', 
+                    '-c:a', 'copy', // Copy audio stream directly
                     '-c:v', 'libx264', 
                     '-tune', 'stillimage', 
                     '-pix_fmt', 'yuv420p', 
