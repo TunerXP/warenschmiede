@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Internes GIF-Studio zum Erstellen und Exportieren von animierten GIFs direkt im Browser.">
+    <meta name="robots" content="noindex,follow">
+    <link rel="canonical" href="https://www.warenschmiede.com/tools/buero/doku-light/gif-studio.html">
     <title>Marco's GIF Studio</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -96,7 +99,7 @@
                             <span id="width-val" class="text-sm font-mono text-violet-400">500px</span>
                         </div>
                         <input type="range" id="width-slider" min="200" max="1200" step="50" value="500" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-violet-500">
-                        <p class="text-xs text-slate-500 mt-1">Kleiner lädt schneller auf der Homepage.</p>
+                        <p class="text-xs text-slate-500 mt-1">Kleiner lÃ¤dt schneller auf der Homepage.</p>
                     </div>
 
                     <!-- Generate Button -->
@@ -122,9 +125,9 @@
                     <div class="text-center z-0 pointer-events-none">
                         <div class="flex items-center justify-center gap-3">
                             <i class="ph ph-images text-3xl text-violet-400 group-hover:scale-110 transition-transform"></i>
-                            <span class="text-lg text-slate-300 font-medium">Bilder hinzufügen</span>
+                            <span class="text-lg text-slate-300 font-medium">Bilder hinzufÃ¼gen</span>
                         </div>
-                        <p class="text-sm text-slate-500 mt-1">Reihenfolge kannst du unten anpassen (Löschen & Neu laden)</p>
+                        <p class="text-sm text-slate-500 mt-1">Reihenfolge kannst du unten anpassen (LÃ¶schen & Neu laden)</p>
                     </div>
                 </div>
 
@@ -132,7 +135,7 @@
                 <div class="flex justify-between items-center mb-3">
                     <h3 class="text-slate-400 text-sm font-semibold uppercase tracking-wider">Frames (Bilder) <span id="frame-count" class="bg-slate-700 text-white px-2 py-0.5 rounded-full text-xs ml-2">0</span></h3>
                     <button onclick="clearFrames()" class="text-xs text-red-400 hover:text-red-300 flex items-center gap-1">
-                        <i class="ph ph-trash"></i> Alle löschen
+                        <i class="ph ph-trash"></i> Alle lÃ¶schen
                     </button>
                 </div>
 
@@ -184,7 +187,7 @@
                 gifWorkerUrl = URL.createObjectURL(blob);
             } catch (e) {
                 console.error("Worker konnte nicht geladen werden", e);
-                alert("Fehler: Konnte GIF-Modul nicht laden. Bitte Internetverbindung prüfen.");
+                alert("Fehler: Konnte GIF-Modul nicht laden. Bitte Internetverbindung prÃ¼fen.");
             }
         }
         setupWorker();
@@ -294,7 +297,7 @@
 
         function createGIF() {
             if (!gifWorkerUrl) {
-                alert("GIF Modul lädt noch... bitte kurz warten.");
+                alert("GIF Modul lÃ¤dt noch... bitte kurz warten.");
                 return;
             }
             if (frames.length < 2) return;

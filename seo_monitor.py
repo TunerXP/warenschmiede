@@ -14,12 +14,13 @@ from urllib.parse import urlparse
 BASE_URL = "https://www.warenschmiede.com"
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 EXCLUDED_SITEMAP_PATHS = {
-    "druck/angebot.html",
-    "druck/ergebnis.html",
-    "druck/rechnung.html",
-    "druck/selftest.html",
     "tools/buero/doku-light.html",
 }
+
+EXCLUDED_SITEMAP_PREFIXES = (
+    "druck/",
+    "tools/",
+)
 
 
 class SeoParser(HTMLParser):
@@ -155,6 +156,8 @@ def generate_sitemap(html_files: Iterable[str]) -> None:
 
 def should_exclude_from_sitemap(path: str, robots_directives: set[str]) -> bool:
     if path in EXCLUDED_SITEMAP_PATHS:
+        return True
+    if path.startswith(EXCLUDED_SITEMAP_PREFIXES):
         return True
     normalized_directives = {directive.lower() for directive in robots_directives}
     if "noindex" in normalized_directives:
