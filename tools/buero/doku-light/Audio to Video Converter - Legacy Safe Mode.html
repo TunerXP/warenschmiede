@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio to Video Converter (Retro Fit)</title>
+    <title>Audio to Video Converter (jsDelivr Retro)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- FFmpeg Wrapper v0.9.8 (Die letzte "einfache" Version) -->
-    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.9.8/dist/ffmpeg.min.js"></script>
+    <!-- FFmpeg Wrapper v0.9.8 via jsDelivr (Schneller & Stabiler) -->
+    <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.9.8/dist/ffmpeg.min.js"></script>
 
     <style>
         body {
@@ -42,11 +42,11 @@
         
         <!-- Header -->
         <div class="text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-600/20 text-orange-500 mb-4">
-                <i class="ph ph-rewind text-4xl"></i>
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-cyan-600/20 text-cyan-500 mb-4">
+                <i class="ph ph-lightning text-4xl"></i>
             </div>
             <h1 class="text-2xl font-bold text-white">Audio zu Video</h1>
-            <p class="text-slate-400 text-sm mt-2">Retro Fit Edition (v0.9.8)</p>
+            <p class="text-slate-400 text-sm mt-2">jsDelivr Retro Edition (v0.9.8)</p>
         </div>
 
         <!-- 1. Upload Audio -->
@@ -106,7 +106,7 @@
     <!-- Live Log Area -->
     <div class="w-full max-w-2xl mt-4">
         <p class="text-xs text-slate-500 uppercase font-bold mb-2">System Protokoll:</p>
-        <div id="log-area" class="w-full h-40 bg-black rounded-lg border border-slate-700 p-3 text-[10px] font-mono text-orange-400 overflow-y-auto whitespace-pre-wrap">Bereit (v0.9.8).</div>
+        <div id="log-area" class="w-full h-40 bg-black rounded-lg border border-slate-700 p-3 text-[10px] font-mono text-cyan-400 overflow-y-auto whitespace-pre-wrap">Bereit (v0.9.8 jsDelivr).</div>
     </div>
 
     <script>
@@ -161,7 +161,7 @@
             }
         }
 
-        // --- Conversion Logic (v0.9.8) ---
+        // --- Conversion Logic (v0.9.8 via jsDelivr) ---
         async function startConversion() {
             if (!audioFile || !imageFile) return;
 
@@ -174,8 +174,8 @@
             try {
                 const { createFFmpeg, fetchFile } = FFmpeg;
                 
-                // Explizit 0.9.8 Core laden
-                const coreURL = 'https://unpkg.com/@ffmpeg/core@0.9.8/dist/ffmpeg-core.js';
+                // Explizit jsDelivr URL für Core 0.9.8
+                const coreURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.9.8/dist/ffmpeg-core.js';
                 
                 if (!ffmpeg) {
                     log(`Lade FFmpeg v0.9.8...`);
@@ -199,7 +199,7 @@
                     });
                     
                     await ffmpeg.load();
-                    log("Engine geladen! (0.9.8)");
+                    log("Engine geladen! (0.9.8 via jsDelivr)");
                 }
 
                 log("Lade Dateien...");
@@ -241,7 +241,7 @@
                 console.error(err);
                 log(`FEHLER: ${err.message}`);
                 convertBtn.innerHTML = "Fehler";
-                alert("Ein Fehler ist aufgetreten. Bitte lade die Seite neu (F5).");
+                alert("Ein Fehler ist aufgetreten: " + err.message);
             }
         }
     </script>
