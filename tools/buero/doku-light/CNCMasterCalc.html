@@ -57,9 +57,9 @@
     .cnc-calc .input-field {
       width: 100%;
       border-radius: 0.75rem;
-      padding: 0.6rem 0.75rem;
+      padding: 0.7rem 0.85rem;
       font-size: 0.95rem;
-      line-height: 1.5;
+      line-height: 1.35;
       border: 1px solid transparent;
       transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
     }
@@ -666,20 +666,32 @@
 
     <!-- Edit Tool Modal (Existing) -->
     <div id="tool-modal" class="fixed inset-0 z-50 hidden modal-overlay flex items-center justify-center p-4">
-        <div class="bg-gray-800 w-full max-w-md rounded-xl shadow-2xl border border-gray-600 transform scale-100 transition-transform">
+        <div class="bg-gray-800 w-full max-w-3xl rounded-xl shadow-2xl border border-gray-600 transform scale-100 transition-transform flex flex-col">
             <div class="bg-gray-900 p-4 rounded-t-xl border-b border-gray-700 flex justify-between items-center">
                 <h3 class="text-white font-bold flex items-center gap-2"><i class="ph ph-pencil-simple text-orange-500"></i> Werkzeug T<span id="modal-title-t">1</span></h3>
                 <button onclick="closeModal()" class="text-gray-500 hover:text-white"><i class="ph ph-x text-xl"></i></button>
             </div>
-            <div class="p-6 space-y-4">
-                <div><label class="input-label">Bezeichnung</label><input type="text" id="tool-name" class="input-field" placeholder="z.B. Schruppfräser"></div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="input-label">Durchmesser (mm)</label><input type="number" id="tool-d" class="input-field"></div>
-                    <div><label class="input-label">Länge (mm)</label><input type="number" id="tool-l" class="input-field"></div>
+            <div class="p-6 space-y-6">
+                <div class="space-y-2">
+                    <label class="input-label">Bezeichnung</label>
+                    <input type="text" id="tool-name" class="input-field" placeholder="z.B. Schruppfräser">
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="input-label">Zähne (Z)</label><input type="number" id="tool-z" class="input-field"></div>
-                    <div>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div class="space-y-2">
+                        <label class="input-label">Durchmesser (mm)</label>
+                        <input type="number" id="tool-d" class="input-field">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="input-label">Länge (mm)</label>
+                        <input type="number" id="tool-l" class="input-field">
+                    </div>
+                </div>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div class="space-y-2">
+                        <label class="input-label">Zähne (Z)</label>
+                        <input type="number" id="tool-z" class="input-field">
+                    </div>
+                    <div class="space-y-2">
                         <label class="input-label">Typ</label>
                         <select id="tool-type" class="input-field bg-gray-900">
                             <option value="VHM">VHM</option>
@@ -690,7 +702,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="flex items-center justify-between border border-gray-700 p-3 rounded bg-gray-900/50">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border border-gray-700 p-3 rounded bg-gray-900/50">
                     <span class="text-sm text-gray-300">Beschichtet</span><input type="checkbox" id="tool-coated" class="w-5 h-5 accent-orange-500">
                 </div>
             </div>
