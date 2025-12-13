@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kostenrechner V3.2 – Warenschmiede</title>
-    <meta name="description" content="Interner 3D-Druck-Kostenrechner V3.2. Kompaktes Design mit integrierten Einheiten.">
-    <link rel="canonical" href="https://www.warenschmiede.com/tools/kostenrechner-v2.html">
+    <title>Kostenrechner V5.6 – Warenschmiede</title>
+    <meta name="description" content="Kostenrechner V5.6. Blanko Start, Multi-Page Fix.">
+    <link rel="canonical" href="https://www.warenschmiede.com/tools/kostenrechner-v5.html">
     <meta name="robots" content="index,follow">
 
     <!-- Tailwind CSS -->
@@ -15,15 +15,142 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        :root {
+            --input-bg-idle: #e2e8f0; /* Deutliches Grau (Slate-200) */
+            --input-border-idle: #cbd5e1; /* Slate-300 */
+            --input-text: #1e293b;
+            --unit-text: #64748b;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #1e293b;
+            background-color: #0f172a; /* Slate-900 Background */
+            color: #334155;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* --- THE BOX INPUT SYSTEM --- */
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .control-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            margin-left: 0.25rem;
+        }
+
+        /* Standard Input Box */
+        .input-box {
+            display: flex;
+            align-items: center;
+            background-color: var(--input-bg-idle);
+            border: 1px solid var(--input-border-idle);
+            border-radius: 0.5rem;
+            padding: 0 0.75rem;
+            height: 2.5rem; /* Feste Höhe */
+            transition: all 0.2s ease;
+            cursor: text;
+            flex-wrap: nowrap;
+        }
+
+        .input-box:focus-within {
+            background-color: #ffffff;
+            border-color: var(--ac);
+            box-shadow: 0 0 0 2px var(--ac-light);
+        }
+
+        /* Textarea Box */
+        .textarea-box {
+            display: flex;
+            background-color: var(--input-bg-idle);
+            border: 1px solid var(--input-border-idle);
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            cursor: text;
+            height: auto;
+            padding: 0.5rem 0.75rem;
+            align-items: flex-start;
+        }
+
+        .textarea-box:focus-within {
+            background-color: #ffffff;
+            border-color: var(--ac);
+            box-shadow: 0 0 0 2px var(--ac-light);
+        }
+
+        .input-control {
+            flex: 1;
+            width: 100%;
+            min-width: 0;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-weight: 600;
+            color: var(--input-text);
+            text-align: right;
+            font-size: 0.9rem;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .input-control::-webkit-inner-spin-button, 
+        .input-control::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        .input-control { -moz-appearance: textfield; }
+
+        .input-unit {
+            margin-left: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--unit-text);
+            user-select: none;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .select-control {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-weight: 600;
+            color: var(--input-text);
+            font-size: 0.9rem;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0 center;
+            background-repeat: no-repeat;
+            background-size: 1.2em 1.2em;
+            padding-right: 1.5rem;
+        }
+
+        .textarea-control {
+            width: 100%;
+            background: transparent;
+            border: none;
+            resize: none;
+            outline: none;
+            font-weight: 600;
+            color: var(--input-text);
+            font-size: 0.9rem;
+            line-height: 1.4;
         }
 
         /* A4 Page Styles */
@@ -31,7 +158,7 @@
             width: 210mm;
             height: 296mm;
             background: white;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             margin: 0 auto 40px auto;
             padding: 20mm;
             position: relative;
@@ -47,171 +174,60 @@
         /* BEZAHLT STEMPEL */
         .paid-stamp {
             position: absolute;
-            top: 35%;
+            top: 40%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-12deg);
-            color: #dc2626; /* Red-600 */
+            color: #dc2626;
             border: 6px solid #dc2626;
-            padding: 1rem 2rem;
-            font-size: 4rem;
+            padding: 1rem 3rem;
+            font-size: 5rem;
             font-weight: 900;
             text-transform: uppercase;
-            opacity: 0.25; /* Transparenz wie Stempelfarbe */
+            opacity: 0.25;
             z-index: 50;
             pointer-events: none;
             font-family: 'Courier New', Courier, monospace;
-            letter-spacing: 0.2em;
-            border-radius: 8px;
+            letter-spacing: 0.1em;
+            border-radius: 12px;
             mix-blend-mode: multiply;
+            mask-image: url("data:image/svg+xml;utf8,<svg width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'><filter id='noise'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23noise)' opacity='0.5'/></svg>");
         }
 
-        /* Scrollbar Styling */
-        .custom-scroll::-webkit-scrollbar {
-            width: 8px;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
 
-        .custom-scroll::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .custom-scroll::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-
-        .preview-area::-webkit-scrollbar {
-            width: 12px;
-        }
-
-        .preview-area::-webkit-scrollbar-track {
-            background: var(--bg-preview);
-        }
-
-        .preview-area::-webkit-scrollbar-thumb {
-            background: #94a3b8;
-            border-radius: 6px;
-            border: 3px solid var(--bg-preview);
-        }
-
-        /* Section Cards */
-        .config-card {
-            @apply bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-6;
-        }
-
-        .config-header {
-            @apply bg-slate-100 px-4 py-3 border-b border-slate-200 flex items-center gap-2 font-bold text-slate-700;
-        }
-
-        .config-body {
-            @apply p-5 space-y-4;
-        }
-
-        /* --- V3.2 COMPACT INPUT STYLES --- */
-        
-        /* Container für Label + Input */
-        .field-container {
-            @apply relative w-full;
-        }
-
-        .field-label {
-            @apply block text-[10px] font-bold text-slate-500 uppercase mb-1 ml-1 tracking-wide truncate;
-        }
-
-        /* Wrapper für Input + Einheit */
-        .input-wrapper {
-            @apply relative w-full;
-        }
-
-        /* Das eigentliche Input Feld */
-        .compact-input {
-            @apply w-full bg-slate-100 border border-slate-300 text-slate-800 rounded-lg px-3 py-2 text-sm font-bold transition-all shadow-sm;
-            @apply placeholder:text-slate-400 placeholder:font-normal;
-            @apply focus:bg-white focus:outline-none focus:border-[var(--ac)] focus:ring-1 focus:ring-[var(--ac)];
-            /* Platz rechts für die Einheit lassen */
-            padding-right: 2.5rem; 
-            text-align: right;
-        }
-
-        /* Text Links ausgerichtet (für Textfelder) */
-        .compact-input.text-left {
-            text-align: left;
-            padding-right: 0.75rem;
-        }
-
-        /* Die Einheit IM Feld */
-        .input-unit-overlay {
-            @apply absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-slate-400 pointer-events-none select-none;
-        }
-
-        /* Select Box Anpassung */
-        .compact-select {
-            @apply w-full bg-slate-100 border border-slate-300 text-slate-800 rounded-lg px-3 py-2 text-sm transition-all shadow-sm cursor-pointer appearance-none;
-            @apply focus:bg-white focus:outline-none focus:border-[var(--ac)] focus:ring-1 focus:ring-[var(--ac)];
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.5rem center;
-            background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-            padding-right: 2.5rem;
-        }
-
-        textarea.compact-input {
-            @apply resize-none block text-left;
-        }
-
-        /* Tooltip Helper */
-        .tooltip {
-            @apply relative inline-block;
-        }
-
-        .tooltip .tooltip-text {
-            @apply invisible absolute z-50 w-48 bg-slate-800 text-white text-[10px] text-center rounded p-2 -top-1 left-full ml-2 opacity-0 transition-opacity pointer-events-none;
-        }
-
-        .tooltip:hover .tooltip-text {
-            @apply visible opacity-100;
-        }
-
-        /* Print Styles */
+        /* Print Override */
         @media print {
-            @page {
-                margin: 0;
-                size: A4 portrait;
+            @page { margin: 0; size: A4 portrait; }
+            body { 
+                background: white; 
+                height: auto; 
+                overflow: visible; 
+                margin: 0; 
+                display: block; /* WICHTIG: Flexbox entfernen für sauberen Seitenumbruch */
             }
-
-            body {
-                background: white;
-                height: auto;
-                overflow: visible;
-            }
-
-            aside, .no-print {
-                display: none !important;
-            }
-
-            main {
-                position: static !important;
-                display: block !important;
-                width: 100% !important;
-                height: auto !important;
+            aside, .no-print { display: none !important; }
+            main { 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                width: 100% !important; 
+                height: auto !important; 
+                display: block !important; /* WICHTIG */
                 overflow: visible !important;
-                background: white !important;
-                padding: 0 !important;
-                margin: 0 !important;
             }
-
-            .a4-page {
-                box-shadow: none !important;
-                margin: 0 !important;
-                width: 100% !important;
-                height: 296mm !important;
-                page-break-after: always !important;
-                break-after: page !important;
-                border: none !important;
+            .a4-page { 
+                box-shadow: none !important; 
+                margin: 0 !important; 
+                width: 210mm !important; 
+                height: 296mm !important; 
+                page-break-after: always; /* Zwingt neue Seite */
+                break-after: page;
+                overflow: hidden;
             }
-
             .a4-page:last-child {
-                page-break-after: auto !important;
-                break-after: auto !important;
+                page-break-after: auto;
+                break-after: auto;
             }
         }
     </style>
@@ -220,156 +236,250 @@
         function appData() {
             return {
                 docType: 'angebot',
-
-                // Theme Konfiguration
-                theme: {
-                    color: 'blue', // blue, red, green, yellow
-                    mode: 'dark'   // dark, light
-                },
-
+                theme: { color: 'blue', mode: 'dark' },
+                
                 colors: {
-                    blue: { primary: '#2563eb', light: '#eff6ff', border: '#bfdbfe' },
-                    red: { primary: '#dc2626', light: '#fef2f2', border: '#fecaca' },
-                    green: { primary: '#16a34a', light: '#f0fdf4', border: '#bbf7d0' },
-                    yellow: { primary: '#ca8a04', light: '#fefce8', border: '#fde68a' }
+                    blue: { primary: '#2563eb', light: '#dbeafe' },
+                    red: { primary: '#dc2626', light: '#fee2e2' },
+                    green: { primary: '#16a34a', light: '#dcfce7' },
+                    yellow: { primary: '#ca8a04', light: '#fef9c3' }
                 },
 
-                settings: {
-                    taxEnabled: false,
-                    showCO2: true,
-                    showPaid: false
-                },
+                settings: { taxEnabled: false, showCO2: true, showPaid: false },
 
                 defaults: {
-                    priceKg: 25.00,
-                    energyPrice: 0.40,
-                    watts: 250,
-                    loadFactor: 80,
-                    machineHourly: 2.00,
-                    hourlyRate: 50.00,
-                    marginPercent: 30.0,
-                    laborMinutes: 10,
-                    failRate: 5,
-                    discount: 0,
-                    co2Electricity: 0.40,
-                    co2Material: 2.5
+                    priceKg: 25.00, energyPrice: 0.40, watts: 250, loadFactor: 80,
+                    machineHourly: 2.00, hourlyRate: 50.00, marginPercent: 30.0,
+                    laborMinutes: 10, failRate: 5, discount: 0, co2Electricity: 0.40, co2Material: 2.5
                 },
 
-                project: {
-                    name: 'Prototyp V1',
-                    number: 'ANG-2025-001',
-                    date: new Date().toISOString().split('T')[0]
-                },
-
-                customer: {
-                    name: 'Musterkunde GmbH',
-                    address: 'Musterstraße 1\n12345 Musterstadt',
-                    id: '',
-                    orderNumber: ''
-                },
-
+                project: { name: 'Projektname', number: 'ANG-2025-001', date: new Date().toISOString().split('T')[0] },
+                customer: { name: '', address: '', id: '', orderNumber: '' },
+                
+                // LEERE STAMMDATEN (Public Version)
                 vendor: {
-                    company: 'Dein Firmenname',
-                    slogan: 'Dein Slogan hier',
-                    name: 'Max Mustermann',
-                    street: 'Musterweg 1',
-                    zip: '12345',
-                    city: 'Musterstadt',
-                    email: 'info@deine-firma.de',
-                    phone: '+49 123 456789',
-                    bank: 'Musterbank',
-                    iban: 'DE00 0000 0000 0000 0000 00',
-                    bic: 'MUSTERBIC',
-                    taxId: 'DE123456789'
+                    company: '', 
+                    slogan: '', 
+                    name: '',
+                    street: '', 
+                    zip: '', 
+                    city: '', 
+                    email: '',
+                    phone: '', 
+                    bank: '', 
+                    iban: '',
+                    bic: '', 
+                    taxId: '' 
                 },
 
                 printJobs: [],
-
-                extraItems: [
-                    { desc: 'Versandpauschale', qty: 1, price: 4.90 }
-                ],
-
-                itemsPerPageFirst: 4,
-                itemsPerPageNext: 10,
+                extraItems: [], // Startet leer!
+                itemsPerPageFirst: 4, itemsPerPageNext: 10,
 
                 initApp() {
-                    try {
-                        const saved = localStorage.getItem('ws-calc-v2-19');
-                        if (saved) {
-                            const data = JSON.parse(saved);
-                            if (data.vendor) this.vendor = data.vendor;
-                            if (data.settings) this.settings = data.settings;
-                            if (data.extraItems) this.extraItems = data.extraItems;
-                            if (data.customer) this.customer = data.customer;
-                            if (data.defaults) this.defaults = data.defaults;
-                            if (data.printJobs) this.printJobs = data.printJobs;
-                            if (data.project) this.project = data.project;
-                            if (data.theme) this.theme = data.theme;
-                        } else {
-                            this.addPrintJob();
-                        }
-                    } catch (e) {
-                        console.error(e);
-                        this.addPrintJob();
-                    }
-
+                    this.loadFromStorage();
+                    // Watchers für Auto-Save
                     ['vendor', 'settings', 'defaults', 'printJobs', 'extraItems', 'customer', 'project', 'theme'].forEach(key => {
                         this.$watch(key, () => this.saveToStorage());
                     });
+                    
+                    // Wenn keine Jobs da sind, füge einen leeren hinzu (damit man was sieht)
+                    if (this.printJobs.length === 0) {
+                        this.addBlankJob();
+                    }
+                },
+
+                loadFromStorage() {
+                    const saved = localStorage.getItem('ws-calc-v5-6'); 
+                    if (saved) {
+                        try {
+                            const data = JSON.parse(saved);
+                            Object.assign(this, data);
+                        } catch(e) { console.error("Load Error", e); }
+                    }
                 },
 
                 saveToStorage() {
                     const data = {
-                        vendor: this.vendor,
-                        settings: this.settings,
-                        extraItems: this.extraItems,
-                        customer: this.customer,
-                        defaults: this.defaults,
-                        printJobs: this.printJobs,
-                        project: this.project,
-                        theme: this.theme
+                        vendor: this.vendor, settings: this.settings, extraItems: this.extraItems,
+                        customer: this.customer, defaults: this.defaults, printJobs: this.printJobs,
+                        project: this.project, theme: this.theme
                     };
-                    localStorage.setItem('ws-calc-v2-19', JSON.stringify(data));
+                    localStorage.setItem('ws-calc-v5-6', JSON.stringify(data));
                 },
 
                 getThemeStyles() {
                     const c = this.colors[this.theme.color] || this.colors.blue;
-                    const bgPrev = this.theme.mode === 'light' ? '#e2e8f0' : '#1e293b';
-                    return `
-                        --ac: ${c.primary};
-                        --ac-light: ${c.light};
-                        --ac-border: ${c.border};
-                        --bg-preview: ${bgPrev};
-                    `;
+                    const bgPrev = this.theme.mode === 'light' ? '#f1f5f9' : '#0f172a';
+                    return `--ac: ${c.primary}; --ac-light: ${c.light}; --bg-preview: ${bgPrev};`;
                 },
 
+                // Neue Funktion für komplett leeren Job
+                addBlankJob() {
+                    this.printJobs.push({
+                        id: Date.now(), 
+                        name: '', // LEER
+                        quantity: 1, 
+                        material: 'pla', 
+                        weight: 0, // 0
+                        time: 0, // 0
+                        priceKg: this.defaults.priceKg, 
+                        energyPrice: this.defaults.energyPrice,
+                        watts: this.defaults.watts, 
+                        loadFactor: this.defaults.loadFactor,
+                        machineHourly: this.defaults.machineHourly, 
+                        hourlyRate: this.defaults.hourlyRate,
+                        marginPercent: this.defaults.marginPercent, 
+                        laborMinutes: this.defaults.laborMinutes,
+                        failRate: this.defaults.failRate, 
+                        discount: this.defaults.discount,
+                        fixedCost: 0, 
+                        co2Material: this.defaults.co2Material,
+                        machinePurchase: 0, 
+                        machineLife: 0, 
+                        expanded: true
+                    });
+                },
+
+                // Wird vom Button aufgerufen
+                addPrintJob() {
+                    this.addBlankJob();
+                },
+
+                removePrintJob(idx) {
+                    if (this.printJobs.length > 1 || confirm("Letzten Job löschen?")) {
+                        this.printJobs.splice(idx, 1);
+                    }
+                },
+
+                calculateMachineHourly(job) {
+                    if (job.machinePurchase > 0 && job.machineLife > 0) {
+                        job.machineHourly = (job.machinePurchase / job.machineLife).toFixed(2);
+                    }
+                },
+
+                applyMaterial(job) {
+                    const map = {
+                        'pla': { price: 20, co2: 2.5 }, 'pla_plus': { price: 25, co2: 2.6 },
+                        'pla_silk': { price: 28, co2: 2.7 }, 'petg': { price: 25, co2: 3.5 },
+                        'petg_cf': { price: 45, co2: 3.8 }, 'abs': { price: 25, co2: 4.0 },
+                        'abs_cf': { price: 50, co2: 4.5 }, 'asa': { price: 35, co2: 4.2 },
+                        'asa_cf': { price: 55, co2: 4.7 }, 'tpu': { price: 38, co2: 3.2 },
+                        'pa': { price: 65, co2: 6.0 }
+                    };
+                    if (map[job.material]) {
+                        job.priceKg = map[job.material].price;
+                        job.co2Material = map[job.material].co2;
+                    }
+                },
+
+                calculateJobTotal(job) {
+                    const matCost = (job.weight / 1000) * job.priceKg;
+                    const actualWatts = job.watts * (job.loadFactor / 100);
+                    const energyCost = (actualWatts / 1000) * job.time * job.energyPrice;
+                    const machineCost = job.time * job.machineHourly;
+                    const laborCost = (job.laborMinutes / 60) * job.hourlyRate;
+                    const prodCost = matCost + energyCost + machineCost + laborCost;
+                    const failCost = prodCost * (job.failRate / 100);
+                    const costWithFixed = prodCost + failCost + (parseFloat(job.fixedCost) || 0);
+                    const salesPrice = costWithFixed * (1 + (job.marginPercent / 100));
+                    return salesPrice * (1 - (job.discount / 100));
+                },
+
+                calculateJobCO2(job) {
+                    const matCO2 = (job.weight / 1000) * job.co2Material;
+                    const kWh = (job.watts * (job.loadFactor / 100) / 1000) * job.time;
+                    return matCO2 + (kWh * this.defaults.co2Electricity);
+                },
+
+                getAllPositions() {
+                    const jobs = this.printJobs.map((job, idx) => {
+                        const up = Math.round(this.calculateJobTotal(job) * 100) / 100;
+                        const mats = {
+                            pla: 'PLA', pla_plus: 'PLA+', pla_silk: 'PLA Silk', petg: 'PETG',
+                            petg_cf: 'PETG-CF', abs: 'ABS', abs_cf: 'ABS-CF', asa: 'ASA',
+                            asa_cf: 'ASA-CF', tpu: 'TPU', pa: 'Nylon', custom: 'Custom'
+                        };
+                        return {
+                            pos: String(idx + 1).padStart(2, '0'),
+                            desc: job.name || 'Keine Bezeichnung',
+                            details: [`${mats[job.material] || job.material}`, `${job.weight}g`, `${job.time}h`],
+                            qty: job.quantity, price: up, total: up * job.quantity
+                        };
+                    });
+                    const extras = this.extraItems.map((item, idx) => ({
+                        pos: String(jobs.length + 1 + idx).padStart(2, '0'),
+                        desc: item.desc, details: [], qty: item.qty, price: item.price, total: item.qty * item.price
+                    }));
+                    return [...jobs, ...extras];
+                },
+
+                getPages() {
+                    const all = this.getAllPositions();
+                    const pages = [];
+                    let i = 0, p = 1;
+                    
+                    // Always ensure at least one page loop runs even if empty
+                    do {
+                        const lim = p === 1 ? this.itemsPerPageFirst : this.itemsPerPageNext;
+                        const chunk = all.slice(i, i + lim);
+                        pages.push({ number: p, items: chunk, isFirst: p === 1, isLast: i + chunk.length >= all.length });
+                        i += chunk.length;
+                        p++;
+                    } while (i < all.length);
+
+                    pages.forEach(pg => pg.totalPages = pages.length);
+                    return pages;
+                },
+
+                getSubtotal() { return this.getAllPositions().reduce((s, i) => s + i.total, 0); },
+                getVat() { return this.settings.taxEnabled ? this.getSubtotal() * 0.19 : 0; },
+                getTotal() { return this.getSubtotal() + this.getVat(); },
+                getTotalCO2() { return (this.printJobs.reduce((s, j) => s + (this.calculateJobCO2(j) * j.quantity), 0) * 1000).toFixed(0); },
+                
+                // === SMART FILE NAMING & PRINT ===
                 printDocument() {
                     const originalTitle = document.title;
-                    let filename = `${this.project.number} ${this.customer.name}`;
-                    filename = filename.replace(/[\/\\:*?"<>|]/g, '-').trim();
-                    if (!filename) filename = "Dokument";
-                    document.title = filename;
+                    
+                    // Prefix bestimmen
+                    let prefix = "DOKUMENT";
+                    if(this.docType === 'angebot') prefix = "ANGEBOT";
+                    if(this.docType === 'rechnung') prefix = "RECHNUNG";
+                    if(this.docType === 'lieferschein') prefix = "LIEFERSCHEIN";
+
+                    // Namen säubern (Keine Sonderzeichen)
+                    const cleanNum = this.project.number ? this.project.number.replace(/[^a-z0-9\-_]/gi, '-') : '000';
+                    const cleanCust = this.customer.name ? this.customer.name.replace(/[^a-z0-9\-_]/gi, '_') : 'Kunde';
+
+                    // Titel für den Druckdialog setzen
+                    document.title = `${prefix}_${cleanNum}_${cleanCust}`;
+                    
                     window.print();
-                    setTimeout(() => { document.title = originalTitle; }, 1000);
+                    
+                    // Titel zurücksetzen
+                    setTimeout(() => document.title = originalTitle, 500);
                 },
 
+                // === SMART JSON EXPORT ===
                 exportToFile() {
                     const data = {
-                        vendor: this.vendor,
-                        settings: this.settings,
-                        extraItems: this.extraItems,
-                        customer: this.customer,
-                        defaults: this.defaults,
-                        printJobs: this.printJobs,
-                        project: this.project,
-                        theme: this.theme
+                        vendor: this.vendor, settings: this.settings, extraItems: this.extraItems,
+                        customer: this.customer, defaults: this.defaults, printJobs: this.printJobs,
+                        project: this.project, theme: this.theme
                     };
                     const jsonString = JSON.stringify(data, null, 2);
                     const blob = new Blob([jsonString], { type: "application/json" });
                     const url = URL.createObjectURL(blob);
+                    
+                    // Name generieren
+                    let prefix = "Kalkulation";
+                    if(this.docType === 'angebot') prefix = "Kalk_ANG";
+                    if(this.docType === 'rechnung') prefix = "Kalk_RE";
+                    const cleanNum = this.project.number ? this.project.number.replace(/[^a-z0-9\-_]/gi, '-') : '000';
+                    
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = `Kalkulation_${this.project.number || 'Projekt'}.json`;
+                    link.download = `${prefix}_${cleanNum}.json`;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -382,249 +492,64 @@
                     reader.onload = (e) => {
                         try {
                             const data = JSON.parse(e.target.result);
-                            if (data.vendor) this.vendor = data.vendor;
-                            if (data.settings) this.settings = data.settings;
-                            if (data.extraItems) this.extraItems = data.extraItems;
-                            if (data.customer) this.customer = data.customer;
-                            if (data.defaults) this.defaults = data.defaults;
-                            if (data.printJobs) this.printJobs = data.printJobs;
-                            if (data.project) this.project = data.project;
-                            if (data.theme) this.theme = data.theme;
-                            alert("Projekt erfolgreich geladen!");
-                        } catch (err) {
-                            alert("Fehler: " + err.message);
-                        }
+                            Object.assign(this, data);
+                            alert("Daten erfolgreich geladen!");
+                        } catch(err) { alert("Fehler beim Laden: " + err.message); }
                     };
                     reader.readAsText(file);
                     event.target.value = '';
                 },
-
                 resetData() {
-                    if (confirm('Alles auf Standardwerte zurücksetzen?')) {
-                        localStorage.removeItem('ws-calc-v2-19');
+                    if(confirm("Wirklich alles zurücksetzen?")) {
+                        localStorage.removeItem('ws-calc-v5-6');
                         location.reload();
                     }
                 },
-
-                addPrintJob() {
-                    this.printJobs.push({
-                        id: Date.now(),
-                        name: 'Bauteil ' + (this.printJobs.length + 1),
-                        quantity: 1,
-                        material: 'pla',
-                        weight: 50,
-                        time: 2.5,
-                        priceKg: this.defaults.priceKg,
-                        energyPrice: this.defaults.energyPrice,
-                        watts: this.defaults.watts,
-                        loadFactor: this.defaults.loadFactor || 100,
-                        machineHourly: this.defaults.machineHourly,
-                        hourlyRate: this.defaults.hourlyRate,
-                        marginPercent: this.defaults.marginPercent,
-                        laborMinutes: this.defaults.laborMinutes,
-                        failRate: this.defaults.failRate || 0,
-                        discount: this.defaults.discount || 0,
-                        fixedCost: 0,
-                        co2Material: this.defaults.co2Material || 2.5,
-                        machinePurchase: 0,
-                        machineLife: 0,
-                        expanded: true
-                    });
-                },
-
-                removePrintJob(index) {
-                    if (this.printJobs.length > 1 || confirm("Löschen?")) this.printJobs.splice(index, 1);
-                },
-
-                applyMaterial(job) {
-                    const map = {
-                        'pla': { price: 20, co2: 2.5 },
-                        'pla_plus': { price: 25, co2: 2.6 },
-                        'pla_silk': { price: 28, co2: 2.7 },
-                        'petg': { price: 25, co2: 3.5 },
-                        'petg_cf': { price: 45, co2: 3.8 },
-                        'abs': { price: 25, co2: 4.0 },
-                        'abs_cf': { price: 50, co2: 4.5 },
-                        'asa': { price: 35, co2: 4.2 },
-                        'asa_cf': { price: 55, co2: 4.7 },
-                        'tpu': { price: 38, co2: 3.2 },
-                        'pa': { price: 65, co2: 6.0 },
-                    };
-
-                    if (map[job.material]) {
-                        job.priceKg = map[job.material].price;
-                        job.co2Material = map[job.material].co2;
-                    }
-                },
-
-                calculateMachineHourly(job) {
-                    if (job.machinePurchase > 0 && job.machineLife > 0) {
-                        job.machineHourly = (job.machinePurchase / job.machineLife).toFixed(2);
-                    }
-                },
-
-                calculateJobTotal(job) {
-                    const matCost = (job.weight / 1000) * job.priceKg;
-                    const actualWatts = job.watts * (job.loadFactor / 100);
-                    const energyCost = (actualWatts / 1000) * job.time * job.energyPrice;
-                    const machineCost = job.time * job.machineHourly;
-                    const laborCost = (job.laborMinutes / 60) * job.hourlyRate;
-
-                    let productionCost = matCost + energyCost + machineCost + laborCost;
-                    let failCost = productionCost * (job.failRate / 100);
-                    let baseCost = productionCost + failCost;
-                    let costWithFixed = baseCost + (parseFloat(job.fixedCost) || 0);
-                    let salesPrice = costWithFixed * (1 + (job.marginPercent / 100));
-                    let finalPrice = salesPrice * (1 - (job.discount / 100));
-
-                    return finalPrice;
-                },
-
-                calculateJobCO2(job) {
-                    const matCO2 = (job.weight / 1000) * job.co2Material;
-                    const actualWatts = job.watts * (job.loadFactor / 100);
-                    const kWh = (actualWatts / 1000) * job.time;
-                    const energyCO2 = kWh * (this.defaults.co2Electricity || 0.4);
-                    return matCO2 + energyCO2;
-                },
-
-                getTotalCO2() {
-                    let totalKg = 0;
-                    this.printJobs.forEach(job => {
-                        const qty = job.quantity || 1;
-                        totalKg += this.calculateJobCO2(job) * qty;
-                    });
-                    return (totalKg * 1000).toFixed(0);
-                },
-
-                getAllPositions() {
-                    const jobPositions = this.printJobs.map((job, idx) => {
-                        let matName = job.material.toUpperCase();
-                        if (job.material === 'pla_plus') matName = 'PLA+';
-                        if (job.material === 'pla_silk') matName = 'PLA Silk';
-                        if (job.material === 'petg_cf') matName = 'PETG-CF';
-                        if (job.material === 'abs_cf') matName = 'ABS-CF';
-                        if (job.material === 'asa_cf') matName = 'ASA-CF';
-                        if (job.material === 'pa') matName = 'Nylon (PA)';
-
-                        const qty = job.quantity || 1;
-                        
-                        // FIX: Round Unit Price to 2 decimals first for commercial consistency
-                        const rawUnitPrice = this.calculateJobTotal(job);
-                        const unitPrice = Math.round(rawUnitPrice * 100) / 100;
-
-                        return {
-                            pos: String(idx + 1).padStart(2, '0'),
-                            desc: job.name,
-                            details: [
-                                `Mat: ${matName}`,
-                                `${job.weight}g`,
-                                `${job.time}h`,
-                                job.laborMinutes > 0 ? `Arbeitszeit: ${job.laborMinutes}min` : ''
-                            ].filter(Boolean),
-                            qty: qty,
-                            price: unitPrice,
-                            total: unitPrice * qty
-                        };
-                    });
-
-                    const startIdx = jobPositions.length + 1;
-                    const extraPositions = this.extraItems.map((item, idx) => ({
-                        pos: String(startIdx + idx).padStart(2, '0'),
-                        desc: item.desc || 'Position',
-                        details: [],
-                        qty: item.qty,
-                        price: item.price,
-                        total: item.qty * item.price
-                    }));
-
-                    return [...jobPositions, ...extraPositions];
-                },
-
-                getPages() {
-                    const allPos = this.getAllPositions();
-                    const pages = [];
-                    let currentIndex = 0;
-                    let pageNum = 1;
-
-                    while (currentIndex < allPos.length || pageNum === 1) {
-                        const limit = pageNum === 1 ? this.itemsPerPageFirst : this.itemsPerPageNext;
-                        const chunk = allPos.slice(currentIndex, currentIndex + limit);
-                        const isLastPage = (currentIndex + chunk.length) >= allPos.length;
-
-                        pages.push({
-                            number: pageNum,
-                            items: chunk,
-                            isFirst: pageNum === 1,
-                            isLast: isLastPage
-                        });
-
-                        currentIndex += chunk.length;
-                        pageNum++;
-                        if (pageNum > 50) break;
-                    }
-                    const totalPages = pages.length;
-                    pages.forEach(p => p.totalPages = totalPages);
-                    return pages;
-                },
-
-                getSubtotal() { return this.getAllPositions().reduce((sum, item) => sum + item.total, 0); },
-                getVat() { return this.settings.taxEnabled ? this.getSubtotal() * 0.19 : 0; },
-                getTotal() { return this.getSubtotal() + this.getVat(); },
-
-                addExtraItem() { this.extraItems.push({ desc: '', qty: 1, price: 0 }); },
-                removeExtraItem(idx) { this.extraItems.splice(idx, 1); },
-
-                formatMoney(val) { return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(val); },
-                formatDate(dateStr) { if (!dateStr) return ''; return new Date(dateStr).toLocaleDateString('de-DE'); },
-                formatText(text) { return text ? text.replace(/\n/g, '<br>') : ''; }
+                formatMoney(v) { return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(v); },
+                formatDate(d) { return d ? new Date(d).toLocaleDateString('de-DE') : ''; },
+                formatText(t) { return t ? t.replace(/\n/g, '<br>') : ''; },
+                getDocumentTitle() {
+                    if(this.docType === 'angebot') return 'Angebot';
+                    if(this.docType === 'rechnung') return 'Rechnung';
+                    if(this.docType === 'lieferschein') return 'Lieferschein';
+                    return 'Dokument';
+                }
             }
         }
     </script>
 </head>
 <body class="h-screen overflow-hidden flex" x-data="appData()" x-init="initApp()" :style="getThemeStyles()">
 
-    <!-- LINKS: EINGABEN -->
-    <aside class="w-[550px] bg-gray-50 border-r border-gray-300 flex flex-col h-full no-print z-20 shadow-2xl shrink-0">
-
-        <!-- Header -->
-        <div class="p-4 bg-white border-b border-gray-200 flex flex-col gap-3">
-            <div class="flex items-center justify-between">
+    <!-- SIDEBAR: EINGABEN -->
+    <aside class="w-[500px] bg-white border-r border-slate-300 flex flex-col h-full z-20 shadow-2xl shrink-0 no-print">
+        
+        <!-- App Header -->
+        <div class="p-4 border-b border-slate-200 bg-slate-50 flex flex-col gap-3">
+            <div class="flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <div class="text-white w-8 h-8 rounded-lg flex items-center justify-center font-bold text-lg shadow bg-[var(--ac)]">W</div>
+                    <div class="w-10 h-10 rounded-xl bg-[var(--ac)] text-white flex items-center justify-center font-bold text-xl shadow-lg">W</div>
                     <div>
-                        <h1 class="font-bold text-gray-800 leading-none tracking-tight">Warenschmiede</h1>
-                        <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Calc V3.2</span>
+                        <h1 class="font-bold text-slate-800 leading-none">Warenschmiede</h1>
+                        <span class="text-[10px] text-slate-400 font-mono uppercase tracking-widest">Calc V5.6</span>
                     </div>
                 </div>
-
-                <div class="flex gap-2">
-                    <!-- THEME DROPDOWN -->
-                    <div x-data="{ open: false }" class="relative" @click.outside="open = false">
-                        <button @click="open = !open" title="Design ändern" class="text-gray-500 hover:text-[var(--ac)] p-2 hover:bg-gray-100 rounded-md transition-colors"><i class="fa-solid fa-palette"></i></button>
-                        <div x-show="open" class="absolute right-0 top-full mt-2 w-48 bg-white border border-slate-200 shadow-xl rounded-xl p-3 z-50 transform origin-top-right">
-                            <h4 class="text-[10px] font-bold uppercase mb-2 text-slate-400">Akzentfarbe</h4>
-                            <div class="grid grid-cols-4 gap-2 mb-4">
-                                <button @click="theme.color='blue'" class="w-8 h-8 rounded-full bg-blue-600 ring-offset-2 hover:ring-2 ring-blue-400 transition-all"></button>
-                                <button @click="theme.color='red'" class="w-8 h-8 rounded-full bg-red-600 ring-offset-2 hover:ring-2 ring-red-400 transition-all"></button>
-                                <button @click="theme.color='green'" class="w-8 h-8 rounded-full bg-green-600 ring-offset-2 hover:ring-2 ring-green-400 transition-all"></button>
-                                <button @click="theme.color='yellow'" class="w-8 h-8 rounded-full bg-amber-600 ring-offset-2 hover:ring-2 ring-amber-400 transition-all"></button>
-                            </div>
-                            <h4 class="text-[10px] font-bold uppercase mb-2 text-slate-400">Hintergrund</h4>
-                            <div class="flex bg-slate-100 p-1 rounded-lg">
-                                <button @click="theme.mode='dark'" :class="{'bg-white shadow-sm text-slate-800': theme.mode==='dark', 'text-slate-500': theme.mode!=='dark'}" class="flex-1 py-1 text-xs font-bold rounded transition-all">Dunkel</button>
-                                <button @click="theme.mode='light'" :class="{'bg-white shadow-sm text-slate-800': theme.mode==='light', 'text-slate-500': theme.mode!=='light'}" class="flex-1 py-1 text-xs font-bold rounded transition-all">Hell</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button @click="exportToFile()" title="Projekt speichern" class="text-gray-500 hover:text-[var(--ac)] p-2 hover:bg-gray-100 rounded-md transition-colors"><i class="fa-solid fa-download"></i></button>
-                    <label title="Projekt laden" class="text-gray-500 hover:text-[var(--ac)] p-2 hover:bg-gray-100 rounded-md cursor-pointer transition-colors"><i class="fa-solid fa-upload"></i><input type="file" class="hidden" accept=".json" @change="importFromFile"></label>
-                    <button @click="location.reload()" title="Neu laden" class="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-md transition-colors"><i class="fa-solid fa-rotate-right"></i></button>
+                <div class="flex gap-2 bg-white border border-slate-200 rounded-lg p-1 shadow-sm">
+                    <template x-for="c in ['blue','red','green','yellow']">
+                        <button @click="theme.color = c" :class="`w-5 h-5 rounded-full bg-${c==='yellow'?'yellow-500':c+'-600'} transition-transform hover:scale-110 ${theme.color===c ? 'ring-2 ring-offset-1 ring-slate-400':''}`"></button>
+                    </template>
+                    <div class="w-px bg-slate-200 mx-1"></div>
+                    <button @click="theme.mode = theme.mode==='dark'?'light':'dark'" class="text-slate-400 hover:text-[var(--ac)] px-1"><i class="fa-solid fa-circle-half-stroke"></i></button>
                 </div>
             </div>
+            
+            <div class="flex gap-2">
+                <button @click="resetData()" class="px-3 py-1.5 text-xs font-bold text-slate-500 bg-white border border-slate-200 rounded hover:bg-red-50 hover:text-red-600 transition-colors">Reset</button>
+                <div class="flex-1"></div>
+                <button @click="exportToFile()" class="px-3 py-1.5 text-xs font-bold text-[var(--ac)] bg-[var(--ac-light)] rounded hover:opacity-80 transition-colors"><i class="fa-solid fa-download mr-1"></i> Speichern</button>
+                <label class="px-3 py-1.5 text-xs font-bold text-slate-600 bg-slate-200 rounded hover:bg-slate-300 cursor-pointer transition-colors"><i class="fa-solid fa-upload mr-1"></i> Laden <input type="file" class="hidden" accept=".json" @change="importFromFile"></label>
+            </div>
 
-            <!-- Navigation Links -->
+            <!-- Website Navigation -->
             <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100">
                 <a href="https://www.warenschmiede.com/" class="hover:text-[var(--ac)] flex items-center gap-1 transition-colors font-medium">
                     <i class="fa-solid fa-arrow-left"></i> Zurück zur Homepage
@@ -636,374 +561,238 @@
             </div>
         </div>
 
-        <!-- Scroll-Bereich Inputs -->
-        <div class="flex-1 overflow-y-auto p-6 space-y-8 custom-scroll">
+        <!-- SCROLLABLE CONTENT -->
+        <div class="flex-1 overflow-y-auto p-5 space-y-6 custom-scroll bg-slate-50">
 
-            <!-- 1. ANBIETER KARTE -->
-            <section class="config-card">
-                <div class="config-header">
-                    <i class="fa-solid fa-store text-[var(--ac)]"></i>
-                    <span>Anbieter-Daten (Du)</span>
-                </div>
-                <div class="config-body">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="field-container"><input type="text" x-model="vendor.company" class="compact-input text-left" placeholder="Firmenname"></div>
-                        <div class="field-container"><input type="text" x-model="vendor.name" class="compact-input text-left" placeholder="Inhaber / Name"></div>
+            <!-- 1. ANBIETER -->
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2"><i class="fa-solid fa-store"></i> Anbieter</div>
+                <div class="space-y-3">
+                    <div class="flex gap-3">
+                        <div class="control-group flex-1">
+                            <span class="control-label">Firma</span>
+                            <div class="input-box"><input type="text" x-model="vendor.company" class="input-control text-left" placeholder="Firmenname"></div>
+                        </div>
+                        <div class="control-group flex-1">
+                            <span class="control-label">Name</span>
+                            <div class="input-box"><input type="text" x-model="vendor.name" class="input-control text-left" placeholder="Inhaber"></div>
+                        </div>
                     </div>
-                    <div class="field-container"><input type="text" x-model="vendor.slogan" class="compact-input text-left" placeholder="Slogan"></div>
-                    <div class="grid grid-cols-3 gap-4">
-                        <div class="col-span-2 field-container"><input type="text" x-model="vendor.street" class="compact-input text-left" placeholder="Straße"></div>
-                        <div class="field-container"><input type="text" x-model="vendor.zip" class="compact-input text-left" placeholder="PLZ"></div>
+                    <div class="control-group">
+                        <span class="control-label">Slogan</span>
+                        <div class="input-box"><input type="text" x-model="vendor.slogan" class="input-control text-left" placeholder="Dein Slogan"></div>
                     </div>
-                    <div class="field-container"><input type="text" x-model="vendor.city" class="compact-input text-left" placeholder="Stadt"></div>
-
-                    <details class="group bg-slate-50 border border-slate-200 rounded-lg overflow-hidden">
-                        <summary class="px-4 py-3 text-xs font-bold text-slate-600 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors">
-                            <span><i class="fa-solid fa-building-columns mr-2 text-slate-400"></i> Bank & Kontakt</span>
-                            <i class="fa-solid fa-chevron-down transition-transform group-open:rotate-180"></i>
-                        </summary>
-                        <div class="p-4 space-y-4 border-t border-slate-200">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="field-container"><input type="text" x-model="vendor.email" class="compact-input text-left" placeholder="Email-Adresse"></div>
-                                <div class="field-container"><input type="text" x-model="vendor.phone" class="compact-input text-left" placeholder="Telefon"></div>
-                            </div>
-                            <div class="field-container"><input type="text" x-model="vendor.bank" class="compact-input text-left" placeholder="Bank Name"></div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="field-container"><input type="text" x-model="vendor.iban" class="compact-input font-mono text-xs text-left" placeholder="IBAN"></div>
-                                <div class="field-container"><input type="text" x-model="vendor.bic" class="compact-input font-mono text-xs text-left" placeholder="BIC"></div>
-                            </div>
-                            <div class="field-container"><input type="text" x-model="vendor.taxId" class="compact-input text-left" placeholder="USt-IdNr."></div>
+                    <div class="control-group">
+                        <span class="control-label">Anschrift</span>
+                        <div class="textarea-box"><textarea x-model="vendor.street" rows="1" class="textarea-control" placeholder="Straße"></textarea></div>
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="control-group w-24">
+                            <span class="control-label">PLZ</span>
+                            <div class="input-box"><input type="text" x-model="vendor.zip" class="input-control text-left"></div>
+                        </div>
+                        <div class="control-group flex-1">
+                            <span class="control-label">Stadt</span>
+                            <div class="input-box"><input type="text" x-model="vendor.city" class="input-control text-left"></div>
+                        </div>
+                    </div>
+                    <details class="text-xs text-slate-500 pt-2 border-t border-slate-100">
+                        <summary class="cursor-pointer font-bold hover:text-[var(--ac)]">Bank & Kontakt Details</summary>
+                        <div class="grid grid-cols-2 gap-3 mt-3">
+                            <div class="control-group"><span class="control-label">Email</span><div class="input-box"><input x-model="vendor.email" class="input-control text-left"></div></div>
+                            <div class="control-group"><span class="control-label">Tel</span><div class="input-box"><input x-model="vendor.phone" class="input-control text-left"></div></div>
+                            <div class="control-group col-span-2"><span class="control-label">IBAN</span><div class="input-box"><input x-model="vendor.iban" class="input-control text-left font-mono"></div></div>
+                            <div class="control-group"><span class="control-label">BIC</span><div class="input-box"><input x-model="vendor.bic" class="input-control text-left"></div></div>
+                            <div class="control-group"><span class="control-label">Steuer-ID</span><div class="input-box"><input x-model="vendor.taxId" class="input-control text-left"></div></div>
                         </div>
                     </details>
                 </div>
-            </section>
+            </div>
 
-            <!-- 2. KUNDE & DOKUMENT KARTE -->
-            <section class="config-card">
-                <div class="config-header">
-                    <i class="fa-solid fa-user-tie text-[var(--ac)]"></i>
-                    <span>Kunde & Dokument</span>
+            <!-- 2. KUNDE & PROJEKT -->
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2"><i class="fa-solid fa-user"></i> Kunde & Projekt</div>
+                
+                <!-- Toggle Switch (NEW: With Lieferschein) -->
+                <div class="flex bg-slate-100 p-1 rounded-lg mb-4">
+                    <button @click="docType='angebot'" :class="docType=='angebot'?'bg-white text-[var(--ac)] shadow-sm':'text-slate-400'" class="flex-1 py-1 text-xs font-bold rounded transition-all">Angebot</button>
+                    <button @click="docType='rechnung'" :class="docType=='rechnung'?'bg-white text-[var(--ac)] shadow-sm':'text-slate-400'" class="flex-1 py-1 text-xs font-bold rounded transition-all">Rechnung</button>
+                    <button @click="docType='lieferschein'" :class="docType=='lieferschein'?'bg-white text-[var(--ac)] shadow-sm':'text-slate-400'" class="flex-1 py-1 text-xs font-bold rounded transition-all">Liefersch.</button>
                 </div>
-                <div class="config-body">
-                    <div class="bg-slate-100 p-1 rounded-lg flex mb-2">
-                        <button @click="docType = 'angebot'" :class="{'bg-white text-[var(--ac)] shadow-sm': docType === 'angebot', 'text-slate-500': docType !== 'angebot'}" class="flex-1 py-1.5 text-xs font-bold rounded-md transition-all">ANGEBOT</button>
-                        <button @click="docType = 'rechnung'" :class="{'bg-white text-[var(--ac)] shadow-sm': docType === 'rechnung', 'text-slate-500': docType !== 'rechnung'}" class="flex-1 py-1.5 text-xs font-bold rounded-md transition-all">RECHNUNG</button>
+
+                <div class="space-y-3">
+                    <div class="control-group">
+                        <span class="control-label">Kunde / Firma</span>
+                        <div class="input-box"><input type="text" x-model="customer.name" class="input-control text-left font-bold"></div>
                     </div>
-                    <div class="space-y-4 pb-4 border-b border-slate-100">
-                        <div class="field-container"><input type="text" x-model="customer.name" class="compact-input font-bold text-left" placeholder="Kunde / Firma"></div>
-                        <div class="field-container"><textarea x-model="customer.address" rows="3" class="compact-input" placeholder="Anschrift"></textarea></div>
+                    <div class="control-group">
+                        <span class="control-label">Anschrift</span>
+                        <div class="textarea-box"><textarea x-model="customer.address" rows="2" class="textarea-control"></textarea></div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="field-container"><input type="text" x-model="project.name" class="compact-input text-left" placeholder="Projekt-Name"></div>
-                        <div class="field-container"><input type="text" x-model="project.number" class="compact-input text-right" placeholder="Angebots-Nr."></div>
-                        <div class="field-container"><input type="date" x-model="project.date" class="compact-input" title="Datum"></div>
-                        <div class="field-container"><input type="text" x-model="customer.id" class="compact-input text-right" placeholder="Kd-Nr."></div>
-                        <div class="col-span-2 field-container"><input type="text" x-model="customer.orderNumber" class="compact-input text-left" placeholder="Bestell-Nr. (Kunde)"></div>
+                    <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+                        <div class="control-group">
+                            <span class="control-label">Projekt</span>
+                            <div class="input-box"><input type="text" x-model="project.name" class="input-control text-left"></div>
+                        </div>
+                        <div class="control-group">
+                            <span class="control-label">Nummer</span>
+                            <div class="input-box"><input type="text" x-model="project.number" class="input-control text-right"></div>
+                        </div>
+                        <div class="control-group">
+                            <span class="control-label">Datum</span>
+                            <div class="input-box"><input type="date" x-model="project.date" class="input-control text-left"></div>
+                        </div>
+                        <div class="control-group">
+                            <span class="control-label">Kunden-Nr.</span>
+                            <div class="input-box"><input type="text" x-model="customer.id" class="input-control text-right"></div>
+                        </div>
                     </div>
-                    <div class="flex items-center justify-between pt-2">
-                        <span class="text-xs font-bold text-slate-600">Umsatzsteuer (19%)</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" x-model="settings.taxEnabled" class="sr-only peer">
-                            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--ac)] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+                    
+                    <!-- Settings Toggles -->
+                    <div class="flex flex-col gap-2 pt-2" x-show="docType !== 'lieferschein'">
+                        <label class="flex items-center justify-between cursor-pointer group">
+                            <span class="text-xs font-bold text-slate-500">MwSt (19%) berechnen</span>
+                            <div class="relative w-10 h-5 bg-slate-200 rounded-full transition-colors group-hover:bg-slate-300" :class="{'!bg-[var(--ac)]': settings.taxEnabled}">
+                                <input type="checkbox" x-model="settings.taxEnabled" class="sr-only">
+                                <div class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform" :class="{'translate-x-5': settings.taxEnabled}"></div>
+                            </div>
                         </label>
-                    </div>
-                    <!-- NEW CO2 Toggle -->
-                    <div class="flex items-center justify-between pt-1">
-                        <span class="text-xs font-bold text-slate-600 flex items-center gap-1"><i class="fa-solid fa-leaf text-green-500"></i> CO₂-Bilanz anzeigen</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" x-model="settings.showCO2" class="sr-only peer">
-                            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:bg-green-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
-                        </label>
-                    </div>
-                    <!-- NEW: BEZAHLT STEMPEL Toggle -->
-                    <div class="flex items-center justify-between pt-1" x-show="docType === 'rechnung'">
-                        <span class="text-xs font-bold text-slate-600 flex items-center gap-1"><i class="fa-solid fa-stamp text-red-500"></i> "BEZAHLT" Stempel</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" x-model="settings.showPaid" class="sr-only peer">
-                            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:bg-red-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+                        <label class="flex items-center justify-between cursor-pointer group" x-show="docType==='rechnung'">
+                            <span class="text-xs font-bold text-slate-500">"Bezahlt" Stempel</span>
+                            <div class="relative w-10 h-5 bg-slate-200 rounded-full transition-colors group-hover:bg-slate-300" :class="{'!bg-red-500': settings.showPaid}">
+                                <input type="checkbox" x-model="settings.showPaid" class="sr-only">
+                                <div class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform" :class="{'translate-x-5': settings.showPaid}"></div>
+                            </div>
                         </label>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <!-- 3. DRUCK JOBS -->
-            <section class="mb-6">
-                <div class="flex justify-between items-center mb-3 px-1">
-                    <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2">
-                        <i class="fa-solid fa-cubes text-[var(--ac)]"></i> Druck-Aufträge
-                    </h3>
-
-                    <!-- Defaults Dropdown (FIXED LAYOUT) -->
-                    <div x-data="{ open: false }" class="relative" @click.outside="open = false">
-                        <button @click="open = !open" class="text-[10px] font-bold text-[var(--ac)] hover:opacity-80 bg-[var(--ac-light)] hover:bg-slate-100 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1">
-                            <i class="fa-solid fa-sliders"></i> Defaults
-                        </button>
-                        <div x-show="open" class="absolute right-0 top-full mt-2 w-80 bg-white border border-slate-200 shadow-xl rounded-xl p-4 z-50 transform origin-top-right transition-all">
-                            <h4 class="text-xs font-bold uppercase mb-3 text-slate-500 border-b pb-2">Globale Standardwerte</h4>
-                            <div class="grid grid-cols-2 gap-3 mb-2">
-                                <div class="field-container">
-                                    <label class="field-label">Material</label>
-                                    <div class="input-wrapper">
-                                        <input type="number" x-model.number="defaults.priceKg" class="compact-input">
-                                        <span class="input-unit-overlay">€/kg</span>
-                                    </div>
-                                </div>
-                                <div class="field-container">
-                                    <label class="field-label">Strompreis</label>
-                                    <div class="input-wrapper">
-                                        <input type="number" x-model.number="defaults.energyPrice" class="compact-input">
-                                        <span class="input-unit-overlay">€</span>
-                                    </div>
-                                </div>
-                                <div class="field-container">
-                                    <label class="field-label">Stundenlohn</label>
-                                    <div class="input-wrapper">
-                                        <input type="number" x-model.number="defaults.hourlyRate" class="compact-input">
-                                        <span class="input-unit-overlay">€/h</span>
-                                    </div>
-                                </div>
-                                <div class="field-container">
-                                    <label class="field-label">Maschine</label>
-                                    <div class="input-wrapper">
-                                        <input type="number" x-model.number="defaults.machineHourly" class="compact-input">
-                                        <span class="input-unit-overlay">€/h</span>
-                                    </div>
-                                </div>
+            <!-- 3. DRUCK AUFTRÄGE -->
+            <div>
+                <div class="flex justify-between items-end mb-2">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wider"><i class="fa-solid fa-cubes"></i> Aufträge</div>
+                    <!-- Defaults Popover -->
+                    <div x-data="{open:false}" class="relative">
+                        <button @click="open=!open" class="text-[10px] font-bold text-[var(--ac)] hover:underline">Defaults ändern</button>
+                        <div x-show="open" @click.outside="open=false" class="absolute right-0 bottom-full mb-2 w-64 bg-white border border-slate-200 shadow-xl rounded-xl p-3 z-50">
+                            <h4 class="text-xs font-bold mb-2">Globale Werte</h4>
+                            <div class="grid grid-cols-2 gap-2 mb-2">
+                                <div class="control-group"><span class="control-label">Strom</span><div class="input-box"><input type="number" x-model.number="defaults.energyPrice" class="input-control"><span class="input-unit">€</span></div></div>
+                                <div class="control-group"><span class="control-label">Lohn</span><div class="input-box"><input type="number" x-model.number="defaults.hourlyRate" class="input-control"><span class="input-unit">€/h</span></div></div>
                             </div>
-                            <div class="field-container mb-2">
-                                <label class="field-label">Gewinn-Marge</label>
-                                <div class="input-wrapper">
-                                    <input type="number" x-model.number="defaults.marginPercent" class="compact-input">
-                                    <span class="input-unit-overlay">%</span>
-                                </div>
-                            </div>
-
-                            <!-- INFO SECTION CO2 -->
-                            <h4 class="text-xs font-bold uppercase mb-2 mt-4 text-green-600 border-b pb-1 flex items-center gap-1">
-                                Öko-Daten <div class="tooltip"><i class="fa-solid fa-circle-info text-slate-400 cursor-help"></i><span class="tooltip-text">Der CO₂-Wert für Stromerzeugung. DE-Mix ≈ 0.4 kg/kWh. Ökostrom ≈ 0.0 kg. Siehe Stromrechnung.</span></div>
-                            </h4>
-                            <div class="field-container">
-                                <label class="field-label">Strom Mix (CO₂)</label>
-                                <div class="input-wrapper">
-                                    <input type="number" x-model.number="defaults.co2Electricity" step="0.01" class="compact-input">
-                                    <span class="input-unit-overlay">kg/kWh</span>
-                                </div>
-                            </div>
+                            <div class="control-group"><span class="control-label">Marge</span><div class="input-box"><input type="number" x-model.number="defaults.marginPercent" class="input-control"><span class="input-unit">%</span></div></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="space-y-4">
-                    <template x-for="(job, index) in printJobs" :key="job.id">
-                        <div class="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all">
-                            <!-- Job Header (Clickable) -->
-                            <div class="bg-slate-50 px-4 py-3 flex justify-between items-center cursor-pointer hover:bg-slate-100 border-b border-slate-200" @click="job.expanded = !job.expanded">
+                    <template x-for="(job, idx) in printJobs" :key="job.id">
+                        <div class="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                            <!-- Job Header -->
+                            <div class="bg-slate-100 p-3 flex justify-between items-center cursor-pointer border-b border-slate-200" @click="job.expanded=!job.expanded">
                                 <div class="flex items-center gap-3">
-                                    <div class="bg-[var(--ac-light)] text-[var(--ac)] w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" x-text="index + 1"></div>
-                                    <div class="flex flex-col">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-xs font-bold bg-gray-200 text-gray-700 px-1.5 rounded" x-show="(job.quantity || 1) > 1" x-text="(job.quantity || 1) + 'x'"></span>
-                                            <span class="font-bold text-sm text-slate-700" x-text="job.name || 'Unbenannter Job'"></span>
-                                        </div>
-                                        <div class="flex gap-3 text-[10px] text-slate-500 font-mono">
-                                            <span title="Einzelpreis" x-text="'EP: ' + formatMoney(calculateJobTotal(job))"></span>
-                                            <span title="Gesamtpreis" class="font-bold text-[var(--ac)]" x-text="'Ges: ' + formatMoney(Math.round(calculateJobTotal(job)*100)/100 * (job.quantity || 1))"></span>
-                                            <span class="text-green-600 flex items-center gap-1" title="CO2 pro Stück"><i class="fa-solid fa-leaf text-[9px]"></i> <span x-text="(calculateJobCO2(job)*1000).toFixed(0) + 'g'"></span></span>
+                                    <div class="bg-[var(--ac)] text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" x-text="idx+1"></div>
+                                    <div>
+                                        <div class="font-bold text-sm text-slate-700" x-text="job.name || 'Neues Bauteil'"></div>
+                                        <div class="text-[10px] text-slate-500 font-mono">
+                                            <span x-text="formatMoney(calculateJobTotal(job))"></span> / Stk
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-3">
-                                    <button @click.stop="removePrintJob(index)" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-trash-can"></i></button>
-                                    <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" :class="{'rotate-180': job.expanded}"></i>
+                                <div class="flex gap-2">
+                                    <button @click.stop="removePrintJob(idx)" class="text-slate-400 hover:text-red-500 p-1"><i class="fa-solid fa-trash"></i></button>
+                                    <i class="fa-solid fa-chevron-down text-slate-400 transition-transform" :class="{'rotate-180': job.expanded}"></i>
                                 </div>
                             </div>
 
-                            <div x-show="job.expanded" class="p-4 space-y-4">
-                                <!-- Basic Fields -->
-                                <div class="flex gap-4">
-                                    <div class="w-20 field-container">
-                                        <label class="field-label">Anzahl</label>
-                                        <div class="input-wrapper">
-                                            <input type="number" x-model.number="job.quantity" min="1" class="compact-input text-center font-bold !pr-2">
-                                        </div>
+                            <!-- Job Body -->
+                            <div x-show="job.expanded" class="p-4 space-y-4 bg-white">
+                                <div class="flex gap-3">
+                                    <div class="control-group w-20">
+                                        <span class="control-label">Menge</span>
+                                        <div class="input-box"><input type="number" x-model.number="job.quantity" class="input-control text-center"></div>
                                     </div>
-                                    <div class="flex-1 field-container">
-                                        <label class="field-label">Bezeichnung</label>
-                                        <div class="input-wrapper">
-                                            <input type="text" x-model="job.name" class="compact-input text-left" placeholder="Bauteil Name">
-                                        </div>
+                                    <div class="control-group flex-1">
+                                        <span class="control-label">Bauteil Name</span>
+                                        <div class="input-box"><input type="text" x-model="job.name" class="input-control text-left"></div>
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="field-container">
-                                        <label class="field-label">Material-Typ</label>
-                                        <select class="compact-select" x-model="job.material" @change="applyMaterial(job)">
-                                            <option value="pla">PLA Standard</option>
-                                            <option value="pla_plus">PLA+</option>
-                                            <option value="pla_silk">PLA Silk</option>
-                                            <option value="petg">PETG</option>
-                                            <option value="petg_cf">PETG-CF</option>
-                                            <option value="abs">ABS</option>
-                                            <option value="abs_cf">ABS-CF</option>
-                                            <option value="asa">ASA</option>
-                                            <option value="asa_cf">ASA-CF</option>
-                                            <option value="tpu">TPU (Flex)</option>
-                                            <option value="pa">Nylon (PA)</option>
-                                            <option value="custom">Benutzerdefiniert</option>
-                                        </select>
-                                    </div>
-                                    <div class="field-container">
-                                        <label class="field-label">Filament-Preis</label>
-                                        <div class="input-wrapper">
-                                            <input type="number" x-model.number="job.priceKg" class="compact-input">
-                                            <span class="input-unit-overlay">€/kg</span>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="control-group">
+                                        <span class="control-label">Material</span>
+                                        <div class="input-box">
+                                            <select x-model="job.material" @change="applyMaterial(job)" class="select-control">
+                                                <option value="pla">PLA Standard</option>
+                                                <option value="pla_plus">PLA+</option>
+                                                <option value="pla_silk">PLA Silk</option>
+                                                <option value="petg">PETG</option>
+                                                <option value="petg_cf">PETG-CF</option>
+                                                <option value="abs">ABS</option>
+                                                <option value="abs_cf">ABS-CF</option>
+                                                <option value="asa">ASA</option>
+                                                <option value="asa_cf">ASA-CF</option>
+                                                <option value="tpu">TPU (Flex)</option>
+                                                <option value="pa">Nylon (PA)</option>
+                                                <option value="custom">Eigenes</option>
+                                            </select>
                                         </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <span class="control-label">Filament Preis</span>
+                                        <div class="input-box"><input type="number" x-model.number="job.priceKg" class="input-control"><span class="input-unit">€/kg</span></div>
+                                    </div>
+                                    <div class="control-group">
+                                        <span class="control-label">Gewicht</span>
+                                        <div class="input-box"><input type="number" x-model.number="job.weight" class="input-control"><span class="input-unit">g</span></div>
+                                    </div>
+                                    <div class="control-group">
+                                        <span class="control-label">Druckzeit</span>
+                                        <div class="input-box"><input type="number" x-model.number="job.time" step="0.1" class="input-control"><span class="input-unit">h</span></div>
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="field-container">
-                                        <label class="field-label">Gewicht (Objekt)</label>
-                                        <div class="input-wrapper">
-                                            <input type="number" x-model.number="job.weight" class="compact-input text-slate-800">
-                                            <span class="input-unit-overlay">g</span>
-                                        </div>
-                                    </div>
-                                    <div class="field-container">
-                                        <label class="field-label">Druckzeit</label>
-                                        <div class="input-wrapper">
-                                            <input type="number" x-model.number="job.time" step="0.1" class="compact-input text-slate-800">
-                                            <span class="input-unit-overlay">h</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Detail Kalkulation (CLEANED UP) -->
-                                <details class="group border border-slate-200 rounded-lg overflow-hidden">
-                                    <summary class="px-3 py-2 bg-slate-50 text-xs font-bold text-slate-600 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100">
-                                        <span><i class="fa-solid fa-calculator mr-1 text-slate-400"></i> Kosten & Marge Details (pro Stück)</span>
-                                        <i class="fa-solid fa-chevron-down ml-auto transition-transform group-open:rotate-180"></i>
+                                <!-- Advanced Details -->
+                                <details class="border border-slate-200 rounded-lg overflow-hidden group">
+                                    <summary class="bg-slate-50 p-2 text-xs font-bold text-slate-500 cursor-pointer flex justify-between hover:bg-slate-100">
+                                        <span>Kalkulation Details</span>
+                                        <i class="fa-solid fa-plus group-open:hidden"></i>
+                                        <i class="fa-solid fa-minus hidden group-open:inline"></i>
                                     </summary>
-                                    <div class="p-4 space-y-4 bg-white border-t border-slate-200">
-                                        
-                                        <!-- Row 1: Production Basics -->
-                                        <div class="grid grid-cols-2 gap-4">
-                                            <div class="field-container">
-                                                <label class="field-label">Arbeitszeit (Nachbearb.)</label>
-                                                <div class="input-wrapper">
-                                                    <input type="number" x-model.number="job.laborMinutes" class="compact-input">
-                                                    <span class="input-unit-overlay">min</span>
-                                                </div>
-                                            </div>
-                                            <div class="field-container">
-                                                <label class="field-label">Stundenlohn</label>
-                                                <div class="input-wrapper">
-                                                    <input type="number" x-model.number="job.hourlyRate" class="compact-input">
-                                                    <span class="input-unit-overlay">€/h</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Row 2: Machine & Power -->
-                                        <div class="grid grid-cols-2 gap-4">
-                                            <div class="field-container">
-                                                <label class="field-label">Strompreis</label>
-                                                <div class="input-wrapper">
-                                                    <input type="number" x-model.number="job.energyPrice" step="0.01" class="compact-input">
-                                                    <span class="input-unit-overlay">€</span>
-                                                </div>
-                                            </div>
-                                            <div class="field-container">
-                                                <label class="field-label">Verbrauch</label>
-                                                <div class="input-wrapper">
-                                                    <input type="number" x-model.number="job.watts" class="compact-input">
-                                                    <span class="input-unit-overlay">W</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Machine Calculation Block -->
-                                        <div class="bg-slate-50 p-3 rounded border border-slate-200">
-                                            <div class="flex justify-between items-center mb-2">
-                                                <label class="text-[10px] font-bold text-slate-500 uppercase">Maschinen-Satz (€/h)</label>
-                                                <div class="w-24 field-container">
-                                                    <div class="input-wrapper">
-                                                        <input type="number" x-model.number="job.machineHourly" step="0.1" class="compact-input">
-                                                        <span class="input-unit-overlay">€/h</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <details class="text-xs">
-                                                <summary class="cursor-pointer text-[var(--ac)] hover:opacity-80 font-medium select-none">Anschaffung berechnen &#9662;</summary>
-                                                <div class="grid grid-cols-2 gap-3 mt-2">
-                                                    <div class="field-container">
-                                                        <label class="field-label">Kaufpreis</label>
-                                                        <div class="input-wrapper">
-                                                            <input type="number" x-model.number="job.machinePurchase" @input="calculateMachineHourly(job)" class="compact-input">
-                                                            <span class="input-unit-overlay">€</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="field-container">
-                                                        <label class="field-label">Lebensdauer</label>
-                                                        <div class="input-wrapper">
-                                                            <input type="number" x-model.number="job.machineLife" @input="calculateMachineHourly(job)" class="compact-input">
-                                                            <span class="input-unit-overlay">h</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </details>
-                                        </div>
-
-                                        <!-- Row 3: Factors -->
-                                        <div class="grid grid-cols-3 gap-3">
-                                            <div class="field-container">
-                                                <label class="field-label">Maschinenlast</label>
-                                                <div class="input-wrapper">
-                                                    <input type="number" x-model.number="job.loadFactor" class="compact-input">
-                                                    <span class="input-unit-overlay">%</span>
-                                                </div>
-                                            </div>
-                                            <div class="field-container">
-                                                <label class="field-label">Ausschuss</label>
-                                                <div class="input-wrapper">
-                                                    <input type="number" x-model.number="job.failRate" class="compact-input">
-                                                    <span class="input-unit-overlay">%</span>
-                                                </div>
-                                            </div>
-                                            <div class="field-container">
-                                                <label class="field-label">Fixkosten</label>
-                                                <div class="input-wrapper">
-                                                    <input type="number" x-model.number="job.fixedCost" class="compact-input">
-                                                    <span class="input-unit-overlay">€</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Row 4: Pricing -->
+                                    <div class="p-3 space-y-3 bg-white">
                                         <div class="grid grid-cols-2 gap-3">
-                                            <div class="field-container">
-                                                <label class="field-label text-emerald-600">Gewinn-Marge</label>
-                                                <div class="input-wrapper">
-                                                    <input type="number" x-model.number="job.marginPercent" class="compact-input text-emerald-700 bg-emerald-50 border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500">
-                                                    <span class="input-unit-overlay text-emerald-600">%</span>
-                                                </div>
+                                            <div class="control-group"><span class="control-label">Nachbearb.</span><div class="input-box"><input type="number" x-model.number="job.laborMinutes" class="input-control"><span class="input-unit">min</span></div></div>
+                                            <div class="control-group"><span class="control-label">Stundenlohn</span><div class="input-box"><input type="number" x-model.number="job.hourlyRate" class="input-control"><span class="input-unit">€/h</span></div></div>
+                                            <div class="control-group"><span class="control-label">Strompreis</span><div class="input-box"><input type="number" x-model.number="job.energyPrice" step="0.01" class="input-control"><span class="input-unit">€</span></div></div>
+                                            <div class="control-group"><span class="control-label">Verbrauch</span><div class="input-box"><input type="number" x-model.number="job.watts" class="input-control"><span class="input-unit">W</span></div></div>
+                                        </div>
+                                        
+                                        <div class="p-2 bg-slate-50 rounded border border-slate-100">
+                                            <div class="flex justify-between items-center mb-2">
+                                                <span class="text-[10px] font-bold text-slate-400 uppercase">Maschine</span>
+                                                <div class="control-group w-24"><div class="input-box h-8"><input type="number" x-model.number="job.machineHourly" class="input-control"><span class="input-unit">€/h</span></div></div>
                                             </div>
-                                            <div class="field-container">
-                                                <label class="field-label text-red-600">Rabatt</label>
-                                                <div class="input-wrapper">
-                                                    <input type="number" x-model.number="job.discount" class="compact-input text-red-700 bg-red-50 border-red-200 focus:border-red-500 focus:ring-red-500">
-                                                    <span class="input-unit-overlay text-red-600">%</span>
-                                                </div>
+                                            <div class="grid grid-cols-2 gap-2">
+                                                <div class="control-group"><span class="control-label">Kaufpreis</span><div class="input-box h-8 bg-white"><input type="number" x-model.number="job.machinePurchase" @input="calculateMachineHourly(job)" class="input-control"><span class="input-unit">€</span></div></div>
+                                                <div class="control-group"><span class="control-label">Lebensdauer</span><div class="input-box h-8 bg-white"><input type="number" x-model.number="job.machineLife" @input="calculateMachineHourly(job)" class="input-control"><span class="input-unit">h</span></div></div>
                                             </div>
                                         </div>
 
-                                        <!-- CO2 Factor for this job -->
-                                        <div class="field-container mt-2">
-                                            <label class="field-label">Material CO₂-Faktor</label>
-                                            <div class="input-wrapper">
-                                                <input type="number" x-model.number="job.co2Material" step="0.1" class="compact-input">
-                                                <span class="input-unit-overlay">kg/kg</span>
+                                        <div class="grid grid-cols-3 gap-2">
+                                            <div class="control-group"><span class="control-label">Last</span><div class="input-box"><input type="number" x-model.number="job.loadFactor" class="input-control"><span class="input-unit">%</span></div></div>
+                                            <div class="control-group"><span class="control-label">Ausschuss</span><div class="input-box"><input type="number" x-model.number="job.failRate" class="input-control"><span class="input-unit">%</span></div></div>
+                                            <div class="control-group"><span class="control-label">Fixkosten</span><div class="input-box"><input type="number" x-model.number="job.fixedCost" class="input-control"><span class="input-unit">€</span></div></div>
+                                        </div>
+
+                                        <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+                                            <div class="control-group">
+                                                <span class="control-label text-green-600">Gewinn-Marge</span>
+                                                <div class="input-box border-green-200 bg-green-50 focus-within:bg-white focus-within:border-green-500"><input type="number" x-model.number="job.marginPercent" class="input-control text-green-700"><span class="input-unit text-green-600">%</span></div>
+                                            </div>
+                                            <div class="control-group">
+                                                <span class="control-label text-red-600">Rabatt</span>
+                                                <div class="input-box border-red-200 bg-red-50 focus-within:bg-white focus-within:border-red-500"><input type="number" x-model.number="job.discount" class="input-control text-red-700"><span class="input-unit text-red-600">%</span></div>
                                             </div>
                                         </div>
                                     </div>
@@ -1011,240 +800,184 @@
                             </div>
                         </div>
                     </template>
-
-                    <button @click="addPrintJob()" class="w-full py-3 bg-white border-2 border-dashed border-slate-300 text-slate-500 rounded-xl font-bold text-sm hover:border-[var(--ac)] hover:text-[var(--ac)] hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-plus-circle"></i> Weiteren Druck berechnen
-                    </button>
+                    
+                    <button @click="addPrintJob()" class="w-full py-3 border-2 border-dashed border-slate-300 text-slate-400 font-bold rounded-xl hover:border-[var(--ac)] hover:text-[var(--ac)] hover:bg-white transition-all">+ Weiteres Bauteil</button>
                 </div>
-            </section>
+            </div>
 
-            <!-- 4. ZUSATZ POSITIONEN -->
-            <section class="mb-10">
-                <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2 mb-3 px-1">
-                    <i class="fa-solid fa-list-check text-[var(--ac)]"></i> Manuelle Positionen
-                </h3>
-                <div class="space-y-3">
-                    <template x-for="(item, index) in extraItems" :key="index">
-                        <div class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
-                            <div class="flex-1 space-y-2">
-                                <input type="text" x-model="item.desc" placeholder="Beschreibung (z.B. CAD-Design, Versand)" class="w-full text-sm font-medium border-b border-dotted border-slate-300 focus:border-[var(--ac)] outline-none pb-1 bg-transparent placeholder-slate-400">
-                                <div class="flex gap-3">
-                                    <div class="w-24 field-container">
-                                        <label class="field-label">Menge</label>
-                                        <div class="input-wrapper">
-                                            <input type="number" x-model.number="item.qty" class="compact-input text-center !pr-2">
-                                        </div>
-                                    </div>
-                                    <div class="flex-1 field-container">
-                                        <label class="field-label">Einzelpreis</label>
-                                        <div class="input-wrapper">
-                                            <input type="number" x-model.number="item.price" step="0.1" class="compact-input">
-                                            <span class="input-unit-overlay">€</span>
-                                        </div>
-                                    </div>
-                                </div>
+            <!-- 4. MANUELLE POSITIONEN -->
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-list"></i> Zusatzpositionen</div>
+                <div class="space-y-2">
+                    <template x-for="(item, idx) in extraItems" :key="idx">
+                        <div class="flex gap-2 items-start">
+                            <div class="control-group flex-1">
+                                <div class="input-box"><input type="text" x-model="item.desc" class="input-control text-left" placeholder="Beschreibung"></div>
                             </div>
-                            <button @click="removeExtraItem(index)" class="text-slate-300 hover:text-red-500 transition-colors pt-6"><i class="fa-solid fa-circle-xmark text-lg"></i></button>
+                            <div class="control-group w-16">
+                                <div class="input-box"><input type="number" x-model.number="item.qty" class="input-control text-center"></div>
+                            </div>
+                            <div class="control-group w-24">
+                                <div class="input-box"><input type="number" x-model.number="item.price" class="input-control"><span class="input-unit">€</span></div>
+                            </div>
+                            <button @click="extraItems.splice(idx, 1)" class="mt-2 text-slate-300 hover:text-red-500"><i class="fa-solid fa-times-circle"></i></button>
                         </div>
                     </template>
-                    <button @click="addExtraItem()" class="w-full py-2 bg-slate-100 text-slate-500 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-slate-200 transition-colors">
-                        + Position hinzufügen
-                    </button>
+                    <button @click="extraItems.push({desc:'',qty:1,price:0})" class="text-xs font-bold text-[var(--ac)] hover:underline">+ Position</button>
                 </div>
-            </section>
+            </div>
 
         </div>
 
-        <!-- Footer -->
-        <div class="p-4 bg-white border-t border-slate-200 flex gap-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-30">
-            <button @click="resetData()" class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg font-medium text-sm transition-colors border border-slate-200">Reset</button>
-            <button @click="printDocument()" class="flex-1 px-4 py-2 bg-[var(--ac)] hover:opacity-90 text-white rounded-lg font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 transform active:scale-95">
-                <i class="fa-solid fa-print"></i> <span>Dokument erstellen</span>
+        <!-- Footer Actions -->
+        <div class="p-4 border-t border-slate-200 bg-white">
+            <button @click="printDocument()" class="w-full py-3 bg-[var(--ac)] text-white font-bold rounded-lg shadow-lg hover:opacity-90 transform active:scale-95 transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-print"></i> Dokument erstellen
             </button>
         </div>
     </aside>
 
-    <!-- RECHTS: VORSCHAU -->
-    <main class="flex-1 bg-[var(--bg-preview)] preview-area overflow-y-auto p-12 flex flex-col items-center">
-
-        <template x-for="(page, pageIndex) in getPages()" :key="pageIndex">
+    <!-- PREVIEW AREA -->
+    <main class="flex-1 bg-[var(--bg-preview)] flex flex-col items-center py-10 overflow-y-auto">
+        <template x-for="page in getPages()">
             <div class="a4-page">
+                <!-- PAID STAMP (Nur bei Rechnung) -->
+                <template x-if="page.isFirst && settings.showPaid && docType === 'rechnung'"><div class="paid-stamp">BEZAHLT</div></template>
 
-                <!-- BEZAHLT STEMPEL (Nur Seite 1) -->
-                <template x-if="page.isFirst && settings.showPaid">
-                    <div class="paid-stamp">BEZAHLT</div>
-                </template>
-
-                <!-- SEITE 1: HEADER -->
-                <template x-if="page.isFirst">
+                <!-- HEADER -->
+                <div class="flex justify-between items-start border-b-2 pb-6 mb-8" style="border-color: var(--ac)">
                     <div>
-                        <div class="flex justify-between items-start border-b-2 pb-6 mb-10" style="border-color: var(--ac)">
-                            <div>
-                                <h1 class="text-4xl font-extrabold uppercase tracking-tight text-gray-900" x-html="vendor.company"></h1>
-                                <p class="text-xs text-gray-500 mt-1 font-medium tracking-wide uppercase" x-html="vendor.slogan"></p>
-                            </div>
-                            <div class="text-right text-[9px] text-gray-500 leading-relaxed font-medium">
-                                <p class="text-gray-900 font-bold uppercase" x-html="vendor.name"></p>
-                                <p x-html="vendor.street"></p>
-                                <p><span x-html="vendor.zip"></span> <span x-html="vendor.city"></span></p>
-                                <p class="mt-1 font-bold" style="color: var(--ac)" x-html="vendor.email"></p>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-between mb-12">
-                            <div class="w-[85mm]">
-                                <p class="text-[6pt] text-gray-400 underline mb-2 ml-1">
-                                    <span x-html="vendor.company"></span> &bull; <span x-html="vendor.street"></span> &bull; <span x-html="vendor.zip"></span> <span x-html="vendor.city"></span>
-                                </p>
-                                <div class="text-[10pt] leading-normal p-2 rounded">
-                                    <div class="font-bold mb-1" x-html="customer.name"></div>
-                                    <div x-html="formatText(customer.address)"></div>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <h2 class="text-3xl font-bold text-gray-900 mb-4" x-text="docType === 'angebot' ? 'Angebot' : 'Rechnung'"></h2>
-                                <div class="inline-block text-sm text-left">
-                                    <div class="grid grid-cols-[80px_1fr] gap-y-1">
-                                        <span class="text-gray-500">Nummer:</span> <span class="font-mono font-bold text-gray-900 text-right" x-text="project.number"></span>
-                                        <span class="text-gray-500">Datum:</span> <span class="font-mono text-gray-900 text-right" x-text="formatDate(project.date)"></span>
-                                        <!-- FIX: Use display:contents to ensure elements are direct children of grid -->
-                                        <div class="contents" x-show="customer.id">
-                                            <span class="text-gray-500">Kunden-Nr:</span> <span class="font-mono text-gray-900 text-right" x-text="customer.id"></span>
-                                        </div>
-                                        <!-- NEW: Order Number Display -->
-                                        <div class="contents" x-show="customer.orderNumber">
-                                            <span class="text-gray-500">Bestell-Nr:</span> <span class="font-mono text-gray-900 text-right" x-text="customer.orderNumber"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-8">
-                            <h3 class="font-bold text-lg text-gray-900 mb-1" x-html="project.name"></h3>
-                            <p class="text-sm text-gray-600">Vielen Dank für Ihre Anfrage. Wir bieten Ihnen hiermit unverbindlich an:</p>
-                        </div>
+                        <h1 class="text-3xl font-extrabold uppercase text-slate-900" x-text="vendor.company"></h1>
+                        <p class="text-xs text-slate-500 font-medium tracking-wide uppercase mt-1" x-text="vendor.slogan"></p>
                     </div>
-                </template>
+                    <div class="text-right text-[8pt] text-slate-500 font-medium leading-relaxed">
+                        <p class="font-bold text-slate-900 uppercase" x-text="vendor.name"></p>
+                        <p x-text="vendor.street"></p>
+                        <p><span x-text="vendor.zip"></span> <span x-text="vendor.city"></span></p>
+                        <p class="text-[var(--ac)] font-bold mt-1" x-text="vendor.email"></p>
+                    </div>
+                </div>
 
-                <!-- SEITE 2+: HEADER -->
-                <template x-if="!page.isFirst">
-                    <div class="border-b-2 pb-4 mb-8" style="border-color: var(--ac-light)">
-                        <div class="flex justify-between items-end mb-2">
-                            <div>
-                                <div class="text-xl font-bold text-gray-900" x-html="vendor.company"></div>
-                                <div class="text-xs text-gray-400 uppercase tracking-wide">Fortsetzung zu <span x-text="docType === 'angebot' ? 'Angebot' : 'Rechnung'"></span> <span x-text="project.number"></span></div>
+                <!-- INFO BLOCK -->
+                <template x-if="page.isFirst">
+                    <div class="flex justify-between mb-10">
+                        <div class="w-[85mm]">
+                            <p class="text-[6pt] text-slate-400 underline mb-2"><span x-text="vendor.company"></span> • <span x-text="vendor.street"></span> • <span x-text="vendor.zip"></span> <span x-text="vendor.city"></span></p>
+                            <div class="text-[10pt] leading-snug p-2 rounded">
+                                <div class="font-bold text-slate-900" x-text="customer.name"></div>
+                                <div x-html="formatText(customer.address)" class="text-slate-600"></div>
                             </div>
-                            <div class="text-right text-xs">
-                                <div class="font-bold text-gray-900" x-html="project.name"></div>
-                                <div class="text-gray-500" x-text="formatDate(project.date)"></div>
+                        </div>
+                        <div class="text-right">
+                            <h2 class="text-2xl font-bold text-slate-900 mb-2" x-text="getDocumentTitle()"></h2>
+                            <div class="text-sm grid grid-cols-[auto_auto] gap-x-4 gap-y-1 justify-end text-slate-600">
+                                <span>Nr:</span> <span class="font-mono font-bold text-slate-900" x-text="project.number"></span>
+                                <span>Datum:</span> <span x-text="formatDate(project.date)"></span>
+                                <span x-show="customer.id">Kd-Nr:</span> <span x-show="customer.id" x-text="customer.id"></span>
                             </div>
                         </div>
                     </div>
                 </template>
 
-                <!-- TABELLE -->
+                <!-- PROJECT TITLE -->
+                <template x-if="page.isFirst">
+                    <div class="mb-6">
+                        <h3 class="font-bold text-lg text-slate-900" x-text="project.name"></h3>
+                    </div>
+                </template>
+
+                <!-- TABLE -->
                 <div class="flex-1">
                     <table class="w-full text-sm">
-                        <thead>
-                            <tr class="border-b-2 text-[10px] uppercase tracking-wider font-bold" style="border-color: var(--ac); color: var(--ac)">
-                                <th class="text-left py-2 w-12">Pos.</th>
-                                <th class="text-left py-2">Beschreibung</th>
-                                <th class="text-right py-2 w-20">Menge</th>
-                                <th class="text-right py-2 w-24">Einzel</th>
-                                <th class="text-right py-2 w-28">Gesamt</th>
+                        <thead class="border-b-2 text-[var(--ac)]" style="border-color: var(--ac)">
+                            <tr class="text-xs font-bold uppercase text-left">
+                                <th class="py-2 w-10">Pos</th>
+                                <th class="py-2">Beschreibung</th>
+                                <th class="py-2 text-right w-16">Menge</th>
+                                <!-- Preise ausblenden bei Lieferschein -->
+                                <template x-if="docType !== 'lieferschein'">
+                                    <th class="py-2 text-right w-24">Einzel</th>
+                                </template>
+                                <template x-if="docType !== 'lieferschein'">
+                                    <th class="py-2 text-right w-24">Gesamt</th>
+                                </template>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100">
+                        <tbody class="divide-y divide-slate-100">
                             <template x-for="item in page.items" :key="item.pos">
                                 <tr>
-                                    <td class="py-3 align-top font-mono text-xs text-gray-400 pt-4" x-text="item.pos"></td>
-                                    <td class="py-3 align-top pt-4">
-                                        <div class="font-bold text-gray-800" x-text="item.desc"></div>
-                                        <div class="text-xs text-gray-500 mt-1 space-x-2" x-show="item.details && item.details.length">
-                                            <template x-for="detail in item.details">
-                                                <span class="inline-block bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100" x-text="detail"></span>
-                                            </template>
+                                    <td class="py-3 align-top text-slate-400 font-mono text-xs" x-text="item.pos"></td>
+                                    <td class="py-3 align-top">
+                                        <div class="font-bold text-slate-800" x-text="item.desc"></div>
+                                        <div class="text-xs text-slate-500 mt-1 flex gap-2" x-show="item.details.length">
+                                            <template x-for="d in item.details"><span class="bg-slate-50 px-1.5 rounded border border-slate-100" x-text="d"></span></template>
                                         </div>
                                     </td>
-                                    <td class="py-3 align-top text-right pt-4 text-gray-700" x-text="item.qty"></td>
-                                    <td class="py-3 align-top text-right font-mono text-gray-700 pt-4" x-text="formatMoney(item.price)"></td>
-                                    <td class="py-3 align-top text-right font-mono font-bold text-gray-900 pt-4" x-text="formatMoney(item.total)"></td>
+                                    <td class="py-3 align-top text-right text-slate-600" x-text="item.qty"></td>
+                                    
+                                    <!-- Preise ausblenden bei Lieferschein -->
+                                    <template x-if="docType !== 'lieferschein'">
+                                        <td class="py-3 align-top text-right font-mono text-slate-600" x-text="formatMoney(item.price)"></td>
+                                    </template>
+                                    <template x-if="docType !== 'lieferschein'">
+                                        <td class="py-3 align-top text-right font-mono font-bold text-slate-900" x-text="formatMoney(item.total)"></td>
+                                    </template>
                                 </tr>
                             </template>
                         </tbody>
                     </table>
                 </div>
 
-                <!-- FOOTER -->
-                <div class="mt-auto">
-                    <template x-if="!page.isLast">
-                        <div class="text-right text-xs text-gray-400 italic py-6 border-t border-gray-100 mt-4">
-                            Fortsetzung auf der nächsten Seite...
-                        </div>
-                    </template>
-
-                    <template x-if="page.isLast">
-                        <div class="border-t-2 mt-8 pt-6" style="border-color: var(--ac)">
-                            <div class="flex justify-end">
-                                <div class="w-72">
-                                    <div class="flex justify-between py-1 text-sm text-gray-600">
-                                        <span>Nettobetrag:</span>
-                                        <span class="font-mono" x-text="formatMoney(getSubtotal())"></span>
-                                    </div>
-                                    <template x-if="settings.taxEnabled">
-                                        <div class="flex justify-between py-1 text-sm text-gray-600">
-                                            <span>Umsatzsteuer 19%:</span>
-                                            <span class="font-mono" x-text="formatMoney(getVat())"></span>
-                                        </div>
-                                    </template>
-                                    <div class="flex justify-between py-3 border-t-2 mt-2 text-xl font-bold text-gray-900 items-baseline" style="border-color: var(--ac-light)">
-                                        <span>Gesamtbetrag:</span>
-                                        <span class="font-mono" style="color: var(--ac)" x-text="formatMoney(getTotal())"></span>
-                                    </div>
-
-                                    <!-- CO2 FOOTER LINE -->
-                                    <template x-if="settings.showCO2">
-                                        <div class="flex justify-between py-2 text-xs text-green-700 font-medium border-t border-dashed border-gray-300 mt-1">
-                                            <span class="flex items-center gap-1"><i class="fa-solid fa-leaf"></i> CO₂-Fußabdruck dieses Auftrags:</span>
-                                            <span class="font-bold" x-text="getTotalCO2() + ' g'"></span>
-                                        </div>
-                                    </template>
-
-                                    <div class="mt-4 text-[10px] text-gray-500 text-right leading-tight bg-gray-50 p-2 rounded">
-                                        <template x-if="!settings.taxEnabled">
-                                            <div>Gemäß §19 UStG wird keine Umsatzsteuer berechnet.<br>Rechnungsbetrag ist sofort fällig ohne Abzug.</div>
-                                        </template>
-                                        <template x-if="settings.taxEnabled">
-                                            <div>Leistungsdatum entspricht Rechnungsdatum.<br>Zahlbar innerhalb von 14 Tagen netto.</div>
-                                        </template>
-                                    </div>
-                                </div>
+                <!-- FOOTER TOTALS (Nur wenn KEIN Lieferschein) -->
+                <template x-if="page.isLast && docType !== 'lieferschein'">
+                    <div class="mt-8 border-t-2 pt-4 flex justify-end" style="border-color: var(--ac)">
+                        <div class="w-64">
+                            <div class="flex justify-between text-sm text-slate-600 mb-1"><span>Netto:</span> <span class="font-mono" x-text="formatMoney(getSubtotal())"></span></div>
+                            <template x-if="settings.taxEnabled">
+                                <div class="flex justify-between text-sm text-slate-600 mb-2"><span>MwSt 19%:</span> <span class="font-mono" x-text="formatMoney(getVat())"></span></div>
+                            </template>
+                            <div class="flex justify-between text-xl font-bold text-slate-900 border-t border-slate-200 pt-2">
+                                <span>Gesamt:</span> <span class="text-[var(--ac)] font-mono" x-text="formatMoney(getTotal())"></span>
+                            </div>
+                            <!-- CO2 -->
+                            <div x-show="settings.showCO2" class="mt-4 text-xs text-green-600 font-bold text-right flex justify-end items-center gap-1">
+                                <i class="fa-solid fa-leaf"></i> <span>CO₂ Footprint: <span x-text="getTotalCO2()"></span>g</span>
+                            </div>
+                            
+                            <!-- LEGAL TEXT (Rechtstext) - Jetzt hier wieder eingefügt -->
+                            <div class="mt-4 text-[10px] text-slate-500 text-right leading-tight bg-slate-50 p-2 rounded border border-slate-100">
+                                <template x-if="!settings.taxEnabled">
+                                    <div>Gemäß §19 UStG wird keine Umsatzsteuer berechnet.<br>Rechnungsbetrag ist sofort fällig ohne Abzug.</div>
+                                </template>
+                                <template x-if="settings.taxEnabled">
+                                    <div>Leistungsdatum entspricht Rechnungsdatum.<br>Zahlbar innerhalb von 14 Tagen netto.</div>
+                                </template>
                             </div>
                         </div>
-                    </template>
+                    </div>
+                </template>
 
-                    <div class="border-t border-gray-300 pt-4 mt-4 grid grid-cols-3 gap-8 text-[7pt] text-gray-500 uppercase tracking-wide">
-                        <div>
-                            <strong class="text-gray-900 block mb-1" x-html="vendor.company"></strong>
-                            <span x-html="vendor.street"></span><br>
-                            <span x-html="vendor.zip"></span> <span x-html="vendor.city"></span>
-                        </div>
-                        <div class="text-center">
-                            <span class="block mb-1">Bankverbindung</span>
-                            <span x-html="vendor.bank"></span><br>
-                            IBAN: <span class="font-mono text-gray-700" x-html="vendor.iban"></span><br>
-                            BIC: <span class="font-mono" x-html="vendor.bic"></span>
-                        </div>
-                        <div class="text-right">
-                            <div class="mb-1" x-show="settings.taxEnabled">USt-IdNr: <span x-html="vendor.taxId"></span></div>
-                            <div class="font-bold text-gray-900">Seite <span x-text="page.number"></span> von <span x-text="page.totalPages"></span></div>
-                        </div>
+                <!-- PAGE FOOTER -->
+                <div class="mt-auto border-t border-slate-200 pt-4 grid grid-cols-3 text-[7pt] text-slate-400 uppercase">
+                    <div>
+                        <strong class="text-slate-700 block" x-text="vendor.company"></strong>
+                        <span x-text="vendor.street"></span>, <span x-text="vendor.city"></span>
+                    </div>
+                    <div class="text-center">
+                        <span class="block text-slate-700 font-bold">Bankverbindung</span>
+                        IBAN: <span x-text="vendor.iban"></span><br>BIC: <span x-text="vendor.bic"></span>
+                    </div>
+                    <div class="text-right">
+                        <div x-show="settings.taxEnabled">Ust-ID: <span x-text="vendor.taxId"></span></div>
+                        Seite <span x-text="page.number"></span> / <span x-text="page.totalPages"></span>
                     </div>
                 </div>
-
             </div>
         </template>
     </main>
+
+    <script>
+        function formatText(t) { return t ? t.replace(/\n/g, '<br>') : ''; }
+    </script>
 </body>
 </html>
