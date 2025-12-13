@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kostenrechner V2 – Angebot &amp; Rechnung | Warenschmiede</title>
-    <meta name="description" content="Interner 3D-Druck-Kostenrechner V2 für Angebote &amp; Rechnungen. Läuft lokal im Browser, ohne Uploads oder Tracking.">
+    <title>Kostenrechner V3 – Angebot &amp; Rechnung | Warenschmiede</title>
+    <meta name="description" content="Interner 3D-Druck-Kostenrechner V3 für Angebote &amp; Rechnungen. Optimiertes UI mit grauen Eingabefeldern.">
     <link rel="canonical" href="https://www.warenschmiede.com/tools/kostenrechner-v2.html">
     <meta name="robots" content="index,follow">
 
@@ -106,24 +106,23 @@
             @apply p-5 space-y-4;
         }
 
-        /* --- CLEAN INPUT STYLES --- */
+        /* --- CLEAN INPUT STYLES (GREY EDITION) --- */
         .modern-input {
-            @apply w-full bg-white border border-slate-300 text-slate-700 rounded-md px-3 py-2.5 text-sm transition-all shadow-sm;
+            @apply w-full bg-slate-100 border border-slate-200 text-slate-800 rounded-md px-3 py-2.5 text-sm transition-all shadow-sm;
             @apply placeholder:text-slate-400 placeholder:italic; 
-            @apply focus:outline-none focus:border-[var(--ac)] focus:ring-1 focus:ring-[var(--ac)];
+            @apply focus:bg-white focus:outline-none focus:border-[var(--ac)] focus:ring-1 focus:ring-[var(--ac)];
         }
         
         .modern-select {
-            @apply w-full bg-white border border-slate-300 text-slate-700 rounded-md px-3 py-2.5 text-sm transition-all shadow-sm cursor-pointer;
-            @apply focus:outline-none focus:border-[var(--ac)] focus:ring-1 focus:ring-[var(--ac)];
+            @apply w-full bg-slate-100 border border-slate-200 text-slate-800 rounded-md px-3 py-2.5 text-sm transition-all shadow-sm cursor-pointer;
+            @apply focus:bg-white focus:outline-none focus:border-[var(--ac)] focus:ring-1 focus:ring-[var(--ac)];
         }
 
         textarea.modern-input {
             @apply resize-none block;
         }
 
-        /* --- NEW ROBUST INPUT GROUP (Fixed by Marco's request) --- */
-        /* This creates the box with [Label | Input | Unit] inside */
+        /* --- ROBUST INPUT GROUP (GREY EDITION) --- */
         .input-group-container {
             @apply relative group;
         }
@@ -133,17 +132,17 @@
         }
 
         .input-group-wrapper {
-            @apply flex items-stretch bg-white border border-slate-300 rounded-lg overflow-hidden transition-all shadow-sm;
-            @apply focus-within:border-[var(--ac)] focus-within:ring-1 focus-within:ring-[var(--ac)] focus-within:shadow-md;
+            @apply flex items-stretch bg-slate-100 border border-slate-200 rounded-lg overflow-hidden transition-all shadow-sm;
+            @apply focus-within:bg-white focus-within:border-[var(--ac)] focus-within:ring-1 focus-within:ring-[var(--ac)] focus-within:shadow-md;
         }
 
         .input-group-field {
-            @apply flex-1 w-full px-3 py-2 text-sm font-bold text-slate-700 outline-none border-none bg-transparent placeholder-slate-300 text-right;
-            /* No appearance for numbers to hide standard browser arrows if needed, but we keep them for utility */
+            @apply flex-1 w-full px-3 py-2 text-sm font-bold text-slate-800 outline-none border-none bg-transparent placeholder-slate-400 text-right;
         }
 
+        /* Slightly darker unit box to contrast with grey input */
         .input-group-unit {
-            @apply px-3 py-2 bg-slate-50 border-l border-slate-200 text-xs font-bold text-slate-500 flex items-center justify-center select-none min-w-[40px];
+            @apply px-3 py-2 bg-slate-200 border-l border-slate-300 text-xs font-bold text-slate-600 flex items-center justify-center select-none min-w-[40px];
         }
 
         /* Tooltip Helper */
@@ -582,7 +581,7 @@
                     <div class="text-white w-8 h-8 rounded-lg flex items-center justify-center font-bold text-lg shadow bg-[var(--ac)]">W</div>
                     <div>
                         <h1 class="font-bold text-gray-800 leading-none tracking-tight">Warenschmiede</h1>
-                        <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Calc V2.9</span>
+                        <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Calc V3.0</span>
                     </div>
                 </div>
 
