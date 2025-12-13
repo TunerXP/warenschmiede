@@ -106,27 +106,26 @@
             @apply p-5 space-y-4;
         }
 
-        /* --- NEW MODERN INPUT STYLES (Optimized Padding) --- */
-        .input-wrapper {
-            @apply relative border border-slate-300 rounded-md bg-slate-50 transition-all overflow-hidden;
-            @apply focus-within:bg-white focus-within:border-[var(--ac)] focus-within:ring-1 focus-within:ring-[var(--ac)];
-        }
-
-        .floating-label {
-            @apply absolute top-1.5 left-2.5 text-[9px] font-bold text-slate-400 uppercase tracking-wider pointer-events-none select-none;
-        }
-
+        /* --- CLEAN INPUT STYLES --- */
+        /* Hier wurde das Styling angepasst: Keine Fettschrift, Placeholder kursiv & grau */
         .modern-input {
-            /* Increased top padding from pt-4 to pt-5 to prevent overlap */
-            @apply w-full bg-transparent border-none px-2.5 pt-5 pb-1.5 text-sm font-medium text-slate-800 placeholder-slate-300 focus:ring-0 focus:outline-none h-auto;
+            @apply w-full bg-white border border-slate-300 text-slate-700 rounded-md px-3 py-2.5 text-sm transition-all shadow-sm;
+            @apply placeholder:text-slate-400 placeholder:italic; 
+            @apply focus:outline-none focus:border-[var(--ac)] focus:ring-1 focus:ring-[var(--ac)];
         }
         
         .modern-select {
-            @apply w-full bg-transparent border-none px-2.5 pt-5 pb-1.5 text-sm font-medium text-slate-800 focus:ring-0 focus:outline-none appearance-none cursor-pointer;
+            @apply w-full bg-white border border-slate-300 text-slate-700 rounded-md px-3 py-2.5 text-sm transition-all shadow-sm cursor-pointer;
+            @apply focus:outline-none focus:border-[var(--ac)] focus:ring-1 focus:ring-[var(--ac)];
         }
 
         textarea.modern-input {
             @apply resize-none block;
+        }
+
+        /* Helper for Grid Layout consistency */
+        .field-col {
+            @apply relative;
         }
 
         /* Tooltip Helper */
@@ -565,7 +564,7 @@
                     <div class="text-white w-8 h-8 rounded-lg flex items-center justify-center font-bold text-lg shadow bg-[var(--ac)]">W</div>
                     <div>
                         <h1 class="font-bold text-gray-800 leading-none tracking-tight">Warenschmiede</h1>
-                        <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Calc V2.50</span>
+                        <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Calc V2.70</span>
                     </div>
                 </div>
 
@@ -618,15 +617,15 @@
                 </div>
                 <div class="config-body">
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="input-wrapper"><label class="floating-label">Firmenname</label><input type="text" x-model="vendor.company" class="modern-input font-bold"></div>
-                        <div class="input-wrapper"><label class="floating-label">Inhaber / Name</label><input type="text" x-model="vendor.name" class="modern-input"></div>
+                        <div class="field-col"><input type="text" x-model="vendor.company" class="modern-input" placeholder="Firmenname"></div>
+                        <div class="field-col"><input type="text" x-model="vendor.name" class="modern-input" placeholder="Inhaber / Name"></div>
                     </div>
-                    <div class="input-wrapper"><label class="floating-label">Slogan</label><input type="text" x-model="vendor.slogan" class="modern-input"></div>
+                    <div class="field-col"><input type="text" x-model="vendor.slogan" class="modern-input" placeholder="Slogan"></div>
                     <div class="grid grid-cols-3 gap-4">
-                        <div class="col-span-2 input-wrapper"><label class="floating-label">Straße</label><input type="text" x-model="vendor.street" class="modern-input"></div>
-                        <div class="input-wrapper"><label class="floating-label">PLZ</label><input type="text" x-model="vendor.zip" class="modern-input"></div>
+                        <div class="col-span-2 field-col"><input type="text" x-model="vendor.street" class="modern-input" placeholder="Straße"></div>
+                        <div class="field-col"><input type="text" x-model="vendor.zip" class="modern-input" placeholder="PLZ"></div>
                     </div>
-                    <div class="input-wrapper"><label class="floating-label">Stadt</label><input type="text" x-model="vendor.city" class="modern-input"></div>
+                    <div class="field-col"><input type="text" x-model="vendor.city" class="modern-input" placeholder="Stadt"></div>
 
                     <details class="group bg-slate-50 border border-slate-200 rounded-lg overflow-hidden">
                         <summary class="px-4 py-3 text-xs font-bold text-slate-600 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors">
@@ -635,15 +634,15 @@
                         </summary>
                         <div class="p-4 space-y-4 border-t border-slate-200">
                             <div class="grid grid-cols-2 gap-4">
-                                <div class="input-wrapper"><label class="floating-label">Email</label><input type="text" x-model="vendor.email" class="modern-input"></div>
-                                <div class="input-wrapper"><label class="floating-label">Telefon</label><input type="text" x-model="vendor.phone" class="modern-input"></div>
+                                <div class="field-col"><input type="text" x-model="vendor.email" class="modern-input" placeholder="Email-Adresse"></div>
+                                <div class="field-col"><input type="text" x-model="vendor.phone" class="modern-input" placeholder="Telefon"></div>
                             </div>
-                            <div class="input-wrapper"><label class="floating-label">Bank Name</label><input type="text" x-model="vendor.bank" class="modern-input"></div>
+                            <div class="field-col"><input type="text" x-model="vendor.bank" class="modern-input" placeholder="Bank Name"></div>
                             <div class="grid grid-cols-2 gap-4">
-                                <div class="input-wrapper"><label class="floating-label">IBAN</label><input type="text" x-model="vendor.iban" class="modern-input font-mono text-xs"></div>
-                                <div class="input-wrapper"><label class="floating-label">BIC</label><input type="text" x-model="vendor.bic" class="modern-input font-mono text-xs"></div>
+                                <div class="field-col"><input type="text" x-model="vendor.iban" class="modern-input font-mono text-xs" placeholder="IBAN"></div>
+                                <div class="field-col"><input type="text" x-model="vendor.bic" class="modern-input font-mono text-xs" placeholder="BIC"></div>
                             </div>
-                            <div class="input-wrapper"><label class="floating-label">USt-IdNr.</label><input type="text" x-model="vendor.taxId" class="modern-input"></div>
+                            <div class="field-col"><input type="text" x-model="vendor.taxId" class="modern-input" placeholder="USt-IdNr."></div>
                         </div>
                     </details>
                 </div>
@@ -661,15 +660,15 @@
                         <button @click="docType = 'rechnung'" :class="{'bg-white text-[var(--ac)] shadow-sm': docType === 'rechnung', 'text-slate-500': docType !== 'rechnung'}" class="flex-1 py-1.5 text-xs font-bold rounded-md transition-all">RECHNUNG</button>
                     </div>
                     <div class="space-y-4 pb-4 border-b border-slate-100">
-                        <div class="input-wrapper"><label class="floating-label">Kunde / Firma</label><input type="text" x-model="customer.name" class="modern-input font-bold"></div>
-                        <div class="input-wrapper"><label class="floating-label">Anschrift</label><textarea x-model="customer.address" rows="3" class="modern-input"></textarea></div>
+                        <div class="field-col"><input type="text" x-model="customer.name" class="modern-input" placeholder="Kunde / Firma"></div>
+                        <div class="field-col"><textarea x-model="customer.address" rows="3" class="modern-input" placeholder="Anschrift"></textarea></div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="input-wrapper"><label class="floating-label">Projekt</label><input type="text" x-model="project.name" class="modern-input font-semibold"></div>
-                        <div class="input-wrapper"><label class="floating-label">Nummer</label><input type="text" x-model="project.number" class="modern-input text-right"></div>
-                        <div class="input-wrapper"><label class="floating-label">Datum</label><input type="date" x-model="project.date" class="modern-input"></div>
-                        <div class="input-wrapper"><label class="floating-label">Kunden-Nr.</label><input type="text" x-model="customer.id" class="modern-input text-right"></div>
-                        <div class="input-wrapper col-span-2"><label class="floating-label">Bestell-Nr. (Kunde)</label><input type="text" x-model="customer.orderNumber" class="modern-input" placeholder="z.B. PO-12345"></div>
+                        <div class="field-col"><input type="text" x-model="project.name" class="modern-input" placeholder="Projekt-Name"></div>
+                        <div class="field-col"><input type="text" x-model="project.number" class="modern-input text-right" placeholder="Angebots-Nr."></div>
+                        <div class="field-col"><input type="date" x-model="project.date" class="modern-input" title="Datum"></div>
+                        <div class="field-col"><input type="text" x-model="customer.id" class="modern-input text-right" placeholder="Kd-Nr."></div>
+                        <div class="field-col col-span-2"><input type="text" x-model="customer.orderNumber" class="modern-input" placeholder="Bestell-Nr. (Kunde)"></div>
                     </div>
                     <div class="flex items-center justify-between pt-2">
                         <span class="text-xs font-bold text-slate-600">Umsatzsteuer (19%)</span>
@@ -712,18 +711,18 @@
                         <div x-show="open" class="absolute right-0 top-full mt-2 w-72 bg-white border border-slate-200 shadow-xl rounded-xl p-4 z-50 transform origin-top-right transition-all">
                             <h4 class="text-xs font-bold uppercase mb-3 text-slate-500 border-b pb-2">Globale Werte</h4>
                             <div class="grid grid-cols-2 gap-3 mb-2">
-                                <div class="input-wrapper"><label class="floating-label">Mat. €/kg</label><input type="number" x-model.number="defaults.priceKg" class="modern-input"></div>
-                                <div class="input-wrapper"><label class="floating-label">Strom €</label><input type="number" x-model.number="defaults.energyPrice" class="modern-input"></div>
-                                <div class="input-wrapper"><label class="floating-label">Lohn €</label><input type="number" x-model.number="defaults.hourlyRate" class="modern-input"></div>
-                                <div class="input-wrapper"><label class="floating-label">Masch. €</label><input type="number" x-model.number="defaults.machineHourly" class="modern-input"></div>
+                                <div class="field-col"><input type="number" x-model.number="defaults.priceKg" class="modern-input" placeholder="Mat. €/kg"></div>
+                                <div class="field-col"><input type="number" x-model.number="defaults.energyPrice" class="modern-input" placeholder="Strom €"></div>
+                                <div class="field-col"><input type="number" x-model.number="defaults.hourlyRate" class="modern-input" placeholder="Lohn €"></div>
+                                <div class="field-col"><input type="number" x-model.number="defaults.machineHourly" class="modern-input" placeholder="Masch. €"></div>
                             </div>
-                            <div class="input-wrapper mb-2"><label class="floating-label">Marge %</label><input type="number" x-model.number="defaults.marginPercent" class="modern-input"></div>
+                            <div class="field-col mb-2"><input type="number" x-model.number="defaults.marginPercent" class="modern-input" placeholder="Marge %"></div>
 
                             <!-- INFO SECTION CO2 -->
                             <h4 class="text-xs font-bold uppercase mb-2 mt-4 text-green-600 border-b pb-1 flex items-center gap-1">
                                 Öko-Daten <div class="tooltip"><i class="fa-solid fa-circle-info text-slate-400 cursor-help"></i><span class="tooltip-text">Der CO₂-Wert für Stromerzeugung. DE-Mix ≈ 0.4 kg/kWh. Ökostrom ≈ 0.0 kg. Siehe Stromrechnung.</span></div>
                             </h4>
-                            <div class="input-wrapper"><label class="floating-label">Strom Mix (kg CO2/kWh)</label><input type="number" x-model.number="defaults.co2Electricity" step="0.01" class="modern-input"></div>
+                            <div class="field-col"><input type="number" x-model.number="defaults.co2Electricity" step="0.01" class="modern-input" placeholder="Strom Mix (kg CO2/kWh)"></div>
                         </div>
                     </div>
                 </div>
@@ -754,19 +753,16 @@
 
                             <div x-show="job.expanded" class="p-4 space-y-4">
                                 <div class="flex gap-4">
-                                    <div class="input-wrapper w-20">
-                                        <label class="floating-label text-[var(--ac)]">Menge</label>
-                                        <input type="number" x-model.number="job.quantity" min="1" class="modern-input font-bold text-center text-[var(--ac)] bg-[var(--ac-light)]/50">
+                                    <div class="field-col w-20">
+                                        <input type="number" x-model.number="job.quantity" min="1" class="modern-input text-center" placeholder="Anz.">
                                     </div>
-                                    <div class="input-wrapper flex-1">
-                                        <label class="floating-label">Bezeichnung</label>
-                                        <input type="text" x-model="job.name" class="modern-input">
+                                    <div class="field-col flex-1">
+                                        <input type="text" x-model="job.name" class="modern-input" placeholder="Bezeichnung">
                                     </div>
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-4">
-                                    <div class="input-wrapper">
-                                        <label class="floating-label">Material</label>
+                                    <div class="field-col">
                                         <select class="modern-select" x-model="job.material" @change="applyMaterial(job)">
                                             <option value="pla">PLA – Standard (ca. 18–24 €/kg)</option>
                                             <option value="pla_plus">PLA+ – etwas robuster als PLA</option>
@@ -782,17 +778,15 @@
                                             <option value="custom">Benutzerdefiniert</option>
                                         </select>
                                     </div>
-                                    <div class="input-wrapper"><label class="floating-label">Preis €/kg</label><input type="number" x-model.number="job.priceKg" class="modern-input"></div>
+                                    <div class="field-col"><input type="number" x-model.number="job.priceKg" class="modern-input" placeholder="Preis €/kg"></div>
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-4">
-                                    <div class="input-wrapper bg-blue-50/30 border-blue-200">
-                                        <label class="floating-label text-blue-400">Gewicht (g)</label>
-                                        <input type="number" x-model.number="job.weight" class="modern-input font-bold text-slate-800">
+                                    <div class="field-col">
+                                        <input type="number" x-model.number="job.weight" class="modern-input" placeholder="Gewicht (g)">
                                     </div>
-                                    <div class="input-wrapper bg-blue-50/30 border-blue-200">
-                                        <label class="floating-label text-blue-400">Zeit (h)</label>
-                                        <input type="number" x-model.number="job.time" step="0.1" class="modern-input font-bold text-slate-800">
+                                    <div class="field-col">
+                                        <input type="number" x-model.number="job.time" step="0.1" class="modern-input" placeholder="Zeit (h)">
                                     </div>
                                 </div>
 
@@ -804,10 +798,10 @@
                                     </summary>
                                     <div class="p-3 space-y-4 bg-white border-t border-slate-200">
                                         <div class="grid grid-cols-4 gap-3">
-                                            <div class="input-wrapper"><label class="floating-label">Arbeit (Min)</label><input type="number" x-model.number="job.laborMinutes" class="modern-input text-xs px-2"></div>
-                                            <div class="input-wrapper"><label class="floating-label">Std-Lohn</label><input type="number" x-model.number="job.hourlyRate" class="modern-input text-xs px-2"></div>
-                                            <div class="input-wrapper"><label class="floating-label">Strom-Pr.</label><input type="number" x-model.number="job.energyPrice" step="0.01" class="modern-input text-xs px-2"></div>
-                                            <div class="input-wrapper"><label class="floating-label">Watt</label><input type="number" x-model.number="job.watts" class="modern-input text-xs px-2"></div>
+                                            <div class="field-col"><input type="number" x-model.number="job.laborMinutes" class="modern-input text-xs px-2" placeholder="Arbeit (Min)"></div>
+                                            <div class="field-col"><input type="number" x-model.number="job.hourlyRate" class="modern-input text-xs px-2" placeholder="Std-Lohn"></div>
+                                            <div class="field-col"><input type="number" x-model.number="job.energyPrice" step="0.01" class="modern-input text-xs px-2" placeholder="Strom-Pr."></div>
+                                            <div class="field-col"><input type="number" x-model.number="job.watts" class="modern-input text-xs px-2" placeholder="Watt"></div>
                                         </div>
 
                                         <div class="bg-slate-50 p-3 rounded border border-slate-200">
@@ -818,33 +812,30 @@
                                             <details class="text-xs">
                                                 <summary class="cursor-pointer text-[var(--ac)] hover:opacity-80 font-medium select-none">Anschaffung berechnen &#9662;</summary>
                                                 <div class="grid grid-cols-2 gap-3 mt-2">
-                                                    <div class="input-wrapper"><label class="floating-label">Preis (€)</label><input type="number" x-model.number="job.machinePurchase" @input="calculateMachineHourly(job)" class="modern-input h-8 py-1"></div>
-                                                    <div class="input-wrapper"><label class="floating-label">Dauer (h)</label><input type="number" x-model.number="job.machineLife" @input="calculateMachineHourly(job)" class="modern-input h-8 py-1"></div>
+                                                    <div class="field-col"><input type="number" x-model.number="job.machinePurchase" @input="calculateMachineHourly(job)" class="modern-input h-8 py-1" placeholder="Preis (€)"></div>
+                                                    <div class="field-col"><input type="number" x-model.number="job.machineLife" @input="calculateMachineHourly(job)" class="modern-input h-8 py-1" placeholder="Dauer (h)"></div>
                                                 </div>
                                             </details>
                                         </div>
 
                                         <div class="grid grid-cols-3 gap-3">
-                                            <div class="input-wrapper"><label class="floating-label">Last (%)</label><input type="number" x-model.number="job.loadFactor" class="modern-input text-xs"></div>
-                                            <div class="input-wrapper"><label class="floating-label">Fehler (%)</label><input type="number" x-model.number="job.failRate" class="modern-input text-xs"></div>
-                                            <div class="input-wrapper"><label class="floating-label">Fix (€)</label><input type="number" x-model.number="job.fixedCost" class="modern-input text-xs"></div>
+                                            <div class="field-col"><input type="number" x-model.number="job.loadFactor" class="modern-input text-xs" placeholder="Last (%)"></div>
+                                            <div class="field-col"><input type="number" x-model.number="job.failRate" class="modern-input text-xs" placeholder="Fehler (%)"></div>
+                                            <div class="field-col"><input type="number" x-model.number="job.fixedCost" class="modern-input text-xs" placeholder="Fix (€)"></div>
                                         </div>
 
                                         <div class="grid grid-cols-2 gap-3">
-                                            <div class="input-wrapper bg-emerald-50/50 border-emerald-200">
-                                                <label class="floating-label text-emerald-600">Marge %</label>
-                                                <input type="number" x-model.number="job.marginPercent" class="modern-input font-bold text-emerald-800">
+                                            <div class="field-col">
+                                                <input type="number" x-model.number="job.marginPercent" class="modern-input text-emerald-800" placeholder="Marge %">
                                             </div>
-                                            <div class="input-wrapper bg-red-50/50 border-red-200">
-                                                <label class="floating-label text-red-600">Rabatt %</label>
-                                                <input type="number" x-model.number="job.discount" class="modern-input font-bold text-red-800">
+                                            <div class="field-col">
+                                                <input type="number" x-model.number="job.discount" class="modern-input text-red-800" placeholder="Rabatt %">
                                             </div>
                                         </div>
 
                                         <!-- CO2 Factor for this job -->
-                                        <div class="input-wrapper mt-2">
-                                            <label class="floating-label text-green-600">Material CO₂-Faktor (kg/kg)</label>
-                                            <input type="number" x-model.number="job.co2Material" step="0.1" class="modern-input">
+                                        <div class="field-col mt-2">
+                                            <input type="number" x-model.number="job.co2Material" step="0.1" class="modern-input" placeholder="Material CO₂-Faktor (kg/kg)">
                                         </div>
                                     </div>
                                 </details>
