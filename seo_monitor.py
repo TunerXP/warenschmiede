@@ -13,6 +13,9 @@ from urllib.parse import urlparse
 
 BASE_URL = "https://www.warenschmiede.com"
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
+INCLUDED_SITEMAP_PATHS = {
+    "tools/kostenrechner-v2.html",
+}
 EXCLUDED_SITEMAP_PATHS = {
     "tools/buero/doku-light.html",
 }
@@ -117,6 +120,8 @@ def get_priority(path: str) -> float:
     basename = os.path.basename(path)
     if path == "index.html":
         return 1.0
+    if path == "tools/kostenrechner-v2.html":
+        return 0.9
     if basename in {
         "about.html",
         "leistungen.html",
@@ -157,7 +162,7 @@ def generate_sitemap(html_files: Iterable[str]) -> None:
 def should_exclude_from_sitemap(path: str, robots_directives: set[str]) -> bool:
     if path in EXCLUDED_SITEMAP_PATHS:
         return True
-    if path.startswith(EXCLUDED_SITEMAP_PREFIXES):
+    if path not in INCLUDED_SITEMAP_PATHS and path.startswith(EXCLUDED_SITEMAP_PREFIXES):
         return True
     normalized_directives = {directive.lower() for directive in robots_directives}
     if "noindex" in normalized_directives:
