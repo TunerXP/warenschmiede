@@ -107,7 +107,6 @@
         }
 
         /* --- CLEAN INPUT STYLES --- */
-        /* Hier wurde das Styling angepasst: Keine Fettschrift, Placeholder kursiv & grau */
         .modern-input {
             @apply w-full bg-white border border-slate-300 text-slate-700 rounded-md px-3 py-2.5 text-sm transition-all shadow-sm;
             @apply placeholder:text-slate-400 placeholder:italic; 
@@ -126,6 +125,16 @@
         /* Helper for Grid Layout consistency */
         .field-col {
             @apply relative;
+        }
+
+        /* NEW: Unit Suffix Style */
+        .input-unit {
+            @apply absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400 pointer-events-none select-none;
+        }
+
+        /* Add padding right to inputs with units so text doesn't overlap */
+        .modern-input.has-unit {
+            @apply pr-10;
         }
 
         /* Tooltip Helper */
@@ -564,7 +573,7 @@
                     <div class="text-white w-8 h-8 rounded-lg flex items-center justify-center font-bold text-lg shadow bg-[var(--ac)]">W</div>
                     <div>
                         <h1 class="font-bold text-gray-800 leading-none tracking-tight">Warenschmiede</h1>
-                        <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Calc V2.70</span>
+                        <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Calc V2.80</span>
                     </div>
                 </div>
 
@@ -660,7 +669,7 @@
                         <button @click="docType = 'rechnung'" :class="{'bg-white text-[var(--ac)] shadow-sm': docType === 'rechnung', 'text-slate-500': docType !== 'rechnung'}" class="flex-1 py-1.5 text-xs font-bold rounded-md transition-all">RECHNUNG</button>
                     </div>
                     <div class="space-y-4 pb-4 border-b border-slate-100">
-                        <div class="field-col"><input type="text" x-model="customer.name" class="modern-input" placeholder="Kunde / Firma"></div>
+                        <div class="field-col"><input type="text" x-model="customer.name" class="modern-input font-bold" placeholder="Kunde / Firma"></div>
                         <div class="field-col"><textarea x-model="customer.address" rows="3" class="modern-input" placeholder="Anschrift"></textarea></div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
@@ -711,18 +720,36 @@
                         <div x-show="open" class="absolute right-0 top-full mt-2 w-72 bg-white border border-slate-200 shadow-xl rounded-xl p-4 z-50 transform origin-top-right transition-all">
                             <h4 class="text-xs font-bold uppercase mb-3 text-slate-500 border-b pb-2">Globale Werte</h4>
                             <div class="grid grid-cols-2 gap-3 mb-2">
-                                <div class="field-col"><input type="number" x-model.number="defaults.priceKg" class="modern-input" placeholder="Mat. €/kg"></div>
-                                <div class="field-col"><input type="number" x-model.number="defaults.energyPrice" class="modern-input" placeholder="Strom €"></div>
-                                <div class="field-col"><input type="number" x-model.number="defaults.hourlyRate" class="modern-input" placeholder="Lohn €"></div>
-                                <div class="field-col"><input type="number" x-model.number="defaults.machineHourly" class="modern-input" placeholder="Masch. €"></div>
+                                <div class="field-col">
+                                    <input type="number" x-model.number="defaults.priceKg" class="modern-input has-unit" placeholder="Mat.">
+                                    <span class="input-unit">€/kg</span>
+                                </div>
+                                <div class="field-col">
+                                    <input type="number" x-model.number="defaults.energyPrice" class="modern-input has-unit" placeholder="Strom">
+                                    <span class="input-unit">€</span>
+                                </div>
+                                <div class="field-col">
+                                    <input type="number" x-model.number="defaults.hourlyRate" class="modern-input has-unit" placeholder="Lohn">
+                                    <span class="input-unit">€/h</span>
+                                </div>
+                                <div class="field-col">
+                                    <input type="number" x-model.number="defaults.machineHourly" class="modern-input has-unit" placeholder="Masch.">
+                                    <span class="input-unit">€/h</span>
+                                </div>
                             </div>
-                            <div class="field-col mb-2"><input type="number" x-model.number="defaults.marginPercent" class="modern-input" placeholder="Marge %"></div>
+                            <div class="field-col mb-2">
+                                <input type="number" x-model.number="defaults.marginPercent" class="modern-input has-unit" placeholder="Marge">
+                                <span class="input-unit">%</span>
+                            </div>
 
                             <!-- INFO SECTION CO2 -->
                             <h4 class="text-xs font-bold uppercase mb-2 mt-4 text-green-600 border-b pb-1 flex items-center gap-1">
                                 Öko-Daten <div class="tooltip"><i class="fa-solid fa-circle-info text-slate-400 cursor-help"></i><span class="tooltip-text">Der CO₂-Wert für Stromerzeugung. DE-Mix ≈ 0.4 kg/kWh. Ökostrom ≈ 0.0 kg. Siehe Stromrechnung.</span></div>
                             </h4>
-                            <div class="field-col"><input type="number" x-model.number="defaults.co2Electricity" step="0.01" class="modern-input" placeholder="Strom Mix (kg CO2/kWh)"></div>
+                            <div class="field-col">
+                                <input type="number" x-model.number="defaults.co2Electricity" step="0.01" class="modern-input has-unit" placeholder="Strom Mix">
+                                <span class="input-unit">kg/kWh</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -754,7 +781,8 @@
                             <div x-show="job.expanded" class="p-4 space-y-4">
                                 <div class="flex gap-4">
                                     <div class="field-col w-20">
-                                        <input type="number" x-model.number="job.quantity" min="1" class="modern-input text-center" placeholder="Anz.">
+                                        <input type="number" x-model.number="job.quantity" min="1" class="modern-input text-center has-unit" placeholder="Anz.">
+                                        <span class="input-unit !right-2">Stk</span>
                                     </div>
                                     <div class="field-col flex-1">
                                         <input type="text" x-model="job.name" class="modern-input" placeholder="Bezeichnung">
@@ -778,15 +806,20 @@
                                             <option value="custom">Benutzerdefiniert</option>
                                         </select>
                                     </div>
-                                    <div class="field-col"><input type="number" x-model.number="job.priceKg" class="modern-input" placeholder="Preis €/kg"></div>
+                                    <div class="field-col">
+                                        <input type="number" x-model.number="job.priceKg" class="modern-input has-unit" placeholder="Preis">
+                                        <span class="input-unit">€/kg</span>
+                                    </div>
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="field-col">
-                                        <input type="number" x-model.number="job.weight" class="modern-input" placeholder="Gewicht (g)">
+                                        <input type="number" x-model.number="job.weight" class="modern-input font-bold text-slate-800 has-unit" placeholder="Gewicht">
+                                        <span class="input-unit">g</span>
                                     </div>
                                     <div class="field-col">
-                                        <input type="number" x-model.number="job.time" step="0.1" class="modern-input" placeholder="Zeit (h)">
+                                        <input type="number" x-model.number="job.time" step="0.1" class="modern-input font-bold text-slate-800 has-unit" placeholder="Zeit">
+                                        <span class="input-unit">h</span>
                                     </div>
                                 </div>
 
@@ -798,44 +831,78 @@
                                     </summary>
                                     <div class="p-3 space-y-4 bg-white border-t border-slate-200">
                                         <div class="grid grid-cols-4 gap-3">
-                                            <div class="field-col"><input type="number" x-model.number="job.laborMinutes" class="modern-input text-xs px-2" placeholder="Arbeit (Min)"></div>
-                                            <div class="field-col"><input type="number" x-model.number="job.hourlyRate" class="modern-input text-xs px-2" placeholder="Std-Lohn"></div>
-                                            <div class="field-col"><input type="number" x-model.number="job.energyPrice" step="0.01" class="modern-input text-xs px-2" placeholder="Strom-Pr."></div>
-                                            <div class="field-col"><input type="number" x-model.number="job.watts" class="modern-input text-xs px-2" placeholder="Watt"></div>
+                                            <div class="field-col">
+                                                <input type="number" x-model.number="job.laborMinutes" class="modern-input text-xs px-2 has-unit" placeholder="Arbeit">
+                                                <span class="input-unit">min</span>
+                                            </div>
+                                            <div class="field-col">
+                                                <input type="number" x-model.number="job.hourlyRate" class="modern-input text-xs px-2 has-unit" placeholder="Std-Lohn">
+                                                <span class="input-unit">€/h</span>
+                                            </div>
+                                            <div class="field-col">
+                                                <input type="number" x-model.number="job.energyPrice" step="0.01" class="modern-input text-xs px-2 has-unit" placeholder="Strom-Pr.">
+                                                <span class="input-unit">€</span>
+                                            </div>
+                                            <div class="field-col">
+                                                <input type="number" x-model.number="job.watts" class="modern-input text-xs px-2 has-unit" placeholder="Watt">
+                                                <span class="input-unit">W</span>
+                                            </div>
                                         </div>
 
                                         <div class="bg-slate-50 p-3 rounded border border-slate-200">
                                             <div class="flex justify-between items-center mb-2">
                                                 <label class="text-[10px] font-bold text-slate-500 uppercase">Maschinen-Satz (€/h)</label>
-                                                <input type="number" x-model.number="job.machineHourly" step="0.1" class="w-20 text-right font-bold h-8 py-1 bg-white border border-slate-300 rounded px-2 text-sm">
+                                                <!-- Small manual suffix for this specific small input -->
+                                                <div class="relative w-24">
+                                                    <input type="number" x-model.number="job.machineHourly" step="0.1" class="w-full text-right font-bold h-8 py-1 pr-8 bg-white border border-slate-300 rounded px-2 text-sm focus:outline-none focus:border-[var(--ac)] focus:ring-1 focus:ring-[var(--ac)]">
+                                                    <span class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 font-bold pointer-events-none">€/h</span>
+                                                </div>
                                             </div>
                                             <details class="text-xs">
                                                 <summary class="cursor-pointer text-[var(--ac)] hover:opacity-80 font-medium select-none">Anschaffung berechnen &#9662;</summary>
                                                 <div class="grid grid-cols-2 gap-3 mt-2">
-                                                    <div class="field-col"><input type="number" x-model.number="job.machinePurchase" @input="calculateMachineHourly(job)" class="modern-input h-8 py-1" placeholder="Preis (€)"></div>
-                                                    <div class="field-col"><input type="number" x-model.number="job.machineLife" @input="calculateMachineHourly(job)" class="modern-input h-8 py-1" placeholder="Dauer (h)"></div>
+                                                    <div class="field-col">
+                                                        <input type="number" x-model.number="job.machinePurchase" @input="calculateMachineHourly(job)" class="modern-input h-8 py-1 has-unit" placeholder="Preis">
+                                                        <span class="input-unit">€</span>
+                                                    </div>
+                                                    <div class="field-col">
+                                                        <input type="number" x-model.number="job.machineLife" @input="calculateMachineHourly(job)" class="modern-input h-8 py-1 has-unit" placeholder="Dauer">
+                                                        <span class="input-unit">h</span>
+                                                    </div>
                                                 </div>
                                             </details>
                                         </div>
 
                                         <div class="grid grid-cols-3 gap-3">
-                                            <div class="field-col"><input type="number" x-model.number="job.loadFactor" class="modern-input text-xs" placeholder="Last (%)"></div>
-                                            <div class="field-col"><input type="number" x-model.number="job.failRate" class="modern-input text-xs" placeholder="Fehler (%)"></div>
-                                            <div class="field-col"><input type="number" x-model.number="job.fixedCost" class="modern-input text-xs" placeholder="Fix (€)"></div>
+                                            <div class="field-col">
+                                                <input type="number" x-model.number="job.loadFactor" class="modern-input text-xs has-unit" placeholder="Last">
+                                                <span class="input-unit">%</span>
+                                            </div>
+                                            <div class="field-col">
+                                                <input type="number" x-model.number="job.failRate" class="modern-input text-xs has-unit" placeholder="Fehler">
+                                                <span class="input-unit">%</span>
+                                            </div>
+                                            <div class="field-col">
+                                                <input type="number" x-model.number="job.fixedCost" class="modern-input text-xs has-unit" placeholder="Fix">
+                                                <span class="input-unit">€</span>
+                                            </div>
                                         </div>
 
                                         <div class="grid grid-cols-2 gap-3">
                                             <div class="field-col">
-                                                <input type="number" x-model.number="job.marginPercent" class="modern-input text-emerald-800" placeholder="Marge %">
+                                                <input type="number" x-model.number="job.marginPercent" class="modern-input text-emerald-800 has-unit" placeholder="Marge">
+                                                <span class="input-unit">%</span>
                                             </div>
                                             <div class="field-col">
-                                                <input type="number" x-model.number="job.discount" class="modern-input text-red-800" placeholder="Rabatt %">
+                                                <input type="number" x-model.number="job.discount" class="modern-input text-red-800 has-unit" placeholder="Rabatt">
+                                                <span class="input-unit">%</span>
                                             </div>
                                         </div>
 
                                         <!-- CO2 Factor for this job -->
                                         <div class="field-col mt-2">
-                                            <input type="number" x-model.number="job.co2Material" step="0.1" class="modern-input" placeholder="Material CO₂-Faktor (kg/kg)">
+                                            <input type="number" x-model.number="job.co2Material" step="0.1" class="modern-input has-unit" placeholder="Material CO₂-Faktor">
+                                            <span class="input-unit">kg/kg</span>
                                         </div>
                                     </div>
                                 </details>
@@ -860,13 +927,14 @@
                             <div class="flex-1 space-y-2">
                                 <input type="text" x-model="item.desc" placeholder="Beschreibung (z.B. CAD-Design, Versand)" class="w-full text-sm font-medium border-b border-dotted border-slate-300 focus:border-[var(--ac)] outline-none pb-1 bg-transparent placeholder-slate-400">
                                 <div class="flex gap-3">
-                                    <div class="flex items-center gap-2 bg-slate-50 px-2 py-1 rounded border border-slate-200">
+                                    <div class="flex items-center gap-2 bg-slate-50 px-2 py-1 rounded border border-slate-200 relative">
                                         <span class="text-[10px] font-bold text-slate-400 uppercase">Anz</span>
                                         <input type="number" x-model.number="item.qty" class="w-12 text-sm bg-transparent text-center outline-none font-bold text-slate-700">
                                     </div>
-                                    <div class="flex items-center gap-2 bg-slate-50 px-2 py-1 rounded border border-slate-200 flex-1">
-                                        <span class="text-[10px] font-bold text-slate-400 uppercase">Preis €</span>
-                                        <input type="number" x-model.number="item.price" step="0.1" class="w-full text-sm bg-transparent text-right outline-none font-mono text-slate-700">
+                                    <div class="flex items-center gap-2 bg-slate-50 px-2 py-1 rounded border border-slate-200 flex-1 relative">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase">Preis</span>
+                                        <input type="number" x-model.number="item.price" step="0.1" class="w-full text-sm bg-transparent text-right outline-none font-mono text-slate-700 pr-4">
+                                        <span class="text-[10px] font-bold text-slate-400 absolute right-2 pointer-events-none">€</span>
                                     </div>
                                 </div>
                             </div>
