@@ -348,6 +348,7 @@
                     this.printJobs.push({
                         id: Date.now(),
                         name: 'Bauteil ' + (this.printJobs.length + 1),
+                        quantity: 1, // NEW: Default Quantity
                         material: 'pla',
                         weight: 50,
                         time: 2.5,
@@ -400,6 +401,7 @@
                     }
                 },
 
+                // Calculates price for ONE SINGLE unit
                 calculateJobTotal(job) {
                     const matCost = (job.weight / 1000) * job.priceKg;
                     const actualWatts = job.watts * (job.loadFactor / 100);
@@ -428,7 +430,8 @@
                 getTotalCO2() {
                     let totalKg = 0;
                     this.printJobs.forEach(job => {
-                        totalKg += this.calculateJobCO2(job);
+                        const qty = job.quantity || 1; // Default to 1 if undefined
+                        totalKg += this.calculateJobCO2(job) * qty;
                     });
                     return (totalKg * 1000).toFixed(0);
                 },
@@ -443,6 +446,9 @@
                         if (job.material === 'asa_cf') matName = 'ASA-CF';
                         if (job.material === 'pa') matName = 'Nylon (PA)';
 
+                        const qty = job.quantity || 1;
+                        const unitPrice = this.calculateJobTotal(job);
+
                         return {
                             pos: String(idx + 1).padStart(2, '0'),
                             desc: job.name,
@@ -452,9 +458,9 @@
                                 `${job.time}h`,
                                 job.laborMinutes > 0 ? `Arbeitszeit: ${job.laborMinutes}min` : ''
                             ].filter(Boolean),
-                            qty: 1,
-                            price: this.calculateJobTotal(job),
-                            total: this.calculateJobTotal(job)
+                            qty: qty,
+                            price: unitPrice,
+                            total: unitPrice * qty
                         };
                     });
 
@@ -524,7 +530,7 @@
                     <div class="bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center font-bold text-lg shadow">W</div>
                     <div>
                         <h1 class="font-bold text-gray-800 leading-none tracking-tight">Warenschmiede</h1>
-                        <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Calc V2.19</span>
+                        <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Calc V2.20</span>
                     </div>
                 </div>
 
@@ -675,10 +681,14 @@
                                 <div class="flex items-center gap-3">
                                     <div class="bg-blue-100 text-blue-600 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" x-text="index + 1"></div>
                                     <div class="flex flex-col">
-                                        <span class="font-bold text-sm text-slate-700" x-text="job.name || 'Unbenannter Job'"></span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs font-bold bg-gray-200 text-gray-700 px-1.5 rounded" x-show="(job.quantity || 1) > 1" x-text="(job.quantity || 1) + 'x'"></span>
+                                            <span class="font-bold text-sm text-slate-700" x-text="job.name || 'Unbenannter Job'"></span>
+                                        </div>
                                         <div class="flex gap-3 text-[10px] text-slate-500 font-mono">
-                                            <span x-text="formatMoney(calculateJobTotal(job))"></span>
-                                            <span class="text-green-600 flex items-center gap-1"><i class="fa-solid fa-leaf text-[9px]"></i> <span x-text="(calculateJobCO2(job)*1000).toFixed(0) + 'g'"></span></span>
+                                            <span title="Einzelpreis" x-text="'EP: ' + formatMoney(calculateJobTotal(job))"></span>
+                                            <span title="Gesamtpreis" class="font-bold text-blue-600" x-text="'Ges: ' + formatMoney(calculateJobTotal(job) * (job.quantity || 1))"></span>
+                                            <span class="text-green-600 flex items-center gap-1" title="CO2 pro Stück"><i class="fa-solid fa-leaf text-[9px]"></i> <span x-text="(calculateJobCO2(job)*1000).toFixed(0) + 'g'"></span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -689,7 +699,17 @@
                             </div>
 
                             <div x-show="job.expanded" class="p-4 space-y-4">
-                                <div class="input-group"><label class="input-label">Bezeichnung</label><input type="text" x-model="job.name" class="input-field"></div>
+                                <div class="flex gap-4">
+                                    <!-- NEW: Quantity Input -->
+                                    <div class="input-group w-20">
+                                        <label class="input-label text-blue-700">Menge</label>
+                                        <input type="number" x-model.number="job.quantity" min="1" class="input-field font-bold text-center border-blue-200 text-blue-800 bg-blue-50/30">
+                                    </div>
+                                    <div class="input-group flex-1">
+                                        <label class="input-label">Bezeichnung</label>
+                                        <input type="text" x-model="job.name" class="input-field">
+                                    </div>
+                                </div>
 
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="input-group">
@@ -720,7 +740,7 @@
                                 <!-- Detail Kalkulation -->
                                 <details class="group border border-slate-200 rounded-lg overflow-hidden">
                                     <summary class="px-3 py-2 bg-slate-50 text-xs font-bold text-slate-600 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100">
-                                        <span><i class="fa-solid fa-calculator mr-1 text-slate-400"></i> Kosten & Marge Details</span>
+                                        <span><i class="fa-solid fa-calculator mr-1 text-slate-400"></i> Kosten & Marge Details (pro Stück)</span>
                                         <i class="fa-solid fa-chevron-down ml-auto transition-transform group-open:rotate-180"></i>
                                     </summary>
                                     <div class="p-3 space-y-4 bg-white border-t border-slate-200">
