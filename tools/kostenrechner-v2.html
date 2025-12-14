@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kostenrechner V2 – Warenschmiede</title>
-    <meta name="description" content="Kostenrechner V2. Blanko Start, Multi-Page Fix.">
-    <link rel="canonical" href="https://www.warenschmiede.com/tools/kostenrechner-v2.html">
-    <meta name="robots" content="index,follow">
+    <title>Kostenrechner V5.7 – Warenschmiede</title>
+    <meta name="description" content="Kostenrechner V5.7. Mit manueller Festpreis-Funktion.">
+    <link rel="canonical" href="https://www.warenschmiede.com/tools/kostenrechner-v5.html">
+    <meta name="robots" content="noindex,nofollow">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -51,6 +51,9 @@
             letter-spacing: 0.05em;
             color: #64748b;
             margin-left: 0.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         /* Standard Input Box */
@@ -67,10 +70,16 @@
             flex-wrap: nowrap;
         }
 
-        .input-box:focus-within {
+        .input-box:focus-within:not(.disabled) {
             background-color: #ffffff;
             border-color: var(--ac);
             box-shadow: 0 0 0 2px var(--ac-light);
+        }
+        
+        .input-box.disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background-color: #f1f5f9; /* Helleres Grau für disabled */
         }
 
         /* Textarea Box */
@@ -105,6 +114,11 @@
             font-size: 0.9rem;
             padding: 0;
             margin: 0;
+        }
+        
+        .input-control:disabled {
+            cursor: not-allowed;
+            color: #94a3b8; /* Hellerer Text wenn disabled */
         }
         
         .input-control::-webkit-inner-spin-button, 
@@ -205,7 +219,7 @@
                 height: auto; 
                 overflow: visible; 
                 margin: 0; 
-                display: block; /* WICHTIG: Flexbox entfernen für sauberen Seitenumbruch */
+                display: block; 
             }
             aside, .no-print { display: none !important; }
             main { 
@@ -213,7 +227,7 @@
                 margin: 0 !important; 
                 width: 100% !important; 
                 height: auto !important; 
-                display: block !important; /* WICHTIG */
+                display: block !important; 
                 overflow: visible !important;
             }
             .a4-page { 
@@ -221,7 +235,7 @@
                 margin: 0 !important; 
                 width: 210mm !important; 
                 height: 296mm !important; 
-                page-break-after: always; /* Zwingt neue Seite */
+                page-break-after: always; 
                 break-after: page;
                 overflow: hidden;
             }
@@ -258,39 +272,27 @@
                 
                 // LEERE STAMMDATEN (Public Version)
                 vendor: {
-                    company: '', 
-                    slogan: '', 
-                    name: '',
-                    street: '', 
-                    zip: '', 
-                    city: '', 
-                    email: '',
-                    phone: '', 
-                    bank: '', 
-                    iban: '',
-                    bic: '', 
-                    taxId: '' 
+                    company: '', slogan: '', name: '', street: '', zip: '', 
+                    city: '', email: '', phone: '', bank: '', iban: '', bic: '', taxId: '' 
                 },
 
                 printJobs: [],
-                extraItems: [], // Startet leer!
+                extraItems: [{ desc: 'Versandpauschale', qty: 1, price: 4.90 }],
                 itemsPerPageFirst: 4, itemsPerPageNext: 10,
 
                 initApp() {
                     this.loadFromStorage();
-                    // Watchers für Auto-Save
                     ['vendor', 'settings', 'defaults', 'printJobs', 'extraItems', 'customer', 'project', 'theme'].forEach(key => {
                         this.$watch(key, () => this.saveToStorage());
                     });
                     
-                    // Wenn keine Jobs da sind, füge einen leeren hinzu (damit man was sieht)
                     if (this.printJobs.length === 0) {
                         this.addBlankJob();
                     }
                 },
 
                 loadFromStorage() {
-                    const saved = localStorage.getItem('ws-calc-v5-6'); 
+                    const saved = localStorage.getItem('ws-calc-v5-7'); 
                     if (saved) {
                         try {
                             const data = JSON.parse(saved);
@@ -305,7 +307,7 @@
                         customer: this.customer, defaults: this.defaults, printJobs: this.printJobs,
                         project: this.project, theme: this.theme
                     };
-                    localStorage.setItem('ws-calc-v5-6', JSON.stringify(data));
+                    localStorage.setItem('ws-calc-v5-7', JSON.stringify(data));
                 },
 
                 getThemeStyles() {
@@ -314,37 +316,24 @@
                     return `--ac: ${c.primary}; --ac-light: ${c.light}; --bg-preview: ${bgPrev};`;
                 },
 
-                // Neue Funktion für komplett leeren Job
                 addBlankJob() {
                     this.printJobs.push({
                         id: Date.now(), 
-                        name: '', // LEER
-                        quantity: 1, 
-                        material: 'pla', 
-                        weight: 0, // 0
-                        time: 0, // 0
-                        priceKg: this.defaults.priceKg, 
-                        energyPrice: this.defaults.energyPrice,
-                        watts: this.defaults.watts, 
-                        loadFactor: this.defaults.loadFactor,
-                        machineHourly: this.defaults.machineHourly, 
-                        hourlyRate: this.defaults.hourlyRate,
-                        marginPercent: this.defaults.marginPercent, 
-                        laborMinutes: this.defaults.laborMinutes,
-                        failRate: this.defaults.failRate, 
-                        discount: this.defaults.discount,
-                        fixedCost: 0, 
-                        co2Material: this.defaults.co2Material,
-                        machinePurchase: 0, 
-                        machineLife: 0, 
-                        expanded: true
+                        name: '', quantity: 1, material: 'pla', weight: 0, time: 0, 
+                        priceKg: this.defaults.priceKg, energyPrice: this.defaults.energyPrice,
+                        watts: this.defaults.watts, loadFactor: this.defaults.loadFactor,
+                        machineHourly: this.defaults.machineHourly, hourlyRate: this.defaults.hourlyRate,
+                        marginPercent: this.defaults.marginPercent, laborMinutes: this.defaults.laborMinutes,
+                        failRate: this.defaults.failRate, discount: this.defaults.discount,
+                        fixedCost: 0, co2Material: this.defaults.co2Material,
+                        machinePurchase: 0, machineLife: 0, expanded: true,
+                        // NEU: Festpreis Logik
+                        manualPriceActive: false,
+                        manualPrice: 0
                     });
                 },
 
-                // Wird vom Button aufgerufen
-                addPrintJob() {
-                    this.addBlankJob();
-                },
+                addPrintJob() { this.addBlankJob(); },
 
                 removePrintJob(idx) {
                     if (this.printJobs.length > 1 || confirm("Letzten Job löschen?")) {
@@ -373,7 +362,8 @@
                     }
                 },
 
-                calculateJobTotal(job) {
+                // REINE KALKULATION (Interne Nutzung)
+                calculateCalculatedCost(job) {
                     const matCost = (job.weight / 1000) * job.priceKg;
                     const actualWatts = job.watts * (job.loadFactor / 100);
                     const energyCost = (actualWatts / 1000) * job.time * job.energyPrice;
@@ -384,6 +374,23 @@
                     const costWithFixed = prodCost + failCost + (parseFloat(job.fixedCost) || 0);
                     const salesPrice = costWithFixed * (1 + (job.marginPercent / 100));
                     return salesPrice * (1 - (job.discount / 100));
+                },
+
+                // ENDPREIS (Entscheidet ob Kalkulation oder Manuell)
+                calculateJobTotal(job) {
+                    if (job.manualPriceActive) {
+                        return parseFloat(job.manualPrice) || 0;
+                    }
+                    return this.calculateCalculatedCost(job);
+                },
+
+                // Helper für die UI beim Checkbox-Klick
+                toggleManualPrice(job) {
+                    job.manualPriceActive = !job.manualPriceActive;
+                    if (job.manualPriceActive) {
+                        // Beim Aktivieren den aktuellen berechneten Wert als Startwert setzen
+                        job.manualPrice = this.calculateCalculatedCost(job).toFixed(2);
+                    }
                 },
 
                 calculateJobCO2(job) {
@@ -418,8 +425,6 @@
                     const all = this.getAllPositions();
                     const pages = [];
                     let i = 0, p = 1;
-                    
-                    // Always ensure at least one page loop runs even if empty
                     do {
                         const lim = p === 1 ? this.itemsPerPageFirst : this.itemsPerPageNext;
                         const chunk = all.slice(i, i + lim);
@@ -427,7 +432,6 @@
                         i += chunk.length;
                         p++;
                     } while (i < all.length);
-
                     pages.forEach(pg => pg.totalPages = pages.length);
                     return pages;
                 },
@@ -437,30 +441,19 @@
                 getTotal() { return this.getSubtotal() + this.getVat(); },
                 getTotalCO2() { return (this.printJobs.reduce((s, j) => s + (this.calculateJobCO2(j) * j.quantity), 0) * 1000).toFixed(0); },
                 
-                // === SMART FILE NAMING & PRINT ===
                 printDocument() {
                     const originalTitle = document.title;
-                    
-                    // Prefix bestimmen
                     let prefix = "DOKUMENT";
                     if(this.docType === 'angebot') prefix = "ANGEBOT";
                     if(this.docType === 'rechnung') prefix = "RECHNUNG";
                     if(this.docType === 'lieferschein') prefix = "LIEFERSCHEIN";
-
-                    // Namen säubern (Keine Sonderzeichen)
                     const cleanNum = this.project.number ? this.project.number.replace(/[^a-z0-9\-_]/gi, '-') : '000';
                     const cleanCust = this.customer.name ? this.customer.name.replace(/[^a-z0-9\-_]/gi, '_') : 'Kunde';
-
-                    // Titel für den Druckdialog setzen
                     document.title = `${prefix}_${cleanNum}_${cleanCust}`;
-                    
                     window.print();
-                    
-                    // Titel zurücksetzen
                     setTimeout(() => document.title = originalTitle, 500);
                 },
 
-                // === SMART JSON EXPORT ===
                 exportToFile() {
                     const data = {
                         vendor: this.vendor, settings: this.settings, extraItems: this.extraItems,
@@ -470,13 +463,10 @@
                     const jsonString = JSON.stringify(data, null, 2);
                     const blob = new Blob([jsonString], { type: "application/json" });
                     const url = URL.createObjectURL(blob);
-                    
-                    // Name generieren
                     let prefix = "Kalkulation";
                     if(this.docType === 'angebot') prefix = "Kalk_ANG";
                     if(this.docType === 'rechnung') prefix = "Kalk_RE";
                     const cleanNum = this.project.number ? this.project.number.replace(/[^a-z0-9\-_]/gi, '-') : '000';
-                    
                     const link = document.createElement('a');
                     link.href = url;
                     link.download = `${prefix}_${cleanNum}.json`;
@@ -501,7 +491,7 @@
                 },
                 resetData() {
                     if(confirm("Wirklich alles zurücksetzen?")) {
-                        localStorage.removeItem('ws-calc-v5-6');
+                        localStorage.removeItem('ws-calc-v5-7');
                         location.reload();
                     }
                 },
@@ -530,7 +520,7 @@
                     <div class="w-10 h-10 rounded-xl bg-[var(--ac)] text-white flex items-center justify-center font-bold text-xl shadow-lg">W</div>
                     <div>
                         <h1 class="font-bold text-slate-800 leading-none">Warenschmiede</h1>
-                        <span class="text-[10px] text-slate-400 font-mono uppercase tracking-widest">Calc V5.6</span>
+                        <span class="text-[10px] text-slate-400 font-mono uppercase tracking-widest">Calc V5.7</span>
                     </div>
                 </div>
                 <div class="flex gap-2 bg-white border border-slate-200 rounded-lg p-1 shadow-sm">
@@ -613,7 +603,7 @@
             <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
                 <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2"><i class="fa-solid fa-user"></i> Kunde & Projekt</div>
                 
-                <!-- Toggle Switch (NEW: With Lieferschein) -->
+                <!-- Toggle Switch -->
                 <div class="flex bg-slate-100 p-1 rounded-lg mb-4">
                     <button @click="docType='angebot'" :class="docType=='angebot'?'bg-white text-[var(--ac)] shadow-sm':'text-slate-400'" class="flex-1 py-1 text-xs font-bold rounded transition-all">Angebot</button>
                     <button @click="docType='rechnung'" :class="docType=='rechnung'?'bg-white text-[var(--ac)] shadow-sm':'text-slate-400'" class="flex-1 py-1 text-xs font-bold rounded transition-all">Rechnung</button>
@@ -696,6 +686,7 @@
                                     <div>
                                         <div class="font-bold text-sm text-slate-700" x-text="job.name || 'Neues Bauteil'"></div>
                                         <div class="text-[10px] text-slate-500 font-mono">
+                                            <!-- Anzeige aktualisiert sich automatisch, da calculateJobTotal() jetzt die Logik enthält -->
                                             <span x-text="formatMoney(calculateJobTotal(job))"></span> / Stk
                                         </div>
                                     </div>
@@ -753,8 +744,33 @@
                                     </div>
                                 </div>
 
+                                <!-- NEU: MANUELLER FESTPREIS (Direkt sichtbar vor den Details) -->
+                                <div class="control-group border-t border-slate-100 pt-3 pb-1">
+                                    <span class="control-label text-slate-700">
+                                        Endpreis (Netto)
+                                        <div class="flex items-center gap-2 cursor-pointer" @click="toggleManualPrice(job)">
+                                            <span class="text-[9px] font-normal text-slate-400">Manuell festlegen</span>
+                                            <div class="w-8 h-4 rounded-full transition-colors relative" :class="job.manualPriceActive ? 'bg-[var(--ac)]' : 'bg-slate-300'">
+                                                <div class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform" :class="{'translate-x-4': job.manualPriceActive}"></div>
+                                            </div>
+                                        </div>
+                                    </span>
+                                    <!-- INPUT FIELD: Zeigt entweder berechneten Wert (grau) oder manuellen Wert (weiß/aktiv) -->
+                                    <div class="input-box" :class="{'disabled': !job.manualPriceActive}">
+                                        <input type="number" step="0.01" 
+                                            :disabled="!job.manualPriceActive"
+                                            :value="job.manualPriceActive ? job.manualPrice : calculateCalculatedCost(job).toFixed(2)"
+                                            @input="if(job.manualPriceActive) job.manualPrice = $event.target.value"
+                                            class="input-control font-bold text-lg text-slate-800">
+                                        <span class="input-unit text-sm">€</span>
+                                    </div>
+                                    <div x-show="!job.manualPriceActive" class="text-[9px] text-right text-slate-400 mt-1 italic">
+                                        Automatisch berechnet (Kalkulation)
+                                    </div>
+                                </div>
+
                                 <!-- Advanced Details -->
-                                <details class="border border-slate-200 rounded-lg overflow-hidden group">
+                                <details class="border border-slate-200 rounded-lg overflow-hidden group mt-2">
                                     <summary class="bg-slate-50 p-2 text-xs font-bold text-slate-500 cursor-pointer flex justify-between hover:bg-slate-100">
                                         <span>Kalkulation Details</span>
                                         <i class="fa-solid fa-plus group-open:hidden"></i>
