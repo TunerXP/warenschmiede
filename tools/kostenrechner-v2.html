@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kostenrechner V5.7 – Warenschmiede</title>
-    <meta name="description" content="Kostenrechner V5.7. Mit manueller Festpreis-Funktion.">
+    <title>Kostenrechner V5.8 – Warenschmiede</title>
+    <meta name="description" content="Kostenrechner V5.8. Mit automatischer Nummern-Anpassung (ANG/RE/LS).">
     <link rel="canonical" href="https://www.warenschmiede.com/tools/kostenrechner-v5.html">
     <meta name="robots" content="noindex,nofollow">
 
@@ -292,7 +292,7 @@
                 },
 
                 loadFromStorage() {
-                    const saved = localStorage.getItem('ws-calc-v5-7'); 
+                    const saved = localStorage.getItem('ws-calc-v5-8'); 
                     if (saved) {
                         try {
                             const data = JSON.parse(saved);
@@ -307,13 +307,33 @@
                         customer: this.customer, defaults: this.defaults, printJobs: this.printJobs,
                         project: this.project, theme: this.theme
                     };
-                    localStorage.setItem('ws-calc-v5-7', JSON.stringify(data));
+                    localStorage.setItem('ws-calc-v5-8', JSON.stringify(data));
                 },
 
                 getThemeStyles() {
                     const c = this.colors[this.theme.color] || this.colors.blue;
                     const bgPrev = this.theme.mode === 'light' ? '#f1f5f9' : '#0f172a';
                     return `--ac: ${c.primary}; --ac-light: ${c.light}; --bg-preview: ${bgPrev};`;
+                },
+
+                // AUTOMATIC NUMBER PREFIX UPDATE
+                setDocType(type) {
+                    this.docType = type;
+                    if (!this.project.number) return;
+
+                    let num = this.project.number;
+                    // Remove old prefix if exists
+                    num = num.replace(/^(ANG|RE|LS)-/, '');
+                    
+                    // Add new prefix
+                    let prefix = '';
+                    if (type === 'angebot') prefix = 'ANG-';
+                    if (type === 'rechnung') prefix = 'RE-';
+                    if (type === 'lieferschein') prefix = 'LS-';
+                    
+                    // Update only if prefix was present or if user wants auto-magic
+                    // Here we simply force the new prefix to keep it consistent
+                    this.project.number = prefix + num;
                 },
 
                 addBlankJob() {
@@ -327,7 +347,6 @@
                         failRate: this.defaults.failRate, discount: this.defaults.discount,
                         fixedCost: 0, co2Material: this.defaults.co2Material,
                         machinePurchase: 0, machineLife: 0, expanded: true,
-                        // NEU: Festpreis Logik
                         manualPriceActive: false,
                         manualPrice: 0
                     });
@@ -491,7 +510,7 @@
                 },
                 resetData() {
                     if(confirm("Wirklich alles zurücksetzen?")) {
-                        localStorage.removeItem('ws-calc-v5-7');
+                        localStorage.removeItem('ws-calc-v5-8');
                         location.reload();
                     }
                 },
@@ -520,7 +539,7 @@
                     <div class="w-10 h-10 rounded-xl bg-[var(--ac)] text-white flex items-center justify-center font-bold text-xl shadow-lg">W</div>
                     <div>
                         <h1 class="font-bold text-slate-800 leading-none">Warenschmiede</h1>
-                        <span class="text-[10px] text-slate-400 font-mono uppercase tracking-widest">Calc V5.7</span>
+                        <span class="text-[10px] text-slate-400 font-mono uppercase tracking-widest">Calc V5.8</span>
                     </div>
                 </div>
                 <div class="flex gap-2 bg-white border border-slate-200 rounded-lg p-1 shadow-sm">
@@ -605,9 +624,9 @@
                 
                 <!-- Toggle Switch -->
                 <div class="flex bg-slate-100 p-1 rounded-lg mb-4">
-                    <button @click="docType='angebot'" :class="docType=='angebot'?'bg-white text-[var(--ac)] shadow-sm':'text-slate-400'" class="flex-1 py-1 text-xs font-bold rounded transition-all">Angebot</button>
-                    <button @click="docType='rechnung'" :class="docType=='rechnung'?'bg-white text-[var(--ac)] shadow-sm':'text-slate-400'" class="flex-1 py-1 text-xs font-bold rounded transition-all">Rechnung</button>
-                    <button @click="docType='lieferschein'" :class="docType=='lieferschein'?'bg-white text-[var(--ac)] shadow-sm':'text-slate-400'" class="flex-1 py-1 text-xs font-bold rounded transition-all">Liefersch.</button>
+                    <button @click="setDocType('angebot')" :class="docType=='angebot'?'bg-white text-[var(--ac)] shadow-sm':'text-slate-400'" class="flex-1 py-1 text-xs font-bold rounded transition-all">Angebot</button>
+                    <button @click="setDocType('rechnung')" :class="docType=='rechnung'?'bg-white text-[var(--ac)] shadow-sm':'text-slate-400'" class="flex-1 py-1 text-xs font-bold rounded transition-all">Rechnung</button>
+                    <button @click="setDocType('lieferschein')" :class="docType=='lieferschein'?'bg-white text-[var(--ac)] shadow-sm':'text-slate-400'" class="flex-1 py-1 text-xs font-bold rounded transition-all">Liefersch.</button>
                 </div>
 
                 <div class="space-y-3">
