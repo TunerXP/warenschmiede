@@ -1,2337 +1,901 @@
-<!doctype html>
-<html lang="de">
+<!DOCTYPE html>
+<html lang="de" class="dark">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="icon" type="image/png" href="/ws.png" sizes="32x32">
-  <link rel="apple-touch-icon" href="/ws.png" sizes="180x180">
-  <meta name="theme-color" content="#000000">
-  <title>Werkstatt- &amp; Metall-Rechner | Warenschmiede</title>
-  <meta name="description" content="Werkstatt-Rechner für Einheiten, Schnittdaten und ISO-Gewinde mit Grenzmaßen, Kernloch und DIN-Toleranzen – direkt im Browser.">
-  <meta name="robots" content="index,follow">
-  <meta name="color-scheme" content="light dark">
-  <link rel="canonical" href="https://www.warenschmiede.com/werkstatt-rechner.html">
-  <meta property="og:title" content="Werkstatt- &amp; Metall-Rechner | Warenschmiede">
-  <meta property="og:description" content="Werkstatt-Rechner für Einheiten, Schnittdaten und ISO-Gewinde mit Grenzmaßen, Kernloch und DIN-Toleranzen – direkt im Browser.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.warenschmiede.com/werkstatt-rechner.html">
-  <meta property="og:site_name" content="Warenschmiede">
-  <meta property="og:locale" content="de_DE">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Werkstatt- &amp; Metall-Rechner | Warenschmiede">
-  <meta name="twitter:description" content="Werkstatt-Rechner für Einheiten, Schnittdaten und ISO-Gewinde mit Grenzmaßen, Kernloch und DIN-Toleranzen – direkt im Browser.">
-  <meta name="twitter:url" content="https://www.warenschmiede.com/werkstatt-rechner.html">
-  <meta name="twitter:image" content="/assets/og/og-default.jpg">
-  <script>
-    (function () {
-      var storageKey = 'theme-preference';
-      var preference = 'system';
-      try {
-        var stored = localStorage.getItem(storageKey);
-        if (stored === 'light' || stored === 'dark' || stored === 'system') {
-          preference = stored;
-        }
-      } catch (error) { }
-      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-      var resolved = preference === 'dark'
-        ? 'dark'
-        : preference === 'light'
-          ? 'light'
-          : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
-      var root = document.documentElement;
-      root.dataset.theme = resolved;
-      root.dataset.themePreference = preference;
-    })();
-  </script>
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/assets/print.css?v=1.0.7" media="print">
-  <style>
-    .tool-hero {
-      text-align: center;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .info-box {
-      border: 1px solid var(--control-border);
-      background: var(--surface);
-      padding: 1rem 1.1rem;
-      border-radius: 14px;
-      color: var(--text-muted);
-      display: flex;
-      gap: 0.75rem;
-      align-items: center;
-      justify-content: center;
-      margin-top: 1rem;
-      box-shadow: 0 12px 30px -22px rgba(15, 23, 42, 0.45);
-    }
-    .info-box--subtle {
-      background: var(--surface-muted);
-      align-items: flex-start;
-      text-align: left;
-    }
-    .tool-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-    .tool-header {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-    }
-    .tool-info-toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      border: 1px solid var(--control-border);
-      background: var(--surface-muted);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 0.35rem 0.75rem;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background-color 120ms ease, border-color 120ms ease, transform 160ms ease;
-      margin-left: auto;
-    }
-    .tool-info-toggle:hover,
-    .tool-info-toggle:focus-visible {
-      background: var(--surface);
-      border-color: var(--focus);
-    }
-    .tool-info-toggle-icon {
-      display: inline-block;
-      transition: transform 120ms ease;
-    }
-    .tool-info-toggle[aria-expanded="true"] .tool-info-toggle-icon {
-      transform: rotate(90deg);
-    }
-    .tool-info-content {
-      margin-top: 0.5rem;
-      padding: 0.75rem;
-      border: 1px dashed var(--control-border);
-      border-radius: 12px;
-      background: var(--surface);
-      transition: opacity 180ms ease;
-    }
-    /* Fix: Werkstatt-Rechner – Warum-dieser-Rechner-Box komplett sichtbar */
-    .tool-info-content.is-collapsed {
-      display: none;
-      opacity: 0;
-    }
-    .tools-wrapper {
-      max-width: min(1400px, 100%);
-      margin: 0 auto;
-      padding-inline: var(--space-5);
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-5);
-    }
-    .tools-wrapper .tool-card {
-      width: 100%;
-    }
-    .tool-card {
-      background: var(--surface);
-      border: 1px solid var(--control-border);
-      border-radius: 16px;
-      padding: var(--space-5);
-      box-shadow: var(--shadow-soft);
-    }
-    .tool-card h2, .tool-card h3 {
-      margin-top: 0;
-    }
-    .form-grid {
-      display: grid;
-      gap: var(--space-3);
-    }
-    .unit-group {
-      display: none;
-    }
-    .unit-group.is-active {
-      display: grid;
-      gap: 0.7rem;
-    }
-    .unit-grid {
-      display: grid;
-      gap: 0.65rem;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    }
-    .result-note {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-    .helper-text {
-      font-size: 0.95rem;
-      color: var(--text-muted);
-    }
-    .helper-text strong {
-      color: var(--text, #000);
-    }
-    .example-note {
-      background: var(--surface-muted);
-      border: 1px solid var(--control-border);
-      border-radius: 12px;
-      padding: 0.75rem 0.85rem;
-      margin: 0.25rem 0 0.65rem;
-      color: var(--text-muted);
-    }
-    .result-box {
-      border: 1px dashed var(--control-border);
-      background: var(--surface);
-      padding: 0.75rem;
-      border-radius: 12px;
-    }
-    .btn-inline {
-      margin-top: 0.5rem;
-      align-self: flex-start;
-    }
-    .tool-nav {
-      margin-top: var(--space-4);
-    }
-
-    .tool-top-nav {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: var(--space-3);
-      margin-top: var(--space-4);
-    }
-
-    .tool-top-nav .btn {
-      justify-content: center;
-      width: 100%;
-    }
-    .calculator-grid {
-      display: grid;
-      gap: var(--space-4);
-      grid-template-columns: 1fr;
-      align-items: start;
-    }
-
-    @media (min-width: 768px) {
-      .calculator-grid {
-        grid-template-columns: repeat(2, minmax(320px, 1fr));
-      }
-    }
-
-    @media (min-width: 1200px) {
-      .calculator-grid {
-        grid-template-columns: repeat(3, minmax(320px, 1fr));
-      }
-    }
-
-    .cutting-calculator-grid {
-      align-items: stretch;
-    }
-
-    .cutting-card {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .cutting-form-grid {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      gap: var(--space-3);
-    }
-
-    .cutting-card .result-box {
-      margin-top: auto;
-    }
-
-    .thread-helper-card {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-3);
-    }
-
-    .thread-helper-diagram {
-      background: var(--surface-muted);
-      border: 1px solid var(--control-border);
-      border-radius: 12px;
-      padding: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .thread-helper-diagram__image {
-      width: 100%;
-      max-width: 100%;
-      height: auto;
-      display: block;
-      object-fit: contain;
-    }
-
-    .thread-helper-values {
-      display: grid;
-      gap: 0.5rem;
-      margin: 0;
-    }
-
-    .thread-helper-values div {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 0.5rem;
-    }
-
-    .thread-helper-values dt {
-      margin: 0;
-      font-weight: 600;
-    }
-
-    .thread-helper-values dd {
-      margin: 0;
-      color: var(--text);
-    }
-
-    .thread-helper-note {
-      margin: 0;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-
-    .thread-helper-hint {
-      margin: 0;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-
-    .cutting-reset-wrapper {
-      margin-top: 0.5rem;
-    }
-    .tolerance-grid {
-      display: grid;
-      gap: 16px;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      align-items: start;
-    }
-    .tolerance-card {
-      background: var(--surface);
-      border: 1px solid var(--control-border);
-      border-radius: 16px;
-      padding: var(--space-4);
-      box-shadow: var(--shadow-soft);
-    }
-    .tolerance-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 0.5rem;
-    }
-    .tolerance-table th,
-    .tolerance-table td {
-      padding: 0.35rem 0.5rem;
-      text-align: left;
-      font-size: 0.95rem;
-      border-bottom: 1px solid var(--control-border);
-    }
-    .tolerance-table th {
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-    .tolerance-table tr:last-child td {
-      border-bottom: none;
-    }
-    .tolerance-note {
-      margin-top: 0.75rem;
-    }
-
-    /* --- Styles für Elektro-Helfer Visualisierungen --- */
-    .electro-viz-container {
-      background: #1e293b; /* Slate-800 für Kontrast */
-      border-radius: 12px;
-      padding: 1rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      margin-bottom: 1rem;
-      min-height: 140px;
-    }
-    .warning-box {
-      background-color: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #b91c1c; /* Rot */
-      padding: 0.5rem;
-      border-radius: 6px;
-      margin-top: 0.5rem;
-      font-size: 0.85rem;
-      display: none; /* Initial versteckt */
-    }
-    .warning-box.is-visible {
-      display: block;
-    }
-    /* Flex-Input für Presets */
-    .input-with-preset {
-      display: flex;
-      gap: 0.5rem;
-    }
-    .input-with-preset input {
-      flex: 1;
-    }
-    .input-with-preset select {
-      width: auto;
-      max-width: 140px;
-      font-size: 0.9rem;
-    }
-    
-    /* AWG Table Styling */
-    .awg-table { width: 100%; text-align: left; border-collapse: collapse; }
-    .awg-table th { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--control-border); padding: 4px; }
-    .awg-table td { padding: 6px 4px; border-bottom: 1px solid var(--control-border); font-variant-numeric: tabular-nums; }
-    .awg-table tr:last-child td { border-bottom: none; }
-
-    @media (max-width: 960px) {
-      .tool-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-    @media (max-width: 640px) {
-      .tools-wrapper {
-        padding-inline: var(--space-4);
-      }
-    }
-  </style>
-</head>
-<body>
-  <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
-    <symbol id="icon-printer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M6.75 15.75h-1.5a1.5 1.5 0 0 1-1.5-1.5v-4.5a1.5 1.5 0 0 1 1.5-1.5h13.5a1.5 1.5 0 0 1 1.5 1.5v4.5a1.5 1.5 0 0 1-1.5 1.5h-1.5" />
-      <path d="M7.5 8.25v-3h9v3" />
-      <rect x="7.5" y="15.75" width="9" height="4.5" rx="1" />
-      <path d="M16.5 12.75h0" />
-    </symbol>
-    <symbol id="icon-clip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M8 10v7a4 4 0 0 0 8 0V7a2.5 2.5 0 1 0-5 0v8a1 1 0 0 0 2 0v-7" />
-    </symbol>
-    <symbol id="icon-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M4.75 19.25h14.5" />
-      <rect x="5.75" y="11.25" width="3.5" height="7.5" rx="1" />
-      <rect x="10.25" y="6.25" width="3.5" height="12.5" rx="1" />
-      <rect x="14.75" y="9.25" width="3.5" height="9.5" rx="1" />
-    </symbol>
-    <symbol id="icon-laptop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M6.75 5.25h10.5a1.5 1.5 0 0 1 1.5 1.5v7.75a1.5 1.5 0 0 1-1.5 1.5H6.75a1.5 1.5 0 0 1-1.5-1.5V6.75a1.5 1.5 0 0 1 1.5-1.5z" />
-      <path d="M4.25 17.75h15.5" />
-      <path d="M3.5 18.75h17" />
-    </symbol>
-  </svg>
-  <noscript>
-    <style>
-      .card__icon--svg { display: none !important; }
-      .card__icon--fallback { display: inline-flex !important; }
-    </style>
-  </noscript>
-  <header class="site-header" data-header>
-    <div class="ws-nav-container header-grid">
-      <div class="brand">
-        <a class="brand-link" href="/index.html#start">
-          <img src="/assets/images/warenschmiede_logo.png" alt="Warenschmiede Logo" class="brand-logo" width="453" height="276" fetchpriority="high">
-          <div class="brand-text">
-            <span class="brand-name">Warenschmiede</span>
-            <span class="brand-tagline">3D-Druck · Made in Germany</span>
-          </div>
-        </a>
-      </div>
-
-      <nav class="main-nav" aria-label="Hauptnavigation">
-        <div class="nav-menu" id="primary-navigation" data-nav-menu>
-          <ul class="nav-list" id="navList">
-            <li class="nav-item nav-fixed">
-              <a class="nav-link" href="/index.html#start" data-nav-link data-section="start" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html"><span class="nav-ico" aria-hidden="true">🏠</span>Start</a>
-            </li>
-
-            <!-- Neuer Dropdown: Rechner & Tools -->
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-highlight nav-tools" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">
-                <span class="nav-ico" aria-hidden="true">🧮</span>Rechner &amp; Tools ▾
-              </button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/tools/kostenrechner-v2.html" data-nav-link data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html">
-                    <span class="nav-ico" aria-hidden="true">🧮</span>Kostenrechner V2
-                  </a>
-                </li>
-                <li>
-                  <a
-                    class="nav-link"
-                    href="/tools/buero/doku-light/"
-                    data-nav-link
-                    data-path="/tools/buero/doku-light , /tools/buero/doku-light/ , /tools/buero/doku-light/index.html"
-                  >
-                    <span class="nav-ico" aria-hidden="true">📄</span>Dokumenten-Tool Light
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/bild-konverter.html" data-nav-link data-path="/bild-konverter , /bild-konverter.html">
-                    <span class="nav-ico" aria-hidden="true">🖼️</span>Bilder Tools
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/tools/buero/doku-light/QRCodeMasterPro.html" data-nav-link data-path="/tools/buero/doku-light/QRCodeMasterPro , /tools/buero/doku-light/QRCodeMasterPro.html">
-                    <span class="nav-ico" aria-hidden="true">🔳</span>QR-Code Generator
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/tools/buero/doku-light/ReceiptWriterPro.html" data-nav-link data-path="/tools/buero/doku-light/ReceiptWriterPro , /tools/buero/doku-light/ReceiptWriterPro.html">
-                    <span class="nav-ico" aria-hidden="true">🧾</span>Quittungs-Generator
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/tools/buero/doku-light/CNCMasterCalc.html" data-nav-link data-path="/tools/buero/doku-light/CNCMasterCalc , /tools/buero/doku-light/CNCMasterCalc.html">
-                    <span class="nav-ico" aria-hidden="true">⚙️</span>CNCMasterCalc
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/werkstatt-rechner.html" data-nav-link data-path="/werkstatt-rechner , /werkstatt-rechner.html">
-                    <span class="nav-ico" aria-hidden="true">🛠️</span>Werkstatt-Rechner
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🧰</span>Leistungen ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/leistungen/3d-druck.html" data-nav-link data-path="/leistungen/3d-druck , /leistungen/3d-druck.html"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druckauftrag</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/leistungen/cad-prototyping.html" data-nav-link data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html"><span class="nav-ico" aria-hidden="true">📐</span>CAD &amp; Prototyping</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/leistungen/pc-hilfe.html" data-nav-link data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html"><span class="nav-ico" aria-hidden="true">💻</span>PC-Hilfe</a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🤖</span>Über KI ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/ki/index.html" data-nav-link data-path="/ki , /ki/ , /ki/index.html"><span class="nav-ico" aria-hidden="true">📖</span>Einführung &amp; Grundlagen</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/prompts.html" data-nav-link data-path="/ki/prompts , /ki/prompts.html"><span class="nav-ico" aria-hidden="true">✍️</span>Prompts für den Alltag</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/tools.html" data-nav-link data-path="/ki/tools , /ki/tools.html"><span class="nav-ico" aria-hidden="true">🛠️</span>KI-Werkzeuge</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/so-arbeitest-du-mit-ki.html" data-nav-link data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html"><span class="nav-ico" aria-hidden="true">🧭</span>So arbeitest du mit KI</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/programme-die-du-brauchst.html" data-nav-link data-path="/ki/programme-die-du-brauchst , /ki/programme-die-du-brauchst.html"><span class="nav-ico" aria-hidden="true">💾</span>Programme, die du brauchst</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/chancen-und-risiken.html" data-nav-link data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html"><span class="nav-ico" aria-hidden="true">⚖️</span>KI: Chancen &amp; Risiken</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/faq.html" data-nav-link data-path="/ki/faq , /ki/faq.html"><span class="nav-ico" aria-hidden="true">🔒</span>KI-FAQ &amp; Sicherheit</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/lexikon.html" data-nav-link data-path="/ki/lexikon , /ki/lexikon.html"><span class="nav-ico" aria-hidden="true">🔤</span>KI-Lexikon</a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">✉️</span>Kontakt ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/kontakt.html" data-nav-link data-path="/kontakt , /kontakt.html , /warenschmiede/kontakt , /warenschmiede/kontakt.html"><span class="nav-ico" aria-hidden="true">📧</span>Kontakt aufnehmen</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ablauf-anfrage.html" data-nav-link data-path="/ablauf-anfrage , /ablauf-anfrage.html"><span class="nav-ico" aria-hidden="true">📝</span>Ablauf &amp; Anfrage</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/impressum.html" data-nav-link data-path="/impressum , /impressum.html , /warenschmiede/impressum , /warenschmiede/impressum.html"><span class="nav-ico" aria-hidden="true">⚖️</span>Impressum</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ueber-mich.html" data-nav-link data-path="/ueber-mich , /ueber-mich.html , /warenschmiede/ueber-mich.html , /about , /about.html , /warenschmiede/about.html"><span class="nav-ico" aria-hidden="true">👤</span>Über mich</a>
-                </li>
-              </ul>
-            </li>
-
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druck ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/technologien.html" data-nav-link data-path="/technologien , /technologien.html"><span class="nav-ico" aria-hidden="true">🧪</span>FDM / SLA / SLS – Technologien</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/fehlerdatenbank.html" data-nav-link data-path="/fehlerdatenbank , /fehlerdatenbank.html"><span class="nav-ico" aria-hidden="true">🛠️</span>Fehler &amp; Troubleshooting</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ideenquellen.html" data-nav-link data-path="/ideenquellen , /ideenquellen.html , /ideen , /ideen/ , /ideen/index.html"><span class="nav-ico" aria-hidden="true">💡</span>Ideenquellen &amp; Portale</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/material.html" data-nav-link data-path="/material.html"><span class="nav-ico" aria-hidden="true">📚</span>Materialwissen &amp; Vergleiche</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/druck-tipps.html" data-nav-link data-path="/druck-tipps , /druck-tipps.html"><span class="nav-ico" aria-hidden="true">🧭</span>Tipps &amp; Abläufe / Kosten</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/tools/kostenrechner-v2.html" data-nav-link data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html"><span class="nav-ico" aria-hidden="true">🧮</span>Kosten &amp; Kalkulation</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/slicer-einstellungen.html" data-nav-link data-path="/slicer-einstellungen , /slicer-einstellungen.html"><span class="nav-ico" aria-hidden="true">⚙️</span>Slicer &amp; Einstellungen</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/3ddruck-faq.html" data-nav-link data-path="/3ddruck-faq , /3ddruck-faq.html"><span class="nav-ico" aria-hidden="true">❓</span>Neu beim 3D-Druck?</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/wartung-reinigung.html" data-nav-link data-path="/wartung-reinigung , /wartung-reinigung.html"><span class="nav-ico" aria-hidden="true">🧼</span>Wartung &amp; Reinigung</a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </nav>
-
-      <div class="header-actions">
-        <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Design umschalten: Hell/Dunkel" title="Design umschalten: Hell/Dunkel" aria-pressed="false">
-          <span id="themeIcon" aria-hidden="true">🖥️</span>
-          <span class="theme-toggle__text" id="themeToggleText" aria-live="polite">Helles Design</span>
-        </button>
-
-        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
-          <span class="sr-only">Menü öffnen</span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main class="site-main" tabindex="-1">
-    <section class="section section-hero">
-      <div class="container container--calc-wide tool-hero">
-        <p class="hero-eyebrow">Neu &amp; kostenlos</p>
-        <h1>Werkstatt- &amp; Metall-Rechner</h1>
-        <p class="hero-lede">Praktische Helfer für Alltag und Konstruktion – Einheiten umrechnen, Gewinde-Toleranzen prüfen und Schnittdaten abschätzen. Läuft komplett im Browser, ohne Werbung, ohne Tracking.</p>
-        <div class="info-box" role="note">
-          <span aria-hidden="true">ℹ️</span>
-          <span>Hinweis: Alle Berechnungen erfolgen nur in deinem Browser. Es werden keine Daten an Warenschmiede oder Dritte übertragen.</span>
-        </div>
-        
-        <div class="ki-tools-toc" id="rechner-uebersicht" aria-label="Schnellnavigation">
-          <p class="section-eyebrow">Direkt zu</p>
-          <ul class="ki-tools-toc__list">
-            <li class="ki-tools-toc__item">
-              <a class="ki-tools-toc__link" href="#einheiten-rechner">Einheiten-Rechner</a>
-            </li>
-            <li class="ki-tools-toc__item">
-              <a class="ki-tools-toc__link" href="#gewinde-toleranzrechner">Gewinde-Toleranzen</a>
-            </li>
-            <li class="ki-tools-toc__item">
-              <a class="ki-tools-toc__link" href="#schnittdaten-rechner">Schnittdaten</a>
-            </li>
-            <li class="ki-tools-toc__item">
-              <a class="ki-tools-toc__link" href="#allgemeintoleranzen">Allgemeintoleranzen</a>
-            </li>
-            <li class="ki-tools-toc__item">
-              <a class="ki-tools-toc__link" href="#elektro-helfer">Elektro-Helfer (Neu!)</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <div class="tools-wrapper">
-      <!-- EXISTING SECTIONS 1-4 (UNVERÄNDERT) -->
-      <section class="section">
-        <div class="container container--calc-wide tool-grid">
-        <div class="tool-card">
-          <div class="tool-header">
-            <h2 id="einheiten-rechner" data-section-target>1. Einheiten-Rechner (Mechanik &amp; Alltag)</h2>
-            <button class="tool-info-toggle" type="button" aria-expanded="false" aria-controls="info-einheiten">
-              <span class="tool-info-toggle-label">Warum dieser Rechner?</span>
-              <span class="tool-info-toggle-icon" aria-hidden="true">▶</span>
-            </button>
-          </div>
-          <div id="info-einheiten" class="tool-info-content is-collapsed">
-            <p class="helper-text">Rechnet typische Werkstatt-Maße automatisch um – mm, cm, Meter, Zoll, Flächen, Volumen, Gewicht, °C/°F. Ideal für Zeichnungen, 3D-Druck und CNC.</p>
-            <p class="helper-text">Wähle die Größe, gib einen Wert ein und die übrigen Einheiten folgen direkt. Alle Berechnungen laufen nur im Browser.</p>
-          </div>
-          <div class="example-note">
-            <strong>Beispiel:</strong>
-            <p class="helper-text">Du misst ein Teil mit 68 mm und willst wissen, wie viele Zoll das ungefähr sind. Gib 68 mm ein – die anderen Felder füllen sich automatisch mit cm, m und inch.</p>
-          </div>
-          <div class="form-grid">
-            <div class="calc-field">
-              <label for="unitCategory">Größe auswählen</label>
-              <select id="unitCategory">
-                <option value="length">Länge</option>
-                <option value="area">Fläche</option>
-                <option value="volume">Volumen</option>
-                <option value="mass">Masse</option>
-                <option value="temperature">Temperatur</option>
-              </select>
-              <p class="helper-text">Typische Werkstatt- und Alltagswerte – mm/cm/m/inch, Flächen, Volumen, Gewicht und °C/°F. Du kannst jeden Bereich einzeln nutzen.</p>
-            </div>
-
-            <div class="unit-group is-active" data-category="length">
-              <div class="unit-grid">
-                <div class="calc-field">
-                  <label for="length-um">Mikrometer (µm)</label>
-                  <input type="number" id="length-um" inputmode="decimal" placeholder="z. B. 500" data-category="length" data-unit="um">
-                </div>
-                <div class="calc-field">
-                  <label for="length-mm">Millimeter (mm)</label>
-                  <input type="number" id="length-mm" inputmode="decimal" placeholder="z. B. 120" data-category="length" data-unit="mm">
-                </div>
-                <div class="calc-field">
-                  <label for="length-cm">Zentimeter (cm)</label>
-                  <input type="number" id="length-cm" inputmode="decimal" placeholder="z. B. 12" data-category="length" data-unit="cm">
-                </div>
-                <div class="calc-field">
-                  <label for="length-m">Meter (m)</label>
-                  <input type="number" id="length-m" inputmode="decimal" placeholder="z. B. 1.2" data-category="length" data-unit="m">
-                </div>
-                <div class="calc-field">
-                  <label for="length-inch">Zoll (inch)</label>
-                  <input type="number" id="length-inch" inputmode="decimal" placeholder="z. B. 4.72" data-category="length" data-unit="inch" step="0.01">
-                </div>
-              </div>
-              <button class="btn btn-utility btn-sm btn-inline reset-btn" type="button" data-category="length">Felder zurücksetzen</button>
-            </div>
-
-            <div class="unit-group" data-category="area">
-              <div class="unit-grid">
-                <div class="calc-field">
-                  <label for="area-mm2">Quadratmillimeter (mm²)</label>
-                  <input type="number" id="area-mm2" inputmode="decimal" placeholder="z. B. 2500" data-category="area" data-unit="mm2">
-                </div>
-                <div class="calc-field">
-                  <label for="area-cm2">Quadratzentimeter (cm²)</label>
-                  <input type="number" id="area-cm2" inputmode="decimal" placeholder="z. B. 25" data-category="area" data-unit="cm2">
-                </div>
-                <div class="calc-field">
-                  <label for="area-dm2">Quadratdezimeter (dm²)</label>
-                  <input type="number" id="area-dm2" inputmode="decimal" placeholder="z. B. 0.25" data-category="area" data-unit="dm2" step="0.001">
-                </div>
-                <div class="calc-field">
-                  <label for="area-m2">Quadratmeter (m²)</label>
-                  <input type="number" id="area-m2" inputmode="decimal" placeholder="z. B. 0.0025" data-category="area" data-unit="m2" step="0.0001">
-                </div>
-              </div>
-              <button class="btn btn-utility btn-sm btn-inline reset-btn" type="button" data-category="area">Felder zurücksetzen</button>
-            </div>
-
-            <div class="unit-group" data-category="volume">
-              <div class="unit-grid">
-                <div class="calc-field">
-                  <label for="volume-ml">Milliliter (ml)</label>
-                  <input type="number" id="volume-ml" inputmode="decimal" placeholder="z. B. 125" data-category="volume" data-unit="ml" step="0.1">
-                </div>
-                <div class="calc-field">
-                  <label for="volume-cm3">Kubikzentimeter (cm³ / ccm)</label>
-                  <input type="number" id="volume-cm3" inputmode="decimal" placeholder="z. B. 125" data-category="volume" data-unit="cm3">
-                </div>
-                <div class="calc-field">
-                  <label for="volume-liter">Liter (L)</label>
-                  <input type="number" id="volume-liter" inputmode="decimal" placeholder="z. B. 0.125" data-category="volume" data-unit="liter" step="0.001">
-                </div>
-                <div class="calc-field">
-                  <label for="volume-m3">Kubikmeter (m³)</label>
-                  <input type="number" id="volume-m3" inputmode="decimal" placeholder="optional: 0.000125" data-category="volume" data-unit="m3" step="0.000001">
-                </div>
-              </div>
-              <button class="btn btn-utility btn-sm btn-inline reset-btn" type="button" data-category="volume">Felder zurücksetzen</button>
-            </div>
-
-            <div class="unit-group" data-category="mass">
-              <div class="unit-grid">
-                <div class="calc-field">
-                  <label for="mass-mg">Milligramm (mg)</label>
-                  <input type="number" id="mass-mg" inputmode="decimal" placeholder="z. B. 250000" data-category="mass" data-unit="mg">
-                </div>
-                <div class="calc-field">
-                  <label for="mass-g">Gramm (g)</label>
-                  <input type="number" id="mass-g" inputmode="decimal" placeholder="z. B. 750" data-category="mass" data-unit="g">
-                </div>
-                <div class="calc-field">
-                  <label for="mass-kg">Kilogramm (kg)</label>
-                  <input type="number" id="mass-kg" inputmode="decimal" placeholder="z. B. 0.75" data-category="mass" data-unit="kg" step="0.001">
-                </div>
-                <div class="calc-field">
-                  <label for="mass-t">Tonne (t)</label>
-                  <input type="number" id="mass-t" inputmode="decimal" placeholder="z. B. 0.001" data-category="mass" data-unit="t" step="0.0001">
-                </div>
-                <div class="calc-field">
-                  <label for="mass-oz">Unze (oz)</label>
-                  <input type="number" id="mass-oz" inputmode="decimal" placeholder="optional: 26.455" data-category="mass" data-unit="oz" step="0.001">
-                </div>
-                <div class="calc-field">
-                  <label for="mass-lb">Pfund (lb)</label>
-                  <input type="number" id="mass-lb" inputmode="decimal" placeholder="optional: 1.653" data-category="mass" data-unit="lb" step="0.001">
-                </div>
-              </div>
-              <button class="btn btn-utility btn-sm btn-inline reset-btn" type="button" data-category="mass">Felder zurücksetzen</button>
-            </div>
-
-            <div class="unit-group" data-category="temperature">
-              <div class="unit-grid">
-                <div class="calc-field">
-                  <label for="temp-c">Grad Celsius (°C)</label>
-                  <input type="number" id="temp-c" inputmode="decimal" placeholder="z. B. 20" data-category="temperature" data-unit="c">
-                </div>
-                <div class="calc-field">
-                  <label for="temp-f">Grad Fahrenheit (°F)</label>
-                  <input type="number" id="temp-f" inputmode="decimal" placeholder="z. B. 68" data-category="temperature" data-unit="f">
-                </div>
-              </div>
-              <button class="btn btn-utility btn-sm btn-inline reset-btn" type="button" data-category="temperature">Felder zurücksetzen</button>
-            </div>
-          </div>
-          <p class="result-note">Tipp: Ändere einfach einen Wert – alle anderen Felder füllen sich automatisch. Die Formeln sind als Kommentare im Code dokumentiert.</p>
-          <div class="tool-nav">
-            <a class="btn btn-utility btn-sm" href="#rechner-uebersicht">Zur Rechner-Auswahl</a>
-          </div>
-        </div>
-
-        <div class="tool-card">
-          <div class="tool-header">
-            <h2 id="gewinde-toleranzrechner" data-section-target>2. Gewinde-Toleranzrechner (Light)</h2>
-            <button class="tool-info-toggle" type="button" aria-expanded="false" aria-controls="info-tolerance">
-              <span class="tool-info-toggle-label">Warum dieser Rechner?</span>
-              <span class="tool-info-toggle-icon" aria-hidden="true">▶</span>
-            </button>
-          </div>
-          <div id="info-tolerance" class="tool-info-content is-collapsed">
-            <p class="helper-text">Zeigt typische Grenzmaße für ISO-Metrische Regel- und Feingewinde. Vereinfachte Praxiswerte, keine vollständige Normübernahme.</p>
-            <p class="helper-text">Wähle Serie, Gewindetyp, Größe und Toleranzfeld. Steigung und Nenndurchmesser sind in der Liste hinterlegt – Kernloch = Nenndurchmesser minus Steigung.</p>
-            <p class="helper-text result-note">Für sicherheitskritische Anwendungen immer vollständige Normtabellen (DIN 13 / ISO) heranziehen.</p>
-          </div>
-
-          <div class="calculator-grid">
-            <div class="tool-card">
-              <h3>Eingaben</h3>
-              <div class="form-grid">
-                <div class="calc-field">
-                  <label for="tolerance-series">Gewinde-Serie</label>
-                  <select id="tolerance-series">
-                    <option value="ISO-Metrisch (Regelgewinde)">ISO-Metrisch (Regelgewinde)</option>
-                    <option value="ISO-Metrisch (Feingewinde)">ISO-Metrisch (Feingewinde)</option>
-                  </select>
-                </div>
-                <div class="calc-field">
-                  <label for="tolerance-type">Gewindetyp</label>
-                  <select id="tolerance-type">
-                    <option value="Außengewinde">Außengewinde</option>
-                    <option value="Innengewinde">Innengewinde</option>
-                  </select>
-                </div>
-                <div class="calc-field">
-                  <label for="tolerance-thread">Gewinde auswählen</label>
-                  <select id="tolerance-thread"></select>
-                </div>
-                <div class="calc-field">
-                  <label for="tolerance-field">Toleranzfeld</label>
-                  <select id="tolerance-field"></select>
-                </div>
-              </div>
-            </div>
-
-            <div class="tool-card">
-              <h3>Grenzmaße</h3>
-              <div class="result-box" aria-live="polite">
-                <p><strong>Gewindebezeichnung:</strong> <span id="tolerance-thread-name">–</span></p>
-                <p><strong>Gewindetyp:</strong> <span id="tolerance-thread-type">–</span></p>
-                <p><strong>Toleranzfeld:</strong> <span id="tolerance-field-label">–</span></p>
-                <p><strong>Nenndurchmesser d / D:</strong> <span id="tolerance-nominal">–</span> mm</p>
-                <p><strong>Kernloch-Bohrung (Näherung):</strong> <span id="tolerance-core-hole">–</span> mm</p>
-                <div id="tolerance-outer-block">
-                  <p><strong>Außendurchmesser max:</strong> <span id="tolerance-outer-max">–</span> mm</p>
-                  <p><strong>Außendurchmesser min:</strong> <span id="tolerance-outer-min">–</span> mm</p>
-                  <p><strong>Kerndurchmesser max:</strong> <span id="tolerance-core-max">–</span> mm</p>
-                  <p><strong>Kerndurchmesser min:</strong> <span id="tolerance-core-min">–</span> mm</p>
-                </div>
-                <div id="tolerance-inner-block">
-                  <p><strong>Kerndurchmesser max:</strong> <span id="tolerance-inner-core-max">–</span> mm</p>
-                  <p><strong>Kerndurchmesser min:</strong> <span id="tolerance-inner-core-min">–</span> mm</p>
-                </div>
-                <p class="helper-text" id="tolerance-error"></p>
-              </div>
-              <p class="helper-text result-note">Vereinfachte Richtwerte, keine vollständige Normübernahme. Für exakte Konstruktionen bitte ISO-Norm bzw. Gewindetabellen verwenden.</p>
-            </div>
-
-            <div class="tool-card thread-helper-card" aria-label="Bohrer- und Senkungsrichtwerte">
-              <h3 class="tool-card-title">Bohrer &amp; Senkung (DIN 912, Richtwerte)</h3>
-              <div class="thread-helper-diagram">
-                <img
-                  src="/assets/img/placeholder-schraube-din912.png"
-                  alt="Schematische Schraube mit Durchgangsloch und Senkung; Bezeichnungen dk, ds und k"
-                  class="thread-helper-diagram__image"
-                >
-              </div>
-              <dl class="thread-helper-values">
-                <div>
-                  <dt>Kernloch-Bohrer</dt>
-                  <dd><span data-thread-core-drill>–</span> mm</dd>
-                </div>
-                <div>
-                  <dt>Durchgangsloch-Bohrer</dt>
-                  <dd><span data-thread-clearance-drill>–</span> mm</dd>
-                </div>
-                <div>
-                  <dt>Kopf-Ø dk (DIN 912)</dt>
-                  <dd><span data-thread-head-diameter>–</span> mm</dd>
-                </div>
-                <div>
-                  <dt>empf. Senkungstiefe k</dt>
-                  <dd><span data-thread-countersink-depth>–</span> mm</dd>
-                </div>
-              </dl>
-              <p class="thread-helper-hint" id="thread-helper-hint" aria-live="polite"></p>
-              <p class="tool-note thread-helper-note">Richtwerte für Standard-Zylinderschrauben DIN 912 (Durchgangsloch). Für sicherheitskritische Anwendungen bitte Tabellenbuch oder Herstellerdaten verwenden.</p>
-            </div>
-          </div>
-
-          <div class="example-note">
-            <strong>Beispiel:</strong>
-            <p class="helper-text">Du möchtest ein M12-Außengewinde mit Toleranz 6g fertigen. Wähle „Außengewinde“, M12 und 6g – der Rechner zeigt dir das einfache min./max.-Grenzmaß für den Außendurchmesser. So kannst du schneller prüfen, ob dein Istmaß im zulässigen Bereich liegt.</p>
-          </div>
-          <div class="tool-nav">
-            <a class="btn btn-utility btn-sm" href="#rechner-uebersicht">Zur Rechner-Auswahl</a>
-          </div>
-        </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container container--calc-wide">
-        <div class="tool-card">
-          <div class="tool-header">
-            <h2 id="schnittdaten-rechner" data-section-target>3. Schnittdaten-Rechner (Drehzahl &amp; Vorschub)</h2>
-            <button class="tool-info-toggle" type="button" aria-expanded="false" aria-controls="info-cutting">
-              <span class="tool-info-toggle-label">Warum dieser Rechner?</span>
-              <span class="tool-info-toggle-icon" aria-hidden="true">▶</span>
-            </button>
-          </div>
-          <div id="info-cutting" class="tool-info-content is-collapsed">
-            <p class="helper-text">Berechnet Drehzahl, Vorschub und Schnittgeschwindigkeit. Richtwerte – bitte Material- und Werkzeugdatenblatt dazu beachten.</p>
-            <p class="helper-text result-note">Nutze die Formeln für Drehen, Fräsen und Bohren. Ergebnisse dienen der Orientierung und müssen mit den Herstellerempfehlungen abgeglichen werden.</p>
-          </div>
-          <div class="calculator-grid cutting-calculator-grid">
-            <div class="tool-card cutting-card">
-              <h3>Drehzahl berechnen</h3>
-              <p class="helper-text">Formel: <strong>n = (1000 · v<sub>c</sub>) / (π · d)</strong></p>
-              <div class="form-grid cutting-form-grid">
-                <div class="calc-field">
-                  <label for="cutting-vc">Schnittgeschwindigkeit v<sub>c</sub> (m/min)</label>
-                  <input type="number" inputmode="decimal" id="cutting-vc" placeholder="z. B. 150">
-                </div>
-                <div class="calc-field">
-                  <label for="cutting-diameter">Werkzeugdurchmesser d (mm)</label>
-                  <input type="number" inputmode="decimal" id="cutting-diameter" placeholder="z. B. 10">
-                </div>
-                <button class="btn btn-primary btn-inline" type="button" id="spindle-btn">Drehzahl berechnen</button>
-                <div class="result-box" aria-live="polite">
-                  <p><strong>Drehzahl n:</strong> <span id="spindle-speed-result">–</span> 1/min</p>
-                  <p class="helper-text" id="spindle-speed-error"></p>
-                </div>
-              </div>
-            </div>
-
-            <div class="tool-card cutting-card">
-              <h3>Vorschubgeschwindigkeit berechnen</h3>
-              <p class="helper-text">Formel: <strong>v<sub>f</sub> = n · z · f<sub>z</sub></strong></p>
-              <div class="form-grid cutting-form-grid">
-                <div class="calc-field">
-                  <label for="feed-n">Drehzahl n (1/min)</label>
-                  <input type="number" inputmode="decimal" id="feed-n" placeholder="z. B. 4775">
-                </div>
-                <div class="calc-field">
-                  <label for="feed-z">Schneidenzahl z</label>
-                  <input type="number" inputmode="decimal" id="feed-z" placeholder="z. B. 4" min="1" step="1">
-                </div>
-                <div class="calc-field">
-                  <label for="feed-fz">Zahnvorschub f<sub>z</sub> (mm/Zahn)</label>
-                  <input type="number" inputmode="decimal" id="feed-fz" placeholder="z. B. 0.05" step="0.001">
-                </div>
-                <button class="btn btn-primary btn-inline" type="button" id="feed-btn">Vorschub berechnen</button>
-                <div class="result-box" aria-live="polite">
-                  <p><strong>Vorschub v<sub>f</sub>:</strong> <span id="feed-result">–</span> mm/min</p>
-                  <p class="helper-text" id="feed-error"></p>
-                </div>
-              </div>
-            </div>
-
-            <div class="tool-card cutting-card">
-              <h3>Schnittgeschwindigkeit berechnen</h3>
-              <p class="helper-text">Berechnet die Schnittgeschwindigkeit v<sub>c</sub> aus Drehzahl und Werkzeugdurchmesser. Praktisch, wenn nur n und d bekannt sind und du wissen möchtest, mit welcher Schnittgeschwindigkeit du gerade arbeitest.</p>
-              <div class="form-grid cutting-form-grid">
-                <div class="calc-field">
-                  <label for="cutting-n">Drehzahl n (1/min)</label>
-                  <input type="number" inputmode="decimal" id="cutting-n" placeholder="z. B. 3500">
-                </div>
-                <div class="calc-field">
-                  <label for="cutting-tool-diameter">Werkzeugdurchmesser d (mm)</label>
-                  <input type="number" inputmode="decimal" id="cutting-tool-diameter" placeholder="z. B. 10">
-                </div>
-                <button class="btn btn-primary btn-inline" type="button" id="cutting-speed-btn">Schnittgeschwindigkeit berechnen</button>
-                <div class="result-box" aria-live="polite">
-                  <p><strong>Schnittgeschwindigkeit v<sub>c</sub>:</strong> <span id="cutting-speed-result">–</span> m/min</p>
-                  <p class="helper-text" id="cutting-speed-error"></p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="cutting-reset-wrapper">
-            <button class="btn btn-utility" type="button" id="cutting-reset-btn">Felder zurücksetzen</button>
-          </div>
-          <div class="example-note">
-            <strong>Beispiel:</strong>
-            <p class="helper-text">Du möchtest mit einer VHM-Fräser Ø10 mm und einer Schnittgeschwindigkeit von 150 m/min arbeiten. Gib v<sub>c</sub> = 150 m/min und d = 10 mm ein – der Rechner liefert die Drehzahl n. Wenn dein Fräser 4 Schneiden hat und du mit f<sub>z</sub> = 0,05 mm/Zahn fahren möchtest, trägst du n, z = 4 und f<sub>z</sub> = 0,05 mm/Zahn ein – der Rechner zeigt dir v<sub>f</sub> in mm/min.</p>
-          </div>
-          <div class="tool-nav">
-            <a class="btn btn-utility btn-sm" href="#rechner-uebersicht">Zur Rechner-Auswahl</a>
-          </div>
-        </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container container--calc-wide">
-          <div class="tool-card">
-            <div class="tool-header">
-              <h2 id="allgemeintoleranzen" data-section-target>4. Allgemeintoleranzen (Richtwerte nach DIN ISO 2768-1 – stark vereinfacht)</h2>
-              <button class="tool-info-toggle" type="button" aria-expanded="false" aria-controls="info-general-tolerance">
-                <span class="tool-info-toggle-label">Warum dieser Rechner?</span>
-                <span class="tool-info-toggle-icon" aria-hidden="true">▶</span>
-              </button>
-            </div>
-            <div id="info-general-tolerance" class="tool-info-content is-collapsed">
-              <p class="helper-text">Diese Übersicht soll dir ein Gefühl geben, wofür grobe, mittlere und feine Allgemeintoleranzen typischerweise verwendet werden. Die Beispiele orientieren sich an ISO 2768, enthalten aber keine vollständigen Normwerte. Exakte Grenzmaße bitte immer aus deiner gültigen Norm bzw. Zeichnung übernehmen.</p>
-              <p class="helper-text tolerance-note">Hinweis: Stark vereinfachter Auszug aus DIN ISO 2768-1. Exakte Grenzwerte und größere Nennmaßbereiche bitte der Original-Norm entnehmen.</p>
-            </div>
-          <p class="helper-text tolerance-note"><strong>Richtwerte nach DIN ISO 2768-1. Für vollständige Grenzmaße bitte Norm einsehen.</strong></p>
-          <div class="tolerance-grid">
-            <div class="tolerance-card">
-              <h3>Fein (f)</h3>
-              <table class="tolerance-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Nennmaß (mm)</th>
-                    <th scope="col">Richtwert</th>
-                  </tr>
-                </thead>
-                <tbody class="helper-text">
-                  <tr>
-                    <td>&gt;0,5 – 3</td>
-                    <td>±0,05 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;3 – 6</td>
-                    <td>±0,05 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;6 – 30</td>
-                    <td>±0,10 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;30 – 120</td>
-                    <td>±0,15 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;120 – 400</td>
-                    <td>±0,20 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;400 – 1000</td>
-                    <td>±0,30 mm</td>
-                  </tr>
-                </tbody>
-              </table>
-              <p class="helper-text tolerance-note">Hinweis: Stark vereinfachter Auszug aus DIN ISO 2768-1. Exakte Grenzwerte und größere Nennmaßbereiche bitte der Original-Norm entnehmen.</p>
-            </div>
-            <div class="tolerance-card">
-              <h3>Mittel (m)</h3>
-              <table class="tolerance-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Nennmaß (mm)</th>
-                    <th scope="col">Richtwert</th>
-                  </tr>
-                </thead>
-                <tbody class="helper-text">
-                  <tr>
-                    <td>&gt;0,5 – 3</td>
-                    <td>±0,10 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;3 – 6</td>
-                    <td>±0,10 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;6 – 30</td>
-                    <td>±0,20 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;30 – 120</td>
-                    <td>±0,30 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;120 – 400</td>
-                    <td>±0,50 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;400 – 1000</td>
-                    <td>±0,80 mm</td>
-                  </tr>
-                </tbody>
-              </table>
-              <p class="helper-text tolerance-note">Hinweis: Stark vereinfachter Auszug aus DIN ISO 2768-1. Exakte Grenzwerte und größere Nennmaßbereiche bitte der Original-Norm entnehmen.</p>
-            </div>
-            <div class="tolerance-card">
-              <h3>Grob (c)</h3>
-              <table class="tolerance-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Nennmaß (mm)</th>
-                    <th scope="col">Richtwert</th>
-                  </tr>
-                </thead>
-                <tbody class="helper-text">
-                  <tr>
-                    <td>&gt;0,5 – 3</td>
-                    <td>±0,20 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;3 – 6</td>
-                    <td>±0,30 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;6 – 30</td>
-                    <td>±0,50 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;30 – 120</td>
-                    <td>±0,80 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;120 – 400</td>
-                    <td>±1,20 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;400 – 1000</td>
-                    <td>±2,00 mm</td>
-                  </tr>
-                </tbody>
-              </table>
-              <p class="helper-text tolerance-note">Hinweis: Stark vereinfachter Auszug aus DIN ISO 2768-1. Exakte Grenzwerte und größere Nennmaßbereiche bitte der Original-Norm entnehmen.</p>
-            </div>
-            <div class="tolerance-card">
-              <h3>Sehr grob (v)</h3>
-              <table class="tolerance-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Nennmaß (mm)</th>
-                    <th scope="col">Richtwert</th>
-                  </tr>
-                </thead>
-                <tbody class="helper-text">
-                  <tr>
-                    <td>&gt;0,5 – 3</td>
-                    <td>–</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;3 – 6</td>
-                    <td>±0,50 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;6 – 30</td>
-                    <td>±1,00 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;30 – 120</td>
-                    <td>±1,50 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;120 – 400</td>
-                    <td>±2,50 mm</td>
-                  </tr>
-                  <tr>
-                    <td>&gt;400 – 1000</td>
-                    <td>±4,00 mm</td>
-                  </tr>
-                </tbody>
-              </table>
-              <p class="helper-text tolerance-note">Hinweis: Stark vereinfachter Auszug aus DIN ISO 2768-1. Exakte Grenzwerte und größere Nennmaßbereiche bitte der Original-Norm entnehmen.</p>
-            </div>
-          </div>
-          <p class="helper-text tolerance-note"><strong>Hinweis:</strong> Die folgenden Werte orientieren sich grob an DIN ISO 2768-1 und sollen dir nur eine schnelle Einschätzung geben. Für exakte Anforderungen bitte immer Norm oder Zeichnung heranziehen.</p>
-          <div class="tolerance-card">
-            <h3>Kompakte Richtwert-Tabelle</h3>
-            <table class="tolerance-table">
-              <thead>
-                <tr>
-                  <th scope="col">Toleranzklasse</th>
-                  <th scope="col">0,5–3 mm</th>
-                  <th scope="col">&gt;3–6 mm</th>
-                  <th scope="col">&gt;6–30 mm</th>
-                  <th scope="col">&gt;30–120 mm</th>
-                  <th scope="col">&gt;120–400 mm</th>
-                  <th scope="col">&gt;400–1000 mm</th>
-                </tr>
-              </thead>
-              <tbody class="helper-text">
-                <tr>
-                  <td><strong>f (fein)</strong></td>
-                  <td>±0,05 mm</td>
-                  <td>±0,05 mm</td>
-                  <td>±0,10 mm</td>
-                  <td>±0,15 mm</td>
-                  <td>±0,20 mm</td>
-                  <td>±0,30 mm</td>
-                </tr>
-                <tr>
-                  <td><strong>m (mittel)</strong></td>
-                  <td>±0,10 mm</td>
-                  <td>±0,10 mm</td>
-                  <td>±0,20 mm</td>
-                  <td>±0,30 mm</td>
-                  <td>±0,50 mm</td>
-                  <td>±0,80 mm</td>
-                </tr>
-                <tr>
-                  <td><strong>c (grob)</strong></td>
-                  <td>±0,20 mm</td>
-                  <td>±0,30 mm</td>
-                  <td>±0,50 mm</td>
-                  <td>±0,80 mm</td>
-                  <td>±1,20 mm</td>
-                  <td>±2,00 mm</td>
-                </tr>
-                <tr>
-                  <td><strong>v (sehr grob)</strong></td>
-                  <td>–</td>
-                  <td>±0,50 mm</td>
-                  <td>±1,00 mm</td>
-                  <td>±1,50 mm</td>
-                  <td>±2,50 mm</td>
-                  <td>±4,00 mm</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="helper-text tolerance-note">
-            <p><strong>Normquellen &amp; Tabellen:</strong></p>
-            <ul>
-              <li><a href="https://www.europa-lehrmittel.de/Ausbildung/Metalltechnik/Tabellenbuecher/?srsltid=AfmBOoplyFaH-LaJU2w87ZCIgxzAMeH3CrhUg4K6kcC6vexDR6CDoZ-Q" rel="noopener" target="_blank">Tabellenbuch Metall (offizieller Shop)</a></li>
-            </ul>
-          </div>
-          <div class="tool-nav">
-            <a class="btn btn-utility btn-sm" href="#rechner-uebersicht">Zur Rechner-Auswahl</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-      <!-- ========================================== -->
-      <!-- SEKTION: 5. ELEKTRO-HELFER -->
-      <!-- ========================================== -->
-      <section class="section">
-        <div class="container container--calc-wide">
-          <div class="tool-card">
-            <div class="tool-header">
-              <h2 id="elektro-helfer" data-section-target>5. Elektro-Helfer (Maker &amp; 3D-Druck)</h2>
-              <button class="tool-info-toggle" type="button" aria-expanded="false" aria-controls="info-electro">
-                <span class="tool-info-toggle-label">Warum diese Tools?</span>
-                <span class="tool-info-toggle-icon" aria-hidden="true">▶</span>
-              </button>
-            </div>
-            <div id="info-electro" class="tool-info-content is-collapsed">
-              <p class="helper-text">Nützliche Rechner für Arduino, LEDs, Verkabelung und Sensoren in deinen 3D-Druck-Projekten.</p>
-            </div>
-
-            <div class="calculator-grid">
-              
-              <!-- TOOL 1: LED VORWIDERSTAND -->
-              <div class="tool-card">
-                <h3>LED Vorwiderstand</h3>
-                <p class="helper-text">Berechnet den passenden Widerstand (E12-Reihe).</p>
-                
-                <div class="electro-viz-container">
-                   <!-- SVG Circuit Visualization -->
-                   <svg width="200" height="100" viewBox="0 0 200 100" fill="none" stroke="currentColor" stroke-width="2">
-                      <line x1="20" y1="50" x2="20" y2="80" stroke="#94a3b8" />
-                      <line x1="10" y1="20" x2="30" y2="20" stroke="#cbd5e1" stroke-width="3" />
-                      <text x="10" y="15" fill="#94a3b8" stroke="none" font-size="10">V+</text>
-                      <rect x="50" y="40" width="40" height="20" rx="2" stroke="#cbd5e1" />
-                      <text x="70" y="35" text-anchor="middle" fill="#94a3b8" stroke="none" font-size="10" id="svg-res-val">R?</text>
-                      <line x1="20" y1="50" x2="50" y2="50" stroke="#cbd5e1" />
-                      <line x1="90" y1="50" x2="130" y2="50" stroke="#cbd5e1" />
-                      <!-- LED Symbol -->
-                      <path d="M130 50 L150 50" stroke="#cbd5e1" />
-                      <path d="M150 35 L150 65 L170 50 Z" fill="none" stroke="#cbd5e1" id="svg-led-symbol"/>
-                      <line x1="170" y1="35" x2="170" y2="65" stroke="#cbd5e1" />
-                   </svg>
-                </div>
-
-                <div class="form-grid">
-                  <div class="calc-field">
-                    <label>Versorgungsspannung (V)</label>
-                    <div class="input-with-preset">
-                      <input type="number" id="led-u-source" placeholder="z.B. 5 oder 12" step="0.1">
-                      <select id="led-u-source-preset">
-                        <option value="">Presets...</option>
-                        <option value="3.3">3.3V (Arduino)</option>
-                        <option value="5">5V (USB)</option>
-                        <option value="9">9V (Block)</option>
-                        <option value="12">12V (Netzteil)</option>
-                        <option value="24">24V (Ind.)</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="calc-field">
-                    <label>LED Spannung (V)</label>
-                    <div class="input-with-preset">
-                      <input type="number" id="led-u-led" placeholder="z.B. 2.1" step="0.1">
-                      <select id="led-u-led-preset">
-                        <option value="">Farbe...</option>
-                        <option value="1.6">Rot (1.6V)</option>
-                        <option value="2.0">Orange (2.0V)</option>
-                        <option value="2.1">Grün (2.1V)</option>
-                        <option value="3.0">Blau (3.0V)</option>
-                        <option value="3.2">Weiß (3.2V)</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="calc-field">
-                    <label>LED Strom (mA)</label>
-                    <input type="number" id="led-i" placeholder="z.B. 20" value="20">
-                  </div>
-                  <button class="btn btn-primary btn-inline" id="led-calc-btn">Berechnen</button>
-                  
-                  <div class="result-box" aria-live="polite">
-                    <p><strong>Widerstand (Exakt):</strong> <span id="led-res-exact">–</span> Ω</p>
-                    <p><strong>Empfohlen (E12):</strong> <span id="led-res-std" style="color: var(--focus);">–</span> Ω</p>
-                    <p><strong>Verlustleistung:</strong> <span id="led-power">–</span> mW</p>
-                    <div id="led-warning" class="warning-box">Achtung: Widerstand wird heiß (>0.25W)!</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- TOOL 2: AKKULAUFZEIT -->
-              <div class="tool-card">
-                <h3>Akkulaufzeit</h3>
-                <p class="helper-text">Wie lange hält die Batterie (inkl. Realitätsfaktor)?</p>
-                
-                <div class="form-grid">
-                  <div class="calc-field">
-                    <label>Kapazität (mAh)</label>
-                    <div class="input-with-preset">
-                      <input type="number" id="batt-cap" placeholder="z.B. 2500">
-                      <select id="batt-cap-preset">
-                        <option value="">Typ...</option>
-                        <option value="220">CR2032 (220)</option>
-                        <option value="550">9V Block (550)</option>
-                        <option value="1200">AAA (1200)</option>
-                        <option value="2500">AA (2500)</option>
-                        <option value="3000">18650 (3000)</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="calc-field">
-                    <label>Verbrauch (mA)</label>
-                    <div class="input-with-preset">
-                      <input type="number" id="batt-curr" placeholder="z.B. 100">
-                      <select id="batt-curr-preset">
-                        <option value="">Last...</option>
-                        <option value="20">LED (20mA)</option>
-                        <option value="50">Arduino (50mA)</option>
-                        <option value="80">ESP32 (80mA)</option>
-                        <option value="200">DC Motor (200mA)</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="calc-field" style="flex-direction: row; align-items: center; gap: 10px;">
-                    <input type="checkbox" id="batt-real" checked style="width: auto;">
-                    <label for="batt-real" style="margin:0;">Realistisch (Faktor 0.7)</label>
-                  </div>
-                  
-                  <button class="btn btn-primary btn-inline" id="batt-calc-btn">Berechnen</button>
-
-                  <div class="result-box" aria-live="polite">
-                    <p><strong>Laufzeit ca.:</strong></p>
-                    <p style="font-size: 1.5rem; font-weight: bold;"><span id="batt-hours">–</span> Stunden</p>
-                    <p class="helper-text"><span id="batt-days">–</span> Tage</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- TOOL 3: KABEL-QUERSCHNITT (SAFETY) -->
-              <div class="tool-card">
-                <h3>Kabel-Querschnitt (Safety)</h3>
-                <p class="helper-text">Sicherer Mindestquerschnitt basierend auf Stromstärke (Konservative Schätzung für Maker).</p>
-                
-                <div class="form-grid">
-                  <div class="calc-field">
-                    <label>Max. Stromstärke (Ampere)</label>
-                    <div class="input-with-preset">
-                      <input type="number" id="cable-curr" placeholder="z.B. 10" step="0.5">
-                      <select id="cable-curr-preset">
-                        <option value="">Typ...</option>
-                        <option value="0.5">USB/Signal (0.5A)</option>
-                        <option value="2">LED-Strip (2A)</option>
-                        <option value="10">3D-Drucker (10A)</option>
-                        <option value="16">Steckdose (16A)</option>
-                      </select>
-                    </div>
-                  </div>
-                  <p class="helper-text" style="font-size: 0.85rem;">Gilt für kurze Strecken (< 2m), Einzelader, freiliegend.</p>
-                  
-                  <button class="btn btn-primary btn-inline" id="cable-calc-btn">Prüfen</button>
-
-                  <div class="result-box" aria-live="polite">
-                    <p><strong>Empfohlener Querschnitt:</strong></p>
-                    <p style="font-size: 1.4rem; font-weight: bold; color: var(--focus);"><span id="cable-mm2">–</span> mm²</p>
-                    <p><strong>AWG (ca.):</strong> <span id="cable-awg">–</span></p>
-                    <p class="helper-text" id="cable-note"></p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- TOOL 4: SPANNUNGSTEILER (LEVEL SHIFTER) -->
-              <div class="tool-card">
-                <h3>Spannungsteiler (Level Shifter)</h3>
-                <p class="helper-text">Wandle 24V (z.B. induktiver Sensor) in 5V/3.3V Signale um.</p>
-                
-                <div class="electro-viz-container">
-                   <!-- SVG Voltage Divider -->
-                   <svg width="200" height="120" viewBox="0 0 200 120" fill="none" stroke="currentColor" stroke-width="2">
-                      <text x="10" y="20" fill="#94a3b8" stroke="none" font-size="10">Vin</text>
-                      <line x1="30" y1="20" x2="70" y2="20" stroke="#cbd5e1" />
-                      <!-- R1 -->
-                      <rect x="70" y="10" width="40" height="20" rx="2" stroke="#cbd5e1" />
-                      <text x="90" y="25" text-anchor="middle" fill="#94a3b8" stroke="none" font-size="9">R1</text>
-                      
-                      <line x1="110" y1="20" x2="140" y2="20" stroke="#cbd5e1" />
-                      <line x1="140" y1="20" x2="140" y2="50" stroke="#cbd5e1" />
-                      
-                      <!-- Vout Point -->
-                      <circle cx="140" cy="20" r="3" fill="#3b82f6" stroke="none"/>
-                      <text x="150" y="20" fill="#3b82f6" stroke="none" font-size="12" font-weight="bold">Vout</text>
-
-                      <!-- R2 -->
-                      <rect x="120" y="50" width="40" height="20" rx="2" stroke="#cbd5e1" />
-                      <text x="140" y="65" text-anchor="middle" fill="#94a3b8" stroke="none" font-size="9">R2</text>
-                      
-                      <line x1="140" y1="70" x2="140" y2="100" stroke="#cbd5e1" />
-                      <text x="140" y="115" text-anchor="middle" fill="#94a3b8" stroke="none" font-size="10">GND</text>
-                   </svg>
-                </div>
-
-                <div class="form-grid">
-                  <div class="calc-field">
-                    <label>Eingangsspannung (Vin)</label>
-                    <div class="input-with-preset">
-                      <input type="number" id="div-vin" placeholder="z.B. 24" step="0.1">
-                      <select id="div-vin-preset">
-                        <option value="">Typ...</option>
-                        <option value="12">12V Netzteil</option>
-                        <option value="24">24V Netzteil</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="calc-field">
-                    <label>Widerstand R1 (Ohm)</label>
-                    <input type="number" id="div-r1" placeholder="z.B. 10000 (10k)">
-                  </div>
-                  <div class="calc-field">
-                    <label>Widerstand R2 (Ohm)</label>
-                    <input type="number" id="div-r2" placeholder="z.B. 4700 (4.7k)">
-                  </div>
-                  <button class="btn btn-primary btn-inline" id="div-calc-btn">Berechnen</button>
-                  
-                  <div class="result-box" aria-live="polite">
-                    <p><strong>Ausgangsspannung (Vout):</strong></p>
-                    <p style="font-size: 1.5rem; font-weight: bold; color: var(--focus);"><span id="div-vout">–</span> V</p>
-                    <div id="div-warning" class="warning-box">Achtung: Spannung zu hoch für Arduino/ESP (>5V)!</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- TOOL 5: AWG TABELLE -->
-              <div class="tool-card">
-                <h3>AWG zu mm² (Referenz)</h3>
-                <p class="helper-text">Schnellübersicht für Kabel-Importe.</p>
-                
-                <div style="overflow-x:auto;">
-                  <table class="awg-table">
-                    <thead>
-                      <tr>
-                        <th>AWG</th>
-                        <th>mm²</th>
-                        <th>Ø mm</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr><td>30</td><td>0.05</td><td>0.25</td></tr>
-                      <tr><td>28</td><td>0.08</td><td>0.32</td></tr>
-                      <tr><td>26</td><td>0.13</td><td>0.40</td></tr>
-                      <tr><td>24</td><td>0.20</td><td>0.51</td></tr>
-                      <tr><td>22</td><td>0.33</td><td>0.64</td></tr>
-                      <tr><td>20</td><td>0.52</td><td>0.81</td></tr>
-                      <tr><td>18</td><td>0.82</td><td>1.02</td></tr>
-                      <tr><td>16</td><td>1.31</td><td>1.29</td></tr>
-                      <tr><td>14</td><td>2.08</td><td>1.63</td></tr>
-                      <tr><td>12</td><td>3.31</td><td>2.05</td></tr>
-                      <tr><td>10</td><td>5.26</td><td>2.59</td></tr>
-                    </tbody>
-                  </table>
-                </div>
-                <p class="helper-text" style="font-size:0.8rem; margin-top:0.5rem;">Werte sind gerundet. Ø = Leiterdurchmesser ohne Isolierung.</p>
-              </div>
-
-            </div>
-            <div class="tool-nav">
-              <a class="btn btn-utility btn-sm" href="#rechner-uebersicht">Nach oben</a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-    </div>
-  </main>
-
-  <footer class="footer">
-    <div class="container">
-      <div class="footer__inner">
-        <div class="footer__brand">© 2025 Warenschmiede · Alle Rechte vorbehalten.</div>
-        <nav class="footer__links" aria-label="Rechtliches &amp; Kontakt">
-          <a href="/impressum.html">Impressum</a>
-          <a href="/datenschutz.html">Datenschutzerklärung</a>
-          <a href="/kontakt.html">Kontakt</a>
-        </nav>
-        <div class="footer__notes">
-          <p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
-          <p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
-        </div>
-      </div>
-    </div>
-  </footer>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warenschmiede Metall</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script>
-      function formatForInput(value) {
-        if (!isFinite(value)) return '';
-        if (Math.abs(value) < 1e-8) return '0';
-        return Number.parseFloat(value.toFixed(6)).toString();
-      }
-
-      function formatDisplayValue(value) {
-        if (!isFinite(value)) return '–';
-        return Number.parseFloat(value.toString()).toString().replace('.', ',');
-      }
-
-      function initToolInfoToggles() {
-        var toggles = document.querySelectorAll('.tool-info-toggle');
-        toggles.forEach(function (toggle) {
-          var targetId = toggle.getAttribute('aria-controls');
-          var content = targetId ? document.getElementById(targetId) : null;
-
-          if (content) {
-            content.setAttribute('aria-hidden', 'true');
-          }
-
-          toggle.addEventListener('click', function () {
-            var isExpanded = toggle.getAttribute('aria-expanded') === 'true';
-            var nextState = !isExpanded;
-            toggle.setAttribute('aria-expanded', String(nextState));
-            toggle.classList.toggle('is-open', nextState);
-            if (content) {
-              content.classList.toggle('is-collapsed', !nextState);
-              content.style.opacity = nextState ? '1' : '0';
-              content.setAttribute('aria-hidden', String(!nextState));
-            }
-          });
-        });
-      }
-
-      // Vereinfachte Praxiswerte für Gewinde-Toleranzen (ISO-Metrisch)
-      var toleranceConfig = {
-        outer: {
-          '6g': { majorBase: 0.02, majorPitchFactor: 0.04, majorRange: 0.14, rangePitchFactor: 0.05, coreLift: 0.05, coreRange: 0.12, corePitchFactor: 0.04 },
-          '6h': { majorBase: 0.015, majorPitchFactor: 0.035, majorRange: 0.12, rangePitchFactor: 0.045, coreLift: 0.045, coreRange: 0.1, corePitchFactor: 0.035 },
-          '8g': { majorBase: 0.025, majorPitchFactor: 0.045, majorRange: 0.16, rangePitchFactor: 0.055, coreLift: 0.055, coreRange: 0.13, corePitchFactor: 0.045 }
-        },
-        inner: {
-          '6H': { coreLift: 0.1, coreRange: 0.12, corePitchFactor: 0.05 },
-          '7H': { coreLift: 0.12, coreRange: 0.16, corePitchFactor: 0.06 }
-        }
-      };
-
-      var THREAD_HOLE_DATA = {
-        "M3": { coreDrill: 2.5, clearanceDrill: 3.4, headDiameter: 5.5, countersinkDepth: 3 },
-        "M4": { coreDrill: 3.3, clearanceDrill: 4.5, headDiameter: 7, countersinkDepth: 4 },
-        "M5": { coreDrill: 4.2, clearanceDrill: 5.5, headDiameter: 8.5, countersinkDepth: 5 },
-        "M6": { coreDrill: 5, clearanceDrill: 6.6, headDiameter: 10, countersinkDepth: 6 },
-        "M8": { coreDrill: 6.8, clearanceDrill: 9, headDiameter: 13, countersinkDepth: 8 },
-        "M10": { coreDrill: 8.5, clearanceDrill: 11, headDiameter: 16, countersinkDepth: 10 },
-        "M12": { coreDrill: 10.2, clearanceDrill: 13.5, headDiameter: 18, countersinkDepth: 12 },
-        "M14": { coreDrill: 12, clearanceDrill: 15.5, headDiameter: 21, countersinkDepth: 14 },
-        "M16": { coreDrill: 14, clearanceDrill: 17.5, headDiameter: 24, countersinkDepth: 16 },
-        "M18": { coreDrill: 15.5, clearanceDrill: 20, headDiameter: 27, countersinkDepth: 18 },
-        "M20": { coreDrill: 17.5, clearanceDrill: 22, headDiameter: 30, countersinkDepth: 20 },
-        "M22": { coreDrill: 19.5, clearanceDrill: 24, headDiameter: 33, countersinkDepth: 22 },
-        "M24": { coreDrill: 21, clearanceDrill: 26, headDiameter: 36, countersinkDepth: 24 },
-        "M27": { coreDrill: 24, clearanceDrill: 30, headDiameter: 40, countersinkDepth: 27 },
-        "M30": { coreDrill: 26.5, clearanceDrill: 33, headDiameter: 45, countersinkDepth: 30 },
-        "M33": { coreDrill: 29.5, clearanceDrill: 36, headDiameter: 50, countersinkDepth: 33 },
-        "M36": { coreDrill: 32, clearanceDrill: 39, headDiameter: 54, countersinkDepth: 36 }
-      };
-
-      var threadSeriesDefinitions = {
-        'ISO-Metrisch (Regelgewinde)': [
-          { d: 1, pitch: 0.25 }, { d: 1.2, pitch: 0.25 }, { d: 1.4, pitch: 0.3 }, { d: 1.6, pitch: 0.35 },
-          { d: 1.8, pitch: 0.35 }, { d: 2, pitch: 0.4 }, { d: 2.2, pitch: 0.45 }, { d: 2.5, pitch: 0.45 },
-          { d: 3, pitch: 0.5 }, { d: 3.5, pitch: 0.6 }, { d: 4, pitch: 0.7 }, { d: 4.5, pitch: 0.75 },
-          { d: 5, pitch: 0.8 }, { d: 6, pitch: 1 }, { d: 7, pitch: 1 }, { d: 8, pitch: 1.25 },
-          { d: 9, pitch: 1.25 }, { d: 10, pitch: 1.5 }, { d: 11, pitch: 1.5 }, { d: 12, pitch: 1.75 },
-          { d: 14, pitch: 2 }, { d: 16, pitch: 2 }, { d: 18, pitch: 2.5 }, { d: 20, pitch: 2.5 },
-          { d: 22, pitch: 2.5 }, { d: 24, pitch: 3 }, { d: 27, pitch: 3 }, { d: 30, pitch: 3.5 },
-          { d: 33, pitch: 3.5 }, { d: 36, pitch: 4 }, { d: 39, pitch: 4 }, { d: 42, pitch: 4.5 },
-          { d: 45, pitch: 4.5 }, { d: 48, pitch: 5 }, { d: 50, pitch: 5 }, { d: 52, pitch: 5 },
-          { d: 56, pitch: 5.5 }, { d: 60, pitch: 5.5 }, { d: 64, pitch: 6 }
-        ],
-        'ISO-Metrisch (Feingewinde)': [
-          { d: 4, pitch: 0.5 }, { d: 5, pitch: 0.5 }, { d: 6, pitch: 0.75 }, { d: 8, pitch: 1 },
-          { d: 10, pitch: 1.25 }, { d: 12, pitch: 1.5 }, { d: 14, pitch: 1.5 }, { d: 16, pitch: 1.5 },
-          { d: 18, pitch: 1.5 }, { d: 20, pitch: 1.5 }, { d: 22, pitch: 1.5 }, { d: 24, pitch: 2 },
-          { d: 27, pitch: 2 }, { d: 30, pitch: 2 }, { d: 33, pitch: 2 }, { d: 36, pitch: 3 }
-        ]
-      };
-
-      function roundTolerance(value) {
-        return Number.parseFloat(value.toFixed(3));
-      }
-
-      function formatIdNumber(value) {
-        return value % 1 === 0 ? value.toFixed(0) : value.toString();
-      }
-
-      function buildExternalLimits(nominal, pitch, config) {
-        var outerMax = roundTolerance(nominal - (config.majorBase + pitch * config.majorPitchFactor));
-        var outerMin = roundTolerance(outerMax - (config.majorRange + pitch * config.rangePitchFactor));
-        var coreNominal = nominal - 1.226 * pitch;
-        var coreMax = roundTolerance(coreNominal + (config.coreLift + pitch * 0.02));
-        var coreMin = roundTolerance(coreMax - (config.coreRange + pitch * config.corePitchFactor));
-        return { d_max: outerMax, d_min: outerMin, core_max: coreMax, core_min: coreMin };
-      }
-
-      function buildInternalLimits(nominal, pitch, config) {
-        var minorNominal = nominal - 1.0825 * pitch;
-        var coreMax = roundTolerance(minorNominal + (config.coreLift + pitch * 0.02));
-        var coreMin = roundTolerance(coreMax - (config.coreRange + pitch * config.corePitchFactor));
-        return { core_max: coreMax, core_min: coreMin };
-      }
-
-      function buildThreadData(definitions) {
-        var data = {};
-        Object.keys(definitions).forEach(function (seriesName) {
-          var threads = definitions[seriesName].map(function (spec) {
-            var nominal = spec.d;
-            var pitch = spec.pitch;
-            var id = 'M' + formatIdNumber(nominal) + 'x' + formatIdNumber(pitch);
-            var designation = 'M' + formatDisplayValue(nominal) + ' × ' + formatDisplayValue(pitch);
-
-            var outerLimits = {};
-            Object.keys(toleranceConfig.outer).forEach(function (field) {
-              outerLimits[field] = Object.assign({ d_nominal: nominal, pitch: pitch }, buildExternalLimits(nominal, pitch, toleranceConfig.outer[field]));
-            });
-
-            var innerLimits = {};
-            Object.keys(toleranceConfig.inner).forEach(function (field) {
-              innerLimits[field] = Object.assign({ d_nominal: nominal, pitch: pitch }, buildInternalLimits(nominal, pitch, toleranceConfig.inner[field]));
-            });
-
-            return {
-              id: id,
-              designation: designation,
-              d_nominal: nominal,
-              pitch: pitch,
-              limits: { outer: outerLimits, inner: innerLimits }
-            };
-          });
-
-          data[seriesName] = {
-            threads: threads,
-            fields: {
-              outer: Object.keys(toleranceConfig.outer),
-              inner: Object.keys(toleranceConfig.inner)
-            }
-          };
-        });
-        return data;
-      }
-
-      var threadData = buildThreadData(threadSeriesDefinitions);
-
-      var conversionData = {
-        length: {
-          base: 'm',
-          units: {
-            um: 0.000001,
-            mm: 0.001,
-            cm: 0.01,
-            m: 1,
-            inch: 0.0254
-          }
-        },
-        area: {
-          base: 'm2',
-          units: {
-            mm2: 0.000001,
-            cm2: 0.0001,
-            dm2: 0.01,
-            m2: 1
-          }
-        },
-        volume: {
-          base: 'liter',
-          units: {
-            ml: 0.001,
-            cm3: 0.001,
-            liter: 1,
-            m3: 1000
-          }
-        },
-        mass: {
-          base: 'kg',
-          units: {
-            mg: 0.000001,
-            g: 0.001,
-            kg: 1,
-            t: 1000,
-            oz: 0.028349523125,
-            lb: 0.45359237
-          }
-        }
-      };
-
-      var toleranceSeriesSelect = document.getElementById('tolerance-series');
-      var toleranceTypeSelect = document.getElementById('tolerance-type');
-      var toleranceThreadSelect = document.getElementById('tolerance-thread');
-      var toleranceFieldSelect = document.getElementById('tolerance-field');
-      var toleranceThreadName = document.getElementById('tolerance-thread-name');
-      var toleranceThreadType = document.getElementById('tolerance-thread-type');
-      var toleranceFieldLabel = document.getElementById('tolerance-field-label');
-      var toleranceNominal = document.getElementById('tolerance-nominal');
-      var toleranceCoreHole = document.getElementById('tolerance-core-hole');
-      var toleranceOuterBlock = document.getElementById('tolerance-outer-block');
-      var toleranceInnerBlock = document.getElementById('tolerance-inner-block');
-      var toleranceOuterMax = document.getElementById('tolerance-outer-max');
-      var toleranceOuterMin = document.getElementById('tolerance-outer-min');
-      var toleranceCoreMax = document.getElementById('tolerance-core-max');
-      var toleranceCoreMin = document.getElementById('tolerance-core-min');
-      var toleranceInnerCoreMax = document.getElementById('tolerance-inner-core-max');
-      var toleranceInnerCoreMin = document.getElementById('tolerance-inner-core-min');
-      var toleranceError = document.getElementById('tolerance-error');
-      var threadHelperCore = document.querySelector('[data-thread-core-drill]');
-      var threadHelperClearance = document.querySelector('[data-thread-clearance-drill]');
-      var threadHelperHead = document.querySelector('[data-thread-head-diameter]');
-      var threadHelperCountersink = document.querySelector('[data-thread-countersink-depth]');
-      var threadHelperHint = document.getElementById('thread-helper-hint');
-
-      function mapTypeToKey(typeLabel) {
-        return typeLabel === 'Innengewinde' ? 'inner' : 'outer';
-      }
-
-      function getThreadsForSeries(seriesName) {
-        var series = threadData[seriesName];
-        return series ? series.threads : [];
-      }
-
-      function populateThreadOptions(seriesName) {
-        if (!toleranceThreadSelect) return;
-        var threads = getThreadsForSeries(seriesName);
-        var previous = toleranceThreadSelect.value;
-        toleranceThreadSelect.innerHTML = '';
-
-        threads.forEach(function (thread) {
-          var option = document.createElement('option');
-          option.value = thread.id;
-          option.textContent = thread.designation;
-          toleranceThreadSelect.appendChild(option);
-        });
-
-        var availableIds = threads.map(function (thread) { return thread.id; });
-        if (previous && availableIds.includes(previous)) {
-          toleranceThreadSelect.value = previous;
-        } else if (threads.length > 0) {
-          toleranceThreadSelect.value = threads[0].id;
-        }
-      }
-
-      function populateToleranceFields(typeKey) {
-        if (!toleranceFieldSelect) return;
-        var seriesName = toleranceSeriesSelect ? toleranceSeriesSelect.value : '';
-        var series = threadData[seriesName];
-        var options = series && series.fields ? series.fields[typeKey] : [];
-        toleranceFieldSelect.innerHTML = '';
-
-        if (!options || options.length === 0) {
-          var placeholder = document.createElement('option');
-          placeholder.textContent = 'Aktuell nicht hinterlegt';
-          placeholder.disabled = true;
-          placeholder.selected = true;
-          toleranceFieldSelect.appendChild(placeholder);
-          toleranceFieldSelect.disabled = true;
-          return;
-        }
-
-        toleranceFieldSelect.disabled = false;
-        options.forEach(function (field) {
-          var option = document.createElement('option');
-          option.value = field;
-          option.textContent = field;
-          toleranceFieldSelect.appendChild(option);
-        });
-        if (options.length > 0) {
-          toleranceFieldSelect.value = options[0];
-        }
-      }
-
-      function toggleToleranceBlocks(typeKey) {
-        if (!toleranceOuterBlock || !toleranceInnerBlock) return;
-        var isExternal = typeKey === 'outer';
-        toleranceOuterBlock.style.display = isExternal ? 'block' : 'none';
-        toleranceInnerBlock.style.display = isExternal ? 'none' : 'block';
-      }
-
-      function clearToleranceResult(message) {
-        toleranceThreadName.textContent = '–';
-        toleranceThreadType.textContent = '–';
-        toleranceFieldLabel.textContent = '–';
-        toleranceNominal.textContent = '–';
-        toleranceCoreHole.textContent = '–';
-        toleranceOuterMax.textContent = '–';
-        toleranceOuterMin.textContent = '–';
-        toleranceCoreMax.textContent = '–';
-        toleranceCoreMin.textContent = '–';
-        toleranceInnerCoreMax.textContent = '–';
-        toleranceInnerCoreMin.textContent = '–';
-        updateThreadHelper(null);
-        if (toleranceError) {
-          toleranceError.textContent = message || '';
-        }
-      }
-
-      function updateThreadHelper(threadInfo) {
-        if (!threadHelperCore || !threadHelperClearance || !threadHelperHead || !threadHelperCountersink) return;
-        var baseId = threadInfo ? ('M' + formatIdNumber(threadInfo.d_nominal)) : '';
-        var holeData = baseId ? THREAD_HOLE_DATA[baseId] : null;
-        var computedCore = threadInfo ? threadInfo.d_nominal - threadInfo.pitch : NaN;
-        var coreValue = isFinite(computedCore) ? computedCore : (holeData ? holeData.coreDrill : NaN);
-
-        threadHelperCore.textContent = formatDisplayValue(coreValue);
-        threadHelperClearance.textContent = formatDisplayValue(holeData && holeData.clearanceDrill);
-        threadHelperHead.textContent = formatDisplayValue(holeData && holeData.headDiameter);
-        threadHelperCountersink.textContent = formatDisplayValue(holeData && holeData.countersinkDepth);
-
-        if (threadHelperHint) {
-          threadHelperHint.textContent = holeData ? '' : 'Für dieses Gewinde sind keine Bohrer-Richtwerte im Rechner hinterlegt.';
-        }
-      }
-
-      function updateToleranceResult() {
-        if (!toleranceTypeSelect || !toleranceThreadSelect || !toleranceFieldSelect || !toleranceSeriesSelect) return;
-        var typeKey = mapTypeToKey(toleranceTypeSelect.value);
-        var seriesName = toleranceSeriesSelect.value;
-        var threadId = toleranceThreadSelect.value;
-        var fieldKey = toleranceFieldSelect.value;
-        var threads = getThreadsForSeries(seriesName);
-        var threadInfo = threads.find(function (thread) { return thread.id === threadId; }) || null;
-
-        toggleToleranceBlocks(typeKey);
-
-        if (!threadInfo) {
-          clearToleranceResult('Für diese Serie sind aktuell keine Daten hinterlegt.');
-          return;
-        }
-
-        var limitGroup = threadInfo.limits[typeKey] || {};
-        var toleranceEntry = limitGroup[fieldKey] || null;
-
-        toleranceThreadName.textContent = threadInfo.designation;
-        toleranceThreadType.textContent = toleranceTypeSelect.value || '–';
-        toleranceFieldLabel.textContent = fieldKey || '–';
-        toleranceNominal.textContent = formatDisplayValue(threadInfo.d_nominal);
-        toleranceCoreHole.textContent = formatDisplayValue(threadInfo.d_nominal - threadInfo.pitch);
-        updateThreadHelper(threadInfo);
-
-        if (!toleranceEntry) {
-          toleranceOuterMax.textContent = '–';
-          toleranceOuterMin.textContent = '–';
-          toleranceCoreMax.textContent = '–';
-          toleranceCoreMin.textContent = '–';
-          toleranceInnerCoreMax.textContent = '–';
-          toleranceInnerCoreMin.textContent = '–';
-          if (toleranceError) toleranceError.textContent = 'Für diese Kombination liegen im Rechner keine Richtwerte vor – bitte Tabellenbuch/Norm verwenden.';
-          return;
-        }
-
-        if (typeKey === 'outer') {
-          toleranceOuterMax.textContent = formatDisplayValue(toleranceEntry.d_max);
-          toleranceOuterMin.textContent = formatDisplayValue(toleranceEntry.d_min);
-          toleranceCoreMax.textContent = formatDisplayValue(toleranceEntry.core_max);
-          toleranceCoreMin.textContent = formatDisplayValue(toleranceEntry.core_min);
-          toleranceInnerCoreMax.textContent = '–';
-          toleranceInnerCoreMin.textContent = '–';
-          if (toleranceError) toleranceError.textContent = '';
-          return;
-        }
-
-        toleranceInnerCoreMax.textContent = formatDisplayValue(toleranceEntry.core_max);
-        toleranceInnerCoreMin.textContent = formatDisplayValue(toleranceEntry.core_min);
-        toleranceOuterMax.textContent = '–';
-        toleranceOuterMin.textContent = '–';
-        toleranceCoreMax.textContent = '–';
-        toleranceCoreMin.textContent = '–';
-        if (toleranceError) toleranceError.textContent = '';
-      }
-
-    function clearCategoryInputs(category) {
-      var group = document.querySelector('.unit-group[data-category="' + category + '"]');
-      if (!group) return;
-      group.querySelectorAll('input').forEach(function (input) {
-        input.value = '';
-      });
-    }
-
-    function setActiveGroup(category) {
-      var groups = document.querySelectorAll('.unit-group');
-      groups.forEach(function (group) {
-        var isActive = group.dataset.category === category;
-        group.classList.toggle('is-active', isActive);
-        if (isActive) {
-          // leeren, damit der Nutzer neu startet
-          clearCategoryInputs(category);
-        }
-      });
-    }
-
-    function convertUnits(category, changedUnit, rawValue) {
-      if (category === 'temperature') {
-        handleTemperature(changedUnit, rawValue);
-        return;
-      }
-
-      var value = parseFloat(rawValue);
-      if (Number.isNaN(value)) return;
-      var config = conversionData[category];
-      var baseValue = value * config.units[changedUnit];
-
-      var inputs = document.querySelectorAll('input[data-category="' + category + '"]');
-      inputs.forEach(function (input) {
-        var unit = input.dataset.unit;
-        if (unit === changedUnit) return;
-        var converted = baseValue / config.units[unit];
-        input.value = formatForInput(converted);
-      });
-    }
-
-    function handleTemperature(changedUnit, rawValue) {
-      var value = parseFloat(rawValue);
-      if (Number.isNaN(value)) return;
-
-      var cInput = document.getElementById('temp-c');
-      var fInput = document.getElementById('temp-f');
-
-      if (changedUnit === 'c') {
-        // °F = °C · 9/5 + 32
-        var fVal = (value * 9 / 5) + 32;
-        fInput.value = formatForInput(fVal);
-      } else {
-        // °C = (°F − 32) · 5/9
-        var cVal = (value - 32) * 5 / 9;
-        cInput.value = formatForInput(cVal);
-      }
-    }
-
-    document.getElementById('unitCategory').addEventListener('change', function (event) {
-      setActiveGroup(event.target.value);
-    });
-
-    document.querySelectorAll('.unit-group input').forEach(function (input) {
-      input.addEventListener('input', function (event) {
-        var category = event.target.dataset.category;
-        var unit = event.target.dataset.unit;
-        convertUnits(category, unit, event.target.value);
-      });
-    });
-
-    document.querySelectorAll('.reset-btn').forEach(function (button) {
-      button.addEventListener('click', function (event) {
-        var category = event.target.dataset.category;
-        clearCategoryInputs(category);
-      });
-    });
-
-    initToolInfoToggles();
-
-      if (toleranceSeriesSelect && toleranceThreadSelect && toleranceFieldSelect && toleranceTypeSelect) {
-        var initialSeries = toleranceSeriesSelect.value || Object.keys(threadData)[0];
-        var initialTypeKey = mapTypeToKey(toleranceTypeSelect.value || 'Außengewinde');
-        populateThreadOptions(initialSeries);
-        populateToleranceFields(initialTypeKey);
-        toggleToleranceBlocks(initialTypeKey);
-        updateToleranceResult();
-
-        toleranceSeriesSelect.addEventListener('change', function (event) {
-          populateThreadOptions(event.target.value);
-          populateToleranceFields(mapTypeToKey(toleranceTypeSelect.value));
-          updateToleranceResult();
-        });
-
-        toleranceTypeSelect.addEventListener('change', function (event) {
-          var typeKey = mapTypeToKey(event.target.value);
-          populateToleranceFields(typeKey);
-          toggleToleranceBlocks(typeKey);
-          updateToleranceResult();
-        });
-
-        toleranceThreadSelect.addEventListener('change', updateToleranceResult);
-        toleranceFieldSelect.addEventListener('change', updateToleranceResult);
-      }
-
-    var cuttingState = { vc: null, n: null, d: null, z: null, fz: null, vf: null };
-
-    var spindleVcInput = document.getElementById('cutting-vc');
-    var spindleDiameterInput = document.getElementById('cutting-diameter');
-    var spindleResult = document.getElementById('spindle-speed-result');
-    var spindleError = document.getElementById('spindle-speed-error');
-    var feedNInput = document.getElementById('feed-n');
-    var feedZInput = document.getElementById('feed-z');
-    var feedFzInput = document.getElementById('feed-fz');
-    var feedResult = document.getElementById('feed-result');
-    var feedError = document.getElementById('feed-error');
-    var cuttingSpeedNInput = document.getElementById('cutting-n');
-    var cuttingSpeedDiameterInput = document.getElementById('cutting-tool-diameter');
-    var cuttingSpeedResult = document.getElementById('cutting-speed-result');
-    var cuttingSpeedError = document.getElementById('cutting-speed-error');
-    var cuttingResetButton = document.getElementById('cutting-reset-btn');
-
-    function isFiniteNumber(value) {
-      return isFinite(value) && value !== null;
-    }
-
-    function setInputValue(input, value) {
-      if (!input) return;
-      if (isFiniteNumber(value)) {
-        input.value = formatForInput(value);
-      } else {
-        input.value = '';
-      }
-    }
-
-    function setResultText(target, value) {
-      if (!target) return;
-      target.textContent = isFiniteNumber(value) ? formatForInput(value) : '–';
-    }
-
-    function clearCuttingErrors() {
-      if (spindleError) spindleError.textContent = '';
-      if (feedError) feedError.textContent = '';
-      if (cuttingSpeedError) cuttingSpeedError.textContent = '';
-    }
-
-    function updateCuttingUIFromState() {
-      setInputValue(spindleVcInput, cuttingState.vc);
-      setInputValue(spindleDiameterInput, cuttingState.d);
-      setInputValue(feedNInput, cuttingState.n);
-      setInputValue(feedZInput, cuttingState.z);
-      setInputValue(feedFzInput, cuttingState.fz);
-      setInputValue(cuttingSpeedNInput, cuttingState.n);
-      setInputValue(cuttingSpeedDiameterInput, cuttingState.d);
-
-      setResultText(spindleResult, cuttingState.n);
-      setResultText(feedResult, cuttingState.vf);
-      setResultText(cuttingSpeedResult, cuttingState.vc);
-
-      clearCuttingErrors();
-    }
-
-    function calculateSpindleSpeed() {
-      if (!spindleVcInput || !spindleDiameterInput || !spindleResult || !spindleError) return;
-      var vc = parseFloat(spindleVcInput.value);
-      var diameter = parseFloat(spindleDiameterInput.value);
-
-      if (!isFinite(vc) || vc <= 0 || !isFinite(diameter) || diameter <= 0) {
-        spindleResult.textContent = '–';
-        spindleError.textContent = 'Bitte gültige Werte für v_c und d eingeben.';
-        return;
-      }
-
-      var speed = Math.round((1000 * vc) / (Math.PI * diameter));
-      cuttingState.vc = vc;
-      cuttingState.d = diameter;
-      cuttingState.n = speed;
-      spindleError.textContent = '';
-      updateCuttingUIFromState();
-    }
-
-    function calculateFeedRate() {
-      if (!feedNInput || !feedZInput || !feedFzInput || !feedResult || !feedError) return;
-      var n = parseFloat(feedNInput.value);
-      var z = parseFloat(feedZInput.value);
-      var fz = parseFloat(feedFzInput.value);
-
-      if (!isFinite(n) || n <= 0 || !isFinite(z) || z <= 0 || !isFinite(fz) || fz <= 0) {
-        feedResult.textContent = '–';
-        feedError.textContent = 'Bitte n, z und f_z größer 0 eingeben.';
-        return;
-      }
-
-      var vf = n * z * fz;
-      cuttingState.n = n;
-      cuttingState.z = z;
-      cuttingState.fz = fz;
-      cuttingState.vf = vf;
-      feedError.textContent = '';
-      updateCuttingUIFromState();
-    }
-
-    function calculateCuttingSpeed() {
-      if (!cuttingSpeedNInput || !cuttingSpeedDiameterInput || !cuttingSpeedResult || !cuttingSpeedError) return;
-      var n = parseFloat(cuttingSpeedNInput.value);
-      var diameter = parseFloat(cuttingSpeedDiameterInput.value);
-
-      if (!isFinite(n) || n <= 0 || !isFinite(diameter) || diameter <= 0) {
-        cuttingSpeedResult.textContent = '–';
-        cuttingSpeedError.textContent = 'Bitte gültige Werte für n und d eingeben.';
-        return;
-      }
-
-      var vc = (n * Math.PI * diameter) / 1000;
-      var roundedVc = Math.round(vc * 10) / 10;
-      cuttingState.vc = roundedVc;
-      cuttingState.n = n;
-      cuttingState.d = diameter;
-      cuttingSpeedError.textContent = '';
-      updateCuttingUIFromState();
-    }
-
-    function resetCuttingCalculator() {
-      cuttingState.vc = null;
-      cuttingState.n = null;
-      cuttingState.d = null;
-      cuttingState.z = null;
-      cuttingState.fz = null;
-      cuttingState.vf = null;
-      updateCuttingUIFromState();
-    }
-
-    var spindleButton = document.getElementById('spindle-btn');
-    var feedButton = document.getElementById('feed-btn');
-    var cuttingSpeedButton = document.getElementById('cutting-speed-btn');
-
-    if (spindleButton) {
-      spindleButton.addEventListener('click', calculateSpindleSpeed);
-    }
-
-    if (feedButton) {
-      feedButton.addEventListener('click', calculateFeedRate);
-    }
-
-    if (cuttingSpeedButton) {
-      cuttingSpeedButton.addEventListener('click', calculateCuttingSpeed);
-    }
-
-    if (cuttingResetButton) {
-      cuttingResetButton.addEventListener('click', resetCuttingCalculator);
-    }
-
-    /* =========================================
-       NEUE LOGIK: ELEKTRO-HELFER MIT PRESETS
-       ========================================= */
-
-    // 1. LED Calculator Logic
-    document.getElementById('led-u-source-preset').addEventListener('change', function() {
-        if(this.value) document.getElementById('led-u-source').value = this.value;
-    });
-    
-    document.getElementById('led-u-led-preset').addEventListener('change', function() {
-        if(this.value) {
-            document.getElementById('led-u-led').value = this.value;
-            // Visual Update
-            var ledSymbol = document.getElementById('svg-led-symbol');
-            var val = parseFloat(this.value);
-            if(val < 2.0) ledSymbol.setAttribute('fill', '#ef4444'); 
-            else if(val < 2.4) ledSymbol.setAttribute('fill', '#eab308'); 
-            else if(val < 2.9) ledSymbol.setAttribute('fill', '#22c55e'); 
-            else ledSymbol.setAttribute('fill', '#3b82f6'); 
-        }
-    });
-
-    document.getElementById('led-calc-btn').addEventListener('click', function() {
-        var uSource = parseFloat(document.getElementById('led-u-source').value);
-        var uLed = parseFloat(document.getElementById('led-u-led').value);
-        var iLed = parseFloat(document.getElementById('led-i').value);
-
-        if(!uSource || !uLed || !iLed) return;
-
-        // Visualisierung (Fallback falls kein Preset genutzt)
-        var ledSymbol = document.getElementById('svg-led-symbol');
-        if(uLed < 2.0) ledSymbol.setAttribute('fill', '#ef4444');
-        else if(uLed < 2.4) ledSymbol.setAttribute('fill', '#eab308');
-        else if(uLed < 2.9) ledSymbol.setAttribute('fill', '#22c55e');
-        else ledSymbol.setAttribute('fill', '#3b82f6');
-
-        var rExact = (uSource - uLed) / (iLed / 1000);
-        if(rExact < 0) rExact = 0;
-
-        var e12 = [10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68, 82];
-        var rStd = rExact;
-        var found = false;
-        for(var m=0; m<7; m++) {
-            var mult = Math.pow(10, m);
-            for(var k=0; k<e12.length; k++) {
-                var val = e12[k] * mult;
-                if(val >= rExact) {
-                    rStd = val;
-                    found = true;
-                    break;
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#151e2e', 900: '#0f172a' },
+                        metal: { 500: '#64748b', 600: '#475569' }
+                    }
                 }
             }
-            if(found) break;
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+        
+        .input-group label {
+            display: flex; align-items: center; gap: 4px;
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-bottom: 0.25rem;
+        }
+        .input-field {
+            width: 100%; background-color: #1e293b; border: 1px solid #334155; color: white;
+            padding: 0.75rem; border-radius: 0.5rem; font-family: monospace; font-size: 1rem;
+            transition: all 0.2s;
+        }
+        .input-field:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2); }
+        .input-error { border-color: #ef4444; background-color: #450a0a; }
+        
+        /* Tooltip Style */
+        .tooltip { position: relative; display: inline-flex; cursor: help; align-items: center; }
+        .tooltip .tooltiptext {
+            visibility: hidden; width: 220px; background-color: #0f172a; color: #cbd5e1; text-align: left;
+            border-radius: 6px; padding: 10px; position: absolute; z-index: 50; bottom: 135%; left: 50%;
+            margin-left: -110px; opacity: 0; transition: opacity 0.3s; border: 1px solid #475569;
+            font-size: 0.75rem; font-weight: normal; text-transform: none; line-height: 1.4;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); pointer-events: none;
+        }
+        .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+        /* Arrow for tooltip */
+        .tooltip .tooltiptext::after {
+            content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px;
+            border-width: 5px; border-style: solid; border-color: #475569 transparent transparent transparent;
         }
 
-        var p = (iLed/1000) * (iLed/1000) * rStd;
-        var pMw = p * 1000;
+        .tab-content { display: none; animation: fadeIn 0.2s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        document.getElementById('led-res-exact').textContent = rExact.toFixed(1);
-        document.getElementById('led-res-std').textContent = rStd;
-        document.getElementById('led-power').textContent = pMw.toFixed(0);
-        document.getElementById('svg-res-val').textContent = rStd + "Ω";
-
-        var warn = document.getElementById('led-warning');
-        if(pMw > 250) warn.classList.add('is-visible');
-        else warn.classList.remove('is-visible');
-    });
-
-    // 2. Akku Calculator Logic
-    document.getElementById('batt-cap-preset').addEventListener('change', function() {
-        if(this.value) document.getElementById('batt-cap').value = this.value;
-    });
-    
-    document.getElementById('batt-curr-preset').addEventListener('change', function() {
-        if(this.value) document.getElementById('batt-curr').value = this.value;
-    });
-
-    document.getElementById('batt-calc-btn').addEventListener('click', function() {
-        var cap = parseFloat(document.getElementById('batt-cap').value);
-        var curr = parseFloat(document.getElementById('batt-curr').value);
-        var real = document.getElementById('batt-real').checked;
-
-        if(!cap || !curr) return;
-
-        var eff = real ? 0.7 : 1.0;
-        var hours = (cap / curr) * eff;
-        var days = hours / 24;
-
-        document.getElementById('batt-hours').textContent = hours.toFixed(1);
-        document.getElementById('batt-days').textContent = days < 1 ? "< 1" : days.toFixed(1);
-    });
-
-    // 3. Kabel Calculator Logic
-    document.getElementById('cable-curr-preset').addEventListener('change', function() {
-        if(this.value) document.getElementById('cable-curr').value = this.value;
-    });
-
-    document.getElementById('cable-calc-btn').addEventListener('click', function() {
-        var amps = parseFloat(document.getElementById('cable-curr').value);
-        if(!amps) return;
-
-        var mm2 = 0;
-        var awg = "-";
-        
-        // Konservativere Werte (Sicherer für Dauerbetrieb)
-        // Quelle angelehnt an VDE 0298-4 (für Verlegeart Einzelader in Luft, gerundet)
-        // 0.5mm² -> ca 9A
-        // 0.75mm² -> ca 12A
-        // 1.0mm² -> ca 15A
-        // 1.5mm² -> ca 19A (Standard 16A Absicherung)
-        
-        if (amps <= 3) { mm2 = 0.25; awg = "24"; }
-        else if (amps <= 6) { mm2 = 0.50; awg = "20"; }
-        else if (amps <= 10) { mm2 = 1.00; awg = "17"; }  
-        else if (amps <= 16) { mm2 = 1.50; awg = "16"; }  
-        else if (amps <= 25) { mm2 = 2.50; awg = "14"; }  
-        else if (amps <= 32) { mm2 = 4.00; awg = "12"; }  
-        else { mm2 = 6.00; awg = "10"; }
-
-        document.getElementById('cable-mm2').textContent = mm2.toFixed(2).replace('.', ',');
-        document.getElementById('cable-awg').textContent = awg;
-        
-        var note = document.getElementById('cable-note');
-        if(amps > 16) note.textContent = "Hinweis: Bei hohen Strömen (>16A) unbedingt CEE-Stecker oder Festanschluss prüfen!";
-        else note.textContent = "";
-    });
-
-    // 4. Spannungsteiler Logic
-    document.getElementById('div-vin-preset').addEventListener('change', function() {
-        if(this.value) document.getElementById('div-vin').value = this.value;
-    });
-
-    document.getElementById('div-calc-btn').addEventListener('click', function() {
-        var vin = parseFloat(document.getElementById('div-vin').value);
-        var r1 = parseFloat(document.getElementById('div-r1').value);
-        var r2 = parseFloat(document.getElementById('div-r2').value);
-
-        if(!vin || !r1 || !r2) return;
-
-        // Vout = Vin * (R2 / (R1 + R2))
-        var vout = vin * (r2 / (r1 + r2));
-        
-        document.getElementById('div-vout').textContent = vout.toFixed(2).replace('.', ',');
-
-        var warn = document.getElementById('div-warning');
-        if(vout > 5.2) warn.classList.add('is-visible');
-        else warn.classList.remove('is-visible');
-    });
-
-  </script>
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "HowTo",
-      "name": "Werkstatt-Rechner verwenden",
-      "description": "So nutzt du die Einheiten-, Gewinde- und Schnittdaten-Rechner auf warenschmiede.com.",
-      "step": [
-        {
-          "@type": "HowToStep",
-          "name": "Rechner auswählen",
-          "text": "Oben einen Schnellzugriff anklicken oder in der Übersicht den passenden Rechner wählen (Einheiten, Gewinde, Schnittdaten, Allgemeintoleranzen)."
-        },
-        {
-          "@type": "HowToStep",
-          "name": "Werte eingeben",
-          "text": "Im Formular die geforderten Größen eintragen: z. B. mm, Zoll, Gewindeserie und Toleranzfeld oder v_c, Drehzahl und Schneidenzahl."
-        },
-        {
-          "@type": "HowToStep",
-          "name": "Ergebnisse prüfen",
-          "text": "Die Ergebnisse erscheinen sofort im Ausgabeblock – inkl. Kernloch-Näherung und Richtwert-Toleranzen. Für sicherheitskritische Teile bitte immer Normtabellen prüfen."
+        .result-box {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
         }
-      ],
-      "tool": [
-        "Einheiten-Rechner",
-        "Gewinde-Toleranzrechner",
-        "Schnittdaten-Rechner",
-        "DIN ISO 2768-1 Richtwerttabelle"
-      ],
-      "url": "https://www.warenschmiede.com/werkstatt-rechner.html"
-    }
-  </script>
-  <script src="assets/js/theme.js" defer></script>
-  <script src="assets/js/header.js" defer></script>
-  <script src="assets/js/whatsapp.js" defer></script>
+        
+        .nav-btn { white-space: nowrap; }
+        .nav-btn.active { color: #f97316; border-bottom-color: #f97316; } /* Orange-500 */
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-200 h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 h-16 shrink-0 flex items-center justify-between px-4 z-20 shadow-lg">
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-br from-amber-600 to-orange-700 p-2 rounded-lg text-white shadow-lg shadow-orange-500/20">
+                <i class="ph ph-wrench text-xl"></i>
+            </div>
+            <div>
+                <h1 class="font-bold tracking-wide text-lg leading-tight text-white">Warenschmiede <span class="text-orange-500 italic">METALL</span></h1>
+                <p class="text-[10px] text-slate-400">CNC & Fertigungstechnik</p>
+            </div>
+        </div>
+        <a href="https://www.warenschmiede.com/" target="_blank" class="text-xs text-slate-400 hover:text-white transition flex items-center gap-1">
+            <i class="ph ph-house"></i> Home
+        </a>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-slate-800/50 border-b border-slate-700 overflow-x-auto">
+        <div class="flex px-2 min-w-max">
+            <button onclick="switchTab('schnitt')" class="nav-btn active flex items-center gap-2 px-4 py-3 text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition-colors">
+                <i class="ph ph-aperture"></i> Schnittdaten
+            </button>
+            <button onclick="switchTab('toleranzen')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition-colors">
+                <i class="ph ph-ruler"></i> Toleranzen ISO 2768
+            </button>
+            <button onclick="switchTab('iso')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition-colors">
+                <i class="ph ph-ruler-precision"></i> ISO-Passungen
+            </button>
+            <button onclick="switchTab('gewinde')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition-colors">
+                <i class="ph ph-screw"></i> Gewinde & Kernlöcher
+            </button>
+            <button onclick="switchTab('schrauben')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition-colors">
+                <i class="ph ph-nut"></i> Schrauben & Senkungen
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 relative max-w-5xl mx-auto w-full">
+
+        <!-- TAB 1: SCHNITTDATEN -->
+        <div id="tab-schnitt" class="tab-content active">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-white mb-1">Schnittdaten-Rechner</h2>
+                <p class="text-sm text-slate-400">Hier berechnest du Drehzahl, Vorschub und Zeitspanvolumen. Wähle einfach dein Material und Werkzeug.</p>
+            </div>
+
+            <!-- Presets -->
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 mb-6 shadow-md">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                    <div class="input-group">
+                        <label>Material</label>
+                        <select id="cut-mat" class="input-field text-sm cursor-pointer">
+                            <option value="steel">Stahl (allgemein)</option>
+                            <option value="inox">Edelstahl (VA)</option>
+                            <option value="alu">Aluminium</option>
+                            <option value="plastic">Kunststoff</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Bearbeitung</label>
+                        <select id="cut-op" class="input-field text-sm cursor-pointer">
+                            <option value="drill">Bohren (HSS/VHM)</option>
+                            <option value="mill_rough">Fräsen (Schruppen)</option>
+                            <option value="mill_finish">Fräsen (Schlichten)</option>
+                        </select>
+                    </div>
+                    <button onclick="loadCuttingPresets()" class="bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 px-4 rounded-lg transition text-sm flex items-center justify-center gap-2 shadow-lg hover:shadow-orange-500/20">
+                        <i class="ph ph-lightning"></i> Richtwerte laden
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Inputs -->
+                <div class="space-y-4">
+                    <div class="input-group">
+                        <label>Werkzeug-Ø d [mm]</label>
+                        <input type="number" id="inp-d" class="input-field" value="10" min="0.1" oninput="calcSchnitt()">
+                    </div>
+
+                    <div class="input-group">
+                        <label>
+                            Schnittgeschw. vc [m/min]
+                            <span class="tooltip"><i class="ph ph-info text-orange-500 ml-1"></i>
+                                <span class="tooltiptext">Die Geschwindigkeit, mit der die Schneide am Werkstück entlangfährt.</span>
+                            </span>
+                        </label>
+                        <input type="number" id="inp-vc" class="input-field" value="120" oninput="calcSchnitt()">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="input-group">
+                            <label>Zähnezahl z</label>
+                            <input type="number" id="inp-z" class="input-field" value="4" min="1" oninput="calcSchnitt()">
+                        </div>
+                        <div class="input-group">
+                            <label>
+                                Vorschub/Zahn fz [mm]
+                                <span class="tooltip"><i class="ph ph-info text-orange-500 ml-1"></i>
+                                    <span class="tooltiptext">Weg, den das Werkzeug pro Zahn vorankommt.</span>
+                                </span>
+                            </label>
+                            <input type="number" id="inp-fz" class="input-field" value="0.05" oninput="calcSchnitt()">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 pt-2 border-t border-slate-700">
+                        <div class="input-group">
+                            <label>Schnitttiefe ap [mm]</label>
+                            <input type="number" id="inp-ap" class="input-field text-slate-400 placeholder-slate-600" placeholder="Optional" oninput="calcSchnitt()">
+                        </div>
+                        <div class="input-group">
+                            <label>Schnittbreite ae [mm]</label>
+                            <input type="number" id="inp-ae" class="input-field text-slate-400 placeholder-slate-600" placeholder="Optional" oninput="calcSchnitt()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="flex flex-col gap-4">
+                    <div class="result-box p-6 rounded-2xl shadow-xl flex-1 flex flex-col justify-center items-center text-center relative overflow-hidden group">
+                        <span class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Drehzahl (n)</span>
+                        <div id="res-n" class="text-5xl font-mono font-bold text-orange-500 group-hover:scale-105 transition-transform">3820</div>
+                        <div class="text-slate-500 text-sm mt-1">U/min</div>
+                        <div id="rpm-warning" class="hidden absolute bottom-2 bg-red-900/90 text-red-200 text-[10px] px-3 py-1 rounded-full border border-red-700 animate-pulse font-bold flex items-center gap-1">
+                            <i class="ph ph-warning"></i> Sehr hoch! Maschine prüfen.
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs text-slate-400 uppercase font-bold">Vorschubgeschw. (vf)</span>
+                            <span class="text-xl font-mono font-bold text-white"><span id="res-vf">764</span> <span class="text-sm font-normal text-slate-500">mm/min</span></span>
+                        </div>
+                        <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-blue-500 h-full w-2/3 opacity-50"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-400 uppercase font-bold">Zeitspanvolumen (Q)</span>
+                            <span class="text-lg font-mono font-bold text-slate-300"><span id="res-q">--</span> <span class="text-xs font-normal text-slate-500">cm³/min</span></span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 text-center mt-2 italic">Hinweis: Alle Werte sind Richtwerte. Beachte immer die Angaben der Hersteller.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: TOLERANZEN ISO 2768 -->
+        <div id="tab-toleranzen" class="tab-content">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-white mb-1">Allgemeintoleranzen nach DIN ISO 2768-1</h2>
+                <p class="text-sm text-slate-400">Gültig für lineare Maße, wenn auf der Zeichnung kein spezielles Toleranzfeld angegeben ist.</p>
+            </div>
+
+            <!-- Mini Rechner -->
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 max-w-2xl mx-auto mb-8 shadow-lg">
+                <h3 class="font-bold text-slate-200 mb-4 flex items-center gap-2"><i class="ph ph-calculator text-blue-400"></i> Toleranz-Check</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div class="input-group">
+                        <label>Nennmaß in mm</label>
+                        <input type="number" id="tol2768-dim" class="input-field" placeholder="z.B. 45" oninput="calcToleranz2768()">
+                    </div>
+                    <div class="input-group">
+                        <label>Toleranzklasse</label>
+                        <select id="tol2768-class" class="input-field cursor-pointer" onchange="calcToleranz2768()">
+                            <option value="f">fein (f)</option>
+                            <option value="m" selected>mittel (m) - Standard</option>
+                            <option value="c">grob (c)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="tol2768-res" class="bg-slate-900 p-4 rounded-lg border border-slate-600 text-center hidden transition-all">
+                    <div class="text-sm text-slate-400 uppercase tracking-wide text-[10px] mb-1">Ergebnis</div>
+                    <div class="text-2xl font-bold text-white mb-1">±<span id="tol2768-val">0.3</span> mm</div>
+                    <div class="text-sm font-mono text-blue-400">Bereich: <span id="tol2768-range">44.70 - 45.30</span> mm</div>
+                </div>
+                <div id="tol2768-error" class="hidden text-red-400 text-xs text-center mt-2">Dieses Tool deckt Nennmaße von 0,5 mm bis 2000 mm ab.</div>
+            </div>
+
+            <!-- Tabelle -->
+            <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-lg opacity-90 hover:opacity-100 transition-opacity">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left">
+                        <thead class="text-slate-400 bg-slate-950 uppercase font-bold">
+                            <tr>
+                                <th class="p-3">Nennmaßbereich</th>
+                                <th class="p-3 text-center text-green-400 border-l border-slate-800">fein (f)</th>
+                                <th class="p-3 text-center text-blue-400 border-l border-slate-800">mittel (m)</th>
+                                <th class="p-3 text-center text-yellow-400 border-l border-slate-800">grob (c)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-700 text-slate-300 font-mono">
+                            <tr class="hover:bg-slate-700/50"><td class="p-3">0.5 bis 3</td><td class="text-center border-l border-slate-700">±0.05</td><td class="text-center border-l border-slate-700">±0.1</td><td class="text-center border-l border-slate-700">±0.2</td></tr>
+                            <tr class="hover:bg-slate-700/50"><td class="p-3">über 3 bis 6</td><td class="text-center border-l border-slate-700">±0.05</td><td class="text-center border-l border-slate-700">±0.1</td><td class="text-center border-l border-slate-700">±0.3</td></tr>
+                            <tr class="hover:bg-slate-700/50"><td class="p-3">über 6 bis 30</td><td class="text-center border-l border-slate-700">±0.1</td><td class="text-center border-l border-slate-700">±0.2</td><td class="text-center border-l border-slate-700">±0.5</td></tr>
+                            <tr class="hover:bg-slate-700/50"><td class="p-3">über 30 bis 120</td><td class="text-center border-l border-slate-700">±0.15</td><td class="text-center border-l border-slate-700">±0.3</td><td class="text-center border-l border-slate-700">±0.8</td></tr>
+                            <tr class="hover:bg-slate-700/50"><td class="p-3">über 120 bis 400</td><td class="text-center border-l border-slate-700">±0.2</td><td class="text-center border-l border-slate-700">±0.5</td><td class="text-center border-l border-slate-700">±1.2</td></tr>
+                            <tr class="hover:bg-slate-700/50"><td class="p-3">über 400 bis 1000</td><td class="text-center border-l border-slate-700">±0.3</td><td class="text-center border-l border-slate-700">±0.8</td><td class="text-center border-l border-slate-700">±2.0</td></tr>
+                            <tr class="hover:bg-slate-700/50"><td class="p-3">über 1000 bis 2000</td><td class="text-center border-l border-slate-700">±0.5</td><td class="text-center border-l border-slate-700">±1.2</td><td class="text-center border-l border-slate-700">±3.0</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-3 bg-slate-900/50 text-[10px] text-slate-500 border-t border-slate-700">
+                    <i class="ph ph-info mr-1"></i> Diese Werte gelten nur für Längenmaße ohne eigene Toleranzangabe. Form-, Lage- und Oberflächentoleranzen müssen separat definiert werden.
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: ISO PASSUNGEN -->
+        <div id="tab-iso" class="tab-content">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-white mb-1">ISO-Passungsrechner</h2>
+                <p class="text-sm text-slate-400">Berechne, wie Bohrung und Welle zueinander passen (Spiel, Übergang, Presssitz).</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Calculator -->
+                <div class="lg:col-span-7 bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+                    
+                    <!-- Presets -->
+                    <div class="mb-6">
+                        <label class="input-label text-orange-400">Schnellauswahl (Presets)</label>
+                        <select id="iso-preset" class="input-field text-sm cursor-pointer" onchange="applyIsoPreset()">
+                            <option value="">-- Individuell wählen --</option>
+                            <option value="H7-h6">H7 / h6 - Spielpassung (leicht beweglich)</option>
+                            <option value="H7-g6">H7 / g6 - Spielpassung (leichtes Spiel)</option>
+                            <option value="H7-f7">H7 / f7 - Enge Spielpassung</option>
+                            <option value="H7-k6">H7 / k6 - Übergangspassung</option>
+                            <option value="H7-p6">H7 / p6 - Übermaßpassung (Presssitz)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-6 border-t border-slate-700 pt-4">
+                        <label class="input-label">Nennmaß (mm)</label>
+                        <input type="number" id="iso-dim" class="input-field text-center text-xl font-bold" placeholder="20" oninput="calcIsoFit()">
+                        <p class="text-[10px] text-slate-500 mt-1 text-center">Bereich: 1 - 500 mm</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-6 relative">
+                        <!-- Bohrung -->
+                        <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
+                            <div class="flex items-center gap-2 mb-2 justify-center text-green-400 font-bold uppercase text-xs">
+                                <i class="ph ph-circle-notch"></i> Bohrung
+                            </div>
+                            <div class="flex gap-1 justify-center">
+                                <select id="iso-hole-char" class="input-field text-center w-16 px-1" onchange="calcIsoFit()">
+                                    <option value="H">H</option><option value="G">G</option><option value="F">F</option><option value="P">P</option>
+                                </select>
+                                <select id="iso-hole-num" class="input-field text-center w-16 px-1" onchange="calcIsoFit()">
+                                    <option value="6">6</option><option value="7" selected>7</option><option value="8">8</option><option value="9">9</option>
+                                </select>
+                            </div>
+                            <div class="mt-3 text-center">
+                                <div id="res-hole-dev" class="font-mono text-xs text-slate-400">--</div>
+                                <div id="res-hole-range" class="font-mono font-bold text-sm text-white mt-1">--</div>
+                            </div>
+                        </div>
+
+                        <!-- Welle -->
+                        <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
+                            <div class="flex items-center gap-2 mb-2 justify-center text-blue-400 font-bold uppercase text-xs">
+                                <i class="ph ph-circle"></i> Welle
+                            </div>
+                            <div class="flex gap-1 justify-center">
+                                <select id="iso-shaft-char" class="input-field text-center w-16 px-1" onchange="calcIsoFit()">
+                                    <option value="h" selected>h</option><option value="g">g</option><option value="f">f</option><option value="k">k</option><option value="m">m</option><option value="p">p</option>
+                                </select>
+                                <select id="iso-shaft-num" class="input-field text-center w-16 px-1" onchange="calcIsoFit()">
+                                    <option value="5">5</option><option value="6" selected>6</option><option value="7">7</option><option value="9">9</option>
+                                </select>
+                            </div>
+                            <div class="mt-3 text-center">
+                                <div id="res-shaft-dev" class="font-mono text-xs text-slate-400">--</div>
+                                <div id="res-shaft-range" class="font-mono font-bold text-sm text-white mt-1">--</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fit Result -->
+                    <div id="fit-result-box" class="bg-slate-900 p-4 rounded-lg border border-slate-600 text-center hidden animate-pulse-once">
+                        <div class="text-xs text-slate-400 uppercase tracking-widest mb-1">Erwartete Passungsart</div>
+                        <div id="fit-type" class="text-xl font-bold text-white mb-2">Spielpassung</div>
+                        <div class="text-xs font-mono text-slate-300 bg-slate-800 inline-block px-2 py-1 rounded" id="fit-values">Min: 0.020 / Max: 0.054</div>
+                    </div>
+                    <div id="fit-error" class="text-center text-red-400 text-xs mt-4 hidden bg-red-900/20 p-2 rounded">
+                        Diese Kombination ist im Tool noch nicht hinterlegt. Bitte wähle eine typische Passung.
+                    </div>
+                </div>
+
+                <!-- Info Column (Lernkasten) -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+                        <h4 class="font-bold text-sm text-white mb-3 flex items-center gap-2"><i class="ph ph-graduation-cap text-orange-500 text-lg"></i> Passung lesen lernen</h4>
+                        <div class="text-xs text-slate-300 space-y-3 leading-relaxed">
+                            <p><strong>Beispiel: 20 H7/g6</strong></p>
+                            <ul class="list-disc pl-4 space-y-1 text-slate-400">
+                                <li><strong>20</strong> = Nennmaß in mm</li>
+                                <li><strong>H7</strong> = Bohrung (Großbuchstabe)</li>
+                                <li><strong>g6</strong> = Welle (Kleinbuchstabe)</li>
+                                <li><strong>Zahl</strong> = Toleranzgrad (kleiner = genauer)</li>
+                            </ul>
+                            <div class="bg-slate-900 p-2 rounded border border-slate-700 mt-2">
+                                <p class="text-slate-400 mb-1">Ergebnis im Beispiel:</p>
+                                <p class="text-green-400">Bohrung: 20,000 – 20,021 mm</p>
+                                <p class="text-blue-400">Welle: 19,979 – 19,994 mm</p>
+                                <p class="text-white mt-1 border-t border-slate-700 pt-1">→ Immer Spiel (0,006 – 0,042 mm)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 text-xs text-slate-400">
+                        <h5 class="font-bold text-slate-200 mb-2">Passungsarten</h5>
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2"><span class="w-2 h-2 bg-green-500 rounded-full"></span> <span><strong>Spiel:</strong> Teile bewegen sich (z.B. Lager).</span></div>
+                            <div class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-500 rounded-full"></span> <span><strong>Übergang:</strong> Klemmen oder Rutschen möglich.</span></div>
+                            <div class="flex items-center gap-2"><span class="w-2 h-2 bg-red-500 rounded-full"></span> <span><strong>Übermaß:</strong> Feste Verbindung (Presssitz).</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: GEWINDE -->
+        <div id="tab-gewinde" class="tab-content">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-white mb-1">Gewinde & Kernlöcher</h2>
+                <p class="text-sm text-slate-400">Finde sofort den richtigen Bohrer für dein Gewinde. Regel- und Feingewinde.</p>
+            </div>
+
+            <div class="max-w-xl mx-auto">
+                <!-- Calculator Widget -->
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg mb-8">
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="input-group">
+                            <label>Gewindeart</label>
+                            <select id="th-type" class="input-field cursor-pointer" onchange="updateThreadList()">
+                                <option value="M">Metrisches Regelgewinde (M)</option>
+                                <option value="MF">Metrisches Feingewinde (MF)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Größe</label>
+                            <select id="th-size" class="input-field cursor-pointer font-bold" onchange="calcThread()">
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center py-4 bg-slate-900 rounded-xl border border-slate-700 relative">
+                        <div class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Kernlochdurchmesser (Bohrer)</div>
+                        <div class="text-5xl font-mono font-bold text-indigo-400 mb-2"><span id="res-thread-drill">--</span> <span class="text-lg text-slate-500">mm</span></div>
+                        <div class="text-xs text-slate-500">
+                            Faustformel: Nennmaß – Steigung ≈ Kernloch
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Preview -->
+                <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
+                    <div class="bg-slate-950 p-3 border-b border-slate-700 flex justify-between items-center">
+                        <h4 class="text-sm font-bold text-white">Wichtige Größen (Regelgewinde)</h4>
+                    </div>
+                    <div class="p-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm font-mono">
+                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M3</span><span class="text-indigo-400 font-bold">2.5</span></div>
+                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M4</span><span class="text-indigo-400 font-bold">3.3</span></div>
+                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M5</span><span class="text-indigo-400 font-bold">4.2</span></div>
+                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M6</span><span class="text-indigo-400 font-bold">5.0</span></div>
+                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M8</span><span class="text-indigo-400 font-bold">6.8</span></div>
+                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M10</span><span class="text-indigo-400 font-bold">8.5</span></div>
+                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M12</span><span class="text-indigo-400 font-bold">10.2</span></div>
+                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M16</span><span class="text-indigo-400 font-bold">14.0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: SCHRAUBEN & SENKUNGEN (NEU) -->
+        <div id="tab-schrauben" class="tab-content">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-white mb-1">Bohrungen & Senkungen</h2>
+                <p class="text-sm text-slate-400">Maße für Durchgangslöcher und Senkungen für Zylinder- und Senkschrauben (DIN 912 / 7991).</p>
+            </div>
+
+            <div class="max-w-2xl mx-auto">
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                        <div class="input-group">
+                            <label>Schraubenart</label>
+                            <select id="scr-type" class="input-field text-sm cursor-pointer" onchange="calcScrew()">
+                                <option value="912">Zylinderkopf (DIN 912)</option>
+                                <option value="7991">Senkkopf (DIN 7991)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Größe</label>
+                            <select id="scr-size" class="input-field text-sm cursor-pointer font-bold" onchange="calcScrew()">
+                                <option value="M3">M3</option>
+                                <option value="M4">M4</option>
+                                <option value="M5">M5</option>
+                                <option value="M6">M6</option>
+                                <option value="M8">M8</option>
+                                <option value="M10">M10</option>
+                                <option value="M12">M12</option>
+                                <option value="M16">M16</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>
+                                Spielklasse
+                                <span class="tooltip"><i class="ph ph-info text-slate-500 ml-1"></i>
+                                    <span class="tooltiptext">eng: wenig Spiel. mittel: Standard. groß: Montagefreundlich.</span>
+                                </span>
+                            </label>
+                            <select id="scr-fit" class="input-field text-sm cursor-pointer" onchange="calcScrew()">
+                                <option value="f">eng (f)</option>
+                                <option value="m" selected>mittel (m)</option>
+                                <option value="c">groß (c)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Results Layout -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">
+                        <!-- Through Hole -->
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-600 text-center h-full flex flex-col justify-center">
+                            <div class="text-[10px] text-slate-400 uppercase font-bold mb-2">Durchgangsbohrung Ø</div>
+                            <div class="text-4xl font-mono font-bold text-white mb-1"><span id="res-scr-hole">--</span> <span class="text-lg text-slate-500">mm</span></div>
+                            <div class="text-[10px] text-slate-500" id="res-scr-fit-text">Standard</div>
+                        </div>
+
+                        <!-- Counterbore Info -->
+                        <div class="space-y-3">
+                            <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
+                                <span class="text-xs text-slate-400">Kopf-Ø (dk):</span>
+                                <span class="font-mono font-bold text-white" id="res-scr-dk">-- mm</span>
+                            </div>
+                            
+                            <!-- Zylinder Spec -->
+                            <div id="res-spec-912" class="hidden">
+                                <div class="p-3 bg-blue-900/20 rounded-lg border border-blue-800/30 text-xs text-blue-300">
+                                    <i class="ph ph-info mr-1"></i> Zylinderkopf steht über. Keine Senkung nötig (nur entgraten), außer bei Zapfensenkung (DIN 974).
+                                </div>
+                            </div>
+
+                            <!-- Senk Spec -->
+                            <div id="res-spec-7991" class="hidden space-y-3">
+                                <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
+                                    <span class="text-xs text-orange-400 font-bold">Senk-Ø (d_senk):</span>
+                                    <span class="font-mono font-bold text-white" id="res-scr-cs-dia">-- mm</span>
+                                </div>
+                                <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
+                                    <span class="text-xs text-orange-400 font-bold">Senktiefe (t):</span>
+                                    <span class="font-mono font-bold text-white" id="res-scr-cs-depth">-- mm</span>
+                                </div>
+                                <div class="text-[10px] text-slate-500 text-center">90° Senkung für bündigen Sitz.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-[10px] text-slate-500 mt-6 text-center border-t border-slate-700 pt-2">
+                        Maße sind typische Richtwerte für DIN/ISO Schrauben. Für sicherheitskritische Teile bitte Normblatt prüfen.
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // --- Navigation Logic ---
+        function switchTab(id) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Reset nav buttons
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('active', 'text-orange-500', 'border-orange-500');
+                el.classList.add('text-slate-400', 'border-transparent');
+            });
+            
+            // Show target
+            document.getElementById('tab-' + id).classList.add('active');
+            
+            // Highlight button (simple lookup by index for this static list)
+            const ids = ['schnitt', 'toleranzen', 'iso', 'gewinde', 'schrauben'];
+            const idx = ids.indexOf(id);
+            if(idx > -1) {
+                const btns = document.querySelectorAll('.nav-btn');
+                btns[idx].classList.remove('text-slate-400', 'border-transparent');
+                btns[idx].classList.add('active', 'text-orange-500', 'border-orange-500');
+            }
+        }
+
+        /* =========================================
+           1. SCHNITTDATEN RECHNER
+           Formel: n = (vc * 1000) / (PI * d)
+           Formel: vf = n * z * fz
+           ========================================= */
+        function loadCuttingPresets() {
+            const mat = document.getElementById('cut-mat').value;
+            const op = document.getElementById('cut-op').value;
+            
+            // Richtwerte [vc, fz]
+            const presets = {
+                steel: { drill: [25, 0.1], mill_rough: [120, 0.05], mill_finish: [180, 0.03] },
+                inox:  { drill: [15, 0.08], mill_rough: [80, 0.04], mill_finish: [120, 0.03] },
+                alu:   { drill: [80, 0.2],  mill_rough: [400, 0.1], mill_finish: [600, 0.08] },
+                plastic: { drill: [60, 0.2], mill_rough: [300, 0.15], mill_finish: [400, 0.1] }
+            };
+
+            if (presets[mat] && presets[mat][op]) {
+                const [vc, fz] = presets[mat][op];
+                document.getElementById('inp-vc').value = vc;
+                document.getElementById('inp-fz').value = fz;
+                
+                // Zähne anpassen
+                if (op === 'drill') document.getElementById('inp-z').value = 2;
+                else if (document.getElementById('inp-z').value == 2) document.getElementById('inp-z').value = 4;
+
+                calcSchnitt();
+            }
+        }
+
+        function calcSchnitt() {
+            const d = parseFloat(document.getElementById('inp-d').value) || 0;
+            const vc = parseFloat(document.getElementById('inp-vc').value) || 0;
+            const z = parseFloat(document.getElementById('inp-z').value) || 0;
+            const fz = parseFloat(document.getElementById('inp-fz').value) || 0;
+            const ap = parseFloat(document.getElementById('inp-ap').value) || 0;
+            const ae = parseFloat(document.getElementById('inp-ae').value) || 0;
+
+            if (d <= 0 || vc <= 0) {
+                document.getElementById('res-n').innerText = "0";
+                document.getElementById('res-vf').innerText = "0";
+                return;
+            }
+
+            // Berechnung n
+            const n = (vc * 1000) / (Math.PI * d);
+            
+            // Berechnung vf
+            const vf = n * z * fz;
+
+            // Berechnung Q (cm³/min)
+            let q = 0;
+            if (ap > 0 && ae > 0) {
+                q = (ap * ae * vf) / 1000;
+            }
+
+            // Update UI
+            document.getElementById('res-n').innerText = n.toFixed(0);
+            document.getElementById('res-vf').innerText = vf.toFixed(0);
+            document.getElementById('res-q').innerText = q > 0 ? q.toFixed(1) : "--";
+
+            // Warnung > 20k
+            const warn = document.getElementById('rpm-warning');
+            if (n > 20000) warn.classList.remove('hidden');
+            else warn.classList.add('hidden');
+        }
+
+        /* =========================================
+           2. TOLERANZEN ISO 2768
+           ========================================= */
+        const tol2768Table = [
+            { max: 3, vals: [0.05, 0.1, 0.2] },
+            { max: 6, vals: [0.05, 0.1, 0.3] },
+            { max: 30, vals: [0.1, 0.2, 0.5] },
+            { max: 120, vals: [0.15, 0.3, 0.8] },
+            { max: 400, vals: [0.2, 0.5, 1.2] },
+            { max: 1000, vals: [0.3, 0.8, 2.0] },
+            { max: 2000, vals: [0.5, 1.2, 3.0] }
+        ];
+
+        function calcToleranz2768() {
+            const dim = parseFloat(document.getElementById('tol2768-dim').value);
+            const cls = document.getElementById('tol2768-class').value;
+            const resBox = document.getElementById('tol2768-res');
+            const errBox = document.getElementById('tol2768-error');
+
+            if (!dim || dim < 0.5 || dim > 2000) {
+                resBox.classList.add('hidden');
+                if(dim) errBox.classList.remove('hidden');
+                return;
+            }
+            errBox.classList.add('hidden');
+
+            const entry = tol2768Table.find(e => dim <= e.max);
+            
+            let idx = 0; // f
+            if (cls === 'm') idx = 1;
+            if (cls === 'c') idx = 2;
+
+            const tol = entry.vals[idx];
+            
+            document.getElementById('tol2768-val').innerText = tol.toFixed(2);
+            document.getElementById('tol2768-range').innerText = (dim - tol).toFixed(2) + " - " + (dim + tol).toFixed(2);
+            resBox.classList.remove('hidden');
+        }
+
+        /* =========================================
+           3. ISO PASSUNGEN
+           Datenbasis: Vereinfachte Tabelle für gängige Fälle (H7, h6, etc.)
+           Werte in Mikrometer (µm)
+           ========================================= */
+        // Format: [H7_up, H7_lo, h6_up, h6_lo, etc...] is too complex.
+        // Using object mapping for clarity. 
+        // NOTE: This is a subset for "Azubi" common usage. Not full standard.
+        const isoData = [
+            { max: 3,   H7:[10,0], H8:[14,0], h6:[0,-6], g6:[-2,-8], f7:[-6,-16], k6:[6,0], p6:[12,6] },
+            { max: 6,   H7:[12,0], H8:[18,0], h6:[0,-8], g6:[-4,-12], f7:[-10,-22], k6:[9,1], p6:[20,12] },
+            { max: 10,  H7:[15,0], H8:[22,0], h6:[0,-9], g6:[-5,-14], f7:[-13,-28], k6:[10,1], p6:[24,15] },
+            { max: 18,  H7:[18,0], H8:[27,0], h6:[0,-11], g6:[-6,-17], f7:[-16,-34], k6:[12,1], p6:[29,18] },
+            { max: 30,  H7:[21,0], H8:[33,0], h6:[0,-13], g6:[-7,-20], f7:[-20,-41], k6:[15,2], p6:[35,22] },
+            { max: 50,  H7:[25,0], H8:[39,0], h6:[0,-16], g6:[-9,-25], f7:[-25,-50], k6:[18,2], p6:[42,26] },
+            { max: 80,  H7:[30,0], H8:[46,0], h6:[0,-19], g6:[-10,-29], f7:[-30,-60], k6:[21,2], p6:[51,32] },
+            { max: 120, H7:[35,0], H8:[54,0], h6:[0,-22], g6:[-12,-34], f7:[-36,-71], k6:[25,3], p6:[59,37] },
+            { max: 500, H7:[63,0], H8:[97,0], h6:[0,-40], g6:[-20,-60], f7:[-68,-131], k6:[45,5], p6:[108,68] } // Rough catch-all for demo
+        ];
+
+        function applyIsoPreset() {
+            const val = document.getElementById('iso-preset').value;
+            if(!val) return;
+            
+            const [hole, shaft] = val.split('-');
+            // Set Hole
+            document.getElementById('iso-hole-char').value = hole.charAt(0);
+            document.getElementById('iso-hole-num').value = hole.charAt(1);
+            // Set Shaft
+            document.getElementById('iso-shaft-char').value = shaft.charAt(0);
+            document.getElementById('iso-shaft-num').value = shaft.charAt(1);
+            
+            calcIsoFit();
+        }
+
+        function getIsoValues(dim, code) {
+            // Find range
+            const entry = isoData.find(e => dim <= e.max);
+            if (!entry) return null;
+            // Check if specific code exists in our mini-db
+            if (entry[code]) return entry[code];
+            // Fallback: Return null to trigger "Not supported"
+            return null;
+        }
+
+        function calcIsoFit() {
+            const dim = parseFloat(document.getElementById('iso-dim').value);
+            const holeCode = document.getElementById('iso-hole-char').value + document.getElementById('iso-hole-num').value;
+            const shaftCode = document.getElementById('iso-shaft-char').value + document.getElementById('iso-shaft-num').value;
+
+            const resBox = document.getElementById('fit-result-box');
+            const errBox = document.getElementById('fit-error');
+
+            if (!dim || dim < 1 || dim > 500) {
+                resBox.classList.add('hidden');
+                errBox.classList.add('hidden');
+                return;
+            }
+
+            const hVals = getIsoValues(dim, holeCode);
+            const sVals = getIsoValues(dim, shaftCode);
+
+            if (hVals && sVals) {
+                errBox.classList.add('hidden');
+                resBox.classList.remove('hidden');
+
+                // Convert µm to mm
+                const hUp = hVals[0] / 1000;
+                const hLo = hVals[1] / 1000;
+                const sUp = sVals[0] / 1000;
+                const sLo = sVals[1] / 1000;
+
+                // Update UI Texts
+                document.getElementById('res-hole-dev').innerText = `${fmt(hUp)} / ${fmt(hLo)}`;
+                document.getElementById('res-shaft-dev').innerText = `${fmt(sUp)} / ${fmt(sLo)}`;
+
+                const hMax = dim + hUp;
+                const hMin = dim + hLo;
+                const sMax = dim + sUp;
+                const sMin = dim + sLo;
+
+                document.getElementById('res-hole-range').innerText = `${hMin.toFixed(3)} - ${hMax.toFixed(3)}`;
+                document.getElementById('res-shaft-range').innerText = `${sMin.toFixed(3)} - ${sMax.toFixed(3)}`;
+
+                // Fit Calc
+                const maxClearance = hMax - sMin; // Hole Max - Shaft Min
+                const minClearance = hMin - sMax; // Hole Min - Shaft Max
+
+                const typeEl = document.getElementById('fit-type');
+                const valEl = document.getElementById('fit-values');
+
+                // Logic: 
+                // Min > 0 -> Spiel
+                // Max < 0 -> Übermaß
+                // Sonst -> Übergang
+                
+                if (minClearance >= 0) {
+                    typeEl.innerText = "Spielpassung";
+                    typeEl.className = "text-xl font-bold text-green-400 mb-2";
+                    valEl.innerText = `Spiel: ${(minClearance * 1000).toFixed(0)} bis ${(maxClearance * 1000).toFixed(0)} µm`;
+                } else if (maxClearance <= 0) {
+                    typeEl.innerText = "Übermaßpassung (Presssitz)";
+                    typeEl.className = "text-xl font-bold text-red-400 mb-2";
+                    valEl.innerText = `Übermaß: ${(Math.abs(maxClearance) * 1000).toFixed(0)} bis ${(Math.abs(minClearance) * 1000).toFixed(0)} µm`;
+                } else {
+                    typeEl.innerText = "Übergangspassung";
+                    typeEl.className = "text-xl font-bold text-yellow-400 mb-2";
+                    valEl.innerText = `Übergang: ${(Math.abs(minClearance)*1000).toFixed(0)} µm Übermaß bis ${(maxClearance*1000).toFixed(0)} µm Spiel`;
+                }
+
+            } else {
+                resBox.classList.add('hidden');
+                errBox.classList.remove('hidden');
+                document.getElementById('res-hole-dev').innerText = "--";
+                document.getElementById('res-shaft-dev').innerText = "--";
+                document.getElementById('res-hole-range').innerText = "--";
+                document.getElementById('res-shaft-range').innerText = "--";
+            }
+        }
+        
+        function fmt(num) { return (num >= 0 ? '+' : '') + num.toFixed(3); }
+
+        /* =========================================
+           4. GEWINDE & KERNLÖCHER
+           ========================================= */
+        const threads = {
+            'M': {
+                'M1': 0.75, 'M1.2': 0.95, 'M1.6': 1.25, 'M2': 1.6, 'M2.5': 2.05,
+                'M3': 2.5, 'M4': 3.3, 'M5': 4.2, 'M6': 5.0, 'M8': 6.8, 
+                'M10': 8.5, 'M12': 10.2, 'M14': 12.0, 'M16': 14.0, 'M18': 15.5, 
+                'M20': 17.5, 'M22': 19.5, 'M24': 21.0, 'M27': 24.0, 'M30': 26.5, 
+                'M33': 29.5, 'M36': 32.0
+            },
+            'MF': {
+                'M3 x 0.35': 2.65,
+                'M4 x 0.5': 3.5,
+                'M5 x 0.5': 4.5,
+                'M6 x 0.75': 5.25,
+                'M8 x 1.0': 7.0, 
+                'M10 x 1.0': 9.0, 'M10 x 1.25': 8.8, 
+                'M12 x 1.25': 10.8, 'M12 x 1.5': 10.5, 
+                'M14 x 1.5': 12.5, 
+                'M16 x 1.5': 14.5,
+                'M18 x 1.5': 16.5,
+                'M20 x 1.5': 18.5,
+                'M22 x 1.5': 20.5,
+                'M24 x 1.5': 22.5, 'M24 x 2.0': 22.0,
+                'M27 x 2.0': 25.0,
+                'M30 x 2.0': 28.0,
+                'M32 x 1.5': 30.5
+            }
+        };
+
+        function updateThreadList() {
+            const type = document.getElementById('th-type').value;
+            const sizeSelect = document.getElementById('th-size');
+            sizeSelect.innerHTML = '';
+            
+            for (const key in threads[type]) {
+                const opt = document.createElement('option');
+                opt.value = threads[type][key];
+                opt.innerText = key;
+                sizeSelect.appendChild(opt);
+            }
+            calcThread();
+        }
+
+        function calcThread() {
+            const val = document.getElementById('th-size').value;
+            document.getElementById('res-thread-drill').innerText = val;
+        }
+
+        /* =========================================
+           5. SCHRAUBEN & SENKUNGEN
+           Datenbasis: DIN 912 / ISO 4762 (Zylinder), DIN 7991 (Senk)
+           Durchgangslöcher nach DIN ISO 273 (fein, mittel, grob)
+           ========================================= */
+        const screwData = {
+            'M3': { hole_f: 3.2, hole_m: 3.4, hole_c: 3.6, dk_912: 5.5, dk_7991: 6.0, k_7991: 1.7 },
+            'M4': { hole_f: 4.3, hole_m: 4.5, hole_c: 4.8, dk_912: 7.0, dk_7991: 8.0, k_7991: 2.3 },
+            'M5': { hole_f: 5.3, hole_m: 5.5, hole_c: 5.8, dk_912: 8.5, dk_7991: 10.0, k_7991: 2.8 },
+            'M6': { hole_f: 6.4, hole_m: 6.6, hole_c: 7.0, dk_912: 10.0, dk_7991: 12.0, k_7991: 3.3 },
+            'M8': { hole_f: 8.4, hole_m: 9.0, hole_c: 10.0, dk_912: 13.0, dk_7991: 16.0, k_7991: 4.4 },
+            'M10': { hole_f: 10.5, hole_m: 11.0, hole_c: 12.0, dk_912: 16.0, dk_7991: 20.0, k_7991: 5.5 },
+            'M12': { hole_f: 13.0, hole_m: 13.5, hole_c: 14.5, dk_912: 18.0, dk_7991: 24.0, k_7991: 6.5 },
+            'M16': { hole_f: 17.0, hole_m: 17.5, hole_c: 18.5, dk_912: 24.0, dk_7991: 30.0, k_7991: 7.5 }
+        };
+
+        function calcScrew() {
+            const type = document.getElementById('scr-type').value;
+            const size = document.getElementById('scr-size').value;
+            const fit = document.getElementById('scr-fit').value;
+            
+            const data = screwData[size];
+            
+            // Durchgangsbohrung
+            let hole = data['hole_' + fit];
+            document.getElementById('res-scr-hole').innerText = hole.toFixed(1);
+            
+            const fitMap = { 'f': 'Eng (fein)', 'm': 'Standard (mittel)', 'c': 'Groß (grob)' };
+            document.getElementById('res-scr-fit-text').innerText = fitMap[fit];
+
+            // Kopfdaten
+            if (type === '912') {
+                document.getElementById('res-scr-dk').innerText = data.dk_912.toFixed(1) + " mm";
+                document.getElementById('res-spec-912').classList.remove('hidden');
+                document.getElementById('res-spec-7991').classList.add('hidden');
+            } else {
+                document.getElementById('res-scr-dk').innerText = data.dk_7991.toFixed(1) + " mm";
+                
+                // Senkung für Senkkopf: Ø = dk, Tiefe ≈ k
+                document.getElementById('res-scr-cs-dia').innerText = data.dk_7991.toFixed(1) + " mm";
+                document.getElementById('res-scr-cs-depth').innerText = data.k_7991.toFixed(1) + " mm";
+                
+                document.getElementById('res-spec-912').classList.add('hidden');
+                document.getElementById('res-spec-7991').classList.remove('hidden');
+            }
+        }
+
+        // Init Calls
+        updateThreadList();
+        loadCuttingPresets();
+        calcScrew();
+    </script>
 </body>
 </html>
