@@ -82,7 +82,7 @@
             </div>
             <div class="min-w-0">
                 <h1 class="font-bold tracking-wide text-lg leading-tight truncate">QR Master <span class="text-violet-600 dark:text-violet-400 font-black italic text-sm align-top">ULTRA</span></h1>
-                <p class="text-[10px] text-slate-500 truncate">Warenschmiede Tools | v3.0 (Web Edition)</p>
+                <p class="text-[10px] text-slate-500 truncate">Warenschmiede Tools | v3.1 (Web Edition)</p>
             </div>
         </div>
         
@@ -413,6 +413,28 @@
                         <i class="ph ph-bezier-curve"></i> Download SVG (Vektor)
                     </button>
                 </div>
+
+                <!-- Recommend Box -->
+                <div class="mb-8 p-4 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-lg relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 bg-white/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-white/20 transition"></div>
+                    
+                    <h4 class="font-bold text-lg mb-1 flex items-center gap-2">
+                        <i class="ph ph-thumbs-up"></i> Gefällt dir das Tool?
+                    </h4>
+                    <p class="text-xs text-emerald-50 mb-4 opacity-90">Unterstütze die Warenschmiede und teile es mit Freunden.</p>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <a href="https://wa.me/?text=Hey%2C%20check%20mal%20diesen%20kostenlosen%20QR-Generator%20der%20Warenschmiede%20aus%3A%20https%3A%2F%2Fwww.warenschmiede.com%2F%20-%20Komplett%20offline%20und%20sicher!" 
+                           target="_blank"
+                           class="flex items-center justify-center gap-2 bg-white/20 hover:bg-white/30 py-2 rounded-lg text-xs font-bold transition backdrop-blur-sm border border-white/10">
+                            <i class="ph ph-whatsapp-logo text-lg"></i> WhatsApp
+                        </a>
+                        <button onclick="copyShareLink()" 
+                                class="flex items-center justify-center gap-2 bg-white/20 hover:bg-white/30 py-2 rounded-lg text-xs font-bold transition backdrop-blur-sm border border-white/10">
+                            <i class="ph ph-copy text-lg"></i> Link kopieren
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- Security Box -->
@@ -697,6 +719,22 @@
                 icon.classList.remove('ph-moon');
                 icon.classList.add('ph-sun');
             }
+        }
+
+        // --- Share Function ---
+        function copyShareLink() {
+            const text = "https://www.warenschmiede.com/";
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert("Link kopiert!");
+            } catch (err) {
+                prompt("Link kopieren:", text);
+            }
+            document.body.removeChild(textArea);
         }
 
         // --- Map Logic ---
