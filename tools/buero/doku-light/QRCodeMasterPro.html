@@ -1,746 +1,871 @@
-<!doctype html>
-<html lang="de">
+<!DOCTYPE html>
+<html lang="de" class="dark">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="icon" type="image/png" href="/ws.png" sizes="32x32">
-  <link rel="apple-touch-icon" href="/ws.png" sizes="180x180">
-  <meta name="theme-color" content="#000000">
-  <title>QR-Code Generator – Warenschmiede Tools</title>
-  <meta name="description" content="QRCode Master Pro: QR-Codes für Links, WLAN, vCards oder Texte erstellen – alles lokal im Browser.">
-  <meta name="robots" content="noindex,follow">
-  <meta name="color-scheme" content="light dark">
-  <link rel="canonical" href="https://www.warenschmiede.com/tools/buero/doku-light/QRCodeMasterPro.html">
-  <meta property="og:title" content="QR-Code Generator – Warenschmiede Tools">
-  <meta property="og:description" content="QRCode Master Pro: QR-Codes für Links, WLAN, vCards oder Texte erstellen – alles lokal im Browser.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.warenschmiede.com/tools/buero/doku-light/QRCodeMasterPro.html">
-  <meta property="og:image" content="/assets/og/og-default.jpg">
-  <meta property="og:site_name" content="Warenschmiede">
-  <meta property="og:locale" content="de_DE">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="QR-Code Generator – Warenschmiede Tools">
-  <meta name="twitter:description" content="QRCode Master Pro: QR-Codes für Links, WLAN, vCards oder Texte erstellen – alles lokal im Browser.">
-  <meta name="twitter:url" content="https://www.warenschmiede.com/tools/buero/doku-light/QRCodeMasterPro.html">
-  <meta name="twitter:image" content="/assets/og/og-default.jpg">
-  <script>
-    (function () {
-      var storageKey = 'theme-preference';
-      var preference = 'system';
-      try {
-        var stored = localStorage.getItem(storageKey);
-        if (stored === 'light' || stored === 'dark' || stored === 'system') {
-          preference = stored;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Master ULTRA - Warenschmiede Tools</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- QR Code Styling Library -->
+    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <!-- Leaflet Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#151e2e' }
+                    }
+                }
+            }
         }
-      } catch (error) { }
-      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-      var resolved = preference === 'dark'
-        ? 'dark'
-        : preference === 'light'
-          ? 'light'
-          : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
-      var root = document.documentElement;
-      root.dataset.theme = resolved;
-      root.dataset.themePreference = preference;
-    })();
-  </script>
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/assets/print.css?v=1.0.7" media="print">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Oswald:wght@500;700&family=Orbitron:wght@500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
-  <script>
-    window.tailwind = window.tailwind || {};
-    window.tailwind.config = { corePlugins: { preflight: false } };
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
-  <style>
-    .qr-tool {
-      font-family: 'Inter', sans-serif;
-      background-color: #0f172a;
-      color: #e2e8f0;
-    }
+    </script>
 
-    .converter-hero {
-      text-align: center;
-      max-width: 840px;
-      margin: 0 auto;
-    }
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #64748b; border-radius: 3px; }
 
-    @media (max-width: 960px) {
-      .converter-hero {
-        text-align: left;
-      }
-    }
+        /* Map Container */
+        #map-picker { height: 250px; width: 100%; border-radius: 0.5rem; z-index: 1; }
 
-    .qr-tool ::-webkit-scrollbar {
-      width: 6px;
-    }
+        /* Inputs & Transitions */
+        .input-label {
+            display: flex; align-items: center; gap: 0.25rem;
+            font-size: 0.7rem; font-weight: 700;
+            text-transform: uppercase; margin-bottom: 0.25rem; letter-spacing: 0.05em;
+        }
+        .input-field {
+            width: 100%; border-radius: 0.5rem; padding: 0.5rem 0.75rem; font-size: 0.875rem; transition: all 0.2s;
+            border-width: 1px;
+        }
+        .input-error { border-color: #ef4444 !important; background-color: #450a0a !important; }
+        .error-text { color: #ef4444; font-size: 0.7rem; margin-top: 0.25rem; display: none; }
+        .input-error + .error-text { display: block; }
 
-    .qr-tool ::-webkit-scrollbar-track {
-      background: #1e293b;
-    }
+        /* Dark/Light Styles */
+        .dark .input-label { color: #94a3b8; }
+        .dark .input-field { background-color: #1e293b; border-color: #334155; color: white; }
+        .dark .input-field:focus { border-color: #8b5cf6; box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2); outline: none; }
+        
+        html:not(.dark) body { background-color: #f1f5f9; color: #0f172a; }
+        html:not(.dark) .input-label { color: #475569; }
+        html:not(.dark) .input-field { background-color: #ffffff; border-color: #cbd5e1; color: #0f172a; }
+        html:not(.dark) .input-field:focus { border-color: #8b5cf6; box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1); outline: none; }
 
-    .qr-tool ::-webkit-scrollbar-thumb {
-      background: #475569;
-      border-radius: 3px;
-    }
+        .tab-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tab-btn.active { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .dark .tab-btn.active { background-color: #8b5cf6; color: white; border-color: #8b5cf6; }
+        html:not(.dark) .tab-btn.active { background-color: #7c3aed; color: white; border-color: #7c3aed; }
 
-    .qr-tool .input-label {
-      display: block;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: #94a3b8;
-      margin-bottom: 0.25rem;
-    }
-
-    .qr-tool .input-field {
-      width: 100%;
-      background-color: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      color: white;
-      font-size: 0.875rem;
-      transition: all 0.2s;
-    }
-
-    .qr-tool .input-field:focus {
-      outline: none;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-    }
-
-    .qr-tool .tab-btn.active {
-      background-color: #3b82f6;
-      color: white;
-      border-color: #3b82f6;
-    }
-  </style>
+        /* Accordion */
+        details > summary { list-style: none; cursor: pointer; }
+        details > summary::-webkit-details-marker { display: none; }
+    </style>
 </head>
-<body>
-  <header class="site-header" data-header>
-    <div class="ws-nav-container header-grid">
-      <div class="brand">
-        <a class="brand-link" href="/index.html#start">
-          <img src="/assets/images/warenschmiede_logo.png" alt="Warenschmiede Logo" class="brand-logo" width="453" height="276" fetchpriority="high">
-          <div class="brand-text">
-            <span class="brand-name">Warenschmiede</span>
-            <span class="brand-tagline">3D-Druck · Made in Germany</span>
-          </div>
-        </a>
-      </div>
+<body class="h-screen flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-200 transition-colors duration-300">
 
-      <nav class="main-nav" aria-label="Hauptnavigation">
-        <div class="nav-menu" id="primary-navigation" data-nav-menu>
-          <ul class="nav-list" id="navList">
-            <li class="nav-item nav-fixed">
-              <a class="nav-link" href="/index.html#start" data-nav-link data-section="start" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html"><span class="nav-ico" aria-hidden="true">🏠</span>Start</a>
-            </li>
-
-            <!-- Neuer Dropdown: Rechner & Tools -->
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-highlight nav-tools" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">
-                <span class="nav-ico" aria-hidden="true">🧮</span>Rechner &amp; Tools ▾
-              </button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/tools/kostenrechner-v2.html" data-nav-link data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html">
-                    <span class="nav-ico" aria-hidden="true">🧮</span>Kostenrechner V2
-                  </a>
-                </li>
-                <li>
-                  <a
-                    class="nav-link"
-                    href="/tools/buero/doku-light/"
-                    data-nav-link
-                    data-path="/tools/buero/doku-light , /tools/buero/doku-light/ , /tools/buero/doku-light/index.html"
-                  >
-                    <span class="nav-ico" aria-hidden="true">📄</span>Dokumenten-Tool Light
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/bild-konverter.html" data-nav-link data-path="/bild-konverter , /bild-konverter.html">
-                    <span class="nav-ico" aria-hidden="true">🖼️</span>Bilder Tools
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/tools/buero/doku-light/QRCodeMasterPro.html" data-nav-link data-path="/tools/buero/doku-light/QRCodeMasterPro , /tools/buero/doku-light/QRCodeMasterPro.html">
-                    <span class="nav-ico" aria-hidden="true">🔳</span>QR-Code Generator
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/tools/buero/doku-light/ReceiptWriterPro.html" data-nav-link data-path="/tools/buero/doku-light/ReceiptWriterPro , /tools/buero/doku-light/ReceiptWriterPro.html">
-                    <span class="nav-ico" aria-hidden="true">🧾</span>Quittungs-Generator
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/tools/buero/doku-light/CNCMasterCalc.html" data-nav-link data-path="/tools/buero/doku-light/CNCMasterCalc , /tools/buero/doku-light/CNCMasterCalc.html">
-                    <span class="nav-ico" aria-hidden="true">⚙️</span>CNCMasterCalc
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/werkstatt-rechner.html" data-nav-link data-path="/werkstatt-rechner , /werkstatt-rechner.html">
-                    <span class="nav-ico" aria-hidden="true">🛠️</span>Werkstatt-Rechner
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🧰</span>Leistungen ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/leistungen/3d-druck.html" data-nav-link data-path="/leistungen/3d-druck , /leistungen/3d-druck.html"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druckauftrag</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/leistungen/cad-prototyping.html" data-nav-link data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html"><span class="nav-ico" aria-hidden="true">📐</span>CAD &amp; Prototyping</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/leistungen/pc-hilfe.html" data-nav-link data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html"><span class="nav-ico" aria-hidden="true">💻</span>PC-Hilfe</a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🤖</span>Über KI ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/ki/index.html" data-nav-link data-path="/ki , /ki/ , /ki/index.html"><span class="nav-ico" aria-hidden="true">📖</span>Einführung &amp; Grundlagen</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/prompts.html" data-nav-link data-path="/ki/prompts , /ki/prompts.html"><span class="nav-ico" aria-hidden="true">✍️</span>Prompts für den Alltag</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/tools.html" data-nav-link data-path="/ki/tools , /ki/tools.html"><span class="nav-ico" aria-hidden="true">🛠️</span>KI-Werkzeuge</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/so-arbeitest-du-mit-ki.html" data-nav-link data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html"><span class="nav-ico" aria-hidden="true">🧭</span>So arbeitest du mit KI</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/programme-die-du-brauchst.html" data-nav-link data-path="/ki/programme-die-du-brauchst , /ki/programme-die-du-brauchst.html"><span class="nav-ico" aria-hidden="true">💾</span>Programme, die du brauchst</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/chancen-und-risiken.html" data-nav-link data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html"><span class="nav-ico" aria-hidden="true">⚖️</span>KI: Chancen &amp; Risiken</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/faq.html" data-nav-link data-path="/ki/faq , /ki/faq.html"><span class="nav-ico" aria-hidden="true">🔒</span>KI-FAQ &amp; Sicherheit</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/lexikon.html" data-nav-link data-path="/ki/lexikon , /ki/lexikon.html"><span class="nav-ico" aria-hidden="true">🔤</span>KI-Lexikon</a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">✉️</span>Kontakt ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/kontakt.html" data-nav-link data-path="/kontakt , /kontakt.html , /warenschmiede/kontakt , /warenschmiede/kontakt.html"><span class="nav-ico" aria-hidden="true">📧</span>Kontakt aufnehmen</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ablauf-anfrage.html" data-nav-link data-path="/ablauf-anfrage , /ablauf-anfrage.html"><span class="nav-ico" aria-hidden="true">📝</span>Ablauf &amp; Anfrage</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/impressum.html" data-nav-link data-path="/impressum , /impressum.html , /warenschmiede/impressum , /warenschmiede/impressum.html"><span class="nav-ico" aria-hidden="true">⚖️</span>Impressum</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ueber-mich.html" data-nav-link data-path="/ueber-mich , /ueber-mich.html , /warenschmiede/ueber-mich.html , /about , /about.html , /warenschmiede/about.html"><span class="nav-ico" aria-hidden="true">👤</span>Über mich</a>
-                </li>
-              </ul>
-            </li>
-
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druck ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/technologien.html" data-nav-link data-path="/technologien , /technologien.html"><span class="nav-ico" aria-hidden="true">🧪</span>FDM / SLA / SLS – Technologien</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/fehlerdatenbank.html" data-nav-link data-path="/fehlerdatenbank , /fehlerdatenbank.html"><span class="nav-ico" aria-hidden="true">🛠️</span>Fehler &amp; Troubleshooting</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ideenquellen.html" data-nav-link data-path="/ideenquellen , /ideenquellen.html , /ideen , /ideen/ , /ideen/index.html"><span class="nav-ico" aria-hidden="true">💡</span>Ideenquellen &amp; Portale</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/material.html" data-nav-link data-path="/material.html"><span class="nav-ico" aria-hidden="true">📚</span>Materialwissen &amp; Vergleiche</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/druck-tipps.html" data-nav-link data-path="/druck-tipps , /druck-tipps.html"><span class="nav-ico" aria-hidden="true">🧭</span>Tipps &amp; Abläufe / Kosten</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/tools/kostenrechner-v2.html" data-nav-link data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html"><span class="nav-ico" aria-hidden="true">🧮</span>Kosten &amp; Kalkulation</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/slicer-einstellungen.html" data-nav-link data-path="/slicer-einstellungen , /slicer-einstellungen.html"><span class="nav-ico" aria-hidden="true">⚙️</span>Slicer &amp; Einstellungen</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/3ddruck-faq.html" data-nav-link data-path="/3ddruck-faq , /3ddruck-faq.html"><span class="nav-ico" aria-hidden="true">❓</span>Neu beim 3D-Druck?</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/wartung-reinigung.html" data-nav-link data-path="/wartung-reinigung , /wartung-reinigung.html"><span class="nav-ico" aria-hidden="true">🧼</span>Wartung &amp; Reinigung</a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </nav>
-
-      <div class="header-actions">
-        <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Design umschalten: Hell/Dunkel" title="Design umschalten: Hell/Dunkel" aria-pressed="false">
-          <span id="themeIcon" aria-hidden="true">🖥️</span>
-          <span class="theme-toggle__text" id="themeToggleText" aria-live="polite">Helles Design</span>
-        </button>
-
-        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
-          <span class="sr-only">Menü öffnen</span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main id="inhalt" class="site-main" tabindex="-1">
-    <section class="section section-hero">
-      <div class="container converter-hero">
-        <p class="hero-eyebrow">QR-Code Tool</p>
-        <h1>QR-Code Generator (QRCode Master Pro)</h1>
-        <p class="hero-lede">Erstelle sofort scannbare QR-Codes für Links, WLAN, vCards, E-Mails oder Texte – Design, Farben und Logos inklusive.</p>
-        <p class="hero-meta">Die Generierung läuft vollständig lokal in deinem Browser. Keine Uploads, keine Speicherung, keine Server.</p>
-      </div>
-    </section>
-
-    <section class="section ws-section" aria-label="QR-Code Generator">
-      <div class="container">
-        <div class="ws-card">
-          <div class="qr-tool rounded-2xl shadow-2xl overflow-hidden border border-slate-800">
-            <div class="bg-slate-800 border-b border-slate-700 h-16 shrink-0 flex items-center justify-between px-6 z-20">
-              <div class="flex items-center gap-3">
-                <div class="bg-blue-600 p-2 rounded-lg text-white shadow-lg shadow-blue-500/20">
-                  <i class="ph ph-qr-code text-xl"></i>
-                </div>
-                <div>
-                  <p class="text-xs text-slate-400">QRCode Master Pro</p>
-                  <h2 class="font-bold text-white tracking-wide text-lg">QR-Code Generator</h2>
-                </div>
-              </div>
-              <div class="hidden sm:flex items-center gap-4 text-xs text-slate-400">
-                <span class="flex items-center gap-1"><i class="ph ph-wifi-high text-blue-500"></i> WiFi Ready</span>
-                <span class="flex items-center gap-1"><i class="ph ph-address-book text-emerald-500"></i> vCard Pro</span>
-                <span class="flex items-center gap-1"><i class="ph ph-bezier-curve text-purple-500"></i> SVG Export</span>
-              </div>
+    <!-- Header -->
+    <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 h-16 shrink-0 flex items-center justify-between px-4 sm:px-6 z-20 shadow-sm transition-colors duration-300">
+        <div class="flex items-center gap-3 overflow-hidden">
+            <div class="bg-gradient-to-br from-violet-600 to-indigo-600 p-2 rounded-lg text-white shadow-lg shadow-violet-500/20 shrink-0">
+                <i class="ph ph-qr-code text-xl"></i>
             </div>
+            <div class="min-w-0">
+                <h1 class="font-bold tracking-wide text-lg leading-tight truncate">QR Master <span class="text-violet-600 dark:text-violet-400 font-black italic text-sm align-top">ULTRA</span></h1>
+                <p class="text-[10px] text-slate-500 truncate">Warenschmiede Tools | v3.0 (Web Edition)</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            <!-- Home Link -->
+            <a href="https://www.warenschmiede.com/" target="_blank" class="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 text-xs font-medium px-2 py-1.5 transition rounded hover:bg-slate-100 dark:hover:bg-slate-800" title="Zur Startseite">
+                <i class="ph ph-house text-lg"></i> <span class="hidden md:inline">Home</span>
+            </a>
 
-            <div class="flex flex-col lg:flex-row" style="min-height: 640px;">
-              <div class="w-full lg:w-1/3 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 overflow-y-auto bg-slate-900">
-                <h3 class="text-xs font-bold text-blue-400 uppercase mb-4 flex items-center gap-2">
-                  <i class="ph ph-pencil-simple"></i> 1. Inhalt wählen
-                </h3>
+            <!-- Legal Button -->
+            <button onclick="toggleLegalModal()" class="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 text-xs font-medium px-2 py-1.5 transition rounded hover:bg-slate-100 dark:hover:bg-slate-800" title="Impressum, Datenschutz & Kontakt">
+                <i class="ph ph-scroll text-lg"></i> <span class="hidden md:inline">Rechtliches</span>
+            </button>
 
-                <div class="grid grid-cols-5 gap-2 mb-6">
-                  <button onclick="setMode(event, 'url')" class="tab-btn active flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
+            <!-- Info Button -->
+            <button onclick="toggleInfoModal()" class="flex items-center gap-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs px-3 py-1.5 rounded-full border border-blue-200 dark:border-blue-800 transition hover:bg-blue-200 dark:hover:bg-blue-900/50 ml-1">
+                <i class="ph ph-info"></i> <span class="hidden sm:inline">Hilfe</span>
+            </button>
+            
+            <div class="h-6 w-px bg-slate-300 dark:bg-slate-700 mx-1 hidden sm:block"></div>
+            
+            <!-- Tools -->
+            <button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition" title="Design wechseln">
+                <i id="theme-icon" class="ph ph-moon text-xl"></i>
+            </button>
+            <button onclick="saveDesignPreset()" class="hidden sm:flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 transition">
+                <i class="ph ph-floppy-disk"></i>
+            </button>
+            <button onclick="resetDesign()" class="text-slate-400 hover:text-red-500 p-2" title="Reset">
+                <i class="ph ph-arrow-counter-clockwise"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="flex flex-1 overflow-hidden flex-col lg:flex-row">
+
+        <!-- Left Column: Content -->
+        <div class="w-full lg:w-1/3 p-4 lg:p-6 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 overflow-y-auto bg-white dark:bg-slate-900/50 transition-colors">
+            <h2 class="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase mb-4 flex items-center gap-2">
+                <i class="ph ph-pencil-simple"></i> 1. Datentyp & Inhalt
+            </h2>
+
+            <!-- Tabs Grid -->
+            <div class="grid grid-cols-4 gap-2 mb-4">
+                <button onclick="setMode('url')" class="tab-btn active flex flex-col items-center justify-center p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs gap-1">
                     <i class="ph ph-link text-lg"></i> Link
-                  </button>
-                  <button onclick="setMode(event, 'wifi')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
+                </button>
+                <button onclick="setMode('wifi')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs gap-1">
                     <i class="ph ph-wifi-high text-lg"></i> WiFi
-                  </button>
-                  <button onclick="setMode(event, 'vcard')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
+                </button>
+                <button onclick="setMode('whatsapp')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs gap-1">
+                    <i class="ph ph-whatsapp-logo text-lg text-green-600 dark:text-green-500"></i> WA
+                </button>
+                <button onclick="setMode('maps')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs gap-1">
+                    <i class="ph ph-map-pin text-lg text-red-600 dark:text-red-500"></i> Maps
+                </button>
+                <button onclick="setMode('sepa')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs gap-1">
+                    <i class="ph ph-bank text-lg"></i> SEPA
+                </button>
+                <button onclick="setMode('vcard')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs gap-1">
                     <i class="ph ph-user-circle text-lg"></i> vCard
-                  </button>
-                  <button onclick="setMode(event, 'email')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
-                    <i class="ph ph-envelope text-lg"></i> Mail
-                  </button>
-                  <button onclick="setMode(event, 'text')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400 text-xs gap-1">
-                    <i class="ph ph-text-t text-lg"></i> Text
-                  </button>
-                </div>
-
-                <div id="forms-container" class="space-y-4">
-                  <div id="form-url" class="form-section">
-                    <label class="input-label">Webseite URL</label>
-                    <input type="url" id="inp-url" class="input-field" placeholder="https://deine-seite.de" value="https://www.warenschmiede.com" oninput="updateQR()">
-                    <p class="text-[10px] text-slate-500 mt-1">Tipp: Auch gut für Montageanleitungen oder YouTube Videos.</p>
-                  </div>
-
-                  <div id="form-wifi" class="form-section hidden space-y-3">
-                    <div>
-                      <label class="input-label">SSID (WLAN Name)</label>
-                      <input type="text" id="inp-wifi-ssid" class="input-field" placeholder="Mein WLAN" oninput="updateQR()">
-                    </div>
-                    <div>
-                      <label class="input-label">Passwort</label>
-                      <div class="relative">
-                        <input type="text" id="inp-wifi-pass" class="input-field" placeholder="Geheim123" oninput="updateQR()">
-                        <i class="ph ph-eye absolute right-3 top-3 text-slate-500 cursor-pointer hover:text-white" onclick="togglePassVisibility()"></i>
-                      </div>
-                    </div>
-                    <div>
-                      <label class="input-label">Verschlüsselung</label>
-                      <select id="inp-wifi-type" class="input-field" onchange="updateQR()">
-                        <option value="WPA">WPA/WPA2 (Standard)</option>
-                        <option value="WEP">WEP (Alt)</option>
-                        <option value="nopass">Kein Passwort (Offen)</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div id="form-vcard" class="form-section hidden space-y-3">
-                    <div class="grid grid-cols-2 gap-3">
-                      <div>
-                        <label class="input-label">Vorname</label>
-                        <input type="text" id="inp-vc-first" class="input-field" placeholder="Max" oninput="updateQR()">
-                      </div>
-                      <div>
-                        <label class="input-label">Nachname</label>
-                        <input type="text" id="inp-vc-last" class="input-field" placeholder="Muster" oninput="updateQR()">
-                      </div>
-                    </div>
-                    <div>
-                      <label class="input-label">Firma / Titel</label>
-                      <input type="text" id="inp-vc-org" class="input-field" placeholder="Dein Firmenname" oninput="updateQR()">
-                    </div>
-                    <div>
-                      <label class="input-label">Telefon</label>
-                      <input type="tel" id="inp-vc-phone" class="input-field" placeholder="+49 123 456789" oninput="updateQR()">
-                    </div>
-                    <div>
-                      <label class="input-label">E-Mail</label>
-                      <input type="email" id="inp-vc-email" class="input-field" placeholder="max@example.com" oninput="updateQR()">
-                    </div>
-                    <div>
-                      <label class="input-label">Webseite</label>
-                      <input type="text" id="inp-vc-web" class="input-field" placeholder="www.deine-seite.de" oninput="updateQR()">
-                    </div>
-                  </div>
-
-                  <div id="form-email" class="form-section hidden space-y-3">
-                    <div>
-                      <label class="input-label">Empfänger E-Mail</label>
-                      <input type="email" id="inp-mail-to" class="input-field" placeholder="anfrage@firma.de" oninput="updateQR()">
-                    </div>
-                    <div>
-                      <label class="input-label">Betreff</label>
-                      <input type="text" id="inp-mail-sub" class="input-field" placeholder="Anfrage 3D Druck" oninput="updateQR()">
-                    </div>
-                    <div>
-                      <label class="input-label">Nachricht (Vorschau)</label>
-                      <textarea id="inp-mail-body" rows="3" class="input-field" placeholder="Hallo, ich hätte gerne..." oninput="updateQR()"></textarea>
-                    </div>
-                  </div>
-
-                  <div id="form-text" class="form-section hidden">
-                    <label class="input-label">Freitext</label>
-                    <textarea id="inp-text" rows="4" class="input-field" placeholder="Einfacher Text, Seriennummern, Notizen..." oninput="updateQR()"></textarea>
-                  </div>
-                </div>
-              </div>
-
-              <div class="w-full lg:w-1/3 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 overflow-y-auto bg-slate-800">
-                <h3 class="text-xs font-bold text-purple-400 uppercase mb-4 flex items-center gap-2">
-                  <i class="ph ph-paint-brush-broad"></i> 2. Design Studio
-                </h3>
-
-                <div class="space-y-6">
-                  <div class="space-y-3">
-                    <label class="input-label text-slate-300">Punkte Stil</label>
-                    <div class="grid grid-cols-3 gap-2">
-                      <button onclick="setDotType('square')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Eckig</button>
-                      <button onclick="setDotType('dots')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Punkte</button>
-                      <button onclick="setDotType('rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Rund</button>
-                      <button onclick="setDotType('extra-rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Soft</button>
-                      <button onclick="setDotType('classy')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Classy</button>
-                      <button onclick="setDotType('classy-rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Classy R</button>
-                    </div>
-                  </div>
-
-                  <div class="space-y-3 pt-4 border-t border-slate-700">
-                    <label class="input-label text-slate-300">Farben</label>
-                    <div class="grid grid-cols-2 gap-4">
-                      <div>
-                        <label class="text-[10px] text-slate-500 uppercase block mb-1">Code Farbe</label>
-                        <div class="flex gap-2">
-                          <input type="color" id="col-fg" value="#000000" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
-                        </div>
-                      </div>
-                      <div>
-                        <label class="text-[10px] text-slate-500 uppercase block mb-1">Hintergrund</label>
-                        <div class="flex gap-2">
-                          <input type="color" id="col-bg" value="#ffffff" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="flex items-center gap-2 mt-2">
-                      <input type="checkbox" id="use-gradient" onchange="toggleGradient()" class="rounded bg-slate-700 border-slate-500 text-blue-600 focus:ring-blue-500">
-                      <label for="use-gradient" class="text-xs text-slate-300 select-none">Farbverlauf nutzen</label>
-                    </div>
-
-                    <div id="gradient-ui" class="hidden mt-2">
-                      <label class="text-[10px] text-slate-500 uppercase block mb-1">Zweite Farbe</label>
-                      <input type="color" id="col-fg2" value="#3b82f6" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
-                    </div>
-                  </div>
-
-                  <div class="space-y-3 pt-4 border-t border-slate-700">
-                    <label class="input-label text-slate-300">Logo &amp; Icon</label>
-
-                    <div class="flex gap-2 mb-2">
-                      <label class="flex-1 cursor-pointer bg-slate-700 hover:bg-slate-600 text-white py-2 rounded text-xs text-center border border-slate-600 transition-colors">
-                        <i class="ph ph-upload-simple"></i> Upload
-                        <input type="file" id="logo-upload" class="hidden" accept="image/*" onchange="handleLogoUpload(this)">
-                      </label>
-                      <button onclick="clearLogo()" class="px-3 bg-slate-700 hover:bg-slate-600 text-red-400 rounded border border-slate-600"><i class="ph ph-trash"></i></button>
-                    </div>
-
-                    <p class="text-[10px] text-slate-500 mb-2">Oder Preset wählen:</p>
-                    <div class="grid grid-cols-5 gap-2">
-                      <button onclick="setPresetLogo('wifi')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-wifi-high text-xl"></i></button>
-                      <button onclick="setPresetLogo('cube')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-cube text-xl"></i></button>
-                      <button onclick="setPresetLogo('facebook')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-facebook-logo text-xl"></i></button>
-                      <button onclick="setPresetLogo('instagram')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-instagram-logo text-xl"></i></button>
-                      <button onclick="setPresetLogo('whatsapp')" class="aspect-square bg-slate-700 hover:bg-slate-600 rounded flex items-center justify-center text-slate-300"><i class="ph ph-whatsapp-logo text-xl"></i></button>
-                    </div>
-                  </div>
-
-                  <div class="space-y-3 pt-4 border-t border-slate-700">
-                    <label class="input-label text-slate-300">Ecken (Marker)</label>
-                    <div class="grid grid-cols-3 gap-2">
-                      <button onclick="setCornerType('square')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Eckig</button>
-                      <button onclick="setCornerType('dot')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Punkt</button>
-                      <button onclick="setCornerType('extra-rounded')" class="p-2 border border-slate-600 rounded hover:bg-slate-700 text-xs">Rund</button>
-                    </div>
-                    <div>
-                      <label class="text-[10px] text-slate-500 uppercase block mb-1">Marker Farbe</label>
-                      <input type="color" id="col-eye" value="#000000" class="h-8 w-full bg-slate-700 rounded cursor-pointer" oninput="updateQR()">
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="w-full lg:w-1/3 p-6 bg-slate-900 flex flex-col items-center justify-center relative">
-                <div class="absolute top-6 left-6">
-                  <h3 class="text-xs font-bold text-emerald-400 uppercase flex items-center gap-2">
-                    <i class="ph ph-eye"></i> Vorschau
-                  </h3>
-                </div>
-
-                <div class="bg-white/5 p-8 rounded-2xl shadow-2xl border border-white/10 mb-8 transition-transform hover:scale-[1.02]">
-                  <div id="canvas-wrapper"></div>
-                </div>
-
-                <div class="w-full max-w-xs space-y-3">
-                  <button onclick="downloadQR('png')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
-                    <i class="ph ph-download-simple text-xl"></i>
-                    Download PNG
-                  </button>
-                  <div class="grid grid-cols-2 gap-3">
-                    <button onclick="downloadQR('jpeg')" class="bg-slate-800 hover:bg-slate-700 text-white py-2 rounded-lg border border-slate-700 transition-colors text-sm">
-                      JPG
-                    </button>
-                    <button onclick="downloadQR('svg')" class="bg-slate-800 hover:bg-slate-700 text-white py-2 rounded-lg border border-slate-700 transition-colors text-sm flex items-center justify-center gap-1">
-                      <i class="ph ph-bezier-curve"></i> SVG
-                    </button>
-                  </div>
-                </div>
-
-                <p class="text-xs text-slate-500 mt-8 text-center px-4">
-                  SVG ist Vektor-basiert. Perfekt für den Import in CAD-Software (SolidWorks) oder für Großformat-Druck.
-                </p>
-              </div>
+                </button>
+                <button onclick="setMode('paypal')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs gap-1 ring-1 ring-blue-500/30 bg-blue-500/10 dark:bg-blue-500/10">
+                    <i class="ph ph-paypal-logo text-lg text-blue-500 dark:text-blue-400"></i> PayPal
+                </button>
+                <button onclick="setMode('review')" class="tab-btn flex flex-col items-center justify-center p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs gap-1 ring-1 ring-yellow-500/30 bg-yellow-500/10 dark:bg-yellow-500/10">
+                    <i class="ph ph-star text-lg text-yellow-500 dark:text-yellow-400"></i> Sterne
+                </button>
+                <button onclick="setMode('phone')" class="col-span-4 tab-btn flex flex-row items-center justify-center p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs gap-2">
+                    <i class="ph ph-phone text-lg"></i> Telefon / Anruf Direkt
+                </button>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
 
-  <footer class="footer">
-    <div class="container">
-      <div class="footer__inner">
-        <div class="footer__brand">© 2025 Warenschmiede · Alle Rechte vorbehalten.</div>
-        <nav class="footer__links" aria-label="Rechtliches &amp; Kontakt">
-          <a href="/impressum.html">Impressum</a>
-          <a href="/datenschutz.html">Datenschutzerklärung</a>
-          <a href="/kontakt.html">Kontakt</a>
-        </nav>
-        <div class="footer__notes">
-          <p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
-          <p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
+            <!-- Dynamic Help Text -->
+            <div id="mode-description" class="mb-6 p-3 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-600 dark:text-slate-300 flex gap-3 items-start transition-colors">
+                <i class="ph ph-info text-lg text-violet-500 mt-0.5 shrink-0"></i>
+                <span id="desc-text">Wähle oben eine Funktion aus.</span>
+            </div>
+
+            <!-- Input Forms -->
+            <div id="forms-container" class="space-y-4">
+
+                <!-- URL -->
+                <div id="form-url" class="form-section">
+                    <label class="input-label">Webseite URL</label>
+                    <input type="url" id="inp-url" class="input-field" placeholder="https://deine-website.de" oninput="validateField(this, 'url'); updateQR()">
+                    <p class="error-text">Bitte vollständige URL mit http(s) eingeben.</p>
+                    <p class="text-[10px] text-slate-400 mt-1">Nutze möglichst kurze Links, dann bleibt der QR-Code einfacher und besser scannbar.</p>
+                </div>
+
+                <!-- WiFi -->
+                <div id="form-wifi" class="form-section hidden space-y-3">
+                    <div><label class="input-label">SSID</label><input type="text" id="inp-wifi-ssid" class="input-field" placeholder="Mein WLAN Name" oninput="updateQR()"></div>
+                    <div><label class="input-label">Passwort</label><input type="text" id="inp-wifi-pass" class="input-field" placeholder="WLAN Passwort" oninput="updateQR()"></div>
+                    <div>
+                        <label class="input-label">Verschlüsselung</label>
+                        <select id="inp-wifi-type" class="input-field" onchange="updateQR()">
+                            <option value="WPA">WPA/WPA2</option>
+                            <option value="nopass">Offen</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- WhatsApp -->
+                <div id="form-whatsapp" class="form-section hidden space-y-3">
+                    <div>
+                        <label class="input-label">Nummer</label>
+                        <div class="flex gap-2">
+                            <select id="inp-wa-code" class="input-field w-24 shrink-0" onchange="updateQR()">
+                                <option value="49">🇩🇪 +49</option>
+                                <option value="43">🇦🇹 +43</option>
+                                <option value="41">🇨🇭 +41</option>
+                                <option value="1">🇺🇸 +1</option>
+                            </select>
+                            <input type="tel" id="inp-wa-phone" class="input-field" placeholder="170 1234567" oninput="validateField(this, 'phone'); updateQR()">
+                        </div>
+                        <p class="error-text">Bitte nur Ziffern eingeben.</p>
+                        <p class="text-[10px] text-slate-500 mt-1">Nummer ohne führende "0" eingeben.</p>
+                    </div>
+                    <div>
+                        <label class="input-label">Nachricht</label>
+                        <textarea id="inp-wa-text" rows="3" class="input-field" placeholder="Hallo, ich habe eine Frage..." oninput="updateQR()"></textarea>
+                    </div>
+                </div>
+
+                <!-- Maps -->
+                <div id="form-maps" class="form-section hidden space-y-3">
+                    <div id="map-picker" class="border border-slate-300 dark:border-slate-700 shadow-inner"></div>
+                    <div class="flex justify-between items-center">
+                        <p class="text-[10px] text-slate-500">Klicke auf die Karte um Position zu setzen</p>
+                        <button onclick="locateUser()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded flex items-center gap-1 shadow-md transition">
+                            <i class="ph ph-crosshair"></i> Mein Standort
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><label class="input-label">Breitengrad</label><input type="text" id="inp-geo-lat" class="input-field" placeholder="47.9511" oninput="updateQR()"></div>
+                        <div><label class="input-label">Längengrad</label><input type="text" id="inp-geo-long" class="input-field" placeholder="8.5024" oninput="updateQR()"></div>
+                    </div>
+                </div>
+
+                <!-- SEPA -->
+                <div id="form-sepa" class="form-section hidden space-y-3 bg-violet-50 dark:bg-violet-900/10 p-4 rounded-xl border border-violet-200 dark:border-violet-500/20">
+                    <div><label class="input-label">Empfänger</label><input type="text" id="inp-sepa-name" class="input-field" placeholder="Max Mustermann" oninput="updateQR()"></div>
+                    <div>
+                        <label class="input-label">IBAN <i class="ph ph-info ml-1 cursor-help" title="International Bank Account Number"></i></label>
+                        <input type="text" id="inp-sepa-iban" class="input-field uppercase" placeholder="DE00 0000 0000 0000 0000 00" oninput="validateField(this, 'iban'); updateQR()">
+                        <p class="error-text">Bitte Format 'DE' gefolgt von Ziffern prüfen.</p>
+                        <p class="text-[10px] text-slate-500 mt-1">Format: DE… – bitte ohne Leerzeichen eingeben.</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><label class="input-label">Betrag (€)</label><input type="number" step="0.01" id="inp-sepa-amount" class="input-field" placeholder="0.00" oninput="updateQR()"></div>
+                        <div><label class="input-label">Zweck</label><input type="text" id="inp-sepa-ref" class="input-field" placeholder="Rechnungsnummer 123" oninput="updateQR()"></div>
+                    </div>
+                </div>
+
+                <!-- vCard -->
+                <div id="form-vcard" class="form-section hidden space-y-3">
+                     <div class="grid grid-cols-2 gap-3">
+                        <div><label class="input-label">Vorname</label><input type="text" id="inp-vc-first" class="input-field" placeholder="Max" oninput="updateQR()"></div>
+                        <div><label class="input-label">Nachname</label><input type="text" id="inp-vc-last" class="input-field" placeholder="Mustermann" oninput="updateQR()"></div>
+                    </div>
+                    <div><label class="input-label">Firma</label><input type="text" id="inp-vc-org" class="input-field" placeholder="Musterfirma GmbH" oninput="updateQR()"></div>
+                    <div><label class="input-label">Telefon</label><input type="tel" id="inp-vc-phone" class="input-field" placeholder="+49 170 1234567" oninput="updateQR()"></div>
+                </div>
+
+                <!-- PayPal -->
+                <div id="form-paypal" class="form-section hidden space-y-3 bg-blue-50 dark:bg-blue-900/10 p-4 rounded-xl border border-blue-200 dark:border-blue-500/20">
+                    <div class="text-blue-600 dark:text-blue-300 text-xs mb-2 flex items-center gap-2">
+                        <i class="ph ph-paypal-logo"></i> Generiert einen PayPal.Me Link.
+                    </div>
+                    <div>
+                        <label class="input-label">PayPal Nutzername</label>
+                        <input type="text" id="inp-pp-user" class="input-field" placeholder="DeinNutzername" oninput="updateQR()">
+                    </div>
+                    <div>
+                        <label class="input-label">Betrag (Optional)</label>
+                        <input type="number" step="0.50" id="inp-pp-amount" class="input-field" placeholder="25.00" oninput="updateQR()">
+                    </div>
+                    <div>
+                        <label class="input-label">Währung</label>
+                        <select id="inp-pp-curr" class="input-field" onchange="updateQR()">
+                            <option value="EUR">EUR (€)</option>
+                            <option value="USD">USD ($)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Review -->
+                <div id="form-review" class="form-section hidden space-y-3 bg-yellow-50 dark:bg-yellow-900/10 p-4 rounded-xl border border-yellow-200 dark:border-yellow-500/20">
+                    <div class="text-yellow-600 dark:text-yellow-300 text-xs mb-2 flex items-center gap-2">
+                        <i class="ph ph-star-half"></i> Leitet direkt zur Bewertung.
+                    </div>
+                    <div>
+                        <label class="input-label">Google Maps Link</label>
+                        <input type="url" id="inp-rev-url" class="input-field" placeholder="https://g.page/r/..." oninput="validateField(this, 'url'); updateQR()">
+                        <p class="error-text">Bitte vollständige URL mit http(s) eingeben.</p>
+                        <p class="text-[10px] text-slate-500 mt-1">Nutze hier den direkten Bewertungs-Link deiner Google-Firmenseite.</p>
+                    </div>
+                </div>
+
+                <!-- Phone -->
+                <div id="form-phone" class="form-section hidden space-y-3">
+                    <div>
+                        <label class="input-label">Telefonnummer</label>
+                        <input type="tel" id="inp-ph-num" class="input-field" placeholder="+49 123 4567890" oninput="validateField(this, 'phone'); updateQR()">
+                        <p class="error-text">Bitte Format prüfen.</p>
+                        <p class="text-[10px] text-slate-500 mt-1">Mit Ländervorwahl, ohne führende 0 nach der Vorwahl.</p>
+                    </div>
+                    <div>
+                        <label class="input-label">Aktion beim Scannen</label>
+                        <select id="inp-ph-action" class="input-field" onchange="updateQR()">
+                            <option value="tel">Anrufen (Dialer öffnen)</option>
+                            <option value="sms">SMS schreiben</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
         </div>
-      </div>
+
+        <!-- Middle Column: Design -->
+        <div class="w-full lg:w-1/3 p-4 lg:p-6 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 overflow-y-auto bg-slate-50 dark:bg-slate-800/50 transition-colors">
+            <h2 class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase mb-4 flex items-center gap-2">
+                <i class="ph ph-paint-brush-broad"></i> 2. Design Studio
+            </h2>
+
+            <!-- Design Mode Toggle -->
+            <div class="flex p-1 bg-slate-200 dark:bg-slate-700 rounded-lg mb-6">
+                <button onclick="setDesignMode('simple')" id="btn-design-simple" class="flex-1 text-xs font-medium py-1.5 rounded-md transition bg-white dark:bg-slate-600 shadow text-slate-800 dark:text-white">Einfach</button>
+                <button onclick="setDesignMode('advanced')" id="btn-design-advanced" class="flex-1 text-xs font-medium py-1.5 rounded-md transition text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200">Erweitert</button>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Simple Mode Controls (Always Visible) -->
+                <div class="space-y-3">
+                    <label class="input-label">Farbe & Form</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] text-slate-500 uppercase block mb-1">Code Farbe</label>
+                            <input type="color" id="col-fg" value="#000000" class="h-8 w-full bg-slate-200 dark:bg-slate-700 rounded cursor-pointer border-0 p-0 shadow-sm" oninput="updateQR()">
+                        </div>
+                        <div>
+                             <label class="text-[10px] text-slate-500 uppercase block mb-1">Form</label>
+                             <select id="style-dots" class="input-field text-xs h-8 py-1" onchange="updateQR()">
+                                 <option value="square">Eckig</option>
+                                 <option value="dots">Punkte</option>
+                                 <option value="rounded">Rund</option>
+                                 <option value="extra-rounded">Soft</option>
+                                 <option value="classy">Edel</option>
+                             </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Mode Controls (Conditional) -->
+                <div id="advanced-controls" class="hidden space-y-6 border-t border-slate-200 dark:border-slate-700 pt-6">
+                    
+                     <div class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="use-gradient" onchange="toggleGradient()" class="rounded bg-slate-200 dark:bg-slate-700 border-slate-300 dark:border-slate-500 text-violet-600">
+                            <label for="use-gradient" class="input-label mb-0 cursor-pointer">Verlauf <i class="ph ph-info ml-1 text-slate-400 cursor-help" title="Zu wenig Kontrast kann Scannen erschweren"></i></label>
+                        </div>
+                        <div id="gradient-ui" class="hidden mt-2">
+                             <input type="color" id="col-fg2" value="#8b5cf6" class="h-8 w-full bg-slate-200 dark:bg-slate-700 rounded cursor-pointer border-0 p-0 shadow-sm" oninput="updateQR()">
+                        </div>
+                    </div>
+
+                    <!-- Logo -->
+                    <div class="space-y-3">
+                        <label class="input-label">Logo</label>
+                        <div class="flex gap-2 mb-2">
+                            <label class="flex-1 cursor-pointer bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-white py-2 rounded text-xs text-center border border-slate-300 dark:border-slate-600 transition flex items-center justify-center gap-2 shadow-sm">
+                                <i class="ph ph-upload-simple"></i> Upload
+                                <input type="file" id="logo-upload" class="hidden" accept="image/*" onchange="handleLogoUpload(this)">
+                            </label>
+                            <button onclick="clearLogo()" class="px-3 bg-slate-200 dark:bg-slate-700 hover:bg-red-100 dark:hover:bg-slate-600 text-red-500 dark:text-red-400 rounded border border-slate-300 dark:border-slate-600 shadow-sm"><i class="ph ph-trash"></i></button>
+                        </div>
+                        <p class="text-[10px] text-slate-500 mb-2">Nutze am besten ein einfaches, kontrastreiches Logo – zu viel Detail kann das Scannen erschweren.</p>
+                        
+                        <label class="text-[10px] text-slate-500 uppercase block mb-1">Presets</label>
+                        <div class="grid grid-cols-4 gap-2">
+                             <!-- Row 1 -->
+                             <button onclick="setPresetLogo('whatsapp')" title="WhatsApp" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 p-2 rounded flex items-center justify-center text-slate-400 hover:text-green-500 transition"><i class="ph ph-whatsapp-logo text-xl"></i></button>
+                             <button onclick="setPresetLogo('wifi')" title="WiFi" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 p-2 rounded flex items-center justify-center text-slate-400 hover:text-blue-500 transition"><i class="ph ph-wifi-high text-xl"></i></button>
+                             <button onclick="setPresetLogo('maps')" title="Maps" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 p-2 rounded flex items-center justify-center text-slate-400 hover:text-red-500 transition"><i class="ph ph-map-pin text-xl"></i></button>
+                             <button onclick="setPresetLogo('printer')" title="3D Druck" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 p-2 rounded flex items-center justify-center text-slate-400 hover:text-violet-500 transition"><i class="ph ph-cube text-xl"></i></button>
+                             
+                             <!-- Row 2 -->
+                             <button onclick="setPresetLogo('paypal')" title="PayPal" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 p-2 rounded flex items-center justify-center text-slate-400 hover:text-blue-400 transition"><i class="ph ph-paypal-logo text-xl"></i></button>
+                             <button onclick="setPresetLogo('google')" title="Google" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 p-2 rounded flex items-center justify-center text-slate-400 hover:text-white transition"><i class="ph ph-google-logo text-xl"></i></button>
+                             <button onclick="setPresetLogo('youtube')" title="YouTube" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 p-2 rounded flex items-center justify-center text-slate-400 hover:text-red-600 transition"><i class="ph ph-youtube-logo text-xl"></i></button>
+                             <button onclick="setPresetLogo('facebook')" title="Facebook" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 p-2 rounded flex items-center justify-center text-slate-400 hover:text-blue-600 transition"><i class="ph ph-facebook-logo text-xl"></i></button>
+                             
+                             <!-- Row 3 -->
+                             <button onclick="setPresetLogo('instagram')" title="Instagram" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 p-2 rounded flex items-center justify-center text-slate-400 hover:text-pink-500 transition"><i class="ph ph-instagram-logo text-xl"></i></button>
+                             <button onclick="setPresetLogo('phone')" title="Telefon" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 p-2 rounded flex items-center justify-center text-slate-400 hover:text-green-400 transition"><i class="ph ph-phone text-xl"></i></button>
+                             <button onclick="setPresetLogo('email')" title="E-Mail" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 p-2 rounded flex items-center justify-center text-slate-400 hover:text-yellow-400 transition"><i class="ph ph-envelope text-xl"></i></button>
+                             <button onclick="setPresetLogo('euro')" title="Euro / Bank" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 p-2 rounded flex items-center justify-center text-slate-400 hover:text-emerald-400 transition"><i class="ph ph-currency-eur text-xl"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Preview & Footer -->
+        <div class="w-full lg:w-1/3 p-6 bg-slate-100 dark:bg-slate-950 flex flex-col relative transition-colors overflow-y-auto">
+            
+            <div id="main-preview-area" class="flex flex-col items-center w-full mt-4">
+                <div class="text-center mb-6">
+                     <h3 class="text-emerald-500 dark:text-emerald-400 font-bold uppercase tracking-widest text-xs mb-1">Live Vorschau</h3>
+                </div>
+
+                <div id="qr-wrapper" class="bg-white dark:bg-white/5 p-6 rounded-3xl shadow-2xl border border-slate-200 dark:border-white/10 mb-4 transition-transform hover:scale-[1.02] backdrop-blur-sm">
+                    <div id="canvas-container"></div>
+                </div>
+                
+                <div class="text-center mb-6">
+                    <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">Tipp: Mit der Handy-Kamera testen, bevor du druckst.</p>
+                    <p class="text-[10px] text-slate-500 mt-1">Achte auf guten Kontrast (dunkler Code auf hellem Hintergrund).</p>
+                </div>
+
+                <div class="w-full max-w-xs space-y-3 mb-8">
+                    <button onclick="downloadQR('png')" class="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-violet-500/20 transition-all flex justify-center items-center gap-2 hover:-translate-y-1">
+                        <i class="ph ph-download-simple text-xl"></i> Download PNG
+                    </button>
+                    <button onclick="downloadQR('svg')" class="w-full bg-slate-200 dark:bg-slate-900 hover:bg-slate-300 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 py-2 rounded-lg border border-slate-300 dark:border-slate-800 transition text-sm flex justify-center items-center gap-2">
+                        <i class="ph ph-bezier-curve"></i> Download SVG (Vektor)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Security Box -->
+            <div class="mt-auto bg-slate-200 dark:bg-slate-900 p-4 rounded-xl border border-slate-300 dark:border-slate-800">
+                <h4 class="font-bold text-sm text-slate-800 dark:text-white flex items-center gap-2 mb-2">
+                    <i class="ph ph-shield-check text-green-500"></i> Warum dieses Tool sicher ist
+                </h4>
+                <ul class="text-[11px] text-slate-600 dark:text-slate-400 space-y-1 list-disc ml-4">
+                    <li>Läuft komplett im Browser – deine Daten werden niemals an einen Server gesendet.</li>
+                    <li>Keine Werbung, keine Abos, keine versteckten Kosten.</li>
+                    <li>Dieses Tool ist und bleibt kostenlos.</li>
+                </ul>
+            </div>
+
+            <!-- FAQ Accordion -->
+            <div class="mt-6 border-t border-slate-300 dark:border-slate-800 pt-6">
+                <h4 class="text-xs font-bold uppercase text-slate-500 mb-3">Häufige Fragen</h4>
+                <div class="space-y-2">
+                    <details class="group">
+                        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-xs text-slate-700 dark:text-slate-300">
+                            <span>Wie teste ich meinen QR-Code?</span>
+                            <span class="transition group-open:rotate-180"><i class="ph ph-caret-down"></i></span>
+                        </summary>
+                        <p class="text-[11px] text-slate-500 mt-2 leading-relaxed">
+                            Speichere den Code, zeige ihn am Bildschirm und scanne ihn mit der Kamera-App deines Smartphones. Wenn der richtige Inhalt geöffnet wird, passt alles.
+                        </p>
+                    </details>
+                    <div class="h-px bg-slate-200 dark:bg-slate-800"></div>
+                    <details class="group">
+                        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-xs text-slate-700 dark:text-slate-300">
+                            <span>Wie groß muss der Code gedruckt werden?</span>
+                            <span class="transition group-open:rotate-180"><i class="ph ph-caret-down"></i></span>
+                        </summary>
+                        <p class="text-[11px] text-slate-500 mt-2 leading-relaxed">
+                            Für Flyer und Visitenkarten mindestens etwa 2 x 2 cm, für Plakate deutlich größer. Wichtig ist immer hoher Kontrast und genügend Abstand zum Rand.
+                        </p>
+                    </details>
+                    <div class="h-px bg-slate-200 dark:bg-slate-800"></div>
+                    <details class="group">
+                        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-xs text-slate-700 dark:text-slate-300">
+                            <span>Darf ich die Codes kommerziell nutzen?</span>
+                            <span class="transition group-open:rotate-180"><i class="ph ph-caret-down"></i></span>
+                        </summary>
+                        <p class="text-[11px] text-slate-500 mt-2 leading-relaxed">
+                            Ja. Du darfst die mit diesem Tool erzeugten QR-Codes privat und geschäftlich verwenden.
+                        </p>
+                    </details>
+                    <div class="h-px bg-slate-200 dark:bg-slate-800"></div>
+                     <details class="group">
+                        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-xs text-slate-700 dark:text-slate-300">
+                            <span>Speichert ihr meine Daten?</span>
+                            <span class="transition group-open:rotate-180"><i class="ph ph-caret-down"></i></span>
+                        </summary>
+                        <p class="text-[11px] text-slate-500 mt-2 leading-relaxed">
+                            Nein. Alles läuft lokal in deinem Browser. Deine Daten (WLAN-Passwörter, IBANs usw.) werden nicht an einen Server gesendet.
+                        </p>
+                    </details>
+                </div>
+            </div>
+
+        </div>
+
     </div>
-  </footer>
 
-  <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
-  <script>
-    let qrCode = new QRCodeStyling({
-      width: 300,
-      height: 300,
-      type: "svg",
-      data: "https://www.warenschmiede.com",
-      image: "",
-      dotsOptions: {
-        color: "#000000",
-        type: "rounded"
-      },
-      backgroundOptions: {
-        color: "#ffffff",
-      },
-      imageOptions: {
-        crossOrigin: "anonymous",
-        margin: 5
-      }
-    });
+    <!-- Info Modal -->
+    <div id="info-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center backdrop-blur-sm transition-opacity opacity-0 p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl p-8 shadow-2xl transform transition-transform scale-95 border border-slate-200 dark:border-slate-700 relative">
+            <button onclick="toggleInfoModal()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition"><i class="ph ph-x text-xl"></i></button>
+            
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 mb-4">
+                    <i class="ph ph-shield-check text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold dark:text-white">100% Sicher & Kostenlos</h2>
+            </div>
+            
+            <div class="space-y-4 text-sm text-slate-600 dark:text-slate-300">
+                <div class="flex gap-3">
+                    <i class="ph ph-lock-key text-lg text-emerald-500 mt-1"></i>
+                    <div>
+                        <h4 class="font-bold text-slate-900 dark:text-white">Datenschutz Priorität</h4>
+                        <p>Dieser Generator läuft komplett in deinem Browser. Deine Daten (WLAN-Passwörter, IBANs, etc.) werden <strong>niemals</strong> an einen Server gesendet.</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <i class="ph ph-prohibit text-lg text-red-500 mt-1"></i>
+                    <div>
+                        <h4 class="font-bold text-slate-900 dark:text-white">Keine Werbung, Keine Abos</h4>
+                        <p>Dieses Tool ist und bleibt kostenlos. Es gibt keine versteckten Kosten, keine "Pro"-Versionen und keine nervigen Popups.</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <i class="ph ph-printer text-lg text-blue-500 mt-1"></i>
+                    <div>
+                        <h4 class="font-bold text-slate-900 dark:text-white">Druck-Tipp</h4>
+                        <p>Verwende für große Drucke (Plakate, Autos, Schilder) immer SVG verwenden und mindestens 3–4 cm Kantenlänge einplanen.</p>
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-6 pt-4 border-t border-slate-200 dark:border-slate-700 justify-center">
+                     <p class="text-xs text-slate-400">by Warenschmiede Tools</p>
+                </div>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <button onclick="toggleInfoModal()" class="bg-slate-900 dark:bg-slate-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-slate-800 dark:hover:bg-slate-600 transition">Verstanden</button>
+            </div>
+        </div>
+    </div>
 
-    let currentMode = 'url';
-    let logoUrl = "";
+    <!-- Legal Modal (New) -->
+    <div id="legal-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center backdrop-blur-sm transition-opacity opacity-0 p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl p-6 shadow-2xl transform transition-transform scale-95 border border-slate-200 dark:border-slate-700 relative">
+            <button onclick="toggleLegalModal()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition"><i class="ph ph-x text-xl"></i></button>
+            
+            <div class="mb-6">
+                <h2 class="text-xl font-bold dark:text-white flex items-center gap-2">
+                    <i class="ph ph-gavel text-violet-500"></i> Rechtliches
+                </h2>
+                <p class="text-xs text-slate-500 mt-1">Links zu Warenschmiede.com</p>
+            </div>
+            
+            <div class="space-y-2">
+                <a href="https://www.warenschmiede.com/impressum.html" target="_blank" class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500 group-hover:text-violet-500 transition">
+                            <i class="ph ph-identification-card text-lg"></i>
+                        </div>
+                        <span class="font-medium text-sm text-slate-700 dark:text-slate-200">Impressum</span>
+                    </div>
+                    <i class="ph ph-arrow-square-out text-slate-400"></i>
+                </a>
 
-    document.getElementById('canvas-wrapper').innerHTML = "";
-    qrCode.append(document.getElementById('canvas-wrapper'));
+                <a href="https://www.warenschmiede.com/datenschutz.html" target="_blank" class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500 group-hover:text-emerald-500 transition">
+                            <i class="ph ph-shield text-lg"></i>
+                        </div>
+                        <span class="font-medium text-sm text-slate-700 dark:text-slate-200">Datenschutz</span>
+                    </div>
+                    <i class="ph ph-arrow-square-out text-slate-400"></i>
+                </a>
 
-    function setMode(ev, mode) {
-      currentMode = mode;
+                <a href="https://www.warenschmiede.com/kontakt.html" target="_blank" class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500 group-hover:text-blue-500 transition">
+                            <i class="ph ph-envelope-simple text-lg"></i>
+                        </div>
+                        <span class="font-medium text-sm text-slate-700 dark:text-slate-200">Kontakt</span>
+                    </div>
+                    <i class="ph ph-arrow-square-out text-slate-400"></i>
+                </a>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <button onclick="toggleLegalModal()" class="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 underline">Schließen</button>
+            </div>
+        </div>
+    </div>
 
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      if (ev && ev.currentTarget) {
-        ev.currentTarget.classList.add('active');
-      }
+    <script>
+        // --- Init Code ---
+        let qrCode = new QRCodeStyling({
+            width: 300, height: 300, type: "svg", data: "https://deine-website.de",
+            dotsOptions: { color: "#000000", type: "rounded" },
+            backgroundOptions: { color: "#ffffff" },
+            imageOptions: { crossOrigin: "anonymous", margin: 8 }
+        });
 
-      document.querySelectorAll('.form-section').forEach(el => el.classList.add('hidden'));
-
-      const active = document.getElementById(`form-${mode}`);
-      if (active) {
-        active.classList.remove('hidden');
-      }
-
-      updateQR();
-    }
-
-    function updateQR() {
-      const data = generateDataString();
-
-      const fg = document.getElementById('col-fg').value;
-      const bg = document.getElementById('col-bg').value;
-      const useGrad = document.getElementById('use-gradient').checked;
-      const fg2 = document.getElementById('col-fg2').value;
-      const eyeColor = document.getElementById('col-eye').value;
-
-      let dotsOptions = {
-        color: fg,
-        type: qrCode._options.dotsOptions.type
-      };
-
-      if (useGrad) {
-        dotsOptions.gradient = {
-          type: "linear",
-          rotation: 45,
-          colorStops: [{ offset: 0, color: fg }, { offset: 1, color: fg2 }]
+        let currentMode = 'url';
+        let logoUrl = "";
+        let map = null;
+        let marker = null;
+        
+        // Kinderleichte Erklärungen
+        const infoTexts = {
+            url: "Scan öffnet sofort deine Website oder jeden beliebigen Link im Browser.",
+            wifi: "Scan verbindet das Smartphone direkt mit deinem WLAN – ohne Passwort tippen.",
+            whatsapp: "Scan öffnet einen WhatsApp-Chat zu dir mit vorbereiteter Nachricht.",
+            maps: "Scan öffnet direkt die Navigation zu diesem Standort in Google Maps.",
+            sepa: "Scan erstellt eine fertige SEPA-Überweisung (Empfänger, IBAN, Betrag, Verwendungszweck).",
+            vcard: "Scan speichert deinen Kontakt (Name, Nummer, E-Mail) direkt im Handy des anderen.",
+            paypal: "Scan startet eine PayPal.Me-Zahlung an dich, Betrag optional voreingestellt.",
+            review: "Scan führt direkt zu deiner Google-Bewertungsseite.",
+            phone: "Scan ruft deine Nummer an oder öffnet eine SMS – je nach Einstellung."
         };
-      }
 
-      qrCode.update({
-        data: data,
-        dotsOptions: dotsOptions,
-        backgroundOptions: { color: bg },
-        cornersSquareOptions: { color: eyeColor, type: qrCode._options.cornersSquareOptions?.type },
-        cornersDotOptions: { color: eyeColor },
-        image: logoUrl
-      });
-    }
+        document.getElementById('canvas-container').innerHTML = "";
+        qrCode.append(document.getElementById('canvas-container'));
 
-    function generateDataString() {
-      switch (currentMode) {
-        case 'url':
-          return document.getElementById('inp-url').value || "https://example.com";
+        // Init Text
+        document.getElementById('desc-text').innerText = infoTexts['url'];
 
-        case 'wifi':
-          const ssid = document.getElementById('inp-wifi-ssid').value;
-          const pass = document.getElementById('inp-wifi-pass').value;
-          const type = document.getElementById('inp-wifi-type').value;
-          return `WIFI:T:${type};S:${ssid};P:${pass};;`;
+        // --- Validation Logic ---
+        function validateField(input, type) {
+            const val = input.value;
+            let isValid = true;
 
-        case 'vcard':
-          const n = document.getElementById('inp-vc-last').value;
-          const fn = document.getElementById('inp-vc-first').value;
-          const org = document.getElementById('inp-vc-org').value;
-          const tel = document.getElementById('inp-vc-phone').value;
-          const mail = document.getElementById('inp-vc-email').value;
-          const web = document.getElementById('inp-vc-web').value;
+            // Remove previous error state
+            input.classList.remove('input-error');
 
-          return `BEGIN:VCARD\nVERSION:3.0\nN:${n};${fn}\nFN:${fn} ${n}\nORG:${org}\nTEL:${tel}\nEMAIL:${mail}\nURL:${web}\nEND:VCARD`;
+            if (type === 'url' && val.length > 0) {
+                if (!/^https?:\/\//i.test(val)) isValid = false;
+            }
+            if (type === 'iban' && val.length > 0) {
+                // Simple pattern check for DE IBANs or generic length
+                if (!/^DE\d{20}$/i.test(val.replace(/\s/g, '')) && !/^[A-Z]{2}\d+$/.test(val.replace(/\s/g, ''))) isValid = false;
+            }
+            if (type === 'phone' && val.length > 0) {
+                if (!/^[+]?[0-9\s]+$/.test(val)) isValid = false;
+            }
 
-        case 'email':
-          const mailto = document.getElementById('inp-mail-to').value;
-          const sub = document.getElementById('inp-mail-sub').value;
-          const body = document.getElementById('inp-mail-body').value;
-          return `mailto:${mailto}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
+            if (!isValid) {
+                input.classList.add('input-error');
+            }
+        }
 
-        case 'text':
-          return document.getElementById('inp-text').value || "Hallo Welt";
+        // --- Design Mode Logic ---
+        function setDesignMode(mode) {
+            const advControls = document.getElementById('advanced-controls');
+            const btnSimple = document.getElementById('btn-design-simple');
+            const btnAdv = document.getElementById('btn-design-advanced');
 
-        default: return "Error";
-      }
-    }
+            if (mode === 'simple') {
+                advControls.classList.add('hidden');
+                btnSimple.classList.remove('text-slate-500', 'dark:text-slate-400', 'hover:text-slate-800');
+                btnSimple.classList.add('bg-white', 'dark:bg-slate-600', 'shadow', 'text-slate-800', 'dark:text-white');
+                
+                btnAdv.classList.add('text-slate-500', 'dark:text-slate-400', 'hover:text-slate-800');
+                btnAdv.classList.remove('bg-white', 'dark:bg-slate-600', 'shadow', 'text-slate-800', 'dark:text-white');
+            } else {
+                advControls.classList.remove('hidden');
+                btnAdv.classList.remove('text-slate-500', 'dark:text-slate-400', 'hover:text-slate-800');
+                btnAdv.classList.add('bg-white', 'dark:bg-slate-600', 'shadow', 'text-slate-800', 'dark:text-white');
 
-    function setDotType(type) {
-      qrCode.update({ dotsOptions: { type: type } });
-    }
+                btnSimple.classList.add('text-slate-500', 'dark:text-slate-400', 'hover:text-slate-800');
+                btnSimple.classList.remove('bg-white', 'dark:bg-slate-600', 'shadow', 'text-slate-800', 'dark:text-white');
+            }
+        }
 
-    function setCornerType(type) {
-      qrCode.update({ cornersSquareOptions: { type: type } });
-    }
+        // --- Toggle Modals ---
+        function toggleInfoModal() {
+            toggleModal('info-modal');
+        }
 
-    function toggleGradient() {
-      const useGrad = document.getElementById('use-gradient').checked;
-      const ui = document.getElementById('gradient-ui');
-      if (useGrad) ui.classList.remove('hidden');
-      else ui.classList.add('hidden');
-      updateQR();
-    }
+        function toggleLegalModal() {
+            toggleModal('legal-modal');
+        }
 
-    function togglePassVisibility() {
-      const inp = document.getElementById('inp-wifi-pass');
-      if (inp.type === "text") inp.type = "password";
-      else inp.type = "text";
-    }
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const content = modal.querySelector('div');
+            
+            if(modal.classList.contains('hidden')) {
+                // Open
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    content.classList.remove('scale-95');
+                    content.classList.add('scale-100');
+                }, 10);
+            } else {
+                // Close
+                modal.classList.add('opacity-0');
+                content.classList.remove('scale-100');
+                content.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 200);
+            }
+        }
 
-    function handleLogoUpload(input) {
-      const file = input.files[0];
-      if (!file) return;
+        // --- Theme Toggle ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if(html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.classList.remove('ph-sun');
+                icon.classList.add('ph-moon');
+            } else {
+                html.classList.add('dark');
+                icon.classList.remove('ph-moon');
+                icon.classList.add('ph-sun');
+            }
+        }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        logoUrl = e.target.result;
-        updateQR();
-      };
-      reader.readAsDataURL(file);
-    }
+        // --- Map Logic ---
+        function initMap() {
+            if(map) return; 
+            map = L.map('map-picker').setView([47.95, 8.50], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap'
+            }).addTo(map);
 
-    function setPresetLogo(type) {
-      const icons = {
-        wifi: "https://cdn-icons-png.flaticon.com/512/93/93158.png",
-        cube: "https://cdn-icons-png.flaticon.com/512/103/103903.png",
-        facebook: "https://cdn-icons-png.flaticon.com/512/5968/5968764.png",
-        instagram: "https://cdn-icons-png.flaticon.com/512/3955/3955024.png",
-        whatsapp: "https://cdn-icons-png.flaticon.com/512/3670/3670051.png"
-      };
-      logoUrl = icons[type];
-      updateQR();
-    }
+            map.on('click', function(e) {
+                const lat = e.latlng.lat.toFixed(6);
+                const lng = e.latlng.lng.toFixed(6);
+                if(marker) map.removeLayer(marker);
+                marker = L.marker([lat, lng]).addTo(map);
+                
+                document.getElementById('inp-geo-lat').value = lat;
+                document.getElementById('inp-geo-long').value = lng;
+                updateQR();
+            });
+        }
 
-    function clearLogo() {
-      logoUrl = "";
-      updateQR();
-    }
+        function locateUser() {
+            if (!navigator.geolocation) {
+                alert("Browser unterstützt keine Ortung.");
+                return;
+            }
+            navigator.geolocation.getCurrentPosition((position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                document.getElementById('inp-geo-lat').value = lat.toFixed(6);
+                document.getElementById('inp-geo-long').value = lng.toFixed(6);
+                
+                if(map) {
+                    map.setView([lat, lng], 16);
+                    if(marker) map.removeLayer(marker);
+                    marker = L.marker([lat, lng]).addTo(map);
+                }
+                updateQR();
+            }, () => alert("Standort konnte nicht abgerufen werden."));
+        }
 
-    function downloadQR(ext) {
-      qrCode.download({ name: "my-qr-code", extension: ext });
-    }
+        // --- Mode Switching ---
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            document.querySelectorAll('.form-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`form-${mode}`).classList.remove('hidden');
 
-    updateQR();
-  </script>
-  <script src="/assets/js/theme.js" defer></script>
-  <script src="/assets/js/header.js" defer></script>
-  <script src="/assets/js/whatsapp.js" defer></script>
+            // Update Help Text
+            document.getElementById('desc-text').innerText = infoTexts[mode] || "Wähle eine Funktion.";
+
+            if(mode === 'maps') {
+                setTimeout(initMap, 100);
+                setTimeout(() => { if(map) map.invalidateSize(); }, 200); 
+            }
+
+            updateQR();
+        }
+
+        // --- Update Logic ---
+        function updateQR() {
+            const data = generateDataString();
+            const fg = document.getElementById('col-fg').value;
+            const useGrad = document.getElementById('use-gradient').checked;
+            const fg2 = document.getElementById('col-fg2').value;
+            const style = document.getElementById('style-dots').value;
+
+            let dots = { color: fg, type: style };
+            if (useGrad) dots.gradient = { type: "linear", rotation: 45, colorStops: [{ offset: 0, color: fg }, { offset: 1, color: fg2 }] };
+
+            qrCode.update({
+                data: data,
+                dotsOptions: dots,
+                cornersSquareOptions: { type: style === 'dots' ? 'dot' : 'square', color: fg },
+                cornersDotOptions: { type: style === 'dots' ? 'dot' : 'square', color: fg },
+                image: logoUrl
+            });
+        }
+
+        function generateDataString() {
+            switch(currentMode) {
+                case 'url': return document.getElementById('inp-url').value;
+                case 'wifi':
+                    return `WIFI:T:${document.getElementById('inp-wifi-type').value};S:${document.getElementById('inp-wifi-ssid').value};P:${document.getElementById('inp-wifi-pass').value};;`;
+                case 'whatsapp':
+                    const code = document.getElementById('inp-wa-code').value;
+                    let num = document.getElementById('inp-wa-phone').value.replace(/\s/g, '').replace(/^0/, ''); 
+                    const text = encodeURIComponent(document.getElementById('inp-wa-text').value);
+                    return `https://wa.me/${code}${num}?text=${text}`;
+                case 'maps':
+                    const lat = document.getElementById('inp-geo-lat').value;
+                    const long = document.getElementById('inp-geo-long').value;
+                    return `http://maps.google.com/maps?q=${lat},${long}`;
+                case 'sepa':
+                    const name = document.getElementById('inp-sepa-name').value;
+                    const iban = document.getElementById('inp-sepa-iban').value.replace(/\s/g, '');
+                    const amount = document.getElementById('inp-sepa-amount').value;
+                    const ref = document.getElementById('inp-sepa-ref').value;
+                    let str = "BCD\n002\n1\nSCT\n\n" + name + "\n" + iban + "\n" + (amount ? `EUR${amount}` : "") + "\n\n\n" + ref + "\n";
+                    return str;
+                case 'vcard':
+                    return `BEGIN:VCARD\nVERSION:3.0\nFN:${document.getElementById('inp-vc-first').value} ${document.getElementById('inp-vc-last').value}\nORG:${document.getElementById('inp-vc-org').value}\nTEL:${document.getElementById('inp-vc-phone').value}\nEND:VCARD`;
+                case 'paypal':
+                    const ppUser = document.getElementById('inp-pp-user').value;
+                    const ppAmt = document.getElementById('inp-pp-amount').value;
+                    const ppCurr = document.getElementById('inp-pp-curr').value;
+                    let ppUrl = `https://www.paypal.com/paypalme/${ppUser}`;
+                    if(ppAmt) ppUrl += `/${ppAmt}${ppCurr}`;
+                    return ppUrl;
+                case 'review':
+                    return document.getElementById('inp-rev-url').value || "https://google.com";
+                case 'phone':
+                    const phNum = document.getElementById('inp-ph-num').value;
+                    const phAct = document.getElementById('inp-ph-action').value;
+                    if(phAct === 'sms') return `smsto:${phNum}`;
+                    return `tel:${phNum}`;
+                default: return "Error";
+            }
+        }
+
+        // --- Helpers ---
+        function toggleGradient() {
+            const use = document.getElementById('use-gradient').checked;
+            document.getElementById('gradient-ui').classList.toggle('hidden', !use);
+            updateQR();
+        }
+        function handleLogoUpload(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => { logoUrl = e.target.result; updateQR(); };
+            reader.readAsDataURL(file);
+        }
+        function clearLogo() { logoUrl = ""; updateQR(); }
+        
+        function setPresetLogo(type) {
+             const icons = {
+                whatsapp: "https://cdn-icons-png.flaticon.com/512/3670/3670051.png",
+                wifi: "https://cdn-icons-png.flaticon.com/512/93/93158.png",
+                maps: "https://cdn-icons-png.flaticon.com/512/854/854878.png",
+                printer: "https://cdn-icons-png.flaticon.com/512/2822/2822668.png",
+                paypal: "https://cdn-icons-png.flaticon.com/512/174/174861.png",
+                google: "https://cdn-icons-png.flaticon.com/512/300/300221.png",
+                youtube: "https://cdn-icons-png.flaticon.com/512/1384/1384060.png",
+                facebook: "https://cdn-icons-png.flaticon.com/512/5968/5968764.png",
+                instagram: "https://cdn-icons-png.flaticon.com/512/3955/3955024.png",
+                phone: "https://cdn-icons-png.flaticon.com/512/724/724664.png",
+                email: "https://cdn-icons-png.flaticon.com/512/542/542638.png",
+                euro: "https://cdn-icons-png.flaticon.com/512/2535/2535074.png"
+            };
+            logoUrl = icons[type];
+            updateQR();
+        }
+        
+        // --- Storage ---
+        function saveDesignPreset() {
+             const config = {
+                fg: document.getElementById('col-fg').value,
+                dotStyle: document.getElementById('style-dots').value
+            };
+            localStorage.setItem('qr_design_ultra', JSON.stringify(config));
+            alert("Design gespeichert!");
+        }
+        function resetDesign() { localStorage.removeItem('qr_design_ultra'); location.reload(); }
+
+        function downloadQR(ext) { qrCode.download({ name: `QR_Master_${currentMode}`, extension: ext }); }
+    </script>
 </body>
 </html>
