@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warenschmiede Tools - Alle Rechner & Helfer</title>
+    <style>
+        /* Basis-Stile (Passend zu deinem Dark/Light Mode Konzept anpassbar) */
+        :root {
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --card-border: #e0e0e0;
+            --accent-color: #007bff;
+            --badge-new: #28a745;
+            --badge-beta: #ffc107;
+        }
+
+        body.dark-mode {
+            --bg-color: #1a1a1a;
+            --text-color: #f0f0f0;
+            --card-bg: #2d2d2d;
+            --card-border: #444;
+            --accent-color: #4da3ff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+        }
+
+        h1 { margin: 0; font-size: 2.5rem; }
+        p.subtitle { opacity: 0.8; font-size: 1.1rem; max-width: 600px; margin: 10px auto; }
+
+        /* Grid Layout */
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Tool Card Styles */
+        .tool-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 25px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            text-decoration: none; /* Link-Stil entfernen */
+            color: inherit;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-color: var(--accent-color);
+        }
+
+        .tool-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .tool-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .tool-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 20px;
+            flex-grow: 1; /* Drückt den Button nach unten */
+        }
+
+        .tool-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: auto;
+        }
+
+        .category-tag {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+            font-size: 0.7rem;
+        }
+
+        /* Badges */
+        .badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        }
+        .badge.new { background-color: var(--badge-new); }
+        .badge.beta { background-color: var(--badge-beta); color: #333; text-shadow: none; }
+
+        /* Button Mockup */
+        .cta-text {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Warenschmiede Tools</h1>
+    <p class="subtitle">Eine Sammlung nützlicher Werkzeuge für Maker, Werkstatt und Büro. Kostenlos und direkt im Browser nutzbar.</p>
+</header>
+
+<div class="tool-grid">
+
+    <!-- 3D Druck Suite -->
+    <a href="/tools/kostenrechner-v2.html" class="tool-card">
+        <span class="tool-icon">🖨️</span>
+        <span class="badge beta">BETA</span>
+        <span class="tool-title">3D-Druck Suite</span>
+        <div class="tool-desc">
+            Berechne Materialkosten, Druckzeit und Stromverbrauch für deine 3D-Druck-Projekte. Inklusive Filament-Datenbank.
+        </div>
+        <div class="tool-meta">
+            <span class="category-tag">3D-Druck</span>
+            <span class="cta-text">Starten &rarr;</span>
+        </div>
+    </a>
+
+    <!-- Werkstatt Rechner -->
+    <a href="/werkstatt-rechner.html" class="tool-card">
+        <span class="tool-icon">🔧</span>
+        <span class="tool-title">Warenschmiede METALL</span>
+        <div class="tool-desc">
+            Der Allrounder für die Werkstatt. Schnittdaten, Gewindetabellen und Passungsrechner schnell zur Hand.
+        </div>
+        <div class="tool-meta">
+            <span class="category-tag">Werkstatt</span>
+            <span class="cta-text">Starten &rarr;</span>
+        </div>
+    </a>
+
+    <!-- CNC Master -->
+    <a href="/tools/buero/doku-light/CNCMasterCalc.html" class="tool-card">
+        <span class="tool-icon">⚙️</span>
+        <span class="badge new">NEU</span>
+        <span class="tool-title">CNC MasterCalc</span>
+        <div class="tool-desc">
+            Spezialisierter Rechner für CNC-Fräsdaten. Vorschub, Drehzahl und Zeitspanvolumen optimieren.
+        </div>
+        <div class="tool-meta">
+            <span class="category-tag">CNC & CAM</span>
+            <span class="cta-text">Starten &rarr;</span>
+        </div>
+    </a>
+
+    <!-- QR Master -->
+    <a href="/tools/buero/doku-light/QRCodeMasterPro.html" class="tool-card">
+        <span class="tool-icon">📱</span>
+        <span class="tool-title">QR-Master ULTRA</span>
+        <div class="tool-desc">
+            Erstelle QR-Codes für WLAN, VCards oder Webseiten. Mit individuellen Farben und Fehlerkorrektur.
+        </div>
+        <div class="tool-meta">
+            <span class="category-tag">Büro</span>
+            <span class="cta-text">Starten &rarr;</span>
+        </div>
+    </a>
+
+    <!-- Quittungen -->
+    <a href="/tools/buero/doku-light/ReceiptWriterPro.html" class="tool-card">
+        <span class="tool-icon">🧾</span>
+        <span class="tool-title">Quittungs-Generator</span>
+        <div class="tool-desc">
+            Schnell digitale Quittungen erstellen und als PDF ausdrucken. Ideal für Kleinunternehmer.
+        </div>
+        <div class="tool-meta">
+            <span class="category-tag">Büro</span>
+            <span class="cta-text">Starten &rarr;</span>
+        </div>
+    </a>
+
+    <!-- KI Finder (Beispiel für Cross-Link) -->
+    <a href="/ki/ki-finder.html" class="tool-card">
+        <span class="tool-icon">🤖</span>
+        <span class="tool-title">KI-Finder</span>
+        <div class="tool-desc">
+            Finde das perfekte KI-Tool für dein Problem. Interaktiver Guide durch den KI-Dschungel.
+        </div>
+        <div class="tool-meta">
+            <span class="category-tag">Artificial Intelligence</span>
+            <span class="cta-text">Starten &rarr;</span>
+        </div>
+    </a>
+
+</div>
+
+<script>
+    // Optional: Dark Mode Erkennung (falls du kein globales Script hast)
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark-mode');
+    }
+</script>
+
+</body>
+</html>
