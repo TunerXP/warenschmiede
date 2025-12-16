@@ -78,7 +78,6 @@
                 </svg>
                 Zurück zur Warenschmiede
             </a>
-            <!-- Mobile Share Hint (optional) -->
             <span class="hidden sm:inline text-slate-600">Kostenloses Lern-Tool</span>
         </div>
     </div>
@@ -114,7 +113,7 @@
     <!-- MAIN CONTENT -->
     <main class="flex-grow max-w-7xl mx-auto w-full p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- SPALTE 1: SZENEN-AUSWAHL (3 Cols) -->
+        <!-- SPALTE 1: SZENEN-AUSWAHL -->
         <section class="lg:col-span-3 flex flex-col gap-4">
             <h2 class="text-sm uppercase tracking-wider text-slate-500 font-bold mb-1">1. Wähle eine Aufgabe</h2>
             <div id="scene-list" class="space-y-3">
@@ -122,7 +121,7 @@
             </div>
         </section>
 
-        <!-- SPALTE 2: CHAT-SIMULATION (5 Cols) -->
+        <!-- SPALTE 2: CHAT-SIMULATION -->
         <section class="lg:col-span-5 flex flex-col h-[600px] lg:h-auto bg-slate-850 rounded-xl border border-slate-700 shadow-xl overflow-hidden relative">
             
             <!-- Chat Header -->
@@ -149,15 +148,15 @@
                 <div class="grid grid-cols-2 gap-3">
                     <button onclick="sendPrompt('bad')" id="btn-bad" class="group relative px-4 py-3 bg-red-900/20 hover:bg-red-900/30 border border-red-800/50 rounded-lg text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                         <div class="text-xs text-red-400 font-bold mb-1">👎 Schlechter Prompt</div>
-                        <div class="text-[10px] text-slate-400 leading-tight group-hover:text-slate-300">Zu kurz, unklar, keine Details.</div>
+                        <div class="text-[10px] text-slate-400 leading-tight group-hover:text-slate-300">Zufälliges Beispiel (unklar, kurz).</div>
                     </button>
                     <button onclick="sendPrompt('good')" id="btn-good" class="group relative px-4 py-3 bg-emerald-900/20 hover:bg-emerald-900/30 border border-emerald-800/50 rounded-lg text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                         <div class="text-xs text-emerald-400 font-bold mb-1">👍 Guter Prompt</div>
-                        <div class="text-[10px] text-slate-400 leading-tight group-hover:text-slate-300">Strukturiert, mit Kontext & Ziel.</div>
+                        <div class="text-[10px] text-slate-400 leading-tight group-hover:text-slate-300">Zufälliges Beispiel (strukturiert).</div>
                     </button>
                 </div>
 
-                <!-- Custom Input (Optional) -->
+                <!-- Custom Input -->
                 <div class="border-t border-slate-700 pt-3">
                     <label class="text-xs text-slate-500 mb-1 block">Oder teste deine eigene Version:</label>
                     <div class="flex gap-2">
@@ -166,11 +165,18 @@
                             Prüfen
                         </button>
                     </div>
+                    <!-- NEU: Hinweis -->
+                    <p class="text-[10px] text-slate-500 mt-2 italic flex gap-1 items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 text-slate-600">
+                          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd" />
+                        </svg>
+                        Hinweis: Hier bekommst du nur eine Bewertung, keine echte KI-Antwort. Teste deinen Prompt später in einem echten KI-Chat.
+                    </p>
                 </div>
             </div>
         </section>
 
-        <!-- SPALTE 3: ANALYSE (4 Cols) -->
+        <!-- SPALTE 3: ANALYSE -->
         <section class="lg:col-span-4 space-y-6">
             
             <!-- Analyse Card -->
@@ -259,16 +265,16 @@
 
     <!-- FOOTER / LERNBEREICH -->
     <footer class="bg-slate-950 border-t border-slate-800 py-10 px-4 mt-8">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
             
             <!-- Box 1 -->
             <div>
                 <h4 class="text-white font-bold mb-3">💡 So nutzt du den Trainer</h4>
                 <ul class="text-sm text-slate-400 space-y-2 list-disc list-inside">
                     <li>Wähle links eine Alltagssituation.</li>
-                    <li>Sende erst den <strong>schlechten Prompt</strong> und sieh das Ergebnis.</li>
-                    <li>Sende dann den <strong>guten Prompt</strong> zum Vergleich.</li>
-                    <li>Teste eigene Texte im Eingabefeld.</li>
+                    <li>Sende mehrmals <strong>schlechte/gute Prompts</strong> (zufällige Beispiele).</li>
+                    <li>Vergleiche die Qualität der Antworten.</li>
+                    <li>Teste eigene Ideen im Eingabefeld.</li>
                 </ul>
             </div>
 
@@ -278,12 +284,26 @@
                 <ul class="text-sm text-slate-400 space-y-2">
                     <li class="flex items-start gap-2">✅ <span>Sei so konkret wie möglich.</span></li>
                     <li class="flex items-start gap-2">✅ <span>Gib der KI eine Rolle ("Du bist...").</span></li>
-                    <li class="flex items-start gap-2">✅ <span>Definiere das Ausgabeformat (Tabelle, Mail...).</span></li>
-                    <li class="flex items-start gap-2">✅ <span>Gib Beispiele, wenn der Stil wichtig ist.</span></li>
+                    <li class="flex items-start gap-2">✅ <span>Definiere das Ausgabeformat.</span></li>
+                    <li class="flex items-start gap-2">✅ <span>Gib Beispiele zur Orientierung.</span></li>
                 </ul>
             </div>
 
-            <!-- Box 3 -->
+            <!-- Box 3 (NEU: Nächster Schritt) -->
+            <div class="bg-brand-blue/10 border border-brand-blue/20 rounded-lg p-4">
+                <h4 class="text-brand-blue font-bold mb-2">🚀 Nächster Schritt</h4>
+                <p class="text-xs text-slate-300 mb-3 leading-relaxed">
+                    Wenn du mit den Beispielen hier warm geworden bist, probier deine Prompts in einem echten KI-Chat aus.
+                </p>
+                <a href="https://www.warenschmiede.com/ki/tools.html" target="_blank" class="inline-flex items-center gap-1 text-sm text-white font-bold hover:text-brand-accent transition-colors">
+                    KI-Werkzeuge bei Warenschmiede
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Box 4: Links -->
             <div>
                 <h4 class="text-white font-bold mb-3">🔗 Rechtliches & Links</h4>
                 <div class="flex flex-col gap-2 text-sm">
@@ -307,112 +327,202 @@
             const shareData = {
                 title: 'Warenschmiede KI Prompt-Trainer',
                 text: 'Lern mit Beispielen, wie du gute Prompts für KI schreibst.',
-                url: window.location.href // Oder hier die echte URL eintragen wenn gewünscht
+                url: window.location.href
             };
-
-            // Modern Share API (Mobile & supported Browsers)
             if (navigator.share) {
-                navigator.share(shareData)
-                    .then(() => console.log('Geteilt!'))
-                    .catch((err) => console.log('Fehler beim Teilen:', err));
+                navigator.share(shareData).catch((err) => console.log('Fehler:', err));
             } else {
-                // Fallback: Clipboard
                 navigator.clipboard.writeText(window.location.href)
-                    .then(() => alert('Link in die Zwischenablage kopiert! Du kannst ihn jetzt teilen.'))
-                    .catch(() => alert('Konnte Link nicht kopieren.'));
+                    .then(() => alert('Link kopiert!'))
+                    .catch(() => alert('Fehler beim Kopieren.'));
             }
         }
 
-        // --- DATEN: SZENARIEN ---
+        // --- NEUE DATENSTRUKTUR: VARIANTEN ---
         const scenes = [
             {
-                id: 1,
+                id: 'email',
                 title: "E-Mail freundlich formulieren",
                 desc: "Homeoffice beim Chef anfragen.",
-                prompts: {
-                    bad: {
-                        text: "Schreib mal eine Mail an meinen Chef wegen Homeoffice.",
-                        answer: "Betreff: Homeoffice\n\nHallo Chef,\n\nich will morgen Homeoffice machen. Sag Bescheid, ob das okay ist.\n\nGruß",
-                        explanation: "Der Prompt ist viel zu allgemein. Die KI weiß nicht: Welcher Tonfall? Welcher Grund? Wie lang? Das Ergebnis ist unhöflich und kurz."
-                    },
-                    good: {
-                        text: "Schreibe eine freundliche, aber bestimmte E-Mail an meinen Chef (Herr Müller). Ich möchte für morgen um einen Tag Homeoffice bitten. \n\nKontext: Ich habe einen Handwerkertermin. \nTon: Professionell, Du-Form.\nLänge: ca. 80 Wörter.\nFormat: E-Mail mit Betreff.",
-                        answer: "Betreff: Anfrage Homeoffice für morgen\n\nHallo Herr Müller,\n\nich hoffe, du hattest einen guten Start in die Woche.\n\nIch würde morgen gerne aus dem Homeoffice arbeiten, da sich kurzfristig ein Handwerkertermin bei mir ergeben hat. Meine Erreichbarkeit und Arbeitsleistung bleiben davon natürlich unberührt.\n\nGib mir bitte kurz Bescheid, ob das für dich in Ordnung ist.\n\nViele Grüße,",
-                        explanation: "Perfekt! Der Prompt nennt den Empfänger, den genauen Grund, den gewünschten Tonfall ('freundlich, aber bestimmt') und das Format. Die KI kann so einen passgenauen Text liefern."
-                    }
+                variants: {
+                    bad: [
+                        {
+                            text: "Schreib mal eine Mail an meinen Chef wegen Homeoffice.",
+                            answer: "Betreff: Homeoffice\n\nHallo Chef,\n\nich will morgen Homeoffice machen. Sag Bescheid, ob das okay ist.\n\nGruß",
+                            explanation: "Der Prompt ist viel zu allgemein. Die KI weiß nicht: Welcher Tonfall? Welcher Grund? Wie lang? Das Ergebnis ist unhöflich."
+                        },
+                        {
+                            text: "Ich brauch morgen frei, schreib Mail.",
+                            answer: "Hallo,\n\nich brauche morgen frei. Danke.",
+                            explanation: "Extrem kurz. Die KI kann nicht wissen, an wen die Mail geht oder warum du frei brauchst. Das wirkt respektlos."
+                        },
+                        {
+                            text: "Sag dem Chef ich bin krank per Mail.",
+                            answer: "Chef,\n\nich bin krank und komme nicht.\n\nTschüss.",
+                            explanation: "Ohne Kontext (z.B. 'höflich', 'Krankschreibung folgt') klingt die Nachricht sehr schroff und unprofessionell."
+                        }
+                    ],
+                    good: [
+                        {
+                            text: "Schreibe eine freundliche, aber bestimmte E-Mail an meinen Chef (Herr Müller). Ich möchte für morgen um einen Tag Homeoffice bitten. \n\nKontext: Ich habe einen Handwerkertermin. \nTon: Professionell, Du-Form.\nLänge: ca. 80 Wörter.\nFormat: E-Mail mit Betreff.",
+                            answer: "Betreff: Anfrage Homeoffice für morgen\n\nHallo Herr Müller,\n\nich hoffe, du hattest einen guten Start in die Woche.\n\nIch würde morgen gerne aus dem Homeoffice arbeiten, da sich kurzfristig ein Handwerkertermin bei mir ergeben hat. Meine Erreichbarkeit bleibt davon natürlich unberührt.\n\nGib mir bitte kurz Bescheid, ob das für dich in Ordnung ist.\n\nViele Grüße,",
+                            explanation: "Perfekt! Empfänger, Grund, Tonfall und Format sind klar definiert. Die KI liefert ein sofort nutzbares Ergebnis."
+                        },
+                        {
+                            text: "Verfasse eine förmliche E-Mail an meine Chefin (Frau Dr. Weber). Ich bin krank und falle heute aus. \n\nInfos: Attest kommt morgen. Ich bin per Mail erreichbar.\nStil: Höflich, kurz, Sie-Form.",
+                            answer: "Betreff: Krankmeldung für heute\n\nSehr geehrte Frau Dr. Weber,\n\nleider muss ich mich für heute krankmelden. Ein ärztliches Attest werde ich Ihnen voraussichtlich morgen nachreichen.\n\nFür dringende Rückfragen stehe ich Ihnen eingeschränkt per E-Mail zur Verfügung.\n\nMit freundlichen Grüßen,",
+                            explanation: "Sehr gut. Klare Anweisungen zum 'Siezen' und wichtige Details (Attest, Erreichbarkeit) machen die Mail professionell."
+                        },
+                        {
+                            text: "Ich muss ein Meeting verschieben. Schreib eine nette Mail an das Team 'Marketing'.\n\nGrund: Doppelbuchung.\nNeuer Vorschlag: Donnerstag 14 Uhr.\nTon: Locker, kollegial.",
+                            answer: "Betreff: Verschiebung Marketing-Meeting 📅\n\nHi Team,\n\nleider hat sich bei mir der Fehlerteufel eingeschlichen und ich habe eine Doppelbuchung. Sorry!\n\nKönnen wir unser Meeting auf Donnerstag um 14 Uhr schieben? Passt das bei euch?\n\nDanke für euer Verständnis!",
+                            explanation: "Guter Einsatz von Kontext (Grund) und Tonalität ('Locker'). Die KI nutzt sogar ein Emoji, was zum kollegialen Stil passt."
+                        }
+                    ]
                 }
             },
             {
-                id: 2,
+                id: 'learn',
                 title: "Lernhilfe / Erklärung",
                 desc: "Ein schwieriges Thema einfach erklären.",
-                prompts: {
-                    bad: {
-                        text: "Erklär mal Photosynthese.",
-                        answer: "Die Photosynthese ist ein physiologischer Prozess zur Erzeugung von energiereichen Biomolekülen aus energieärmeren Stoffen mithilfe von Lichtenergie. Sie wird von Pflanzen, Algen und einigen Bakteriengruppen betrieben.",
-                        explanation: "Zu vage. Die KI wählt oft standardmäßig eine lexikonartige Sprache. Ohne Zielgruppe (z.B. 'für ein Kind') ist die Antwort oft zu kompliziert."
-                    },
-                    good: {
-                        text: "Erkläre mir die Photosynthese so, dass es ein 10-jähriges Kind versteht. \n\nStil: Nutze einfache Vergleiche (z.B. Kochen).\nLänge: Maximal 4 Sätze.\nFormat: Text + 3 Stichpunkte als Merksätze am Ende.",
-                        answer: "Stell dir vor, eine Pflanze ist wie ein kleiner Koch. Sie nimmt Sonnenlicht, Wasser und Luft und kocht daraus in ihren grünen Blättern ihr eigenes Essen (Zucker).\n\nMerksätze:\n• Pflanzen brauchen Licht und Wasser.\n• Sie machen daraus Zucker und Sauerstoff.\n• Das nennt man Photosynthese.",
-                        explanation: "Sehr gut. Durch die Angabe der Zielgruppe ('10-jähriges Kind') und den Wunsch nach Vergleichen passt die KI die Sprache komplett an. Die Formatvorgabe sorgt für Übersichtlichkeit."
-                    }
+                variants: {
+                    bad: [
+                        {
+                            text: "Erklär mal Photosynthese.",
+                            answer: "Die Photosynthese ist ein physiologischer Prozess zur Erzeugung von energiereichen Biomolekülen aus energieärmeren Stoffen mithilfe von Lichtenergie.",
+                            explanation: "Zu vage. Die KI wählt oft standardmäßig eine lexikonartige Sprache. Ohne Zielgruppe ist die Antwort oft zu kompliziert."
+                        },
+                        {
+                            text: "Was ist ein Atom?",
+                            answer: "Ein Atom ist der kleinste chemisch nicht weiter teilbare Baustein der Materie. Es besteht aus einem Atomkern und einer Atomhülle.",
+                            explanation: "Faktisch richtig, aber didaktisch schwach. Wer fragt? Ein Physikstudent oder ein Erstklässler? Der Kontext fehlt."
+                        },
+                        {
+                            text: "Hilfe bei Mathe.",
+                            answer: "Wobei genau benötigst du Hilfe? Algebra, Geometrie, Analysis?",
+                            explanation: "Der Prompt ist so ungenau, dass die KI gar nicht antworten kann, sondern Rückfragen stellen muss."
+                        }
+                    ],
+                    good: [
+                        {
+                            text: "Erkläre mir die Photosynthese so, dass es ein 10-jähriges Kind versteht. \n\nStil: Nutze einfache Vergleiche (z.B. Kochen).\nLänge: Maximal 4 Sätze.\nFormat: Text + 3 Stichpunkte als Merksätze am Ende.",
+                            answer: "Stell dir vor, eine Pflanze ist wie ein kleiner Koch. Sie nimmt Sonnenlicht, Wasser und Luft und kocht daraus in ihren grünen Blättern ihr eigenes Essen (Zucker).\n\nMerksätze:\n• Pflanzen brauchen Licht und Wasser.\n• Sie machen daraus Zucker und Sauerstoff.\n• Das nennt man Photosynthese.",
+                            explanation: "Sehr gut. Zielgruppe ('10-jähriges Kind') und Wunsch nach Vergleichen führen zu einer verständlichen Sprache."
+                        },
+                        {
+                            text: "Erkläre das 'Bohr'sche Atommodell' für einen Schüler der 9. Klasse.\n\nVergleich: Sonnensystem.\nFokus: Aufbau (Kern/Hülle).",
+                            answer: "Das Bohr'sche Atommodell funktioniert ähnlich wie unser Sonnensystem. In der Mitte steht die Sonne – das ist beim Atom der Atomkern (positiv geladen). Die Planeten, die darum kreisen, sind die Elektronen (negativ geladen) auf festen Bahnen.",
+                            explanation: "Der Vergleich mit dem Sonnensystem wurde explizit angefordert und hilft dem Schüler beim Verständnis."
+                        },
+                        {
+                            text: "Ich muss ein Referat über den Satz des Pythagoras halten. Erstelle eine Gliederung.\n\nZielgruppe: Meine Mitschüler.\nDauer: 5 Minuten.\nInhalt: Formel, Beispiel, Anwendung im Alltag.",
+                            answer: "Hier ist eine Gliederung für dein 5-Minuten-Referat:\n\n1. Einleitung: Wer war Pythagoras?\n2. Die Formel: a² + b² = c² einfach erklärt.\n3. Rechenbeispiel an der Tafel.\n4. Alltag: Wie man damit eine Leiter an die Wand stellt.\n5. Fazit.",
+                            explanation: "Statt nur 'Erkläre Pythagoras' wurde hier eine konkrete Struktur ('Gliederung', '5 Minuten') angefordert. Sehr hilfreich."
+                        }
+                    ]
                 }
             },
             {
-                id: 3,
+                id: 'idea',
                 title: "Ideenfindung / Brainstorming",
-                desc: "Geschenkideen sammeln.",
-                prompts: {
-                    bad: {
-                        text: "Ich brauche Geschenkideen.",
-                        answer: "Hier sind Ideen:\n1. Buch\n2. Parfüm\n3. Gutschein\n4. Socken\n5. Tasse",
-                        explanation: "Ohne Kontext kann die KI nur raten. Die Liste ist generisch und langweilig, weil sie nicht weiß, für wen das Geschenk ist."
-                    },
-                    good: {
-                        text: "Ich brauche 5 kreative Geschenkideen für meinen Bruder.\n\nProfil: Er ist 30 Jahre alt, liebt Camping, kocht gerne draußen und mag keine technischen Gadgets.\nBudget: Bis 50 Euro.\nFormat: Liste mit kurzer Begründung, warum das passt.",
-                        answer: "Hier sind 5 Ideen für deinen Bruder:\n1. Hochwertiges Outdoor-Gewürzset (Perfekt fürs Kochen draußen).\n2. Personalisierte Emaille-Tasse (Robust für Camping).\n3. Ein Feuerstahl-Set (Traditionell, keine Technik).\n4. Ein Buch über 'Kochen am Lagerfeuer'.\n5. Eine Hängematte für unterwegs.",
-                        explanation: "Exzellent. Das 'Profil' der Person hilft der KI, spezifische Vorschläge zu machen. Das Budget schränkt die Auswahl sinnvoll ein."
-                    }
+                desc: "Kreative Vorschläge sammeln.",
+                variants: {
+                    bad: [
+                        {
+                            text: "Ich brauche Geschenkideen.",
+                            answer: "Hier sind Ideen:\n1. Buch\n2. Parfüm\n3. Gutschein\n4. Socken\n5. Tasse",
+                            explanation: "Ohne Kontext kann die KI nur raten. Die Liste ist generisch und langweilig."
+                        },
+                        {
+                            text: "Was soll ich kochen?",
+                            answer: "Du könntest Nudeln, Reis oder Kartoffeln kochen. Vielleicht Pizza?",
+                            explanation: "Die KI weiß nicht, was du magst, was du im Kühlschrank hast oder ob du Allergien hast."
+                        },
+                        {
+                            text: "Party Ideen.",
+                            answer: "Musik, Tanzen, Essen, Trinken, Spiele.",
+                            explanation: "Kein Motto, keine Altersgruppe, kein Budget. Die Antwort ist nutzlos."
+                        }
+                    ],
+                    good: [
+                        {
+                            text: "Ich brauche 5 kreative Geschenkideen für meinen Bruder.\n\nProfil: Er ist 30 Jahre alt, liebt Camping, kocht gerne draußen und mag keine technischen Gadgets.\nBudget: Bis 50 Euro.\nFormat: Liste mit kurzer Begründung.",
+                            answer: "1. Outdoor-Gewürzset (Perfekt fürs Kochen draußen).\n2. Personalisierte Emaille-Tasse (Robust).\n3. Feuerstahl-Set (Traditionell, keine Technik).\n4. Buch 'Kochen am Lagerfeuer'.\n5. Hängematte für unterwegs.",
+                            explanation: "Exzellent. Das 'Profil' und Budget helfen der KI, spezifische Vorschläge zu machen."
+                        },
+                        {
+                            text: "Schlage mir 3 vegetarische Gerichte vor, die in unter 20 Minuten fertig sind.\n\nZutaten im Haus: Nudeln, Tomaten, Sahne, Zucchini.\nStil: Einfach & lecker.",
+                            answer: "1. Cremige Tomaten-Sahne-Pasta mit Zucchini-Würfeln.\n2. One-Pot-Pasta mit frischen Tomaten.\n3. Zucchini-Nudel-Pfanne mit Sahnesauce.",
+                            explanation: "Die Einschränkung ('vegetarisch', 'unter 20 Min') und die Zutatenliste liefern ein perfektes Ergebnis."
+                        },
+                        {
+                            text: "Ich plane eine Überraschungsparty zum 60. Geburtstag meiner Mutter. Sie mag Gartenarbeit und Italien.\n\nAufgabe: Erstelle eine Checkliste für die Deko und ein Motto.",
+                            answer: "Motto-Idee: 'La Dolce Vita im Grünen'.\n\nCheckliste Deko:\n- [ ] Tischdecken in Rot-Weiß kariert.\n- [ ] Kleine Olivenbäumchen oder Kräutertöpfe als Tischdeko.\n- [ ] Lichterketten für die Bäume im Garten.\n- [ ] Girlanden mit italienischen Flaggen.",
+                            explanation: "Das Kombinieren von Interessen (Garten + Italien) zu einem Motto ist eine Stärke der KI, wenn man sie danach fragt."
+                        }
+                    ]
                 }
             },
             {
-                id: 4,
-                title: "Text verbessern",
+                id: 'textfix',
+                title: "Text verbessern / prüfen",
                 desc: "Rechtschreibung und Stil korrigieren.",
-                prompts: {
-                    bad: {
-                        text: "Mach den Text besser: 'hallo kunde ich schik das angebot speter.'",
-                        answer: "Hallo Kunde, ich schicke das Angebot später.",
-                        explanation: "Der Befehl 'besser' ist subjektiv. Die KI korrigiert hier nur die gröbsten Fehler, aber der Text bleibt unprofessionell."
-                    },
-                    good: {
-                        text: "Korrigiere den folgenden Text auf Rechtschreibung und formuliere ihn in ein professionelles Business-Deutsch um.\n\nOriginal: 'hallo kunde ich schik das angebot speter.'\n\nTon: Höflich, förmlich.\nErgänze: Entschuldigung für die Verzögerung.",
-                        answer: "Sehr geehrter Kunde,\n\nvielen Dank für Ihre Geduld. Ich werde Ihnen das gewünschte Angebot im Laufe des Tages zukommen lassen. Bitte entschuldigen Sie die kleine Verzögerung.\n\nMit freundlichen Grüßen",
-                        explanation: "Stark. Der Prompt definiert 'besser' als 'professionelles Business-Deutsch' und gibt inhaltliche Anweisungen (Entschuldigung ergänzen)."
-                    }
+                variants: {
+                    bad: [
+                        {
+                            text: "Mach den Text besser: 'hallo kunde ich schik das angebot speter.'",
+                            answer: "Hallo Kunde, ich schicke das Angebot später.",
+                            explanation: "Der Befehl 'besser' ist subjektiv. Die KI korrigiert hier nur die gröbsten Fehler."
+                        },
+                        {
+                            text: "Korrigier mal.",
+                            answer: "Bitte gib mir den Text, den ich korrigieren soll.",
+                            explanation: "Der Prompt fehlt komplett. Die KI weiß nicht, was sie tun soll."
+                        },
+                        {
+                            text: "Liest sich doof: 'Das Produkt ist gut kauf es.'",
+                            answer: "Das Produkt ist gut, kaufe es.",
+                            explanation: "Nur Grammatik korrigiert, aber der Stil ist immer noch werblich schwach."
+                        }
+                    ],
+                    good: [
+                        {
+                            text: "Korrigiere den Text auf Rechtschreibung und formuliere ihn in ein professionelles Business-Deutsch um.\n\nOriginal: 'hallo kunde ich schik das angebot speter.'\nTon: Höflich, förmlich.\nErgänze: Entschuldigung für die Verzögerung.",
+                            answer: "Sehr geehrter Kunde,\n\nvielen Dank für Ihre Geduld. Ich werde Ihnen das gewünschte Angebot im Laufe des Tages zukommen lassen. Bitte entschuldigen Sie die Verzögerung.\n\nMit freundlichen Grüßen",
+                            explanation: "Stark. Der Prompt definiert 'besser' als 'professionelles Business-Deutsch' und gibt inhaltliche Anweisungen."
+                        },
+                        {
+                            text: "Schreibe diesen Satz werblich und attraktiv um, damit Kunden sofort klicken wollen.\n\nSatz: 'Wir haben neue Schuhe im Shop.'\nZielgruppe: Junge Sportler.\nStil: Energetisch, du-Form.",
+                            answer: "Bereit für dein nächstes Level? 🚀 Entdecke jetzt unsere brandneuen Laufschuhe im Shop und hol dir den Boost, den du brauchst!",
+                            explanation: "Hier wird nicht nur korrigiert, sondern der Zweck ('werblich') und die Zielgruppe ('Sportler') definieren das Ergebnis."
+                        },
+                        {
+                            text: "Prüfe folgenden Text auf Grammatikfehler und gib mir eine Liste der gefundenen Fehler.\n\nText: 'Der Hund laufen in Wald.'",
+                            answer: "Korrigierter Satz: Der Hund läuft im Wald.\n\nGefundene Fehler:\n1. 'laufen' -> 'läuft' (Konjugation)\n2. 'in' -> 'im' (Präposition/Fall)",
+                            explanation: "Statt nur den Text zu ändern, wird hier eine Erklärung ('Liste der Fehler') angefordert. Gut zum Lernen."
+                        }
+                    ]
                 }
             }
         ];
 
-        // --- STATE ---
+        // --- STATE & HELPERS ---
         let currentSceneId = null;
+        let lastIndices = {}; // Speichert zuletzt genutzte Indizes: "sceneId_type" -> index
         const chatWindow = document.getElementById('chat-window');
         const customInput = document.getElementById('custom-input');
         const scoreRingBg = document.getElementById('score-ring-bg');
 
-        // --- INIT ---
         function init() {
             renderSceneList();
-            // Select first scene by default
-            selectScene(1);
+            selectScene('email');
         }
 
-        // --- RENDER SCENE LIST ---
+        // --- RENDER SCENE LIST (OPTISCH VERBESSERT) ---
         function renderSceneList() {
             const container = document.getElementById('scene-list');
             container.innerHTML = scenes.map(scene => `
-                <button onclick="selectScene(${scene.id})" 
+                <button onclick="selectScene('${scene.id}')" 
                         id="scene-btn-${scene.id}"
                         class="w-full text-left p-4 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-750 hover:border-slate-600 transition-all group focus:outline-none focus:ring-2 focus:ring-brand-blue">
                     <div class="flex justify-between items-center mb-1">
@@ -421,17 +531,16 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                         </svg>
                     </div>
-                    <p class="text-xs text-slate-400 line-clamp-2">${scene.desc}</p>
+                    <!-- Hellerer Untertitel für bessere Lesbarkeit -->
+                    <p class="text-xs text-slate-300 font-medium line-clamp-2">${scene.desc}</p>
                 </button>
             `).join('');
         }
 
-        // --- SELECT SCENE ---
         function selectScene(id) {
             currentSceneId = id;
             const scene = scenes.find(s => s.id === id);
             
-            // Update UI Active State
             document.querySelectorAll('[id^="scene-btn-"]').forEach(btn => {
                 btn.classList.remove('border-brand-blue', 'bg-slate-750');
                 btn.classList.add('border-slate-700', 'bg-slate-800');
@@ -440,48 +549,53 @@
             activeBtn.classList.remove('border-slate-700', 'bg-slate-800');
             activeBtn.classList.add('border-brand-blue', 'bg-slate-750');
 
-            // Reset Chat
             document.getElementById('chat-title').innerText = scene.title;
             chatWindow.innerHTML = `
                 <div class="flex gap-3 bubble-enter">
                     <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center flex-shrink-0 text-xs text-slate-300">AI</div>
                     <div class="bg-slate-800 text-slate-300 p-3 rounded-2xl rounded-tl-none text-sm shadow-sm border border-slate-700/50 max-w-[85%]">
-                        Ich bin bereit für die Aufgabe: <strong>"${scene.title}"</strong>. <br>Versuche mal den schlechten Prompt, dann den guten.
+                        Ich bin bereit für die Aufgabe: <strong>"${scene.title}"</strong>. <br>Wähle einen Prompt, ich zeige dir zufällige Beispiele.
                     </div>
                 </div>
             `;
             
-            // Reset Analysis
             resetAnalysis();
             enableControls();
         }
 
-        // --- SEND PRESET PROMPT ---
+        // --- ZUFALLS-LOGIK & SENDEN ---
         function sendPrompt(type) {
             const scene = scenes.find(s => s.id === currentSceneId);
-            const data = scene.prompts[type];
+            const variants = scene.variants[type];
+            const key = `${currentSceneId}_${type}`;
+            
+            let newIndex = 0;
+
+            // Wähle zufälligen Index, aber nicht den gleichen wie vorher (wenn möglich)
+            if (variants.length > 1) {
+                do {
+                    newIndex = Math.floor(Math.random() * variants.length);
+                } while (newIndex === lastIndices[key] && variants.length > 1);
+            }
+
+            lastIndices[key] = newIndex;
+            const data = variants[newIndex];
             
             disableControls();
-
-            // 1. User Message
             appendUserMessage(data.text);
 
-            // 2. Simulate Delay & Typing
             setTimeout(() => {
                 showTypingIndicator();
-                
-                // 3. Analyze & Show Result (Explanation)
                 updateAnalysisUI(data.text, data.explanation);
 
                 setTimeout(() => {
                     removeTypingIndicator();
                     appendBotMessage(data.answer);
                     enableControls();
-                }, 1200); // 1.2s delay for typing
+                }, 1000 + Math.random() * 500); // Variabler Delay
             }, 500);
         }
 
-        // --- CUSTOM USER PROMPT ---
         function showUserPrompt() {
             const text = customInput.value.trim();
             if (!text) return;
@@ -491,10 +605,7 @@
             customInput.value = '';
 
             setTimeout(() => {
-                // Analyze logic
-                updateAnalysisUI(text, "Das ist dein eigener Prompt. Schau dir den Score oben an! Ich antworte hier nicht wirklich, da ich nur ein Simulator bin.");
-                
-                // Bot placeholder
+                updateAnalysisUI(text, "Das ist dein eigener Prompt. Ich habe ihn analysiert (siehe oben). Da ich nur ein Trainer bin, kann ich keine echte Antwort generieren.");
                 appendBotMessage("Dies ist ein Trainings-Modus. Ich analysiere deinen Text (siehe rechts), generiere aber keine neue Antwort.");
                 enableControls();
             }, 600);
@@ -560,40 +671,30 @@
             document.querySelector('#custom-input').nextElementSibling.disabled = false;
         }
 
-        // --- ANALYSIS LOGIC (HEURISTICS) ---
+        // --- ANALYSIS LOGIC ---
         function calculateScore(text) {
             let score = 0;
             const lowerText = text.toLowerCase();
             const length = text.length;
             
-            let scores = {
-                clarity: 5,
-                context: 0,
-                struct: 0,
-                example: 0
-            };
+            let scores = { clarity: 5, context: 0, struct: 0, example: 0 };
 
-            // 1. Klarheit (Verb check, Length)
-            const verbs = ["schreibe", "formuliere", "erkläre", "erstelle", "korrigiere", "fasse zusammen", "analysiere"];
+            const verbs = ["schreibe", "formuliere", "erkläre", "erstelle", "korrigiere", "fasse zusammen", "analysiere", "prüfe", "überarbeite"];
             if (verbs.some(v => lowerText.includes(v))) scores.clarity += 10;
-            if (length > 30) scores.clarity += 10; // Zu kurz ist oft unklar
+            if (length > 30) scores.clarity += 10; 
             
-            // 2. Kontext
-            const contextWords = ["für", "zielgruppe", "niveau", "alter", "hintergrund", "situation", "mein", "chef", "kind", "kollege"];
+            const contextWords = ["für", "zielgruppe", "niveau", "alter", "hintergrund", "situation", "mein", "chef", "kind", "kollege", "bruder", "mutter", "kunden"];
             if (contextWords.some(w => lowerText.includes(w))) scores.context += 15;
             if (lowerText.includes("du bist") || lowerText.includes("rolle")) scores.context += 10;
 
-            // 3. Struktur / Format
-            const structWords = ["liste", "tabelle", "bullet", "stichpunkte", "format", "mail", "betreff", "anzahl", "wörter", "sätze"];
+            const structWords = ["liste", "tabelle", "bullet", "stichpunkte", "format", "mail", "betreff", "anzahl", "wörter", "sätze", "gliederung", "checkliste"];
             if (structWords.some(w => lowerText.includes(w))) scores.struct += 15;
-            if (lowerText.includes(":")) scores.struct += 10; // Doppelpunkte deuten oft auf Struktur hin
+            if (lowerText.includes(":")) scores.struct += 10;
 
-            // 4. Beispiele
-            const exampleWords = ["beispiel", "z.b.", "wie", "stil", "ton", "art", "muster"];
+            const exampleWords = ["beispiel", "z.b.", "wie", "stil", "ton", "art", "muster", "original"];
             if (exampleWords.some(w => lowerText.includes(w))) scores.example += 15;
-            if (text.includes('"') || text.includes("'")) scores.example += 10; // Anführungszeichen deuten auf Referenztext hin
+            if (text.includes('"') || text.includes("'")) scores.example += 10;
 
-            // Caps
             scores.clarity = Math.min(25, scores.clarity);
             scores.context = Math.min(25, scores.context);
             scores.struct = Math.min(25, scores.struct);
@@ -606,10 +707,8 @@
         function updateAnalysisUI(text, explanation) {
             const result = calculateScore(text);
             
-            // Update Number
             animateValue("score-value", parseInt(document.getElementById("score-value").innerText) || 0, result.total, 1000);
             
-            // Update Text Rating
             const scoreText = document.getElementById("score-text");
             if (result.total < 40) {
                 scoreText.innerText = "Ausbaufähig";
@@ -625,15 +724,12 @@
                 scoreRingBg.className = "w-full h-full rounded-full border-4 border-emerald-500/30";
             }
 
-            // Update Bars
             updateBar("crit-clarity", result.details.clarity);
             updateBar("crit-context", result.details.context);
             updateBar("crit-struct", result.details.struct);
             updateBar("crit-example", result.details.example);
 
-            // Update Explanation
-            const expBox = document.getElementById("analysis-text");
-            expBox.innerHTML = explanation;
+            document.getElementById("analysis-text").innerHTML = explanation;
         }
 
         function updateBar(idPrefix, value) {
@@ -655,7 +751,6 @@
             document.getElementById("analysis-text").innerText = "Wähle einen Prompt, um zu sehen, warum er gut oder schlecht ist.";
         }
 
-        // Animation Helper
         function animateValue(id, start, end, duration) {
             if (start === end) return;
             const range = end - start;
@@ -669,12 +764,10 @@
                 if (current == end) {
                     clearInterval(timer);
                 }
-            }, stepTime > 0 ? stepTime : 10); // prevent 0 or negative
+            }, stepTime > 0 ? stepTime : 10);
         }
 
-        // --- START ---
         init();
-
     </script>
 </body>
 </html>
