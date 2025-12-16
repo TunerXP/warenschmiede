@@ -1,68 +1,71 @@
-# Warenschmiede.com – Website & Tools (GitHub Pages)
+Warenschmiede.com – Projektstatus & Inventar
 
-Statische Website für **www.warenschmiede.com** (GitHub Pages) mit:
-- Leistungsseiten (3D-Druck, CAD & Prototyping, PC-Hilfe)
-- Wissensbereich (u. a. 3D-Druck-Know-how)
-- KI-Bereich für Einsteiger
-- Eigene kleine Tools/Rechner
+Über das Projekt
 
-**Live:** https://www.warenschmiede.com
+Name: Warenschmiede.com
+Hosting: GitHub Pages
+Tech-Stack: Statisches HTML/CSS/JS, Dark/Light Mode Toggle, Python SEO-Script.
 
----
+1. Leistungsbereiche (Services)
 
-## Was die Website aktuell bietet (Überblick)
+Kernangebote der Seite:
 
-### Leistungen (Website-Inhalte)
-- **3D-Druck** (Infos + Einstieg + Hilfen)
-- **CAD & Prototyping**
-- **PC-Hilfe**
+3D-Druck: Informationen, Einstiegshilfen und Services.
 
-### KI-Bereich (für Einsteiger)
-Ziel: KI verständlich erklären (ohne Fachchinesisch), mit Beispielen und fairen Hinweisen zu Grenzen & Sicherheit.
+CAD & Prototyping: Konstruktion und Modellierung.
 
-Wichtige Seiten:
-- **KI Übersicht / Grundlagen:** `/ki/index.html`
-- **Prompts für den Alltag:** `/ki/prompts.html`
-- **KI-Werkzeuge:** `/ki/tools.html`
-- **Chancen & Risiken:** `/ki/chancen-und-risiken.html`
-- **KI-FAQ & Sicherheit:** `/ki/faq.html`
-- **KI-Lexikon:** `/ki/lexikon.html`
-- **KI Trainer (interaktiv):** `/ki/promt-trainer.html`
-- **Warenschmiede KI-Finder (interaktiv):** `/ki/ki-finder.html`
+PC-Hilfe: Support und Beratung.
 
-### Tools & Rechner (Highlights)
-- **Warenschmiede 3D-Druck Suite**  
-  URL/Datei (historisch): `/tools/kostenrechner-v2.html`  
-  (Name im Menü/auf der Seite: „Warenschmiede 3D-Druck Suite“)
+2. KI-Bereich (Bildung & Einsteiger)
 
-- **Warenschmiede METALL**  
-  `/werkstatt-rechner.html`
+Ziel: Verständliche Erklärungen ohne Fachjargon, Sicherheitsbewusstsein.
 
-- **Dokumenten-Tool Light**  
-  `/tools/buero/doku-light/`
+Bestehende Inhalte:
 
-- **Warenschmiede QR-Master ULTRA**  
-  `/tools/buero/doku-light/QRCodeMasterPro.html`
+Grundlagen: /ki/index.html (Übersicht)
 
-- **Quittungs-Generator**  
-  `/tools/buero/doku-light/ReceiptWriterPro.html`
+Anwendung: /ki/prompts.html (Alltags-Prompts)
 
-- **CNCMasterCalc**  
-  `/tools/buero/doku-light/CNCMasterCalc.html`
+Ressourcen: /ki/tools.html (Werkzeuge), /ki/lexikon.html (Begriffe)
 
-Hinweis: Viele Tool-Seiten sind absichtlich **nicht** für Google gedacht (noindex / nicht in Sitemap), damit keine internen Tool-Varianten „wild“ indexiert werden.
+Aufklärung: /ki/chancen-und-risiken.html, /ki/faq.html (Sicherheit/FAQ)
 
----
+Interaktiv:
 
-## Technik (kurz)
-- **Statisch:** HTML/CSS/JS
-- **Dark/Light/System Theme:** per Toggle + localStorage
-- **SEO Monitoring & Sitemap:** `seo_monitor.py` erzeugt Report + optional `sitemap.xml`
+/ki/promt-trainer.html (KI Trainer)
 
----
+/ki/ki-finder.html (Warenschmiede KI-Finder)
 
-## Lokal testen (ohne Build-Tool)
-Im Repo-Root:
+3. Tools & Werkzeuge
 
-```bash
-python -m http.server 8000
+NEU (Geplant/In Arbeit):
+
+Zentrale Tool-Übersicht: /tools/index.html (Dashboard für alle Apps)
+
+Interaktive Web-Apps und Rechner:
+
+3D-Druck:
+
+Warenschmiede 3D-Druck Suite (/tools/kostenrechner-v2.html)
+
+Werkstatt:
+
+Warenschmiede METALL (/werkstatt-rechner.html)
+
+CNCMasterCalc (/tools/buero/doku-light/CNCMasterCalc.html)
+
+Büro / Doku-Light:
+
+Dokumenten-Tool Light (/tools/buero/doku-light/)
+
+QR-Master ULTRA (/tools/buero/doku-light/QRCodeMasterPro.html)
+
+Quittungs-Generator (/tools/buero/doku-light/ReceiptWriterPro.html)
+
+4. Technische Notizen
+
+SEO: Python-Script (seo_monitor.py) für Reports und Sitemap.
+
+Indizierung: Viele Tools sind bewusst auf noindex gesetzt. Die neue Übersichtseite (/tools/index.html) sollte jedoch indiziert werden!
+
+Lokaler Test: python -m http.server 8000
