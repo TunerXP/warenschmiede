@@ -453,7 +453,7 @@
         <div id="tab-schrauben" class="tab-content">
             <div class="mb-6">
                 <h2 class="text-xl font-bold text-white mb-1">Bohrungen & Senkungen</h2>
-                <p class="text-sm text-slate-400">Maße für Durchgangslöcher und Senkungen für Zylinder- und Senkschrauben (DIN 912 / 7991).</p>
+                <p class="text-sm text-slate-400">Maße für Durchgangslöcher und Senkungen (DIN 974 / 7991).</p>
             </div>
 
             <div class="max-w-2xl mx-auto">
@@ -484,7 +484,7 @@
                             <label>
                                 Spielklasse
                                 <span class="tooltip"><i class="ph ph-info text-slate-500 ml-1"></i>
-                                    <span class="tooltiptext">eng: wenig Spiel. mittel: Standard. groß: Montagefreundlich.</span>
+                                    <span class="tooltiptext">Bestimmt den Zapfen-Ø! eng: f, mittel: m, groß: c.</span>
                                 </span>
                             </label>
                             <select id="scr-fit" class="input-field text-sm cursor-pointer" onchange="calcScrew()">
@@ -498,27 +498,39 @@
                     <!-- Results Layout -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">
                         <!-- Through Hole -->
-                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-600 text-center h-full flex flex-col justify-center">
-                            <div class="text-[10px] text-slate-400 uppercase font-bold mb-2">Durchgangsbohrung Ø</div>
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-600 text-center h-full flex flex-col justify-center relative">
+                            <div class="text-[10px] text-slate-400 uppercase font-bold mb-2">Bohrung / Zapfen-Ø</div>
                             <div class="text-4xl font-mono font-bold text-white mb-1"><span id="res-scr-hole">--</span> <span class="text-lg text-slate-500">mm</span></div>
-                            <div class="text-[10px] text-slate-500" id="res-scr-fit-text">Standard</div>
+                            <div class="text-[10px] text-orange-400 font-bold" id="res-scr-fit-text">Mittel (m)</div>
+                            <div class="absolute top-2 right-2 text-slate-600 text-xs"><i class="ph ph-ruler"></i></div>
                         </div>
 
                         <!-- Counterbore Info -->
                         <div class="space-y-3">
                             <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
-                                <span class="text-xs text-slate-400">Kopf-Ø (dk):</span>
+                                <span class="text-xs text-slate-400">Schraubenkopf-Ø (dk):</span>
                                 <span class="font-mono font-bold text-white" id="res-scr-dk">-- mm</span>
                             </div>
                             
-                            <!-- Zylinder Spec -->
-                            <div id="res-spec-912" class="hidden">
-                                <div class="p-3 bg-blue-900/20 rounded-lg border border-blue-800/30 text-xs text-blue-300">
-                                    <i class="ph ph-info mr-1"></i> Zylinderkopf steht über. Keine Senkung nötig (nur entgraten), außer bei Zapfensenkung (DIN 974).
+                            <!-- Zylinder Spec (DIN 974) -->
+                            <div id="res-spec-912" class="hidden space-y-3">
+                                <div class="bg-blue-900/20 p-3 rounded-lg border border-blue-800/30">
+                                    <div class="text-xs font-bold text-blue-300 mb-2 flex items-center gap-2"><i class="ph ph-arrow-fat-down"></i> Zapfensenkung (DIN 974-1)</div>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-xs text-slate-400">Senk-Ø (d2):</span>
+                                        <span class="font-mono font-bold text-white" id="res-scr-cb-dia">-- mm</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-slate-400">Senktiefe (t):</span>
+                                        <span class="font-mono font-bold text-white" id="res-scr-cb-depth">-- mm</span>
+                                    </div>
+                                </div>
+                                <div class="text-[9px] text-slate-500 leading-tight">
+                                    Hinweis: Zapfensenker muss zur gewählten Bohrung (<span class="res-fit-ref font-bold">m</span>) passen. Tiefe t = Kopfhöhe k + 0.4mm.
                                 </div>
                             </div>
 
-                            <!-- Senk Spec -->
+                            <!-- Senk Spec (DIN 7991) -->
                             <div id="res-spec-7991" class="hidden space-y-3">
                                 <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
                                     <span class="text-xs text-orange-400 font-bold">Senk-Ø (d_senk):</span>
@@ -534,7 +546,7 @@
                     </div>
                     
                     <p class="text-[10px] text-slate-500 mt-6 text-center border-t border-slate-700 pt-2">
-                        Maße sind typische Richtwerte für DIN/ISO Schrauben. Für sicherheitskritische Teile bitte Normblatt prüfen.
+                        Maße sind Richtwerte nach DIN 974-1 (Reihe 1) und DIN ISO 273.
                     </p>
 
                 </div>
@@ -847,18 +859,18 @@
 
         /* =========================================
            5. SCHRAUBEN & SENKUNGEN
-           Datenbasis: DIN 912 / ISO 4762 (Zylinder), DIN 7991 (Senk)
+           Datenbasis: DIN 912 / ISO 4762 (Zylinder), DIN 7991 (Senk), DIN 974-1 (Senkung)
            Durchgangslöcher nach DIN ISO 273 (fein, mittel, grob)
            ========================================= */
         const screwData = {
-            'M3': { hole_f: 3.2, hole_m: 3.4, hole_c: 3.6, dk_912: 5.5, dk_7991: 6.0, k_7991: 1.7 },
-            'M4': { hole_f: 4.3, hole_m: 4.5, hole_c: 4.8, dk_912: 7.0, dk_7991: 8.0, k_7991: 2.3 },
-            'M5': { hole_f: 5.3, hole_m: 5.5, hole_c: 5.8, dk_912: 8.5, dk_7991: 10.0, k_7991: 2.8 },
-            'M6': { hole_f: 6.4, hole_m: 6.6, hole_c: 7.0, dk_912: 10.0, dk_7991: 12.0, k_7991: 3.3 },
-            'M8': { hole_f: 8.4, hole_m: 9.0, hole_c: 10.0, dk_912: 13.0, dk_7991: 16.0, k_7991: 4.4 },
-            'M10': { hole_f: 10.5, hole_m: 11.0, hole_c: 12.0, dk_912: 16.0, dk_7991: 20.0, k_7991: 5.5 },
-            'M12': { hole_f: 13.0, hole_m: 13.5, hole_c: 14.5, dk_912: 18.0, dk_7991: 24.0, k_7991: 6.5 },
-            'M16': { hole_f: 17.0, hole_m: 17.5, hole_c: 18.5, dk_912: 24.0, dk_7991: 30.0, k_7991: 7.5 }
+            'M3': { hole_f: 3.2, hole_m: 3.4, hole_c: 3.6, dk_912: 5.5, k_912: 3.0, d2_974: 6.0, dk_7991: 6.0, k_7991: 1.7 },
+            'M4': { hole_f: 4.3, hole_m: 4.5, hole_c: 4.8, dk_912: 7.0, k_912: 4.0, d2_974: 8.0, dk_7991: 8.0, k_7991: 2.3 },
+            'M5': { hole_f: 5.3, hole_m: 5.5, hole_c: 5.8, dk_912: 8.5, k_912: 5.0, d2_974: 10.0, dk_7991: 10.0, k_7991: 2.8 },
+            'M6': { hole_f: 6.4, hole_m: 6.6, hole_c: 7.0, dk_912: 10.0, k_912: 6.0, d2_974: 11.0, dk_7991: 12.0, k_7991: 3.3 },
+            'M8': { hole_f: 8.4, hole_m: 9.0, hole_c: 10.0, dk_912: 13.0, k_912: 8.0, d2_974: 15.0, dk_7991: 16.0, k_7991: 4.4 },
+            'M10': { hole_f: 10.5, hole_m: 11.0, hole_c: 12.0, dk_912: 16.0, k_912: 10.0, d2_974: 18.0, dk_7991: 20.0, k_7991: 5.5 },
+            'M12': { hole_f: 13.0, hole_m: 13.5, hole_c: 14.5, dk_912: 18.0, k_912: 12.0, d2_974: 20.0, dk_7991: 24.0, k_7991: 6.5 },
+            'M16': { hole_f: 17.0, hole_m: 17.5, hole_c: 18.5, dk_912: 24.0, k_912: 16.0, d2_974: 26.0, dk_7991: 30.0, k_7991: 7.5 }
         };
 
         function calcScrew() {
@@ -874,10 +886,21 @@
             
             const fitMap = { 'f': 'Eng (fein)', 'm': 'Standard (mittel)', 'c': 'Groß (grob)' };
             document.getElementById('res-scr-fit-text').innerText = fitMap[fit];
+            
+            // Update reference text for zapfen match
+            const refEls = document.querySelectorAll('.res-fit-ref');
+            refEls.forEach(el => el.innerText = fit);
 
             // Kopfdaten
             if (type === '912') {
                 document.getElementById('res-scr-dk').innerText = data.dk_912.toFixed(1) + " mm";
+                
+                // Zapfensenkung DIN 974-1 (Reihe 1)
+                document.getElementById('res-scr-cb-dia').innerText = data.d2_974.toFixed(1) + " mm";
+                // Tiefe = k + 0.4mm (übliche Praxis für bündiges Versenken)
+                const depth = data.k_912 + 0.4;
+                document.getElementById('res-scr-cb-depth').innerText = depth.toFixed(1) + " mm";
+
                 document.getElementById('res-spec-912').classList.remove('hidden');
                 document.getElementById('res-spec-7991').classList.add('hidden');
             } else {
