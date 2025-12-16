@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warenschmiede KI – Prompt-Trainer</title>
+    <!-- Tailwind CSS (via CDN für Standalone-Nutzung ohne Build-Step) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#1e293b', // Custom dark card bg
+                            900: '#0f172a', // Main bg
+                            950: '#020617', // Darker details
+                        },
+                        brand: {
+                            blue: '#3b82f6',
+                            accent: '#06b6d4'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar für Dark Mode */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569; 
+        }
+
+        /* Animation für Chat Bubbles */
+        .bubble-enter {
+            animation: popIn 0.3s ease-out forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        
+        @keyframes popIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-200 antialiased min-h-screen flex flex-col">
+
+    <!-- 1. TOP NAV (Zurück Link) -->
+    <div class="bg-slate-950 border-b border-slate-800 text-xs py-2 px-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="https://www.warenschmiede.com/" class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 group-hover:-translate-x-1 transition-transform">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                Zurück zur Warenschmiede
+            </a>
+            <!-- Mobile Share Hint (optional) -->
+            <span class="hidden sm:inline text-slate-600">Kostenloses Lern-Tool</span>
+        </div>
+    </div>
+
+    <!-- 2. MAIN HEADER -->
+    <header class="bg-slate-950/80 backdrop-blur-md border-b border-slate-800 py-4 px-6 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-brand-blue to-brand-accent rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-blue-900/20 flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+                    </svg>
+                </div>
+                <div class="leading-tight">
+                    <h1 class="text-lg md:text-xl font-bold text-white tracking-tight">Warenschmiede KI <span class="hidden sm:inline text-brand-accent font-normal">| Prompt-Trainer</span></h1>
+                    <p class="text-xs text-slate-400">Lerne spielerisch, wie man gute Prompts schreibt.</p>
+                </div>
+            </div>
+
+            <!-- Share Button -->
+            <button onclick="sharePage()" class="flex items-center gap-2 bg-brand-accent hover:bg-cyan-400 text-slate-950 font-bold px-4 py-2 rounded-full transition-all shadow-lg shadow-cyan-900/20 active:scale-95 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+                </svg>
+                <span class="hidden sm:inline">Trainer teilen</span>
+                <span class="sm:hidden">Teilen</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow max-w-7xl mx-auto w-full p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- SPALTE 1: SZENEN-AUSWAHL (3 Cols) -->
+        <section class="lg:col-span-3 flex flex-col gap-4">
+            <h2 class="text-sm uppercase tracking-wider text-slate-500 font-bold mb-1">1. Wähle eine Aufgabe</h2>
+            <div id="scene-list" class="space-y-3">
+                <!-- Wird per JS gefüllt -->
+            </div>
+        </section>
+
+        <!-- SPALTE 2: CHAT-SIMULATION (5 Cols) -->
+        <section class="lg:col-span-5 flex flex-col h-[600px] lg:h-auto bg-slate-850 rounded-xl border border-slate-700 shadow-xl overflow-hidden relative">
+            
+            <!-- Chat Header -->
+            <div class="bg-slate-800 p-3 border-b border-slate-700 flex justify-between items-center">
+                <span id="chat-title" class="font-medium text-white">Bitte Szene wählen...</span>
+                <span class="text-xs bg-brand-blue/20 text-brand-blue px-2 py-0.5 rounded-full border border-brand-blue/30">Bot Simulation</span>
+            </div>
+
+            <!-- Chat Area -->
+            <div id="chat-window" class="flex-grow p-4 overflow-y-auto space-y-4 bg-slate-900/50">
+                <!-- Initial Message -->
+                <div class="flex gap-3">
+                    <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center flex-shrink-0 text-xs">AI</div>
+                    <div class="bg-slate-800 text-slate-300 p-3 rounded-2xl rounded-tl-none text-sm shadow-sm border border-slate-700/50 max-w-[85%]">
+                        Hallo! Wähle links eine Aufgabe aus, dann zeige ich dir den Unterschied zwischen guten und schlechten Anweisungen (Prompts).
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls Area -->
+            <div class="bg-slate-800 p-4 border-t border-slate-700 space-y-4">
+                
+                <!-- Preset Buttons -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="sendPrompt('bad')" id="btn-bad" class="group relative px-4 py-3 bg-red-900/20 hover:bg-red-900/30 border border-red-800/50 rounded-lg text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        <div class="text-xs text-red-400 font-bold mb-1">👎 Schlechter Prompt</div>
+                        <div class="text-[10px] text-slate-400 leading-tight group-hover:text-slate-300">Zu kurz, unklar, keine Details.</div>
+                    </button>
+                    <button onclick="sendPrompt('good')" id="btn-good" class="group relative px-4 py-3 bg-emerald-900/20 hover:bg-emerald-900/30 border border-emerald-800/50 rounded-lg text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        <div class="text-xs text-emerald-400 font-bold mb-1">👍 Guter Prompt</div>
+                        <div class="text-[10px] text-slate-400 leading-tight group-hover:text-slate-300">Strukturiert, mit Kontext & Ziel.</div>
+                    </button>
+                </div>
+
+                <!-- Custom Input (Optional) -->
+                <div class="border-t border-slate-700 pt-3">
+                    <label class="text-xs text-slate-500 mb-1 block">Oder teste deine eigene Version:</label>
+                    <div class="flex gap-2">
+                        <textarea id="custom-input" rows="1" placeholder="Schreibe hier einen Prompt..." class="w-full bg-slate-900 border border-slate-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-brand-blue resize-none"></textarea>
+                        <button onclick="showUserPrompt()" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-md text-xs font-medium transition-colors">
+                            Prüfen
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SPALTE 3: ANALYSE (4 Cols) -->
+        <section class="lg:col-span-4 space-y-6">
+            
+            <!-- Analyse Card -->
+            <div class="bg-slate-850 rounded-xl border border-slate-700 p-5 shadow-lg">
+                <h2 class="text-sm uppercase tracking-wider text-brand-accent font-bold mb-4 border-b border-slate-700 pb-2">Prompt Analyse</h2>
+                
+                <!-- Score Header -->
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="relative w-16 h-16 flex items-center justify-center">
+                        <div class="w-full h-full rounded-full border-4 border-slate-700" id="score-ring-bg"></div>
+                        <div class="absolute text-xl font-bold text-white" id="score-value">-</div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-slate-400">Qualitäts-Score</div>
+                        <div class="text-xs text-slate-500" id="score-text">Warte auf Eingabe...</div>
+                    </div>
+                </div>
+
+                <!-- Criteria List -->
+                <div class="space-y-3 mb-6">
+                    <!-- Klarheit -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300">Klarheit & Präzision</span>
+                            <span id="crit-clarity-val" class="text-slate-500">0/25</span>
+                        </div>
+                        <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                            <div id="crit-clarity-bar" class="h-full bg-blue-500 w-0 transition-all duration-500"></div>
+                        </div>
+                    </div>
+                    <!-- Kontext -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300">Kontext & Zielgruppe</span>
+                            <span id="crit-context-val" class="text-slate-500">0/25</span>
+                        </div>
+                        <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                            <div id="crit-context-bar" class="h-full bg-purple-500 w-0 transition-all duration-500"></div>
+                        </div>
+                    </div>
+                    <!-- Struktur -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300">Format & Struktur</span>
+                            <span id="crit-struct-val" class="text-slate-500">0/25</span>
+                        </div>
+                        <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                            <div id="crit-struct-bar" class="h-full bg-orange-500 w-0 transition-all duration-500"></div>
+                        </div>
+                    </div>
+                    <!-- Beispiele -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300">Beispiele / Stil</span>
+                            <span id="crit-example-val" class="text-slate-500">0/25</span>
+                        </div>
+                        <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                            <div id="crit-example-bar" class="h-full bg-emerald-500 w-0 transition-all duration-500"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Explanation Box -->
+                <div class="bg-slate-900/50 border border-slate-700/50 rounded-lg p-3 text-sm">
+                    <h3 class="font-bold text-slate-200 mb-1 text-xs">🔍 Diagnose:</h3>
+                    <p id="analysis-text" class="text-slate-400 leading-relaxed text-xs">
+                        Wähle einen Prompt, um zu sehen, warum er gut oder schlecht ist.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Cheatsheet -->
+            <div class="bg-slate-800 rounded-xl border border-slate-700 p-5">
+                <h3 class="text-xs font-bold text-slate-300 uppercase mb-3">🛠️ Bausteine für Top-Prompts</h3>
+                <ul class="space-y-2 text-xs text-slate-400 font-mono">
+                    <li class="flex gap-2"><span class="text-brand-blue">Rolle:</span> "Du bist ein Experte für..."</li>
+                    <li class="flex gap-2"><span class="text-brand-blue">Ziel:</span> "Erkläre mir..."</li>
+                    <li class="flex gap-2"><span class="text-brand-blue">Kontext:</span> "Für Anfänger ohne Vorwissen..."</li>
+                    <li class="flex gap-2"><span class="text-brand-blue">Format:</span> "Als Liste mit 5 Punkten..."</li>
+                    <li class="flex gap-2"><span class="text-brand-blue">Beispiel:</span> "Nutze diesen Stil: ..."</li>
+                </ul>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- FOOTER / LERNBEREICH -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-10 px-4 mt-8">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <!-- Box 1 -->
+            <div>
+                <h4 class="text-white font-bold mb-3">💡 So nutzt du den Trainer</h4>
+                <ul class="text-sm text-slate-400 space-y-2 list-disc list-inside">
+                    <li>Wähle links eine Alltagssituation.</li>
+                    <li>Sende erst den <strong>schlechten Prompt</strong> und sieh das Ergebnis.</li>
+                    <li>Sende dann den <strong>guten Prompt</strong> zum Vergleich.</li>
+                    <li>Teste eigene Texte im Eingabefeld.</li>
+                </ul>
+            </div>
+
+            <!-- Box 2 -->
+            <div>
+                <h4 class="text-white font-bold mb-3">✨ Goldene Regeln</h4>
+                <ul class="text-sm text-slate-400 space-y-2">
+                    <li class="flex items-start gap-2">✅ <span>Sei so konkret wie möglich.</span></li>
+                    <li class="flex items-start gap-2">✅ <span>Gib der KI eine Rolle ("Du bist...").</span></li>
+                    <li class="flex items-start gap-2">✅ <span>Definiere das Ausgabeformat (Tabelle, Mail...).</span></li>
+                    <li class="flex items-start gap-2">✅ <span>Gib Beispiele, wenn der Stil wichtig ist.</span></li>
+                </ul>
+            </div>
+
+            <!-- Box 3 -->
+            <div>
+                <h4 class="text-white font-bold mb-3">🔗 Rechtliches & Links</h4>
+                <div class="flex flex-col gap-2 text-sm">
+                    <a href="https://www.warenschmiede.com/" class="text-brand-blue hover:text-brand-accent transition-colors">← Zur Warenschmiede</a>
+                    <div class="h-px bg-slate-800 my-1"></div>
+                    <a href="https://www.warenschmiede.com/impressum.html" target="_blank" class="text-slate-400 hover:text-white transition-colors">Impressum</a>
+                    <a href="https://www.warenschmiede.com/datenschutz.html" target="_blank" class="text-slate-400 hover:text-white transition-colors">Datenschutz</a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center text-slate-600 text-xs mt-10 flex flex-col sm:flex-row justify-center gap-4">
+            <span>&copy; 2024 Warenschmiede KI Trainer.</span>
+            <span>Läuft lokal im Browser. Kein Tracking.</span>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- SHARE FUNKTION ---
+        function sharePage() {
+            const shareData = {
+                title: 'Warenschmiede KI Prompt-Trainer',
+                text: 'Lern mit Beispielen, wie du gute Prompts für KI schreibst.',
+                url: window.location.href // Oder hier die echte URL eintragen wenn gewünscht
+            };
+
+            // Modern Share API (Mobile & supported Browsers)
+            if (navigator.share) {
+                navigator.share(shareData)
+                    .then(() => console.log('Geteilt!'))
+                    .catch((err) => console.log('Fehler beim Teilen:', err));
+            } else {
+                // Fallback: Clipboard
+                navigator.clipboard.writeText(window.location.href)
+                    .then(() => alert('Link in die Zwischenablage kopiert! Du kannst ihn jetzt teilen.'))
+                    .catch(() => alert('Konnte Link nicht kopieren.'));
+            }
+        }
+
+        // --- DATEN: SZENARIEN ---
+        const scenes = [
+            {
+                id: 1,
+                title: "E-Mail freundlich formulieren",
+                desc: "Homeoffice beim Chef anfragen.",
+                prompts: {
+                    bad: {
+                        text: "Schreib mal eine Mail an meinen Chef wegen Homeoffice.",
+                        answer: "Betreff: Homeoffice\n\nHallo Chef,\n\nich will morgen Homeoffice machen. Sag Bescheid, ob das okay ist.\n\nGruß",
+                        explanation: "Der Prompt ist viel zu allgemein. Die KI weiß nicht: Welcher Tonfall? Welcher Grund? Wie lang? Das Ergebnis ist unhöflich und kurz."
+                    },
+                    good: {
+                        text: "Schreibe eine freundliche, aber bestimmte E-Mail an meinen Chef (Herr Müller). Ich möchte für morgen um einen Tag Homeoffice bitten. \n\nKontext: Ich habe einen Handwerkertermin. \nTon: Professionell, Du-Form.\nLänge: ca. 80 Wörter.\nFormat: E-Mail mit Betreff.",
+                        answer: "Betreff: Anfrage Homeoffice für morgen\n\nHallo Herr Müller,\n\nich hoffe, du hattest einen guten Start in die Woche.\n\nIch würde morgen gerne aus dem Homeoffice arbeiten, da sich kurzfristig ein Handwerkertermin bei mir ergeben hat. Meine Erreichbarkeit und Arbeitsleistung bleiben davon natürlich unberührt.\n\nGib mir bitte kurz Bescheid, ob das für dich in Ordnung ist.\n\nViele Grüße,",
+                        explanation: "Perfekt! Der Prompt nennt den Empfänger, den genauen Grund, den gewünschten Tonfall ('freundlich, aber bestimmt') und das Format. Die KI kann so einen passgenauen Text liefern."
+                    }
+                }
+            },
+            {
+                id: 2,
+                title: "Lernhilfe / Erklärung",
+                desc: "Ein schwieriges Thema einfach erklären.",
+                prompts: {
+                    bad: {
+                        text: "Erklär mal Photosynthese.",
+                        answer: "Die Photosynthese ist ein physiologischer Prozess zur Erzeugung von energiereichen Biomolekülen aus energieärmeren Stoffen mithilfe von Lichtenergie. Sie wird von Pflanzen, Algen und einigen Bakteriengruppen betrieben.",
+                        explanation: "Zu vage. Die KI wählt oft standardmäßig eine lexikonartige Sprache. Ohne Zielgruppe (z.B. 'für ein Kind') ist die Antwort oft zu kompliziert."
+                    },
+                    good: {
+                        text: "Erkläre mir die Photosynthese so, dass es ein 10-jähriges Kind versteht. \n\nStil: Nutze einfache Vergleiche (z.B. Kochen).\nLänge: Maximal 4 Sätze.\nFormat: Text + 3 Stichpunkte als Merksätze am Ende.",
+                        answer: "Stell dir vor, eine Pflanze ist wie ein kleiner Koch. Sie nimmt Sonnenlicht, Wasser und Luft und kocht daraus in ihren grünen Blättern ihr eigenes Essen (Zucker).\n\nMerksätze:\n• Pflanzen brauchen Licht und Wasser.\n• Sie machen daraus Zucker und Sauerstoff.\n• Das nennt man Photosynthese.",
+                        explanation: "Sehr gut. Durch die Angabe der Zielgruppe ('10-jähriges Kind') und den Wunsch nach Vergleichen passt die KI die Sprache komplett an. Die Formatvorgabe sorgt für Übersichtlichkeit."
+                    }
+                }
+            },
+            {
+                id: 3,
+                title: "Ideenfindung / Brainstorming",
+                desc: "Geschenkideen sammeln.",
+                prompts: {
+                    bad: {
+                        text: "Ich brauche Geschenkideen.",
+                        answer: "Hier sind Ideen:\n1. Buch\n2. Parfüm\n3. Gutschein\n4. Socken\n5. Tasse",
+                        explanation: "Ohne Kontext kann die KI nur raten. Die Liste ist generisch und langweilig, weil sie nicht weiß, für wen das Geschenk ist."
+                    },
+                    good: {
+                        text: "Ich brauche 5 kreative Geschenkideen für meinen Bruder.\n\nProfil: Er ist 30 Jahre alt, liebt Camping, kocht gerne draußen und mag keine technischen Gadgets.\nBudget: Bis 50 Euro.\nFormat: Liste mit kurzer Begründung, warum das passt.",
+                        answer: "Hier sind 5 Ideen für deinen Bruder:\n1. Hochwertiges Outdoor-Gewürzset (Perfekt fürs Kochen draußen).\n2. Personalisierte Emaille-Tasse (Robust für Camping).\n3. Ein Feuerstahl-Set (Traditionell, keine Technik).\n4. Ein Buch über 'Kochen am Lagerfeuer'.\n5. Eine Hängematte für unterwegs.",
+                        explanation: "Exzellent. Das 'Profil' der Person hilft der KI, spezifische Vorschläge zu machen. Das Budget schränkt die Auswahl sinnvoll ein."
+                    }
+                }
+            },
+            {
+                id: 4,
+                title: "Text verbessern",
+                desc: "Rechtschreibung und Stil korrigieren.",
+                prompts: {
+                    bad: {
+                        text: "Mach den Text besser: 'hallo kunde ich schik das angebot speter.'",
+                        answer: "Hallo Kunde, ich schicke das Angebot später.",
+                        explanation: "Der Befehl 'besser' ist subjektiv. Die KI korrigiert hier nur die gröbsten Fehler, aber der Text bleibt unprofessionell."
+                    },
+                    good: {
+                        text: "Korrigiere den folgenden Text auf Rechtschreibung und formuliere ihn in ein professionelles Business-Deutsch um.\n\nOriginal: 'hallo kunde ich schik das angebot speter.'\n\nTon: Höflich, förmlich.\nErgänze: Entschuldigung für die Verzögerung.",
+                        answer: "Sehr geehrter Kunde,\n\nvielen Dank für Ihre Geduld. Ich werde Ihnen das gewünschte Angebot im Laufe des Tages zukommen lassen. Bitte entschuldigen Sie die kleine Verzögerung.\n\nMit freundlichen Grüßen",
+                        explanation: "Stark. Der Prompt definiert 'besser' als 'professionelles Business-Deutsch' und gibt inhaltliche Anweisungen (Entschuldigung ergänzen)."
+                    }
+                }
+            }
+        ];
+
+        // --- STATE ---
+        let currentSceneId = null;
+        const chatWindow = document.getElementById('chat-window');
+        const customInput = document.getElementById('custom-input');
+        const scoreRingBg = document.getElementById('score-ring-bg');
+
+        // --- INIT ---
+        function init() {
+            renderSceneList();
+            // Select first scene by default
+            selectScene(1);
+        }
+
+        // --- RENDER SCENE LIST ---
+        function renderSceneList() {
+            const container = document.getElementById('scene-list');
+            container.innerHTML = scenes.map(scene => `
+                <button onclick="selectScene(${scene.id})" 
+                        id="scene-btn-${scene.id}"
+                        class="w-full text-left p-4 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-750 hover:border-slate-600 transition-all group focus:outline-none focus:ring-2 focus:ring-brand-blue">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-slate-200 group-hover:text-brand-accent transition-colors">${scene.title}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-slate-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                        </svg>
+                    </div>
+                    <p class="text-xs text-slate-400 line-clamp-2">${scene.desc}</p>
+                </button>
+            `).join('');
+        }
+
+        // --- SELECT SCENE ---
+        function selectScene(id) {
+            currentSceneId = id;
+            const scene = scenes.find(s => s.id === id);
+            
+            // Update UI Active State
+            document.querySelectorAll('[id^="scene-btn-"]').forEach(btn => {
+                btn.classList.remove('border-brand-blue', 'bg-slate-750');
+                btn.classList.add('border-slate-700', 'bg-slate-800');
+            });
+            const activeBtn = document.getElementById(`scene-btn-${id}`);
+            activeBtn.classList.remove('border-slate-700', 'bg-slate-800');
+            activeBtn.classList.add('border-brand-blue', 'bg-slate-750');
+
+            // Reset Chat
+            document.getElementById('chat-title').innerText = scene.title;
+            chatWindow.innerHTML = `
+                <div class="flex gap-3 bubble-enter">
+                    <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center flex-shrink-0 text-xs text-slate-300">AI</div>
+                    <div class="bg-slate-800 text-slate-300 p-3 rounded-2xl rounded-tl-none text-sm shadow-sm border border-slate-700/50 max-w-[85%]">
+                        Ich bin bereit für die Aufgabe: <strong>"${scene.title}"</strong>. <br>Versuche mal den schlechten Prompt, dann den guten.
+                    </div>
+                </div>
+            `;
+            
+            // Reset Analysis
+            resetAnalysis();
+            enableControls();
+        }
+
+        // --- SEND PRESET PROMPT ---
+        function sendPrompt(type) {
+            const scene = scenes.find(s => s.id === currentSceneId);
+            const data = scene.prompts[type];
+            
+            disableControls();
+
+            // 1. User Message
+            appendUserMessage(data.text);
+
+            // 2. Simulate Delay & Typing
+            setTimeout(() => {
+                showTypingIndicator();
+                
+                // 3. Analyze & Show Result (Explanation)
+                updateAnalysisUI(data.text, data.explanation);
+
+                setTimeout(() => {
+                    removeTypingIndicator();
+                    appendBotMessage(data.answer);
+                    enableControls();
+                }, 1200); // 1.2s delay for typing
+            }, 500);
+        }
+
+        // --- CUSTOM USER PROMPT ---
+        function showUserPrompt() {
+            const text = customInput.value.trim();
+            if (!text) return;
+
+            disableControls();
+            appendUserMessage(text);
+            customInput.value = '';
+
+            setTimeout(() => {
+                // Analyze logic
+                updateAnalysisUI(text, "Das ist dein eigener Prompt. Schau dir den Score oben an! Ich antworte hier nicht wirklich, da ich nur ein Simulator bin.");
+                
+                // Bot placeholder
+                appendBotMessage("Dies ist ein Trainings-Modus. Ich analysiere deinen Text (siehe rechts), generiere aber keine neue Antwort.");
+                enableControls();
+            }, 600);
+        }
+
+        // --- CHAT UI HELPERS ---
+        function appendUserMessage(text) {
+            const div = document.createElement('div');
+            div.className = "flex gap-3 flex-row-reverse bubble-enter";
+            div.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-brand-blue flex items-center justify-center flex-shrink-0 text-xs text-white">DU</div>
+                <div class="bg-brand-blue/10 text-brand-blue border border-brand-blue/20 p-3 rounded-2xl rounded-tr-none text-sm shadow-sm max-w-[85%] font-mono text-xs leading-relaxed whitespace-pre-wrap">${text}</div>
+            `;
+            chatWindow.appendChild(div);
+            scrollToBottom();
+        }
+
+        function appendBotMessage(text) {
+            const div = document.createElement('div');
+            div.className = "flex gap-3 bubble-enter";
+            div.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center flex-shrink-0 text-xs text-slate-300">AI</div>
+                <div class="bg-slate-800 text-slate-300 p-3 rounded-2xl rounded-tl-none text-sm shadow-sm border border-slate-700/50 max-w-[85%] whitespace-pre-wrap border-l-4 border-l-slate-600">${text}</div>
+            `;
+            chatWindow.appendChild(div);
+            scrollToBottom();
+        }
+
+        function showTypingIndicator() {
+            const div = document.createElement('div');
+            div.id = 'typing-indicator';
+            div.className = "flex gap-3 bubble-enter";
+            div.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center flex-shrink-0 text-xs text-slate-300">AI</div>
+                <div class="bg-slate-800 p-4 rounded-2xl rounded-tl-none border border-slate-700/50 flex gap-1 items-center h-10">
+                    <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
+                    <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
+                    <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
+                </div>
+            `;
+            chatWindow.appendChild(div);
+            scrollToBottom();
+        }
+
+        function removeTypingIndicator() {
+            const el = document.getElementById('typing-indicator');
+            if(el) el.remove();
+        }
+
+        function scrollToBottom() {
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function disableControls() {
+            document.getElementById('btn-bad').disabled = true;
+            document.getElementById('btn-good').disabled = true;
+            document.querySelector('#custom-input').nextElementSibling.disabled = true;
+        }
+
+        function enableControls() {
+            document.getElementById('btn-bad').disabled = false;
+            document.getElementById('btn-good').disabled = false;
+            document.querySelector('#custom-input').nextElementSibling.disabled = false;
+        }
+
+        // --- ANALYSIS LOGIC (HEURISTICS) ---
+        function calculateScore(text) {
+            let score = 0;
+            const lowerText = text.toLowerCase();
+            const length = text.length;
+            
+            let scores = {
+                clarity: 5,
+                context: 0,
+                struct: 0,
+                example: 0
+            };
+
+            // 1. Klarheit (Verb check, Length)
+            const verbs = ["schreibe", "formuliere", "erkläre", "erstelle", "korrigiere", "fasse zusammen", "analysiere"];
+            if (verbs.some(v => lowerText.includes(v))) scores.clarity += 10;
+            if (length > 30) scores.clarity += 10; // Zu kurz ist oft unklar
+            
+            // 2. Kontext
+            const contextWords = ["für", "zielgruppe", "niveau", "alter", "hintergrund", "situation", "mein", "chef", "kind", "kollege"];
+            if (contextWords.some(w => lowerText.includes(w))) scores.context += 15;
+            if (lowerText.includes("du bist") || lowerText.includes("rolle")) scores.context += 10;
+
+            // 3. Struktur / Format
+            const structWords = ["liste", "tabelle", "bullet", "stichpunkte", "format", "mail", "betreff", "anzahl", "wörter", "sätze"];
+            if (structWords.some(w => lowerText.includes(w))) scores.struct += 15;
+            if (lowerText.includes(":")) scores.struct += 10; // Doppelpunkte deuten oft auf Struktur hin
+
+            // 4. Beispiele
+            const exampleWords = ["beispiel", "z.b.", "wie", "stil", "ton", "art", "muster"];
+            if (exampleWords.some(w => lowerText.includes(w))) scores.example += 15;
+            if (text.includes('"') || text.includes("'")) scores.example += 10; // Anführungszeichen deuten auf Referenztext hin
+
+            // Caps
+            scores.clarity = Math.min(25, scores.clarity);
+            scores.context = Math.min(25, scores.context);
+            scores.struct = Math.min(25, scores.struct);
+            scores.example = Math.min(25, scores.example);
+
+            const total = scores.clarity + scores.context + scores.struct + scores.example;
+            return { total, details: scores };
+        }
+
+        function updateAnalysisUI(text, explanation) {
+            const result = calculateScore(text);
+            
+            // Update Number
+            animateValue("score-value", parseInt(document.getElementById("score-value").innerText) || 0, result.total, 1000);
+            
+            // Update Text Rating
+            const scoreText = document.getElementById("score-text");
+            if (result.total < 40) {
+                scoreText.innerText = "Ausbaufähig";
+                scoreText.className = "text-xs text-red-400 font-bold";
+                scoreRingBg.className = "w-full h-full rounded-full border-4 border-red-500/30";
+            } else if (result.total < 75) {
+                scoreText.innerText = "Guter Anfang";
+                scoreText.className = "text-xs text-yellow-400 font-bold";
+                scoreRingBg.className = "w-full h-full rounded-full border-4 border-yellow-500/30";
+            } else {
+                scoreText.innerText = "Exzellent";
+                scoreText.className = "text-xs text-emerald-400 font-bold";
+                scoreRingBg.className = "w-full h-full rounded-full border-4 border-emerald-500/30";
+            }
+
+            // Update Bars
+            updateBar("crit-clarity", result.details.clarity);
+            updateBar("crit-context", result.details.context);
+            updateBar("crit-struct", result.details.struct);
+            updateBar("crit-example", result.details.example);
+
+            // Update Explanation
+            const expBox = document.getElementById("analysis-text");
+            expBox.innerHTML = explanation;
+        }
+
+        function updateBar(idPrefix, value) {
+            document.getElementById(`${idPrefix}-val`).innerText = `${value}/25`;
+            document.getElementById(`${idPrefix}-bar`).style.width = `${(value/25)*100}%`;
+        }
+
+        function resetAnalysis() {
+            document.getElementById("score-value").innerText = "-";
+            document.getElementById("score-text").innerText = "Warte auf Prompt...";
+            document.getElementById("score-text").className = "text-xs text-slate-500";
+            document.getElementById("score-ring-bg").className = "w-full h-full rounded-full border-4 border-slate-700";
+            
+            ["crit-clarity", "crit-context", "crit-struct", "crit-example"].forEach(id => {
+                document.getElementById(`${id}-val`).innerText = "0/25";
+                document.getElementById(`${id}-bar`).style.width = "0%";
+            });
+
+            document.getElementById("analysis-text").innerText = "Wähle einen Prompt, um zu sehen, warum er gut oder schlecht ist.";
+        }
+
+        // Animation Helper
+        function animateValue(id, start, end, duration) {
+            if (start === end) return;
+            const range = end - start;
+            let current = start;
+            const increment = end > start ? 1 : -1;
+            const stepTime = Math.abs(Math.floor(duration / range));
+            const obj = document.getElementById(id);
+            const timer = setInterval(function() {
+                current += increment;
+                obj.innerHTML = current;
+                if (current == end) {
+                    clearInterval(timer);
+                }
+            }, stepTime > 0 ? stepTime : 10); // prevent 0 or negative
+        }
+
+        // --- START ---
+        init();
+
+    </script>
+</body>
+</html>
