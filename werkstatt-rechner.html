@@ -399,7 +399,7 @@
         <div id="tab-gewinde" class="tab-content">
             <div class="mb-6">
                 <h2 class="text-xl font-bold text-white mb-1">Gewinde & Kernlöcher</h2>
-                <p class="text-sm text-slate-400">Finde sofort den richtigen Bohrer für dein Gewinde. Regel- und Feingewinde.</p>
+                <p class="text-sm text-slate-400">Finde sofort den richtigen Bohrer für dein Gewinde. Metrisch & Zoll (UNC/UNF).</p>
             </div>
 
             <div class="max-w-xl mx-auto">
@@ -409,8 +409,10 @@
                         <div class="input-group">
                             <label>Gewindeart</label>
                             <select id="th-type" class="input-field cursor-pointer" onchange="updateThreadList()">
-                                <option value="M">Metrisches Regelgewinde (M)</option>
-                                <option value="MF">Metrisches Feingewinde (MF)</option>
+                                <option value="M">Metrisch Regel (M)</option>
+                                <option value="MF">Metrisch Fein (MF)</option>
+                                <option value="UNC">Zoll Grob (UNC)</option>
+                                <option value="UNF">Zoll Fein (UNF)</option>
                             </select>
                         </div>
                         <div class="input-group">
@@ -424,7 +426,7 @@
                     <div class="text-center py-4 bg-slate-900 rounded-xl border border-slate-700 relative">
                         <div class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Kernlochdurchmesser (Bohrer)</div>
                         <div class="text-5xl font-mono font-bold text-indigo-400 mb-2"><span id="res-thread-drill">--</span> <span class="text-lg text-slate-500">mm</span></div>
-                        <div class="text-xs text-slate-500">
+                        <div class="text-xs text-slate-500" id="thread-hint">
                             Faustformel: Nennmaß – Steigung ≈ Kernloch
                         </div>
                     </div>
@@ -433,16 +435,16 @@
                 <!-- Table Preview -->
                 <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
                     <div class="bg-slate-950 p-3 border-b border-slate-700 flex justify-between items-center">
-                        <h4 class="text-sm font-bold text-white">Wichtige Größen (Regelgewinde)</h4>
+                        <h4 class="text-sm font-bold text-white">Schnellübersicht (Gängige Größen)</h4>
                     </div>
                     <div class="p-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm font-mono">
-                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M3</span><span class="text-indigo-400 font-bold">2.5</span></div>
-                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M4</span><span class="text-indigo-400 font-bold">3.3</span></div>
-                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M5</span><span class="text-indigo-400 font-bold">4.2</span></div>
                         <div class="flex justify-between border-b border-slate-700 pb-1"><span>M6</span><span class="text-indigo-400 font-bold">5.0</span></div>
                         <div class="flex justify-between border-b border-slate-700 pb-1"><span>M8</span><span class="text-indigo-400 font-bold">6.8</span></div>
                         <div class="flex justify-between border-b border-slate-700 pb-1"><span>M10</span><span class="text-indigo-400 font-bold">8.5</span></div>
-                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M12</span><span class="text-indigo-400 font-bold">10.2</span></div>
+                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>1/4"-20</span><span class="text-orange-400 font-bold">5.1</span></div>
+                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>5/16"-18</span><span class="text-orange-400 font-bold">6.6</span></div>
+                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>3/8"-16</span><span class="text-orange-400 font-bold">8.0</span></div>
+                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>1/2"-13</span><span class="text-orange-400 font-bold">10.8</span></div>
                         <div class="flex justify-between border-b border-slate-700 pb-1"><span>M16</span><span class="text-indigo-400 font-bold">14.0</span></div>
                     </div>
                 </div>
@@ -835,13 +837,39 @@
                 'M27 x 2.0': 25.0,
                 'M30 x 2.0': 28.0,
                 'M32 x 1.5': 30.5
+            },
+            'UNC': {
+                'No. 1 - 64': 1.5, 'No. 2 - 56': 1.85, 'No. 3 - 48': 2.1, 'No. 4 - 40': 2.35,
+                'No. 5 - 40': 2.65, 'No. 6 - 32': 2.85, 'No. 8 - 32': 3.5, 'No. 10 - 24': 3.9,
+                'No. 12 - 24': 4.5,
+                '1/4" - 20': 5.1, '5/16" - 18': 6.6, '3/8" - 16': 8.0, '7/16" - 14': 9.4,
+                '1/2" - 13': 10.8, '9/16" - 12': 12.2, '5/8" - 11': 13.5, '3/4" - 10': 16.5,
+                '7/8" - 9': 19.5, '1" - 8': 22.25, '1 1/8" - 7': 25.0, '1 1/4" - 7': 28.25,
+                '1 1/2" - 6': 34.0
+            },
+            'UNF': {
+                'No. 0 - 80': 1.25, 'No. 1 - 72': 1.55, 'No. 2 - 64': 1.9, 'No. 3 - 56': 2.15,
+                'No. 4 - 48': 2.4, 'No. 5 - 44': 2.7, 'No. 6 - 40': 2.95, 'No. 8 - 36': 3.5,
+                'No. 10 - 32': 4.1, 'No. 12 - 28': 4.7,
+                '1/4" - 28': 5.5, '5/16" - 24': 6.9, '3/8" - 24': 8.5, '7/16" - 20': 9.9,
+                '1/2" - 20': 11.5, '9/16" - 18': 12.9, '5/8" - 18': 14.5, '3/4" - 16': 17.5,
+                '7/8" - 14': 20.4, '1" - 12': 23.25, '1" - 14': 23.5, '1 1/8" - 12': 26.5,
+                '1 1/4" - 12': 29.5, '1 1/2" - 12': 36.0
             }
         };
 
         function updateThreadList() {
             const type = document.getElementById('th-type').value;
             const sizeSelect = document.getElementById('th-size');
+            const hint = document.getElementById('thread-hint');
             sizeSelect.innerHTML = '';
+            
+            // Hint Update
+            if (type.startsWith('UN')) {
+                hint.innerText = "Kernloch für metrische Bohrer (mm) angenähert.";
+            } else {
+                hint.innerText = "Faustformel: Nennmaß – Steigung ≈ Kernloch";
+            }
             
             for (const key in threads[type]) {
                 const opt = document.createElement('option');
