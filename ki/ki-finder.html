@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warenschmiede KI – Anwendungsfinder</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#1e293b', // Custom dark card bg
+                            900: '#0f172a', // Main bg
+                            950: '#020617', // Darker details
+                        },
+                        brand: {
+                            blue: '#3b82f6',
+                            accent: '#06b6d4',
+                            purple: '#8b5cf6'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .check-icon { display: none; }
+        .selected .check-icon { display: block; }
+        
+        /* Selection Styles */
+        .btn-select { transition: all 0.2s; border: 1px solid #334155; }
+        .btn-select:hover { background-color: #1e293b; border-color: #475569; }
+        .btn-select.selected { 
+            background-color: rgba(59, 130, 246, 0.15); 
+            border-color: #3b82f6; 
+            color: #fff;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-200 antialiased min-h-screen flex flex-col">
+
+    <!-- TOP NAV -->
+    <div class="bg-slate-950 border-b border-slate-800 text-xs py-2 px-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="https://www.warenschmiede.com/" class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 group-hover:-translate-x-1 transition-transform">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                Zurück zur Warenschmiede
+            </a>
+            <span class="hidden sm:inline text-slate-600">Kostenloses Orientierungs-Tool</span>
+        </div>
+    </div>
+
+    <!-- MAIN HEADER -->
+    <header class="bg-slate-950/80 backdrop-blur-md border-b border-slate-800 py-6 px-6 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex items-center gap-4">
+            <div class="w-12 h-12 bg-gradient-to-br from-brand-blue to-brand-purple rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-purple-900/20 flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zm-7.518-.267A8.25 8.25 0 1120.25 10.5M8.288 14.212A5.25 5.25 0 1117.25 10.5" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold text-white tracking-tight">Warenschmiede KI <span class="text-brand-accent font-normal">| Anwendungsfinder</span></h1>
+                <p class="text-sm text-slate-400">Finde in 3 Schritten die passende KI-Hilfe für deinen Alltag.</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT GRID -->
+    <main class="flex-grow max-w-7xl mx-auto w-full p-4 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- LINKES PANEL: WIZARD / FILTER (4 Cols) -->
+        <section class="lg:col-span-4 flex flex-col gap-6">
+            
+            <div class="bg-slate-850 border border-slate-700 rounded-xl p-5 shadow-lg">
+                <h2 class="text-brand-blue font-bold uppercase text-xs tracking-wider mb-4 border-b border-slate-700 pb-2">Schritt 1: Dein Profil</h2>
+                <p class="text-sm text-slate-400 mb-3">Wer bist du am ehesten?</p>
+                <div class="flex flex-wrap gap-2" id="step1-container">
+                    <!-- Buttons generated by JS -->
+                </div>
+            </div>
+
+            <div class="bg-slate-850 border border-slate-700 rounded-xl p-5 shadow-lg">
+                <h2 class="text-brand-purple font-bold uppercase text-xs tracking-wider mb-4 border-b border-slate-700 pb-2">Schritt 2: Dein Bedarf</h2>
+                <p class="text-sm text-slate-400 mb-3">Wobei brauchst du Hilfe?</p>
+                <div class="grid grid-cols-1 gap-2" id="step2-container">
+                    <!-- Buttons generated by JS -->
+                </div>
+            </div>
+
+            <div class="bg-slate-850 border border-slate-700 rounded-xl p-5 shadow-lg">
+                <h2 class="text-brand-accent font-bold uppercase text-xs tracking-wider mb-4 border-b border-slate-700 pb-2">Schritt 3: Deine Prioritäten</h2>
+                <p class="text-sm text-slate-400 mb-3">Was ist dir besonders wichtig?</p>
+                <div class="grid grid-cols-1 gap-2" id="step3-container">
+                    <!-- Buttons generated by JS -->
+                </div>
+            </div>
+
+            <button onclick="calculateResults()" class="w-full bg-brand-blue hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-900/20 transition-all active:scale-95 flex items-center justify-center gap-2 text-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+                Ergebnisse anzeigen
+            </button>
+        </section>
+
+        <!-- RECHTES PANEL: ERGEBNISSE (8 Cols) -->
+        <section class="lg:col-span-8 flex flex-col gap-6" id="results-area">
+            
+            <!-- Placeholder State (Initial) -->
+            <div id="placeholder-state" class="h-full flex flex-col items-center justify-center text-center p-10 bg-slate-850/50 rounded-xl border-2 border-dashed border-slate-700">
+                <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4 text-slate-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Noch keine Ergebnisse</h3>
+                <p class="text-slate-400 max-w-md">Wähle links deine Kriterien aus und klicke auf "Ergebnisse anzeigen", um maßgeschneiderte KI-Empfehlungen zu erhalten.</p>
+            </div>
+
+            <!-- Results Content (Hidden initially) -->
+            <div id="results-content" class="hidden space-y-8 animate-fade-in">
+                
+                <!-- Summary Header -->
+                <div class="bg-brand-blue/10 border border-brand-blue/20 rounded-lg p-4 flex justify-between items-start gap-4">
+                    <div>
+                        <h3 class="text-brand-blue font-bold text-sm mb-1">Deine Auswahl:</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed" id="selection-summary">...</p>
+                    </div>
+                    <button onclick="resetAll()" class="text-xs text-slate-500 hover:text-white underline whitespace-nowrap">Zurücksetzen</button>
+                </div>
+
+                <!-- PART A: USE CASES -->
+                <div>
+                    <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <span class="text-brand-purple">💡</span> Konkrete Anwendungs-Ideen
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="usecase-grid">
+                        <!-- Use Cases injected here -->
+                    </div>
+                </div>
+
+                <!-- PART B: TOOLS -->
+                <div>
+                    <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <span class="text-brand-accent">🛠️</span> Passende KI-Chats für dich
+                    </h2>
+                    <div class="space-y-4" id="tools-list">
+                        <!-- Tools injected here -->
+                    </div>
+                    <p class="text-center text-xs text-slate-500 mt-4 italic">
+                        Keine Werbung, nur Empfehlungen. Prüfe immer Preise & Datenschutz direkt beim Anbieter.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-8 px-4 mt-8">
+        <div class="max-w-7xl mx-auto text-center">
+            <p class="text-sm text-slate-400 mb-2">
+                <strong>Datenschutz-Hinweis:</strong> Deine Auswahl wird nur hier im Browser verarbeitet und nicht gespeichert.
+            </p>
+            <div class="text-xs text-slate-600 flex justify-center gap-4 mt-4">
+                <a href="https://www.warenschmiede.com/" class="hover:text-slate-300">Startseite</a>
+                <span>|</span>
+                <a href="https://www.warenschmiede.com/impressum.html" target="_blank" class="hover:text-slate-300">Impressum</a>
+                <span>|</span>
+                <a href="https://www.warenschmiede.com/datenschutz.html" target="_blank" class="hover:text-slate-300">Datenschutz</a>
+            </div>
+            <div class="mt-4 text-[10px] text-slate-700">
+                &copy; 2024 Warenschmiede KI Anwendungsfinder.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- DATA STRUCTURES ---
+
+        // Konfiguration der Filter
+        const filters = {
+            step1: [
+                { id: 'schueler', label: 'Schüler / Azubi' },
+                { id: 'buero', label: 'Büro / Angestellt' },
+                { id: 'selbststaendig', label: 'Selbständig' },
+                { id: 'handwerk', label: 'Handwerk' },
+                { id: 'privat', label: 'Privat / Hobby' }
+            ],
+            step2: [
+                { id: 'text', label: 'Texte schreiben' },
+                { id: 'lernen', label: 'Lernen / Erklären' },
+                { id: 'planung', label: 'Planen & Orga' },
+                { id: 'ideen', label: 'Ideen finden' },
+                { id: 'zahlen', label: 'Zahlen / Excel' },
+                { id: 'sprache', label: 'Sprache / Übersetzung' }
+            ],
+            step3: [
+                { id: 'einfach', label: 'Einfache Bedienung' },
+                { id: 'deutsch', label: 'Gute deutsche Sprache' },
+                { id: 'datenschutz', label: 'Hoher Datenschutz' },
+                { id: 'kostenlos', label: 'Kostenloser Einstieg' }
+            ]
+        };
+
+        // Datenbank: Anwendungsfälle
+        const useCases = [
+            {
+                id: 'email',
+                title: 'E-Mails schneller formulieren',
+                desc: 'Lass dir Entwürfe für schwierige oder routinehafte E-Mails schreiben.',
+                tags: ['buero', 'selbststaendig', 'privat', 'text', 'sprache'],
+                prompts: [
+                    "Schreibe eine freundliche Antwort auf diese E-Mail. Ziel: Termin bestätigen, aber um eine Stunde verschieben. Ton: Professionell, Du-Form.",
+                    "Formuliere eine höfliche Absage an einen Bewerber, der fachlich leider nicht passt."
+                ]
+            },
+            {
+                id: 'lernen_schule',
+                title: 'Schwierige Themen verstehen',
+                desc: 'Komplexe Themen einfach erklärt bekommen – wie von einem Nachhilfelehrer.',
+                tags: ['schueler', 'azubi', 'privat', 'lernen'],
+                prompts: [
+                    "Erkläre mir das Thema 'Inflation' so, dass es ein 12-Jähriger versteht. Nutze ein Alltagsbeispiel.",
+                    "Fasse die wichtigsten Ereignisse der Französischen Revolution in 5 Stichpunkten zusammen."
+                ]
+            },
+            {
+                id: 'social_media',
+                title: 'Social Media Posts erstellen',
+                desc: 'Ideen und Texte für Instagram, LinkedIn oder Facebook generieren.',
+                tags: ['selbststaendig', 'buero', 'ideen', 'text'],
+                prompts: [
+                    "Erstelle 3 Ideen für einen Instagram-Post über 'Nachhaltigkeit im Handwerk'.",
+                    "Schreibe einen LinkedIn-Beitrag über unser neues Produkt. Stil: Motivierend und kurz."
+                ]
+            },
+            {
+                id: 'excel_hilfe',
+                title: 'Excel-Formeln erstellen',
+                desc: 'Beschreibe dein Problem und erhalte die passende Formel.',
+                tags: ['buero', 'zahlen', 'schueler'],
+                prompts: [
+                    "Ich brauche eine Excel-Formel, die den Durchschnitt von Spalte A nur berechnet, wenn in Spalte B 'Ja' steht.",
+                    "Wie erstelle ich in Excel eine Dropdown-Liste?"
+                ]
+            },
+            {
+                id: 'geschenkideen',
+                title: 'Kreative Brainstormings',
+                desc: 'Neue Ideen finden, egal ob für Geschenke, Marketing oder Projekte.',
+                tags: ['privat', 'ideen', 'planung'],
+                prompts: [
+                    "Ich brauche 5 Geschenkideen für meinen Vater (60), der gerne wandert und Krimis liest. Budget: 30 Euro.",
+                    "Nenne mir 10 mögliche Namen für mein neues Café, das vegane Kuchen anbietet."
+                ]
+            },
+            {
+                id: 'text_korrektur',
+                title: 'Texte korrigieren & verbessern',
+                desc: 'Rechtschreibung prüfen oder den Stil aufpolieren lassen.',
+                tags: ['schueler', 'buero', 'text', 'sprache'],
+                prompts: [
+                    "Prüfe diesen Text auf Rechtschreibung und Kommasetzung: '...'",
+                    "Formuliere diesen Satz professioneller und kürzer: '...'"
+                ]
+            },
+            {
+                id: 'orga_checklisten',
+                title: 'Planung & Checklisten',
+                desc: 'Strukturiere Projekte oder Veranstaltungen in Sekunden.',
+                tags: ['planung', 'selbststaendig', 'privat', 'handwerk'],
+                prompts: [
+                    "Erstelle eine Checkliste für die Planung einer Firmenfeier mit 50 Personen.",
+                    "Ich will meinen Keller aufräumen. Gib mir einen strukturierten Plan für das Wochenende."
+                ]
+            },
+            {
+                id: 'angebot_schreiben',
+                title: 'Kunden-Angebote texten',
+                desc: 'Anschreiben für Angebote freundlich und verkaufsstark formulieren.',
+                tags: ['selbststaendig', 'handwerk', 'text'],
+                prompts: [
+                    "Schreibe ein kurzes Anschreiben für ein Angebot zur Gartenpflege. Betone Zuverlässigkeit und Sauberkeit."
+                ]
+            }
+        ];
+
+        // Datenbank: Tools
+        const tools = [
+            {
+                id: 'chatgpt',
+                name: 'ChatGPT (OpenAI)',
+                desc: 'Der bekannteste Allrounder. Sehr gut im Verstehen von Absichten.',
+                strengths: ['Sehr starke Textqualität', 'Logisches Verständnis', 'Viele Beispiele online'],
+                tags: ['text', 'lernen', 'ideen', 'einfach', 'deutsch', 'kostenlos', 'planung'],
+                url: 'https://chat.openai.com/',
+                color: 'text-emerald-400'
+            },
+            {
+                id: 'gemini',
+                name: 'Google Gemini',
+                desc: 'Stark ins Google-Ökosystem integriert. Gut für aktuelle Informationen.',
+                strengths: ['Verbindung zu Google Apps', 'Schnelle Antworten', 'Kreative Texte'],
+                tags: ['text', 'ideen', 'einfach', 'kostenlos', 'buero', 'sprache'],
+                url: 'https://gemini.google.com/',
+                color: 'text-blue-400'
+            },
+            {
+                id: 'perplexity',
+                name: 'Perplexity AI',
+                desc: 'Eine Mischung aus KI und Suchmaschine. Liefert Quellen.',
+                strengths: ['Nennt Quellen & Zitate', 'Gut für Recherche', 'Aktuelles Wissen'],
+                tags: ['lernen', 'zahlen', 'recherche', 'deutsch', 'kostenlos', 'schueler'],
+                url: 'https://www.perplexity.ai/',
+                color: 'text-cyan-400'
+            },
+            {
+                id: 'deepl',
+                name: 'DeepL Write / Translator',
+                desc: 'Spezialist für Sprache. Besser als normale Chatbots beim Übersetzen.',
+                strengths: ['Beste Übersetzungen', 'Grammatik-Korrektur', 'Datenschutz (Pro)'],
+                tags: ['sprache', 'text', 'deutsch', 'einfach'],
+                url: 'https://www.deepl.com/write',
+                color: 'text-indigo-400'
+            },
+            {
+                id: 'claude',
+                name: 'Claude (Anthropic)',
+                desc: 'Bekannt für sehr natürliches, menschliches Deutsch und lange Texte.',
+                strengths: ['Sehr guter Schreibstil', 'Verarbeitet lange Dokumente', 'Nuancierte Sprache'],
+                tags: ['text', 'buero', 'deutsch', 'lernen'],
+                url: 'https://claude.ai/',
+                color: 'text-orange-400'
+            }
+        ];
+
+        // --- STATE ---
+        let selected = {
+            step1: [], // User Type
+            step2: [], // Needs
+            step3: []  // Prefs
+        };
+
+        // --- INIT & RENDER WIZARD ---
+        function init() {
+            renderFilterButtons('step1', filters.step1);
+            renderFilterButtons('step2', filters.step2);
+            renderFilterButtons('step3', filters.step3);
+        }
+
+        function renderFilterButtons(step, items) {
+            const container = document.getElementById(`${step}-container`);
+            container.innerHTML = items.map(item => `
+                <button onclick="toggleSelection('${step}', '${item.id}')" 
+                        id="btn-${step}-${item.id}"
+                        class="btn-select bg-slate-800 text-slate-300 py-2 px-4 rounded-lg text-sm font-medium text-left flex justify-between items-center w-full group">
+                    <span>${item.label}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 check-icon text-brand-blue animate-fade-in">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                </button>
+            `).join('');
+        }
+
+        // --- LOGIC ---
+        function toggleSelection(step, id) {
+            const index = selected[step].indexOf(id);
+            if (index === -1) {
+                // Bei Step 1 kann man mehrere wählen, aber das UI soll klar sein
+                selected[step].push(id);
+            } else {
+                selected[step].splice(index, 1);
+            }
+            updateButtonStyles(step);
+        }
+
+        function updateButtonStyles(step) {
+            filters[step].forEach(item => {
+                const btn = document.getElementById(`btn-${step}-${item.id}`);
+                if (selected[step].includes(item.id)) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
+        }
+
+        function resetAll() {
+            selected = { step1: [], step2: [], step3: [] };
+            ['step1', 'step2', 'step3'].forEach(updateButtonStyles);
+            document.getElementById('results-content').classList.add('hidden');
+            document.getElementById('placeholder-state').classList.remove('hidden');
+            
+            // Scroll to top mobile
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function calculateResults() {
+            // Validation: Mindestens Step 1 oder 2 sollte gewählt sein
+            if (selected.step1.length === 0 && selected.step2.length === 0) {
+                alert("Bitte wähle zumindest aus, wer du bist oder wobei du Hilfe brauchst.");
+                return;
+            }
+
+            // 1. Filter Use Cases
+            // Ein Use Case passt, wenn er tags aus Step 1 ODER Step 2 enthält.
+            // Besser: Schnittmenge berechnen und sortieren.
+            const rankedCases = useCases.map(uc => {
+                const userMatches = uc.tags.filter(t => selected.step1.includes(t)).length;
+                const needMatches = uc.tags.filter(t => selected.step2.includes(t)).length;
+                const totalScore = (userMatches * 1.5) + (needMatches * 2); // Needs wiegen schwerer
+                return { ...uc, score: totalScore };
+            }).filter(uc => uc.score > 0).sort((a, b) => b.score - a.score);
+
+            // Top 6 Use Cases nehmen
+            const finalCases = rankedCases.slice(0, 6);
+
+            // 2. Filter Tools
+            // Ein Tool passt, wenn es Needs (Step 2) und Prefs (Step 3) abdeckt.
+            const rankedTools = tools.map(tool => {
+                const needMatches = tool.tags.filter(t => selected.step2.includes(t)).length;
+                const prefMatches = tool.tags.filter(t => selected.step3.includes(t)).length;
+                // Prefs sind wichtig für Tools
+                const totalScore = (needMatches * 1) + (prefMatches * 1.5);
+                return { ...tool, score: totalScore };
+            }).filter(t => t.score > 0).sort((a, b) => b.score - a.score);
+
+            // Top 3 Tools
+            const finalTools = rankedTools.slice(0, 3);
+
+            renderResults(finalCases, finalTools);
+        }
+
+        function renderResults(cases, toolsList) {
+            // Switch UI
+            document.getElementById('placeholder-state').classList.add('hidden');
+            const content = document.getElementById('results-content');
+            content.classList.remove('hidden');
+            
+            // Summary Text
+            const userLabels = selected.step1.map(id => filters.step1.find(f => f.id === id).label).join(', ');
+            const needLabels = selected.step2.map(id => filters.step2.find(f => f.id === id).label).join(', ');
+            document.getElementById('selection-summary').innerText = 
+                `Profil: ${userLabels || '-'} | Bedarf: ${needLabels || '-'} | Filter aktiv: ${selected.step3.length}`;
+
+            // Render Use Cases
+            const caseContainer = document.getElementById('usecase-grid');
+            if (cases.length === 0) {
+                caseContainer.innerHTML = `<div class="col-span-2 text-slate-500 text-center py-4">Keine spezifischen Anwendungsfälle gefunden. Wähle mehr Kategorien.</div>`;
+            } else {
+                caseContainer.innerHTML = cases.map(uc => `
+                    <div class="bg-slate-800 border border-slate-700 rounded-lg p-5 hover:border-brand-purple/50 transition-colors">
+                        <h4 class="font-bold text-white mb-2 text-sm">${uc.title}</h4>
+                        <p class="text-xs text-slate-400 mb-4 h-8 overflow-hidden line-clamp-2">${uc.desc}</p>
+                        
+                        <div class="space-y-2">
+                            ${uc.prompts.map(p => `
+                                <div class="bg-slate-900 rounded border border-slate-700/50 p-2 relative group cursor-pointer" onclick="copyToClipboard(this, '${p.replace(/'/g, "\\'")}')">
+                                    <p class="font-mono text-[10px] text-brand-blue leading-relaxed pr-6">${p}</p>
+                                    <div class="absolute top-2 right-2 text-slate-500 opacity-50 group-hover:opacity-100 transition-opacity">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5" />
+                                        </svg>
+                                    </div>
+                                    <span class="absolute -top-2 -right-2 bg-green-500 text-white text-[9px] px-1 rounded hidden copied-badge">Kopiert!</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Render Tools
+            const toolsContainer = document.getElementById('tools-list');
+            if (toolsList.length === 0) {
+                 // Fallback if nothing specific matches (show standard)
+                 toolsList = tools.slice(0, 2); 
+            }
+            
+            toolsContainer.innerHTML = toolsList.map((t, idx) => `
+                <div class="bg-slate-800 border border-slate-700 rounded-lg p-5 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between group hover:bg-slate-750 transition-colors">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-lg font-bold ${t.color}">${t.name}</span>
+                            ${idx === 0 ? '<span class="bg-brand-blue/20 text-brand-blue text-[10px] px-2 py-0.5 rounded-full border border-brand-blue/30">Top Treffer</span>' : ''}
+                        </div>
+                        <p class="text-sm text-slate-300 mb-2">${t.desc}</p>
+                        <div class="flex flex-wrap gap-2">
+                            ${t.strengths.map(s => `<span class="text-[10px] text-slate-500 bg-slate-900 px-2 py-0.5 rounded border border-slate-700">✅ ${s}</span>`).join('')}
+                        </div>
+                    </div>
+                    <a href="${t.url}" target="_blank" class="shrink-0 bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors border border-slate-600">
+                        Zur Website
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                        </svg>
+                    </a>
+                </div>
+            `).join('');
+
+            // Scroll on Mobile
+            if (window.innerWidth < 1024) {
+                document.getElementById('results-area').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Helper: Copy
+        function copyToClipboard(el, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const badge = el.querySelector('.copied-badge');
+                badge.classList.remove('hidden');
+                setTimeout(() => badge.classList.add('hidden'), 1500);
+            });
+        }
+
+        // Start
+        init();
+
+    </script>
+</body>
+</html>
