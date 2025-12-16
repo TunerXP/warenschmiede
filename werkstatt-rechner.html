@@ -47,7 +47,6 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); pointer-events: none;
         }
         .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
-        /* Arrow for tooltip */
         .tooltip .tooltiptext::after {
             content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px;
             border-width: 5px; border-style: solid; border-color: #475569 transparent transparent transparent;
@@ -101,6 +100,12 @@
             </button>
             <button onclick="switchTab('schrauben')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition-colors">
                 <i class="ph ph-nut"></i> Schrauben & Senkungen
+            </button>
+            <button onclick="switchTab('einheiten')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition-colors">
+                <i class="ph ph-arrows-left-right"></i> Einheiten & Umrechner
+            </button>
+            <button onclick="switchTab('gewicht')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition-colors">
+                <i class="ph ph-scales"></i> Material & Gewicht
             </button>
         </div>
     </nav>
@@ -451,7 +456,7 @@
             </div>
         </div>
 
-        <!-- TAB 5: SCHRAUBEN & SENKUNGEN (NEU) -->
+        <!-- TAB 5: SCHRAUBEN & SENKUNGEN -->
         <div id="tab-schrauben" class="tab-content">
             <div class="mb-6">
                 <h2 class="text-xl font-bold text-white mb-1">Bohrungen & Senkungen</h2>
@@ -555,6 +560,247 @@
             </div>
         </div>
 
+        <!-- TAB 6: EINHEITEN & UMRECHNER (NEU) -->
+        <div id="tab-einheiten" class="tab-content">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-white mb-1">Einheiten & Umrechner</h2>
+                <p class="text-sm text-slate-400">Hier wandelst du schnell typische Einheiten um oder rechnest Schnittdaten rückwärts.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- A) Einheiten-Rechner -->
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+                    <h3 class="font-bold text-slate-200 mb-4 flex items-center gap-2"><i class="ph ph-arrows-left-right text-indigo-400"></i> Umrechnen</h3>
+                    
+                    <!-- Länge -->
+                    <div class="mb-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700/50">
+                        <div class="text-xs text-slate-500 uppercase font-bold mb-2">Länge (mm ↔ Zoll)</div>
+                        <div class="grid grid-cols-2 gap-2 items-center">
+                            <div class="relative">
+                                <input type="number" id="conv-mm" class="input-field pr-8" placeholder="mm" oninput="calcUnit('mm_inch')">
+                                <span class="absolute right-2 top-3 text-xs text-slate-500">mm</span>
+                            </div>
+                            <div class="relative">
+                                <input type="number" id="conv-inch" class="input-field pr-8" placeholder="inch" oninput="calcUnit('inch_mm')">
+                                <span class="absolute right-2 top-3 text-xs text-slate-500">in</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Winkel -->
+                    <div class="mb-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700/50">
+                        <div class="text-xs text-slate-500 uppercase font-bold mb-2">Winkel (Grad ↔ Radiant)</div>
+                        <div class="grid grid-cols-2 gap-2 items-center">
+                            <div class="relative">
+                                <input type="number" id="conv-deg" class="input-field pr-8" placeholder="deg" oninput="calcUnit('deg_rad')">
+                                <span class="absolute right-2 top-3 text-xs text-slate-500">°</span>
+                            </div>
+                            <div class="relative">
+                                <input type="number" id="conv-rad" class="input-field pr-8" placeholder="rad" oninput="calcUnit('rad_deg')">
+                                <span class="absolute right-2 top-3 text-xs text-slate-500">rad</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Geschwindigkeit -->
+                    <div class="p-4 bg-slate-900/50 rounded-lg border border-slate-700/50">
+                        <div class="text-xs text-slate-500 uppercase font-bold mb-2">Geschwindigkeit (m/min ↔ m/s)</div>
+                        <div class="grid grid-cols-2 gap-2 items-center">
+                            <div class="relative">
+                                <input type="number" id="conv-mmin" class="input-field pr-12" placeholder="m/min" oninput="calcUnit('mmin_ms')">
+                                <span class="absolute right-2 top-3 text-xs text-slate-500">m/min</span>
+                            </div>
+                            <div class="relative">
+                                <input type="number" id="conv-ms" class="input-field pr-8" placeholder="m/s" oninput="calcUnit('ms_mmin')">
+                                <span class="absolute right-2 top-3 text-xs text-slate-500">m/s</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- B) Schnittdaten Rückwärts & Lernbox -->
+                <div class="space-y-6">
+                    <!-- Rückwärts Rechner -->
+                    <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+                        <h3 class="font-bold text-slate-200 mb-4 flex items-center gap-2"><i class="ph ph-arrow-u-up-left text-orange-400"></i> Schnittdaten-Rückwärts</h3>
+                        <p class="text-xs text-slate-400 mb-4">Berechne vc oder n, wenn du den jeweils anderen Wert hast.</p>
+                        
+                        <div class="flex gap-2 mb-4 bg-slate-900 p-1 rounded-lg">
+                            <button onclick="toggleReverseMode('n')" id="btn-rev-n" class="flex-1 py-1 text-xs rounded font-bold bg-slate-700 text-white transition">Ich habe: n (Drehzahl)</button>
+                            <button onclick="toggleReverseMode('vc')" id="btn-rev-vc" class="flex-1 py-1 text-xs rounded font-bold text-slate-400 hover:text-white transition">Ich habe: vc (Schnitt)</button>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="input-group">
+                                <label>Werkzeug-Ø d [mm]</label>
+                                <input type="number" id="rev-d" class="input-field" value="10" oninput="calcReverseSchnitt()">
+                            </div>
+                            
+                            <div id="input-rev-n" class="input-group">
+                                <label>Gegebene Drehzahl n [U/min]</label>
+                                <input type="number" id="rev-in-n" class="input-field" value="3000" oninput="calcReverseSchnitt()">
+                            </div>
+                            
+                            <div id="input-rev-vc" class="input-group hidden">
+                                <label>Gegebene Schnittgeschw. vc [m/min]</label>
+                                <input type="number" id="rev-in-vc" class="input-field" value="100" oninput="calcReverseSchnitt()">
+                            </div>
+
+                            <div class="mt-4 pt-4 border-t border-slate-700 text-center">
+                                <div class="text-xs text-slate-500 uppercase font-bold mb-1" id="res-rev-label">Ergebnis: Schnittgeschw. (vc)</div>
+                                <div class="text-3xl font-mono font-bold text-white"><span id="res-rev-val">--</span> <span class="text-sm text-slate-400" id="res-rev-unit">m/min</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lernkasten -->
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+                        <h4 class="font-bold text-sm text-white mb-3 flex items-center gap-2"><i class="ph ph-lightbulb text-yellow-500 text-lg"></i> Beispiele aus der Praxis</h4>
+                        <ul class="text-xs text-slate-300 space-y-2 list-disc pl-4">
+                            <li><strong>10 mm Bohrer:</strong> Bei vc = 25 m/min brauchst du ca. 800 U/min.</li>
+                            <li><strong>Zoll:</strong> 12,7 mm entsprechen genau 1/2" (Halbzeoll).</li>
+                            <li><strong>Speed:</strong> 600 m/min sind umgerechnet 10 m/s.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 7: MATERIAL & GEWICHT (NEU) -->
+        <div id="tab-gewicht" class="tab-content">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-white mb-1">Material & Gewicht</h2>
+                <p class="text-sm text-slate-400">Berechne das Gewicht von Rundmaterial, Vierkant, Flachstahl und Rohren.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Rechner -->
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="input-group">
+                            <label>Material</label>
+                            <select id="mat-type" class="input-field text-sm cursor-pointer" onchange="calcMaterialWeight()">
+                                <option value="7.85">Stahl (7.85)</option>
+                                <option value="7.9">Edelstahl (7.9)</option>
+                                <option value="2.7">Aluminium (2.7)</option>
+                                <option value="8.5">Messing (8.5)</option>
+                                <option value="8.9">Kupfer (8.9)</option>
+                                <option value="1.2">Kunststoff (ca. 1.2)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Profil</label>
+                            <select id="mat-shape" class="input-field text-sm cursor-pointer" onchange="updateShapeInputs()">
+                                <option value="round">Rund (voll)</option>
+                                <option value="square">Vierkant</option>
+                                <option value="flat">Flach</option>
+                                <option value="tube">Rohr</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Inputs -->
+                    <div class="space-y-3 mb-6 bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
+                        
+                        <!-- Rund -->
+                        <div id="shape-round" class="shape-group">
+                            <div class="input-group">
+                                <label>Durchmesser d [mm]</label>
+                                <input type="number" id="dim-d" class="input-field" value="20" oninput="calcMaterialWeight()">
+                            </div>
+                        </div>
+
+                        <!-- Square -->
+                        <div id="shape-square" class="shape-group hidden">
+                            <div class="input-group">
+                                <label>Seitenlänge a [mm]</label>
+                                <input type="number" id="dim-a" class="input-field" value="20" oninput="calcMaterialWeight()">
+                            </div>
+                        </div>
+
+                        <!-- Flat -->
+                        <div id="shape-flat" class="shape-group hidden">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="input-group">
+                                    <label>Breite b [mm]</label>
+                                    <input type="number" id="dim-b" class="input-field" value="50" oninput="calcMaterialWeight()">
+                                </div>
+                                <div class="input-group">
+                                    <label>Stärke h [mm]</label>
+                                    <input type="number" id="dim-h" class="input-field" value="10" oninput="calcMaterialWeight()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tube -->
+                        <div id="shape-tube" class="shape-group hidden">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="input-group">
+                                    <label>Außen-Ø D [mm]</label>
+                                    <input type="number" id="dim-D_out" class="input-field" value="40" oninput="calcMaterialWeight()">
+                                </div>
+                                <div class="input-group">
+                                    <label>Innen-Ø d [mm]</label>
+                                    <input type="number" id="dim-d_in" class="input-field" value="30" oninput="calcMaterialWeight()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Common -->
+                        <div class="grid grid-cols-2 gap-4 mt-3 border-t border-slate-700 pt-3">
+                            <div class="input-group">
+                                <label>Länge L [mm]</label>
+                                <input type="number" id="dim-L" class="input-field" value="1000" oninput="calcMaterialWeight()">
+                            </div>
+                            <div class="input-group">
+                                <label>Stückzahl</label>
+                                <input type="number" id="dim-n" class="input-field" value="1" oninput="calcMaterialWeight()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Result -->
+                    <div class="bg-slate-900 p-4 rounded-lg border border-slate-600">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs text-slate-400 uppercase">Gewicht pro Stück</span>
+                            <span class="font-mono font-bold text-white"><span id="res-weight-single">0.00</span> kg</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-700">
+                            <span class="text-xs text-orange-400 font-bold uppercase">Gesamtgewicht</span>
+                            <span class="text-2xl font-mono font-bold text-orange-500"><span id="res-weight-total">0.00</span> kg</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Info Box -->
+                <div class="space-y-6">
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+                        <h4 class="font-bold text-sm text-white mb-3 flex items-center gap-2"><i class="ph ph-question text-blue-400 text-lg"></i> Wofür brauche ich das?</h4>
+                        <ul class="text-xs text-slate-300 space-y-2 list-disc pl-4 leading-relaxed">
+                            <li><strong>Heben:</strong> Schnell checken, ob du das Rohteil alleine auf die Maschine wuchten kannst (ab 25 kg besser Kran!).</li>
+                            <li><strong>Kalkulation:</strong> Wenn du Materialpreis pro kg kennst, hast du sofort den Preis.</li>
+                            <li><strong>Sägen:</strong> Prüfen, ob der Restbestand im Lager für den Auftrag reicht (Länge abschätzen).</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+                        <h4 class="font-bold text-sm text-white mb-2">Rechenbeispiel</h4>
+                        <div class="bg-slate-900 p-3 rounded text-xs font-mono text-slate-400 border border-slate-700">
+                            1 m Rundstahl Ø 30 mm (Stahl)<br>
+                            Fläche A ≈ 706,9 mm²<br>
+                            Volumen V ≈ 706,9 cm³<br>
+                            Gewicht ≈ 706,9 * 7,85 / 1000<br>
+                            = <span class="text-white font-bold">5,55 kg</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </main>
 
     <script>
@@ -571,8 +817,8 @@
             // Show target
             document.getElementById('tab-' + id).classList.add('active');
             
-            // Highlight button (simple lookup by index for this static list)
-            const ids = ['schnitt', 'toleranzen', 'iso', 'gewinde', 'schrauben'];
+            // Highlight button
+            const ids = ['schnitt', 'toleranzen', 'iso', 'gewinde', 'schrauben', 'einheiten', 'gewicht'];
             const idx = ids.indexOf(id);
             if(idx > -1) {
                 const btns = document.querySelectorAll('.nav-btn');
@@ -583,8 +829,6 @@
 
         /* =========================================
            1. SCHNITTDATEN RECHNER
-           Formel: n = (vc * 1000) / (PI * d)
-           Formel: vf = n * z * fz
            ========================================= */
         function loadCuttingPresets() {
             const mat = document.getElementById('cut-mat').value;
@@ -603,7 +847,6 @@
                 document.getElementById('inp-vc').value = vc;
                 document.getElementById('inp-fz').value = fz;
                 
-                // Zähne anpassen
                 if (op === 'drill') document.getElementById('inp-z').value = 2;
                 else if (document.getElementById('inp-z').value == 2) document.getElementById('inp-z').value = 4;
 
@@ -625,24 +868,17 @@
                 return;
             }
 
-            // Berechnung n
             const n = (vc * 1000) / (Math.PI * d);
-            
-            // Berechnung vf
             const vf = n * z * fz;
-
-            // Berechnung Q (cm³/min)
             let q = 0;
             if (ap > 0 && ae > 0) {
                 q = (ap * ae * vf) / 1000;
             }
 
-            // Update UI
             document.getElementById('res-n').innerText = n.toFixed(0);
             document.getElementById('res-vf').innerText = vf.toFixed(0);
             document.getElementById('res-q').innerText = q > 0 ? q.toFixed(1) : "--";
 
-            // Warnung > 20k
             const warn = document.getElementById('rpm-warning');
             if (n > 20000) warn.classList.remove('hidden');
             else warn.classList.add('hidden');
@@ -689,12 +925,7 @@
 
         /* =========================================
            3. ISO PASSUNGEN
-           Datenbasis: Vereinfachte Tabelle für gängige Fälle (H7, h6, etc.)
-           Werte in Mikrometer (µm)
            ========================================= */
-        // Format: [H7_up, H7_lo, h6_up, h6_lo, etc...] is too complex.
-        // Using object mapping for clarity. 
-        // NOTE: This is a subset for "Azubi" common usage. Not full standard.
         const isoData = [
             { max: 3,   H7:[10,0], H8:[14,0], h6:[0,-6], g6:[-2,-8], f7:[-6,-16], k6:[6,0], p6:[12,6] },
             { max: 6,   H7:[12,0], H8:[18,0], h6:[0,-8], g6:[-4,-12], f7:[-10,-22], k6:[9,1], p6:[20,12] },
@@ -704,7 +935,7 @@
             { max: 50,  H7:[25,0], H8:[39,0], h6:[0,-16], g6:[-9,-25], f7:[-25,-50], k6:[18,2], p6:[42,26] },
             { max: 80,  H7:[30,0], H8:[46,0], h6:[0,-19], g6:[-10,-29], f7:[-30,-60], k6:[21,2], p6:[51,32] },
             { max: 120, H7:[35,0], H8:[54,0], h6:[0,-22], g6:[-12,-34], f7:[-36,-71], k6:[25,3], p6:[59,37] },
-            { max: 500, H7:[63,0], H8:[97,0], h6:[0,-40], g6:[-20,-60], f7:[-68,-131], k6:[45,5], p6:[108,68] } // Rough catch-all for demo
+            { max: 500, H7:[63,0], H8:[97,0], h6:[0,-40], g6:[-20,-60], f7:[-68,-131], k6:[45,5], p6:[108,68] } 
         ];
 
         function applyIsoPreset() {
@@ -712,10 +943,8 @@
             if(!val) return;
             
             const [hole, shaft] = val.split('-');
-            // Set Hole
             document.getElementById('iso-hole-char').value = hole.charAt(0);
             document.getElementById('iso-hole-num').value = hole.charAt(1);
-            // Set Shaft
             document.getElementById('iso-shaft-char').value = shaft.charAt(0);
             document.getElementById('iso-shaft-num').value = shaft.charAt(1);
             
@@ -723,12 +952,9 @@
         }
 
         function getIsoValues(dim, code) {
-            // Find range
             const entry = isoData.find(e => dim <= e.max);
             if (!entry) return null;
-            // Check if specific code exists in our mini-db
             if (entry[code]) return entry[code];
-            // Fallback: Return null to trigger "Not supported"
             return null;
         }
 
@@ -753,13 +979,11 @@
                 errBox.classList.add('hidden');
                 resBox.classList.remove('hidden');
 
-                // Convert µm to mm
                 const hUp = hVals[0] / 1000;
                 const hLo = hVals[1] / 1000;
                 const sUp = sVals[0] / 1000;
                 const sLo = sVals[1] / 1000;
 
-                // Update UI Texts
                 document.getElementById('res-hole-dev').innerText = `${fmt(hUp)} / ${fmt(hLo)}`;
                 document.getElementById('res-shaft-dev').innerText = `${fmt(sUp)} / ${fmt(sLo)}`;
 
@@ -771,18 +995,12 @@
                 document.getElementById('res-hole-range').innerText = `${hMin.toFixed(3)} - ${hMax.toFixed(3)}`;
                 document.getElementById('res-shaft-range').innerText = `${sMin.toFixed(3)} - ${sMax.toFixed(3)}`;
 
-                // Fit Calc
-                const maxClearance = hMax - sMin; // Hole Max - Shaft Min
-                const minClearance = hMin - sMax; // Hole Min - Shaft Max
+                const maxClearance = hMax - sMin; 
+                const minClearance = hMin - sMax; 
 
                 const typeEl = document.getElementById('fit-type');
                 const valEl = document.getElementById('fit-values');
 
-                // Logic: 
-                // Min > 0 -> Spiel
-                // Max < 0 -> Übermaß
-                // Sonst -> Übergang
-                
                 if (minClearance >= 0) {
                     typeEl.innerText = "Spielpassung";
                     typeEl.className = "text-xl font-bold text-green-400 mb-2";
@@ -800,10 +1018,6 @@
             } else {
                 resBox.classList.add('hidden');
                 errBox.classList.remove('hidden');
-                document.getElementById('res-hole-dev').innerText = "--";
-                document.getElementById('res-shaft-dev').innerText = "--";
-                document.getElementById('res-hole-range').innerText = "--";
-                document.getElementById('res-shaft-range').innerText = "--";
             }
         }
         
@@ -821,40 +1035,28 @@
                 'M33': 29.5, 'M36': 32.0
             },
             'MF': {
-                'M3 x 0.35': 2.65,
-                'M4 x 0.5': 3.5,
-                'M5 x 0.5': 4.5,
-                'M6 x 0.75': 5.25,
-                'M8 x 1.0': 7.0, 
-                'M10 x 1.0': 9.0, 'M10 x 1.25': 8.8, 
-                'M12 x 1.25': 10.8, 'M12 x 1.5': 10.5, 
-                'M14 x 1.5': 12.5, 
-                'M16 x 1.5': 14.5,
-                'M18 x 1.5': 16.5,
-                'M20 x 1.5': 18.5,
-                'M22 x 1.5': 20.5,
-                'M24 x 1.5': 22.5, 'M24 x 2.0': 22.0,
-                'M27 x 2.0': 25.0,
-                'M30 x 2.0': 28.0,
-                'M32 x 1.5': 30.5
+                'M3 x 0.35': 2.65, 'M4 x 0.5': 3.5, 'M5 x 0.5': 4.5, 'M6 x 0.75': 5.25,
+                'M8 x 1.0': 7.0, 'M10 x 1.0': 9.0, 'M10 x 1.25': 8.8, 
+                'M12 x 1.25': 10.8, 'M12 x 1.5': 10.5, 'M14 x 1.5': 12.5, 
+                'M16 x 1.5': 14.5, 'M18 x 1.5': 16.5, 'M20 x 1.5': 18.5,
+                'M22 x 1.5': 20.5, 'M24 x 1.5': 22.5, 'M24 x 2.0': 22.0,
+                'M27 x 2.0': 25.0, 'M30 x 2.0': 28.0, 'M32 x 1.5': 30.5
             },
             'UNC': {
                 'No. 1 - 64': 1.5, 'No. 2 - 56': 1.85, 'No. 3 - 48': 2.1, 'No. 4 - 40': 2.35,
                 'No. 5 - 40': 2.65, 'No. 6 - 32': 2.85, 'No. 8 - 32': 3.5, 'No. 10 - 24': 3.9,
-                'No. 12 - 24': 4.5,
-                '1/4" - 20': 5.1, '5/16" - 18': 6.6, '3/8" - 16': 8.0, '7/16" - 14': 9.4,
-                '1/2" - 13': 10.8, '9/16" - 12': 12.2, '5/8" - 11': 13.5, '3/4" - 10': 16.5,
-                '7/8" - 9': 19.5, '1" - 8': 22.25, '1 1/8" - 7': 25.0, '1 1/4" - 7': 28.25,
-                '1 1/2" - 6': 34.0
+                'No. 12 - 24': 4.5, '1/4" - 20': 5.1, '5/16" - 18': 6.6, '3/8" - 16': 8.0, 
+                '7/16" - 14': 9.4, '1/2" - 13': 10.8, '9/16" - 12': 12.2, '5/8" - 11': 13.5, 
+                '3/4" - 10': 16.5, '7/8" - 9': 19.5, '1" - 8': 22.25, '1 1/8" - 7': 25.0, 
+                '1 1/4" - 7': 28.25, '1 1/2" - 6': 34.0
             },
             'UNF': {
                 'No. 0 - 80': 1.25, 'No. 1 - 72': 1.55, 'No. 2 - 64': 1.9, 'No. 3 - 56': 2.15,
                 'No. 4 - 48': 2.4, 'No. 5 - 44': 2.7, 'No. 6 - 40': 2.95, 'No. 8 - 36': 3.5,
-                'No. 10 - 32': 4.1, 'No. 12 - 28': 4.7,
-                '1/4" - 28': 5.5, '5/16" - 24': 6.9, '3/8" - 24': 8.5, '7/16" - 20': 9.9,
-                '1/2" - 20': 11.5, '9/16" - 18': 12.9, '5/8" - 18': 14.5, '3/4" - 16': 17.5,
-                '7/8" - 14': 20.4, '1" - 12': 23.25, '1" - 14': 23.5, '1 1/8" - 12': 26.5,
-                '1 1/4" - 12': 29.5, '1 1/2" - 12': 36.0
+                'No. 10 - 32': 4.1, 'No. 12 - 28': 4.7, '1/4" - 28': 5.5, '5/16" - 24': 6.9, 
+                '3/8" - 24': 8.5, '7/16" - 20': 9.9, '1/2" - 20': 11.5, '9/16" - 18': 12.9, 
+                '5/8" - 18': 14.5, '3/4" - 16': 17.5, '7/8" - 14': 20.4, '1" - 12': 23.25, 
+                '1" - 14': 23.5, '1 1/8" - 12': 26.5, '1 1/4" - 12': 29.5, '1 1/2" - 12': 36.0
             }
         };
 
@@ -864,7 +1066,6 @@
             const hint = document.getElementById('thread-hint');
             sizeSelect.innerHTML = '';
             
-            // Hint Update
             if (type.startsWith('UN')) {
                 hint.innerText = "Kernloch für metrische Bohrer (mm) angenähert.";
             } else {
@@ -887,8 +1088,6 @@
 
         /* =========================================
            5. SCHRAUBEN & SENKUNGEN
-           Datenbasis: DIN 912 / ISO 4762 (Zylinder), DIN 7991 (Senk), DIN 974-1 (Senkung)
-           Durchgangslöcher nach DIN ISO 273 (fein, mittel, grob)
            ========================================= */
         const screwData = {
             'M3': { hole_f: 3.2, hole_m: 3.4, hole_c: 3.6, dk_912: 5.5, k_912: 3.0, d2_974: 6.0, dk_7991: 6.0, k_7991: 1.7 },
@@ -915,7 +1114,6 @@
             const fitMap = { 'f': 'Eng (fein)', 'm': 'Standard (mittel)', 'c': 'Groß (grob)' };
             document.getElementById('res-scr-fit-text').innerText = fitMap[fit];
             
-            // Update reference text for zapfen match
             const refEls = document.querySelectorAll('.res-fit-ref');
             refEls.forEach(el => el.innerText = fit);
 
@@ -925,7 +1123,7 @@
                 
                 // Zapfensenkung DIN 974-1 (Reihe 1)
                 document.getElementById('res-scr-cb-dia').innerText = data.d2_974.toFixed(1) + " mm";
-                // Tiefe = k + 0.4mm (übliche Praxis für bündiges Versenken)
+                // Tiefe = k + 0.4mm
                 const depth = data.k_912 + 0.4;
                 document.getElementById('res-scr-cb-depth').innerText = depth.toFixed(1) + " mm";
 
@@ -941,6 +1139,145 @@
                 document.getElementById('res-spec-912').classList.add('hidden');
                 document.getElementById('res-spec-7991').classList.remove('hidden');
             }
+        }
+
+        /* =========================================
+           6. EINHEITEN & UMRECHNER
+           ========================================= */
+        function calcUnit(convType) {
+            // convType = 'mm_inch', 'inch_mm', 'deg_rad', etc.
+            
+            if(convType === 'mm_inch') {
+                const mm = parseFloat(document.getElementById('conv-mm').value);
+                if(!isNaN(mm)) document.getElementById('conv-inch').value = (mm / 25.4).toFixed(4);
+            } else if(convType === 'inch_mm') {
+                const inch = parseFloat(document.getElementById('conv-inch').value);
+                if(!isNaN(inch)) document.getElementById('conv-mm').value = (inch * 25.4).toFixed(2);
+            }
+            
+            else if(convType === 'deg_rad') {
+                const deg = parseFloat(document.getElementById('conv-deg').value);
+                if(!isNaN(deg)) document.getElementById('conv-rad').value = (deg * (Math.PI / 180)).toFixed(4);
+            } else if(convType === 'rad_deg') {
+                const rad = parseFloat(document.getElementById('conv-rad').value);
+                if(!isNaN(rad)) document.getElementById('conv-deg').value = (rad * (180 / Math.PI)).toFixed(2);
+            }
+            
+            else if(convType === 'mmin_ms') {
+                const mmin = parseFloat(document.getElementById('conv-mmin').value);
+                if(!isNaN(mmin)) document.getElementById('conv-ms').value = (mmin / 60).toFixed(2);
+            } else if(convType === 'ms_mmin') {
+                const ms = parseFloat(document.getElementById('conv-ms').value);
+                if(!isNaN(ms)) document.getElementById('conv-mmin').value = (ms * 60).toFixed(0);
+            }
+        }
+
+        // --- Schnittdaten Rückwärts ---
+        let revMode = 'n'; // We have N, want VC
+
+        function toggleReverseMode(mode) {
+            revMode = mode;
+            // UI Switch
+            if(mode === 'n') {
+                document.getElementById('btn-rev-n').classList.remove('text-slate-400', 'hover:text-white');
+                document.getElementById('btn-rev-n').classList.add('bg-slate-700', 'text-white');
+                
+                document.getElementById('btn-rev-vc').classList.add('text-slate-400', 'hover:text-white');
+                document.getElementById('btn-rev-vc').classList.remove('bg-slate-700', 'text-white');
+                
+                document.getElementById('input-rev-n').classList.remove('hidden');
+                document.getElementById('input-rev-vc').classList.add('hidden');
+                
+                document.getElementById('res-rev-label').innerText = "Ergebnis: Schnittgeschw. (vc)";
+                document.getElementById('res-rev-unit').innerText = "m/min";
+            } else {
+                document.getElementById('btn-rev-vc').classList.remove('text-slate-400', 'hover:text-white');
+                document.getElementById('btn-rev-vc').classList.add('bg-slate-700', 'text-white');
+                
+                document.getElementById('btn-rev-n').classList.add('text-slate-400', 'hover:text-white');
+                document.getElementById('btn-rev-n').classList.remove('bg-slate-700', 'text-white');
+                
+                document.getElementById('input-rev-vc').classList.remove('hidden');
+                document.getElementById('input-rev-n').classList.add('hidden');
+                
+                document.getElementById('res-rev-label').innerText = "Ergebnis: Drehzahl (n)";
+                document.getElementById('res-rev-unit').innerText = "U/min";
+            }
+            calcReverseSchnitt();
+        }
+
+        function calcReverseSchnitt() {
+            const d = parseFloat(document.getElementById('rev-d').value);
+            const resVal = document.getElementById('res-rev-val');
+            
+            if(!d || d <= 0) { resVal.innerText = "--"; return; }
+
+            if(revMode === 'n') {
+                // Have n, want vc = (d * PI * n) / 1000
+                const n = parseFloat(document.getElementById('rev-in-n').value);
+                if(!n || n < 0) { resVal.innerText = "--"; return; }
+                const vc = (d * Math.PI * n) / 1000;
+                resVal.innerText = vc.toFixed(1);
+            } else {
+                // Have vc, want n = (vc * 1000) / (d * PI)
+                const vc = parseFloat(document.getElementById('rev-in-vc').value);
+                if(!vc || vc < 0) { resVal.innerText = "--"; return; }
+                const n = (vc * 1000) / (d * Math.PI);
+                resVal.innerText = n.toFixed(0);
+            }
+        }
+
+        /* =========================================
+           7. MATERIAL & GEWICHT
+           ========================================= */
+        function updateShapeInputs() {
+            const shape = document.getElementById('mat-shape').value;
+            // Hide all
+            document.querySelectorAll('.shape-group').forEach(el => el.classList.add('hidden'));
+            // Show active
+            document.getElementById('shape-' + shape).classList.remove('hidden');
+            calcMaterialWeight();
+        }
+
+        function calcMaterialWeight() {
+            const rho = parseFloat(document.getElementById('mat-type').value); // g/cm3
+            const shape = document.getElementById('mat-shape').value;
+            const L = parseFloat(document.getElementById('dim-L').value); // mm
+            const n = parseFloat(document.getElementById('dim-n').value);
+            
+            if(!L || L <= 0 || !n || n <= 0) {
+                document.getElementById('res-weight-single').innerText = "0.00";
+                document.getElementById('res-weight-total').innerText = "0.00";
+                return;
+            }
+
+            let A = 0; // mm2
+
+            if(shape === 'round') {
+                const d = parseFloat(document.getElementById('dim-d').value);
+                if(d > 0) A = Math.PI * Math.pow(d/2, 2);
+            } else if(shape === 'square') {
+                const a = parseFloat(document.getElementById('dim-a').value);
+                if(a > 0) A = a * a;
+            } else if(shape === 'flat') {
+                const b = parseFloat(document.getElementById('dim-b').value);
+                const h = parseFloat(document.getElementById('dim-h').value);
+                if(b > 0 && h > 0) A = b * h;
+            } else if(shape === 'tube') {
+                const D = parseFloat(document.getElementById('dim-D_out').value);
+                const d = parseFloat(document.getElementById('dim-d_in').value);
+                if(D > 0 && D > d) A = Math.PI * (Math.pow(D/2, 2) - Math.pow(d/2, 2));
+            }
+
+            // Calc Volume in cm3 (A is mm2, L is mm -> V = mm3 / 1000)
+            const V_cm3 = (A * L) / 1000;
+            
+            // Weight = Vol * Density (g) / 1000 -> kg
+            const weightOne = (V_cm3 * rho) / 1000;
+            const weightTotal = weightOne * n;
+
+            document.getElementById('res-weight-single').innerText = weightOne.toFixed(2);
+            document.getElementById('res-weight-total').innerText = weightTotal.toFixed(2);
         }
 
         // Init Calls
