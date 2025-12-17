@@ -1,0 +1,2843 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warenschmiede Welding Trainer</title>
+    <style>
+        :root {
+            --bg-dark: #1e1e24;
+            --bg-panel: #2b2b36;
+            --primary: #ff9f1c; /* Welding spark orange */
+            --primary-hover: #ffbf69;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --success: #2ec4b6;
+            --danger: #e71d36;
+            --border-radius: 12px;
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+        a:hover { color: var(--primary); text-decoration: underline; }
+
+        /* --- HEADER --- */
+        header {
+            background-color: var(--bg-panel);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        .back-link { font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
+        
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .user-stats { display: flex; gap: 15px; font-size: 0.9rem; color: var(--text-muted); align-items: center; }
+        .stat-item strong { color: var(--text-main); }
+
+        .btn-share {
+            background: transparent; border: 1px solid #555; color: var(--text-muted);
+            padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;
+            display: flex; align-items: center; gap: 5px; transition: all 0.2s;
+        }
+        .btn-share:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* --- MAIN CONTAINER --- */
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* --- VIEWS --- */
+        .view { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .view.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- DASHBOARD --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background-color: var(--bg-panel);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            border: 1px solid #444;
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .card h3 { margin-top: 0; color: var(--primary); }
+        .card p { color: var(--text-muted); font-size: 0.9rem; }
+        .card-icon { font-size: 3rem; margin-bottom: 15px; display: block; }
+
+        /* --- DATA MANAGEMENT BAR --- */
+        .management-bar {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            border: 1px solid #333;
+        }
+        .management-header { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
+        .management-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        
+        .btn-small {
+            padding: 8px 16px; font-size: 0.85rem; border-radius: 6px; cursor: pointer; border: 1px solid #555;
+            background: var(--bg-panel); color: var(--text-main); display: flex; align-items: center; gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-small:hover { background: #3a3a45; border-color: #777; }
+        .btn-danger-small { color: #ff6b6b; border-color: #552b2b; }
+        .btn-danger-small:hover { background: rgba(255, 0, 0, 0.1); border-color: var(--danger); }
+
+        /* --- DB INFO & LEGAL --- */
+        .db-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 30px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+        .db-count { font-size: 1.2rem; font-weight: bold; color: var(--success); }
+        .legal-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; line-height: 1.4; }
+
+        /* --- QUIZ UI --- */
+        .progress-bar-container { width: 100%; height: 8px; background: #444; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
+
+        .question-box {
+            background: var(--bg-panel);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .question-text { font-size: 1.2rem; font-weight: 500; margin-bottom: 25px; line-height: 1.5; }
+        .question-meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;}
+        .options-grid { display: grid; gap: 12px; }
+
+        .option-btn {
+            background: transparent;
+            border: 1px solid #555;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: var(--text-main);
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            position: relative;
+        }
+        .option-btn:hover:not(:disabled) { background: #3a3a45; border-color: #777; }
+        .option-btn.selected { border-color: var(--primary); background: rgba(255, 159, 28, 0.1); }
+        .option-btn.correct { border-color: var(--success); background: rgba(46, 196, 182, 0.2); color: #fff; }
+        .option-btn.wrong { border-color: var(--danger); background: rgba(231, 29, 54, 0.2); color: #fff; }
+
+        .explanation-box {
+            margin-top: 20px; padding: 15px; background: rgba(46, 196, 182, 0.1);
+            border-left: 4px solid var(--success); border-radius: 4px; display: none;
+        }
+
+        .btn {
+            background: var(--primary); color: #000; border: none; padding: 12px 30px;
+            border-radius: 25px; font-weight: bold; cursor: pointer; font-size: 1rem;
+            transition: transform 0.1s; margin-top: 20px; display: inline-block;
+        }
+        .btn:hover { background: var(--primary-hover); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-outline { background: transparent; border: 1px solid var(--text-muted); color: var(--text-main); }
+        .btn-outline:hover { border-color: var(--text-main); background: #333; }
+
+        /* --- RESULTS --- */
+        .result-score { font-size: 4rem; font-weight: bold; color: var(--primary); margin: 20px 0; }
+        .result-circle { 
+            width: 150px; height: 150px; border-radius: 50%; border: 8px solid var(--primary);
+            display: flex; align-items: center; justify-content: center; margin: 0 auto;
+        }
+
+        /* --- LEVEL BADGE --- */
+        .level-badge {
+            background: #333; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; border: 1px solid var(--primary);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: var(--bg-panel);
+            padding: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid #444;
+            margin-top: 40px;
+        }
+        footer a { color: var(--text-muted); text-decoration: none; margin: 0 10px; }
+        footer a:hover { color: var(--primary); }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <div class="logo">
+                <span>🔥</span> Welding Trainer
+            </div>
+            <!-- Link zurück zur Hauptseite -->
+            <a href="https://www.warenschmiede.com/" class="back-link">&larr; Warenschmiede</a>
+        </div>
+        
+        <div class="header-right">
+            <button class="btn-share" onclick="shareApp()">
+                📤 <span style="display:none;" class="share-text-desktop">Teilen</span>
+            </button>
+            <div class="user-stats">
+                <div class="level-badge" id="userLevelDisplay">Level 1: Lehrling</div>
+                <div class="stat-item">XP: <strong id="userXpDisplay">0</strong></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- VIEW: DASHBOARD -->
+        <div id="view-dashboard" class="view active">
+            <h1 style="text-align: center;">Wähle deinen Prüfungsmodus</h1>
+            <p style="text-align: center; color: var(--text-muted);">Teste dein Wissen in MAG, WIG und Arbeitssicherheit.</p>
+
+            <div class="dashboard-grid">
+                <div class="card" onclick="startQuiz(10, 'training')">
+                    <span class="card-icon">☕</span>
+                    <h3>Kaffeepause</h3>
+                    <p>10 Fragen. Schneller Check für Zwischendurch.</p>
+                    <p style="color: var(--success); font-size: 0.8rem;">Sofortiges Feedback</p>
+                </div>
+
+                <div class="card" onclick="startQuiz(30, 'training')">
+                    <span class="card-icon">🏋️</span>
+                    <h3>Training</h3>
+                    <p>30 Fragen. Vertiefe dein Wissen systematisch.</p>
+                    <p style="color: var(--success); font-size: 0.8rem;">Sofortiges Feedback</p>
+                </div>
+
+                <div class="card" onclick="startQuiz(50, 'exam')">
+                    <span class="card-icon">🎓</span>
+                    <h3>Prüfungs-Simulation</h3>
+                    <p>50 Fragen. Wie in der echten Prüfung.</p>
+                    <p style="color: var(--danger); font-size: 0.8rem;">Ergebnis erst am Ende</p>
+                </div>
+            </div>
+
+            <!-- DATA MANAGEMENT -->
+            <div class="management-bar">
+                <div class="management-header">Datenverwaltung & Optionen</div>
+                <div class="management-actions">
+                    <button class="btn-small" onclick="exportData()" title="Speichere deinen Fortschritt als Datei">
+                        💾 Sichern (JSON)
+                    </button>
+                    <button class="btn-small" onclick="document.getElementById('importFile').click()" title="Lade einen Spielstand">
+                        📂 Laden (JSON)
+                    </button>
+                    <button class="btn-small btn-danger-small" onclick="resetProgress()" title="Alles löschen">
+                        🗑️ Reset
+                    </button>
+                    <!-- Hidden File Input -->
+                    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
+                </div>
+            </div>
+
+            <!-- DB INFO & LEGAL -->
+            <div class="db-info">
+                <div>Aktueller Fragenpool: <span id="poolCountDisplay" class="db-count">...</span> Fragen</div>
+                <div class="legal-note">
+                    <strong>Hinweis zum Urheberrecht:</strong> Die Fragen in diesem Trainer sind an offizielle Prüfungsfragen angelehnt und dienen ausschließlich Übungszwecken. Sie wurden redaktionell bearbeitet und weichen im Wortlaut vom Original ab, um Urheberrechte zu wahren. Die fachlichen Inhalte und Lernziele bleiben identisch.
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: QUIZ -->
+        <div id="view-quiz" class="view">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="quizProgress"></div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-meta">Frage <span id="qCurrent">1</span> von <span id="qTotal">10</span> • <span id="qCategory">MAG</span></div>
+                <div class="question-text" id="questionText">Frage wird geladen...</div>
+                
+                <div class="options-grid" id="optionsContainer">
+                    <!-- Buttons generated by JS -->
+                </div>
+
+                <div class="explanation-box" id="explanationBox">
+                    <strong>Erklärung:</strong> <span id="explanationText"></span>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button class="btn btn-outline" onclick="showDashboard()">Abbrechen</button>
+                <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>Weiter &rarr;</button>
+            </div>
+        </div>
+
+        <!-- VIEW: RESULTS -->
+        <div id="view-result" class="view" style="text-align: center;">
+            <h2>Prüfung beendet!</h2>
+            <div class="result-circle">
+                <div class="result-score" id="resultPercentage">80%</div>
+            </div>
+            <p id="resultText" style="margin: 20px 0; font-size: 1.2rem;">Nicht schlecht!</p>
+            
+            <div style="margin-top: 40px;">
+                <button class="btn" onclick="showDashboard()">Zurück zum Dashboard</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER MIT RECHTLICHEN LINKS -->
+    <footer>
+        &copy; 2025 Warenschmiede.com - Welding Trainer v1.0 <br><br>
+        <a href="https://www.warenschmiede.com/impressum.html">Impressum</a> | 
+        <a href="https://www.warenschmiede.com/datenschutz.html">Datenschutz</a>
+    </footer>
+
+    <script>
+        // --- 1. DATENBANK (TEIL 1 + TEIL 2 Kombiniert) ---
+        const questionPool = [
+            // --- START TEIL 1 (Original Set) ---
+            {
+                q: "Welche elektrische Größe wird in 'Ampere' (A) gemessen?",
+                options: ["Die elektrische Spannung", "Der elektrische Widerstand", "Die Stromstärke", "Die Leistung"],
+                correct: 2,
+                cat: "Elektrotechnik",
+                expl: "Ampere ist die Einheit für die Stromstärke (I). Spannung ist Volt (U), Widerstand Ohm (R)."
+            },
+            {
+                q: "Was passiert in einem Schweißtransformator?",
+                options: ["Er wandelt Gleichstrom in Wechselstrom um", "Er reduziert die Netzspannung und erhöht die Stromstärke", "Er erhöht die Netzspannung auf 5000 Volt", "Er richtet den Strom gleich"],
+                correct: 1,
+                cat: "Elektrotechnik",
+                expl: "Der Trafo wandelt hohe Spannung/wenig Strom (Netz) in niedrige Spannung/viel Strom (Schweißen) um."
+            },
+            {
+                q: "Was bedeutet die Angabe 'ED 60%' auf einem Schweißgerät?",
+                options: ["Das Gerät hat 60% Wirkungsgrad", "Du darfst 6 Minuten schweißen, dann 4 Minuten Pause (bezogen auf 10 min)", "Der Strom ist um 60% reduziert", "Die Elektrode muss 60mm dick sein"],
+                correct: 1,
+                cat: "Elektrotechnik",
+                expl: "ED steht für Einschaltdauer. 60% ED bedeutet bei 10 Min Zyklus: 6 Min Arbeit, 4 Min Abkühlphase."
+            },
+            {
+                q: "Welche Stromart wird beim klassischen Lichtbogenhandschweißen (E-Hand) meistens genutzt?",
+                options: ["Gleichstrom (DC)", "Wechselstrom (AC) oder Gleichstrom (DC) je nach Elektrodentyp", "Drehstrom", "Hochfrequenzstrom"],
+                correct: 1,
+                cat: "E-Hand",
+                expl: "Viele rutilumhüllte Elektroden gehen an AC und DC. Basische Elektroden benötigen meist DC (+)."
+            },
+            {
+                q: "Was bewirkt eine Erhöhung der Schweißspannung (Volt) beim MAG-Prozess?",
+                options: ["Der Lichtbogen wird länger und die Naht breiter", "Der Einbrand wird tiefer", "Der Draht schmilzt schneller ab", "Die Stromstärke sinkt"],
+                correct: 0,
+                cat: "MAG Parameter",
+                expl: "Spannung = Lichtbogenlänge. Mehr Spannung macht den Lichtbogen breiter und flacher, erhöht aber die Porengefahr."
+            },
+            {
+                q: "Welches Gas ist ein 'Aktives Gas' beim MAG-Schweißen?",
+                options: ["Argon 4.6", "Helium", "Kohlendioxid (CO2)", "Stickstoff"],
+                correct: 2,
+                cat: "MAG Gase",
+                expl: "CO2 reagiert chemisch mit dem Schmelzbad (es ist aktiv). Argon und Helium sind inert (träge)."
+            },
+            {
+                q: "Wie nennt man den Lichtbogen, bei dem der Werkstoffübergang kurzschlussfrei und feintropfig erfolgt?",
+                options: ["Kurzlichtbogen", "Sprühlichtbogen", "Impulslichtbogen", "WIG-Lichtbogen"],
+                correct: 1,
+                cat: "MAG Prozess",
+                expl: "Der Sprühlichtbogen entsteht bei hoher Stromstärke/Spannung. Das Material 'sprüht' ohne Kurzschlüsse ins Bad."
+            },
+            {
+                q: "Welche Drahtförderrollen-Nut verwendet man für Aluminium-Draht?",
+                options: ["V-Nut (spitz)", "U-Nut (rund)", "Gezahnte Nut (geriffelt)", "Flache Walze"],
+                correct: 1,
+                cat: "MAG Ausrüstung",
+                expl: "Alu ist weich. Eine V-Nut oder Zähne würden den Draht verformen. Man nutzt daher U-Nuten."
+            },
+            {
+                q: "Was ist die häufigste Ursache für Poren beim MAG-Schweißen?",
+                options: ["Zu viel Drahtvorschub", "Mangelnder Gasschutz (Zugluft/Düse verstopft)", "Falsche Polung", "Zu hohe Stromstärke"],
+                correct: 1,
+                cat: "MAG Fehler",
+                expl: "Wenn Luft (Sauerstoff/Stickstoff) an das flüssige Bad kommt, entstehen sofort Poren."
+            },
+            {
+                q: "Wofür steht die Abkürzung WIG?",
+                options: ["Wolfram-Inert-Gas", "Warm-Inert-Gas", "Wolfram-Induktions-Gas", "Wechselstrom-Impuls-Gas"],
+                correct: 0,
+                cat: "WIG Grundlagen",
+                expl: "Es steht für Wolfram-Inert-Gas. Im Englischen TIG (Tungsten Inert Gas)."
+            },
+            {
+                q: "Welche Farbe kennzeichnet eine reine Wolframelektrode (WP) für Aluminium?",
+                options: ["Rot", "Gold", "Grün", "Grau"],
+                correct: 2,
+                cat: "WIG Elektroden",
+                expl: "Grün (WP = Wolfram Pure) ist für Aluminium (AC). Heute nutzen viele aber auch Universal-Elektroden (Gold/Lila)."
+            },
+            {
+                q: "Warum muss man bei Edelstahl 'formieren' (Wurzelschutzgas)?",
+                options: ["Damit die Naht schneller abkühlt", "Um die Wurzel vor Oxidation ('Verblumen') zu schützen", "Damit der Draht besser fließt", "Ist bei Edelstahl nicht nötig"],
+                correct: 1,
+                cat: "WIG Verfahren",
+                expl: "Ohne Gas auf der Rückseite verbrennt das Chrom im Edelstahl an der Wurzel (Blumenkohl-Effekt) -> Rostgefahr."
+            },
+            {
+                q: "Wie schleift man eine WIG-Nadel korrekt an?",
+                options: ["Quer zur Längsachse", "Längs zur Spitze hin (axial)", "Gar nicht, sie muss stumpf sein", "Kreisförmig"],
+                correct: 1,
+                cat: "WIG Praxis",
+                expl: "Längsschliff sorgt für einen stabilen Lichtbogen. Querrillen lassen den Lichtbogen flackern."
+            },
+            {
+                q: "Welche Gefahr besteht beim Schweißen von verzinkten Bauteilen?",
+                options: ["Keine besondere Gefahr", "Zinkfieber durch giftige Rauche", "Explosionsgefahr", "Radioaktive Strahlung"],
+                correct: 1,
+                cat: "Gesundheit",
+                expl: "Zinkoxid-Rauch ist giftig und führt zu Schüttelfrost und Fieber. Absaugung ist Pflicht!"
+            },
+            {
+                q: "Welche Spannung gilt bei Wechselstrom (AC) unter erhöhter elektrischer Gefährdung als maximal zulässig (Leerlauf)?",
+                options: ["230 V", "113 V", "48 V", "12 V"],
+                correct: 2,
+                cat: "Sicherheit",
+                expl: "In engen Räumen (Kessel) sind max. 48V (AC Effektivwert) oder 113V (DC) erlaubt. Achte auf das 'S'-Zeichen."
+            },
+            {
+                q: "Was bedeutet das 'S'-Zeichen auf einem Schweißgerät?",
+                options: ["Super-Power", "Schweißen unter erhöhter elektrischer Gefährdung erlaubt", "Nur für Stahl (Steel)", "Sicherheitsprüfung fehlt"],
+                correct: 1,
+                cat: "Sicherheit",
+                expl: "Das S-Zeichen (früher K) erlaubt den Einsatz in engen, leitfähigen Räumen (Kessel, Tanks)."
+            },
+            {
+                q: "Welche Strahlenbelastung schädigt die Augen beim Lichtbogenschweißen am stärksten?",
+                options: ["Mikrowellen", "UV-Strahlung (Ultraviolett)", "Röntgenstrahlung", "Radiowellen"],
+                correct: 1,
+                cat: "Sicherheit",
+                expl: "UV-Strahlung verbrennt die Netzhaut ('Verblitzen') und die Haut. Daher immer Schutzfilter nutzen."
+            },
+            {
+                q: "Wie transportiert man Gasflaschen sicher?",
+                options: ["Liegend rollen", "Auf der Schulter tragen", "Mit aufgeschraubter Kappe und gegen Umfallen gesichert", "Am Ventil tragend"],
+                correct: 2,
+                cat: "Sicherheit",
+                expl: "Die Kappe schützt das Ventil. Ohne Kappe kann das Ventil bei einem Sturz abreißen -> Raketenantrieb."
+            },
+            {
+                q: "Was ist 'S235JR'?",
+                options: ["Ein hochlegierter Edelstahl", "Ein unlegierter Baustahl mit 235 N/mm² Streckgrenze", "Ein Aluminium-Guss", "Eine Elektrode"],
+                correct: 1,
+                cat: "Werkstoffe",
+                expl: "S = Structural (Stahlbau), 235 = Mindeststreckgrenze, JR = Kerbschlagarbeit (27J bei Raumtemperatur)."
+            },
+            {
+                q: "Welches Element macht Edelstahl 'rostfrei'?",
+                options: ["Kohlenstoff", "Chrom (mind. 10,5%)", "Mangan", "Schwefel"],
+                correct: 1,
+                cat: "Werkstoffe",
+                expl: "Chrom bildet an der Oberfläche eine passive Oxidschicht, die den Stahl schützt."
+            },
+            {
+                q: "Was ist eine 'Aufhärtung' in der Wärmeeinflusszone (WEZ)?",
+                options: ["Der Stahl wird weicher", "Das Material wird spröde und rissig durch schnelle Abkühlung", "Die Naht wird dicker", "Der Stahl schmilzt nicht mehr"],
+                correct: 1,
+                cat: "Werkstoffe",
+                expl: "Bei Stählen mit viel Kohlenstoff entsteht durch schnelles Abkühlen Martensit (hart & spröde) -> Rissgefahr."
+            },
+            {
+                q: "Was ist ein 'Bindefehler' (Flankenbindefehler)?",
+                options: ["Ein Loch in der Naht", "Das Schweißgut haftet nur am Grundmaterial, ohne es aufzuschmelzen", "Ein Riss im Endkrater", "Zu viel Schlacke"],
+                correct: 1,
+                cat: "Fehlererkennung",
+                expl: "Einer der gefährlichsten Fehler, da man ihn von außen oft nicht sieht (Klebung statt Schweißung)."
+            },
+            {
+                q: "Womit kann man Oberflächenrisse an einer Naht sichtbar machen?",
+                options: ["Mit dem Hammer", "Farbeindringprüfung (Rot-Weiß)", "Zugversuch", "Biegeversuch"],
+                correct: 1,
+                cat: "Prüfung",
+                expl: "Das Farbeindringverfahren (PT) nutzt Kapillarkräfte, um Risse farbig anzuzeigen."
+            },
+            {
+                q: "Was verursacht 'Endkraterrisse'?",
+                options: ["Zu langsames Schweißen", "Abruptes Beenden des Schweißvorgangs ohne Füllen des Kraters", "Falsches Gas", "Zu dicke Elektrode"],
+                correct: 1,
+                cat: "Fehlererkennung",
+                expl: "Beim schnellen Abschalten schrumpft das letzte Schmelzbad und reißt auf. Krater füllen oder Rampen-Funktion nutzen!"
+    },
+            {
+                q: "Welches Gasgemisch nutzt man zum Autogenschweißen?",
+                options: ["Propan + Luft", "Acetylen + Sauerstoff", "Erdgas + Argon", "Argon + CO2"],
+                correct: 1,
+                cat: "Autogen",
+                expl: "Nur Acetylen/Sauerstoff erreicht die nötige Temperatur (ca. 3200°C) und Atmosphäre für Stahl."
+            },
+            {
+                q: "Was bedeutet 'Rückschlag' beim Autogenschweißen?",
+                options: ["Der Brenner stößt zurück", "Die Flamme schlägt in den Brenner/Schlauch zurück", "Das Werkstück verzieht sich", "Gasflasche ist leer"],
+                correct: 1,
+                cat: "Sicherheit Autogen",
+                expl: "Hochgefährlich! Flamme wandert in den Schlauch. Flammensperren/Rückschlagsicherungen sind Pflicht."
+            },
+            {
+                q: "Wie erkennt man eine Sauerstoffflasche?",
+                options: ["Rote Farbe", "Blaue Schulter (früher blau, heute weiß/blau je nach Typ)", "Gelbe Farbe", "Kastanienbraun"],
+                correct: 1,
+                cat: "Gase",
+                expl: "Technischer Sauerstoff hat meist eine weiße Schulter (früher blau). Acetylen ist kastanienbraun."
+            },
+            {
+                q: "Was bedeutet das Symbol 'a4' in einer Schweißzeichnung?",
+                options: ["Arbeitszeit 4 Minuten", "Kehlnahtdicke a = 4 mm", "Abstand 4 cm", "Elektrode 4 mm"],
+                correct: 1,
+                cat: "Zeichnen",
+                expl: "Das a-Maß bezeichnet die statisch wirksame Höhe der Kehlnaht."
+            },
+            {
+                q: "Welches Symbol steht für eine 'V-Naht'?",
+                options: ["Zwei parallele Striche", "Ein V-förmiges Zeichen", "Ein Kreis", "Ein Quadrat"],
+                correct: 1,
+                cat: "Zeichnen",
+                expl: "Das V-Symbol steht logischerweise für die V-Naht."
+            },
+            {
+                q: "Was bedeutet '111' in der Verfahrensliste?",
+                options: ["MAG-Schweißen", "WIG-Schweißen", "Lichtbogenhandschweißen (E-Hand)", "Gasschweißen"],
+                correct: 2,
+                cat: "Normen",
+                expl: "111 ist die ISO-Kennziffer für E-Hand (MMA). 135 ist MAG, 141 ist WIG."
+            },
+            
+            // --- HIER BEGINNT TEIL 2 (Nahtlos angefügt) ---
+            {
+                q: "Welchen Fugenwinkel (Öffnungswinkel) wählt man typischerweise für eine V-Naht an Stahlblechen (über 10mm)?",
+                options: ["30 Grad", "45 Grad", "60 Grad", "90 Grad"],
+                correct: 2,
+                cat: "Nahtvorbereitung",
+                expl: "60° ist der Standard. Ist der Winkel zu klein (z.B. 30°), drohen Bindefehler in der Wurzel. Ist er zu groß, verschwendet man Schweißgut."
+            },
+            {
+                q: "Was ist ein 'Steg' (Wurzelsteg) bei der Nahtvorbereitung?",
+                options: ["Die Breite der Decklage", "Die ungeschweißte Kante an der Wurzel (ca. 1-2mm)", "Der Abstand zwischen den Blechen", "Ein Werkzeug zum Reinigen"],
+                correct: 1,
+                cat: "Nahtvorbereitung",
+                expl: "Der Steg verhindert, dass der Lichtbogen sofort durchbrennt ('Durchfallen'). Er hält das Schmelzbad."
+            },
+            {
+                q: "Warum heftet man Bauteile vor dem Schweißen?",
+                options: ["Damit sie nicht weglaufen", "Um den Verzug und den Spaltabstand während des Schweißens zu fixieren", "Um Strom zu sparen", "Um die Naht vorzuwärmen"],
+                correct: 1,
+                cat: "Arbeitstechnik",
+                expl: "Ohne Heftstellen würden sich die Bleche durch die Hitze (Schrumpfung) zusammenziehen und der Spalt würde sich schließen."
+            },
+            {
+                q: "Welche Voraussetzung muss ein Metall erfüllen, damit man es autogen brennschneiden kann?",
+                options: ["Es muss magnetisch sein", "Die Entzündungstemperatur muss niedriger sein als die Schmelztemperatur", "Es muss Aluminium enthalten", "Es muss rostfrei sein"],
+                correct: 1,
+                cat: "Brennschneiden",
+                expl: "Das ist die wichtigste Regel! Stahl verbrennt im Sauerstoffstrahl, bevor er schmilzt. Bei Alu oder Edelstahl geht das nicht (Oxidhaut schmilzt erst sehr spät)."
+            },
+            {
+                q: "Kann man Aluminium autogen brennschneiden?",
+                options: ["Ja, problemlos", "Nein, man muss Plasma- oder Laserschneiden nutzen", "Nur mit Acetylen-Überschuss", "Ja, aber nur vorgewärmt"],
+                correct: 1,
+                cat: "Brennschneiden",
+                expl: "Nein. Aluminiumoxide schmelzen erst bei >2000°C. Autogenbrenner schaffen das Wegblasen der Oxide nicht. Hier hilft nur Plasma."
+            },
+            {
+                q: "Was ist die Aufgabe des 'Schneidsauerstoffs' beim Brennschneiden?",
+                options: ["Er kühlt das Werkstück", "Er verbrennt das Eisen und bläst die Schlacke aus der Fuge", "Er zündet die Flamme", "Er schützt vor Oxidation"],
+                correct: 1,
+                cat: "Brennschneiden",
+                expl: "Die Heizflamme wärmt nur vor. Der eigentliche Schnitt passiert durch den reinen Sauerstoffstrahl, der den Stahl verbrennt."
+            },
+            {
+                q: "Der MAG-Lichtbogen 'stottert' und der Draht stößt fest gegen das Werkstück. Was ist eine wahrscheinliche Ursache?",
+                options: ["Zu viel Spannung", "Vorschub zu hoch für die gewählte Spannung (oder Masse schlecht)", "Gasflasche leer", "Draht ist zu dünn"],
+                correct: 1,
+                cat: "MAG Fehler",
+                expl: "Wenn der Draht schneller kommt, als er abschmelzen kann, gibt es Kurzschlüsse (Stottern). Spannung erhöhen oder Draht bremsen!"
+            },
+            {
+                q: "Was passiert, wenn die Drahtführungsseele (im Schlauchpaket) verstopft oder abgeknickt ist?",
+                options: ["Der Lichtbogen wird lila", "Der Drahtvorschub stockt unregelmäßig", "Das Gas strömt nicht mehr", "Das Gerät schaltet ab"],
+                correct: 1,
+                cat: "MAG Wartung",
+                expl: "Klassiker: Der Motor dreht, aber vorne kommt der Draht nur ruckartig ('Slip-Stick'). Seele ausblasen oder tauschen!"
+            },
+            {
+                q: "Welche Drahtelektrode nutzt man für unlegierten Baustahl (S235)?",
+                options: ["G3Si1 (SG2)", "AlMg5", "308LSI", "CuSi3"],
+                correct: 0,
+                cat: "Werkstoffe",
+                expl: "G3Si1 (früher SG2) ist der Standard-Draht für 'Wald-und-Wiesen'-Stahl. Er ist verkupfert."
+            },
+            {
+                q: "Was ist ein 'Rückbrand'?",
+                options: ["Wenn der Brenner hinten brennt", "Wenn der Draht nach dem Schweißen an der Stromdüse festschmilzt", "Ein Sonnenbrand durch UV", "Wenn das Gas brennt"],
+                correct: 1,
+                cat: "MAG Fehler",
+                expl: "Passiert, wenn der Drahtvorschub zu früh stoppt, aber der Strom noch fließt. Die Drahtspitze schmilzt an der Düse fest."
+            },
+            {
+                q: "Was unterscheidet 'Austenit' (Edelstahl) von normalem Ferrit (Baustahl) magnetisch?",
+                options: ["Austenit ist meist unmagnetisch", "Austenit ist extrem stark magnetisch", "Es gibt keinen Unterschied", "Austenit stößt Magnete ab"],
+                correct: 0,
+                cat: "Werkstoffe",
+                expl: "Ein einfacher Test: Hält der Magnet am Blech? Nein -> Wahrscheinlich Edelstahl (V2A/V4A)."
+            },
+            {
+                q: "Warum ist Aluminium beim Schweißen schwierig?",
+                options: ["Es ist zu schwer", "Wegen der Oxidschicht (Schmelzpunkt >2000°C) und der hohen Wärmeleitfähigkeit", "Es rostet sofort", "Es ist giftig"],
+                correct: 1,
+                cat: "Werkstoffe",
+                expl: "Alu leitet Wärme extrem schnell ab (man braucht viel Energie) und die harte Haut muss erst aufgebrochen werden (Wechselstrom)."
+            },
+            {
+                q: "Was bedeutet die Bezeichnung 'AlMg5'?",
+                options: ["Aluminium mit 5% Mangan", "Aluminium mit 5% Magnesium", "Aluminium 5mm dick", "Aluminium der Güteklasse 5"],
+                correct: 1,
+                cat: "Werkstoffe",
+                expl: "Mg (Magnesium) macht Alu härter und fester. Es ist der Standard-Zusatz für Alubleche."
+            },
+            {
+                q: "Was ist 'Zunder'?",
+                options: ["Ein Anzünder für den Brenner", "Eine Oxidschicht auf warmgewalztem Stahl (dunkelgrau/blau)", "Ein spezieller Schweißdraht", "Eine Schlacke"],
+                correct: 1,
+                cat: "Werkstoffe",
+                expl: "Zunder entsteht im Walzwerk. Er muss vor dem Schweißen weggeschliffen werden, sonst gibt es Bindefehler und Poren."
+            },
+            {
+                q: "Was ist eine 'Brandwache'?",
+                options: ["Jemand, der das Feuer schürt", "Die Kontrolle des Arbeitsbereichs auf Glutnester NACH dem Schweißen", "Die Feuerwehr", "Ein Feuerlöscher"],
+                correct: 1,
+                cat: "Sicherheit",
+                expl: "Funken können stundenlang in Dämmwolle oder Holzböden glimmen. Eine Brandwache (oft über Stunden) ist Pflicht."
+            },
+            {
+                q: "Warum darf man Sauerstoffarmaturen niemals ölen oder fetten?",
+                options: ["Weil sie dann verkleben", "Explosionsgefahr! Öl entzündet sich schlagartig in reinem Sauerstoff", "Weil es stinkt", "Weil der Griff rutschig wird"],
+                correct: 1,
+                cat: "Sicherheit",
+                expl: "Merksatz: 'Sauerstoff und Fett = tödliches Duett'. Es kommt zur Selbstentzündung unter Druck."
+            },
+            {
+                q: "Wie hoch ist der Sauerstoffgehalt in der normalen Atemluft?",
+                options: ["Ca. 10%", "Ca. 21%", "Ca. 50%", "Ca. 78%"],
+                correct: 1,
+                cat: "Grundlagen",
+                expl: "21% Sauerstoff, 78% Stickstoff, 1% Edelgase/CO2. Schon kleine Abweichungen in Tanks sind tödlich."
+            },
+            {
+                q: "Was passiert, wenn man in einem engen Behälter mit reinem Sauerstoff 'belüftet'?",
+                options: ["Die Luft wird frisch und gesund", "Die Arbeitskleidung wird zur Fackel (extreme Brandgefahr)", "Man wird müde", "Nichts"],
+                correct: 1,
+                cat: "Sicherheit",
+                expl: "Niemals mit Sauerstoff kühlen/lüften! Ein Funke reicht, und der Schweißeranzug brennt explosionsartig ab."
+            },
+            {
+                q: "Was bewirkt die 'Balance'-Einstellung beim WIG-AC-Schweißen?",
+                options: ["Sie balanciert den Brenner aus", "Sie regelt das Verhältnis von Reinigung (Plus) zu Einbrand (Minus)", "Sie stellt die Gasmenge ein", "Sie regelt die Lautstärke"],
+                correct: 1,
+                cat: "WIG Parameter",
+                expl: "Mehr 'Minus' = tieferer Einbrand, Elektrode bleibt kühl. Mehr 'Plus' = breitere Reinigungszone, Elektrode wird heiß."
+            },
+            {
+                q: "Was ist eine 'Gaslinse'?",
+                options: ["Eine Brille für Gas", "Ein Sieb im Brenner, das die Gasströmung beruhigt (laminar)", "Ein Ventil an der Flasche", "Ein spezieller Druckminderer"],
+                correct: 1,
+                cat: "WIG Zubehör",
+                expl: "Gaslinsen sorgen für eine gleichmäßige Gassäule. Man kann die Nadel weiter rausstehen lassen -> besser Sicht."
+            },
+            {
+                q: "Was passiert, wenn ich mit der WIG-Nadel das Schmelzbad berühre?",
+                options: ["Nichts", "Die Nadel verunreinigt (Wolfram-Einschluss) und muss nachgeschliffen werden", "Der Strom fällt aus", "Das Gas stoppt"],
+                correct: 1,
+                cat: "WIG Fehler",
+                expl: "Wolfram im Stahl ist ein harter, spröder Einschluss (Röntgenfehler!). Die Nadel muss sofort neu geschliffen werden."
+            },
+            {
+                q: "Was bedeutet das Symbol 'Z' bei einer Kehlnaht?",
+                options: ["Zick-Zack schweißen", "Versetzte Naht", "Schenkellänge (statt a-Maß)", "Zusatzwerkstoff"],
+                correct: 2,
+                cat: "Zeichnen",
+                expl: "Z ist die Schenkellänge. Es gilt grob: a = z * 0.7. (Wichtig, nicht verwechseln!)"
+            },
+            {
+                q: "Was bedeutet die Position 'PF'?",
+                options: ["Plattenlage Flach", "Steignaht (Blech)", "Fallnaht", "Überkopf"],
+                correct: 1,
+                cat: "Normen",
+                expl: "PF = Plate (Blech) in Flow direction up (Steigend). Eine der schwierigsten Positionen."
+            },
+            {
+                q: "Was bedeutet 'PG'?",
+                options: ["Fallnaht", "Steignaht", "Querposition", "Wannenlage"],
+                correct: 0,
+                cat: "Normen",
+                expl: "PG = Fallnaht. Nur für dünne Bleche oder spezielle Elektroden (Cellulose) erlaubt, da Bindefehlergefahr hoch."
+            },
+            {
+                q: "Was ist 'UP-Schweißen' (Unterpulver)?",
+                options: ["Schweißen unter Wasser", "Lichtbogen brennt unsichtbar unter einer Schicht Pulver", "Schweißen mit Pulver in der Elektrode", "Gasschweißen mit Pulver"],
+                correct: 1,
+                cat: "Verfahren",
+                expl: "Industriestandard für dicke Bleche/Träger. Hohe Abschmelzleistung, kein sichtbarer Lichtbogen, kein Rauch."
+            },
+            {
+                q: "Womit kann man Gusseisen reparieren?",
+                options: ["Mit normalen Stahlelektroden", "Mit Nickel-Elektroden und viel Vorwärmen/Hämmern", "Gar nicht", "Mit Aluminium-Draht"],
+                correct: 1,
+                cat: "Werkstoffe",
+                expl: "Guss ist spröde. Nickel ist weich und dehnbar, es nimmt die Spannungen auf. Hämmern baut Spannungen ab."
+            },
+            {
+                q: "Was ist eine 'Schrumpfung'?",
+                options: ["Das Werkstück wird kleiner beim Erwärmen", "Das Volumen des Metalls verringert sich beim Abkühlen -> Verzug", "Die Gasflasche wird leer", "Der Schweißer wird müde"],
+                correct: 1,
+                cat: "Physik",
+                expl: "Heißes Metall dehnt sich aus, kaltes zieht sich zusammen. Da die Naht heiß war, zieht sie das Bauteil krumm."
+            },
+            {
+                q: "Welches Gewinde hat der Anschluss für brennbare Gase (Acetylen, Propan)?",
+                options: ["Rechtsgewinde", "Linksgewinde (mit Kerbe)", "Feingewinde", "Zollgewinde"],
+                correct: 1,
+                cat: "Sicherheit",
+                expl: "Damit man sie nicht verwechselt! Brenngas = Links (Mutter hat eine Rille). Sauerstoff/Inertgas = Rechts."
+            },
+            {
+                q: "Wie prüft man Gasschläuche auf Dichtheit?",
+                options: ["Mit dem Feuerzeug", "Mit Lecksuchspray oder Seifenwasser", "Durch Riechen", "Durch Hören"],
+                correct: 1,
+                cat: "Sicherheit",
+                expl: "Niemals mit Flamme absuchen! Seifenwasser bildet Blasen an der undichten Stelle."
+            }
+        , // --- START TEIL 3 (E-Hand, Prüfung, Qualität) ---
+    
+    // --- LICHTBOGENHANDSCHWEISSEN (E-HAND / 111) ---
+    {
+        q: "Welche Aufgabe hat die Umhüllung einer Stabelektrode NICHT?",
+        options: ["Bildung von Schutzgas und Schlacke", "Stabilisierung des Lichtbogens", "Kühlung des Werkstücks", "Zuführung von Legierungselementen"],
+        correct: 2,
+        cat: "E-Hand",
+        expl: "Die Umhüllung schützt das Bad (Gas/Schlacke) und stabilisiert den Lichtbogen. Sie kühlt nicht."
+    },
+    {
+        q: "Welche Stabelektrode muss vor dem Schweißen oft rückgetrocknet werden (z.B. 2h bei 300°C)?",
+        options: ["Rutil-Elektrode (R)", "Cellulose-Elektrode (C)", "Basische Elektrode (B)", "Sauer-umhüllte Elektrode (A)"],
+        correct: 2,
+        cat: "E-Hand",
+        expl: "Basische Elektroden sind hygroskopisch (ziehen Wasser). Feuchtigkeit führt zu Poren und Wasserstoffrissen."
+    },
+    {
+        q: "Welche Elektrode eignet sich besonders gut für Fallnähte (Position PG), z.B. an Pipelines?",
+        options: ["Rutil (R)", "Basisch (B)", "Cellulose (C)", "Rutil-Sauer (RA)"],
+        correct: 2,
+        cat: "E-Hand",
+        expl: "Cellulose-Elektroden haben wenig Schlacke und einen intensiven Lichtbogen, ideal für Fallnähte."
+    },
+    {
+        q: "An welchem Pol wird eine basische Elektrode (B) normalerweise verschweißt?",
+        options: ["Am Pluspol (+)", "Am Minuspol (-)", "An Wechselstrom", "Polung ist egal"],
+        correct: 0,
+        cat: "E-Hand",
+        expl: "Basische Elektroden benötigen meist den Pluspol (außer spezielle Doppelmantel-Typen)."
+    },
+    {
+        q: "Was ist die 'Blaswirkung' beim E-Hand-Schweißen?",
+        options: ["Das Wegblasen des Schutzgases durch Wind", "Die Ablenkung des Lichtbogens durch magnetische Felder", "Das Ausblasen der Schlacke", "Ein Fehler im Druckminderer"],
+        correct: 1,
+        cat: "E-Hand Fehler",
+        expl: "Der Lichtbogen ist ein flexibler Leiter. Magnetfelder (durch den Stromfluss) können ihn ablenken (besonders bei DC)."
+    },
+    {
+        q: "Wie kann man die Blaswirkung verringern?",
+        options: ["Durch Erhöhen des Stroms", "Durch Wechseln auf Wechselstrom (AC) oder Ändern des Masseanschlusses", "Durch längeren Lichtbogen", "Durch dünnere Elektroden"],
+        correct: 1,
+        cat: "E-Hand Praxis",
+        expl: "Wechselstrom hat fast keine Blaswirkung. Auch das Versetzen der Masseklemme hilft oft."
+    },
+
+    // --- PRÜFTECHNIK & FEHLER ---
+    {
+        q: "Welches Prüfverfahren ist 'zerstörungsfrei' (ZfP)?",
+        options: ["Zugversuch", "Kerbschlagbiegeversuch", "Ultraschallprüfung", "Faltversuch"],
+        correct: 2,
+        cat: "Prüfung",
+        expl: "Ultraschall (UT) schaut in das Material, ohne es zu beschädigen. Die anderen zerstören die Probe."
+    },
+    {
+        q: "Womit prüft man die Zähigkeit eines Werkstoffs (Sprödbruchneigung)?",
+        options: ["Härteprüfung", "Kerbschlagbiegeversuch", "Farbeindringprüfung", "Zugversuch"],
+        correct: 1,
+        cat: "Prüfung",
+        expl: "Ein gekerbter Probestab wird zerschlagen. Die verbrauchte Energie (Joule) zeigt die Zähigkeit."
+    },
+    {
+        q: "Was weist man mit der Farbeindringprüfung (PT) nach?",
+        options: ["Innere Fehler wie Schlackeneinschlüsse", "Fehler, die zur Oberfläche hin offen sind (Risse/Poren)", "Die Festigkeit der Naht", "Die Härte der WEZ"],
+        correct: 1,
+        cat: "Prüfung",
+        expl: "Das Kriechöl (Penetrant) zieht nur in Risse ein, die an der Oberfläche offen sind (Kapillarwirkung)."
+    },
+    {
+        q: "Welches Verfahren eignet sich am besten, um Volumenfehler (Lunker, Schlacke im Inneren) bei dicken Blechen zu finden?",
+        options: ["Sichtprüfung (VT)", "Magnetpulver (MT)", "Ultraschall (UT)", "Farbeindring (PT)"],
+        correct: 2,
+        cat: "Prüfung",
+        expl: "Ultraschall dringt tief ein und reflektiert an Fehlern im Volumen."
+    },
+    {
+        q: "Welche Unregelmäßigkeit ist oft die Ursache für Dauerbruch (Ermüdung) bei dynamischer Belastung?",
+        options: ["Eine gleichmäßige Nahtschuppung", "Kerben (z.B. Einbrandkerben oder schroffe Nahtübergänge)", "Anlauffarben", "Ein breiter Nahtdeckel"],
+        correct: 1,
+        cat: "Nahtfehler",
+        expl: "Kerben bewirken Spannungsspitzen. An diesen Stellen beginnt der Riss bei Wechsellast."
+    },
+    {
+        q: "Was ist eine 'Zündstelle' außerhalb der Fuge?",
+        options: ["Ein optischer Mangel, technisch egal", "Ein harter Punkt mit Rissgefahr (Martensitbildung)", "Eine Hilfe zum Wiederzünden", "Ein Zeichen für gute Erdung"],
+        correct: 1,
+        cat: "Nahtfehler",
+        expl: "Das kurze Zünden erhitzt den Stahl punktuell und kühlt extrem schnell ab -> Härtung & Rissgefahr!"
+    },
+
+    // --- QUALITÄTSSICHERUNG & NORMEN ---
+    {
+        q: "Was ist eine 'WPS' (Welding Procedure Specification)?",
+        options: ["Eine Schweißanweisung für den Schweißer", "Ein Prüfzertifikat", "Eine Materialbestellung", "Eine Norm für Gase"],
+        correct: 0,
+        cat: "Qualität",
+        expl: "Die WPS beschreibt genau, wie geschweißt werden muss (Strom, Zusatz, Lagenaufbau), damit die Qualität stimmt."
+    },
+    {
+        q: "Welche Bewertungsgruppe nach DIN EN ISO 5817 stellt die höchsten Anforderungen?",
+        options: ["Gruppe D (Niedrig)", "Gruppe C (Mittel)", "Gruppe B (Hoch)", "Gruppe A (Gibt es meist nicht in der Norm für Lichtbogen)"],
+        correct: 2,
+        cat: "Normen",
+        expl: "B ist die höchste Stufe (z.B. für Druckbehälter). D ist die niedrigste (für einfache Konstruktionen)."
+    },
+    {
+        q: "Wie lange ist eine Schweißerprüfung (nach ISO 9606 / früher EN 287) in der Regel gültig, wenn regelmäßig geschweißt wird?",
+        options: ["1 Jahr", "2 Jahre (früher) / 3 Jahre (ISO)", "Lebenslang", "6 Monate"],
+        correct: 1,
+        cat: "Normen",
+        expl: "Üblich sind 2 bzw. 3 Jahre, vorausgesetzt, der Schweißer arbeitet regelmäßig (alle 6 Monate bestätigt)."
+    },
+    {
+        q: "Was bedeutet die Ziffer '111' in einer Verfahrensprüfung?",
+        options: ["MAG-Schweißen", "WIG-Schweißen", "Lichtbogenhandschweißen", "Gasschweißen"],
+        correct: 2,
+        cat: "Normen",
+        expl: "111 ist die ISO-Referenznummer für Lichtbogenhandschweißen (E-Hand)."
+    },
+
+    // --- ARBEITSSICHERHEIT SPEZIAL ---
+    {
+        q: "Wann entsteht besonders viel Ozon beim Schweißen?",
+        options: ["Beim Gasschweißen", "Beim WIG-Schweißen von Aluminium (starke UV-Reflexion)", "Beim UP-Schweißen", "Beim Löten"],
+        correct: 1,
+        cat: "Gesundheit",
+        expl: "Ozon bildet sich durch UV-Strahlung aus dem Luftsauerstoff. Da Alu stark reflektiert (blank), ist die Ozonbelastung hoch."
+    },
+    {
+        q: "Was muss beim Entfernen von Schlacke unbedingt getragen werden?",
+        options: ["Gehörschutz", "Schutzbrille mit Seitenschutz", "Lederhandschuhe", "Atemschutz"],
+        correct: 1,
+        cat: "Sicherheit",
+        expl: "Heiße Schlacke springt oft glasartig ab und kann Augen schwer verletzen."
+    },
+    {
+        q: "Welches Zeichen auf dem Schweißgerät erlaubt Arbeiten in engen leitfähigen Räumen (Kessel)?",
+        options: ["CE", "S-Zeichen (früher K)", "IP 23", "Ein Blitz-Symbol"],
+        correct: 1,
+        cat: "Sicherheit",
+        expl: "Das S-Zeichen garantiert, dass die Leerlaufspannung begrenzt ist (max 48V AC eff / 113V DC peak)."
+    },
+    {
+        q: "Warum ist das Schweißen an Behältern, die brennbare Stoffe enthielten, lebensgefährlich?",
+        options: ["Wegen Rost", "Explosionsgefahr durch Gasreste in Poren/Ecken", "Weil der Behälter undicht wird", "Weil die Naht nicht hält"],
+        correct: 1,
+        cat: "Sicherheit",
+        expl: "Auch 'leere' Behälter gasen aus. Ein Funke reicht zur Explosion. Immer spülen/inertisieren!"
+    },
+
+    // --- WERKSTOFFKUNDE ERGÄNZUNG ---
+    {
+        q: "Welche Eigenschaft hat 'S355' (früher St52)?",
+        options: ["Mindeststreckgrenze 355 N/mm²", "Zugfestigkeit 355 N/mm²", "Bruchdehnung 355%", "Härte 355 HB"],
+        correct: 0,
+        cat: "Werkstoffe",
+        expl: "Die Zahl hinter dem S (Structural) gibt die Mindeststreckgrenze in MPa (N/mm²) an."
+    },
+    {
+        q: "Warum muss man bei hochfesten Feinkornbaustählen die Streckenenergie (Wärme) begrenzen?",
+        options: ["Damit der Stahl nicht schmilzt", "Um Grobkornbildung und Festigkeitsverlust in der WEZ zu vermeiden", "Damit die Elektrode nicht klebt", "Ist egal"],
+        correct: 1,
+        cat: "Werkstoffe",
+        expl: "Zu viel Hitze (langsames Schweißen) zerstört das feine Korn -> der Stahl verliert seine Zähigkeit."
+    },
+    
+    // --- POSITIONEN & NAHT ---
+    {
+        q: "Was ist die Schweißposition 'PD'?",
+        options: ["Wannenlage", "Horizontal-Überkopf (Kehlnaht)", "Steignaht", "Querposition"],
+        correct: 1,
+        cat: "Positionen",
+        expl: "PD ist die horizontale Überkopfposition bei Kehlnähten (Stuck-Lage)."
+    },
+    {
+        q: "Was bedeutet das a-Maß bei einer Kehlnaht?",
+        options: ["Die Breite der Naht", "Die Höhe des eingezeichneten gleichschenkligen Dreiecks", "Die Schenkellänge", "Die Einbrandtiefe"],
+        correct: 1,
+        cat: "Nahtberechnung",
+        expl: "Das a-Maß ist die statisch tragende Dicke der Naht (Höhe des Dreiecks)."
+    },
+    {
+        q: "Welcher Nahtfehler entsteht oft bei zu hoher Stromstärke?",
+        options: ["Bindefehler", "Einbrandkerben", "Zu hohe Nahtüberhöhung", "Schlackeneinschlüsse"],
+        correct: 1,
+        cat: "Fehler",
+        expl: "Der starke Lichtbogen 'frisst' sich in den Grundwerkstoff am Rand, das Bad füllt es aber nicht schnell genug auf."
+    },
+    {
+        q: "Was versteht man unter 'Puls-Schweißen' (z.B. WIG/MAG)?",
+        options: ["Strom ein/aus schalten", "Periodischer Wechsel zwischen Grundstrom und Impulsstrom", "Schweißen mit Wechselstrom", "Manuelles Tippen am Brenner"],
+        correct: 1,
+        cat: "Prozess",
+        expl: "Der Impulsstrom schmilzt das Material und löst den Tropfen, der Grundstrom hält den Lichtbogen und kühlt das Bad."
+    },
+    {
+        q: "Welches Gasgemisch wird oft für Edelstahl (MAG) verwendet?",
+        options: ["100% CO2", "98% Argon / 2% CO2 (oder O2)", "100% Stickstoff", "Acetylen"],
+        correct: 1,
+        cat: "Gase",
+        expl: "Für Edelstahl braucht man wenig Aktivgas (max 2-3%), um den Kohlenstoffbrand zu vermeiden, aber den Lichtbogen zu stabilisieren."
+    },
+    {
+        q: "Was ist der Vorteil vom UP-Schweißen (Unterpulver)?",
+        options: ["Man sieht den Lichtbogen gut", "Hohe Abschmelzleistung und keine UV-Strahlung", "Gut für Zwangslagen", "Billige Geräte"],
+        correct: 1,
+        cat: "Verfahren",
+        expl: "UP ist ein Hochleistungsverfahren für lange Nähte in Wannenlage. Das Pulver deckt den Lichtbogen komplett ab."
+    }
+, // --- START TEIL 4 (Nahtvorbereitung, Elektrotechnik, Werkstoff, Fehler) ---
+
+    // --- NAHTVORBEREITUNG & MAßE ---
+    {
+        q: "Welche Nahtform eignet sich am besten für Blechdicken über 20 mm, um Schweißgut zu sparen?",
+        options: ["V-Naht", "U-Naht (oder Tulpennaht)", "I-Naht", "Kehlnaht"],
+        correct: 1,
+        cat: "Nahtvorbereitung",
+        expl: "Die U-Naht hat parallele Flanken im oberen Bereich. Das Volumen wächst nicht so extrem mit der Dicke wie bei der V-Naht."
+    },
+    {
+        q: "Was passiert, wenn der Stegabstand (Wurzelspalt) bei einer V-Naht zu klein gewählt wird?",
+        options: ["Der Einbrand wird zu tief", "Gefahr von Bindefehlern in der Wurzel (Wurzel nicht erfasst)", "Die Naht wird zu breit", "Es entstehen Poren"],
+        correct: 1,
+        cat: "Nahtvorbereitung",
+        expl: "Ohne Spalt kommt der Lichtbogen nicht bis ganz unten durch. Die Wurzel bleibt offen."
+    },
+    {
+        q: "Wie groß ist der Öffnungswinkel einer V-Naht an Stahlrohren (ISO 9692)?",
+        options: ["30 Grad", "60 Grad (manchmal auch 70)", "90 Grad", "120 Grad"],
+        correct: 1,
+        cat: "Nahtvorbereitung",
+        expl: "60° ist der Standard, um mit der Elektrode gut an die Wurzel zu kommen, ohne zu viel Material zu brauchen."
+    },
+    {
+        q: "Was ist ein 'Wurzelrückfall'?",
+        options: ["Wenn die Wurzel zu weit durchhängt", "Wenn die Wurzel nach innen eingefallen ist (Hohlkehle innen)", "Wenn der Schweißer umfällt", "Ein Fehler in der Decklage"],
+        correct: 1,
+        cat: "Fehler",
+        expl: "Passiert oft beim WIG-Schweißen (besonders Edelstahl/Titan) ohne Schutzgasdruck innen oder bei zu viel Hitze."
+    },
+
+    // --- ELEKTROTECHNIK VERTIEFUNG ---
+    {
+        q: "Was ist die 'Leerlaufspannung' (U0) einer Schweißstromquelle?",
+        options: ["Die Spannung während des Schweißens", "Die Spannung an den Klemmen bei offenem Stromkreis (ohne Lichtbogen)", "Die Spannung im Kurzschlussfall", "Die Netzspannung"],
+        correct: 1,
+        cat: "Elektrotechnik",
+        expl: "Es ist die Spannung, die anliegt, BEVOR man zündet. Sie ist wichtig für das Zündverhalten und die Sicherheit."
+    },
+    {
+        q: "Wie verläuft die statische Kennlinie einer typischen E-Hand-Stromquelle (Fallende Kennlinie)?",
+        options: ["Waagerecht (Konstantspannung)", "Steil fallend (Konstantstrom)", "Steigend", "Kreisförmig"],
+        correct: 1,
+        cat: "Elektrotechnik",
+        expl: "Wenn der Schweißer wackelt (Lichtbogenlänge ändert), soll der Strom (Ampere) trotzdem fast gleich bleiben. Daher steil fallend."
+    },
+    {
+        q: "Was passiert bei einer Konstantspannungs-Kennlinie (MAG), wenn man den Lichtbogen kürzer macht?",
+        options: ["Der Strom steigt stark an (Selbstregelung)", "Der Strom sinkt", "Die Spannung steigt", "Der Draht brennt fest"],
+        correct: 0,
+        cat: "Elektrotechnik",
+        expl: "Der innere Widerstand sinkt, der Strom schießt hoch -> Draht schmilzt schneller ab -> Lichtbogenlänge stimmt wieder."
+    },
+    {
+        q: "Welche Stromart wird meistens für WIG-Schweißen von Stahl/Edelstahl verwendet?",
+        options: ["Wechselstrom (AC)", "Gleichstrom (DC) Minuspol", "Gleichstrom (DC) Pluspol", "Drehstrom"],
+        correct: 1,
+        cat: "WIG",
+        expl: "DC Minus schont die Elektrode (Kaltkathode) und bringt die Hitze ins Werkstück."
+    },
+
+    // --- WERKSTOFFKUNDE & CHEMIE ---
+    {
+        q: "Was ist 'Zunder' auf einer Stahloberfläche?",
+        options: ["Schmutz und Fett", "Eine Oxidschicht (Walzhaut) aus dem Stahlwerk", "Eine Farbschicht", "Rostschutz"],
+        correct: 1,
+        cat: "Werkstoffe",
+        expl: "Dunkelgraue Schicht (Eisenoxid), die beim Warmwalzen entsteht. Sie isoliert elektrisch und stört beim Schweißen massiv."
+    },
+    {
+        q: "Warum ist Schwefel (S) im Stahl unerwünscht?",
+        options: ["Er macht den Stahl zu hart", "Er verursacht Heißrisse (Rotbruch)", "Er verursacht Kaltbrüche", "Er verhindert das Rosten"],
+        correct: 1,
+        cat: "Werkstoffe",
+        expl: "Schwefel bildet niedrigschmelzende Phasen an den Korngrenzen. Beim Abkühlen reißen diese auf (Heißriss)."
+    },
+    {
+        q: "Was bewirkt Mangan (Mn) im Schweißzusatz?",
+        options: ["Es bindet Schwefel und Sauerstoff (Desoxidation)", "Es macht den Stahl weich wie Kupfer", "Es fördert Poren", "Es senkt die Festigkeit"],
+        correct: 0,
+        cat: "Werkstoffe",
+        expl: "Mangan ist ein 'Reiniger'. Es bindet Sauerstoff und Schwefel in die Schlacke und verhindert so Poren/Risse."
+    },
+    {
+        q: "Was versteht man unter 'Aufhärtung' in der WEZ (Wärmeeinflusszone)?",
+        options: ["Der Stahl wird weicher", "Durch schnelles Abkühlen bildet sich Martensit (hart & spröde)", "Die Naht wird dicker", "Der Stahl schmilzt"],
+        correct: 1,
+        cat: "Werkstoffe",
+        expl: "Bei C-haltigen Stählen wirkt die schnelle Abkühlung wie ein Härteprozess (Abschrecken)."
+    },
+
+    // --- FEHLERBILDER SPEZIAL ---
+    {
+        q: "Wann entstehen 'Fischaugen' (Wasserstoffversprödung) im Bruchbild?",
+        options: ["Bei zu viel Strom", "Durch diffundierbaren Wasserstoff (feuchte Elektroden)", "Bei Überhitzung", "Durch Öleinschlüsse"],
+        correct: 1,
+        cat: "Fehler",
+        expl: "Typisch für wasserstoffinduzierte Kaltrisse. Der Wasserstoff sammelt sich an Fehlstellen und sprengt das Gefüge."
+    },
+    {
+        q: "Was ist ein 'Kraterriss' (Sternriss)?",
+        options: ["Ein Riss, der beim Zünden entsteht", "Ein Schwindungsriss im Endkrater (beim Abschalten)", "Ein Riss neben der Naht", "Ein Riss in der Wurzel"],
+        correct: 1,
+        cat: "Fehler",
+        expl: "Wenn der Endkrater nicht gefüllt wird, reißt das letzte erstarrende Material sternförmig auf."
+    },
+    {
+        q: "Warum darf man bei Aluminium keine Drahtbürste aus normalem Stahl verwenden?",
+        options: ["Weil sie rostet", "Weil Eisenpartikel in das Alu eingebürstet werden -> Korrosion (Fremdrost)", "Weil sie zu hart ist", "Weil sie Funken schlägt"],
+        correct: 1,
+        cat: "Aluminium",
+        expl: "Kleine Eisenpartikel bleiben im weichen Alu stecken. Wenn Feuchtigkeit dazukommt, rostet das Alu (Lokalelement)."
+    },
+    {
+        q: "Was deutet auf eine gute Gasschutzabdeckung bei Titan/Edelstahl hin?",
+        options: ["Eine dunkelblaue bis schwarze Verfärbung", "Eine silberne bis strohgelbe Farbe", "Eine raue Oberfläche", "Weiße Flocken"],
+        correct: 1,
+        cat: "Qualität",
+        expl: "Silber (keine Oxidation) oder Strohgelb (leichte Anlauffarbe) sind perfekt. Blau/Schwarz heißt: Schutzgasproblem!"
+    },
+
+    // --- VERFAHRENSTECHNIK ---
+    {
+        q: "Was ist 'Auftragschweißen' (Cladding)?",
+        options: ["Zwei Bleche verbinden", "Beschichten eines Werkstücks (z.B. Verschleißschutz oder Korrosionsschutz)", "Schweißen im Auftrag eines Kunden", "Heften"],
+        correct: 1,
+        cat: "Verfahren",
+        expl: "Man schweißt eine Schicht (Pufferlage oder Hartauftrag) auf die Oberfläche, nicht um Teile zu verbinden."
+    },
+    {
+        q: "Was bedeutet 'Pilgerschrittverfahren'?",
+        options: ["Schweißen während man geht", "Eine spezielle Reihenfolge der Nahtabschnitte (Rückwärts schweißen, vorwärts schreiten)", "Schweißen mit zwei Brennern", "Schweißen von Rohren"],
+        correct: 1,
+        cat: "Arbeitstechnik",
+        expl: "Man setzt ein Stück vor dem Ende an und schweißt rückwärts zum Anfang. Reduziert Verzug und Spannungen."
+    },
+    {
+        q: "Welche Naht wird 'a-Maß-überwacht' geschweißt?",
+        options: ["Stumpfnaht", "I-Naht", "Kehlnaht", "Auftragsschweißung"],
+        correct: 2,
+        cat: "Nahtberechnung",
+        expl: "Bei Kehlnähten ist das a-Maß (Dicke) das entscheidende Kriterium für die Statik."
+    },
+    {
+        q: "Was ist eine 'Badsicherung' (Backing)?",
+        options: ["Ein zweiter Schweißer", "Eine Leiste (Keramik/Kupfer/Stahl) unter der Wurzel", "Ein Sicherheitsgurt", "Eine spezielle Elektrode"],
+        correct: 1,
+        cat: "Hilfsmittel",
+        expl: "Sie verhindert, dass das Schmelzbad durchfällt und formt die Wurzelunterseite glatt."
+    },
+
+    // --- SICHERHEIT & GESUNDHEIT ---
+    {
+        q: "Ab welcher Lautstärke (Lärmpegel) muss der Arbeitgeber Gehörschutz bereitstellen?",
+        options: ["Ab 80 dB(A)", "Ab 85 dB(A)", "Ab 100 dB(A)", "Ab 60 dB(A)"],
+        correct: 0,
+        cat: "Sicherheit",
+        expl: "Ab 80 dB(A) muss er bereitgestellt werden. Ab 85 dB(A) MUSS er getragen werden (Tragepflicht)."
+    },
+    {
+        q: "Was ist 'Verblitzen'?",
+        options: ["Ein Stromschlag", "Eine Entzündung der Hornhaut/Bindehaut durch UV-Strahlung", "Verbrennung der Haut", "Explosion einer Flasche"],
+        correct: 1,
+        cat: "Gesundheit",
+        expl: "Fühlt sich an wie 'Sand in den Augen'. Tritt meist nachts auf, wenn man ohne Schutz in den Lichtbogen geschaut hat."
+    },
+    {
+        q: "Warum sind Chrom-Nickel-Schweißrauche (Edelstahl) besonders gefährlich?",
+        options: ["Sie stinken", "Sie enthalten krebserzeugende Chrom(VI)-Verbindungen und Nickeloxide", "Sie sind radioaktiv", "Sie sind explosiv"],
+        correct: 1,
+        cat: "Gesundheit",
+        expl: "Cr(VI) ist krebserzeugend. Absaugung ist bei Edelstahl zwingend vorgeschrieben (oft mit Umluftverbot)."
+    },
+    {
+        q: "Welche Farbe hat der Schulteranstrich einer Argon-Flasche (technisch)?",
+        options: ["Grau", "Dunkelgrün", "Kastanienbraun", "Weiß"],
+        correct: 1,
+        cat: "Gase",
+        expl: "Dunkelgrün nach DIN EN 1089-3. Grau wäre CO2 oder Helium (alt). Weiß ist Sauerstoff."
+    },
+    
+    // --- SONSTIGES ---
+    {
+        q: "Was bedeutet das Kurzzeichen '135' nach ISO 4063?",
+        options: ["WIG", "E-Hand", "MAG (Metall-Aktivgas)", "MIG (Metall-Inertgas)"],
+        correct: 2,
+        cat: "Normen",
+        expl: "135 = MAG mit Massivdraht. 136 = MAG mit Fülldraht. 131 = MIG."
+    },
+    {
+        q: "Was ist eine 'Schweißanweisung' (WPS)?",
+        options: ["Eine Anleitung zum Reparieren des Geräts", "Ein Dokument mit allen Parametern für eine bestimmte Naht", "Ein Gesetz", "Eine Rechnung"],
+        correct: 1,
+        cat: "Qualität",
+        expl: "Die WPS (Welding Procedure Specification) ist das 'Rezept' für die Naht (Strom, Draht, Gas, Lagenaufbau)."
+    }
+, // --- START TEIL 5 (Zusatzwerkstoffe, Autogen, Korrosion) ---
+
+    // --- SCHWEISSZUSÄTZE & NORMEN (DIN EN ISO) ---
+    {
+        q: "Was bedeutet die Bezeichnung 'G3Si1' (früher SG2) auf einem MAG-Draht?",
+        options: ["Drahtdurchmesser 3mm", "Gasgehalt 3%", "Chemische Zusammensetzung (viel Mangan/Silizium)", "Güteklasse 3"],
+        correct: 2,
+        cat: "Zusatzwerkstoffe",
+        expl: "G3Si1 kennzeichnet die Legierung. Mn und Si sind hoch, um Zunder und Rost zu binden (Desoxidation)."
+    },
+    {
+        q: "Was bedeutet das 'B' in der Elektrodenbezeichnung 'E 42 4 B 42'?",
+        options: ["Basisch umhüllt", "Biegbar", "Baustahl", "Brandschutz"],
+        correct: 0,
+        cat: "Zusatzwerkstoffe",
+        expl: "B = Basisch. R = Rutil. C = Cellulose. A = Sauer."
+    },
+    {
+        q: "Welche Elektrode macht die 'schönste' Naht (feinschuppig, glatt), hat aber weniger Festigkeit?",
+        options: ["Basische (B)", "Rutil (R/RR)", "Cellulose (C)", "Gusseisen"],
+        correct: 1,
+        cat: "Zusatzwerkstoffe",
+        expl: "Rutil-Elektroden laufen sehr weich, zünden gut und machen schöne Nähte. Ideal für Heftarbeiten und Decklagen."
+    },
+    {
+        q: "Welche Elektrode hat die höchsten Zähigkeitswerte (auch bei Kälte) und ist rissunempfindlich?",
+        options: ["Rutil (R)", "Sauer (A)", "Basisch (B)", "Rutil-Sauer (RA)"],
+        correct: 2,
+        cat: "Zusatzwerkstoffe",
+        expl: "Basische Elektroden haben ein sehr reines Schweißgut (wenig Sauerstoff/Wasserstoff) -> Beste Qualität."
+    },
+    {
+        q: "Was bedeutet 'Rücktrocknen' von Elektroden?",
+        options: ["Abkühlen nach dem Schweißen", "Erwärmen im Ofen (ca. 300-350°C) vor dem Schweißen, um Feuchtigkeit zu entfernen", "Trockenwischen mit einem Lappen", "Lagern im Wasserbad"],
+        correct: 1,
+        cat: "Zusatzwerkstoffe",
+        expl: "Besonders basische Elektroden saugen Wasser aus der Luft. Das führt zu Poren und Rissen (H2). Trocknen hilft."
+    },
+
+    // --- GASSCHWEISSEN (AUTOGEN) VERTIEFUNG ---
+    {
+        q: "Wie stellt man die Flamme zum Schweißen von Messing ein?",
+        options: ["Neutral (1:1)", "Mit Sauerstoffüberschuss (oxidierend)", "Mit Acetylenüberschuss (aufkohlend)", "Ganz ohne Sauerstoff"],
+        correct: 1,
+        cat: "Autogen",
+        expl: "Der Sauerstoffüberschuss bildet eine Oxidhaut auf dem Schmelzbad, die das Verdampfen von Zink (Zinkrauch!) verhindert."
+    },
+    {
+        q: "Welche Temperatur hat die Acetylen-Sauerstoff-Flamme maximal?",
+        options: ["Ca. 1500°C", "Ca. 2200°C", "Ca. 3200°C", "Ca. 5000°C"],
+        correct: 2,
+        cat: "Autogen",
+        expl: "3200°C an der Kegelspitze. Das reicht für Stahl. Propan schafft nur ca. 2800°C (zu wenig zum Schweißen)."
+    },
+    {
+        q: "Was ist ein 'Flammenrückschlag'?",
+        options: ["Die Flamme geht aus", "Die Flamme schlägt mit einem Knall in den Brenner/Griffstück zurück", "Die Flasche fällt um", "Der Druckminderer vereist"],
+        correct: 1,
+        cat: "Sicherheit Autogen",
+        expl: "Wenn die Ausströmgeschwindigkeit kleiner ist als die Zündgeschwindigkeit, wandert die Flamme in den Brenner."
+    },
+    {
+        q: "Wie viel Acetylen darf man maximal pro Stunde aus einer Flasche entnehmen?",
+        options: ["So viel man will", "Max. 1000 Liter", "Max. 1000 Liter (kurzzeitig), Dauerentnahme max. 600-700 l/h", "Max. 10 Liter"],
+        correct: 2,
+        cat: "Sicherheit Autogen",
+        expl: "Zieht man zu schnell, kommt das Lösungsmittel (Aceton) mit raus. Das spuckt am Brenner und ruiniert den Druckminderer."
+    },
+    {
+        q: "Was bedeutet die Kennzeichnung 'A' auf einem Druckminderer?",
+        options: ["Argon", "Acetylen", "Atemluft", "Ausgang"],
+        correct: 1,
+        cat: "Gase",
+        expl: "A = Acetylen (Bügelanschluss). O = Sauerstoff (Rechtsgewinde)."
+    },
+
+    // --- KORROSION & EDELSTAHL ---
+    {
+        q: "Was ist 'Interkristalline Korrosion' (IK) bei Edelstahl?",
+        options: ["Rost auf der Oberfläche", "Zerfall des Gefüges entlang der Korngrenzen (Kornzerfall)", "Lochfraß", "Rost durch Kontakt mit Stahl"],
+        correct: 1,
+        cat: "Korrosion",
+        expl: "Passiert, wenn sich beim Schweißen Chromcarbide bilden. Das Chrom fehlt dann für den Korrosionsschutz."
+    },
+    {
+        q: "Wie verhindert man Interkristalline Korrosion?",
+        options: ["Durch 'stabilisierte' Stähle (mit Titan/Niob) oder 'Low Carbon' (L-Stähle)", "Durch schnelles Schweißen", "Durch viel Gas", "Durch Vorwärmen"],
+        correct: 0,
+        cat: "Werkstoffe",
+        expl: "Titan bindet den Kohlenstoff, bevor er das Chrom 'klauen' kann. L-Stähle haben so wenig C, dass nichts passiert."
+    },
+    {
+        q: "Was sind 'Anlauffarben' bei Edelstahl?",
+        options: ["Ein Qualitätsmerkmal", "Oxidschichten, die den Korrosionsschutz verringern", "Farbe zum Markieren", "Reste vom Öl"],
+        correct: 1,
+        cat: "Nachbehandlung",
+        expl: "Die bunten Farben (Blau/Gelb) sind nicht mehr passiv. Sie müssen gebeizt oder gebürstet werden, sonst rostet es dort."
+    },
+    {
+        q: "Was ist 'Lochfraß' (Pitting)?",
+        options: ["Tiefe Löcher, oft durch Chlorid (Salzwasser) verursacht", "Große Poren", "Löcher durch zu viel Strom", "Bohrlöcher"],
+        correct: 0,
+        cat: "Korrosion",
+        expl: "Sehr tückisch. Kleine Nadelstiche an der Oberfläche, aber große Höhlen darunter. Chlor zerstört die Passivschicht."
+    },
+
+    // --- PHYSIK & WÄRME ---
+    {
+        q: "Was ist die 'Streckenenergie'?",
+        options: ["Der Stromverbrauch der Maschine", "Die Energie, die pro cm Nahtlänge in das Bauteil eingebracht wird", "Die Kraft des Schweißers", "Die Spannung mal Ampere"],
+        correct: 1,
+        cat: "Physik",
+        expl: "Berechnung: (Spannung x Strom) / Geschwindigkeit. Wichtig, um Härte und Verzug zu steuern."
+    },
+    {
+        q: "Warum verziehen sich Edelstahl-Bauteile stärker als solche aus normalem Stahl?",
+        options: ["Edelstahl ist weicher", "Edelstahl leitet Wärme schlechter und dehnt sich stärker aus", "Edelstahl ist magnetisch", "Tun sie nicht"],
+        correct: 1,
+        cat: "Verzug",
+        expl: "Edelstahl (Austenit) hat ca. 50% mehr Ausdehnung als Baustahl und leitet die Wärme kaum ab (Wärmestau)."
+    },
+    {
+        q: "Was passiert beim 'Spannungsarmglühen'?",
+        options: ["Das Bauteil wird härter", "Innere Spannungen werden durch Wärme (ca. 550-600°C) abgebaut", "Der Stahl schmilzt", "Die Naht wird breiter"],
+        correct: 1,
+        cat: "Wärmebehandlung",
+        expl: "Bei hohen Temperaturen sinkt die Streckgrenze, der Stahl 'entspannt' sich plastisch."
+    },
+
+    // --- MAG SONDERFÄLLE ---
+    {
+        q: "Was ist ein 'Fülldraht' (Rutil-Fülldraht)?",
+        options: ["Ein massiver Draht", "Ein Röhrchen, gefüllt mit Pulver (ähnlich Stabelektrode)", "Ein Draht aus Kunststoff", "Ein Draht für Gas"],
+        correct: 1,
+        cat: "Zusatzwerkstoffe",
+        expl: "Fülldrähte können Schlacke bilden, den Lichtbogen stabilisieren oder Legierungen einbringen."
+    },
+    {
+        q: "Warum nutzt man Fülldrähte oft auf Baustellen (selbstschützend)?",
+        options: ["Weil sie billig sind", "Weil man kein Schutzgas (Flasche) braucht und sie windunempfindlicher sind", "Weil sie leise sind", "Weil sie nicht rosten"],
+        correct: 1,
+        cat: "Verfahren",
+        expl: "Selbstschützende Fülldrähte erzeugen ihr eigenes Schutzgas/Schlacke. Der Wind bläst den Schutz nicht weg."
+    },
+    {
+        q: "Was ist der 'Metall-Aktiv-Gas' (MAG) Prozess-Code nach ISO 4063?",
+        options: ["111", "141", "135", "311"],
+        correct: 2,
+        cat: "Normen",
+        expl: "135 = MAG Massivdraht. 136 = MAG Fülldraht. 131 = MIG."
+    },
+
+    // --- ARBEITSSCHUTZ AUGEN ---
+    {
+        q: "Welche Schutzstufe (DIN) braucht man ca. für MAG-Schweißen bei 250 Ampere?",
+        options: ["DIN 5", "DIN 9", "DIN 12", "DIN 15"],
+        correct: 2,
+        cat: "Sicherheit",
+        expl: "Bei Strömen über 200A ist Stufe 11 oder 12 empfohlen. Stufe 9 ist zu hell (Augenschäden)."
+    },
+    {
+        q: "Was tun, wenn ein Fremdkörper (Schleiffunke) im Auge steckt?",
+        options: ["Reiben", "Selbst mit Pinzette entfernen", "Auge ruhig halten, abdecken, zum Arzt", "Augentropfen nehmen"],
+        correct: 2,
+        cat: "Erste Hilfe",
+        expl: "Niemals reiben oder selbst popeln! Das verletzt die Hornhaut weiter. Metall muss ausgebohrt werden (Arzt)."
+    },
+
+    // --- ALLGEMEINES WISSEN ---
+    {
+        q: "Was ist eine 'Kehlnaht am T-Stoß'?",
+        options: ["Zwei Bleche auf Stoß", "Ein Blech steht senkrecht auf dem anderen", "Zwei Rohre", "Eine Eckverbindung"],
+        correct: 1,
+        cat: "Nahtarten",
+        expl: "Der Klassiker im Stahlbau. Steg steht auf Gurt. Winkel 90°."
+    },
+    {
+        q: "Was bedeutet 'PA' in der Positions-Norm?",
+        options: ["Steigend", "Überkopf", "Wannenposition (Waagerecht)", "Quer"],
+        correct: 2,
+        cat: "Positionen",
+        expl: "PA = Wanne. Die einfachste Position. PB = Horizontal (Kehlnaht). PC = Quer (Wand)."
+    },
+    {
+        q: "Was ist 'Magnetblaswirkung'?",
+        options: ["Der Lichtbogen wird durch Magnetfelder abgelenkt", "Der Brenner bläst Luft", "Das Gas ist magnetisch", "Die Naht wird magnetisch"],
+        correct: 0,
+        cat: "E-Hand Fehler",
+        expl: "Tritt bei Gleichstrom auf. Der Lichtbogen 'weht' weg, als ob man pustet. Gegenmaßnahme: Masse verlegen oder AC nutzen."
+    },
+    {
+        q: "Welches Gas ist schwerer als Luft und sammelt sich in Gruben?",
+        options: ["Wasserstoff", "Helium", "Argon und CO2", "Stickstoff"],
+        correct: 2,
+        cat: "Sicherheit",
+        expl: "Argon und CO2 sind schwerer als Luft. Erstickungsgefahr am Boden oder in Gruben!"
+    },
+    {
+        q: "Was ist ein 'Inverter'?",
+        options: ["Ein alter Trafo", "Eine moderne, elektronische Schweißstromquelle (leicht, tragbar)", "Ein Gasventil", "Ein Helm"],
+        correct: 1,
+        cat: "Gerätetechnik",
+        expl: "Inverter formen den Netzstrom elektronisch mit hoher Frequenz um. Sie sind effizienter und viel leichter als Trafos."
+    }
+, // --- START TEIL 6 (Berechnung, Verzug, Spezialverfahren) ---
+
+    // --- NAHTBERECHNUNG & KONSTRUKTION ---
+    {
+        q: "Wie berechnet man überschlägig das a-Maß einer Kehlnaht, wenn die Blechdicke 't' gegeben ist (Faustformel)?",
+        options: ["a = 0,2 x t", "a = 0,7 x t", "a = 1,5 x t", "a = t"],
+        correct: 1,
+        cat: "Nahtberechnung",
+        expl: "Bei normal beanspruchten Kehlnähten gilt: a-Maß ist ca. 0,7 mal die Blechdicke des dünneren Blechs."
+    },
+    {
+        q: "Eine Kehlnaht hat ein a-Maß von 4mm. Wie lang ist die Schenkellänge 'z' ungefähr?",
+        options: ["ca. 3 mm", "ca. 4 mm", "ca. 5,7 mm (a x 1,4)", "ca. 8 mm"],
+        correct: 2,
+        cat: "Nahtberechnung",
+        expl: "Das a-Maß ist die Höhe, z die Seite. Im 45°-Winkel gilt: z = a * Wurzel(2) ≈ a * 1,4."
+    },
+    {
+        q: "Welche Nahtart hat die geringste Kerbwirkung und ist für dynamische Belastungen (Schwingungen) am besten?",
+        options: ["Kehlnaht (flach)", "Stumpfnaht (Wurzel gegengeschweißt und eben geschliffen)", "Überlappnaht", "Einseitige V-Naht ohne Durchschweißung"],
+        correct: 1,
+        cat: "Konstruktion",
+        expl: "Eine glatt geschliffene Stumpfnaht hat fast keinen Kraftfluss-Sprung. Kehlnähte haben immer eine Kerbwirkung am Übergang."
+    },
+    {
+        q: "Was versteht man unter der 't8/5-Zeit'?",
+        options: ["Die Arbeitszeit von 8 bis 17 Uhr", "Die Abkühlzeit einer Naht von 800°C auf 500°C", "Die Zeit zum Wechseln der Elektrode", "Die Zeit für 8 bis 5 Lagen"],
+        correct: 1,
+        cat: "Werkstoffkunde",
+        expl: "Entscheidend für das Gefüge! Geht es zu schnell (< 5s), härtet der Stahl auf. Geht es zu langsam, wird das Korn grob."
+    },
+
+    // --- VERZUG & SCHRUMPFUNG (PRAXIS) ---
+    {
+        q: "Was bewirkt das 'Pilgerschrittschweißen'?",
+        options: ["Man schweißt im Gehen", "Es reduziert den Längsverzug und Spannungen in langen Nähten", "Es erhöht die Schweißgeschwindigkeit", "Es spart Gas"],
+        correct: 1,
+        cat: "Arbeitstechnik",
+        expl: "Durch das rückwärtige Schweißen von Abschnitten wird die Wärmeeinbringung verteilt und Spannungen bauen sich gegenseitig ab."
+    },
+    {
+        q: "Wie wirkt sich eine 'Winkelvorgabe' vor dem Schweißen aus?",
+        options: ["Man biegt die Bleche vorher in die Gegenrichtung, damit sie nach dem Schrumpfen gerade sind", "Man schweißt immer im 90° Winkel", "Man stellt den Brenner schräg", "Man nutzt Winkelprofile"],
+        correct: 0,
+        cat: "Arbeitstechnik",
+        expl: "Da V-Nähte die Bleche 'hochziehen' (Winkelverzug), spannt man sie vorher leicht 'negativ' vor."
+    },
+    {
+        q: "Welche Nahtvorbereitung verursacht den GRÖSSTEN Winkelverzug?",
+        options: ["X-Naht (Doppel-V)", "V-Naht (einseitig)", "I-Naht", "U-Naht"],
+        correct: 1,
+        cat: "Verzug",
+        expl: "Die V-Naht ist asymmetrisch. Oben ist viel mehr geschmolzenes Material als unten, daher zieht es das Blech stark nach oben."
+    },
+    {
+        q: "Warum sollte man Schweißnähte nicht unnötig dick machen (z.B. a10 statt a5)?",
+        options: ["Sieht hässlich aus", "Kostet nur Geld", "Erhöht Verzug und Eigenspannungen massiv ohne mehr Festigkeit zu bringen", "Dauert zu lange"],
+        correct: 2,
+        cat: "Wirtschaftlichkeit",
+        expl: "Das Volumen wächst im Quadrat! Doppelte Dicke = vierfaches Volumen = vierfache Wärme/Verzug."
+    },
+
+    // --- SPEZIALVERFAHREN ---
+    {
+        q: "Was ist 'Plasmaschneiden'?",
+        options: ["Schneiden mit Laser", "Schneiden mit einem eingeschnürten, extrem heißen Lichtbogen (Gasstrahl)", "Schneiden mit Acetylen", "Schneiden mit Wasser"],
+        correct: 1,
+        cat: "Trennverfahren",
+        expl: "Ein Lichtbogen wird durch eine Düse und Gasströmung zu einem Plasmastrahl (>20.000°C) gebündelt. Schneidet alle Metalle."
+    },
+    {
+        q: "Was ist der Vorteil von Plasmaschneiden gegenüber Autogenschneiden?",
+        options: ["Es ist leiser", "Es kann auch Edelstahl und Aluminium schneiden", "Es braucht keinen Strom", "Es ist langsamer"],
+        correct: 1,
+        cat: "Trennverfahren",
+        expl: "Autogen geht nur bei unlegiertem Stahl (Verbrennung). Plasma schmilzt das Material physikalisch und geht daher bei allen Leitern."
+    },
+    {
+        q: "Was ist 'Bolzenschweißen' (Hubzündung)?",
+        options: ["Verbinden von zwei Bolzen", "Aufschweißen von Gewindebolzen auf Bleche mittels Lichtbogen", "Schweißen mit einem Bolzen als Elektrode", "Reparatur von Bolzen"],
+        correct: 1,
+        cat: "Verfahren",
+        expl: "Ein Lichtbogen zündet zwischen Bolzen und Blech, schmilzt beide an, dann wird der Bolzen in die Schmelze getaucht."
+    },
+    {
+        q: "Welches Gas wird beim Plasmaschweißen als 'Plasmagas' (Zentrum) genutzt?",
+        options: ["Sauerstoff", "Argon", "CO2", "Acetylen"],
+        correct: 1,
+        cat: "Verfahren",
+        expl: "Argon lässt sich leicht ionisieren. Außen herum wird oft noch ein Schutzgas (z.B. Argon-Wasserstoff) geführt."
+    },
+
+    // --- WARTUNG & TECHNIK ---
+    {
+        q: "Warum haben MIG/MAG-Brenner eine 'Gasverteiler' (Diffusor) aus Keramik oder Kunststoff?",
+        options: ["Damit es gut aussieht", "Um das Gas gleichmäßig laminar aus der Düse strömen zu lassen", "Um den Strom zu leiten", "Um Gewicht zu sparen"],
+        correct: 1,
+        cat: "Gerätetechnik",
+        expl: "Ohne Diffusor würde das Gas turbulent austreten und Luft einsaugen (Porengefahr)."
+    },
+    {
+        q: "Was passiert, wenn das Massekabel einen schlechten Kontakt hat (Wackelkontakt)?",
+        options: ["Der Lichtbogen stottert und die Kontaktstelle wird heiß", "Das Gerät schaltet ab", "Die Sicherung fliegt raus", "Man spart Strom"],
+        correct: 0,
+        cat: "Fehlersuche",
+        expl: "Hoher Übergangswiderstand erzeugt Hitze (Brandgefahr!) und Spannungsabfall (Lichtbogen wird instabil)."
+    },
+    {
+        q: "Wann muss eine Gasdüse ausgetauscht werden?",
+        options: ["Jeden Tag", "Wenn sie so voller Spritzer ist, dass der Gasfluss behindert wird oder Kurzschlüsse entstehen", "Wenn sie die Farbe ändert", "Nie"],
+        correct: 1,
+        cat: "Wartung",
+        expl: "Spritzerbrücken können einen Kurzschluss zum Kontaktrohr verursachen oder die Gasglocke zerstören."
+    },
+    {
+        q: "Was ist ein 'Zentralanschluss' (Euro-Anschluss)?",
+        options: ["Der Stecker für die Steckdose", "Der Standard-Anschluss für das Schlauchpaket an der Maschine", "Der Gasanschluss", "Der Masseanschluss"],
+        correct: 1,
+        cat: "Gerätetechnik",
+        expl: "Der Euro-Zentralanschluss verbindet Strom, Draht, Gas und Steuerleitungen mit einem Handgriff."
+    },
+
+    // --- WERKSTOFFE GUSSEISEN & KUPFER ---
+    {
+        q: "Warum lässt sich Gusseisen (Grauguss) schlecht schweißen?",
+        options: ["Es ist zu weich", "Wegen des hohen Kohlenstoffgehalts (>2%) -> extreme Härte und Rissgefahr", "Es ist magnetisch", "Es rostet nicht"],
+        correct: 1,
+        cat: "Werkstoffe",
+        expl: "Der viele Kohlenstoff führt bei schneller Abkühlung zu extrem sprödem Gefüge. Man muss es oft 'kalt' schweißen (Nickel) oder hoch vorwärmen."
+    },
+    {
+        q: "Was ist beim Schweißen von Kupfer zu beachten?",
+        options: ["Man braucht sehr wenig Strom", "Kupfer leitet Wärme extrem gut ab -> sehr hohe Energie/Vorwärmung nötig", "Es ist giftig", "Man nimmt Stahldraht"],
+        correct: 1,
+        cat: "Werkstoffe",
+        expl: "Kupfer saugt die Hitze förmlich weg. Ohne Vorwärmen (oft >300°C) gibt es keinen Einbrand (Bindefehler)."
+    },
+    {
+        q: "Welches Gas nimmt Kupfer im flüssigen Zustand begierig auf (Porengefahr)?",
+        options: ["Argon", "Wasserstoff und Sauerstoff", "Helium", "Stickstoff"],
+        correct: 1,
+        cat: "Werkstoffe",
+        expl: "Wasserstoffkrankheit: Wasserstoff reagiert mit Kupferoxid zu Wasserdampf im Gefüge -> Risse/Poren."
+    },
+
+    // --- ARBEITSSICHERHEIT ERGÄNZUNG ---
+    {
+        q: "Was bedeutet 'TRGS 528'?",
+        options: ["Technische Regeln für Gefahrstoffe: Schweißtechnische Arbeiten", "Transport Regeln für Gasflaschen", "Technische Richtlinie Gerätesicherheit", "TÜV Regelwerk"],
+        correct: 0,
+        cat: "Normen/Gesetze",
+        expl: "Die 'Bibel' für den Arbeitsschutz beim Schweißen (Lüftung, Absaugung, Gefährdungsbeurteilung)."
+    },
+    {
+        q: "Warum ist das Schweißen an alten Fässern (z.B. Öl) lebensgefährlich?",
+        options: ["Man wird schmutzig", "Explosionsgefahr durch Gasreste, auch nach Jahren!", "Das Blech ist zu dünn", "Es stinkt"],
+        correct: 1,
+        cat: "Sicherheit",
+        expl: "Auch 'leere' Fässer enthalten Gase oder Rückstände, die durch Hitze ausgasen und explodieren."
+    },
+    {
+        q: "Wie hoch darf die Berührungsspannung bei Wechselstrom (AC) maximal sein (für den Menschen)?",
+        options: ["230 V", "50 V (bzw. 48V)", "12 V", "1000 V"],
+        correct: 1,
+        cat: "Sicherheit",
+        expl: "Ab 50V AC (bzw. 120V DC) wird es lebensgefährlich. Schweißgeräte haben im Leerlauf oft Spannungen nahe an dieser Grenze."
+    },
+
+    // --- LICHTBOGENPHYSIK ---
+    {
+        q: "Was ist der 'Pinch-Effekt' beim MAG-Schweißen?",
+        options: ["Ein Kneifen des Schweißers", "Die elektromagnetische Einschnürung des flüssigen Tropfens am Drahtende", "Das Festkleben des Drahtes", "Ein Fehler im Gas"],
+        correct: 1,
+        cat: "Physik",
+        expl: "Der Strom erzeugt ein Magnetfeld, das den Tropfen einschnürt (wie ein Gürtel) und ablöst."
+    },
+    {
+        q: "Welche Temperatur herrscht im Kern eines Lichtbogens ca.?",
+        options: ["1.000 - 2.000 °C", "6.000 - 10.000 °C (und mehr)", "500 °C", "1.000.000 °C"],
+        correct: 1,
+        cat: "Physik",
+        expl: "Plasma ist extrem heiß. Stahl schmilzt bei 1500°C, der Lichtbogen ist also heiß genug zum schnellen Schmelzen."
+    },
+    {
+        q: "Warum wird Argon auch als 'Inertgas' bezeichnet?",
+        options: ["Weil es billig ist", "Weil es reaktionsträge ist und keine chemische Verbindung eingeht", "Weil es in der Erde vorkommt", "Weil es brennt"],
+        correct: 1,
+        cat: "Gase",
+        expl: "Inert (lateinisch) = untätig. Es schützt das Bad nur mechanisch vor Luft, reagiert aber nicht chemisch (im Gegensatz zu CO2)."
+    },
+
+    // --- ALLGEMEIN ---
+    {
+        q: "Welches Verfahren wird oft für Reparaturen an Landmaschinen (dickes Material, rostig) draußen genutzt?",
+        options: ["WIG", "E-Hand (Elektrode)", "Plasmaschweißen", "Laser"],
+        correct: 1,
+        cat: "Praxis",
+        expl: "E-Hand ist unempfindlich gegen Wind (kein Gas weggeblasen) und toleriert Rost/Schmutz besser als MAG/WIG."
+    },
+    {
+        q: "Was ist eine 'Badsicherung' (Wurzelbadsicherung)?",
+        options: ["Ein Geländer um das Schweißbad", "Eine Keramik- oder Kupferleiste unter der Naht, die das Durchfallen verhindert", "Eine Versicherung", "Ein spezielles Gas"],
+        correct: 1,
+        cat: "Hilfsmittel",
+        expl: "Ermöglicht das Schweißen der Wurzel mit hoher Leistung, ohne dass das Bad nach unten wegfällt."
+    },
+    {
+        q: "Was ist ein 'Zweinadler' (Druckminderer)?",
+        options: ["Ein Minderer mit zwei Anzeigen (Flaschendruck + Arbeitsdruck/Durchfluss)", "Ein Brenner mit zwei Nadeln", "Ein Doppelflaschenventil", "Ein Fehler"],
+        correct: 0,
+        cat: "Gerätetechnik",
+        expl: "Das linke Manometer zeigt den Inhalt (bar), das rechte die eingestellte Menge (l/min)."
+    }
+, // --- START TEIL 7 (Wärmebehandlung, Normen, Fehlerbilder) ---
+
+    // --- WÄRMEBEHANDLUNG & GEFÜGE ---
+    {
+        q: "Was bezweckt das 'Normalglühen' (Normalisieren) von Stahlguss oder Schweißverbindungen?",
+        options: ["Härten der Oberfläche", "Erzeugen eines feinkörnigen, gleichmäßigen Gefüges (Beseitigung von Grobkorn)", "Weichmachen zum Biegen", "Erhöhen der Korrosionsbeständigkeit"],
+        correct: 1,
+        cat: "Wärmebehandlung",
+        expl: "Durch Erwärmen knapp über die Umwandlungstemperatur (AC3) und Abkühlen an Luft entsteht ein feines, zähes Gefüge."
+    },
+    {
+        q: "Was ist 'Diffusionsglühen'?",
+        options: ["Glühen bei sehr hohen Temperaturen (1000-1200°C) zum Ausgleich von Konzentrationsunterschieden (Seigerungen)", "Glühen zum Härten", "Glühen zum Löten", "Glühen zum Richten"],
+        correct: 0,
+        cat: "Wärmebehandlung",
+        expl: "Dauert sehr lange (viele Stunden). Atome wandern (diffundieren) und gleichen Unterschiede in der Legierung aus."
+    },
+    {
+        q: "Warum muss man bei hochfesten Feinkornbaustählen (z.B. S690QL) die 'Zwischenlagentemperatur' begrenzen (z.B. max 250°C)?",
+        options: ["Damit der Schweißer nicht schwitzt", "Um ein Kornwachstum (Grobkorn) und damit Zähigkeitsverlust zu verhindern", "Damit die Schlacke besser abgeht", "Damit der Draht nicht festklebt"],
+        correct: 1,
+        cat: "Werkstoffe",
+        expl: "Zu viel Hitze zerstört den 'Feinkorn'-Effekt. Der Stahl verliert seine enorme Festigkeit und wird spröde."
+    },
+    {
+        q: "Was ist die 'Streckgrenze' (Re) eines Stahls?",
+        options: ["Der Punkt, an dem der Stahl bricht", "Die Spannung, bis zu der sich der Stahl elastisch verformt (keine bleibende Verformung)", "Die Härte des Stahls", "Die Dehnung in Prozent"],
+        correct: 1,
+        cat: "Werkstoffkunde",
+        expl: "Das wichtigste Maß für Konstrukteure! Wird die Streckgrenze überschritten, verbiegt sich das Bauteil dauerhaft."
+    },
+
+    // --- FEHLERBILDER & ANALYSE ---
+    {
+        q: "Ein Längsriss genau in der Mitte der Schweißnaht deutet worauf hin?",
+        options: ["Heißriss (Erstarrungsriss)", "Kaltriss", "Lamellenbruch", "Korrosionsriss"],
+        correct: 0,
+        cat: "Fehleranalyse",
+        expl: "Typisch für Heißrisse. Die Verunreinigungen (Schwefel/Phosphor) werden in die Nahtmitte geschoben und reißen beim Erstarren auf."
+    },
+    {
+        q: "Wann entstehen 'Terrassenbrüche' (Lamellenbrüche)?",
+        options: ["Bei Belastung in Dickenrichtung (Z-Güte erforderlich), wenn Walzeinschlüsse aufreißen", "Bei zu viel Strom", "Bei falschem Gas", "Bei Aluminium"],
+        correct: 0,
+        cat: "Fehleranalyse",
+        expl: "Wenn man an ein dickes Blech ein T-Stück anschweißt und Zug auf die Oberfläche kommt, reißt das Blech schichtenweise auf (wie ein Blätterteig)."
+    },
+    {
+        q: "Was sind 'Anlauffarben' beim Schweißen von Titan?",
+        options: ["Schönheitsfehler", "Ein Zeichen für extremen Qualitätsmangel (Versprödung durch Sauerstoff)", "Ein Zeichen für gute Durchschweißung", "Egal"],
+        correct: 1,
+        cat: "Werkstoffe",
+        expl: "Bei Titan darf NICHTS anlaufen (muss silber bleiben). Jede Farbe (Blau/Gelb/Grau) bedeutet: Das Material ist spröde wie Glas -> Ausschuss!"
+    },
+    {
+        q: "Was ist ein 'Zündstellenriss'?",
+        options: ["Ein Riss im Brenner", "Ein kleiner Härteriss, der entsteht, wenn man versehentlich neben der Fuge zündet", "Ein Riss im Massekabel", "Ein Riss in der Elektrode"],
+        correct: 1,
+        cat: "Fehler",
+        expl: "Der Lichtbogen tippt kurz auf das kalte Blech -> Mini-Härtepunkt -> Riss. Darf bei dynamisch belasteten Bauteilen keinesfalls passieren."
+    },
+
+    // --- NORMEN & PRÜFUNGEN (ISO) ---
+    {
+        q: "Was regelt die DIN EN ISO 9606-1?",
+        options: ["Prüfung von Schweißern - Schmelzschweißen - Teil 1: Stähle", "Zerstörungsfreie Prüfung", "Qualitätssicherung", "Schweißzusätze"],
+        correct: 0,
+        cat: "Normen",
+        expl: "Das ist DIE Norm für deine Schweißerprüfung (Handfertigkeit). Früher EN 287-1."
+    },
+    {
+        q: "Was ist eine 'WPQR' (Welding Procedure Qualification Record)?",
+        options: ["Ein Schweißgerät", "Ein Bericht über die Qualifizierung eines Schweißverfahrens (Verfahrensprüfung)", "Eine Rechnung", "Ein Werkstoffzertifikat"],
+        correct: 1,
+        cat: "Qualitätssicherung",
+        expl: "Bevor geschweißt wird, macht man eine Probeanfertigung, prüft sie (Zug/Biege/Röntgen) und dokumentiert, dass das Verfahren funktioniert."
+    },
+    {
+        q: "Was bedeutet 'H-L045' in einer Schweißerprüfung?",
+        options: ["Rohr feststehend, Achse 45° geneigt, steigend geschweißt (Zwangslage)", "Horizontal schweißen", "Wannenlage", "Fallnaht"],
+        correct: 0,
+        cat: "Positionen",
+        expl: "Die 'Königsdisziplin'. Man muss in einer Prüfung Überkopf, Steigend und Quer schweißen. Deckt fast alle anderen Positionen ab."
+    },
+    {
+        q: "Was bedeutet die Bewertungsgruppe 'B' nach ISO 5817?",
+        options: ["Hoch (hohe Anforderungen)", "Mittel", "Niedrig", "Schlecht"],
+        correct: 0,
+        cat: "Qualität",
+        expl: "ISO 5817 hat 3 Gruppen: B (Hoch), C (Mittel), D (Niedrig). Für Druckbehälter braucht man fast immer B."
+    },
+
+    // --- VERFAHRENSTECHNIK SPEZIAL ---
+    {
+        q: "Was ist 'Orbitalschweißen'?",
+        options: ["Schweißen im Weltraum", "Maschinelles WIG-Schweißen rund um ein Rohr (Brenner dreht sich)", "Schweißen von Kugeln", "Schweißen mit Roboter"],
+        correct: 1,
+        cat: "Verfahren",
+        expl: "Der Brenner fährt auf einer Schiene oder Zange mechanisiert um das Rohr. Ergibt perfekte, gleichbleibende Qualität."
+    },
+    {
+        q: "Warum wird beim MAG-Schweißen von dickem Alu oft mit 'Puls' geschweißt?",
+        options: ["Damit es gut klingt", "Um Poren zu vermeiden und die Oxidhaut besser zu kontrollieren bei weniger Wärmeeintrag", "Weil Alu magnetisch ist", "Um Draht zu sparen"],
+        correct: 1,
+        cat: "Aluminium",
+        expl: "Der Puls löst den Tropfen gezielt ab (spritzerfrei) und rüttelt das Bad durch (Poren entgasen)."
+    },
+    {
+        q: "Was ist 'Elektroschlackeschweißen' (RES)?",
+        options: ["Ein Verfahren für extrem dicke Bleche in Senkrechtposition (ohne Lichtbogen, nur Widerstandshitze)", "Schweißen mit Schlacke", "Elektroden schweißen", "Ein Fehler"],
+        correct: 0,
+        cat: "Verfahren",
+        expl: "Der Strom fließt durch ein flüssiges Schlackebad, das den Draht und die Flanken schmilzt. Für Bleche von 30mm bis 500mm Dicke!"
+    },
+    {
+        q: "Wofür steht 'Fülldraht mit Metallpulverfüllung' (Metal Cored)?",
+        options: ["Macht Schlacke", "Hohe Abschmelzleistung, wenig Schlacke, fast wie Massivdraht aber besserer Einbrand", "Ist billig", "Nur für AC"],
+        correct: 1,
+        cat: "Zusatzwerkstoffe",
+        expl: "Enthält Eisenpulver. Schmilzt schneller ab als Massivdraht. Ideal für Roboterschweißen und hohe Geschwindigkeiten."
+    },
+
+    // --- ZERSTÖRENDE PRÜFUNG ---
+    {
+        q: "Was prüft der 'Biegeversuch' (Faltversuch)?",
+        options: ["Die Härte", "Die Verformungsfähigkeit und Bindefehler in der Zugzone", "Die chemische Analyse", "Die Farbe"],
+        correct: 1,
+        cat: "Prüfung",
+        expl: "Die Probe wird um einen Dorn gebogen (oft 180°). Wenn sie reißt oder Poren aufgehen, ist die Prüfung nicht bestanden."
+    },
+    {
+        q: "Was ist eine 'Makroschliff-Untersuchung'?",
+        options: ["Durchschneiden, Polieren und Ätzen der Naht, um Lagenaufbau und Einbrand zu sehen", "Ein großes Foto", "Ein Hörtest", "Eine Härteprüfung"],
+        correct: 0,
+        cat: "Prüfung",
+        expl: "Der Klassiker zur Verfahrensprüfung. Man sieht das Gefüge, die Wärmeeinflusszone und Fehler wie Bindefehler sofort."
+    },
+    {
+        q: "Wo ist die Härte in einer Schweißverbindung meist am höchsten (bei Stahl)?",
+        options: ["Im Grundwerkstoff", "In der Wärmeeinflusszone (WEZ / HAZ)", "Im Schweißgut", "Egal"],
+        correct: 1,
+        cat: "Werkstoffe",
+        expl: "In der WEZ wird der Stahl kurz hoch erhitzt und schnell abgekühlt (Härteeffekt). Hier drohen Kaltrisse!"
+    },
+
+    // --- SICHERHEIT & UMWELT ---
+    {
+        q: "Was bedeutet 'TRGS 900'?",
+        options: ["Arbeitsplatzgrenzwerte (AGW) für Stäube und Rauche", "Technische Regeln für Gasflaschen", "Transport von Gefahrgut", "Schweißgeräte Norm"],
+        correct: 0,
+        cat: "Sicherheit",
+        expl: "Regelt, wie viel 'Dreck' in der Luft sein darf (mg/m³). Wichtig für die Auslegung der Absaugung."
+    },
+    {
+        q: "Darf man in einem Raum, in dem chlorierte Kohlenwasserstoffe (Entfetter) verwendet werden, schweißen?",
+        options: ["Ja, wenn man lüftet", "NEIN! Es entsteht das Kampfgas Phosgen (tödlich!)", "Ja, mit Maske", "Nur WIG"],
+        correct: 1,
+        cat: "Sicherheit",
+        expl: "UV-Strahlung zersetzt die Dämpfe zu Phosgen. Das riecht man kaum, aber die Lunge verätzt nach Stunden (Lungenödem)."
+    },
+    {
+        q: "Wie müssen Gasflaschen gegen Umfallen gesichert sein?",
+        options: ["Mit einer Kette oder Bügel", "Gar nicht, sie sind schwer genug", "Durch Anlehnen", "Durch einen zweiten Mann"],
+        correct: 0,
+        cat: "Sicherheit",
+        expl: "Fällt eine Flasche und das Ventil bricht ab, fliegt sie wie eine Rakete durch Betonwände (200/300 bar!)."
+    },
+
+    // --- PHYSIKALISCHE EFFEKTE ---
+    {
+        q: "Was ist der 'Leidenfrost-Effekt' beim Schweißen?",
+        options: ["Nichts", "Nicht relevant", "Verhindert die Benetzung, wenn Wassertropfen auf heiße Teile fallen", "Ein Kaltriss"],
+        correct: 2,
+        cat: "Physik",
+        expl: "Ist eher ein physikalischer Gag, aber zeigt, wie Flüssigkeiten auf heißen Oberflächen schweben."
+    },
+    {
+        q: "Warum ist Wasserstoff der Feind Nummer 1 beim Stahlschweißen?",
+        options: ["Er brennt", "Er verursacht wasserstoffinduzierte Risse (Kaltrisse) erst Stunden/Tage nach dem Schweißen", "Er macht Poren", "Er stinkt"],
+        correct: 1,
+        cat: "Fehler",
+        expl: "Die Risse treten verzögert auf (daher 48h Wartezeit vor Rissprüfung bei kritischen Teilen)."
+    },
+    {
+        q: "Was bewirkt 'Vorwärmen' physikalisch?",
+        options: ["Es macht den Stahl weich", "Es verringert die Abkühlgeschwindigkeit (t8/5-Zeit wird länger), damit Wasserstoff ausgasen kann und Härte sinkt", "Es spart Strom", "Es reinigt"],
+        correct: 1,
+        cat: "Wärme",
+        expl: "Das Temperaturgefälle ist geringer -> langsamere Abkühlung -> weicheres Gefüge -> weniger Risse."
+    },
+
+    // --- SONSTIGES ---
+    {
+        q: "Welches Verfahren hat den Wirkungsgrad von fast 1 (wenig Wärmeverlust)?",
+        options: ["Gasschweißen", "UP-Schweißen", "WIG", "E-Hand"],
+        correct: 1,
+        cat: "Effizienz",
+        expl: "Beim Unterpulverschweißen ist der Lichtbogen isoliert (durch Pulver). Fast 100% der Energie gehen in die Naht."
+    },
+    {
+        q: "Was ist eine 'Badsicherung' beim einseitigen Schweißen?",
+        options: ["Keramikunterlage", "Ein Gurt", "Ein zweiter Brenner", "Ein Magnet"],
+        correct: 0,
+        cat: "Hilfsmittel",
+        expl: "Keramikstreifen werden unter die Naht geklebt. Sie formen die Wurzel und erlauben hohen Strom."
+    },
+    {
+        q: "Was ist ein 'Zwangskontakt' bei der Sicherheitsabschaltung?",
+        options: ["Ein Schalter, der mechanisch getrennt wird", "Ein Wackelkontakt", "Ein Kurzschluss", "Ein Relais"],
+        correct: 0,
+        cat: "Gerätetechnik",
+        expl: "Wichtig für Not-Aus-Schalter. Auch wenn die Kontakte verschweißen, muss der Schalter mechanisch öffnen."
+    }
+, // --- START TEIL 8 (Prüfung, Sicherheit, Vorbereitung) ---
+
+    // --- SCHWEISSERPRÜFUNG (GÜLTIGKEIT) ---
+    {
+        q: "Ein Schweißer hat eine Prüfung an einem Rohr mit 10 mm Wanddicke abgelegt. Darf er ein Rohr mit 3 mm Wanddicke schweißen?",
+        options: ["Ja, alles was dünner ist, ist erlaubt", "Nein, der Geltungsbereich geht meist von 3mm bis 2x Prüfstückdicke (oder ähnlich, je nach Norm)", "Ja, bis 1mm", "Nein, nur genau 10mm"],
+        correct: 1,
+        cat: "Normen",
+        expl: "Grob gilt: Ab 3mm bis 2x Dicke (bei t > 12mm oft unbegrenzt). 3mm ist oft die Untergrenze des Geltungsbereichs bei dicken Prüfstücken."
+    },
+    {
+        q: "Welche Schweißposition gilt als die 'schwierigste' und deckt in der Prüfung die meisten anderen mit ab?",
+        options: ["PA (Wanne)", "PB (Horizontal)", "H-L045 (Rohr 45° steigend)", "PC (Quer)"],
+        correct: 2,
+        cat: "Positionen",
+        expl: "H-L045 (Rohr fest 45°) beinhaltet Überkopf, Steigend und Quer. Wer das kann, darf fast alles schweißen."
+    },
+    {
+        q: "Darf ein Schweißer, der nur eine Kehlnahtprüfung (FW) hat, auch Stumpfnähte (BW) schweißen?",
+        options: ["Ja, Kehlnaht ist schwieriger", "Nein, Stumpfnaht (BW) qualifiziert für Kehlnaht, aber NICHT umgekehrt", "Ja, wenn es niemand sieht", "Nur bis 5mm"],
+        correct: 1,
+        cat: "Normen",
+        expl: "Stumpfnaht (Butt Weld) schließt Kehlnaht (Fillet Weld) meist ein. Umgekehrt gilt das nicht!"
+    },
+    {
+        q: "Was bedeutet 't' in der Prüfungsbezeichnung?",
+        options: ["Temperatur", "Time (Zeit)", "Thickness (Materialdicke)", "Type (Typ)"],
+        correct: 2,
+        cat: "Normen",
+        expl: "t steht für die Wanddicke des Prüfstücks. D steht für den Durchmesser."
+    },
+
+    // --- ZERSTÖRENDE PRÜFUNG (MECHANIK) ---
+    {
+        q: "Was sagt die 'Kerbschlagarbeit' (in Joule) über einen Werkstoff aus?",
+        options: ["Wie hart er ist", "Wie zäh er ist (Widerstand gegen schlagartige Beanspruchung)", "Wie gut er leitet", "Wie glatt er ist"],
+        correct: 1,
+        cat: "Werkstoffkunde",
+        expl: "Wichtig für kaltzähe Stähle. Wenn der Stahl bei Kälte spröde bricht (wenig Joule), ist er für Brücken/Schiffe ungeeignet."
+    },
+    {
+        q: "Was passiert beim 'Zugversuch'?",
+        options: ["Man zieht den Stahl, bis er bricht, und misst Kraft und Verlängerung", "Man biegt den Stahl", "Man schlägt drauf", "Man magnetisiert ihn"],
+        correct: 0,
+        cat: "Prüfung",
+        expl: "Der Zugversuch liefert Streckgrenze (Re), Zugfestigkeit (Rm) und Bruchdehnung (A5)."
+    },
+    {
+        q: "Welcher Wert kennzeichnet die Verformbarkeit eines Stahls?",
+        options: ["Die Härte (HB)", "Die Zugfestigkeit (Rm)", "Die Bruchdehnung (A in %)", "Die Dichte"],
+        correct: 2,
+        cat: "Werkstoffkunde",
+        expl: "Je höher die Dehnung (%), desto mehr lässt sich der Stahl verformen, bevor er reißt (wichtig für Umformung)."
+    },
+
+    // --- ARBEITSSICHERHEIT (STROM) ---
+    {
+        q: "Was ist gefährlicher für den Menschen: Gleichstrom (DC) oder Wechselstrom (AC) bei gleicher Spannung?",
+        options: ["Gleichstrom", "Wechselstrom (wegen Herzkammerflimmern)", "Beides gleich", "Strom ist nie gefährlich"],
+        correct: 1,
+        cat: "Sicherheit",
+        expl: "Wechselstrom stört den Herzrhythmus massiv (50 Hz). Die Loslassschwelle ist niedriger. DC verursacht eher Verbrennungen/Zersetzung."
+    },
+    {
+        q: "Was muss man tun, wenn ein Kollege am Stromkabel 'klebt' (Stromschlag)?",
+        options: ["Ihn wegziehen", "Sofort abschalten (Not-Aus / Stecker) oder mit isoliertem Gegenstand trennen, NICHT anfassen!", "Wasser drüber schütten", "Ihn rufen"],
+        correct: 1,
+        cat: "Erste Hilfe",
+        expl: "Selbstschutz geht vor! Wer den Verunfallten anfasst, bekommt selbst den Schlag."
+    },
+    {
+        q: "Wann ist eine 'isolierende Unterlage' (Gummimatte/Holzrost) Pflicht?",
+        options: ["Immer", "Bei erhöhter elektrischer Gefährdung (Kessel, enge Räume, nasser Boden)", "Nur bei Regen", "Nie"],
+        correct: 1,
+        cat: "Sicherheit",
+        expl: "Wenn der Körper großflächig Kontakt zur leitfähigen Umgebung hat, muss man sich isolieren."
+    },
+
+    // --- SCHWEISSNAHTVORBEREITUNG (PRAXIS) ---
+    {
+        q: "Warum müssen Heftstellen (Heftnähte) genauso sorgfältig geschweißt werden wie die Hauptnaht?",
+        options: ["Weil sie Teil der Naht werden und Fehler (Risse/Poren) überschweißt würden", "Damit es gut aussieht", "Egal, die schmelzen eh weg", "Weil der Chef es sagt"],
+        correct: 0,
+        cat: "Arbeitstechnik",
+        expl: "Ein Riss in der Heftstelle wird oft nicht komplett aufgeschmolzen, sondern läuft als Fehler in die Wurzel weiter."
+    },
+    {
+        q: "Wie entfernt man Zunder und Rost am besten vor dem Schweißen?",
+        options: ["Mit Öl", "Schleifen (Flex) bis es metallisch blank ist", "Drüber schweißen", "Mit Wasser"],
+        correct: 1,
+        cat: "Vorbereitung",
+        expl: "Metallisch blank ist die einzig richtige Vorbereitung für Qualitätsnähte (besonders bei MAG/WIG)."
+    },
+    {
+        q: "Was ist ein 'Kantenversatz'?",
+        options: ["Wenn die Bleche nicht bündig liegen (Stufe)", "Ein Sägefehler", "Ein Schweißfehler", "Eine Nahtform"],
+        correct: 0,
+        cat: "Fehler",
+        expl: "Versatz reduziert den Querschnitt und erzeugt Kerbwirkung. In Normen sind oft nur max. 10-15% der Dicke erlaubt."
+    },
+    {
+        q: "Warum bricht man scharfe Kanten an Blechen?",
+        options: ["Verletzungsgefahr und damit der Lack besser hält (Kantenflucht)", "Damit man besser schweißen kann", "Sieht besser aus", "Vorschrift"],
+        correct: 0,
+        cat: "Verarbeitung",
+        expl: "An scharfen Kanten ist die Lackschicht extrem dünn -> Rost beginnt dort. Auch Schnittverletzungen werden vermieden."
+    },
+
+    // --- GASSCHWEISSEN (FEHLER) ---
+    {
+        q: "Was passiert, wenn man mit einer 'Sauerstoffüberschuss-Flamme' Stahl schweißt?",
+        options: ["Die Naht wird besonders fest", "Der Stahl verbrennt (Verzunderung), spritzt und wird spröde", "Es geht schneller", "Nichts"],
+        correct: 1,
+        cat: "Autogen Fehler",
+        expl: "Der freie Sauerstoff verbrennt das Eisen zu Eisenoxid. Die Naht ist danach unbrauchbar."
+    },
+    {
+        q: "Was deutet auf zu wenig Wärme beim Gasschweißen hin?",
+        options: ["Ein Loch im Blech", "Klebebindefehler (der Zusatz fließt auf das nicht geschmolzene Blech)", "Viel Einbrand", "Helle Farbe"],
+        correct: 1,
+        cat: "Autogen Fehler",
+        expl: "Der Klassiker: Der Draht schmilzt, aber das Grundmaterial ist noch nicht 'nass'. Es entsteht keine Verbindung."
+    },
+
+    // --- MATERIALKUNDE (ALUMINIUM) ---
+    {
+        q: "Was ist das Besondere an der Oxidschicht von Aluminium?",
+        options: ["Sie ist weich", "Sie schmilzt erst bei 2050°C (Alu selbst schon bei 660°C) und ist elektrisch nichtleitend", "Sie brennt", "Sie ist rot"],
+        correct: 1,
+        cat: "Aluminium",
+        expl: "Das ist das Hauptproblem. Man muss die harte Haut 'aufbrechen' (AC oder Reinigung), sonst schwimmt das Alu wie Wasser in einem Sack."
+    },
+    {
+        q: "Warum muss Aluminium vor dem Schweißen extrem sauber und trocken sein?",
+        options: ["Wegen der Optik", "Weil Wasserstoff aus Feuchtigkeit/Öl sofort Poren bildet", "Weil es sonst rostet", "Ist egal"],
+        correct: 1,
+        cat: "Aluminium",
+        expl: "Aluminium reagiert extrem empfindlich auf Wasserstoff (aus Fett/Wasser). Das gibt den berühmten 'Schweizer Käse' (Poren)."
+    },
+
+    // --- LICHTBOGENHANDSCHWEISSEN (E-HAND) ---
+    {
+        q: "Was bedeutet 'basisch' bei Elektroden?",
+        options: ["Säurehaltig", "Die Umhüllung enthält Kalkspat/Flussspat (basische Mineralien)", "Grundlegend", "Billig"],
+        correct: 1,
+        cat: "Zusatzwerkstoffe",
+        expl: "Die Chemie der Umhüllung bestimmt den Namen. Basisch = Kalkbasis -> sehr reines Schweißgut, aber schwer zu schweißen."
+    },
+    {
+        q: "Welche Elektrode lässt sich auch am Minuspol (-) verschweißen?",
+        options: ["Basisch", "Rutil (meistens)", "Keine", "Nur Alu"],
+        correct: 1,
+        cat: "E-Hand",
+        expl: "Rutil-Elektroden sind oft AC/DC fähig. Basische brauchen fast immer DC+ (Pluspol am Halter)."
+    },
+    {
+        q: "Warum klopft man die Schlacke nicht auf die glühende Naht?",
+        options: ["Gefahr von Schlackeneinschlüssen in den Augen", "Heiße Schlacke fliegt weg", "Man wartet bis zur Erkaltung (Verletzungsgefahr + Schlacke löst sich besser)", "Weil es laut ist"],
+        correct: 2,
+        cat: "Arbeitstechnik",
+        expl: "Heiße Schlacke ist zäh. Kalte Schlacke springt (bei Rutil) oft von selbst ab oder lässt sich leicht lösen."
+    },
+
+    // --- UNTERPULVERSCHWEISSEN (UP) ---
+    {
+        q: "Wo wird UP-Schweißen eingesetzt?",
+        options: ["Karosseriebau", "Schiffbau, Brückenbau, Behälterbau (lange, dicke Nähte)", "Fahrradrahmen", "Mikroelektronik"],
+        correct: 1,
+        cat: "Verfahren",
+        expl: "Das Verfahren für 'Meter machen' bei dicken Blechen. Hohe Abschmelzleistung, aber nur in Wannenlage möglich."
+    },
+    {
+        q: "Was ist 'Schweißpulver' beim UP-Schweißen?",
+        options: ["Sand", "Ein mineralisches Granulat, das schmilzt und die Schlacke/Schutzatmosphäre bildet", "Metallpulver", "Sprengstoff"],
+        correct: 1,
+        cat: "Zusatzwerkstoffe",
+        expl: "Das Pulver übernimmt die Aufgabe der Umhüllung (bei der Stabelektrode): Schutz, Legieren, Formen."
+    },
+
+    // --- DIVERSE THEMEN ---
+    {
+        q: "Was ist ein 'Zentralgasnetz'?",
+        options: ["Ein Internetanschluss", "Eine Ringleitung in der Werkstatt, die Gas von einem Tank zu den Plätzen bringt", "Ein Brenner", "Eine Gasflasche"],
+        correct: 1,
+        cat: "Betriebstechnik",
+        expl: "Spart das Flaschenschleppen. Man schließt den Schlauch direkt an die Kupplung an der Wand an."
+    },
+    {
+        q: "Was bedeutet 'WIG-Impuls'?",
+        options: ["Der Strom wechselt rhythmisch zwischen Hoch- und Niedrigstrom", "Man drückt den Taster oft", "Wechselstrom", "Gleichstrom"],
+        correct: 0,
+        cat: "Verfahren",
+        expl: "Erlaubt das Schweißen von Dünnblechen mit gutem Einbrand, ohne dass das Loch durchfällt (Abkühlphase)."
+    },
+    {
+        q: "Wie nennt man die 'Nahtüberhöhung' fachlich korrekt?",
+        options: ["Buckel", "Nahtdeckelüberhöhung", "Schweißwulst", "Berg"],
+        correct: 1,
+        cat: "Begriffe",
+        expl: "Ein flacher Übergang ist gewünscht (Kerbwirkung!). Zu hohe Überhöhung ist ein Fehler."
+    },
+    {
+        q: "Was ist 'Wurzelschutzgas' (Formieren)?",
+        options: ["Gas, das von innen/hinten an die Naht strömt", "Gas für Pflanzen", "Gas im Brenner", "Druckluft"],
+        correct: 0,
+        cat: "Verfahren",
+        expl: "Verhindert die Oxidation (Verzunderung) auf der Rückseite der Naht. Essentiell bei Rohren (Edelstahl)."
+    }
+, // --- START TEIL 9 (WIG-Spezial, Werkstoffe, Fehlervermeidung) ---
+
+    // --- WIG-SCHWEISSEN (SPEZIAL) ---
+    {
+        q: "Welche Farbe hat eine Wolframelektrode mit 2% Lanthan (WL20), die universell für DC und AC geeignet ist?",
+        options: ["Rot", "Blau", "Gold", "Grün"],
+        correct: 1,
+        cat: "WIG Elektroden",
+        expl: "Blau (WL20) ist der moderne Standard als Ersatz für die radioaktiven roten Elektroden. Gold (WL15) hat 1,5% Lanthan."
+    },
+    {
+        q: "Warum verwendet man beim WIG-Schweißen oft eine 'Gaslinse' im Brenner?",
+        options: ["Um Gas zu sparen", "Um eine laminare (wirbelfreie) Gasströmung zu erzeugen -> besserer Schutz und man kann die Nadel weiter rausziehen", "Damit es leiser ist", "Um den Strom zu erhöhen"],
+        correct: 1,
+        cat: "WIG Technik",
+        expl: "Das feine Sieb in der Gaslinse beruhigt den Gasstrom. Man kommt so auch in Ecken, weil die Elektrode weit vorstehen kann."
+    },
+    {
+        q: "Was passiert beim WIG-Schweißen mit 'HF-Zündung' (Hochfrequenz)?",
+        options: ["Man muss das Werkstück berühren", "Der Lichtbogen zündet berührungslos durch einen Funkenüberschlag", "Es knallt laut", "Die Sicherung fliegt raus"],
+        correct: 1,
+        cat: "Gerätetechnik",
+        expl: "Das ist die sauberste Zündart. Keine Wolfram-Einschlüsse im Bad, da keine Berührung nötig ist."
+    },
+    {
+        q: "Welche Stromart nutzt man für WIG-Schweißen von Kupfer?",
+        options: ["Wechselstrom (AC)", "Gleichstrom (DC) Minuspol (wie bei Stahl)", "Gleichstrom (DC) Pluspol", "Drehstrom"],
+        correct: 1,
+        cat: "WIG Werkstoffe",
+        expl: "Kupfer wird wie Stahl mit DC- geschweißt. Man braucht aber oft Helium im Gas für mehr Hitze."
+    },
+
+    // --- WERKSTOFFKUNDE (STAHL) ---
+    {
+        q: "Was unterscheidet S355 von S235?",
+        options: ["S355 rostet nicht", "S355 hat eine höhere Streckgrenze (355 N/mm²) und ist fester (belastbarer)", "S355 ist weicher", "S355 ist aus Aluminium"],
+        correct: 1,
+        cat: "Werkstoffe",
+        expl: "Beides sind Baustähle, aber S355 hält mehr Last aus. Er ist oft etwas empfindlicher bezüglich Aufhärtung (Vorwärmen!)."
+    },
+    {
+        q: "Was bedeutet das 'N' in der Bezeichnung 'S355J2+N'?",
+        options: ["Normalgeglüht (oder normalisierend gewalzt)", "Nichtrostend", "Niedrig legiert", "Neu"],
+        correct: 0,
+        cat: "Werkstoffzustand",
+        expl: "Das 'N' garantiert einen definierten Lieferzustand mit feinem Korn und guten Zähigkeitswerten."
+    },
+    {
+        q: "Warum sind Feinkornbaustähle (z.B. S690QL) empfindlich gegen 'große Wärme'?",
+        options: ["Sie schmelzen sofort", "Das feine Korn wächst zu Grobkorn -> Festigkeit und Zähigkeit sinken drastisch", "Sie verfärben sich", "Sie werden magnetisch"],
+        correct: 1,
+        cat: "Werkstoffe",
+        expl: "Die hohe Festigkeit kommt vom feinen Korn. Zu viel Hitze (langsame Schweißgeschwindigkeit) zerstört diesen Vorteil."
+    },
+    {
+        q: "Welches Element ist für 'Rotbruch' (Risse bei Rotglut) verantwortlich?",
+        options: ["Schwefel", "Kohlenstoff", "Mangan", "Silizium"],
+        correct: 0,
+        cat: "Werkstofffehler",
+        expl: "Schwefel bildet Eisensulfid an den Korngrenzen, das schon bei niedrigen Temperaturen schmilzt -> Riss."
+    },
+
+    // --- FEHLERVERMEIDUNG (PRAXIS) ---
+    {
+        q: "Wie vermeidet man Einbrandkerben an der Decklage?",
+        options: ["Mehr Strom", "Richtige Brennerhaltung (nicht zu steil zur Flanke) und passende Spannung/Strom", "Schneller schweißen", "Ohne Pendeln"],
+        correct: 1,
+        cat: "Fehlervermeidung",
+        expl: "Der Lichtbogen darf nicht zu stark auf die Kante 'beißen'. Beim Pendeln an der Seite kurz verweilen, damit das Bad nachfließt."
+    },
+    {
+        q: "Was ist die Ursache, wenn die Wurzel 'durchfällt' (zu große Wurzelüberhöhung innen)?",
+        options: ["Zu wenig Strom", "Zu viel Strom, zu großer Spalt oder zu langsame Geschwindigkeit", "Zu viel Gas", "Zu dicker Draht"],
+        correct: 1,
+        cat: "Fehleranalyse",
+        expl: "Das Bad wird zu groß und schwer, die Oberflächenspannung kann es nicht mehr halten -> es tropft durch."
+    },
+    {
+        q: "Warum sollte man beim MAG-Schweißen den Brenner nicht als Hammer benutzen?",
+        options: ["Sieht doof aus", "Die Gasdüse verformt sich, der Isolator bricht -> Kurzschlussgefahr und schlechter Gasschutz", "Macht Kratzer", "Ist verboten"],
+        correct: 1,
+        cat: "Wartung",
+        expl: "Ein deformierter Brennerkopf führt zu Gasverwirbelungen (Poren) und Kontaktproblemen. Teurer 'Hammer'!"
+    },
+    {
+        q: "Was tun, wenn der Lichtbogen beim MAG-Schweißen sehr laut knattert und spritzt?",
+        options: ["Weiter machen", "Einstellungen prüfen: Induktivität (Drossel) erhöhen oder Spannung/Draht anpassen (feintun)", "Mehr Gas", "Anderen Draht nehmen"],
+        correct: 1,
+        cat: "Prozessoptimierung",
+        expl: "Ein harter Lichtbogen braucht mehr Drosselwirkung (Induktivität), um weicher zu werden."
+    },
+
+    // --- ARBEITSSICHERHEIT (GASE & TRANSPORT) ---
+    {
+        q: "Wie prüft man, ob ein Druckminderer dicht am Flaschenventil sitzt?",
+        options: ["Mit dem Feuerzeug", "Mit Lecksuchspray (oder Seifenwasser) bei geöffneter Flasche", "Durch Hören", "Durch Riechen"],
+        correct: 1,
+        cat: "Sicherheit",
+        expl: "Blasenbildung zeigt die Undichtigkeit. Niemals Feuer nehmen! Auch bei Inertgas nicht."
+    },
+    {
+        q: "Warum müssen Gasflaschen beim Transport im Auto 'ausreichend belüftet' sein?",
+        options: ["Damit sie nicht schwitzen", "Erstickungsgefahr! Bei Undichtigkeit verdrängt das Gas den Sauerstoff im kleinen Autoinnenraum", "Explosionsgefahr", "Vorschrift"],
+        correct: 1,
+        cat: "Transport",
+        expl: "Eine undichte Argonflasche im Kofferraum kann den Fahrer während der Fahrt ersticken (man merkt es nicht)."
+    },
+    {
+        q: "Darf man eine Sauerstoffflasche zusammen mit Fett/Öl lagern?",
+        options: ["Ja, klar", "Nein! Spontane Entzündung/Explosion möglich", "Nur im Winter", "Nur wenn sie leer ist"],
+        correct: 1,
+        cat: "Sicherheit",
+        expl: "Öl und reiner Sauerstoff unter Druck reagieren explosiv. Sauberkeit ist lebenswichtig."
+    },
+    {
+        q: "Welches Gewinde hat ein Anschluss für brennbare Gase (Propan, Acetylen)?",
+        options: ["Rechtsgewinde", "Linksgewinde (markiert durch Kerbe an der Mutter)", "Zollgewinde", "Metrisches Gewinde"],
+        correct: 1,
+        cat: "Gase",
+        expl: "Damit man nicht versehentlich den Sauerstoffschlauch (Rechts) an das Brenngas (Links) anschließt."
+    },
+
+    // --- VERFAHREN (SONSTIGE) ---
+    {
+        q: "Was ist 'Widerstandspunktschweißen'?",
+        options: ["Lichtbogenverfahren", "Pressschweißverfahren ohne Zusatzwerkstoff (Karosseriebau)", "Gasschweißen", "Löten"],
+        correct: 1,
+        cat: "Verfahren",
+        expl: "Zwei Kupfer-Elektroden pressen die Bleche zusammen, hoher Strom fließt -> Punkt schmilzt auf."
+    },
+    {
+        q: "Was ist 'Thermit-Schweißen'?",
+        options: ["Schweißen mit Wärme", "Verbindungsschweißen von Eisenbahnschienen mittels chemischer Reaktion (Aluminothermie)", "Kunststoffschweißen", "Laser"],
+        correct: 1,
+        cat: "Verfahren",
+        expl: "Ein Pulvergemisch wird gezündet, flüssiger Stahl entsteht und läuft in die Form um die Schienenenden."
+    },
+    {
+        q: "Was bedeutet 'MSG-Löten' (MIG-Löten)?",
+        options: ["Löten mit Kolben", "Lichtbogenverfahren mit Endlosdraht (Bronze), bei dem der Grundwerkstoff NICHT geschmolzen wird", "Normales MAG", "Kleben"],
+        correct: 1,
+        cat: "Verfahren",
+        expl: "Wird oft bei verzinkten Blechen im Auto genutzt. Zink verbrennt nicht, da Arbeitstemperatur niedriger als beim Schweißen."
+    },
+
+    // --- ALLGEMEINES SCHWEISSWISSEN ---
+    {
+        q: "Was ist eine 'H-Naht'?",
+        options: ["Eine Naht in H-Form", "Eine Doppel-V-Naht (X-Naht)", "Gibt es nicht", "Eine Kehlnaht"],
+        correct: 0,
+        cat: "Begriffe",
+        expl: "Fangfrage: Der Begriff ist nicht genormt/üblich. Gemeint ist oft eine Doppel-U oder Doppel-V Naht."
+    },
+    {
+        q: "Was ist der 'K-Faktor' bei der Nahtberechnung?",
+        options: ["Kerbfaktor", "Kostenfaktor", "Kehlnahtfaktor", "Konstruktionsfaktor"],
+        correct: 0,
+        cat: "Berechnung",
+        expl: "Berücksichtigt die Kerbwirkung der Nahtform bei dynamischer Belastung."
+    },
+    {
+        q: "Was bedeutet 'DVS'?",
+        options: ["Deutscher Verkehrs-Service", "Deutscher Verband für Schweißen und verwandte Verfahren", "Das volle Schweißen", "Deutsche Verbindungsstelle"],
+        correct: 1,
+        cat: "Institutionen",
+        expl: "Der wichtigste Verband in Deutschland für alles rund ums Schweißen (Richtlinien, Ausbildung)."
+    },
+    {
+        q: "Was ist ein 'Schweißstrom-Generator'?",
+        options: ["Eine Batterie", "Ein motorgetriebenes Gerät (Diesel/Benzin) für Baustellen ohne Stromnetz", "Ein Inverter", "Ein Trafo"],
+        correct: 1,
+        cat: "Geräte",
+        expl: "Unabhängig vom Netz. Wichtig für Pipelinebau oder Feldreparaturen."
+    },
+    
+    // --- NAHTPRÜFUNG PRAXIS ---
+    {
+        q: "Wie erkennt man einen 'Bindefehler' auf dem Röntgenbild?",
+        options: ["Als dunklen Fleck", "Als dunkle, gerade Linie (Flankenbindefehler) oder diffuse Wolke", "Als hellen Punkt", "Gar nicht"],
+        correct: 1,
+        cat: "Prüfung",
+        expl: "Da dort Material fehlt (Spalt), gehen die Röntgenstrahlen leichter durch -> Film wird an der Stelle schwärzer (dunkler)."
+    },
+    {
+        q: "Welche Farbe hat das Eindringmittel bei der Rissprüfung (PT) meistens?",
+        options: ["Blau", "Rot (guter Kontrast zum weißen Entwickler)", "Grün", "Gelb"],
+        correct: 1,
+        cat: "Prüfung",
+        expl: "Das 'Rot-Weiß'-Verfahren. Rote Farbe kriecht in den Riss, weißer Kalk zieht sie raus -> Roter Strich sichtbar."
+    },
+    {
+        q: "Was ist 'Ultraschall-Dickenmessung'?",
+        options: ["Messen der Schweißnahtbreite", "Messen der Wanddicke (z.B. bei Rohren) auf Korrosion/Abtrag von außen", "Wiegen des Bauteils", "Schätzen"],
+        correct: 1,
+        cat: "Wartung",
+        expl: "Wichtig bei alten Tanks/Rohren. Man prüft, ob die Wand noch dick genug ist, ohne reinzubohren."
+    }
+, // --- START TEIL 10 (Qualitätssicherung, Normen, Profi-Wissen) ---
+
+    // --- QUALITÄTSSICHERUNG (PERSONAL) ---
+    {
+        q: "Wer ist für die 'Schweißaufsicht' (SAP) im Betrieb verantwortlich?",
+        options: ["Der Schweißer selbst", "Eine qualifizierte Person (Schweißfachmann/Ingenieur) nach ISO 14731", "Der Kunde", "Der Lieferant"],
+        correct: 1,
+        cat: "Qualität",
+        expl: "Die Schweißaufsicht (SAP) koordiniert und überwacht die schweißtechnische Fertigung. Sie trägt die Verantwortung."
+    },
+    {
+        q: "Darf ein 'Geprüfter Schweißer' (nach ISO 9606) automatisch auch andere Schweißer ausbilden und prüfen?",
+        options: ["Ja, er kann es ja", "Nein, dazu braucht er eine Qualifikation als Schweißwerkmeister/Lehrer oder Prüferlizenz", "Ja, aber nur Azubis", "Ja, wenn der Chef es erlaubt"],
+        correct: 1,
+        cat: "Qualifikation",
+        expl: "Handfertigkeit ist nicht gleich Lehrbefähigung. Prüfungen dürfen nur von anerkannten Stellen (z.B. TÜV, DVS) abgenommen werden."
+    },
+    {
+        q: "Was regelt die DIN EN ISO 3834?",
+        options: ["Qualitätsanforderungen für das Schmelzschweißen (Betriebszertifizierung)", "Schweißnahtbewertung", "Sicherheit", "Gasflaschen"],
+        correct: 0,
+        cat: "Normen",
+        expl: "Diese Norm (früher EN 729) legt fest, was ein Betrieb können muss (Personal, Geräte, Lagerung), um Qualität zu liefern."
+    },
+
+    // --- FEHLERBILDER (ANALYSE) ---
+    {
+        q: "Was ist ein 'Porennest' (Cluster porosity)?",
+        options: ["Eine einzelne Pore", "Eine lokale Anhäufung von Poren (Traube)", "Ein Vogelnest", "Ein Riss"],
+        correct: 1,
+        cat: "Fehler",
+        expl: "Entsteht oft beim Zünden oder wenn kurzzeitig der Gasschutz weg war (Windstoß). In Gruppe B meist nicht zulässig."
+    },
+    {
+        q: "Wann sind 'Schlackeneinschlüsse' besonders gefährlich?",
+        options: ["Wenn sie rund sind", "Wenn sie langgestreckt (Schlackenzeilen) und scharfkantig sind (Kerbwirkung)", "Wenn sie an der Oberfläche sind", "Nie"],
+        correct: 1,
+        cat: "Fehleranalyse",
+        expl: "Lange, spitze Einschlüsse wirken wie innere Risse. Bei Belastung reißen sie weiter auf."
+    },
+    {
+        q: "Was ist eine 'Wurzelkerbe'?",
+        options: ["Ein Riss in der Wurzel", "Eine Vertiefung/Rille am Übergang zwischen Wurzelraupe und Grundmaterial", "Ein Loch", "Ein Bindefehler"],
+        correct: 1,
+        cat: "Fehler",
+        expl: "Kerben schwächen den Querschnitt und sind Startpunkte für Risse (Dauerbruchgefahr)."
+    },
+    {
+        q: "Was bedeutet 'mangelnde Durchschweißung' (Lack of penetration)?",
+        options: ["Die Wurzel wurde nicht erfasst/aufgeschmolzen (Spalt bleibt)", "Zu viel Einbrand", "Naht zu dick", "Naht zu breit"],
+        correct: 0,
+        cat: "Fehler",
+        expl: "Der schlimmste Fehler bei Stumpfnähten! Der Querschnitt ist geschwächt und es wirkt wie ein Riss von unten."
+    },
+
+    // --- ELEKTROTECHNIK & KENNLIENIEN ---
+    {
+        q: "Welche Stromquellen-Kennlinie braucht man für das MIG/MAG-Schweißen?",
+        options: ["Fallende Kennlinie", "Flache (waagerechte) Kennlinie (Konstantspannung)", "Steigende Kennlinie", "Wechselnde Kennlinie"],
+        correct: 1,
+        cat: "Elektrotechnik",
+        expl: "Bei MAG regelt sich der Strom selbst (Innere Regelung). Die Spannung bleibt konstant, der Strom schwankt mit der Lichtbogenlänge."
+    },
+    {
+        q: "Welche Kennlinie hat ein E-Hand- oder WIG-Gerät?",
+        options: ["Steil fallende Kennlinie (Konstantstrom)", "Flache Kennlinie", "Steigende Kennlinie", "Keine"],
+        correct: 0,
+        cat: "Elektrotechnik",
+        expl: "Hier will man konstanten Strom (Ampere), auch wenn der Schweißer mit der Hand zittert (Lichtbogenlänge ändert sich)."
+    },
+    {
+        q: "Was ist die 'Einschaltdauer' (ED) bei 100%?",
+        options: ["Gerät läuft immer", "Der Strom, mit dem man dauerhaft (10 min ohne Pause) schweißen kann, ohne dass das Gerät überhitzt", "Der Maximalstrom", "Die Netzspannung"],
+        correct: 1,
+        cat: "Gerätetechnik",
+        expl: "Profi-Geräte haben hohe 100%-Werte (z.B. 200A). Baumarkt-Geräte oft nur 60A bei 100% (schalten oft ab)."
+    },
+
+    // --- NORMEN ISO 5817 (BEWERTUNGSGRUPPEN) ---
+    {
+        q: "Welche Fehler sind in Bewertungsgruppe B (Hoch) grundsätzlich UNZULÄSSIG?",
+        options: ["Risse und Bindefehler", "Poren (einzeln)", "Einbrandkerben (klein)", "Anlauffarben"],
+        correct: 0,
+        cat: "Qualität",
+        expl: "Risse und Bindefehler sind 'Killer-Fehler'. Sie führen sofort zum Ausschuss in Gruppe B (und meist auch C)."
+    },
+    {
+        q: "Darf eine Naht in Gruppe D (Niedrig) Poren enthalten?",
+        options: ["Nein, nie", "Ja, in gewissem Umfang (solange sie nicht zu groß/viele sind)", "Ja, unbegrenzt", "Nur wenn sie rot sind"],
+        correct: 1,
+        cat: "Qualität",
+        expl: "Gruppe D erlaubt viele 'Schönheitsfehler' und runde Poren, solange die Festigkeit nicht kritisch gefährdet ist."
+    },
+    {
+        q: "Wie wird 'Nahtüberhöhung' (h) in der Norm bewertet?",
+        options: ["Je mehr, desto besser", "Sie darf nicht zu hoch sein (sanfter Übergang), Grenzwerte hängen von der Nahtbreite ab", "Ist egal", "Muss abgeschliffen werden"],
+        correct: 1,
+        cat: "Qualität",
+        expl: "Zu viel Überhöhung ist schlecht (Kerbwirkung + Materialverschwendung). Formel z.B.: h <= 1mm + 0,1 x Breite."
+    },
+
+    // --- MATERIAL & PHYSIK ---
+    {
+        q: "Was ist 'Ferrit' im Stahl?",
+        options: ["Ein magnetisches Eisen-Gefüge (weich, zäh)", "Rost", "Eine Legierung", "Ein Gas"],
+        correct: 0,
+        cat: "Werkstoffkunde",
+        expl: "Das Grundgefüge von Baustahl bei Raumtemperatur (kubisch-raumzentriert)."
+    },
+    {
+        q: "Was ist 'Austenit' (bei Edelstahl)?",
+        options: ["Ein unmagnetisches Gefüge (kubisch-flächenzentriert), zäh und korrosionsbeständig", "Ein harter Stahl", "Ein Aluminium", "Ein Kunststoff"],
+        correct: 0,
+        cat: "Werkstoffkunde",
+        expl: "Austenit ist das typische 'Edelstahl-Gefüge' (V2A). Es ist nicht magnetisch und sehr zäh."
+    },
+    {
+        q: "Warum ist 'Magnetismus' beim Schweißen ein Problem?",
+        options: ["Die Elektrode bleibt kleben", "Blaswirkung! Der Lichtbogen wird abgelenkt und instabil", "Das Gas wird magnetisch", "Der Schweißer wird magnetisch"],
+        correct: 1,
+        cat: "Physik",
+        expl: "Restmagnetismus (in Rohren) kann das Schweißen unmöglich machen (Lichtbogen haut ab). Entmagnetisieren hilft."
+    },
+
+    // --- PRAXIS TIPPS ---
+    {
+        q: "Was tun, wenn die Drahtspule im MAG-Gerät nachläuft (Drahtsalat)?",
+        options: ["Spulenbremse in der Mitte der Halterung fester ziehen", "Motor langsamer stellen", "Schneller schweißen", "Neue Rolle kaufen"],
+        correct: 0,
+        cat: "Wartung",
+        expl: "Die Bremse verhindert, dass sich die schwere Spule durch den Schwung weiterdreht, wenn der Motor stoppt."
+    },
+    {
+        q: "Warum muss das Massekabel immer DIREKT am Werkstück sein?",
+        options: ["Damit der Strom nicht über Lager, Zahnräder oder Elektronik der Maschine fließt (Zerstörungsgefahr!)", "Weil es kürzer ist", "Damit es nicht stört", "Ist egal"],
+        correct: 0,
+        cat: "Sicherheit",
+        expl: "Fließt Schweißstrom über Kugellager (z.B. am Drehtisch oder Roboter), verschweißen die Kugeln -> Totalschaden."
+    },
+    {
+        q: "Wie lagert man basische Elektroden, wenn die Packung offen war?",
+        options: ["Im Regal", "Im Köcher (beheizt) oder Trockenschrank bei ca. 100-150°C", "Im Wasser", "Im Kühlschrank"],
+        correct: 1,
+        cat: "Lagerung",
+        expl: "Sie müssen trocken und warm bleiben (Dry-System), sonst saugen sie Feuchtigkeit (Wasserstoff!)."
+    },
+
+    // --- NORMEN & SYMBOLE ---
+    {
+        q: "Was bedeutet das Symbol 'Kreis' auf der Referenzlinie (Zeichnung)?",
+        options: ["Ringsum schweißen (umlaufend)", "Punktschweißen", "Loch schweißen", "Nicht schweißen"],
+        correct: 0,
+        cat: "Zeichnen",
+        expl: "Der Kreis im 'Knick' der Pfeillinie heißt: Diese Naht geht einmal komplett um das Bauteil herum."
+    },
+    {
+        q: "Was bedeutet 'ISO 4063 - 141'?",
+        options: ["WIG-Schweißen", "MAG-Schweißen", "E-Hand", "Plasma"],
+        correct: 0,
+        cat: "Normen",
+        expl: "141 ist der Code für WIG (Wolfram-Inertgas). Das muss jeder WIG-Schweißer im Schlaf wissen."
+    },
+    {
+        q: "Was bedeutet 'ISO 6947'?",
+        options: ["Schweißpositionen (PA, PB, PC...)", "Gase", "Drähte", "Sicherheit"],
+        correct: 0,
+        cat: "Normen",
+        expl: "Die Norm für die Arbeitspositionen. Früher DIN 1912."
+    },
+
+    // --- ABSCHLUSS & MIX ---
+    {
+        q: "Was ist ein 'Zwangslagenschweißen'?",
+        options: ["Wenn man gezwungen wird", "Schweißen in Positionen, die nicht Wanne (PA) oder Horizontal (PB) sind (z.B. Überkopf PE, Steigend PF)", "Schweißen unter Wasser", "Schweißen mit Zwangskontakt"],
+        correct: 1,
+        cat: "Positionen",
+        expl: "Alles, wo die Schwerkraft gegen das Bad arbeitet, ist eine Zwangslage (schwieriger)."
+    },
+    {
+        q: "Wofür steht 'WPS'?",
+        options: ["Welding Procedure Specification (Schweißanweisung)", "Welding Power Source", "World Power System", "Wasser Prüf Stelle"],
+        correct: 0,
+        cat: "Dokumente",
+        expl: "Das Rezeptblatt für die Naht. Der Schweißer MUSS sich daran halten."
+    },
+    {
+        q: "Was ist 'Auftragsschweißen' (Cladding)?",
+        options: ["Verbinden von zwei Blechen", "Aufbringen einer Schicht (hart, korrosionsbeständig) auf ein Bauteil", "Schweißen auf Rechnung", "Heften"],
+        correct: 1,
+        cat: "Verfahren",
+        expl: "Man 'panzert' z.B. Baggerzähne mit Hartauftrag oder beschichtet Stahlrohre innen mit Edelstahl."
+    }
+, // --- START TEIL 11 (Symbole Profi, MIG vs MAG, Technik) ---
+
+    // --- SYMBOLE & ZEICHNUNGEN (PROFI) ---
+    {
+        q: "Was bedeutet eine kleine 'Fahne' am Referenzstrich des Schweißsymbols?",
+        options: ["Achtung Gefahr", "Baustellennaht (Montagenaht, nicht in der Werkstatt zu schweißen)", "Fahnenmast schweißen", "Prüfung erforderlich"],
+        correct: 1,
+        cat: "Zeichnen",
+        expl: "Die Fahne markiert Nähte, die erst vor Ort auf der Baustelle (Site weld) geschweißt werden."
+    },
+    {
+        q: "Ein Schweißsymbol hat einen geraden Strich über dem Nahtsymbol (z.B. über dem V). Was bedeutet das?",
+        options: ["Naht muss flach abgearbeitet werden (eben geschliffen)", "Naht muss überhöht sein", "Unterbrochene Naht", "Wurzelschutz"],
+        correct: 0,
+        cat: "Zeichnen",
+        expl: "Der Strich verlangt eine ebene Oberfläche (z.B. durch Schleifen). Ein Bogen nach außen hieße 'gewölbt'."
+    },
+    {
+        q: "Was bedeutet das Symbol 'Z' bei einer versetzten Naht (Intermittent weld)?",
+        options: ["Zick-Zack-Muster", "Zerspanen", "Versetzte Unterbrechung (z.B. bei Kehlnähten beidseitig)", "Zeitlimit"],
+        correct: 2,
+        cat: "Zeichnen",
+        expl: "Bei beidseitigen Kehlnähten, die nicht durchgehend sind, bedeutet das 'Z' oft eine versetzte Anordnung (Staggered)."
+    },
+    {
+        q: "Wo steht die Angabe für die Nahtlänge im Symbol?",
+        options: ["Links vom Symbol", "Rechts vom Symbol", "In der Gabel", "Unter dem Strich"],
+        correct: 1,
+        cat: "Zeichnen",
+        expl: "Rechts vom Symbol stehen Längenangaben (z.B. 100 mm lang, (50) Abstand)."
+    },
+
+    // --- MIG vs. MAG (DER FEINE UNTERSCHIED) ---
+    {
+        q: "Wann spricht man von 'MIG' (Metall-Inert-Gas) statt 'MAG'?",
+        options: ["Wenn man Stahl schweißt", "Wenn das Gas NICHT chemisch reagiert (z.B. Argon/Helium bei Alu, Kupfer, Titan)", "Wenn man Wechselstrom nimmt", "Wenn man Fülldraht nimmt"],
+        correct: 1,
+        cat: "Verfahren",
+        expl: "Inert = Untätig. Sobald CO2 oder O2 (aktiv) im Spiel sind (bei Stahl üblich), heißt es MAG."
+    },
+    {
+        q: "Kann man Baustahl mit reinem Argon (MIG) schweißen?",
+        options: ["Ja, geht super", "Nein, der Lichtbogen wird extrem unruhig und der Einbrand ist schlecht (Bindefehler)", "Ja, aber nur AC", "Ja, aber nur dünne Bleche"],
+        correct: 1,
+        cat: "Gase",
+        expl: "Stahl braucht Sauerstoff oder CO2 im Gas (aktiv), um den Lichtbogen zu stabilisieren und die Oberflächenspannung zu senken."
+    },
+    {
+        q: "Welches Gas nimmt man für MIG-Schweißen von Aluminium?",
+        options: ["Argon 4.6 (oder höher)", "Corgon 18 (Argon + 18% CO2)", "Reines CO2", "Stickstoff"],
+        correct: 0,
+        cat: "Aluminium",
+        expl: "CO2 würde sofort mit dem Alu reagieren (Oxidation/Verbrennung). Man braucht reines Edelgas (Argon/Helium)."
+    },
+
+    // --- TECHNIK & PHYSIK ---
+    {
+        q: "Was bewirkt die 'Drossel' (Induktivität) im Schweißstromkreis?",
+        options: ["Sie drosselt die Gaszufuhr", "Sie glättet den Stromanstieg bei Kurzschlüssen (Lichtbogen wird weicher/härter)", "Sie kühlt das Gerät", "Sie regelt die Spannung"],
+        correct: 1,
+        cat: "Gerätetechnik",
+        expl: "Wichtig beim MAG-Schweißen. Hohe Induktivität = weicher Lichtbogen, wenig Spritzer, aber kälteres Bad."
+    },
+    {
+        q: "Was versteht man unter 'Aufmischung'?",
+        options: ["Das Mischen von Gasen", "Das Vermischen von abgeschmolzenem Grundwerkstoff mit dem Zusatzwerkstoff in der Schmelze", "Das Mischen von Farben", "Fehler beim Anrühren"],
+        correct: 1,
+        cat: "Metallurgie",
+        expl: "Entscheidend bei Schwarz-Weiß-Verbindungen (Edelstahl an Stahl). Zu viel Aufmischung aus dem Stahl kann die Korrosionsbeständigkeit ruinieren."
+    },
+    {
+        q: "Was ist ein 'langgestreckter Lichtbogen'?",
+        options: ["Ein Lichtbogen mit hoher Spannung (großer Abstand)", "Ein Lichtbogen, der lange dauert", "Ein Fehler", "Ein Plasmaschneider"],
+        correct: 0,
+        cat: "Prozess",
+        expl: "Mehr Spannung = längerer Lichtbogen. Er wird breiter, der Einbrand flacher, aber die Gefahr von Einbrandkerben steigt."
+    },
+
+    // --- WERKSTOFFE (GEFÜGE) ---
+    {
+        q: "Was ist 'Martensit'?",
+        options: ["Ein sehr hartes, sprödes Nadelgefüge (entsteht durch Abschrecken)", "Ein weiches Gefüge", "Ein Schweißgas", "Ein Stein"],
+        correct: 0,
+        cat: "Werkstoffe",
+        expl: "Der Feind der Schweißnaht. Martensit platzt bei Belastung wie Glas. Entsteht bei C-Stählen durch zu schnelle Abkühlung (t8/5 zu kurz)."
+    },
+    {
+        q: "Warum muss man Gusseisen oft 'kalt' schweißen (kurze Raupen, hämmern)?",
+        options: ["Damit es nicht schmilzt", "Um Wärmespannungen gering zu halten, da Guss extrem spröde ist und sofort reißt", "Weil es schneller geht", "Um Gas zu sparen"],
+        correct: 1,
+        cat: "Werkstoffe",
+        expl: "Guss dehnt sich kaum. Zu viel Hitze erzeugt Spannungen, die das Material sprengen. Hämmern baut Spannungen mechanisch ab."
+    },
+    {
+        q: "Was ist 'Baustahl'?",
+        options: ["Ein unlegierter Stahl für den allgemeinen Stahlbau (z.B. S235, S355)", "Ein Edelstahl", "Ein Werkzeugstahl", "Ein Guss"],
+        correct: 0,
+        cat: "Werkstoffe",
+        expl: "Der 'Brot-und-Butter'-Stahl. Gut schweißbar, billig, magnetisch, rostet."
+    },
+
+    // --- SICHERHEIT & WARTUNG ---
+    {
+        q: "Wie oft sollten Schweißkabel und Schlauchpakete geprüft werden?",
+        options: ["Alle 10 Jahre", "Täglich vor Arbeitsbeginn (Sichtprüfung auf Schäden an Isolierung)", "Nur wenn es funkt", "Nie"],
+        correct: 1,
+        cat: "Sicherheit",
+        expl: "Ein blankes Kabel auf einer Stahltreppe ist lebensgefährlich. Sichtprüfung ist Pflicht des Schweißers!"
+    },
+    {
+        q: "Was tun, wenn der Brennerhals extrem heiß wird?",
+        options: ["In den Wassereimer tauchen", "Prüfen, ob Kontaktrohr fest ist oder Kühlung läuft / Pausen einlegen", "Mit Eis kühlen", "Ohne Handschuhe anfassen"],
+        correct: 1,
+        cat: "Wartung",
+        expl: "Niemals in Wasser tauchen (Dampfexplosion/Stromschlag!). Hitze deutet oft auf lose Kontakte (Widerstand) hin."
+    },
+    {
+        q: "Warum darf man Acetylenflaschen nicht liegend entleeren?",
+        options: ["Weil sie wegrollen", "Weil das Aceton (Lösungsmittel) mitgerissen wird -> Stichflamme am Brenner", "Weil sie schwer sind", "Ist erlaubt"],
+        correct: 1,
+        cat: "Sicherheit",
+        expl: "Aceton zerstört Dichtungen und spuckt Feuer. Flasche muss min. 45° geneigt oder stehend sein."
+    },
+    {
+        q: "Welche Schutzbrille braucht der Helfer beim Schweißen?",
+        options: ["Keine", "Sonnenbrille", "Gleiche Schutzstufe wie der Schweißer oder zumindest eine Schutzwand/Vorhang", "Lesebrille"],
+        correct: 2,
+        cat: "Sicherheit",
+        expl: "Auch 'nur mal gucken' aus 2 Meter Entfernung verblitzt die Augen. UV-Strahlung streut im Raum!"
+    },
+
+    // --- FEHLERBILDER (STRATEGIE) ---
+    {
+        q: "Die Naht sieht aus wie eine 'Wurst' (liegt nur oben auf, hoher Berg, kein Flankenübergang). Ursache?",
+        options: ["Zu viel Strom (Ampere)", "Zu wenig Strom (oder zu schnell geschweißt), das Bad war zu kalt", "Zu viel Gas", "Zu dünner Draht"],
+        correct: 1,
+        cat: "Fehleranalyse",
+        expl: "Klassischer Anfängerfehler. Das Material fließt nicht breit, sondern erstarrt sofort als Hügel. Bindefehler sehr wahrscheinlich!"
+    },
+    {
+        q: "Der Lichtbogen wandert unruhig hin und her. Ursache?",
+        options: ["Massekabel schlecht befestigt (Magnetblaswirkung)", "Draht zu dick", "Gas zu teuer", "Zu hell"],
+        correct: 0,
+        cat: "Fehleranalyse",
+        expl: "Der Strom sucht sich seinen Weg. Wenn die Masse weit weg oder schlecht ist, entstehen Magnetfelder, die den Lichtbogen ablenken."
+    },
+    {
+        q: "Die Wolframelektrode ist blau angelaufen. Ist das schlimm?",
+        options: ["Nein, sieht gut aus", "Ja, Oxidation. Der Schutzgasnachstrom war zu kurz eingestellt", "Ja, Strom war zu niedrig", "Egal"],
+        correct: 1,
+        cat: "WIG Fehler",
+        expl: "Wolfram muss unter Gas abkühlen. Wenn es an der Luft noch glüht, oxidiert es sofort -> Zündprobleme beim nächsten Mal."
+    },
+
+    // --- PRAXIS MIX ---
+    {
+        q: "Was ist eine 'Steppnaht'?",
+        options: ["Eine Naht, die wie ein Teppich aussieht", "Kurze Nahtabschnitte mit Lücken (zum Vermindern von Verzug)", "Eine lange Naht", "Eine Kehlnaht"],
+        correct: 1,
+        cat: "Arbeitstechnik",
+        expl: "Oft im Karosseriebau genutzt. Man schweißt 2cm, lässt 5cm frei, schweißt 2cm. Verhindert Durchbrennen und Verzug."
+    },
+    {
+        q: "Was ist 'Fallnaht-Schweißen' (Position PG)?",
+        options: ["Schweißen von oben nach unten", "Schweißen von unten nach oben", "Wenn der Schweißer fällt", "Schweißen am Boden"],
+        correct: 0,
+        cat: "Positionen",
+        expl: "Geht schnell, aber Gefahr von Bindefehlern (Schmelze läuft vor den Lichtbogen). Nur für dünne Bleche oder Profis (Pipeline)."
+    },
+    {
+        q: "Wofür steht 'WIG-DC'?",
+        options: ["WIG mit Gleichstrom (Direct Current)", "WIG mit Wechselstrom", "WIG Digital Control", "WIG Dual Core"],
+        correct: 0,
+        cat: "Verfahren",
+        expl: "Standard für Stahl/Edelstahl. DC- (Elektrode am Minuspol)."
+    },
+    {
+        q: "Was ist der 'K-Faktor' bei Gasflaschen?",
+        options: ["Kompressionsfaktor (Abweichung vom idealen Gasgesetz bei hohem Druck)", "Kostenfaktor", "Kilogramm", "Kein Faktor"],
+        correct: 0,
+        cat: "Physik",
+        expl: "Eine 200 bar Flasche enthält nicht exakt 200x Volumen, sondern etwas weniger (realer Gasfaktor). Für die Praxis reicht aber meist 'Druck x Volumen'."
+    },
+    {
+        q: "Darf man Aluminium mit der Flex (Trennscheibe für Stahl) schleifen?",
+        options: ["Ja, klar", "Nein! Die Scheibe schmiert zu -> kann platzen! Außerdem Eisenabrieb im Alu (Korrosion)", "Nur wenn sie neu ist", "Nur langsam"],
+        correct: 1,
+        cat: "Sicherheit",
+        expl: "Lebensgefahr! Das weiche Alu verstopft die Poren der Scheibe. Die Scheibe überhitzt und zerreißt. Zudem: Rostgefahr am Alu."
+    },
+    {
+        q: "Was ist ein 'Zwangskontakt' am Brenner?",
+        options: ["Der Taster", "Das Kontaktrohr (Stromdüse)", "Die Gasdüse", "Der Griff"],
+        correct: 1,
+        cat: "Bauteile",
+        expl: "Hier wird der Strom auf den Draht übertragen. Es muss 'zwangsweise' Kontakt geben, sonst kein Lichtbogen."
+    },
+    {
+        q: "Was bedeutet 'ISO 9606-2'?",
+        options: ["Schweißerprüfung für Aluminium", "Schweißerprüfung für Stahl", "Schweißerprüfung für Kunststoff", "Schweißerprüfung unter Wasser"],
+        correct: 0,
+        cat: "Normen",
+        expl: "Teil 1 ist Stahl, Teil 2 ist Aluminium. Wichtig, da Alu ganz andere Handfertigkeiten verlangt."
+    }
+];
+
+        // --- 2. LOGIK ---
+        
+        let currentState = {
+            xp: 0,
+            level: 1,
+            quizActive: false,
+            questions: [],
+            currentIndex: 0,
+            score: 0,
+            mode: 'training'
+        };
+
+        const levels = [
+            { limit: 0, name: "Lehrling" },
+            { limit: 500, name: "Schweißer (TÜV)" },
+            { limit: 1500, name: "Vorarbeiter" },
+            { limit: 3000, name: "Schweißfachmann" },
+            { limit: 6000, name: "Schweißfachingenieur" }
+        ];
+
+        window.onload = () => {
+            loadProgress();
+            updateStats();
+            updatePoolCount();
+            
+            // Show share text on larger screens
+            if(window.innerWidth > 600) {
+                document.querySelector('.share-text-desktop').style.display = 'inline';
+            }
+        };
+
+        function updatePoolCount() {
+            const el = document.getElementById('poolCountDisplay');
+            if(el) el.innerText = questionPool.length;
+        }
+
+        function startQuiz(amount, mode) {
+            currentState.mode = mode;
+            currentState.questions = getRandomQuestions(amount);
+            currentState.currentIndex = 0;
+            currentState.score = 0;
+            currentState.quizActive = true;
+            
+            showView('view-quiz');
+            loadQuestion();
+        }
+
+        function getRandomQuestions(amount) {
+            let shuffled = [...questionPool];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled.slice(0, Math.min(amount, shuffled.length));
+        }
+
+        function loadQuestion() {
+            const q = currentState.questions[currentState.currentIndex];
+            document.getElementById('qCurrent').innerText = currentState.currentIndex + 1;
+            document.getElementById('qTotal').innerText = currentState.questions.length;
+            document.getElementById('qCategory').innerText = q.cat;
+            document.getElementById('questionText').innerText = q.q;
+            
+            const percent = (currentState.currentIndex / currentState.questions.length) * 100;
+            document.getElementById('quizProgress').style.width = percent + "%";
+
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = ''; 
+
+            document.getElementById('explanationBox').style.display = 'none';
+            document.getElementById('nextBtn').disabled = true;
+
+            q.options.forEach((optText, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = optText;
+                btn.onclick = () => handleAnswer(index, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btnElement) {
+            const q = currentState.questions[currentState.currentIndex];
+            const isCorrect = (selectedIndex === q.correct);
+            const allBtns = document.querySelectorAll('.option-btn');
+
+            allBtns.forEach(b => b.disabled = true);
+
+            if(currentState.mode === 'training') {
+                if(isCorrect) {
+                    btnElement.classList.add('correct');
+                    currentState.score++;
+                } else {
+                    btnElement.classList.add('wrong');
+                    allBtns[q.correct].classList.add('correct');
+                }
+                document.getElementById('explanationText').innerText = q.expl;
+                document.getElementById('explanationBox').style.display = 'block';
+            } else {
+                btnElement.classList.add('selected');
+                if(isCorrect) currentState.score++;
+            }
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentState.currentIndex++;
+            if(currentState.currentIndex < currentState.questions.length) {
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            showView('view-result');
+            const total = currentState.questions.length;
+            const percentage = Math.round((currentState.score / total) * 100);
+            
+            document.getElementById('resultPercentage').innerText = percentage + "%";
+            
+            let msg = "";
+            let xpGain = 0;
+
+            if(percentage >= 90) { 
+                msg = "Hervorragend! Du bist ein Profi."; 
+                xpGain = currentState.score * 10 + 50; 
+            } else if(percentage >= 70) { 
+                msg = "Gute Arbeit! Das Meiste sitzt.";
+                xpGain = currentState.score * 10;
+            } else if(percentage >= 50) { 
+                msg = "Bestanden, aber da ist noch Luft nach oben.";
+                xpGain = currentState.score * 10;
+            } else { 
+                msg = "Das war noch nichts. Ab in die Theorie!";
+                xpGain = currentState.score * 5; 
+            }
+
+            document.getElementById('resultText').innerText = msg + ` (+${xpGain} XP)`;
+            currentState.xp += xpGain;
+            saveProgress();
+            updateStats();
+        }
+
+        function showView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+        function showDashboard() { showView('view-dashboard'); }
+        
+        function updateStats() {
+            let currentLvlObj = levels[0];
+            for(let l of levels) {
+                if(currentState.xp >= l.limit) currentLvlObj = l;
+            }
+            document.getElementById('userXpDisplay').innerText = currentState.xp;
+            document.getElementById('userLevelDisplay').innerText = currentLvlObj.name;
+        }
+
+        // --- SPEICHERN & LADEN LOGIK ---
+
+        function saveProgress() {
+            const data = { xp: currentState.xp };
+            localStorage.setItem('ws_welding_trainer', JSON.stringify(data));
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('ws_welding_trainer');
+            if(saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    currentState.xp = data.xp || 0;
+                } catch(e) { console.error("Savegame error", e); }
+            }
+        }
+        
+        function resetProgress() {
+            if(confirm("Wirklich allen Fortschritt löschen? Dies kann nicht rückgängig gemacht werden.")) {
+                currentState.xp = 0;
+                saveProgress();
+                updateStats();
+            }
+        }
+
+        // Export (JSON Download)
+        function exportData() {
+            const data = { 
+                xp: currentState.xp, 
+                date: new Date().toISOString(),
+                app: "Warenschmiede Welding Trainer"
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "warenschmiede_trainer_backup.json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Import (JSON Upload)
+        function importData(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (typeof data.xp === 'number') {
+                        currentState.xp = data.xp;
+                        saveProgress();
+                        updateStats();
+                        alert("Fortschritt erfolgreich geladen! Deine XP: " + currentState.xp);
+                    } else {
+                        alert("Fehler: Ungültige Datei oder falsches Format.");
+                    }
+                } catch (err) {
+                    alert("Fehler beim Lesen der Datei.");
+                    console.error(err);
+                }
+                // Reset input so same file can be selected again if needed
+                input.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // --- SHARING ---
+        async function shareApp() {
+            const shareData = {
+                title: 'Warenschmiede Welding Trainer',
+                text: 'Teste dein Schweiß-Wissen mit dem Warenschmiede Trainer! Über 250 Fragen zu MAG, WIG und Sicherheit.',
+                url: window.location.href
+            };
+
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                } else {
+                    await navigator.clipboard.writeText(window.location.href);
+                    alert("Link in die Zwischenablage kopiert!");
+                }
+            } catch (err) {
+                console.log("Teilen abgebrochen oder nicht unterstützt");
+            }
+        }
+
+    </script>
+</body>
+</html>
