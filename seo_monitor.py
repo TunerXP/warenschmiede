@@ -15,6 +15,7 @@ BASE_URL = "https://www.warenschmiede.com"
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 INCLUDED_SITEMAP_PATHS = {
     "tools/kostenrechner-v2.html",
+    "tools/index.html",
 }
 EXCLUDED_SITEMAP_PATHS = {
     "tools/buero/doku-light.html",
@@ -120,6 +121,8 @@ def get_priority(path: str) -> float:
     basename = os.path.basename(path)
     if path == "index.html":
         return 1.0
+    if path == "tools/index.html":
+        return 0.8
     if path == "tools/kostenrechner-v2.html":
         return 0.9
     if path in {"ki/promt-trainer.html", "ki/ki-finder.html"}:
