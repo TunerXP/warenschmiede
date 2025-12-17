@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warenschmiede Welding Trainer</title>
+    <title>Warenschmiede Welding Trainer V2</title>
     <style>
         :root {
             --bg-dark: #1e1e24;
             --bg-panel: #2b2b36;
-            --primary: #ff9f1c; /* Welding spark orange */
+            --primary: #ff9f1c; /* Warenschmiede Orange */
             --primary-hover: #ffbf69;
             --text-main: #ffffff;
             --text-muted: #a0a0a0;
             --success: #2ec4b6;
             --danger: #e71d36;
             --border-radius: 12px;
+            --toggle-bg-off: #555;
+            --toggle-bg-on: var(--primary);
         }
 
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -63,12 +65,11 @@
         main {
             flex: 1;
             padding: 20px;
-            max-width: 800px;
+            max-width: 900px; /* Etwas breiter für die Filter */
             margin: 0 auto;
             width: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
         }
 
         /* --- VIEWS --- */
@@ -77,12 +78,64 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- DASHBOARD --- */
+        /* --- FILTER SECTION (NEU) --- */
+        .filter-section {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid #444;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .filter-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
+            border-bottom: 1px solid #444; padding-bottom: 10px;
+        }
+        .filter-title { font-weight: bold; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+        .filter-controls button {
+            background: none; border: none; color: var(--primary); cursor: pointer; font-size: 0.85rem; text-decoration: underline;
+        }
+        .filter-controls button:hover { color: var(--primary-hover); }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        /* Scrollbar styling */
+        .category-grid::-webkit-scrollbar { width: 6px; }
+        .category-grid::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }
+
+        /* --- TOGGLE SWITCH --- */
+        .toggle-wrapper {
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--bg-panel); padding: 10px; border-radius: 8px; border: 1px solid #444;
+        }
+        .toggle-label { font-size: 0.9rem; user-select: none; flex: 1; padding-right: 10px; }
+        
+        .switch { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--toggle-bg-off); transition: .4s; border-radius: 22px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--toggle-bg-on); }
+        input:checked + .slider:before { transform: translateX(18px); }
+
+        /* --- DASHBOARD CARDS --- */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         .card {
@@ -102,32 +155,22 @@
 
         /* --- DATA MANAGEMENT BAR --- */
         .management-bar {
-            margin-top: 30px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            border: 1px solid #333;
+            margin-top: 30px; background: rgba(255, 255, 255, 0.03); border-radius: var(--border-radius); padding: 20px; border: 1px solid #333;
         }
         .management-header { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
         .management-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
         
         .btn-small {
             padding: 8px 16px; font-size: 0.85rem; border-radius: 6px; cursor: pointer; border: 1px solid #555;
-            background: var(--bg-panel); color: var(--text-main); display: flex; align-items: center; gap: 6px;
-            transition: all 0.2s;
+            background: var(--bg-panel); color: var(--text-main); display: flex; align-items: center; gap: 6px; transition: all 0.2s;
         }
         .btn-small:hover { background: #3a3a45; border-color: #777; }
         .btn-danger-small { color: #ff6b6b; border-color: #552b2b; }
         .btn-danger-small:hover { background: rgba(255, 0, 0, 0.1); border-color: var(--danger); }
 
-        /* --- DB INFO & LEGAL --- */
+        /* --- DB INFO --- */
         .db-info {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 30px;
-            text-align: center;
-            border: 1px solid #444;
+            background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 15px; margin-top: 30px; text-align: center; border: 1px solid #444;
         }
         .db-count { font-size: 1.2rem; font-weight: bold; color: var(--success); }
         .legal-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; line-height: 1.4; }
@@ -136,44 +179,23 @@
         .progress-bar-container { width: 100%; height: 8px; background: #444; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
 
-        .question-box {
-            background: var(--bg-panel);
-            padding: 30px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
-        }
-
+        .question-box { background: var(--bg-panel); padding: 30px; border-radius: var(--border-radius); box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-bottom: 20px; }
         .question-text { font-size: 1.2rem; font-weight: 500; margin-bottom: 25px; line-height: 1.5; }
         .question-meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;}
         .options-grid { display: grid; gap: 12px; }
 
         .option-btn {
-            background: transparent;
-            border: 1px solid #555;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: var(--text-main);
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 1rem;
-            position: relative;
+            background: transparent; border: 1px solid #555; padding: 15px 20px; border-radius: 8px; color: var(--text-main); text-align: left; cursor: pointer; transition: all 0.2s; font-size: 1rem; position: relative;
         }
         .option-btn:hover:not(:disabled) { background: #3a3a45; border-color: #777; }
         .option-btn.selected { border-color: var(--primary); background: rgba(255, 159, 28, 0.1); }
         .option-btn.correct { border-color: var(--success); background: rgba(46, 196, 182, 0.2); color: #fff; }
         .option-btn.wrong { border-color: var(--danger); background: rgba(231, 29, 54, 0.2); color: #fff; }
 
-        .explanation-box {
-            margin-top: 20px; padding: 15px; background: rgba(46, 196, 182, 0.1);
-            border-left: 4px solid var(--success); border-radius: 4px; display: none;
-        }
+        .explanation-box { margin-top: 20px; padding: 15px; background: rgba(46, 196, 182, 0.1); border-left: 4px solid var(--success); border-radius: 4px; display: none; }
 
         .btn {
-            background: var(--primary); color: #000; border: none; padding: 12px 30px;
-            border-radius: 25px; font-weight: bold; cursor: pointer; font-size: 1rem;
-            transition: transform 0.1s; margin-top: 20px; display: inline-block;
+            background: var(--primary); color: #000; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: transform 0.1s; margin-top: 20px; display: inline-block;
         }
         .btn:hover { background: var(--primary-hover); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -182,26 +204,13 @@
 
         /* --- RESULTS --- */
         .result-score { font-size: 4rem; font-weight: bold; color: var(--primary); margin: 20px 0; }
-        .result-circle { 
-            width: 150px; height: 150px; border-radius: 50%; border: 8px solid var(--primary);
-            display: flex; align-items: center; justify-content: center; margin: 0 auto;
-        }
+        .result-circle { width: 150px; height: 150px; border-radius: 50%; border: 8px solid var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto; }
 
         /* --- LEVEL BADGE --- */
-        .level-badge {
-            background: #333; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; border: 1px solid var(--primary);
-        }
+        .level-badge { background: #333; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; border: 1px solid var(--primary); }
 
         /* --- FOOTER --- */
-        footer {
-            background-color: var(--bg-panel);
-            padding: 20px;
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            border-top: 1px solid #444;
-            margin-top: 40px;
-        }
+        footer { background-color: var(--bg-panel); padding: 20px; text-align: center; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid #444; margin-top: 40px; }
         footer a { color: var(--text-muted); text-decoration: none; margin: 0 10px; }
         footer a:hover { color: var(--primary); }
 
@@ -214,7 +223,6 @@
             <div class="logo">
                 <span>🔥</span> Welding Trainer
             </div>
-            <!-- Link zurück zur Hauptseite -->
             <a href="https://www.warenschmiede.com/" class="back-link">&larr; Warenschmiede</a>
         </div>
         
@@ -232,29 +240,44 @@
     <main>
         <!-- VIEW: DASHBOARD -->
         <div id="view-dashboard" class="view active">
-            <h1 style="text-align: center;">Wähle deinen Prüfungsmodus</h1>
-            <p style="text-align: center; color: var(--text-muted);">Teste dein Wissen in MAG, WIG und Arbeitssicherheit.</p>
+            
+            <!-- NEU: KATEGORIE FILTER -->
+            <div class="filter-section">
+                <div class="filter-header">
+                    <div class="filter-title">🛠️ Lern-Fokus wählen</div>
+                    <div class="filter-controls">
+                        <button onclick="toggleAllCategories(true)">Alle an</button> | 
+                        <button onclick="toggleAllCategories(false)">Alle aus</button>
+                    </div>
+                </div>
+                <div class="category-grid" id="categoryList">
+                    <!-- Wird durch JS befüllt -->
+                    <div style="color: #aaa; font-style: italic;">Lade Kategorien...</div>
+                </div>
+                <div style="margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); text-align: center;">
+                    Deine Auswahl wird automatisch für den nächsten Besuch gespeichert.
+                </div>
+            </div>
 
+            <h1 style="text-align: center;">Wähle deinen Prüfungsmodus</h1>
+            
             <div class="dashboard-grid">
                 <div class="card" onclick="startQuiz(10, 'training')">
                     <span class="card-icon">☕</span>
                     <h3>Kaffeepause</h3>
-                    <p>10 Fragen. Schneller Check für Zwischendurch.</p>
-                    <p style="color: var(--success); font-size: 0.8rem;">Sofortiges Feedback</p>
+                    <p>10 Fragen aus deiner Auswahl.</p>
                 </div>
 
                 <div class="card" onclick="startQuiz(30, 'training')">
                     <span class="card-icon">🏋️</span>
                     <h3>Training</h3>
-                    <p>30 Fragen. Vertiefe dein Wissen systematisch.</p>
-                    <p style="color: var(--success); font-size: 0.8rem;">Sofortiges Feedback</p>
+                    <p>30 Fragen. Vertiefe dein Wissen.</p>
                 </div>
 
                 <div class="card" onclick="startQuiz(50, 'exam')">
                     <span class="card-icon">🎓</span>
                     <h3>Prüfungs-Simulation</h3>
-                    <p>50 Fragen. Wie in der echten Prüfung.</p>
-                    <p style="color: var(--danger); font-size: 0.8rem;">Ergebnis erst am Ende</p>
+                    <p>50 Fragen (keine Hilfen).</p>
                 </div>
             </div>
 
@@ -271,16 +294,15 @@
                     <button class="btn-small btn-danger-small" onclick="resetProgress()" title="Alles löschen">
                         🗑️ Reset
                     </button>
-                    <!-- Hidden File Input -->
                     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
                 </div>
             </div>
 
-            <!-- DB INFO & LEGAL -->
+            <!-- DB INFO -->
             <div class="db-info">
                 <div>Aktueller Fragenpool: <span id="poolCountDisplay" class="db-count">...</span> Fragen</div>
                 <div class="legal-note">
-                    <strong>Hinweis zum Urheberrecht:</strong> Die Fragen in diesem Trainer sind an offizielle Prüfungsfragen angelehnt und dienen ausschließlich Übungszwecken. Sie wurden redaktionell bearbeitet und weichen im Wortlaut vom Original ab, um Urheberrechte zu wahren. Die fachlichen Inhalte und Lernziele bleiben identisch.
+                    <strong>Hinweis:</strong> Fragen dienen Übungszwecken (Educational Purpose). Redaktionell bearbeitet.
                 </div>
             </div>
         </div>
@@ -295,10 +317,7 @@
                 <div class="question-meta">Frage <span id="qCurrent">1</span> von <span id="qTotal">10</span> • <span id="qCategory">MAG</span></div>
                 <div class="question-text" id="questionText">Frage wird geladen...</div>
                 
-                <div class="options-grid" id="optionsContainer">
-                    <!-- Buttons generated by JS -->
-                </div>
-
+                <div class="options-grid" id="optionsContainer"></div>
                 <div class="explanation-box" id="explanationBox">
                     <strong>Erklärung:</strong> <span id="explanationText"></span>
                 </div>
@@ -317,16 +336,14 @@
                 <div class="result-score" id="resultPercentage">80%</div>
             </div>
             <p id="resultText" style="margin: 20px 0; font-size: 1.2rem;">Nicht schlecht!</p>
-            
             <div style="margin-top: 40px;">
                 <button class="btn" onclick="showDashboard()">Zurück zum Dashboard</button>
             </div>
         </div>
     </main>
 
-    <!-- FOOTER MIT RECHTLICHEN LINKS -->
     <footer>
-        &copy; 2025 Warenschmiede.com - Welding Trainer v1.0 <br><br>
+        &copy; 2025 Warenschmiede.com - Welding Trainer v2.0 <br><br>
         <a href="https://www.warenschmiede.com/impressum.html">Impressum</a> | 
         <a href="https://www.warenschmiede.com/datenschutz.html">Datenschutz</a>
     </footer>
@@ -2590,7 +2607,6 @@
 ];
 
         // --- 2. LOGIK ---
-        
         let currentState = {
             xp: 0,
             level: 1,
@@ -2598,7 +2614,8 @@
             questions: [],
             currentIndex: 0,
             score: 0,
-            mode: 'training'
+            mode: 'training',
+            activeCategories: [] // Speichert die aktiven Filter
         };
 
         const levels = [
@@ -2609,25 +2626,110 @@
             { limit: 6000, name: "Schweißfachingenieur" }
         ];
 
+        // Beim Starten
         window.onload = () => {
             loadProgress();
             updateStats();
             updatePoolCount();
+            initCategoryFilter(); // Neue Filter-Logik starten
             
-            // Show share text on larger screens
-            if(window.innerWidth > 600) {
-                document.querySelector('.share-text-desktop').style.display = 'inline';
-            }
+            if(window.innerWidth > 600) document.querySelector('.share-text-desktop').style.display = 'inline';
         };
 
-        function updatePoolCount() {
-            const el = document.getElementById('poolCountDisplay');
-            if(el) el.innerText = questionPool.length;
+        // --- FILTER LOGIK (NEU) ---
+        function initCategoryFilter() {
+            // 1. Alle einzigartigen Kategorien finden
+            const uniqueCats = [...new Set(questionPool.map(q => q.cat))].sort();
+            
+            // 2. Gespeicherte Einstellungen laden
+            const savedCats = localStorage.getItem('ws_welding_categories');
+            let checkedCats = uniqueCats; // Standard: Alle an
+            
+            // Wenn gespeicherte vorhanden, nutzen, aber nur wenn sie auch im aktuellen Pool existieren (Reinigungsfunktion)
+            if (savedCats) {
+                try {
+                    const parsed = JSON.parse(savedCats);
+                    // Wir nehmen die gespeicherten, fügen aber neue hinzu, falls Fragen dazukamen, die noch nicht gespeichert waren
+                    // Oder wir nehmen einfach die Schnittmenge?
+                    // Besser: Wir nehmen die gespeicherten. Wenn eine Kategorie im Pool neu ist, ist sie standardmäßig AUS oder AN?
+                    // Machen wir es einfach: Wenn gespeichert, nimm gespeichert.
+                    checkedCats = parsed;
+                } catch(e) { checkedCats = uniqueCats; }
+            }
+            
+            // Fallback: Wenn durch Update neue Kategorien da sind, sind sie evtl. nicht in checkedCats.
+            // Wir lassen das so. User muss sie aktivieren.
+            
+            currentState.activeCategories = checkedCats;
+
+            // 3. HTML bauen
+            const container = document.getElementById('categoryList');
+            container.innerHTML = '';
+
+            uniqueCats.forEach(cat => {
+                const isChecked = checkedCats.includes(cat) ? 'checked' : '';
+                
+                const html = `
+                    <div class="toggle-wrapper">
+                        <span class="toggle-label" title="${cat}">${cat}</span>
+                        <label class="switch">
+                            <input type="checkbox" value="${cat}" ${isChecked} onchange="updateFilter(this)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
         }
 
+        function updateFilter(checkbox) {
+            const val = checkbox.value;
+            if (checkbox.checked) {
+                // Hinzufügen
+                if (!currentState.activeCategories.includes(val)) currentState.activeCategories.push(val);
+            } else {
+                // Entfernen
+                currentState.activeCategories = currentState.activeCategories.filter(c => c !== val);
+            }
+            // Speichern
+            localStorage.setItem('ws_welding_categories', JSON.stringify(currentState.activeCategories));
+        }
+
+        function toggleAllCategories(state) {
+            const checkboxes = document.querySelectorAll('#categoryList input[type="checkbox"]');
+            const allCats = [...new Set(questionPool.map(q => q.cat))];
+            
+            checkboxes.forEach(cb => cb.checked = state);
+            
+            if(state) {
+                currentState.activeCategories = allCats;
+            } else {
+                currentState.activeCategories = [];
+            }
+            localStorage.setItem('ws_welding_categories', JSON.stringify(currentState.activeCategories));
+        }
+
+        // --- QUIZ STARTEN (ANGEPASST) ---
         function startQuiz(amount, mode) {
+            // Filter anwenden
+            // Sicherstellen, dass nur Kategorien genutzt werden, die auch existieren (falls alte Settings noch aktiv)
+            const availableCats = [...new Set(questionPool.map(q => q.cat))];
+            const effectiveCats = currentState.activeCategories.filter(c => availableCats.includes(c));
+
+            const filteredPool = questionPool.filter(q => effectiveCats.includes(q.cat));
+
+            if (filteredPool.length === 0) {
+                alert("Bitte wähle mindestens eine Kategorie aus!");
+                return;
+            }
+
+            if (filteredPool.length < amount) {
+                // Falls weniger Fragen da sind als gewünscht (z.B. nur 5 Sicherheitsfragen), nehmen wir alle.
+                amount = filteredPool.length;
+            }
+
             currentState.mode = mode;
-            currentState.questions = getRandomQuestions(amount);
+            currentState.questions = getRandomQuestions(filteredPool, amount);
             currentState.currentIndex = 0;
             currentState.score = 0;
             currentState.quizActive = true;
@@ -2636,13 +2738,19 @@
             loadQuestion();
         }
 
-        function getRandomQuestions(amount) {
-            let shuffled = [...questionPool];
+        function getRandomQuestions(sourcePool, amount) {
+            let shuffled = [...sourcePool];
             for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
             }
             return shuffled.slice(0, Math.min(amount, shuffled.length));
+        }
+
+        // --- STANDARD FUNKTIONEN ---
+        function updatePoolCount() {
+            const el = document.getElementById('poolCountDisplay');
+            if(el) el.innerText = questionPool.length;
         }
 
         function loadQuestion() {
@@ -2748,8 +2856,7 @@
             document.getElementById('userLevelDisplay').innerText = currentLvlObj.name;
         }
 
-        // --- SPEICHERN & LADEN LOGIK ---
-
+        // --- SPEICHERN & EXPORT ---
         function saveProgress() {
             const data = { xp: currentState.xp };
             localStorage.setItem('ws_welding_trainer', JSON.stringify(data));
@@ -2758,44 +2865,31 @@
         function loadProgress() {
             const saved = localStorage.getItem('ws_welding_trainer');
             if(saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    currentState.xp = data.xp || 0;
-                } catch(e) { console.error("Savegame error", e); }
+                try { currentState.xp = JSON.parse(saved).xp || 0; } catch(e) {}
             }
         }
         
         function resetProgress() {
-            if(confirm("Wirklich allen Fortschritt löschen? Dies kann nicht rückgängig gemacht werden.")) {
+            if(confirm("Alles löschen? Auch XP und Level?")) {
                 currentState.xp = 0;
+                // Kategorien-Auswahl löschen wir nicht, das wäre nervig
                 saveProgress();
                 updateStats();
             }
         }
 
-        // Export (JSON Download)
         function exportData() {
-            const data = { 
-                xp: currentState.xp, 
-                date: new Date().toISOString(),
-                app: "Warenschmiede Welding Trainer"
-            };
+            const data = { xp: currentState.xp, date: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = "warenschmiede_trainer_backup.json";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            a.href = url; a.download = "warenschmiede_backup.json";
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
         }
 
-        // Import (JSON Upload)
         function importData(input) {
             const file = input.files[0];
             if (!file) return;
-            
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
@@ -2804,40 +2898,18 @@
                         currentState.xp = data.xp;
                         saveProgress();
                         updateStats();
-                        alert("Fortschritt erfolgreich geladen! Deine XP: " + currentState.xp);
-                    } else {
-                        alert("Fehler: Ungültige Datei oder falsches Format.");
+                        alert("XP geladen: " + currentState.xp);
                     }
-                } catch (err) {
-                    alert("Fehler beim Lesen der Datei.");
-                    console.error(err);
-                }
-                // Reset input so same file can be selected again if needed
+                } catch (err) { alert("Fehler beim Laden."); }
                 input.value = '';
             };
             reader.readAsText(file);
         }
 
-        // --- SHARING ---
         async function shareApp() {
-            const shareData = {
-                title: 'Warenschmiede Welding Trainer',
-                text: 'Teste dein Schweiß-Wissen mit dem Warenschmiede Trainer! Über 250 Fragen zu MAG, WIG und Sicherheit.',
-                url: window.location.href
-            };
-
-            try {
-                if (navigator.share) {
-                    await navigator.share(shareData);
-                } else {
-                    await navigator.clipboard.writeText(window.location.href);
-                    alert("Link in die Zwischenablage kopiert!");
-                }
-            } catch (err) {
-                console.log("Teilen abgebrochen oder nicht unterstützt");
-            }
+            const shareData = { title: 'Welding Trainer', text: 'Teste dein Wissen!', url: window.location.href };
+            try { await navigator.share(shareData); } catch (err) { /* Fallback or ignore */ }
         }
-
     </script>
 </body>
 </html>
