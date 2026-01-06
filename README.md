@@ -1,5 +1,7 @@
 Warenschmiede.com – Projektstatus & Inventar
 
+Stand: 06.01.2026
+
 Über das Projekt
 
 Name: Warenschmiede.com
@@ -26,7 +28,13 @@ Grundlagen: /ki/index.html (Übersicht)
 
 Anwendung: /ki/prompts.html (Alltags-Prompts)
 
-Ressourcen: /ki/tools.html (Werkzeuge), /ki/lexikon.html (Begriffe)
+Ressourcen & Werkzeuge: /ki/tools.html
+  - Wissen & Forschung
+  - Coding & Entwicklung
+  - Bild-KI
+  - Video-KI
+  - Audio & Musik
+  - Büro & Spezial-Tools
 
 Aufklärung: /ki/chancen-und-risiken.html, /ki/faq.html (Sicherheit/FAQ)
 
@@ -36,17 +44,19 @@ Interaktiv:
 
 /ki/ki-finder.html (Warenschmiede KI-Finder)
 
+/ki/lexikon.html (Begriffe)
+
 3. Tools & Werkzeuge
 
-NEU (Geplant/In Arbeit):
-
-Zentrale Tool-Übersicht: /tools/index.html (Dashboard für alle Apps)
+Downloads:
+Downloads (/downloads.html)
+- Zeiterfassung v3 (Offline-App)
 
 Interaktive Web-Apps und Rechner:
 
 3D-Druck:
 
-Warenschmiede 3D-Druck Suite (/tools/kostenrechner-v2.html)
+Warenschmiede 3D-Druck Suite (/tools/kostenrechner-v2.html) - Status: Release-Vorbereitung
 
 Werkstatt:
 
