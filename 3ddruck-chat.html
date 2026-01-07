@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" type="image/png" href="/ws.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/ws.png" sizes="180x180">
+  <meta name="theme-color" content="#ffffff">
+  <title>Interaktiver 3D-Druck Berater - Warenschmiede</title>
+  <meta name="description" content="Simulierter Chat mit Marco Hoffmann für 3D-Druck Einsteiger. Tipps zu Hardware, Modellen und Software.">
+  <link rel="preload" as="image" href="/assets/logo.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/assets/print.css?v=1.0.7" media="print">
+
+  <style>
+    /* Chat Specific Styles */
+    .chat-container {
+        max-width: 480px;
+        width: 100%;
+        margin: 0 auto;
+        background: #efeae2;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        overflow: hidden;
+        border: 1px solid #ddd;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 75vh;
+        max-height: 800px;
+        min-height: 500px;
+        position: relative;
+    }
+
+    /* WhatsApp Background Pattern simulation */
+    .chat-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background-color: #efeae2;
+        background-image: radial-gradient(#d4d0c8 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+
+    .chat-header {
+        background: #008069;
+        color: white;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+
+    .chat-header-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #fff;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+    .chat-header-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .chat-header-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .chat-header-name {
+        font-weight: 600;
+        font-size: 1.05rem;
+        line-height: 1.2;
+    }
+
+    .chat-header-status {
+        font-size: 0.8rem;
+        opacity: 0.85;
+        line-height: 1.2;
+    }
+
+    .message {
+        max-width: 85%;
+        padding: 6px 7px 8px 9px;
+        border-radius: 7.5px;
+        position: relative;
+        font-size: 0.95rem;
+        line-height: 1.35;
+        box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+        opacity: 0;
+        transform: translateY(10px);
+        animation: messageAppear 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        word-wrap: break-word;
+    }
+
+    @keyframes messageAppear {
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.marco {
+        align-self: flex-start;
+        background: #ffffff;
+        border-top-left-radius: 0;
+    }
+
+    .message.gast {
+        align-self: flex-end;
+        background: #d9fdd3;
+        border-top-right-radius: 0;
+    }
+
+    .message-content {
+        padding-right: 20px; /* Space for time */
+    }
+
+    .message-time {
+        font-size: 0.68rem;
+        color: rgba(0,0,0,0.45);
+        float: right;
+        margin-top: 4px;
+        margin-left: -10px;
+        position: relative;
+        top: 2px;
+    }
+
+    .message a {
+        color: #007bfc;
+        text-decoration: none;
+    }
+    .message a:hover {
+        text-decoration: underline;
+    }
+
+    .typing-container {
+        padding: 0 15px 10px;
+        min-height: 40px;
+    }
+
+    .typing-indicator {
+        background: #ffffff;
+        padding: 10px 15px;
+        border-radius: 18px;
+        border-top-left-radius: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .typing-indicator.visible {
+        opacity: 1;
+    }
+
+    .dot {
+        width: 6px;
+        height: 6px;
+        background: #b0b0b0;
+        border-radius: 50%;
+        animation: typingBounce 1.4s infinite ease-in-out both;
+    }
+    .dot:nth-child(1) { animation-delay: -0.32s; }
+    .dot:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes typingBounce {
+        0%, 80%, 100% { transform: scale(0); }
+        40% { transform: scale(1); }
+    }
+
+    .chat-controls {
+        background: #f0f2f5;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        border-top: 1px solid #ddd;
+        flex-wrap: wrap;
+    }
+
+    .chat-btn {
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 24px;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+        color: var(--text);
+    }
+    .chat-btn:hover {
+        background: #e9edef;
+    }
+    .chat-btn:active {
+        background: #dce1e5;
+    }
+
+    .scenario-selector {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .scenario-btn {
+        padding: 10px 20px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .scenario-btn:hover {
+        background: var(--surface-muted);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    }
+    .scenario-btn.active {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+        box-shadow: 0 4px 10px rgba(209, 42, 42, 0.3);
+    }
+
+    /* Ensure the chat looks good in dark mode context but keeps its "app" look */
+    html[data-theme="dark"] .chat-container {
+        border-color: #333;
+    }
+    html[data-theme="dark"] .chat-btn {
+        background: #2a3942;
+        border-color: #444;
+        color: #e9edef;
+    }
+    html[data-theme="dark"] .chat-btn:hover {
+        background: #3c4a53;
+    }
+  </style>
+  <script src="/assets/js/theme.js"></script>
+</head>
+<body>
+  <header class="site-header" data-header>
+    <div class="ws-nav-container header-grid">
+      <div class="brand">
+        <a class="brand-link" href="/index.html#start">
+          <img src="/assets/images/warenschmiede_logo.png" alt="Warenschmiede Logo" class="brand-logo" width="453" height="276" fetchpriority="high">
+          <div class="brand-text">
+            <span class="brand-name">Warenschmiede</span>
+            <span class="brand-tagline">3D-Druck · Made in Germany</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="main-nav" aria-label="Hauptnavigation">
+        <div class="nav-menu" id="primary-navigation" data-nav-menu>
+          <ul class="nav-list" id="navList">
+            <li class="nav-item nav-fixed">
+              <a class="nav-link" href="/index.html#start" data-nav-link data-section="start" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html"><span class="nav-ico" aria-hidden="true">🏠</span>Start</a>
+            </li>
+
+            <li class="nav-item nav-fixed">
+              <a class="nav-link" href="/downloads.html" data-nav-link data-path="/downloads , /downloads.html"><span class="nav-ico" aria-hidden="true">📥</span>Downloads</a>
+            </li>
+
+                        <!-- Neuer Dropdown: Online Tools -->
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-highlight nav-tools" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                <span class="nav-ico" aria-hidden="true">🧮</span>Online Tools ▾
+              </button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/tools/" data-nav-link data-path="/tools , /tools/ , /tools/index.html">
+                    <span class="nav-ico" aria-hidden="true">🗂️</span>Tool-Übersicht (Dashboard)
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/werkstatt-rechner.html" data-nav-link data-path="/werkstatt-rechner , /werkstatt-rechner.html">
+                    <span class="nav-ico" aria-hidden="true">🛠️</span>Warenschmiede METALL
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/tools/kostenrechner-v2.html" data-nav-link data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html">
+                    <span class="nav-ico" aria-hidden="true">🧮</span>Warenschmiede 3D-Druck Suite
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/tools/buero/doku-light/QRCodeMasterPro.html" data-nav-link data-path="/tools/buero/doku-light/QRCodeMasterPro , /tools/buero/doku-light/QRCodeMasterPro.html">
+                    <span class="nav-ico" aria-hidden="true">🔳</span>Warenschmiede QR-Master ULTRA
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🧰</span>Leistungen ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/leistungen/3d-druck.html" data-nav-link data-path="/leistungen/3d-druck , /leistungen/3d-druck.html"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druckauftrag</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/leistungen/cad-prototyping.html" data-nav-link data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html"><span class="nav-ico" aria-hidden="true">📐</span>CAD &amp; Prototyping</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/leistungen/pc-hilfe.html" data-nav-link data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html"><span class="nav-ico" aria-hidden="true">💻</span>PC-Hilfe</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🤖</span>Über KI ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/ki/index.html" data-nav-link data-path="/ki , /ki/ , /ki/index.html"><span class="nav-ico" aria-hidden="true">📖</span>Einführung &amp; Grundlagen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/prompts.html" data-nav-link data-path="/ki/prompts , /ki/prompts.html"><span class="nav-ico" aria-hidden="true">✍️</span>Prompts für den Alltag</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/promt-trainer.html" data-nav-link data-path="/ki/promt-trainer , /ki/promt-trainer.html"><span class="nav-ico" aria-hidden="true">🧠</span>KI Trainer</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/ki-finder.html" data-nav-link data-path="/ki/ki-finder , /ki/ki-finder.html"><span class="nav-ico" aria-hidden="true">🧭</span>Warenschmiede KI-Finder</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/tools.html" data-nav-link data-path="/ki/tools , /ki/tools.html"><span class="nav-ico" aria-hidden="true">🛠️</span>KI-Werkzeuge</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/so-arbeitest-du-mit-ki.html" data-nav-link data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html"><span class="nav-ico" aria-hidden="true">🧭</span>So arbeitest du mit KI</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/programme-die-du-brauchst.html" data-nav-link data-path="/ki/programme-die-du-brauchst , /ki/programme-die-du-brauchst.html"><span class="nav-ico" aria-hidden="true">💾</span>Programme, die du brauchst</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/chancen-und-risiken.html" data-nav-link data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html"><span class="nav-ico" aria-hidden="true">⚖️</span>KI: Chancen &amp; Risiken</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/faq.html" data-nav-link data-path="/ki/faq , /ki/faq.html"><span class="nav-ico" aria-hidden="true">🔒</span>KI-FAQ &amp; Sicherheit</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ki/lexikon.html" data-nav-link data-path="/ki/lexikon , /ki/lexikon.html"><span class="nav-ico" aria-hidden="true">🔤</span>KI-Lexikon</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">✉️</span>Kontakt ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/kontakt.html" data-nav-link data-path="/kontakt , /kontakt.html , /warenschmiede/kontakt , /warenschmiede/kontakt.html"><span class="nav-ico" aria-hidden="true">📧</span>Kontakt aufnehmen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ablauf-anfrage.html" data-nav-link data-path="/ablauf-anfrage , /ablauf-anfrage.html"><span class="nav-ico" aria-hidden="true">📝</span>Ablauf &amp; Anfrage</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/impressum.html" data-nav-link data-path="/impressum , /impressum.html , /warenschmiede/impressum , /warenschmiede/impressum.html"><span class="nav-ico" aria-hidden="true">⚖️</span>Impressum</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ueber-mich.html" data-nav-link data-path="/ueber-mich , /ueber-mich.html , /warenschmiede/ueber-mich.html , /about , /about.html , /warenschmiede/about.html"><span class="nav-ico" aria-hidden="true">👤</span>Über mich</a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown>
+              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druck ▾</button>
+              <ul class="nav-more-menu" hidden>
+                <li>
+                  <a class="nav-link" href="/3ddruck-chat.html" data-nav-link data-path="/3ddruck-chat , /3ddruck-chat.html"><span class="nav-ico" aria-hidden="true">💬</span>Interaktiver Berater (Neu)</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/technologien.html" data-nav-link data-path="/technologien , /technologien.html"><span class="nav-ico" aria-hidden="true">🧪</span>FDM / SLA / SLS – Technologien</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/fehlerdatenbank.html" data-nav-link data-path="/fehlerdatenbank , /fehlerdatenbank.html"><span class="nav-ico" aria-hidden="true">🛠️</span>Fehler &amp; Troubleshooting</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/ideenquellen.html" data-nav-link data-path="/ideenquellen , /ideenquellen.html , /ideen , /ideen/ , /ideen/index.html"><span class="nav-ico" aria-hidden="true">💡</span>Ideenquellen &amp; Portale</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/material.html" data-nav-link data-path="/material.html"><span class="nav-ico" aria-hidden="true">📚</span>Materialwissen &amp; Vergleiche</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/druck-tipps.html" data-nav-link data-path="/druck-tipps , /druck-tipps.html"><span class="nav-ico" aria-hidden="true">🧭</span>Tipps &amp; Abläufe / Kosten</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/tools/kostenrechner-v2.html" data-nav-link data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html"><span class="nav-ico" aria-hidden="true">🧮</span>Kosten &amp; Kalkulation</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/slicer-einstellungen.html" data-nav-link data-path="/slicer-einstellungen , /slicer-einstellungen.html"><span class="nav-ico" aria-hidden="true">⚙️</span>Slicer &amp; Einstellungen</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/3ddruck-faq.html" data-nav-link data-path="/3ddruck-faq , /3ddruck-faq.html"><span class="nav-ico" aria-hidden="true">❓</span>Neu beim 3D-Druck?</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/wartung-reinigung.html" data-nav-link data-path="/wartung-reinigung , /wartung-reinigung.html"><span class="nav-ico" aria-hidden="true">🧼</span>Wartung &amp; Reinigung</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="header-actions">
+        <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Design umschalten: Hell/Dunkel" title="Design umschalten: Hell/Dunkel" aria-pressed="false">
+          <span id="themeIcon" aria-hidden="true">🖥️</span>
+          <span class="theme-toggle__text" id="themeToggleText" aria-live="polite">Helles Design</span>
+        </button>
+
+        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
+          <span class="sr-only">Menü öffnen</span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="site-main">
+    <div class="container">
+        <div class="ws-section" style="text-align: center;">
+            <h1 class="ws-page-title">Interaktiver 3D-Druck Berater</h1>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
+                Wähle ein Thema und lass dir von Marco in einem simulierten Chat erklären, worauf es ankommt.
+            </p>
+        </div>
+
+        <div class="scenario-selector">
+            <button class="scenario-btn active" onclick="switchScenario(0)" id="btn-scenario-0">Hardware & Einstieg</button>
+            <button class="scenario-btn" onclick="switchScenario(1)" id="btn-scenario-1">Modelle & CAD</button>
+            <button class="scenario-btn" onclick="switchScenario(2)" id="btn-scenario-2">Software (Slicer)</button>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="chat-header-avatar">
+                     <img src="/assets/img/marco.jpg" alt="Marco" onerror="this.src='/assets/img/avatar-placeholder.svg'">
+                </div>
+                <div class="chat-header-info">
+                    <div class="chat-header-name">Marco Hoffmann</div>
+                    <div class="chat-header-status">Online</div>
+                </div>
+            </div>
+
+            <div class="chat-body" id="chat-body">
+                <!-- Messages go here -->
+            </div>
+
+            <div class="typing-container">
+                <div class="typing-indicator" id="typing-indicator">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+
+            <div class="chat-controls">
+                <button class="chat-btn" onclick="togglePlayPause()" id="playPauseBtn">⏸️ Pause</button>
+                <button class="chat-btn" onclick="skipAll()">⏩ Alles anzeigen</button>
+                <button class="chat-btn" onclick="restartChat()">🔄 Neustart</button>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; margin-bottom: 4rem;">
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                Hinweis: Dies ist ein simulierter Chat. Alle Links öffnen in einem neuen Tab.
+            </p>
+            <a href="/kontakt.html" class="btn btn-primary">Echte Anfrage stellen</a>
+        </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__brand">© 2025 Warenschmiede · Alle Rechte vorbehalten.</div>
+        <nav class="footer__links" aria-label="Rechtliches &amp; Kontakt">
+          <a href="/impressum.html">Impressum</a>
+          <a href="/datenschutz.html">Datenschutzerklärung</a>
+          <a href="/kontakt.html">Kontakt</a>
+        </nav>
+        <div class="footer__notes">
+          <p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
+          <p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/theme.js"></script>
+  <script src="/assets/js/header.js"></script>
+
+  <script>
+    // Chat Data
+    const SCENARIOS = [
+        {
+            title: "Hardware (Einstieg)",
+            messages: [
+                { sender: 'gast', text: 'Hey Marco! 👋 Alles fit bei dir? Ich brauch mal deinen Rat.' },
+                { sender: 'marco', text: 'Hi! Ja, bei mir ist alles bestens, die Drucker laufen heiß. 😄 Was hast du vor? Willst du auch einsteigen?' },
+                { sender: 'gast', text: 'Genau das. Ich sehe das ständig bei dir und will das auch können. Hast du zufällig noch einen alten Drucker, den du verkaufst? Zum Üben?' },
+                { sender: 'marco', text: 'Bloß nicht! 🛑 Ganz ehrlich: Tu dir das nicht an.' },
+                { sender: 'marco', text: 'Meine alten Kisten behalte ich als Ersatzteillager oder die sind schon weg. Aber für den Einstieg heute? Kauf bloß keine alte "Bastelbude".' },
+                { sender: 'gast', text: 'Warum? Ist gebraucht schlecht? Ich will halt nicht viel ausgeben für den Anfang.' },
+                { sender: 'marco', text: 'Das Problem ist: Früher musstest du löten, schrauben und stundenlang das Druckbett mit Papier ausrichten ("leveln"). Das frustriert dich nur. Du willst drucken, nicht reparieren, oder?' },
+                { sender: 'gast', text: 'Definitiv! Ich hab zwei linke Hände was Elektronik angeht. Es soll einfach funktionieren.' },
+                { sender: 'marco', text: 'Dann gibt es aktuell nur eine Antwort: **Bambu Lab A1** (oder der A1 Mini, wenn du wenig Platz hast).' },
+                { sender: 'marco', text: 'Ich habe selbst 4 Stück davon in der Werkstatt. Die Dinger sind echte Arbeitstiere. Du packst sie aus, sie kalibrieren sich komplett selbst und nach 15 Minuten hältst du das erste Teil in der Hand.' },
+                { sender: 'gast', text: 'Krass, das klingt fast zu einfach. Und preislich?' },
+                { sender: 'marco', text: 'Der A1 ist absolut fair für das, was er kann. Vor allem ist er schnell und leise.' },
+                { sender: 'gast', text: 'Okay, überredet. Wo bestelle ich den am besten? Amazon?' },
+                { sender: 'marco', text: 'Drucker bestelle ich am liebsten direkt beim **Hersteller** (Bambu Lab), wegen der Garantie und dem Support, falls mal was ist.' },
+                { sender: 'marco', text: 'Aber hier mein Geheimtipp: Schau unbedingt mal bei **3DJack** vorbei. Die haben oft richtig gute Angebote und liefern extrem schnell aus Deutschland.' },
+                { sender: 'marco', text: 'Vergleich da auf jeden Fall die Preise, bevor du klickst! ☝️' },
+                { sender: 'gast', text: 'Guter Tipp, danke! 🙏 Brauche ich sonst noch was, damit es direkt losgehen kann?' },
+                { sender: 'marco', text: 'Ja, Zubehör ist wichtig. Der Drucker kommt oft nur mit wenig Material.' },
+                { sender: 'marco', text: 'Besorg dir **PLA Filament**. Das ist der Standard-Kunststoff. Stinkt nicht, ist ungiftig und druckt sich kinderleicht.' },
+                { sender: 'gast', text: 'Kannst du da eine Marke empfehlen?' },
+                { sender: 'marco', text: 'Schau mal hier bei Amazon, das nutze ich oft für Standard-Teile. Such dir einfach eine Farbe aus, die dir gefällt: <a href="https://www.amazon.de/s?k=PLA+Filament+1.75mm" target="_blank">Amazon Suche "PLA Filament 1.75mm"</a>' },
+                { sender: 'marco', text: 'Und ganz wichtig, was viele vergessen: **Isopropanol** (99%).' },
+                { sender: 'gast', text: 'Alkohol? Zum Trinken auf den Erfolg? 😂' },
+                { sender: 'marco', text: 'Haha, nein! Zum Reinigen der Druckplatte. Wenn da Fett von den Fingern drauf ist, haftet dein Druck nicht. Einmal abwischen vor dem Druck, fertig. <a href="https://www.amazon.de/s?k=Isopropanol+99%25" target="_blank">Amazon Suche "Isopropanol 99%"</a>' },
+                { sender: 'gast', text: 'Okay, Drucker (A1), PLA und Isopropanol. Das krieg ich hin. Danke dir!!' },
+                { sender: 'marco', text: 'Gerne! Wenn die Sachen da sind, meld dich einfach wieder. Viel Spaß beim Shoppen! 🚀' }
+            ]
+        },
+        {
+            title: "Modelle & CAD",
+            messages: [
+                { sender: 'gast', text: 'Hi Marco! Der Drucker läuft super, das erste Schiffchen ("Benchy") sieht klasse aus. Aber jetzt gehen mir die Ideen aus. 😅' },
+                { sender: 'gast', text: 'Ich hab Respekt vor dem Zeichnen. Muss ich jetzt Ingenieur werden und CAD lernen?' },
+                { sender: 'marco', text: 'Quatsch! 😂 Das denken viele, ist aber falsch. Für den Anfang musst du gar nichts zeichnen.' },
+                { sender: 'marco', text: 'Zu 99% hat schon jemand auf der Welt das Problem gelöst, das du hast.' },
+                { sender: 'marco', text: 'Kennst du **MakerWorld** oder **Printables**?' },
+                { sender: 'gast', text: 'Nee, was ist das?' },
+                { sender: 'marco', text: 'Stell dir das vor wie YouTube, aber für Gegenstände. Du gibst "Kopfhörerhalter" oder "Ersatzteil Spülmaschine" ein und bekommst 500 kostenlose Vorlagen.' },
+                { sender: 'marco', text: 'Du lädst die Datei runter, schickst sie an den Drucker, fertig.' },
+                { sender: 'gast', text: 'Kostenlos? Echt jetzt?' },
+                { sender: 'marco', text: 'Ja, die Community ist riesig. MakerWorld ist sogar direkt von Bambu Lab. Da kannst du oft sogar direkt vom Handy aus drucken, ganz ohne PC.' },
+                { sender: 'gast', text: 'Okay, das rettet mich. Aber was, wenn ich was ganz Spezielles brauche?' },
+                { sender: 'marco', text: 'Dann gibt es zwei Wege. Weg 1: Du probierst es selbst.' },
+                { sender: 'marco', text: 'Für den Einstieg empfehle ich **TinkerCAD**. Das läuft im Browser, ist kostenlos und funktioniert wie Lego-Bausteine schieben. Super simpel.' },
+                { sender: 'gast', text: 'Und Weg 2?' },
+                { sender: 'marco', text: 'Weg 2: Du fragst mich. 😉' },
+                { sender: 'marco', text: 'Ich arbeite mit **SolidWorks** – das ist eine Profi-Software für die Industrie. Wenn du ein komplexes Bauteil brauchst, kann ich dir das konstruieren.' },
+                { sender: 'gast', text: 'Gut zu wissen! SolidWorks klingt teuer.' },
+                { sender: 'marco', text: 'Ist es auch. Für Privatleute meist viel zu teuer ("Overkill"). Bleib am Anfang bei MakerWorld und TinkerCAD. Damit deckst du fast alles ab.' },
+                { sender: 'gast', text: 'Super, ich stöber mal bei MakerWorld. Danke für die Entwarnung!' }
+            ]
+        },
+        {
+            title: "Software (Slicer)",
+            messages: [
+                { sender: 'gast', text: 'Marco, Hilfe! 🆘 Ich hab eine Datei runtergeladen (eine .stl), aber wie krieg ich die jetzt in den Drucker?' },
+                { sender: 'gast', text: 'Einfach auf die SD-Karte kopieren wie ein Foto?' },
+                { sender: 'marco', text: 'Nicht ganz. Der Drucker versteht kein "3D-Bild", er ist ja "dumm". Er versteht nur Bewegungen (fahre nach links, drücke Plastik raus).' },
+                { sender: 'marco', text: 'Du brauchst einen **Slicer** (Schnitt-Programm).' },
+                { sender: 'gast', text: 'Einen Slicer? Klingt nach Küchengerät. 🔪' },
+                { sender: 'marco', text: 'Fast! 😄 Das Programm "schneidet" dein digitales Modell in hauchdünne Scheiben (Schichten) und berechnet den Weg für den Drucker.' },
+                { sender: 'gast', text: 'Welchen soll ich nehmen? Gibt es da viele?' },
+                { sender: 'marco', text: 'Es gibt viele (Cura, PrusaSlicer...), aber da du den Bambu A1 hast: Nimm unbedingt **Bambu Studio**.' },
+                { sender: 'marco', text: 'Das installieren wir auf Deutsch. Das ist perfekt auf deinen Drucker abgestimmt.' },
+                { sender: 'gast', text: 'Ist das kompliziert? Muss ich da Temperaturen und Geschwindigkeiten einstellen?' },
+                { sender: 'marco', text: 'Am Anfang: Nein. Das ist das Schöne daran.' },
+                { sender: 'marco', text: 'Pass auf, so geht\'s:' },
+                { sender: 'marco', text: '1. Du ziehst die Datei einfach in das Fenster rein.' },
+                { sender: 'marco', text: '2. Oben links wählst du deinen Drucker aus.' },
+                { sender: 'marco', text: '3. Bei Filament wählst du "Generic PLA" oder "Bambu PLA" aus (je nachdem was du gekauft hast).' },
+                { sender: 'marco', text: '4. Dann drückst du oben rechts auf **"Platte schneiden"** (oder "Slice").' },
+                { sender: 'gast', text: 'Und dann? SD-Karte rennen?' },
+                { sender: 'marco', text: 'Nö. Dein Bambu hat WLAN.' },
+                { sender: 'marco', text: 'Wenn er fertig gerechnet hat, erscheint ein Button **"Drucken"** (oder "Senden"). Da klickst du drauf.' },
+                { sender: 'marco', text: 'Der Drucker im Nebenzimmer legt dann automatisch los. Du kannst ihm sogar per Handy-App und Kamera zuschauen.' },
+                { sender: 'gast', text: 'Wie genial ist das denn? Technik, die begeistert. 😎' },
+                { sender: 'marco', text: 'Sag ich ja! Probier es aus. Lad dir Bambu Studio runter (ist kostenlos) und zieh mal dein erstes Modell rein.' },
+                { sender: 'gast', text: 'Mach ich sofort. Danke dir, du bist der Beste!' }
+            ]
+        }
+    ];
+
+    let currentScenario = 0;
+    let messageIndex = 0;
+    let isPlaying = true;
+    let timeoutId = null;
+    let chatBody = document.getElementById('chat-body');
+    let typingIndicator = document.getElementById('typing-indicator');
+    let playPauseBtn = document.getElementById('playPauseBtn');
+
+    // Utility to format text (bold to strong)
+    function formatText(text) {
+        return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    }
+
+    // Utility to get current time
+    function getCurrentTime() {
+        const now = new Date();
+        return now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // Add message to DOM
+    function addMessage(msgObj) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${msgObj.sender}`;
+
+        let contentHtml = `<span class="message-content">${formatText(msgObj.text)}</span>`;
+        contentHtml += `<span class="message-time">${getCurrentTime()}</span>`;
+
+        msgDiv.innerHTML = contentHtml;
+        chatBody.appendChild(msgDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    // Main loop
+    function processQueue() {
+        if (!isPlaying) return;
+
+        const messages = SCENARIOS[currentScenario].messages;
+
+        if (messageIndex >= messages.length) {
+            isPlaying = false;
+            updatePlayButton();
+            return;
+        }
+
+        const msg = messages[messageIndex];
+
+        // Determine delay based on message length (reading time/typing time simulation)
+        // Base delay + time per character
+        let delay = 600 + (msg.text.length * 20);
+        if (messageIndex === 0) delay = 500; // Faster start
+
+        // Show typing indicator if it's Marco
+        if (msg.sender === 'marco') {
+             typingIndicator.classList.add('visible');
+             chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        timeoutId = setTimeout(() => {
+            typingIndicator.classList.remove('visible');
+            addMessage(msg);
+            messageIndex++;
+
+            // Wait a bit before starting next message processing (reading time for user)
+            if (isPlaying && messageIndex < messages.length) {
+                 timeoutId = setTimeout(processQueue, 1000);
+            } else if (messageIndex >= messages.length) {
+                 isPlaying = false;
+                 updatePlayButton();
+            }
+        }, delay);
+    }
+
+    function togglePlayPause() {
+        isPlaying = !isPlaying;
+        updatePlayButton();
+        if (isPlaying) {
+            processQueue();
+        } else {
+            clearTimeout(timeoutId);
+            typingIndicator.classList.remove('visible');
+        }
+    }
+
+    function updatePlayButton() {
+        if (isPlaying) {
+            playPauseBtn.innerHTML = '⏸️ Pause';
+        } else {
+            // If finished, show Replay, else Play
+            if (messageIndex >= SCENARIOS[currentScenario].messages.length) {
+                playPauseBtn.innerHTML = '🔄 Replay';
+            } else {
+                playPauseBtn.innerHTML = '▶️ Weiter';
+            }
+        }
+    }
+
+    function skipAll() {
+        isPlaying = false;
+        clearTimeout(timeoutId);
+        typingIndicator.classList.remove('visible');
+
+        const messages = SCENARIOS[currentScenario].messages;
+        // Add all remaining messages
+        for (let i = messageIndex; i < messages.length; i++) {
+            addMessage(messages[i]);
+        }
+        messageIndex = messages.length;
+        chatBody.scrollTop = chatBody.scrollHeight;
+        updatePlayButton();
+    }
+
+    function restartChat() {
+        clearTimeout(timeoutId);
+        chatBody.innerHTML = '';
+        messageIndex = 0;
+        typingIndicator.classList.remove('visible');
+        isPlaying = true;
+        updatePlayButton();
+        processQueue();
+    }
+
+    function switchScenario(index) {
+        // Update Buttons
+        document.querySelectorAll('.scenario-btn').forEach((btn, idx) => {
+            if (idx === index) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+
+        currentScenario = index;
+        restartChat();
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+        // Start first scenario
+        processQueue();
+    });
+
+  </script>
+</body>
+</html>
