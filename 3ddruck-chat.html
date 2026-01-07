@@ -444,6 +444,11 @@
             <button class="scenario-btn active" onclick="switchScenario(0)" id="btn-scenario-0">Hardware & Einstieg</button>
             <button class="scenario-btn" onclick="switchScenario(1)" id="btn-scenario-1">Modelle & CAD</button>
             <button class="scenario-btn" onclick="switchScenario(2)" id="btn-scenario-2">Software (Slicer)</button>
+            <button class="scenario-btn" onclick="switchScenario(3)" id="btn-scenario-3">Hilfe, Spaghetti!</button>
+            <button class="scenario-btn" onclick="switchScenario(4)" id="btn-scenario-4">Auto & Garten</button>
+            <button class="scenario-btn" onclick="switchScenario(5)" id="btn-scenario-5">Was kostet das?</button>
+            <button class="scenario-btn" onclick="switchScenario(6)" id="btn-scenario-6">Wurst oder Suppe?</button>
+            <button class="scenario-btn" onclick="switchScenario(7)" id="btn-scenario-7">Kein eigener Drucker?</button>
         </div>
 
         <div class="chat-container">
@@ -589,6 +594,87 @@
                 { sender: 'gast', text: 'Wie genial ist das denn? Technik, die begeistert. 😎' },
                 { sender: 'marco', text: 'Sag ich ja! Probier es aus. Lad dir Bambu Studio runter (ist kostenlos) und zieh mal dein erstes Modell rein.' },
                 { sender: 'gast', text: 'Mach ich sofort. Danke dir, du bist der Beste!' }
+            ]
+        },
+        {
+            title: "Hilfe, Spaghetti!",
+            messages: [
+                { sender: 'gast', text: 'Hilfe, mein Drucker hat Spaghetti produziert! Alles ist voll mit Plastikfäden.' },
+                { sender: 'marco', text: 'Ganz ruhig! Das passiert jedem mal. 😉 Das sieht schlimm aus, ist aber meistens harmlos.' },
+                { sender: 'marco', text: 'Ursache Nummer 1 ist fast immer: Das **Druckbett war fettig** oder schmutzig.' },
+                { sender: 'marco', text: 'Hast du es vor dem Druck mit Isopropanol gereinigt?' },
+                { sender: 'gast', text: 'Äh, nein. Ich dachte, das ist sauber.' },
+                { sender: 'marco', text: 'Das Auge täuscht. Ein Fingerabdruck reicht und das Plastik haftet nicht. Es löst sich und der Drucker druckt in die Luft -> Spaghetti. 🍝' },
+                { sender: 'marco', text: 'Also: Platte runternehmen, ordentlich mit Spüli und warmem Wasser waschen, gut abtrocknen und danach nicht mehr auf die Fläche fassen.' },
+                { sender: 'marco', text: 'Und im Slicer prüfen: Hast du die **richtige Druckplatte** ausgewählt? (Cool Plate vs. Textured PEI Plate). Das ist ein klassischer Fehler.' },
+                { sender: 'gast', text: 'Oh, ich glaube ich hab "Cool Plate" eingestellt, aber die raue Platte drin.' },
+                { sender: 'marco', text: 'Genau das ist es! Der Drucker heizt dann nicht genug. Stell das um, putz die Platte und probier es nochmal. Das wird klappen! 💪' }
+            ]
+        },
+        {
+            title: "Auto & Garten",
+            messages: [
+                { sender: 'gast', text: 'Ich will mir eine Handyhalterung fürs Auto drucken und Deko für den Garten. Kann ich da mein PLA nehmen?' },
+                { sender: 'marco', text: 'Fürs Auto? **Auf keinen Fall PLA!** 🛑' },
+                { sender: 'marco', text: 'Im Sommer wird es im Auto schnell 60-70 Grad heiß. PLA wird schon bei 55 Grad weich. Deine Halterung würde schmelzen wie Schokolade.' },
+                { sender: 'gast', text: 'Oh, gut zu wissen. Was nehme ich dann?' },
+                { sender: 'marco', text: 'Fürs Auto ist **ASA** der König. Das ist extrem hitzebeständig und UV-fest (bleicht nicht aus).' },
+                { sender: 'marco', text: 'Aber Achtung: ASA riecht beim Drucken und braucht eine gute Belüftung (giftige Dämpfe). Das ist eher was für Fortgeschrittene mit Gehäuse.' },
+                { sender: 'gast', text: 'Und für den Garten?' },
+                { sender: 'marco', text: 'Da empfehle ich dir **PETG**.' },
+                { sender: 'marco', text: 'Das ist das Zeug, aus dem Pfandflaschen sind. Es hält Sonne und Wetter gut aus, ist stabil und lässt sich fast so einfach drucken wie PLA.' },
+                { sender: 'marco', text: 'Also: PETG für draußen, ASA fürs Auto (wenn du dich traust), PLA nur für drinnen (Deko, Spielzeug).' },
+                { sender: 'gast', text: 'Alles klar, dann bestelle ich mir mal eine Rolle PETG für die Gartenzwerge! 🍄' }
+            ]
+        },
+        {
+            title: "Was kostet das?",
+            messages: [
+                { sender: 'gast', text: 'Mein Nachbar hat gesehen, was ich drucke. Jetzt will er, dass ich ihm 50 Teile für seinen Verein drucke. Was soll ich da verlangen?' },
+                { sender: 'marco', text: 'Klassiker! 😄 "Ist ja nur Plastik, kostet ja nix", oder?' },
+                { sender: 'gast', text: 'Genau. Aber der Drucker läuft ja ewig.' },
+                { sender: 'marco', text: 'Richtig. Du darfst dich nicht unter Wert verkaufen.' },
+                { sender: 'marco', text: 'Klar, das Material für ein Teil kostet vielleicht nur 20 Cent. Aber du hast Stromkosten, Verschleiß am Drucker und vor allem: **Deine Zeit**.' },
+                { sender: 'marco', text: 'Du musst das Slicen, den Drucker starten, kontrollieren, das Teil ablösen, nachbearbeiten... das läppert sich.' },
+                { sender: 'marco', text: 'Ich habe dafür extra ein Tool gebaut, damit du nicht raten musst.' },
+                { sender: 'marco', text: 'Schau mal hier: <a href="/tools/kostenrechner-v2.html" target="_blank">Zum 3D-Druck Kostenrechner</a>' },
+                { sender: 'marco', text: 'Da gibst du Gewicht, Druckzeit und deinen Strompreis ein. Das Tool spuckt dir den "echten" Preis aus (inklusive Maschinenstundensatz).' },
+                { sender: 'gast', text: 'Super Tool! Das zeig ich ihm. Dann sieht er schwarz auf weiß, dass es nicht umsonst ist.' },
+                { sender: 'marco', text: 'Genau so. Fair für beide Seiten. 👍' }
+            ]
+        },
+        {
+            title: "Wurst oder Suppe?",
+            messages: [
+                { sender: 'gast', text: 'Ich sehe auf Instagram immer diese ultra-detaillierten Figuren aus Flüssigkeit. Resin oder so? Ist das besser als mein Drucker?' },
+                { sender: 'marco', text: 'Das ist **SLA-Druck** (Stereolithografie). Dein Drucker ist ein **FDM-Drucker** (Fused Deposition Modeling).' },
+                { sender: 'marco', text: 'Ich nenne es immer: "Wurst vs. Suppe". 😂' },
+                { sender: 'marco', text: 'Dein FDM-Drucker legt eine heiße Plastikwurst Schicht für Schicht ab. Das ist sauber, mechanisch stabil und einfach.' },
+                { sender: 'marco', text: 'SLA-Drucker nutzen flüssiges Harz (Resin), das mit UV-Licht gehärtet wird.' },
+                { sender: 'gast', text: 'Und was ist besser?' },
+                { sender: 'marco', text: 'Kommt drauf an. Willst du winzige Tabletop-Figuren mit glatter Haut? Dann SLA.' },
+                { sender: 'marco', text: 'Aber sei gewarnt: Resin ist **giftig**, es stinkt, du musst mit Handschuhen und Maske arbeiten, und danach musst du die Teile noch in Alkohol waschen und unter UV-Licht härten. Das ist eine riesige Sauerei. 🧪' },
+                { sender: 'gast', text: 'Oha. Das klingt nach viel Arbeit.' },
+                { sender: 'marco', text: 'Ist es auch. Für den Hausgebrauch, für funktionale Teile (Halterungen, Boxen) oder normales Spielzeug rate ich Anfängern **immer zu FDM** (wie deinem Bambu).' },
+                { sender: 'marco', text: 'Das ist "sauber" und unkompliziert. Heb dir Resin für später auf, wenn du genau weißt, dass du es brauchst.' },
+                { sender: 'gast', text: 'Okay, ich bleib bei der Wurst! 😂 Danke für die Warnung.' }
+            ]
+        },
+        {
+            title: "Kein eigener Drucker?",
+            messages: [
+                { sender: 'gast', text: 'Marco, deine Tipps sind super, aber ich hab einfach keinen Platz und keine Zeit für einen eigenen Drucker.' },
+                { sender: 'gast', text: 'Kannst du das nicht einfach für mich drucken?' },
+                { sender: 'marco', text: 'Natürlich! Das ist ja mein Hauptjob. 😉' },
+                { sender: 'marco', text: 'Willkommen in der **Warenschmiede**.' },
+                { sender: 'marco', text: 'Wenn du ein Teil brauchst, schickst du mir einfach die Datei (oder den Link). Ich drucke das professionell auf meinen Maschinen.' },
+                { sender: 'gast', text: 'Cool! Und wenn ich keine Datei habe? Nur eine Skizze?' },
+                { sender: 'marco', text: 'Dann mache ich **CAD & Konstruktion** für dich. Ich zeichne das Teil in 3D nach deinen Maßen.' },
+                { sender: 'gast', text: 'Machst du nur Druck? Mein PC spinnt nämlich auch...' },
+                { sender: 'marco', text: 'Ich bin auch dein Mann für **PC-Hilfe**. Wenn der Rechner streikt, schau ich mir das an.' },
+                { sender: 'marco', text: 'Schau einfach mal oben im Menü unter <a href="/leistungen.html" target="_blank">Leistungen</a>. Da findest du alle Infos.' },
+                { sender: 'gast', text: 'Perfekt. Dann hast du bald einen Auftrag von mir im Postfach! 📧' },
+                { sender: 'marco', text: 'Ich freu mich drauf! Bis dann. 👋' }
             ]
         }
     ];
