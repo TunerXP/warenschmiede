@@ -682,13 +682,54 @@
                 { sender: 'marco', text: 'Er hat alle Bücher der Welt gelesen, aber er "versteht" den Inhalt nicht wie ein Mensch mit Gefühlen. Er rät statistisch, welches Wort als nächstes kommt. Er ist sehr hilfreich, aber man muss ihm genau sagen, was man will.' },
                 { sender: 'marco', text: 'Was liegt Ihnen auf dem Herzen?' },
                 { type: 'options', options: [
+                    { label: 'Reisen & Sprachen', value: 'travel' },
+                    { label: 'Gesundheit (Vorsicht)', value: 'health' },
                     { label: 'Wie bediene ich das?', value: 'basics' },
-                    { label: 'Ist das sicher (Enkeltrick)?', value: 'risks' },
-                    { label: 'Hobbys & Alltag', value: 'benefits' },
-                    { label: 'Zeig mir Programme', value: 'tools' }
+                    { label: 'Ist das sicher (Enkeltrick)?', value: 'risks' }
                 ]}
             ],
             topics: {
+                travel: {
+                    messages: [
+                        { sender: 'marco', text: 'Planen Sie einen Urlaub?' },
+                        { type: 'options', options: [
+                            { label: 'Ja, Ausland.', value: 'travel_yes' },
+                            { label: 'Nein, nur Interesse.', value: 'restart_topics' }
+                        ]}
+                    ]
+                },
+                travel_yes: {
+                    messages: [
+                        { sender: 'marco', text: 'Toll! Installieren Sie Google Translate oder ChatGPT. Sie können ins Handy sprechen, und das Handy spricht die fremde Sprache laut aus.' },
+                        { sender: 'marco', text: 'Wollen Sie ein Beispiel hören?' },
+                        { type: 'options', options: [
+                            { label: 'Ja, gerne', value: 'travel_ex_yes' },
+                            { label: 'Nein', value: 'restart_topics' }
+                        ]}
+                    ]
+                },
+                travel_ex_yes: {
+                    messages: [
+                        { sender: 'marco', text: 'Marco simuliert: "Hola, ¿dónde está la farmacia? (Wo ist die Apotheke?)"' },
+                        { sender: 'marco', text: 'Das funktioniert in fast allen Sprachen!' },
+                        { type: 'options', options: [
+                            { label: 'Anderes Thema', value: 'restart_topics' },
+                            { label: 'Beenden', value: 'end' }
+                        ]}
+                    ]
+                },
+                health: {
+                    messages: [
+                        { sender: 'marco', text: 'Vorsicht bei Gesundheitsthemen!' },
+                        { sender: 'marco', text: 'Dr. Google ist schon schlimm, aber **Dr. KI kann gefährlich sein**.' },
+                        { sender: 'marco', text: 'KIs können falsche Diagnosen stellen oder Medikamente verwechseln. Nutzen Sie es NIEMALS als Ersatz für einen Arztbesuch.' },
+                        { sender: 'marco', text: 'Aber: Sie können den Arztbrief fotografieren und sagen: "Erkläre mir diese Fachbegriffe einfach". Das ist sehr hilfreich.' },
+                        { type: 'options', options: [
+                            { label: 'Verstanden, zurück', value: 'restart_topics' },
+                            { label: 'Danke, das war\'s', value: 'end' }
+                        ]}
+                    ]
+                },
                 basics: {
                     messages: [
                         { sender: 'gast', text: 'Ich bin kein Computer-Experte. Muss ich programmieren lernen?' },
@@ -707,7 +748,11 @@
                         { sender: 'gast', text: 'Wie rede ich denn am besten mit dem Gerät?' },
                         { sender: 'marco', text: 'Stellen Sie sich vor, der Computer ist ein sehr eifriger Praktikant.' },
                         { sender: 'marco', text: '1. Geben Sie ihm eine Rolle ("Du bist ein Koch").\\n2. Sagen Sie genau, was Sie wollen ("Ein Rezept mit Kartoffeln").\\n3. Sagen Sie, was Sie NICHT wollen ("Kein Fleisch").' },
-                        { sender: 'marco', text: 'Ich habe dafür extra einen Bereich auf der Webseite. Schauen Sie mal hier bei den <a href="/ki/prompts.html" target="_blank">Prompts für den Alltag</a> vorbei.' }
+                        { sender: 'marco', text: 'Ich habe dafür extra einen Bereich auf der Webseite. Schauen Sie mal hier bei den <a href="/ki/prompts.html" target="_blank">Prompts für den Alltag</a> vorbei.' },
+                        { type: 'options', options: [
+                            { label: 'Zurück zur Auswahl', value: 'restart_topics' },
+                            { label: 'Danke, Tschüss', value: 'end' }
+                        ]}
                     ]
                 },
                 risks: {
@@ -716,24 +761,10 @@
                         { sender: 'marco', text: 'Das ist leider ein sehr wichtiger Punkt. Wir nennen das **Enkeltrick 2.0**.' },
                         { sender: 'marco', text: 'Betrüger können mit KI Stimmen aus kurzen Videos klonen. Wenn Sie einen Anruf bekommen ("Oma, ich hatte einen Unfall, ich brauche Geld"), und die Stimme klingt ECHT – seien Sie trotzdem skeptisch!' },
                         { sender: 'marco', text: 'Mein goldener Rat: Legen Sie auf. Rufen Sie Ihren Enkel unter der Nummer an, die SIE gespeichert haben. Oder fragen Sie etwas, das nur der echte Enkel weiß.' },
-                        { sender: 'marco', text: 'KI erfindet auch manchmal Fakten ("Halluzinationen"). Fragen Sie die KI nie nach medizinischem Rat ohne Arzt!' }
-                    ]
-                },
-                benefits: {
-                    messages: [
-                        { sender: 'gast', text: 'Kann mir das im Alltag wirklich helfen?' },
-                        { sender: 'marco', text: 'Oh ja! Stellen Sie sich vor, Sie bekommen einen komplizierten Brief vom Amt.' },
-                        { sender: 'marco', text: 'Sie können den Text abfotografieren oder abtippen und der KI sagen: "Erkläre mir das in einfacher Sprache".' },
-                        { sender: 'marco', text: 'Oder im Urlaub: Nutzen Sie Apps wie ChatGPT oder Google Translate, um Speisekarten sofort zu übersetzen oder sich mit Einheimischen zu unterhalten.' },
-                        { sender: 'marco', text: 'Auch toll: "Was kann ich aus 3 Eiern, Mehl und Milch kochen?" – Die KI gibt Ihnen sofort Rezepte.' }
-                    ]
-                },
-                tools: {
-                    messages: [
-                        { sender: 'gast', text: 'Wo finde ich das? Kostet das viel Geld?' },
-                        { sender: 'marco', text: 'Die gute Nachricht: Die meisten Basis-Versionen sind kostenlos.' },
-                        { sender: 'marco', text: 'Zum Starten empfehle ich oft **ChatGPT** oder **Microsoft Copilot** (das ist oft schon auf dem PC).' },
-                        { sender: 'marco', text: 'Ich habe eine Liste erstellt, wo Sie sicher stöbern können. Klicken Sie hier: <a href="/ki/tools.html" target="_blank">Zu meiner Werkzeug-Übersicht</a>.' }
+                        { sender: 'marco', text: 'KI erfindet auch manchmal Fakten ("Halluzinationen"). Fragen Sie die KI nie nach medizinischem Rat ohne Arzt!' },
+                        { type: 'options', options: [
+                            { label: 'Verstanden.', value: 'restart_topics' }
+                        ]}
                     ]
                 }
             }
@@ -746,23 +777,59 @@
                 { sender: 'marco', text: 'Er liest 1000 Seiten in Sekunden, kann programmieren und texten – macht aber auch mal Flüchtigkeitsfehler, wenn du nicht drüberschaust.' },
                 { sender: 'marco', text: 'Lass uns keine Zeit verschwenden. Was bringt dich weiter?' },
                 { type: 'options', options: [
-                    { label: 'Produktivität & Office', value: 'office' },
+                    { label: 'Excel-Hilfe & Office', value: 'office' },
+                    { label: 'Bewerbungen & Lebenslauf', value: 'job_application' },
                     { label: 'Werde ich ersetzt?', value: 'jobs' },
-                    { label: 'Gute Prompts schreiben', value: 'prompting' },
                     { label: 'Tools für den Job', value: 'tools' }
                 ]}
             ],
             topics: {
                 office: {
                     messages: [
-                        { sender: 'gast', text: 'Was bringt mir das konkret im Bürostress?' },
-                        { sender: 'marco', text: 'Stell dir vor: Du hast ein langes Meeting-Protokoll. KI fasst es in 3 Bulletpoints zusammen.' },
-                        { sender: 'marco', text: 'Oder Excel: "Erstelle eine Formel, die Spalte A mit B vergleicht und Rot markiert, wenn..." – KI schreibt dir die Formel.' },
-                        { sender: 'marco', text: 'Du schreibst eine wütende E-Mail? Sag der KI: "Formuliere das höflich und diplomatisch um." Das rettet Beziehungen! 😉' },
-                        { sender: 'marco', text: 'Willst du wissen, welche Programme das können?' },
+                        { sender: 'marco', text: 'Kämpfst du mit Excel?' },
                         { type: 'options', options: [
-                            { label: 'Ja, zeig Tools', value: 'tools' },
-                            { label: 'Weiter im Text', value: 'restart_topics' }
+                            { label: 'Ja, Formeln nerven.', value: 'office_excel_deep' },
+                            { label: 'Nein, eher Texte/Mails.', value: 'office_mails' }
+                        ]}
+                    ]
+                },
+                office_excel_deep: {
+                    messages: [
+                        { sender: 'marco', text: 'Kopiere deine Spalten-Namen in die KI und sag: "Erstelle eine Formel, die X berechnet". Es funktioniert magisch.' },
+                        { sender: 'marco', text: 'Beispiel: "Ich habe Spalte A (Datum) und B (Umsatz). Gib mir eine Formel für die Summe pro Monat."' },
+                        { type: 'options', options: [
+                            { label: 'Cool, noch was?', value: 'restart_topics' },
+                            { label: 'Danke, reicht.', value: 'end' }
+                        ]}
+                    ]
+                },
+                office_mails: {
+                    messages: [
+                        { sender: 'marco', text: 'Du schreibst eine wütende E-Mail? Sag der KI: "Formuliere das höflich und diplomatisch um." Das rettet Beziehungen! 😉' },
+                        { sender: 'marco', text: 'Stell dir vor: Du hast ein langes Meeting-Protokoll. KI fasst es in 3 Bulletpoints zusammen.' },
+                        { type: 'options', options: [
+                            { label: 'Zurück zur Auswahl', value: 'restart_topics' }
+                        ]}
+                    ]
+                },
+                job_application: {
+                    messages: [
+                        { sender: 'marco', text: 'KI kann deinen Lebenslauf optimieren oder Anschreiben formulieren.' },
+                        { sender: 'marco', text: 'Soll ich dir einen Prompt für ein Anschreiben zeigen?' },
+                        { type: 'options', options: [
+                            { label: 'Ja, zeig mal.', value: 'job_prompt' },
+                            { label: 'Nein.', value: 'restart_topics' }
+                        ]}
+                    ]
+                },
+                job_prompt: {
+                    messages: [
+                        { sender: 'marco', text: 'Hier ein Profi-Prompt:' },
+                        { sender: 'marco', text: '"Du bist ein HR-Experte. Ich bewerbe mich als [JOB] bei [FIRMA]. Hier ist mein Lebenslauf: [TEXT]. Schreibe ein motivierendes Anschreiben, das auf die Werte der Firma eingeht."' },
+                        { sender: 'marco', text: 'Wichtig: Immer Korrektur lesen! Die KI neigt zu Übertreibungen.' },
+                        { type: 'options', options: [
+                            { label: 'Zurück zur Auswahl', value: 'restart_topics' },
+                            { label: 'Danke.', value: 'end' }
                         ]}
                     ]
                 },
@@ -772,25 +839,10 @@
                         { sender: 'marco', text: 'Der Spruch, der in der Branche gilt, ist: **"KI ersetzt keine Menschen. Aber Menschen mit KI ersetzen Menschen ohne KI."**' },
                         { sender: 'marco', text: 'Routineaufgaben fallen weg. Das ist gut! Du hast mehr Zeit für Strategie, Empathie und komplexe Probleme.' },
                         { sender: 'marco', text: 'Aber: Du musst lernen, die KI zu bedienen ("Prompting") und die Ergebnisse zu bewerten. Wer sich verweigert, wird abgehängt.' },
-                        { sender: 'marco', text: 'Wichtig: Gib NIEMALS Firmengeheimnisse in ein öffentliches ChatGPT ein! Das trainiert damit. Nutze Enterprise-Versionen.' }
-                    ]
-                },
-                prompting: {
-                    messages: [
-                        { sender: 'gast', text: 'Alle reden von "Prompt Engineering". Ist das schwer?' },
-                        { sender: 'marco', text: 'Nein, es ist wie Delegieren an einen Mitarbeiter.' },
-                        { sender: 'marco', text: 'Ein schlechter Prompt: "Schreib einen Text über Autos."' },
-                        { sender: 'marco', text: 'Ein guter Prompt: "Du bist ein Marketing-Experte. Schreibe einen Blogartikel (300 Wörter) über E-Mobilität für junge Familien. Tonfall: Begeisternd, aber sachlich."' },
-                        { sender: 'marco', text: 'Ich habe einen KI-Trainer gebaut, wo du genau das üben kannst. Willst du den sehen?' },
+                        { sender: 'marco', text: 'Wichtig: Gib NIEMALS Firmengeheimnisse in ein öffentliches ChatGPT ein! Das trainiert damit. Nutze Enterprise-Versionen.' },
                         { type: 'options', options: [
-                            { label: 'Zum KI-Trainer', value: 'link_trainer' },
-                            { label: 'Nein danke', value: 'restart_topics' }
+                            { label: 'Verstanden.', value: 'restart_topics' }
                         ]}
-                    ]
-                },
-                link_trainer: {
-                    messages: [
-                        { sender: 'marco', text: 'Hier kannst du Prompts simulieren und üben: <a href="/ki/promt-trainer.html" target="_blank">Öffne den KI-Trainer</a>.' }
                     ]
                 },
                 tools: {
@@ -799,7 +851,10 @@
                         { sender: 'marco', text: 'Für Office-Nutzer: **Microsoft Copilot** (ist in Word/Excel integriert).' },
                         { sender: 'marco', text: 'Für Recherche: **Perplexity** (gibt Quellen an).' },
                         { sender: 'marco', text: 'Für Texte/Code: **Claude** oder **ChatGPT**.' },
-                        { sender: 'marco', text: 'Check meine kuratierte Liste für Profis: <a href="/ki/tools.html" target="_blank">Zur Tool-Übersicht</a>.' }
+                        { sender: 'marco', text: 'Check meine kuratierte Liste für Profis: <a href="/ki/tools.html" target="_blank">Zur Tool-Übersicht</a>.' },
+                        { type: 'options', options: [
+                            { label: 'Zurück zur Auswahl', value: 'restart_topics' }
+                        ]}
                     ]
                 }
             }
@@ -812,20 +867,61 @@
                 { sender: 'marco', text: 'Es ändert alles: Schule, Gaming, Social Media, Coding. Checken wir\'s ab.' },
                 { sender: 'marco', text: 'Was ist dein Thema?' },
                 { type: 'options', options: [
+                    { label: 'Coding & Gaming', value: 'gaming' },
+                    { label: 'Dating & Social', value: 'dating' },
                     { label: 'Schule & Hausaufgaben', value: 'school' },
-                    { label: 'Fake Influencer & Deepfakes', value: 'fakes' },
-                    { label: 'Gaming & Coding', value: 'gaming' },
-                    { label: 'Krasse Tools', value: 'tools' }
+                    { label: 'Fake Influencer', value: 'fakes' }
                 ]}
             ],
             topics: {
+                gaming: {
+                    messages: [
+                        { sender: 'marco', text: 'Willst du Python lernen oder direkt ein Spiel bauen?' },
+                        { type: 'options', options: [
+                            { label: 'Spiel bauen', value: 'gaming_build' },
+                            { label: 'Lernen', value: 'gaming_learn' }
+                        ]}
+                    ]
+                },
+                gaming_build: {
+                    messages: [
+                        { sender: 'marco', text: 'Nice! Ich empfehle dir **Cursor** (ein Code-Editor mit KI) + Godot oder Unity.' },
+                        { sender: 'marco', text: 'Du kannst der KI sagen: "Schreib mir ein Skript für eine Spielfigur, die springen kann". Und copy-paste es.' },
+                        { type: 'options', options: [
+                            { label: 'Nice, noch was?', value: 'restart_topics' },
+                            { label: 'Bin raus, ciao.', value: 'end' }
+                        ]}
+                    ]
+                },
+                gaming_learn: {
+                    messages: [
+                        { sender: 'marco', text: 'Bester Weg: Nutze ChatGPT als Tutor.' },
+                        { sender: 'marco', text: 'Prompt: "Erklär mir die While-Schleife in Python wie einem Anfänger mit Beispielen aus Minecraft".' },
+                        { type: 'options', options: [
+                            { label: 'Cool, zurück.', value: 'restart_topics' }
+                        ]}
+                    ]
+                },
+                dating: {
+                    messages: [
+                        { sender: 'marco', text: 'Kleiner Tipp unter Freunden: Nutze KI für deine Bio-Texte auf Insta oder Tinder.' },
+                        { sender: 'marco', text: 'Aber: **Lass dir nicht deine Chat-Antworten schreiben.**' },
+                        { sender: 'marco', text: 'Das kommt raus, wirkt roboterhaft und ist cringe. 😉 Sei du selbst.' },
+                        { type: 'options', options: [
+                            { label: 'Check ich. Zurück.', value: 'restart_topics' }
+                        ]}
+                    ]
+                },
                 school: {
                     messages: [
                         { sender: 'gast', text: 'Kann ich damit meine Hausaufgaben machen? 😅' },
                         { sender: 'marco', text: 'Klar KANNST du. Aber Lehrer sind auch nicht blöd (und haben KI-Detektoren, auch wenn die oft failen).' },
                         { sender: 'marco', text: 'Der Hack ist: Lass die Hausaufgaben nicht SCHREIBEN, sondern ERKLÄREN.' },
                         { sender: 'marco', text: 'Prompt: "Ich kapiere Photosynthese nicht. Erkläre es mir wie einem 10-Jährigen mit Minecraft-Vergleichen." – Das bleibt im Kopf!' },
-                        { sender: 'marco', text: 'Wenn du nur Copy-Paste machst, fällst du in der Klausur auf die Nase, weil dein Gehirn leer bleibt.' }
+                        { sender: 'marco', text: 'Wenn du nur Copy-Paste machst, fällst du in der Klausur auf die Nase, weil dein Gehirn leer bleibt.' },
+                        { type: 'options', options: [
+                            { label: 'Alles klar.', value: 'restart_topics' }
+                        ]}
                     ]
                 },
                 fakes: {
@@ -833,23 +929,10 @@
                         { sender: 'gast', text: 'Was geht auf Social Media ab? Ist da alles fake?' },
                         { sender: 'marco', text: 'Vieles. Es gibt Influencer, die gar nicht existieren (KI-generiert). Sie sehen perfekt aus, sind aber Pixel.' },
                         { sender: 'marco', text: 'Gefährlich sind Deepfakes: Jemand nimmt ein Foto/Video von dir und lässt dich Dinge sagen, die du nie gesagt hast. Oder zieht dich digital aus.' },
-                        { sender: 'marco', text: 'Regel Nr. 1: Traue keinem Bild und keinem Audio mehr blind. Check die Quelle.' }
-                    ]
-                },
-                gaming: {
-                    messages: [
-                        { sender: 'gast', text: 'Was geht bei Gaming und Coden?' },
-                        { sender: 'marco', text: 'Alles! Du kannst dir mit Tools wie **Cursor** oder **ChatGPT** Code schreiben lassen.' },
-                        { sender: 'marco', text: 'Willst du ein eigenes Python-Spiel bauen? Frag die KI: "Schreib mir ein Snake-Spiel in Python". Sie gibt dir den Code.' },
-                        { sender: 'marco', text: 'Du kannst auch Assets (Bilder, Texturen) für deine Mods generieren lassen.' }
-                    ]
-                },
-                tools: {
-                    messages: [
-                        { sender: 'gast', text: 'Was gibt es Cooles außer ChatGPT?' },
-                        { sender: 'marco', text: 'Für Bilder: **Midjourney** oder **Flux** (sieht mega aus).' },
-                        { sender: 'marco', text: 'Für Musik: **Suno** oder **Udio** (mach deine eigenen Songs).' },
-                        { sender: 'marco', text: 'Check mal meine Liste, da sind die Links: <a href="/ki/tools.html" target="_blank">Zu den KI-Tools</a>' }
+                        { sender: 'marco', text: 'Regel Nr. 1: Traue keinem Bild und keinem Audio mehr blind. Check die Quelle.' },
+                        { type: 'options', options: [
+                            { label: 'Heftig. Zurück.', value: 'restart_topics' }
+                        ]}
                     ]
                 }
             }
@@ -862,27 +945,61 @@
                 { sender: 'marco', text: 'Es gibt berechtigte Kritikpunkte. Lassen Sie uns Fakten diskutieren.' },
                 { sender: 'marco', text: 'Welcher Aspekt macht Ihnen Sorgen?' },
                 { type: 'options', options: [
+                    { label: 'Copyright & Diebstahl', value: 'privacy' },
+                    { label: 'Lokale KI (Datenschutz)', value: 'local_ai' },
                     { label: 'Halluzinationen & Lügen', value: 'hallucinations' },
-                    { label: 'Datenschutz & Urheberrecht', value: 'privacy' },
-                    { label: 'Energie & Umwelt', value: 'energy' },
-                    { label: 'Werkzeuge prüfen', value: 'tools' }
+                    { label: 'Energie & Umwelt', value: 'energy' }
                 ]}
             ],
             topics: {
+                privacy: {
+                    messages: [
+                        { sender: 'gast', text: 'Die klauen doch Bilder von Künstlern.' },
+                        { sender: 'marco', text: 'Das ist die "Fair Use" Debatte. In den USA erlaubt, in der EU (AI Act) strenger.' },
+                        { sender: 'marco', text: 'Möchten Sie wissen, wie man Künstler schützt?' },
+                        { type: 'options', options: [
+                            { label: 'Ja, Schutz-Tools?', value: 'privacy_protect' },
+                            { label: 'Nein, anderes Thema.', value: 'restart_topics' }
+                        ]}
+                    ]
+                },
+                privacy_protect: {
+                    messages: [
+                        { sender: 'marco', text: 'Es gibt Tools wie **Glaze** oder **Nightshade**.' },
+                        { sender: 'marco', text: 'Die legen einen für Menschen unsichtbaren Schleier über das Bild, der die KI verwirrt. So kann das Bild nicht zum Training genutzt werden.' },
+                        { type: 'options', options: [
+                            { label: 'Interessant. Zurück.', value: 'restart_topics' },
+                            { label: 'Danke, Ende.', value: 'end' }
+                        ]}
+                    ]
+                },
+                local_ai: {
+                    messages: [
+                        { sender: 'marco', text: 'Trauen Sie der Cloud nicht?' },
+                        { type: 'options', options: [
+                            { label: 'Nein, kein Vertrauen.', value: 'local_ai_deep' },
+                            { label: 'Geht so.', value: 'restart_topics' }
+                        ]}
+                    ]
+                },
+                local_ai_deep: {
+                    messages: [
+                        { sender: 'marco', text: 'Dann schauen Sie sich **LM Studio** an. Damit läuft die KI nur auf Ihrem PC. Kein Internet nötig.' },
+                        { sender: 'marco', text: 'Es ist langsamer, aber 100% privat. Keine Daten verlassen Ihr Haus.' },
+                        { type: 'options', options: [
+                            { label: 'Gut zu wissen. Zurück.', value: 'restart_topics' }
+                        ]}
+                    ]
+                },
                 hallucinations: {
                     messages: [
                         { sender: 'gast', text: 'Das Ding lügt doch ständig. Warum soll ich das nutzen?' },
                         { sender: 'marco', text: 'Korrekt. Man nennt es "Halluzinieren". Da die KI kein Weltwissen hat, sondern nur Wortfolgen berechnet, erfindet sie plausibel klingende Fakten.' },
                         { sender: 'marco', text: 'Die Lösung: Nutzen Sie KI nicht als Lexikon ("Wann wurde Goethe geboren?"), sondern als Sprachmotor ("Fasse diesen Text zusammen", "Formuliere das um").' },
-                        { sender: 'marco', text: 'Für Fakten brauchen Sie Tools mit Live-Suche (wie Perplexity), die Quellen angeben.' }
-                    ]
-                },
-                privacy: {
-                    messages: [
-                        { sender: 'gast', text: 'Klaut die KI nicht Daten und Kunst von anderen?' },
-                        { sender: 'marco', text: 'Ein heißes Eisen. Ja, die Modelle wurden mit Daten aus dem Internet trainiert – oft ohne explizite Erlaubnis der Urheber (Fair Use Diskussion in den USA).' },
-                        { sender: 'marco', text: 'Zum Datenschutz: Alles, was Sie in ein kostenloses ChatGPT eingeben, kann zum Training genutzt werden. Geben Sie keine Klarnamen oder Firmengeheimnisse ein!' },
-                        { sender: 'marco', text: 'Es gibt lokale KIs (Open Source), die auf Ihrem eigenen Rechner laufen. Da verlässt kein Datum das Haus.' }
+                        { sender: 'marco', text: 'Für Fakten brauchen Sie Tools mit Live-Suche (wie Perplexity), die Quellen angeben.' },
+                        { type: 'options', options: [
+                            { label: 'Verstanden. Zurück.', value: 'restart_topics' }
+                        ]}
                     ]
                 },
                 energy: {
@@ -890,15 +1007,10 @@
                         { sender: 'gast', text: 'Und der Energieverbrauch? Die Rechenzentren fressen Strom ohne Ende.' },
                         { sender: 'marco', text: 'Ein absolut valider Punkt. Ein KI-Bild zu generieren verbraucht etwa so viel Strom wie eine volle Smartphone-Ladung.' },
                         { sender: 'marco', text: 'Eine Google-Suche mit KI braucht 10x mehr Strom als eine normale Suche.' },
-                        { sender: 'marco', text: 'Man muss abwägen: Nutze ich es für Spielereien (Katzenbilder) oder um Prozesse effizienter zu machen, die sonst noch mehr Ressourcen (Reisen, Papier) kosten würden? Nutzen Sie es bewusst.' }
-                    ]
-                },
-                tools: {
-                    messages: [
-                        { sender: 'gast', text: 'Gibt es überhaupt Tools, die "sauber" sind?' },
-                        { sender: 'marco', text: 'Absolute Sicherheit gibt es nie. Aber schauen Sie sich **Open Source Modelle** an (wie Llama oder Mistral).' },
-                        { sender: 'marco', text: 'Für Recherche empfehle ich **Perplexity**, weil es transparent Quellen nennt.' },
-                        { sender: 'marco', text: 'Hier ist eine Übersicht, wo Sie differenzieren können: <a href="/ki/tools.html" target="_blank">Zur Tool-Übersicht</a>' }
+                        { sender: 'marco', text: 'Man muss abwägen: Nutze ich es für Spielereien (Katzenbilder) oder um Prozesse effizienter zu machen, die sonst noch mehr Ressourcen (Reisen, Papier) kosten würden? Nutzen Sie es bewusst.' },
+                        { type: 'options', options: [
+                            { label: 'Guter Punkt. Zurück.', value: 'restart_topics' }
+                        ]}
                     ]
                 }
             }
