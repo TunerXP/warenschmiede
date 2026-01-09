@@ -722,9 +722,32 @@
                 },
                 local_ai: {
                     messages: [
-                        { sender: 'gast', text: 'Ich will meine Daten nicht in die Cloud laden.' },
-                        { sender: 'marco', text: 'Verständlich. Kennen Sie **LM Studio**?' },
-                        { sender: 'marco', text: 'Damit läuft die KI komplett auf Ihrem eigenen PC. Kein Internet nötig, keine Daten verlassen das Haus. Das ist die Zukunft für Datenschutz.' }
+                        { sender: 'marco', text: 'Dann schauen Sie sich unbedingt **LM Studio** an.' },
+                        { sender: 'marco', text: 'Damit laden Sie die "Gehirne" (Modelle) herunter und lassen sie komplett offline auf Ihrem eigenen PC laufen. Kein Internet nötig, keine Daten verlassen das Haus.' },
+                        { type: 'options', options: [
+                            { label: 'Brauche ich einen Super-Computer?', value: 'local_ai_hardware' },
+                            { label: 'Klingt gut. Wo gibt\'s das?', value: 'local_ai_link' }
+                        ]}
+                    ]
+                },
+                local_ai_hardware: {
+                    messages: [
+                        { sender: 'marco', text: 'Jein. Ein normaler Gaming-PC (mit Nvidia Grafikkarte) ist optimal.' },
+                        { sender: 'marco', text: 'Aber moderne MacBooks (M1/M2/M3) sind auch fantastisch dafür.' },
+                        { sender: 'marco', text: 'Für reine Text-KI reicht sogar ein guter Mittelklasse-Laptop. Es läuft dann nur etwas langsamer.' },
+                        { type: 'options', options: [
+                            { label: 'Okay, wo finde ich das?', value: 'local_ai_link' }
+                        ]}
+                    ]
+                },
+                local_ai_link: {
+                    messages: [
+                        { sender: 'marco', text: 'Das Tool ist kostenlos. Sie können es hier herunterladen: <a href="https://lmstudio.ai/" target="_blank">LM Studio Website</a>.' },
+                        { sender: 'marco', text: 'Tipp: Suchen Sie dort nach "Llama 3" oder "Mistral". Das sind tolle Einsteiger-Modelle.' },
+                        { type: 'options', options: [
+                            { label: 'Danke, schau ich mir an.', value: 'end' },
+                            { label: 'Zurück zur Auswahl', value: 'restart_topics' }
+                        ]}
                     ]
                 },
                 energy: {
