@@ -43,6 +43,7 @@
         background-color: #efeae2;
         background-image: radial-gradient(#d4d0c8 1px, transparent 1px);
         background-size: 20px 20px;
+        scroll-behavior: smooth;
     }
 
     .chat-header {
@@ -65,7 +66,12 @@
         background: #fff;
         overflow: hidden;
         flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
     }
+    
     .chat-header-avatar img {
         width: 100%;
         height: 100%;
@@ -90,14 +96,31 @@
         opacity: 0.85;
         line-height: 1.2;
     }
+    
+    .status-dot {
+        height: 8px;
+        width: 8px;
+        background-color: #25D366; /* WhatsApp Green bright */
+        border-radius: 50%;
+        display: inline-block;
+        margin-left: 5px;
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
+        animation: pulse-green 2s infinite;
+    }
+    
+    @keyframes pulse-green {
+        0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+        70% { box-shadow: 0 0 0 6px rgba(37, 211, 102, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+    }
 
     .message {
         max-width: 85%;
-        padding: 6px 7px 8px 9px;
+        padding: 8px 12px;
         border-radius: 7.5px;
         position: relative;
         font-size: 0.95rem;
-        line-height: 1.35;
+        line-height: 1.4;
         box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
         opacity: 0;
         transform: translateY(10px);
@@ -109,60 +132,47 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
-    .message.marco {
+    .message.host { /* Marco */
         align-self: flex-start;
         background: #ffffff;
         border-top-left-radius: 0;
+        color: #111b21;
     }
 
-    .message.gast {
+    .message.guest { /* User */
         align-self: flex-end;
         background: #d9fdd3;
         border-top-right-radius: 0;
-    }
-
-    .message-content {
-        padding-right: 20px; /* Space for time */
-    }
-
-    .message-time {
-        font-size: 0.68rem;
-        color: rgba(0,0,0,0.45);
-        float: right;
-        margin-top: 4px;
-        margin-left: -10px;
-        position: relative;
-        top: 2px;
+        color: #111b21;
     }
 
     .message a {
-        color: #007bfc;
+        color: #027eb5;
         text-decoration: none;
+        font-weight: 500;
     }
     .message a:hover {
         text-decoration: underline;
     }
 
-    .typing-container {
-        padding: 0 15px 10px;
-        min-height: 40px;
-    }
-
+    /* Typing Indicator */
     .typing-indicator {
         background: #ffffff;
         padding: 10px 15px;
         border-radius: 18px;
         border-top-left-radius: 0;
-        display: inline-flex;
+        display: none; /* Hidden by default */
         align-items: center;
         gap: 4px;
+        align-self: flex-start;
+        margin-left: 15px;
+        margin-bottom: 10px;
         box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
-        opacity: 0;
-        transition: opacity 0.2s;
+        width: fit-content;
     }
 
     .typing-indicator.visible {
-        opacity: 1;
+        display: inline-flex;
     }
 
     .dot {
@@ -180,6 +190,7 @@
         40% { transform: scale(1); }
     }
 
+    /* Controls & Overlay */
     .chat-controls {
         background: #f0f2f5;
         padding: 10px;
@@ -197,67 +208,25 @@
         padding: 8px 16px;
         cursor: pointer;
         font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 6px;
+        color: #111b21;
         transition: all 0.2s;
-        color: var(--text);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    .chat-btn:hover {
-        background: #e9edef;
-    }
-    .chat-btn:active {
-        background: #dce1e5;
-    }
-
-    /* Option Chips */
-    .options-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 5px;
-        margin-bottom: 10px;
-        animation: messageAppear 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-    }
-    .option-chip {
-        background: #fff;
-        border: 1px solid #008069;
-        color: #008069;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        font-weight: 500;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    }
-    .option-chip:hover {
-        background: #f0fffa;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-    }
+    .chat-btn:hover { background: #e9edef; }
 
     /* Persona Overlay */
     .persona-overlay {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.98);
-        z-index: 100;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(255,255,255,0.95);
+        z-index: 20;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         padding: 20px;
         text-align: center;
-    }
-
-    .persona-overlay h2 {
-        margin-bottom: 1.5rem;
-        font-size: 1.5rem;
-        color: var(--text);
+        backdrop-filter: blur(5px);
     }
 
     .persona-grid {
@@ -265,316 +234,89 @@
         grid-template-columns: 1fr 1fr;
         gap: 15px;
         width: 100%;
-        max-width: 500px;
+        max-width: 400px;
+        margin-top: 20px;
     }
 
     .persona-card {
         background: white;
-        border: 1px solid var(--border);
+        border: 1px solid #ddd;
         border-radius: 12px;
-        padding: 20px 10px;
+        padding: 15px;
         cursor: pointer;
         transition: all 0.2s;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
-
     .persona-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
         border-color: #008069;
     }
+    .persona-icon { font-size: 2rem; display: block; margin-bottom: 5px; }
+    .persona-title { font-weight: bold; font-size: 0.9rem; color: #111b21; }
+    .persona-desc { font-size: 0.75rem; color: #54656f; }
 
-    .persona-emoji {
-        font-size: 2.5rem;
-        margin-bottom: 5px;
+    /* Dark Mode Overrides */
+    html[data-theme="dark"] .chat-container {
+        background: #0b141a;
+        border-color: #333;
     }
-    .persona-title {
-        font-weight: 700;
-        font-size: 1rem;
-        color: var(--text);
+    html[data-theme="dark"] .chat-body {
+        background-color: #0b141a;
+        background-image: radial-gradient(#2a3942 1px, transparent 1px);
     }
-    .persona-desc {
-        font-size: 0.8rem;
-        color: var(--text-muted);
+    html[data-theme="dark"] .chat-header {
+        background: #202c33;
     }
-
-    /* Online Status Animation */
-    @keyframes pulse {
-        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    html[data-theme="dark"] .message.host {
+        background: #202c33;
+        color: #e9edef;
     }
-
-    .status-dot {
-        display: inline-block;
-        width: 10px;
-        height: 10px;
-        background-color: #22c55e;
-        border-radius: 50%;
-        margin-left: 8px;
-        animation: pulse 2s infinite;
+    html[data-theme="dark"] .message.guest {
+        background: #005c4b;
+        color: #e9edef;
     }
-
-    /* Ensure the chat looks good in dark mode context */
-    html[data-theme="dark"] .chat-container,
-    html.dark .chat-container {
-        border-color: #334155;
-        background: #1e293b;
+    html[data-theme="dark"] .chat-controls {
+        background: #202c33;
+        border-color: #333;
     }
-    html[data-theme="dark"] .chat-header,
-    html.dark .chat-header {
-        background: #0f172a;
-    }
-    html[data-theme="dark"] .chat-body,
-    html.dark .chat-body {
-        background-color: #0f172a;
-        background-image: radial-gradient(#334155 1px, transparent 1px);
-    }
-    html[data-theme="dark"] .message.gast,
-    html.dark .message.gast {
-        background: #334155;
-        color: #f8fafc;
-    }
-    html[data-theme="dark"] .message.marco,
-    html.dark .message.marco {
-        background: #1e3a8a;
-        color: #ffffff;
-    }
-    html[data-theme="dark"] .chat-controls,
-    html.dark .chat-controls {
-        background: #1e293b;
-        border-top-color: #334155;
-    }
-    html[data-theme="dark"] .chat-header-name,
-    html[data-theme="dark"] .chat-header-status,
-    html.dark .chat-header-name,
-    html.dark .chat-header-status {
-        color: #f8fafc;
-    }
-    html[data-theme="dark"] .message-time,
-    html.dark .message-time {
-        color: rgba(255,255,255,0.6);
-    }
-
-    html[data-theme="dark"] .chat-btn,
-    html.dark .chat-btn {
+    html[data-theme="dark"] .chat-btn {
         background: #2a3942;
         border-color: #444;
         color: #e9edef;
     }
-    html[data-theme="dark"] .chat-btn:hover,
-    html.dark .chat-btn:hover {
-        background: #3c4a53;
+    html[data-theme="dark"] .persona-overlay {
+        background: rgba(11, 20, 26, 0.95);
     }
-    html[data-theme="dark"] .persona-overlay,
-    html.dark .persona-overlay {
-        background: rgba(15, 23, 42, 0.98);
+    html[data-theme="dark"] .persona-card {
+        background: #202c33;
+        border-color: #333;
     }
-    html[data-theme="dark"] .persona-card,
-    html.dark .persona-card {
-        background: #1e293b;
-        border-color: #334155;
-    }
-    html[data-theme="dark"] .persona-card:hover,
-    html.dark .persona-card:hover {
-        border-color: #008069;
-        background: #2a3942;
-    }
-    html[data-theme="dark"] .option-chip,
-    html.dark .option-chip {
-        background: #1e293b;
-        border-color: #008069;
-        color: #22c55e;
-    }
-    html[data-theme="dark"] .option-chip:hover,
-    html.dark .option-chip:hover {
-        background: #008069;
-        color: white;
-    }
-
-    @media (max-width: 500px) {
-        .persona-grid {
-            grid-template-columns: 1fr;
-        }
-    }
+    html[data-theme="dark"] .persona-title { color: #e9edef; }
+    html[data-theme="dark"] .persona-desc { color: #8696a0; }
+    html[data-theme="dark"] .message a { color: #53bdeb; }
   </style>
-  <script src="../assets/js/theme.js"></script>
+  <script src="/assets/js/theme.js"></script>
 </head>
 <body>
   <header class="site-header" data-header>
     <div class="ws-nav-container header-grid">
       <div class="brand">
         <a class="brand-link" href="/index.html#start">
-          <img src="/assets/images/warenschmiede_logo.png" alt="Warenschmiede Logo" class="brand-logo" width="453" height="276" fetchpriority="high">
+          <img src="/assets/images/warenschmiede_logo.png" alt="Warenschmiede Logo" class="brand-logo" width="453" height="276">
           <div class="brand-text">
             <span class="brand-name">Warenschmiede</span>
             <span class="brand-tagline">3D-Druck · Made in Germany</span>
           </div>
         </a>
       </div>
-
-      <nav class="main-nav" aria-label="Hauptnavigation">
-        <div class="nav-menu" id="primary-navigation" data-nav-menu>
-          <ul class="nav-list" id="navList">
-            <li class="nav-item nav-fixed">
-              <a class="nav-link" href="/index.html#start" data-nav-link data-section="start" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html"><span class="nav-ico" aria-hidden="true">🏠</span>Start</a>
-            </li>
-
-            <li class="nav-item nav-fixed">
-              <a class="nav-link" href="/downloads.html" data-nav-link data-path="/downloads , /downloads.html"><span class="nav-ico" aria-hidden="true">📥</span>Downloads</a>
-            </li>
-
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-highlight nav-tools" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">
-                <span class="nav-ico" aria-hidden="true">🧮</span>Online Tools ▾
-              </button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/tools/" data-nav-link data-path="/tools , /tools/ , /tools/index.html">
-                    <span class="nav-ico" aria-hidden="true">🗂️</span>Tool-Übersicht (Dashboard)
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/werkstatt-rechner.html" data-nav-link data-path="/werkstatt-rechner , /werkstatt-rechner.html">
-                    <span class="nav-ico" aria-hidden="true">🛠️</span>Warenschmiede METALL
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/tools/kostenrechner-v2.html" data-nav-link data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html">
-                    <span class="nav-ico" aria-hidden="true">🧮</span>Warenschmiede 3D-Druck Suite
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/tools/buero/doku-light/QRCodeMasterPro.html" data-nav-link data-path="/tools/buero/doku-light/QRCodeMasterPro , /tools/buero/doku-light/QRCodeMasterPro.html">
-                    <span class="nav-ico" aria-hidden="true">🔳</span>Warenschmiede QR-Master ULTRA
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🧰</span>Leistungen ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/leistungen/3d-druck.html" data-nav-link data-path="/leistungen/3d-druck , /leistungen/3d-druck.html"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druckauftrag</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/leistungen/cad-prototyping.html" data-nav-link data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html"><span class="nav-ico" aria-hidden="true">📐</span>CAD &amp; Prototyping</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/leistungen/pc-hilfe.html" data-nav-link data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html"><span class="nav-ico" aria-hidden="true">💻</span>PC-Hilfe</a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🤖</span>Über KI ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li><a class="nav-link" href="/ki/chat.html"><span class="nav-ico" aria-hidden="true">💬</span>Interaktiver KI Versteher (NEU)</a></li>
-                <li>
-                  <a class="nav-link" href="/ki/index.html" data-nav-link data-path="/ki , /ki/ , /ki/index.html"><span class="nav-ico" aria-hidden="true">📖</span>Einführung &amp; Grundlagen</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/prompts.html" data-nav-link data-path="/ki/prompts , /ki/prompts.html"><span class="nav-ico" aria-hidden="true">✍️</span>Prompts für den Alltag</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/promt-trainer.html" data-nav-link data-path="/ki/promt-trainer , /ki/promt-trainer.html"><span class="nav-ico" aria-hidden="true">🧠</span>KI Trainer</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/ki-finder.html" data-nav-link data-path="/ki/ki-finder , /ki/ki-finder.html"><span class="nav-ico" aria-hidden="true">🧭</span>Warenschmiede KI-Finder</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/tools.html" data-nav-link data-path="/ki/tools , /ki/tools.html"><span class="nav-ico" aria-hidden="true">🛠️</span>KI-Werkzeuge</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/so-arbeitest-du-mit-ki.html" data-nav-link data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html"><span class="nav-ico" aria-hidden="true">🧭</span>So arbeitest du mit KI</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/programme-die-du-brauchst.html" data-nav-link data-path="/ki/programme-die-du-brauchst , /ki/programme-die-du-brauchst.html"><span class="nav-ico" aria-hidden="true">💾</span>Programme, die du brauchst</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/chancen-und-risiken.html" data-nav-link data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html"><span class="nav-ico" aria-hidden="true">⚖️</span>KI: Chancen &amp; Risiken</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/faq.html" data-nav-link data-path="/ki/faq , /ki/faq.html"><span class="nav-ico" aria-hidden="true">🔒</span>KI-FAQ &amp; Sicherheit</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/lexikon.html" data-nav-link data-path="/ki/lexikon , /ki/lexikon.html"><span class="nav-ico" aria-hidden="true">🔤</span>KI-Lexikon</a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">✉️</span>Kontakt ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/kontakt.html" data-nav-link data-path="/kontakt , /kontakt.html , /warenschmiede/kontakt , /warenschmiede/kontakt.html"><span class="nav-ico" aria-hidden="true">📧</span>Kontakt aufnehmen</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ablauf-anfrage.html" data-nav-link data-path="/ablauf-anfrage , /ablauf-anfrage.html"><span class="nav-ico" aria-hidden="true">📝</span>Ablauf &amp; Anfrage</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/impressum.html" data-nav-link data-path="/impressum , /impressum.html , /warenschmiede/impressum , /warenschmiede/impressum.html"><span class="nav-ico" aria-hidden="true">⚖️</span>Impressum</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ueber-mich.html" data-nav-link data-path="/ueber-mich , /ueber-mich.html , /warenschmiede/ueber-mich.html , /about , /about.html , /warenschmiede/about.html"><span class="nav-ico" aria-hidden="true">👤</span>Über mich</a>
-                </li>
-              </ul>
-            </li>
-
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druck ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/3ddruck-chat.html" data-nav-link data-path="/3ddruck-chat , /3ddruck-chat.html"><span class="nav-ico" aria-hidden="true">💬</span>Interaktiver Berater (Neu)</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/technologien.html" data-nav-link data-path="/technologien , /technologien.html"><span class="nav-ico" aria-hidden="true">🧪</span>FDM / SLA / SLS – Technologien</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/fehlerdatenbank.html" data-nav-link data-path="/fehlerdatenbank , /fehlerdatenbank.html"><span class="nav-ico" aria-hidden="true">🛠️</span>Fehler &amp; Troubleshooting</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ideenquellen.html" data-nav-link data-path="/ideenquellen , /ideenquellen.html , /ideen , /ideen/ , /ideen/index.html"><span class="nav-ico" aria-hidden="true">💡</span>Ideenquellen &amp; Portale</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/material.html" data-nav-link data-path="/material.html"><span class="nav-ico" aria-hidden="true">📚</span>Materialwissen &amp; Vergleiche</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/druck-tipps.html" data-nav-link data-path="/druck-tipps , /druck-tipps.html"><span class="nav-ico" aria-hidden="true">🧭</span>Tipps &amp; Abläufe / Kosten</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/tools/kostenrechner-v2.html" data-nav-link data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html"><span class="nav-ico" aria-hidden="true">🧮</span>Kosten &amp; Kalkulation</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/slicer-einstellungen.html" data-nav-link data-path="/slicer-einstellungen , /slicer-einstellungen.html"><span class="nav-ico" aria-hidden="true">⚙️</span>Slicer &amp; Einstellungen</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/3ddruck-faq.html" data-nav-link data-path="/3ddruck-faq , /3ddruck-faq.html"><span class="nav-ico" aria-hidden="true">❓</span>Neu beim 3D-Druck?</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/wartung-reinigung.html" data-nav-link data-path="/wartung-reinigung , /wartung-reinigung.html"><span class="nav-ico" aria-hidden="true">🧼</span>Wartung &amp; Reinigung</a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </nav>
-
+      
       <div class="header-actions">
-        <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Design umschalten: Hell/Dunkel" title="Design umschalten: Hell/Dunkel" aria-pressed="false">
+        <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Design umschalten">
           <span id="themeIcon" aria-hidden="true">🖥️</span>
-          <span class="theme-toggle__text" id="themeToggleText" aria-live="polite">Helles Design</span>
+          <span class="theme-toggle__text" id="themeToggleText">Helles Design</span>
         </button>
-
-        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
-          <span class="sr-only">Menü öffnen</span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-        </button>
+        <a href="/index.html" class="btn btn-outline btn-sm" style="margin-left: 10px;">🏠 Zurück</a>
       </div>
     </div>
   </header>
@@ -589,51 +331,46 @@
         </div>
 
         <div class="chat-container">
-            <div class="persona-overlay" id="persona-overlay">
-                <h2>KI einfach erklärt.<br>Wer fragt gerade?</h2>
-                <div class="persona-grid">
-                    <div class="persona-card" onclick="selectPersona('senior')">
-                        <div class="persona-emoji">👴</div>
-                        <div class="persona-title">Senior / Einsteiger</div>
-                        <div class="persona-desc">Einfach & Sicher</div>
-                    </div>
-                    <div class="persona-card" onclick="selectPersona('adult')">
-                        <div class="persona-emoji">👨‍💼</div>
-                        <div class="persona-title">Beruf & Alltag</div>
-                        <div class="persona-desc">Effizient & Praxis</div>
-                    </div>
-                    <div class="persona-card" onclick="selectPersona('youth')">
-                        <div class="persona-emoji">🎮</div>
-                        <div class="persona-title">Jugend & Schule</div>
-                        <div class="persona-desc">Locker & Future</div>
-                    </div>
-                    <div class="persona-card" onclick="selectPersona('skeptic')">
-                        <div class="persona-emoji">🤨</div>
-                        <div class="persona-title">Skeptiker</div>
-                        <div class="persona-desc">Kritisch & Fakten</div>
-                    </div>
-                </div>
-            </div>
-
             <div class="chat-header">
                 <div class="chat-header-avatar">
-                     <img src="/assets/img/marco.jpg" alt="Marco" onerror="this.src='../assets/img/avatar-placeholder.svg'">
+                     <img src="/assets/img/marco.jpg" alt="Marco" onerror="this.src='/assets/img/avatar-placeholder.svg'">
                 </div>
                 <div class="chat-header-info">
-                    <div class="chat-header-name">Marco (KI-Guide) <span class="status-dot"></span></div>
-                    <div class="chat-header-status" id="chat-status">Online</div>
+                    <div class="chat-header-name">Marco (KI-Guide)</div>
+                    <div class="chat-header-status">Online</div>
                 </div>
             </div>
 
             <div class="chat-body" id="chat-body">
-                <!-- Messages go here -->
+                </div>
+
+            <div class="typing-indicator" id="typing-indicator">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
             </div>
 
-            <div class="typing-container">
-                <div class="typing-indicator" id="typing-indicator">
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
+            <div class="persona-overlay" id="persona-overlay">
+                <h3>KI einfach erklärt.<br>Wer fragt gerade?</h3>
+                <div class="persona-grid">
+                    <div class="persona-card" onclick="selectPersona('senior')">
+                        <span class="persona-icon">👴</span>
+                        <div class="persona-title">Senior / Einsteiger</div>
+                        <div class="persona-desc">Einfach & Sicher</div>
+                    </div>
+                    <div class="persona-card" onclick="selectPersona('adult')">
+                        <span class="persona-icon">👨‍💼</span>
+                        <div class="persona-title">Beruf & Alltag</div>
+                        <div class="persona-desc">Effizient & Praxis</div>
+                    </div>
+                    <div class="persona-card" onclick="selectPersona('youth')">
+                        <span class="persona-icon">🎮</span>
+                        <div class="persona-title">Jugend & Schule</div>
+                        <div class="persona-desc">Locker & Future</div>
+                    </div>
+                    <div class="persona-card" onclick="selectPersona('skeptic')">
+                        <span class="persona-icon">🤨</span>
+                        <div class="persona-title">Skeptiker</div>
+                        <div class="persona-desc">Kritisch & Fakten</div>
+                    </div>
                 </div>
             </div>
 
@@ -651,27 +388,12 @@
     </div>
   </main>
 
-  <footer class="footer">
-    <div class="container">
-      <div class="footer__inner">
-        <div class="footer__brand">© 2026 Warenschmiede · Alle Rechte vorbehalten.</div>
-        <nav class="footer__links" aria-label="Rechtliches &amp; Kontakt">
-          <a href="/impressum.html">Impressum</a>
-          <a href="/datenschutz.html">Datenschutzerklärung</a>
-          <a href="/kontakt.html">Kontakt</a>
-        </nav>
-        <div class="footer__notes">
-          <p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
-          <p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
-        </div>
-      </div>
-    </div>
-  </footer>
-
   <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/header.js"></script>
 
-  // Data Structure
+  <script>
+    // --- KONFIGURATION & DATEN ---
+    
     const PERSONAS = {
         senior: {
             name: "Senior",
@@ -890,104 +612,32 @@
         }
     };
 
+    // --- LOGIK (ENGINE) ---
+    
     let activePersona = null;
     let messageQueue = [];
     let isProcessing = false;
-    let chatBody = document.getElementById('chat-body');
-    let typingIndicator = document.getElementById('typing-indicator');
+    let currentTimeout = null;
 
-    // UI Logic
-    function selectPersona(personaKey) {
-        activePersona = PERSONAS[personaKey];
+    const overlay = document.getElementById('persona-overlay');
+    const chatBody = document.getElementById('chat-body');
+    const typingIndicator = document.getElementById('typing-indicator');
 
-        // Hide overlay
-        document.getElementById('persona-overlay').style.display = 'none';
+    // 1. Start: Persona auswählen
+    function selectPersona(type) {
+        activePersona = PERSONAS[type];
+        
+        // UI anpassen
+        overlay.style.display = 'none'; // Overlay ausblenden
+        document.querySelector('.chat-header-name').innerHTML = 'Marco (Guide) für: ' + activePersona.name + ' <span class="status-dot"></span>';
 
-        // Start Chat
+        // Begrüßung laden
+        // Wir klonen das Array, damit wir das Original nicht verändern
         messageQueue = [...activePersona.greeting];
         processQueue();
     }
 
-    function restartChat() {
-        // Clear Chat
-        chatBody.innerHTML = '';
-        messageQueue = [];
-        isProcessing = false;
-        clearTimeout(window.chatTimeout);
-        typingIndicator.classList.remove('visible');
-
-        // Show Overlay
-        document.getElementById('persona-overlay').style.display = 'flex';
-    }
-
-    function addMessage(msgObj) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${msgObj.sender}`;
-
-        // Format Text (Bold)
-        let formattedText = msgObj.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-        let contentHtml = `<span class="message-content">${formattedText}</span>`;
-        contentHtml += `<span class="message-time">${new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}</span>`;
-
-        msgDiv.innerHTML = contentHtml;
-        chatBody.appendChild(msgDiv);
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }
-
-    function addOptions(options) {
-        const container = document.createElement('div');
-        container.className = 'options-container';
-
-        options.forEach(opt => {
-            const chip = document.createElement('button');
-            chip.className = 'option-chip';
-            chip.textContent = opt.label;
-            chip.onclick = () => handleOptionClick(opt.value, opt.label, container);
-            container.appendChild(chip);
-        });
-
-        chatBody.appendChild(container);
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }
-
-        function handleOptionClick(value, label, container) {
-        // Remove options after selection to prevent multi-clicks
-        container.remove();
-
-        // Add user choice as message
-        addMessage({ sender: 'gast', text: label });
-
-        // Load new topic messages
-        if (activePersona.topics[value]) {
-            const newMessages = activePersona.topics[value].messages;
-            messageQueue = [...newMessages];
-
-            // Check if the last message is options. If not, append generic options.
-            const lastMsg = messageQueue[messageQueue.length - 1];
-            if (!lastMsg || lastMsg.type !== 'options') {
-                // Append "Anything else?" options at the end
-                messageQueue.push({ sender: 'marco', text: 'Möchtest du noch etwas anderes wissen?' });
-                messageQueue.push({ type: 'options', options: [
-                    { label: 'Zurück zur Auswahl', value: 'restart_topics' },
-                    { label: 'Danke, reicht erstmal.', value: 'end' }
-                ]});
-            }
-
-            processQueue();
-        } else if (value === 'restart_topics') {
-             // Re-show initial options
-             const greetingOptions = activePersona.greeting.find(m => m.type === 'options');
-             if (greetingOptions) {
-                 messageQueue = [greetingOptions];
-                 processQueue();
-             }
-        } else if (value === 'end') {
-             messageQueue = [{ sender: 'marco', text: 'Alles klar! Viel Erfolg beim Ausprobieren. 👋' }];
-             processQueue();
-        }
-    }
-
+    // 2. Queue abarbeiten (Nachricht für Nachricht)
     function processQueue() {
         if (messageQueue.length === 0) {
             isProcessing = false;
@@ -995,30 +645,119 @@
         }
 
         isProcessing = true;
-        const item = messageQueue.shift();
+        const item = messageQueue.shift(); // Erstes Element holen
 
         if (item.type === 'options') {
-            addOptions(item.options);
-            isProcessing = false;
+            // Wenn es Buttons sind -> Anzeigen und warten
+            showOptions(item.options);
+            isProcessing = false; 
             return;
         }
 
-        // It's a message
+        // Wenn es eine Text-Nachricht ist -> Anzeigen mit Verzögerung
+        showTyping();
+        
+        // Berechne Lesegeschwindigkeit (längerer Text = längere Pause)
         let delay = 600 + (item.text.length * 15);
-        if (item.sender === 'gast') delay = 400; // User messages appear faster
+        if (item.sender === 'gast') delay = 500; // Gast tippt schneller
 
-        if (item.sender === 'marco') {
-            typingIndicator.classList.add('visible');
-            chatBody.scrollTop = chatBody.scrollHeight;
+        currentTimeout = setTimeout(() => {
+            hideTyping();
+            addMessageToChat(item);
+            
+            // Kleine Pause nach der Nachricht, dann weiter in der Queue
+            currentTimeout = setTimeout(processQueue, 400); 
+        }, delay);
+    }
+
+    // 3. Nachricht ins HTML einfügen
+    function addMessageToChat(msg) {
+        const div = document.createElement('div');
+        div.className = `message ${msg.sender === 'marco' ? 'host' : 'guest'}`;
+        // Markdown Bold zu HTML Bold
+        let txt = msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        div.innerHTML = txt; 
+        chatBody.appendChild(div);
+        scrollToBottom();
+    }
+
+    // 4. Buttons anzeigen
+    function showOptions(options) {
+        const div = document.createElement('div');
+        div.className = 'chat-controls';
+        
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'chat-btn';
+            btn.innerText = opt.label;
+            btn.onclick = () => handleOptionClick(opt.value, opt.label, div);
+            div.appendChild(btn);
+        });
+
+        chatBody.appendChild(div);
+        scrollToBottom();
+    }
+
+    // 5. Klick auf eine Option
+    function handleOptionClick(value, label, controlsDiv) {
+        // Buttons entfernen/deaktivieren (damit man nicht nochmal klickt)
+        controlsDiv.remove();
+        
+        // Anzeigen was der User geklickt hat (als Gast-Nachricht)
+        addMessageToChat({ sender: 'gast', text: label });
+
+        // Spezialfall: Neustart der Themen
+        if (value === 'restart_topics') {
+            // Suche das Greeting-Option-Objekt wieder raus
+            const greetingOptions = activePersona.greeting.find(m => m.type === 'options');
+            if (greetingOptions) {
+                messageQueue = [greetingOptions];
+                processQueue();
+            }
+            return;
         }
 
-        window.chatTimeout = setTimeout(() => {
-            typingIndicator.classList.remove('visible');
-            addMessage(item);
+        // Normalfall: Thema laden
+        if (activePersona.topics[value]) {
+            const topicData = activePersona.topics[value];
+            
+            // Falls das Topic 'messages' hat (neues Format)
+            if (topicData.messages) {
+                 messageQueue = [...topicData.messages];
+            } else {
+                // Fallback
+                messageQueue = [...topicData];
+            }
+            
+            // Check ob am Ende Options kommen, sonst "Alles klar" anhängen
+            const lastMsg = messageQueue[messageQueue.length - 1];
+            if (!lastMsg || lastMsg.type !== 'options') {
+                 messageQueue.push({ type: 'options', options: [
+                    { label: 'Anderes Thema', value: 'restart_topics' }
+                 ]});
+            }
+            
+            processQueue();
+        }
+    }
 
-            // Next message
-            window.chatTimeout = setTimeout(processQueue, 500); // Small pause between messages
-        }, delay);
+    // Hilfsfunktionen
+    function showTyping() {
+        typingIndicator.classList.add('visible');
+        scrollToBottom();
+    }
+
+    function hideTyping() {
+        typingIndicator.classList.remove('visible');
+    }
+
+    function scrollToBottom() {
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+    
+    // Neustart (Reload Page)
+    function restartChat() {
+        location.reload();
     }
   </script>
 </body>
