@@ -11,7 +11,7 @@ from collections import defaultdict
 from typing import Dict, Iterable, List, Tuple
 from urllib.parse import urlparse
 
-BASE_URL = "https://www.warenschmiede.com"
+BASE_URL = "https://warenschmiede.com"
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 INCLUDED_SITEMAP_PATHS = {
     "tools/kostenrechner-v2.html",
@@ -23,7 +23,6 @@ EXCLUDED_SITEMAP_PATHS = {
 
 EXCLUDED_SITEMAP_PREFIXES = (
     "druck/",
-    "tools/",
 )
 
 
@@ -118,27 +117,9 @@ def get_lastmod(path: str) -> str:
 
 
 def get_priority(path: str) -> float:
-    basename = os.path.basename(path)
     if path == "index.html":
         return 1.0
-    if path == "tools/index.html":
-        return 0.8
-    if path == "tools/kostenrechner-v2.html":
-        return 0.9
-    if path in {"ki/promt-trainer.html", "ki/ki-finder.html"}:
-        return 0.8
-    if basename in {
-        "about.html",
-        "leistungen.html",
-        "material.html",
-        "3ddruck.html",
-        "werkstatt-rechner.html",
-        "bild-konverter.html",
-    }:
-        return 0.8
-    if path.startswith("ki/"):
-        return 0.7
-    return 0.5
+    return 0.8
 
 
 def generate_sitemap(html_files: Iterable[str]) -> None:
@@ -154,6 +135,7 @@ def generate_sitemap(html_files: Iterable[str]) -> None:
         lines.append("  <url>")
         lines.append(f"    <loc>{url}</loc>")
         lines.append(f"    <lastmod>{lastmod}</lastmod>")
+        lines.append("    <changefreq>monthly</changefreq>")
         lines.append(f"    <priority>{priority:.1f}</priority>")
         lines.append("  </url>")
 
