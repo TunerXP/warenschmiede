@@ -1,0 +1,666 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profi-Winkelrechner | Warenschmiede</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#3b82f6',
+                        brandDark: '#1e40af',
+                        surface: '#f8fafc',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
+
+        /* Eingabefelder */
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-label {
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            background: white;
+            padding: 0 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1rem;
+            color: #334155;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+            .input-field:focus {
+                outline: none;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                background: #fff !important; /* Force white on edit */
+            }
+            /* Automatisch berechnete Felder */
+            .input-field.calculated {
+                background-color: #f0fdf4; /* Light Green */
+                border-color: #86efac;
+                color: #15803d;
+                font-weight: 600;
+            }
+
+        /* Tabs */
+        .nav-btn {
+            padding: 12px 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #64748b;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+            .nav-btn:hover {
+                color: #3b82f6;
+                background: #f8fafc;
+            }
+
+            .nav-btn.active {
+                color: #3b82f6;
+                border-bottom-color: #3b82f6;
+                background: #fff;
+            }
+
+        /* SVG */
+        .svg-shape {
+            stroke: #3b82f6;
+            stroke-width: 2;
+            stroke-linejoin: round;
+            stroke-linecap: round;
+            fill: rgba(59, 130, 246, 0.05);
+            transition: d 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .svg-dim-text {
+            font-family: sans-serif;
+            font-size: 11px;
+            fill: #64748b;
+            font-weight: 600;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen p-4 md:p-8 items-center">
+
+    <!-- NEU: Navigation zur Homepage -->
+    <div class="w-full max-w-6xl mb-6 flex justify-between items-center">
+        <a href="https://www.warenschmiede.com/" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg shadow-sm text-slate-600 font-medium hover:text-blue-600 hover:border-blue-300 transition-all text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Zurück zur Homepage
+        </a>
+    </div>
+
+    <!-- Header -->
+    <div class="mb-8 text-center max-w-2xl">
+        <h1 class="text-3xl font-bold text-slate-800 mb-2">Werkstatt-Geometrie</h1>
+        <p class="text-slate-500">Dein interaktiver Assistent für Zuschnitte, Konstruktion und CNC. Ändere beliebige Werte – das Modell passt sich an.</p>
+    </div>
+
+    <!-- Haupt-Container -->
+    <div class="w-full max-w-6xl bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row min-h-[650px] mb-12">
+
+        <!-- Linke Spalte: Visualisierung -->
+        <div class="w-full md:w-5/12 bg-slate-50 border-b md:border-b-0 md:border-r border-slate-200 flex flex-col relative transition-colors duration-300" id="viz-container">
+
+            <div class="absolute top-4 left-4 z-10">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white/80 px-2 py-1 rounded backdrop-blur border border-slate-200">Live Ansicht</span>
+            </div>
+
+            <!-- Canvas Container -->
+            <div class="flex-1 flex items-center justify-center p-6 relative overflow-hidden">
+
+                <!-- SVG: Triangle (Right & General) -->
+                <svg id="main-svg" width="100%" height="100%" viewBox="-50 -50 400 400" preserveAspectRatio="xMidYMid meet">
+                    <!-- Dynamisches Dreieck -->
+                    <path id="tri-path" d="M50,250 L250,250 L50,100 Z" class="svg-shape" />
+
+                    <!-- Labels -->
+                    <text id="lbl-a" class="svg-dim-text" text-anchor="middle">a</text>
+                    <text id="lbl-b" class="svg-dim-text" text-anchor="middle">b</text>
+                    <text id="lbl-c" class="svg-dim-text" text-anchor="middle">c</text>
+
+                    <text id="lbl-alpha" class="svg-dim-text" text-anchor="middle" fill="#eab308">α</text>
+                    <text id="lbl-beta" class="svg-dim-text" text-anchor="middle" fill="#eab308">β</text>
+                    <text id="lbl-gamma" class="svg-dim-text" text-anchor="middle" fill="#eab308">γ</text>
+                </svg>
+
+                <!-- SVG: Taper (Kegel) -->
+                <svg id="taper-svg" width="100%" height="100%" viewBox="0 0 400 250" preserveAspectRatio="xMidYMid meet" class="hidden">
+                    <defs>
+                        <marker id="arrow" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                            <path d="M0,0 L6,3 L0,6" fill="#3b82f6" />
+                        </marker>
+                    </defs>
+                    <path d="M50,50 L350,80 L350,170 L50,200 Z" fill="rgba(59, 130, 246, 0.05)" stroke="#334155" stroke-width="2" stroke-dasharray="5,5" />
+                    <line x1="20" y1="125" x2="380" y2="125" stroke="#cbd5e1" stroke-dasharray="4,2" />
+                    <line x1="40" y1="50" x2="40" y2="200" stroke="#3b82f6" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+                    <text x="30" y="130" text-anchor="end" class="svg-dim-text font-bold" fill="#3b82f6">D</text>
+                    <line x1="360" y1="80" x2="360" y2="170" stroke="#3b82f6" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+                    <text x="370" y="130" text-anchor="start" class="svg-dim-text font-bold" fill="#3b82f6">d</text>
+                    <line x1="50" y1="220" x2="350" y2="220" stroke="#3b82f6" />
+                    <text x="200" y="235" text-anchor="middle" class="svg-dim-text font-bold" fill="#3b82f6">L</text>
+                </svg>
+
+            </div>
+
+            <!-- Info Footer -->
+            <div id="info-footer" class="bg-white p-4 border-t border-slate-100 flex justify-around text-center text-sm transition-opacity duration-200">
+                <div>
+                    <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Fläche</div>
+                    <div class="font-mono font-bold text-slate-700" id="res-area">-</div>
+                </div>
+                <div>
+                    <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Umfang</div>
+                    <div class="font-mono font-bold text-slate-700" id="res-perim">-</div>
+                </div>
+                <div>
+                    <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Höhe (h_c)</div>
+                    <div class="font-mono font-bold text-slate-700" id="res-height">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rechte Spalte: Steuerung -->
+        <div class="w-full md:w-7/12 flex flex-col bg-white">
+
+            <!-- Navigation -->
+            <div class="flex border-b border-slate-100 overflow-x-auto">
+                <button onclick="setMode('right')" class="nav-btn active flex-1 whitespace-nowrap" id="btn-right">
+                    <span class="text-lg">📐</span> Rechtwinklig
+                </button>
+                <button onclick="setMode('general')" class="nav-btn flex-1 whitespace-nowrap" id="btn-general">
+                    <span class="text-lg">△</span> Allgemein
+                </button>
+                <button onclick="setMode('taper')" class="nav-btn flex-1 whitespace-nowrap" id="btn-taper">
+                    <span class="text-lg">🔩</span> Kegel (Drehen)
+                </button>
+            </div>
+
+            <!-- Inputs -->
+            <div class="flex-1 p-6 md:p-8 overflow-y-auto">
+
+                <div id="hint-box" class="mb-8 p-4 bg-slate-50 text-slate-600 text-sm rounded-lg border-l-4 border-slate-300 flex items-start gap-3 transition-all duration-300">
+                    <span id="hint-icon" class="text-xl leading-none">ℹ️</span>
+                    <div>
+                        <strong id="hint-title" class="block text-slate-800 mb-1">Bereit</strong>
+                        <span id="hint-text">Gib Werte ein.</span>
+                    </div>
+                </div>
+
+                <!-- Form Triangle -->
+                <div id="form-triangle" class="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center">
+                            <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></span> Seitenlängen
+                        </h3>
+                        <div class="grid grid-cols-2 gap-x-6 gap-y-6">
+                            <div class="input-wrapper">
+                                <label class="input-label text-blue-600">Seite a</label>
+                                <input type="number" id="in-a" class="input-field tri-input" placeholder="-" oninput="handleInput(this)">
+                            </div>
+                            <div class="input-wrapper">
+                                <label class="input-label text-blue-600">Seite b</label>
+                                <input type="number" id="in-b" class="input-field tri-input" placeholder="-" oninput="handleInput(this)">
+                            </div>
+                            <div class="input-wrapper col-span-2">
+                                <label class="input-label text-red-500" id="lbl-c-input">Seite c (Hypotenuse)</label>
+                                <input type="number" id="in-c" class="input-field tri-input" placeholder="-" oninput="handleInput(this)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center mt-6">
+                            <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full mr-2"></span> Winkel (Grad °)
+                        </h3>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="input-wrapper">
+                                <label class="input-label">α (Alpha)</label>
+                                <input type="number" id="in-alpha" class="input-field tri-input" placeholder="-" oninput="handleInput(this)">
+                            </div>
+                            <div class="input-wrapper">
+                                <label class="input-label">β (Beta)</label>
+                                <input type="number" id="in-beta" class="input-field tri-input" placeholder="-" oninput="handleInput(this)">
+                            </div>
+                            <div class="input-wrapper">
+                                <label class="input-label text-slate-400" id="lbl-gamma-input">γ (90°)</label>
+                                <input type="number" id="in-gamma" class="input-field tri-input bg-slate-50 text-slate-400" value="90" disabled oninput="handleInput(this)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Taper -->
+                <div id="form-taper" class="space-y-6 hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <p class="text-sm text-slate-500 mb-4 bg-yellow-50 p-3 rounded border border-yellow-100">
+                        Berechnet den Einstellwinkel für den Oberschlitten. Gib 3 Werte ein.
+                    </p>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="input-wrapper">
+                            <label class="input-label">Großer Ø (D)</label>
+                            <input type="number" id="tap-D" class="input-field" placeholder="mm" oninput="solveTaper()">
+                        </div>
+                        <div class="input-wrapper">
+                            <label class="input-label">Kleiner Ø (d)</label>
+                            <input type="number" id="tap-d" class="input-field" placeholder="mm" oninput="solveTaper()">
+                        </div>
+                        <div class="input-wrapper col-span-2">
+                            <label class="input-label">Kegellänge (L)</label>
+                            <input type="number" id="tap-L" class="input-field" placeholder="mm" oninput="solveTaper()">
+                        </div>
+                    </div>
+                    <div class="mt-8 p-6 bg-slate-800 rounded-xl text-white text-center shadow-lg">
+                        <div class="text-[10px] uppercase text-slate-400 font-bold mb-1 tracking-widest">Einstellwinkel (Alpha / 2)</div>
+                        <div class="text-4xl font-bold text-blue-400 font-mono" id="tap-result">- °</div>
+                        <div class="text-xs text-slate-500 mt-2">Verhältnis 1 : <span id="tap-ratio">-</span></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-xs text-slate-500 flex gap-4">
+                    <div class="flex items-center"><span class="legend-dot bg-white border border-slate-300"></span> Eingabe</div>
+                    <div class="flex items-center"><span class="legend-dot bg-green-100 border border-green-300"></span> Berechnet</div>
+                </div>
+                <button onclick="resetAll()" class="text-xs font-bold text-slate-400 hover:text-red-500 transition uppercase tracking-wider flex items-center gap-1 px-3 py-2 hover:bg-red-50 rounded">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Alles löschen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HILFE (Unverändert) -->
+    <div class="max-w-4xl w-full mx-auto space-y-4 mb-12">
+        <h2 class="text-xl font-bold text-slate-700 mb-4 px-2">Anleitung</h2>
+        <div class="grid md:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-200">
+                <div class="text-blue-500 text-2xl mb-2">📐</div>
+                <h3 class="font-bold text-slate-800 mb-2">Rechtwinklig</h3>
+                <p class="text-sm text-slate-600 leading-relaxed">Der Standardfall. Du brauchst <strong>2 Werte</strong>. Ändere jeden beliebigen Wert, um "Was-wäre-wenn" Szenarien zu testen.</p>
+            </div>
+            <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-200">
+                <div class="text-yellow-500 text-2xl mb-2">△</div>
+                <h3 class="font-bold text-slate-800 mb-2">Allgemein</h3>
+                <p class="text-sm text-slate-600 leading-relaxed">Ohne rechten Winkel. Du brauchst <strong>3 Werte</strong> (min. 1 Seite). Das Tool priorisiert deine letzten 3 Eingaben.</p>
+            </div>
+            <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-200">
+                <div class="text-slate-600 text-2xl mb-2">🔩</div>
+                <h3 class="font-bold text-slate-800 mb-2">Kegel</h3>
+                <p class="text-sm text-slate-600 leading-relaxed">Für die Drehbank. D, d und L eingeben, um den Winkel für den Oberschlitten zu erhalten.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEU: Footer mit Rechtstexten -->
+    <footer class="w-full max-w-6xl mt-auto mb-8 pt-6 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center text-sm text-slate-400">
+        <div class="mb-4 sm:mb-0">
+            &copy; Warenschmiede. Alle Rechte vorbehalten.
+        </div>
+        <div class="flex gap-6">
+            <a href="https://www.warenschmiede.com/impressum.html" class="hover:text-blue-600 transition-colors font-medium">Impressum</a>
+            <a href="https://www.warenschmiede.com/datenschutz.html" class="hover:text-blue-600 transition-colors font-medium">Datenschutz</a>
+            <a href="https://www.warenschmiede.com/kontakt.html" class="hover:text-blue-600 transition-colors font-medium">Kontakt</a>
+        </div>
+    </footer>
+
+    <script>
+        // --- Core Utils ---
+        const toRad = d => d * Math.PI / 180;
+        const toDeg = r => r * 180 / Math.PI;
+        const sin = d => Math.sin(toRad(d));
+        const cos = d => Math.cos(toRad(d));
+        const tan = d => Math.tan(toRad(d));
+        const asin = v => toDeg(Math.asin(v));
+        const acos = v => toDeg(Math.acos(v));
+        const atan = v => toDeg(Math.atan(v));
+
+        let currentMode = 'right';
+
+        // --- Logic: Timestamp priority solver ---
+        function handleInput(el) {
+            // Update timestamp only if user typed something
+            if(el.value !== '') {
+                el.dataset.time = Date.now();
+                el.classList.remove('calculated');
+            } else {
+                delete el.dataset.time; // Remove timestamp if cleared
+            }
+            solveTriangle();
+        }
+
+        function solveTriangle() {
+            // 1. Collect Inputs
+            const ids = ['in-a', 'in-b', 'in-c', 'in-alpha', 'in-beta', 'in-gamma'];
+            let inputs = ids.map(id => {
+                const el = document.getElementById(id);
+                return {
+                    id: id,
+                    val: parseFloat(el.value),
+                    time: parseInt(el.dataset.time || 0),
+                    el: el
+                };
+            }).filter(item => !isNaN(item.val));
+
+            // 2. Sort by Time (Desc)
+            inputs.sort((a, b) => b.time - a.time);
+
+            // 3. Determine needed inputs count
+            const needed = (currentMode === 'right') ? 2 : 3;
+
+            updateHint(currentMode, inputs.length, needed);
+
+            if (inputs.length < needed) return; // Not enough data
+
+            // 4. Select "Drivers" (Top N most recent)
+            // Special check: For general triangle, we need at least 1 side.
+            let drivers = inputs.slice(0, needed);
+
+            if (currentMode === 'general') {
+                const sides = ['in-a', 'in-b', 'in-c'];
+                const hasSide = drivers.some(d => sides.includes(d.id));
+                if (!hasSide) {
+                    // Try to find a side in older inputs
+                    const olderSide = inputs.slice(needed).find(d => sides.includes(d.id));
+                    if (olderSide) {
+                        drivers.pop(); // Remove oldest angle
+                        drivers.push(olderSide); // Add side
+                    } else {
+                        // Impossible geometry (3 angles)
+                        return;
+                    }
+                }
+            }
+
+            // 5. Mark Drivers as white, others as calculated candidates
+            // Note: We don't clear yet, we calculate first.
+            const driverIds = drivers.map(d => d.id);
+
+            // Extract values for solver
+            const getD = (id) => {
+                const d = drivers.find(x => x.id === id);
+                return d ? d.val : null;
+            };
+
+            let a = getD('in-a');
+            let b = getD('in-b');
+            let c = getD('in-c');
+            let alpha = getD('in-alpha');
+            let beta = getD('in-beta');
+            let gamma = getD('in-gamma');
+
+            if (currentMode === 'right') gamma = 90;
+
+            // --- SOLVER KERNEL ---
+            // Iterative approach to solve dependencies
+            for(let k=0; k<3; k++) {
+                // Sum angles
+                if(alpha && beta && !gamma) gamma = 180 - alpha - beta;
+                if(alpha && gamma && !beta) beta = 180 - alpha - gamma;
+                if(beta && gamma && !alpha) alpha = 180 - beta - gamma;
+
+                if (currentMode === 'right') {
+                    // Pythagoras
+                    if(a && b && !c) c = Math.sqrt(a*a + b*b);
+                    if(a && c && !b) b = Math.sqrt(c*c - a*a);
+                    if(b && c && !a) a = Math.sqrt(c*c - b*b);
+                    // Trig
+                    if(a && alpha && !c) c = a/sin(alpha);
+                    if(b && beta && !c) c = b/sin(beta);
+                    if(c && alpha && !a) a = c*sin(alpha);
+                    // Inverse
+                    if(a && c && !alpha) alpha = asin(a/c);
+                    if(b && c && !beta) beta = asin(b/c);
+                }
+                else { // General
+                    // SSS
+                    if(a && b && c) {
+                        if(!alpha) alpha = acos((b*b + c*c - a*a)/(2*b*c));
+                        if(!beta) beta = acos((a*a + c*c - b*b)/(2*a*c));
+                        if(!gamma) gamma = 180 - alpha - beta;
+                    }
+                    // Sine Law (Pairs)
+                    if(a && alpha) {
+                        if(b && !beta) beta = asin(b * sin(alpha) / a);
+                        if(c && !gamma) gamma = asin(c * sin(alpha) / a);
+                        if(beta && !b) b = a * sin(beta) / sin(alpha);
+                    }
+                    // Cosine Law (SAS)
+                    if(b && c && alpha && !a) a = Math.sqrt(b*b + c*c - 2*b*c*cos(alpha));
+                    if(a && c && beta && !b) b = Math.sqrt(a*a + c*c - 2*a*c*cos(beta));
+                    if(a && b && gamma && !c) c = Math.sqrt(a*a + b*b - 2*a*b*cos(gamma));
+                }
+            }
+
+            // 6. Update UI
+            const setRes = (id, val) => {
+                const el = document.getElementById(id);
+                // If this element was a driver, don't change it unless it's impossible?
+                // For "What-If", we assume drivers are truth.
+                // We only update fields that are NOT in driverIds OR if we want to correct input.
+                // For simplicity: We overwrite non-drivers.
+
+                if (!driverIds.includes(id) && val) {
+                    el.value = val.toFixed(2);
+                    el.classList.add('calculated');
+                    // Important: remove timestamp from calculated field so it doesn't become a driver automatically
+                    delete el.dataset.time;
+                }
+            };
+
+            setRes('in-a', a);
+            setRes('in-b', b);
+            setRes('in-c', c);
+            setRes('in-alpha', alpha);
+            setRes('in-beta', beta);
+            setRes('in-gamma', gamma);
+
+            // Extras & Draw
+            if(a && b && c) {
+                let area = 0.5 * a * b * sin(gamma || 90);
+                document.getElementById('res-area').innerText = area.toFixed(2);
+                document.getElementById('res-perim').innerText = (a+b+c).toFixed(2);
+                if(alpha) document.getElementById('res-height').innerText = (b * sin(alpha)).toFixed(2);
+
+                drawTriangle(a, b, c, alpha, beta, gamma || 90);
+                updateHint(currentMode, 10, needed); // Success
+            }
+        }
+
+        // --- Helper: Hint Box ---
+        function updateHint(mode, count, needed) {
+            const box = document.getElementById('hint-box');
+            const title = document.getElementById('hint-title');
+            const text = document.getElementById('hint-text');
+            const icon = document.getElementById('hint-icon');
+
+            box.className = "mb-8 p-4 text-sm rounded-lg border-l-4 flex items-start gap-3 transition-all duration-300";
+
+            if (count >= 10) { // Success Code
+                box.classList.add('bg-green-50', 'text-green-800', 'border-green-500');
+                icon.innerText = "✅";
+                title.innerText = "Berechnet!";
+                text.innerText = "Ändere einen beliebigen Wert, um neu zu berechnen.";
+            } else if (count === 0) {
+                box.classList.add('bg-slate-50', 'text-slate-600', 'border-slate-300');
+                icon.innerText = "ℹ️";
+                title.innerText = "Bereit";
+                text.innerText = `Gib ${needed} Werte ein.`;
+            } else {
+                box.classList.add('bg-blue-50', 'text-blue-800', 'border-blue-400');
+                icon.innerText = "✏️";
+                title.innerText = "Eingabe...";
+                text.innerText = `Noch ${Math.max(0, needed - count)} Wert(e) benötigt.`;
+            }
+        }
+
+        // --- Taper Logic ---
+        function solveTaper() {
+            const D = parseFloat(document.getElementById('tap-D').value);
+            const d = parseFloat(document.getElementById('tap-d').value);
+            const L = parseFloat(document.getElementById('tap-L').value);
+
+            if(D && d && L) {
+                const angle = toDeg(Math.atan(((D-d)/2)/L));
+                document.getElementById('tap-result').innerText = angle.toFixed(3) + " °";
+                const ratio = (D-d)/L;
+                document.getElementById('tap-ratio').innerText = ratio > 0 ? (1/ratio).toFixed(1) : "-";
+            }
+        }
+
+        // --- UI Switching ---
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + mode).classList.add('active');
+
+            const ids = ['form-triangle', 'form-taper', 'main-svg', 'taper-svg'];
+            const showTri = mode !== 'taper';
+
+            document.getElementById('form-triangle').classList.toggle('hidden', !showTri);
+            document.getElementById('form-taper').classList.toggle('hidden', showTri);
+            document.getElementById('main-svg').classList.toggle('hidden', !showTri);
+            document.getElementById('taper-svg').classList.toggle('hidden', showTri);
+            document.getElementById('info-footer').style.opacity = showTri ? '1' : '0';
+
+            // Reset Fields
+            document.querySelectorAll('input').forEach(el => {
+                el.value = '';
+                delete el.dataset.time;
+                el.classList.remove('calculated');
+            });
+            document.getElementById('res-area').innerText = '-';
+
+            // Gamma Lock
+            const g = document.getElementById('in-gamma');
+            const lblC = document.getElementById('lbl-c-input');
+            if(mode === 'right') {
+                g.value = 90; g.disabled = true; g.classList.add('bg-slate-50');
+                lblC.innerText = 'Seite c (Hypotenuse)'; lblC.classList.add('text-red-500');
+            } else {
+                g.value = ''; g.disabled = false; g.classList.remove('bg-slate-50');
+                lblC.innerText = 'Seite c'; lblC.classList.remove('text-red-500');
+            }
+
+            updateHint(mode, 0, mode === 'right' ? 2 : 3);
+            drawTriangle(100, 100, 141.4, 45, 45, 90);
+        }
+
+        function resetAll() { setMode(currentMode); }
+
+        // --- Visualizer ---
+        function drawTriangle(a, b, c, alpha, beta, gamma) {
+            if(!a || !b || !gamma) return;
+            // Coords: C(0,0), B(a,0), A(b*cosG, b*sinG)  [Standard Math]
+            // We map to SVG Viewbox -50..350
+
+            const Cx = 0, Cy = 0;
+            const Bx = a, By = 0;
+            const Ax = b * cos(gamma), Ay = b * sin(gamma);
+
+            const minX = Math.min(Cx, Ax, Bx), maxX = Math.max(Cx, Ax, Bx);
+            const minY = Math.min(Cy, Ay, By), maxY = Math.max(Cy, Ay, By);
+
+            const w = maxX - minX || 1;
+            const h = maxY - minY || 1;
+            const scale = Math.min(300/w, 300/h) * 0.8;
+
+            const tx = (val) => 50 + (val - minX) * scale;
+            const ty = (val) => 300 - (val - minY) * scale; // Invert Y
+
+            const pC = {x: tx(Cx), y: ty(Cy)};
+            const pB = {x: tx(Bx), y: ty(By)};
+            const pA = {x: tx(Ax), y: ty(Ay)};
+
+            document.getElementById('tri-path').setAttribute('d', `M${pC.x},${pC.y} L${pB.x},${pB.y} L${pA.x},${pA.y} Z`);
+
+            // Labels
+            place(document.getElementById('lbl-a'), pC, pB, 20);
+            place(document.getElementById('lbl-b'), pC, pA, -20);
+            place(document.getElementById('lbl-c'), pA, pB, -20);
+
+            // Angles
+            placeNode(document.getElementById('lbl-gamma'), pC, pA, pB);
+            placeNode(document.getElementById('lbl-beta'), pB, pC, pA);
+            placeNode(document.getElementById('lbl-alpha'), pA, pC, pB);
+        }
+
+        function place(el, p1, p2, off) {
+            el.setAttribute('x', (p1.x + p2.x)/2);
+            el.setAttribute('y', (p1.y + p2.y)/2 + off);
+        }
+        function placeNode(el, c, p1, p2) {
+            const mx = (c.x + p1.x + p2.x)/3;
+            const my = (c.y + p1.y + p2.y)/3;
+            const dx = mx - c.x, dy = my - c.y;
+            const len = Math.sqrt(dx*dx + dy*dy) || 1;
+            el.setAttribute('x', c.x + (dx/len)*30);
+            el.setAttribute('y', c.y + (dy/len)*30);
+        }
+
+        // Boot
+        setMode('right');
+    </script>
+</body>
+</html>
