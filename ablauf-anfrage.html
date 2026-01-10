@@ -53,6 +53,220 @@
 <meta content="Warenschmiede" property="og:site_name"/>
 <meta content="de_DE" property="og:locale"/>
 <meta content="summary_large_image" name="twitter:card"/>
+<style>
+    /* Chat Specific Styles from ki/chat.html */
+    .chat-container {
+        max-width: 600px;
+        width: 100%;
+        margin: 1.5rem 0; /* Adjusted margin */
+        background: #efeae2;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        overflow: hidden;
+        border: 1px solid #ddd;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 500px; /* Fixed height for this page context */
+        position: relative;
+    }
+
+    /* WhatsApp Background Pattern simulation */
+    .chat-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background-color: #efeae2;
+        background-image: radial-gradient(#d4d0c8 1px, transparent 1px);
+        background-size: 20px 20px;
+        scroll-behavior: smooth;
+    }
+
+    .chat-header {
+        background: #008069;
+        color: white;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+
+    .chat-header-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #fff;
+        overflow: hidden;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .chat-header-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .chat-header-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .chat-header-name {
+        font-weight: 600;
+        font-size: 1.05rem;
+        line-height: 1.2;
+    }
+
+    .chat-header-status {
+        font-size: 0.8rem;
+        opacity: 0.85;
+        line-height: 1.2;
+    }
+
+    .message {
+        max-width: 85%;
+        padding: 8px 12px;
+        border-radius: 7.5px;
+        position: relative;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+        opacity: 0;
+        transform: translateY(10px);
+        animation: messageAppear 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        word-wrap: break-word;
+    }
+
+    @keyframes messageAppear {
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.host { /* Marco */
+        align-self: flex-start;
+        background: #ffffff;
+        border-top-left-radius: 0;
+        color: #111b21;
+    }
+
+    .message.guest { /* User */
+        align-self: flex-end;
+        background: #d9fdd3;
+        border-top-right-radius: 0;
+        color: #111b21;
+    }
+
+    .message a {
+        color: #027eb5;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .message a:hover {
+        text-decoration: underline;
+    }
+
+    /* Typing Indicator */
+    .typing-indicator {
+        background: #ffffff;
+        padding: 10px 15px;
+        border-radius: 18px;
+        border-top-left-radius: 0;
+        display: none; /* Hidden by default */
+        align-items: center;
+        gap: 4px;
+        align-self: flex-start;
+        margin-left: 15px;
+        margin-bottom: 10px;
+        box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+        width: fit-content;
+    }
+
+    .typing-indicator.visible {
+        display: inline-flex;
+    }
+
+    .dot {
+        width: 6px;
+        height: 6px;
+        background: #b0b0b0;
+        border-radius: 50%;
+        animation: typingBounce 1.4s infinite ease-in-out both;
+    }
+    .dot:nth-child(1) { animation-delay: -0.32s; }
+    .dot:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes typingBounce {
+        0%, 80%, 100% { transform: scale(0); }
+        40% { transform: scale(1); }
+    }
+
+    /* Controls */
+    .chat-controls {
+        background: #f0f2f5;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        border-top: 1px solid #ddd;
+        flex-wrap: wrap;
+    }
+
+    .chat-btn {
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 24px;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: #111b21;
+        transition: all 0.2s;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .chat-btn:hover { background: #e9edef; }
+
+    /* Dark Mode Overrides */
+    html[data-theme="dark"] .chat-container {
+        background: #0b141a;
+        border-color: #333;
+    }
+    html[data-theme="dark"] .chat-body {
+        background-color: #0b141a;
+        background-image: radial-gradient(#2a3942 1px, transparent 1px);
+    }
+    html[data-theme="dark"] .chat-header {
+        background: #202c33;
+    }
+    html[data-theme="dark"] .message.host {
+        background: #202c33;
+        color: #e9edef;
+    }
+    html[data-theme="dark"] .message.guest {
+        background: #005c4b;
+        color: #e9edef;
+    }
+    html[data-theme="dark"] .chat-controls {
+        background: #202c33;
+        border-color: #333;
+    }
+    html[data-theme="dark"] .chat-btn {
+        background: #2a3942;
+        border-color: #444;
+        color: #e9edef;
+    }
+    html[data-theme="dark"] .message a { color: #53bdeb; }
+</style>
 </head>
 <body>
 <header class="site-header" data-header="">
@@ -238,6 +452,26 @@
 <p class="section-eyebrow">Projektablauf</p>
 <h1 id="ablauf-heading">Ablauf &amp; Anfrage – so arbeiten wir zusammen</h1>
 <p>Du bekommst schnelle Rückmeldungen statt Warteschleifen: Ich prüfe dein Projekt persönlich und melde mich mit klaren Empfehlungen.</p>
+
+<!-- Service-Check Chat -->
+<div class="chat-container">
+    <div class="chat-header">
+        <div class="chat-header-avatar">
+            <img alt="Marco" onerror="this.src='/assets/img/avatar-placeholder.svg'" src="/assets/img/marco.jpg"/>
+        </div>
+        <div class="chat-header-info">
+            <div class="chat-header-name">Dein Projekt-Check: Kann Marco helfen?</div>
+            <div class="chat-header-status">Online</div>
+        </div>
+    </div>
+    <div class="chat-body" id="service-chat-body">
+    </div>
+    <div class="typing-indicator" id="typing-indicator">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+</div>
+<!-- End Service-Check Chat -->
+
 <div class="hero-actions">
 <a class="btn btn-primary" href="/kontakt.html#kontakt-heading">Projekt anfragen</a>
 <a class="btn btn-outline" href="/druck-tipps.html">Tipps lesen</a>
@@ -357,5 +591,233 @@
 <script defer="" src="assets/js/theme.js"></script>
 <script defer="" src="assets/js/header.js"></script>
 <script defer="" src="assets/js/whatsapp.js"></script>
+<script>
+    // --- SERVICE CHAT LOGIC ---
+
+    const CHAT_FLOW = {
+        start: {
+            message: "Moin! 👋 Bevor du tippst: Lass uns kurz checken, ob ich der Richtige für dein Problem bin. Worum geht's?",
+            options: [
+                { label: "PC & Technik Hilfe", value: "pc_tech" },
+                { label: "3D-Druck & Teile", value: "print_3d" },
+                { label: "CAD & Konstruktion", value: "cad_design" }
+            ]
+        },
+        pc_tech: {
+            message: "Alles klar. Welches System macht Ärger?",
+            options: [
+                { label: "Windows PC / Laptop", value: "pc_windows" },
+                { label: "Android Handy", value: "pc_android" },
+                { label: "Apple (Mac/iPhone)", value: "pc_apple" },
+                { label: "Drucker / Sonstiges", value: "pc_other" }
+            ]
+        },
+        pc_apple: {
+            message: "Sorry, da bin ich raus. 🍏🚫 Apple ist ein geschlossenes System, da kann ich nicht tief genug rein. Da brauchst du einen Spezialisten.",
+            options: [
+                { label: "Okay, verstanden", value: "end" }
+            ]
+        },
+        pc_windows: { target: "pc_service_check" },
+        pc_android: { target: "pc_service_check" },
+        pc_other: { target: "pc_service_check" },
+
+        pc_service_check: {
+            sequence: [
+                 "Mein Spezialgebiet! ✅",
+                 "Ich bin allerdings nicht mobil. Kannst du das Gerät vorbeibringen? (Donaueschingen, Im Bohrer 7)"
+            ],
+            options: [
+                { label: "Ja, bringe ich vorbei", value: "contact_success" },
+                { label: "Nein, brauche Hausbesuch", value: "house_visit" }
+            ]
+        },
+
+        house_visit: {
+            sequence: [
+                "Ich habe kein Auto für Service-Fahrten.",
+                "ABER: Wenn du z.B. ein Drucker-Problem hast und mich abholen/fahren kannst, können wir drüber reden! 🚗 Flexibel bin ich."
+            ],
+            options: [
+                 { label: "Okay, ich melde mich", value: "contact_success" },
+                 { label: "Schade, dann nicht", value: "end" }
+            ]
+        },
+
+        print_3d: {
+            message: "Cool. Hast du schon eine fertige Datei (STL) oder nur eine Idee?",
+            options: [
+                { label: "Habe Datei (STL)", value: "print_file" },
+                { label: "Nur Idee/Skizze", value: "print_idea" }
+            ]
+        },
+        cad_design: { target: "print_idea" },
+
+        print_file: {
+            message: "Top. Schick sie mir per Mail/Telegram. Ich prüfe, ob man das gut drucken kann.",
+            next: "contact_success"
+        },
+        print_idea: {
+            message: "Kein Problem. Ich kann einfache Teile konstruieren (Adapter, Halter). Aber keine Industrie-Turbinen! 😉",
+            next: "contact_success"
+        },
+
+        contact_success: {
+            sequence: [
+                "Klingt so, als kommen wir zusammen! Schreib mir einfach.",
+                "Ich nutze WhatsApp, Telegram und E-Mail. Adressen und Karte findest du hier:"
+            ],
+            options: [
+                { label: "Zu den Kontaktdaten (Karte & Tel)", action: "goto_contact" }
+            ]
+        },
+        end: {
+            message: "Alles Gute für dein Projekt! Falls sich was ändert, meld dich gern.",
+             options: [
+                { label: "Neustart", value: "restart" }
+            ]
+        }
+    };
+
+    // --- ENGINE ---
+
+    let messageQueue = [];
+    let isProcessing = false;
+    let currentTimeout = null;
+
+    const chatBody = document.getElementById('service-chat-body');
+    const typingIndicator = document.getElementById('typing-indicator');
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+        loadStep('start');
+    });
+
+    function loadStep(stepKey) {
+        // Resolve Target Redirection
+        let step = CHAT_FLOW[stepKey];
+        if (step.target) {
+            loadStep(step.target);
+            return;
+        }
+
+        // Build Queue
+        let messages = [];
+        if (step.sequence) {
+             step.sequence.forEach(txt => messages.push({ sender: 'marco', text: txt }));
+        } else if (step.message) {
+             messages.push({ sender: 'marco', text: step.message });
+        }
+
+        if (step.options) {
+             messages.push({ type: 'options', options: step.options });
+        } else if (step.next) {
+             // Auto advance if no options but next step defined
+             messages.push({ type: 'auto_next', next: step.next });
+        }
+
+        messageQueue = [...messageQueue, ...messages];
+        processQueue();
+    }
+
+    function processQueue() {
+        if (isProcessing) return;
+        if (messageQueue.length === 0) return;
+
+        isProcessing = true;
+        const item = messageQueue.shift();
+
+        if (item.type === 'options') {
+            showOptions(item.options);
+            isProcessing = false;
+            return;
+        }
+
+        if (item.type === 'auto_next') {
+            isProcessing = false;
+            loadStep(item.next);
+            return;
+        }
+
+        // Show Typing
+        showTyping();
+
+        let delay = 600 + (item.text.length * 15);
+        if (item.sender === 'gast') delay = 500;
+
+        currentTimeout = setTimeout(() => {
+            hideTyping();
+            addMessageToChat(item);
+
+            isProcessing = false;
+            // Next
+            setTimeout(processQueue, 400);
+        }, delay);
+    }
+
+    function addMessageToChat(msg) {
+        const div = document.createElement('div');
+        div.className = `message ${msg.sender === 'marco' ? 'host' : 'guest'}`;
+        let txt = msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        div.innerHTML = txt;
+        chatBody.appendChild(div);
+        scrollToBottom();
+    }
+
+    function showOptions(options) {
+        const div = document.createElement('div');
+        div.className = 'chat-controls';
+
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'chat-btn';
+            btn.innerText = opt.label;
+            btn.onclick = () => handleOptionClick(opt, div);
+            div.appendChild(btn);
+        });
+
+        chatBody.appendChild(div);
+        scrollToBottom();
+    }
+
+    function handleOptionClick(opt, controlsDiv) {
+        controlsDiv.remove();
+        addMessageToChat({ sender: 'gast', text: opt.label });
+
+        if (opt.action === 'goto_contact') {
+             // Scroll to contact or follow link
+             const contactSection = document.getElementById('cta-buttons-heading');
+             if(contactSection) {
+                 contactSection.scrollIntoView({ behavior: 'smooth' });
+             } else {
+                 window.location.href = '/kontakt.html';
+             }
+             return;
+        }
+
+        if (opt.value === 'restart') {
+             chatBody.innerHTML = '';
+             loadStep('start');
+             return;
+        }
+
+        if (opt.value) {
+             loadStep(opt.value);
+        }
+    }
+
+    function showTyping() {
+        typingIndicator.classList.add('visible');
+        scrollToBottom();
+    }
+
+    function hideTyping() {
+        typingIndicator.classList.remove('visible');
+    }
+
+    function scrollToBottom() {
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+</script>
 </body>
 </html>
