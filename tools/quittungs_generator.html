@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quittungs-Schmied (V2)</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1e1e1e">
+
+    <!-- Externe Libs für PDF & QR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #121212;
+            --panel: #1e1e1e;
+            --accent: #0078d4;
+            --text: #fff;
+            --text-muted: #aaa;
+            --border: #333;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #f59e0b;
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding-bottom: 40px; }
+        
+        .container { max-width: 600px; margin: 0 auto; padding: 15px; }
+
+        /* Header */
+        .header { background: var(--panel); padding: 15px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; font-size: 1.2rem; color: var(--accent); }
+        .btn-icon { background: transparent; border: none; color: var(--text); font-size: 1.2rem; cursor: pointer; }
+
+        /* Cards */
+        .card { background: var(--panel); border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .card-title { margin: 0 0 10px 0; font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Forms */
+        input, select { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 6px; margin-bottom: 10px; font-size: 1rem; }
+        input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+        .row { display: flex; gap: 10px; }
+        .col { flex: 1; }
+
+        /* Switch */
+        .switch-container { display: flex; align-items: center; justify-content: space-between; background: #2a2a2a; padding: 10px; border-radius: 6px; margin-bottom: 10px; }
+        input[type="checkbox"] { width: auto; margin: 0; transform: scale(1.5); accent-color: var(--accent); }
+
+        /* Item List */
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #252525; border-radius: 6px; margin-bottom: 5px; border-left: 3px solid var(--accent); }
+        .item-info div:first-child { font-weight: bold; }
+        .item-info div:last-child { font-size: 0.85rem; color: var(--text-muted); }
+        .item-price { font-weight: bold; color: var(--success); }
+        .btn-del { color: var(--danger); background: none; border: none; font-size: 1.2rem; padding: 0 0 0 15px; cursor: pointer; }
+
+        /* Buttons */
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-secondary { background: #333; color: white; border: 1px solid #444; margin-top: 10px; }
+        .btn-add { background: #333; border: 1px dashed #555; color: var(--accent); margin-top: 0; }
+        .btn-small { padding: 8px 12px; font-size: 0.9rem; width: auto; }
+
+        /* Payment Selection */
+        .pay-options { display: flex; gap: 5px; margin-bottom: 15px; }
+        .pay-opt { flex: 1; padding: 10px; background: #2a2a2a; text-align: center; border-radius: 6px; border: 1px solid #444; cursor: pointer; font-size: 0.9rem; }
+        .pay-opt.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+        /* History */
+        .hist-item { background: #252525; border-bottom: 1px solid #333; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .hist-date { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 2px; }
+        .hist-cust { font-weight: bold; font-size: 0.95rem; }
+        .hist-actions { display: flex; gap: 10px; }
+        .btn-hist { background: transparent; border: 1px solid #444; color: var(--text-muted); padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        .btn-hist:hover { background: #333; color: white; }
+
+        .hidden { display: none !important; }
+        
+        /* Backup Section */
+        .backup-box { background: #1a202c; border: 1px solid #2d3748; padding: 15px; border-radius: 8px; margin-top: 20px; }
+        .backup-label { color: #a0aec0; font-size: 0.85rem; margin-bottom: 10px; display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Quittungs-Schmied</h1>
+        <button class="btn-icon" onclick="toggleSettings()" title="Einstellungen">⚙️</button>
+    </div>
+
+    <div class="container">
+
+        <!-- EINSTELLUNGEN (Versteckt) -->
+        <div id="settingsCard" class="card hidden">
+            <h3 class="card-title">Meine Firmendaten (Absender)</h3>
+            <input type="text" id="myCompany" placeholder="Firmenname">
+            <input type="text" id="myName" placeholder="Inhaber Name">
+            <input type="text" id="myStreet" placeholder="Straße & Hausnummer">
+            <div class="row">
+                <input type="text" id="myZip" placeholder="PLZ" class="col">
+                <input type="text" id="myCity" placeholder="Ort" class="col" style="flex:2;">
+            </div>
+            <input type="text" id="myTaxId" placeholder="Steuernummer / USt-ID">
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
+            
+            <h3 class="card-title">QR-Code Daten</h3>
+            <select id="qrType">
+                <option value="vcard">vCard (Kontakt)</option>
+                <option value="paypal">PayPal Link</option>
+            </select>
+            <input type="text" id="qrData" placeholder="PayPal.me Name oder Telefonnummer">
+            
+            <button class="btn btn-secondary" onclick="saveSettings()">Speichern & Schließen</button>
+        </div>
+
+        <!-- STEUER MODUS -->
+        <div class="switch-container">
+            <span class="switch-label">Kleinunternehmer (§19 UStG)</span>
+            <input type="checkbox" id="taxSwitch" checked onchange="updateCalculations()">
+        </div>
+
+        <!-- KUNDE -->
+        <div class="card">
+            <h3 class="card-title">Kunde (Optional)</h3>
+            <input type="text" id="custName" placeholder="Name / Firma">
+            <button class="btn btn-secondary btn-small" onclick="toggleCustDetails()" id="btnCustDetails" style="width:100%;">Details anzeigen ▼</button>
+            <div id="custDetails" class="hidden" style="margin-top:10px;">
+                <input type="text" id="custStreet" placeholder="Straße">
+                <div class="row">
+                    <input type="text" id="custZip" placeholder="PLZ" class="col">
+                    <input type="text" id="custCity" placeholder="Ort" class="col" style="flex:2;">
+                </div>
+            </div>
+        </div>
+
+        <!-- ARTIKEL -->
+        <div class="card">
+            <h3 class="card-title">Posten</h3>
+            <div id="itemList" class="item-list"></div>
+            
+            <div style="background:#2a2a2a; padding:10px; border-radius:6px;">
+                <input type="text" id="itemName" placeholder="Artikelbeschreibung" style="margin-bottom:5px;">
+                <div class="row">
+                    <input type="number" id="itemPrice" placeholder="Preis (€)" class="col">
+                    <input type="number" id="itemQty" value="1" placeholder="Menge" class="col" style="flex:0.5;">
+                </div>
+                <button class="btn btn-add" onclick="addItem()">+ Hinzufügen</button>
+            </div>
+        </div>
+
+        <!-- ZAHLUNG & ABSCHLUSS -->
+        <div class="card">
+            <h3 class="card-title">Zahlung & Summe</h3>
+            
+            <div class="row" style="align-items:center; margin-bottom:15px;">
+                <div style="flex:1;">Rabatt (€):</div>
+                <div style="flex:1;"><input type="number" id="discount" value="0" onchange="updateCalculations()" style="margin:0; text-align:right;"></div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; font-size:1.4rem; font-weight:bold; margin-bottom:20px;">
+                <span>Gesamt:</span>
+                <span id="totalSum" style="color:var(--success);">0.00 €</span>
+            </div>
+            <div id="taxDisplay" style="text-align:right; font-size:0.85rem; color:var(--text-muted); margin-top:-15px; margin-bottom:20px;">Enthält 0% MwSt.</div>
+
+            <h3 class="card-title">Zahlart</h3>
+            <div class="pay-options">
+                <div class="pay-opt active" onclick="setPay('Bar')" id="payBar">Bar</div>
+                <div class="pay-opt" onclick="setPay('PayPal')" id="payPP">PayPal</div>
+                <div class="pay-opt" onclick="setPay('Überweisung')" id="payBank">Überw.</div>
+            </div>
+
+            <button class="btn btn-primary" onclick="generatePDF()">
+                <span>📄 PDF Quittung erstellen</span>
+            </button>
+        </div>
+
+        <!-- HISTORIE (Ausklappbar) -->
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="toggleHistory()">
+                <h3 class="card-title" style="margin:0;">Verlauf / Historie</h3>
+                <span id="histArrow">▼</span>
+            </div>
+            <div id="historyContainer" class="hidden" style="margin-top:15px;">
+                <div id="historyList"></div>
+            </div>
+        </div>
+
+        <!-- BACKUP -->
+        <div class="backup-box">
+            <span class="backup-label">Datensicherung (Lokal im Browser)</span>
+            <div class="row">
+                <button class="btn btn-secondary btn-small" onclick="downloadBackup()">💾 Sichern</button>
+                <button class="btn btn-secondary btn-small" onclick="document.getElementById('fileUpload').click()">📂 Laden</button>
+                <input type="file" id="fileUpload" accept=".json" style="display:none" onchange="restoreBackup(this)">
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Hidden Canvas -->
+    <canvas id="qr-canvas" style="display:none;"></canvas>
+
+    <script>
+        // --- STATE ---
+        let items = [];
+        let paymentMethod = 'Bar';
+        let history = JSON.parse(localStorage.getItem('quittung_history')) || [];
+        
+        // Settings laden (oder leer lassen)
+        let companyData = JSON.parse(localStorage.getItem('quittung_company')) || {
+            name: '', owner: '', street: '', zip: '', city: '', taxId: '', qrType: 'vcard', qrData: ''
+        };
+
+        // --- INIT ---
+        window.onload = function() {
+            loadSettingsToUI();
+            renderHistory();
+        };
+
+        function loadSettingsToUI() {
+            document.getElementById('myCompany').value = companyData.name;
+            document.getElementById('myName').value = companyData.owner;
+            document.getElementById('myStreet').value = companyData.street;
+            document.getElementById('myZip').value = companyData.zip;
+            document.getElementById('myCity').value = companyData.city;
+            document.getElementById('myTaxId').value = companyData.taxId;
+            document.getElementById('qrType').value = companyData.qrType || 'vcard';
+            document.getElementById('qrData').value = companyData.qrData || '';
+        }
+
+        function toggleSettings() {
+            document.getElementById('settingsCard').classList.toggle('hidden');
+        }
+
+        function toggleCustDetails() {
+            document.getElementById('custDetails').classList.toggle('hidden');
+            const btn = document.getElementById('btnCustDetails');
+            btn.textContent = btn.textContent.includes('▼') ? 'Details verbergen ▲' : 'Details anzeigen ▼';
+        }
+
+        function toggleHistory() {
+            document.getElementById('historyContainer').classList.toggle('hidden');
+            const arrow = document.getElementById('histArrow');
+            arrow.textContent = arrow.textContent === '▼' ? '▲' : '▼';
+        }
+
+        function saveSettings() {
+            companyData = {
+                name: document.getElementById('myCompany').value,
+                owner: document.getElementById('myName').value,
+                street: document.getElementById('myStreet').value,
+                zip: document.getElementById('myZip').value,
+                city: document.getElementById('myCity').value,
+                taxId: document.getElementById('myTaxId').value,
+                qrType: document.getElementById('qrType').value,
+                qrData: document.getElementById('qrData').value
+            };
+            localStorage.setItem('quittung_company', JSON.stringify(companyData));
+            toggleSettings();
+        }
+
+        // --- ITEMS ---
+        function addItem() {
+            const name = document.getElementById('itemName').value;
+            const price = parseFloat(document.getElementById('itemPrice').value);
+            const qty = parseFloat(document.getElementById('itemQty').value) || 1;
+
+            if(!name || isNaN(price)) return alert("Bitte Name und Preis eingeben.");
+
+            items.push({ name, price, qty });
+            
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemPrice').value = '';
+            document.getElementById('itemQty').value = '1';
+            document.getElementById('itemName').focus();
+            
+            renderItems();
+        }
+
+        function removeItem(index) {
+            items.splice(index, 1);
+            renderItems();
+        }
+
+        function renderItems() {
+            const list = document.getElementById('itemList');
+            list.innerHTML = '';
+            items.forEach((item, index) => {
+                const total = item.price * item.qty;
+                list.innerHTML += `
+                    <div class="item-row">
+                        <div class="item-info"><div>${item.name}</div><div>${item.qty} x ${item.price.toFixed(2)} €</div></div>
+                        <div style="display:flex; align-items:center;">
+                            <div class="item-price">${total.toFixed(2)} €</div>
+                            <button class="btn-del" onclick="removeItem(${index})">×</button>
+                        </div>
+                    </div>`;
+            });
+            updateCalculations();
+        }
+
+        function updateCalculations() {
+            let sum = items.reduce((acc, item) => acc + (item.price * item.qty), 0);
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+            sum = Math.max(0, sum - discount);
+
+            document.getElementById('totalSum').textContent = sum.toFixed(2) + ' €';
+
+            const isSmallBiz = document.getElementById('taxSwitch').checked;
+            if(isSmallBiz) {
+                document.getElementById('taxDisplay').textContent = "Kein Ausweis von USt. (§19 UStG)";
+            } else {
+                const net = sum / 1.19;
+                const tax = sum - net;
+                document.getElementById('taxDisplay').textContent = `Enthält 19% MwSt: ${tax.toFixed(2)} €`;
+            }
+        }
+
+        function setPay(method) {
+            paymentMethod = method;
+            document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('active'));
+            if(method === 'Bar') document.getElementById('payBar').classList.add('active');
+            if(method === 'PayPal') document.getElementById('payPP').classList.add('active');
+            if(method === 'Überweisung') document.getElementById('payBank').classList.add('active');
+        }
+
+        // --- HISTORY ---
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            list.innerHTML = '';
+            
+            // Sortieren: Neueste zuerst
+            history.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if(history.length === 0) {
+                list.innerHTML = '<div style="text-align:center; padding:15px; color:#555;">Keine Einträge.</div>';
+                return;
+            }
+
+            history.forEach(entry => {
+                const d = new Date(entry.date).toLocaleString('de-DE');
+                list.innerHTML += `
+                    <div class="hist-item">
+                        <div>
+                            <div class="hist-cust">${entry.custName || 'Laufkunde'}</div>
+                            <div class="hist-date">${d} • ${entry.total.toFixed(2)} €</div>
+                        </div>
+                        <div class="hist-actions">
+                            <button class="btn-hist" onclick="loadFromHistory('${entry.id}')" style="color:var(--accent); border-color:var(--accent);">✎ Laden</button>
+                            <button class="btn-hist" onclick="deleteFromHistory('${entry.id}')" style="color:var(--danger); border-color:var(--danger);">🗑</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function saveToHistory(total) {
+            const entry = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                custName: document.getElementById('custName').value,
+                custStreet: document.getElementById('custStreet').value,
+                custZip: document.getElementById('custZip').value,
+                custCity: document.getElementById('custCity').value,
+                items: [...items],
+                discount: document.getElementById('discount').value,
+                paymentMethod: paymentMethod,
+                isSmallBiz: document.getElementById('taxSwitch').checked,
+                total: total
+            };
+            history.push(entry);
+            localStorage.setItem('quittung_history', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function deleteFromHistory(id) {
+            if(confirm("Diesen Eintrag löschen?")) {
+                history = history.filter(h => h.id !== id);
+                localStorage.setItem('quittung_history', JSON.stringify(history));
+                renderHistory();
+            }
+        }
+
+        function loadFromHistory(id) {
+            const entry = history.find(h => h.id === id);
+            if(!entry) return;
+
+            if(confirm("Aktuelles Formular überschreiben?")) {
+                document.getElementById('custName').value = entry.custName || '';
+                document.getElementById('custStreet').value = entry.custStreet || '';
+                document.getElementById('custZip').value = entry.custZip || '';
+                document.getElementById('custCity').value = entry.custCity || '';
+                
+                items = [...entry.items];
+                document.getElementById('discount').value = entry.discount || 0;
+                setPay(entry.paymentMethod || 'Bar');
+                document.getElementById('taxSwitch').checked = entry.isSmallBiz;
+                
+                renderItems();
+                
+                // Formular anzeigen (falls Historie groß war und gescrollt wurde)
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                document.getElementById('historyContainer').classList.add('hidden');
+                document.getElementById('histArrow').textContent = '▼';
+            }
+        }
+
+        // --- BACKUP ---
+        function downloadBackup() {
+            const data = { settings: companyData, history: history };
+            const a = document.createElement('a');
+            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+            a.download = "quittung_backup.json";
+            document.body.appendChild(a); a.click(); a.remove();
+        }
+
+        function restoreBackup(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imp = JSON.parse(e.target.result);
+                    if(imp.settings) {
+                        companyData = imp.settings;
+                        localStorage.setItem('quittung_company', JSON.stringify(companyData));
+                        loadSettingsToUI();
+                    }
+                    if(imp.history && Array.isArray(imp.history)) {
+                        history = imp.history;
+                        localStorage.setItem('quittung_history', JSON.stringify(history));
+                        renderHistory();
+                    }
+                    alert("Backup erfolgreich geladen!");
+                } catch(err) { alert("Fehler beim Laden."); }
+            };
+            reader.readAsText(file); input.value = '';
+        }
+
+        // --- PDF GENERATION ---
+        function generatePDF() {
+            if(items.length === 0) return alert("Keine Posten auf der Quittung!");
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: 'mm', format: [80, 250] });
+            
+            const isSmallBiz = document.getElementById('taxSwitch').checked;
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('de-DE');
+            const timeStr = now.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'});
+            const docNum = `Q-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours())}${String(now.getMinutes())}`;
+
+            let y = 10;
+            const lineH = 4;
+            const centerX = 40;
+
+            // Header
+            doc.setFontSize(12); doc.setFont("helvetica", "bold");
+            doc.text(companyData.name || "Firma", centerX, y, {align:"center"}); y += 5;
+            
+            doc.setFontSize(8); doc.setFont("helvetica", "normal");
+            if(companyData.owner) { doc.text(`Inh. ${companyData.owner}`, centerX, y, {align:"center"}); y += lineH; }
+            if(companyData.street) { doc.text(companyData.street, centerX, y, {align:"center"}); y += lineH; }
+            if(companyData.zip && companyData.city) { doc.text(`${companyData.zip} ${companyData.city}`, centerX, y, {align:"center"}); y += lineH; }
+            if(companyData.taxId) { doc.text(`St-Nr/USt-ID: ${companyData.taxId}`, centerX, y, {align:"center"}); y += lineH + 2; }
+
+            doc.line(5, y, 75, y); y += 5;
+
+            // Meta
+            doc.text(`Datum: ${dateStr} ${timeStr}`, 5, y); y += lineH;
+            doc.text(`Beleg-Nr: ${docNum}`, 5, y); y += lineH + 2;
+
+            // Kunde
+            const cName = document.getElementById('custName').value;
+            if(cName) {
+                doc.setFont("helvetica", "bold"); doc.text("Kunde:", 5, y); y += lineH;
+                doc.setFont("helvetica", "normal"); doc.text(cName, 5, y); y += lineH;
+                const cStreet = document.getElementById('custStreet').value;
+                const cCity = document.getElementById('custCity').value;
+                if(cStreet) { doc.text(cStreet, 5, y); y += lineH; }
+                if(cCity) { doc.text(`${document.getElementById('custZip').value} ${cCity}`, 5, y); y += lineH; }
+                y += 2;
+            }
+
+            doc.line(5, y, 75, y); y += 5;
+
+            // Items
+            doc.setFont("helvetica", "bold");
+            doc.text("Pos", 5, y); doc.text("Preis", 75, y, {align:"right"});
+            doc.setFont("helvetica", "normal");
+            y += lineH;
+
+            let total = 0;
+            items.forEach(item => {
+                const lineTotal = item.price * item.qty;
+                total += lineTotal;
+                const title = `${item.qty}x ${item.name}`;
+                const splitTitle = doc.splitTextToSize(title, 50);
+                doc.text(splitTitle, 5, y);
+                doc.text(lineTotal.toFixed(2) + " €", 75, y, {align:"right"});
+                y += (splitTitle.length * lineH) + 1;
+            });
+
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+            if(discount > 0) {
+                y += 1;
+                doc.text(`Zwischensumme:`, 5, y); doc.text(total.toFixed(2) + " €", 75, y, {align:"right"}); y += lineH;
+                doc.text(`Rabatt:`, 5, y); doc.text("-" + discount.toFixed(2) + " €", 75, y, {align:"right"}); y += lineH;
+                total -= discount;
+            }
+
+            doc.line(5, y, 75, y); y += 5;
+
+            // Total
+            doc.setFontSize(12); doc.setFont("helvetica", "bold");
+            doc.text("GESAMT", 5, y); doc.text(total.toFixed(2) + " EUR", 75, y, {align:"right"});
+            y += 6;
+
+            doc.setFontSize(7); doc.setFont("helvetica", "normal");
+            if(isSmallBiz) {
+                doc.text("Kein Ausweis von USt. gem. §19 UStG.", centerX, y, {align:"center"});
+            } else {
+                const net = total / 1.19;
+                const tax = total - net;
+                doc.text(`Enthält 19% MwSt: ${tax.toFixed(2)} EUR`, centerX, y, {align:"center"});
+            }
+            y += lineH;
+            
+            doc.setFontSize(8);
+            doc.text(`Bezahlt mit: ${paymentMethod}`, 5, y); y += 8;
+
+            // QR
+            if(companyData.qrData) {
+                let qrValue = "";
+                let qrLabel = "";
+                if(companyData.qrType === 'paypal') {
+                    qrValue = `https://paypal.me/${companyData.qrData}/${total.toFixed(2)}EUR`;
+                    qrLabel = "PayPal Scan";
+                } else {
+                    qrValue = `BEGIN:VCARD\nVERSION:3.0\nFN:${companyData.name}\nTEL:${companyData.qrData}\nEND:VCARD`;
+                    qrLabel = "Kontakt";
+                }
+                const qr = new QRious({ element: document.getElementById('qr-canvas'), value: qrValue, size: 150 });
+                doc.addImage(qr.toDataURL(), 'JPEG', 30, y, 20, 20);
+                y += 22;
+                doc.setFontSize(6);
+                doc.text(qrLabel, centerX, y, {align:"center"});
+                y += 5;
+            }
+
+            doc.text("Vielen Dank für Ihren Einkauf!", centerX, y, {align:"center"});
+            doc.save(`Quittung_${docNum}.pdf`);
+
+            // Save to History
+            saveToHistory(total);
+        }
+    </script>
+</body>
+</html>
