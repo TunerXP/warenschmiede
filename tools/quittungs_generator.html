@@ -101,12 +101,22 @@
         @media print {
             .no-print { display: none !important; }
         }
+
+        @media (max-width: 600px) {
+            .desktop-only-text { display: none; }
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>Quittungs-Schmied</h1>
+        <div style="display:flex; align-items:center;">
+            <a href="../index.html" class="header-back-link no-print" style="text-decoration:none; color:inherit; margin-right:15px; font-size:0.9rem; display:flex; align-items:center;">
+                <span style="font-size:1.2rem; margin-right:5px;">🏠</span>
+                <span class="desktop-only-text">Zurück zur Warenschmiede</span>
+            </a>
+            <h1>Warenschmiede-Quittungszettel</h1>
+        </div>
         <div style="display:flex; gap:10px; align-items:center;">
             <button class="btn-icon" onclick="toggleDarkMode()" id="darkModeBtn" title="Dunkelmodus">🌙</button>
             <button class="btn-icon" onclick="toggleSettings()" title="Einstellungen">⚙️ Einstellungen & QR-Code</button>
