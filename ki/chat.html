@@ -1,18 +1,18 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="icon" type="image/png" href="/ws.png" sizes="32x32">
-  <link rel="apple-touch-icon" href="/ws.png" sizes="180x180">
-  <meta name="theme-color" content="#ffffff">
-  <title>KI-Versteher: Adaptiver Chat-Simulator - Warenschmiede</title>
-  <meta name="description" content="Simulierter KI-Chat, der sich an dich anpasst. Erklärungen für Einsteiger, Berufstätige, Schüler und Skeptiker.">
-  <link rel="preload" as="image" href="/assets/logo.svg">
-  <link rel="stylesheet" href="../styles.css">
-  <link rel="stylesheet" href="/assets/print.css?v=1.0.7" media="print">
-
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<link href="/ws.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="/ws.png" rel="apple-touch-icon" sizes="180x180"/>
+<meta content="#ffffff" name="theme-color"/>
+<title>KI-Versteher: Adaptiver Chat-Simulator - Warenschmiede</title>
+<meta content="Simulierter KI-Chat, der sich an dich anpasst. Erklärungen für Einsteiger, Berufstätige, Schüler und Skeptiker." name="description"/>
+<link as="image" href="/assets/logo.svg" rel="preload"/>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="/assets/print.css?v=1.0.7" media="print" rel="stylesheet"/>
+<style>
     /* Chat Specific Styles */
     .chat-container {
         max-width: 600px;
@@ -296,179 +296,239 @@
     html[data-theme="dark"] .persona-desc { color: #8696a0; }
     html[data-theme="dark"] .message a { color: #53bdeb; }
   </style>
-  <script src="/assets/js/theme.js"></script>
+<script src="/assets/js/theme.js"></script>
 </head>
 <body>
-  <header class="site-header" data-header>
-    <div class="ws-nav-container header-grid">
-      <div class="brand">
-        <a class="brand-link" href="../index.html#start">
-          <img src="../assets/images/warenschmiede_logo.png" alt="Warenschmiede Logo" class="brand-logo" width="453" height="276">
-          <div class="brand-text">
-            <span class="brand-name">Warenschmiede</span>
-            <span class="brand-tagline">3D-Druck · Made in Germany</span>
-          </div>
-        </a>
-      </div>
-
-      <nav class="main-nav" aria-label="Hauptnavigation">
-        <div class="nav-menu" id="primary-navigation" data-nav-menu>
-          <ul class="nav-list" id="navList">
-            <li class="nav-item nav-fixed">
-              <a class="nav-link" href="../index.html#start"><span class="nav-ico" aria-hidden="true">🏠</span>Start</a>
-            </li>
-
-            <li class="nav-item nav-fixed">
-              <a class="nav-link" href="../downloads.html"><span class="nav-ico" aria-hidden="true">📥</span>Downloads</a>
-            </li>
-
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-tools" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">
-                <span class="nav-ico" aria-hidden="true">🧮</span>Online Tools ▾
+<header class="site-header" data-header="">
+<div class="ws-nav-container header-grid">
+<div class="brand">
+<a class="brand-link" href="../index.html#start">
+<img alt="Warenschmiede Logo" class="brand-logo" height="276" src="../assets/images/warenschmiede_logo.png" width="453"/>
+<div class="brand-text">
+<span class="brand-name">Warenschmiede</span>
+<span class="brand-tagline">3D-Druck · Made in Germany</span>
+</div>
+</a>
+</div>
+<nav aria-label="Hauptnavigation" class="main-nav">
+<div class="nav-menu" data-nav-menu="" id="primary-navigation">
+<ul class="nav-list" id="navList">
+<li class="nav-item nav-fixed">
+<a class="nav-link" data-nav-link="" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html" data-section="start" href="../index.html#start"><span aria-hidden="true" class="nav-ico">🏠</span>Start</a>
+</li>
+<li class="nav-item nav-fixed">
+<a class="nav-link" data-nav-link="" data-path="/downloads , /downloads.html" href="../downloads.html"><span aria-hidden="true" class="nav-ico">📥</span>Downloads</a>
+</li>
+<!-- Neuer Dropdown: Online Tools -->
+<li class="nav-item nav-fixed nav-more nav-dropdown nav-highlight nav-tools" data-nav-dropdown="">
+<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button">
+<span aria-hidden="true" class="nav-ico">🧮</span>Online Tools ▾
               </button>
-              <ul class="nav-more-menu" hidden>
-                <li><a class="nav-link" href="../tools/"><span class="nav-ico" aria-hidden="true">🗂️</span>Tool-Übersicht</a></li>
-                <li><a class="nav-link" href="../werkstatt-rechner.html"><span class="nav-ico" aria-hidden="true">🛠️</span>Warenschmiede METALL</a></li>
-                <li><a class="nav-link" href="../tools/kostenrechner-v2.html"><span class="nav-ico" aria-hidden="true">🧮</span>3D-Druck Rechner</a></li>
-              </ul>
-            </li>
-
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🧰</span>Leistungen ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li><a class="nav-link" href="../leistungen/3d-druck.html"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druckauftrag</a></li>
-                <li><a class="nav-link" href="../leistungen/cad-prototyping.html"><span class="nav-ico" aria-hidden="true">📐</span>CAD &amp; Prototyping</a></li>
-                <li><a class="nav-link" href="../leistungen/pc-hilfe.html"><span class="nav-ico" aria-hidden="true">💻</span>PC-Hilfe</a></li>
-              </ul>
-            </li>
-
-            <li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🤖</span>Über KI ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li><a class="nav-link" href="chat.html" aria-current="page" style="color: var(--accent); font-weight: bold;"><span class="nav-ico" aria-hidden="true">💬</span>KI-Versteher (Neu)</a></li>
-                <li><a class="nav-link" href="index.html"><span class="nav-ico" aria-hidden="true">📖</span>Einführung &amp; Grundlagen</a></li>
-                <li><a class="nav-link" href="prompts.html"><span class="nav-ico" aria-hidden="true">✍️</span>Prompts für den Alltag</a></li>
-                <li><a class="nav-link" href="promt-trainer.html"><span class="nav-ico" aria-hidden="true">🧠</span>KI Trainer</a></li>
-                <li><a class="nav-link" href="ki-finder.html"><span class="nav-ico" aria-hidden="true">🧭</span>Warenschmiede KI-Finder</a></li>
-                <li><a class="nav-link" href="tools.html"><span class="nav-ico" aria-hidden="true">🛠️</span>KI-Werkzeuge</a></li>
-                <li><a class="nav-link" href="so-arbeitest-du-mit-ki.html"><span class="nav-ico" aria-hidden="true">🧭</span>So arbeitest du mit KI</a></li>
-                <li><a class="nav-link" href="programme-die-du-brauchst.html"><span class="nav-ico" aria-hidden="true">💾</span>Software-Tipps</a></li>
-                <li><a class="nav-link" href="chancen-und-risiken.html"><span class="nav-ico" aria-hidden="true">⚖️</span>Chancen &amp; Risiken</a></li>
-                <li><a class="nav-link" href="faq.html"><span class="nav-ico" aria-hidden="true">🔒</span>FAQ &amp; Sicherheit</a></li>
-              </ul>
-            </li>
-
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">✉️</span>Kontakt ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li><a class="nav-link" href="../kontakt.html"><span class="nav-ico" aria-hidden="true">📧</span>Kontakt aufnehmen</a></li>
-                <li><a class="nav-link" href="../ablauf-anfrage.html"><span class="nav-ico" aria-hidden="true">📝</span>Ablauf &amp; Anfrage</a></li>
-                <li><a class="nav-link" href="../ueber-mich.html"><span class="nav-ico" aria-hidden="true">👤</span>Über mich</a></li>
-              </ul>
-            </li>
-
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druck ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li><a class="nav-link" href="../3ddruck-chat.html"><span class="nav-ico" aria-hidden="true">💬</span>Interaktiver Berater</a></li>
-                <li><a class="nav-link" href="../technologien.html"><span class="nav-ico" aria-hidden="true">🧪</span>Technologien</a></li>
-                <li><a class="nav-link" href="../fehlerdatenbank.html"><span class="nav-ico" aria-hidden="true">🛠️</span>Fehler &amp; Lösungen</a></li>
-                <li><a class="nav-link" href="../material.html"><span class="nav-ico" aria-hidden="true">📚</span>Material-Guide</a></li>
-                <li><a class="nav-link" href="../druck-tipps.html"><span class="nav-ico" aria-hidden="true">🧭</span>Tipps &amp; Kosten</a></li>
-                <li><a class="nav-link" href="../3ddruck-faq.html"><span class="nav-ico" aria-hidden="true">❓</span>FAQ</a></li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </nav>
-
-      <div class="header-actions">
-        <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Design umschalten">
-          <span id="themeIcon" aria-hidden="true">🖥️</span>
-          <span class="theme-toggle__text" id="themeToggleText">Helles Design</span>
-        </button>
-
-        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
-          <span class="sr-only">Menü öffnen</span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main class="site-main">
-    <div class="container">
-        <div class="ws-section" style="text-align: center;">
-            <h1 class="ws-page-title">KI-Versteher</h1>
-            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
+<ul class="nav-more-menu" hidden="">
+<li>
+<a class="nav-link" data-nav-link="" data-path="/tools , /tools/ , /tools/index.html" href="../tools">
+<span aria-hidden="true" class="nav-ico">🗂️</span>Tool-Übersicht (Dashboard)
+                  </a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/werkstatt-rechner , /werkstatt-rechner.html" href="../werkstatt-rechner.html">
+<span aria-hidden="true" class="nav-ico">🛠️</span>Warenschmiede METALL
+                  </a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html" href="../tools/kostenrechner-v2.html">
+<span aria-hidden="true" class="nav-ico">🧮</span>Warenschmiede 3D-Druck Suite
+                  </a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/tools/buero/doku-light/QRCodeMasterPro , /tools/buero/doku-light/QRCodeMasterPro.html" href="../tools/buero/doku-light/QRCodeMasterPro.html">
+<span aria-hidden="true" class="nav-ico">🔳</span>Warenschmiede QR-Master ULTRA
+                  </a>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown="">
+<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🧰</span>Leistungen ▾</button>
+<ul class="nav-more-menu" hidden="">
+<li>
+<a class="nav-link" data-nav-link="" data-path="/leistungen/3d-druck , /leistungen/3d-druck.html" href="../leistungen/3d-druck.html"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druckauftrag</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html" href="../leistungen/cad-prototyping.html"><span aria-hidden="true" class="nav-ico">📐</span>CAD &amp; Prototyping</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html" href="../leistungen/pc-hilfe.html"><span aria-hidden="true" class="nav-ico">💻</span>PC-Hilfe</a>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown="">
+<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🤖</span>Über KI ▾</button>
+<ul class="nav-more-menu" hidden="">
+<li><a aria-current="page" class="nav-link active" href="chat.html"><span aria-hidden="true" class="nav-ico">💬</span>Interaktiver KI Versteher (NEU)</a></li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki , /ki/ , /ki/index.html" href="index.html"><span aria-hidden="true" class="nav-ico">📖</span>Einführung &amp; Grundlagen</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/prompts , /ki/prompts.html" href="prompts.html"><span aria-hidden="true" class="nav-ico">✍️</span>Prompts für den Alltag</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/promt-trainer , /ki/promt-trainer.html" href="promt-trainer.html"><span aria-hidden="true" class="nav-ico">🧠</span>KI Trainer</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/ki-finder , /ki/ki-finder.html" href="ki-finder.html"><span aria-hidden="true" class="nav-ico">🧭</span>Warenschmiede KI-Finder</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/tools , /ki/tools.html" href="tools.html"><span aria-hidden="true" class="nav-ico">🛠️</span>KI-Werkzeuge</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html" href="so-arbeitest-du-mit-ki.html"><span aria-hidden="true" class="nav-ico">🧭</span>So arbeitest du mit KI</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/programme-die-du-brauchst , /ki/programme-die-du-brauchst.html" href="programme-die-du-brauchst.html"><span aria-hidden="true" class="nav-ico">💾</span>Programme, die du brauchst</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html" href="chancen-und-risiken.html"><span aria-hidden="true" class="nav-ico">⚖️</span>KI: Chancen &amp; Risiken</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/faq , /ki/faq.html" href="faq.html"><span aria-hidden="true" class="nav-ico">🔒</span>KI-FAQ &amp; Sicherheit</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/lexikon , /ki/lexikon.html" href="lexikon.html"><span aria-hidden="true" class="nav-ico">🔤</span>KI-Lexikon</a>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown="">
+<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">✉️</span>Kontakt ▾</button>
+<ul class="nav-more-menu" hidden="">
+<li>
+<a class="nav-link" data-nav-link="" data-path="/kontakt , /kontakt.html , /warenschmiede/kontakt , /warenschmiede/kontakt.html" href="../kontakt.html"><span aria-hidden="true" class="nav-ico">📧</span>Kontakt aufnehmen</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ablauf-anfrage , /ablauf-anfrage.html" href="../ablauf-anfrage.html"><span aria-hidden="true" class="nav-ico">📝</span>Ablauf &amp; Anfrage</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/impressum , /impressum.html , /warenschmiede/impressum , /warenschmiede/impressum.html" href="../impressum.html"><span aria-hidden="true" class="nav-ico">⚖️</span>Impressum</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ueber-mich , /ueber-mich.html , /warenschmiede/ueber-mich.html , /about , /about.html , /warenschmiede/about.html" href="../ueber-mich.html"><span aria-hidden="true" class="nav-ico">👤</span>Über mich</a>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown="">
+<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druck ▾</button>
+<ul class="nav-more-menu" hidden="">
+<li>
+<a class="nav-link" data-nav-link="" data-path="/3ddruck-chat , /3ddruck-chat.html" href="../3ddruck-chat.html"><span aria-hidden="true" class="nav-ico">💬</span>Interaktiver Berater (Neu)</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/technologien , /technologien.html" href="../technologien.html"><span aria-hidden="true" class="nav-ico">🧪</span>FDM / SLA / SLS – Technologien</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/fehlerdatenbank , /fehlerdatenbank.html" href="../fehlerdatenbank.html"><span aria-hidden="true" class="nav-ico">🛠️</span>Fehler &amp; Troubleshooting</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ideenquellen , /ideenquellen.html , /ideen , /ideen/ , /ideen/index.html" href="../ideenquellen.html"><span aria-hidden="true" class="nav-ico">💡</span>Ideenquellen &amp; Portale</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/material.html" href="../material.html"><span aria-hidden="true" class="nav-ico">📚</span>Materialwissen &amp; Vergleiche</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/druck-tipps , /druck-tipps.html" href="../druck-tipps.html"><span aria-hidden="true" class="nav-ico">🧭</span>Tipps &amp; Abläufe / Kosten</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html" href="../tools/kostenrechner-v2.html"><span aria-hidden="true" class="nav-ico">🧮</span>Kosten &amp; Kalkulation</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/slicer-einstellungen , /slicer-einstellungen.html" href="../slicer-einstellungen.html"><span aria-hidden="true" class="nav-ico">⚙️</span>Slicer &amp; Einstellungen</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/3ddruck-faq , /3ddruck-faq.html" href="../3ddruck-faq.html"><span aria-hidden="true" class="nav-ico">❓</span>Neu beim 3D-Druck?</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/wartung-reinigung , /wartung-reinigung.html" href="../wartung-reinigung.html"><span aria-hidden="true" class="nav-ico">🧼</span>Wartung &amp; Reinigung</a>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+<div class="header-actions">
+<button aria-label="Design umschalten" class="theme-toggle" id="themeToggleBtn" type="button">
+<span aria-hidden="true" id="themeIcon">🖥️</span>
+<span class="theme-toggle__text" id="themeToggleText">Helles Design</span>
+</button>
+<button aria-controls="primary-navigation" aria-expanded="false" class="nav-toggle" data-nav-toggle="" type="button">
+<span class="sr-only">Menü öffnen</span>
+<span aria-hidden="true" class="nav-toggle-bar"></span>
+<span aria-hidden="true" class="nav-toggle-bar"></span>
+<span aria-hidden="true" class="nav-toggle-bar"></span>
+</button>
+</div>
+</div>
+</header>
+<main class="site-main">
+<div class="container">
+<div class="ws-section" style="text-align: center;">
+<h1 class="ws-page-title">KI-Versteher</h1>
+<p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
                 Wähle deinen Modus und entdecke, was Künstliche Intelligenz für dich bedeutet.
             </p>
-        </div>
-
-        <div class="chat-container">
-            <div class="chat-header">
-                <div class="chat-header-avatar">
-                     <img src="/assets/img/marco.jpg" alt="Marco" onerror="this.src='/assets/img/avatar-placeholder.svg'">
-                </div>
-                <div class="chat-header-info">
-                    <div class="chat-header-name">Marco (KI-Guide)</div>
-                    <div class="chat-header-status">Online</div>
-                </div>
-            </div>
-
-            <div class="chat-body" id="chat-body">
-                </div>
-
-            <div class="typing-indicator" id="typing-indicator">
-                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-            </div>
-
-            <div class="persona-overlay" id="persona-overlay">
-                <h3>KI einfach erklärt.<br>Wer fragt gerade?</h3>
-                <div class="persona-grid">
-                    <div class="persona-card" onclick="selectPersona('senior')">
-                        <span class="persona-icon">👴</span>
-                        <div class="persona-title">Senior / Einsteiger</div>
-                        <div class="persona-desc">Einfach & Sicher</div>
-                    </div>
-                    <div class="persona-card" onclick="selectPersona('adult')">
-                        <span class="persona-icon">👨‍💼</span>
-                        <div class="persona-title">Beruf & Alltag</div>
-                        <div class="persona-desc">Effizient & Praxis</div>
-                    </div>
-                    <div class="persona-card" onclick="selectPersona('youth')">
-                        <span class="persona-icon">🎮</span>
-                        <div class="persona-title">Jugend & Schule</div>
-                        <div class="persona-desc">Locker & Future</div>
-                    </div>
-                    <div class="persona-card" onclick="selectPersona('skeptic')">
-                        <span class="persona-icon">🤨</span>
-                        <div class="persona-title">Skeptiker</div>
-                        <div class="persona-desc">Kritisch & Fakten</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="chat-controls">
-                <button class="chat-btn" onclick="restartChat()">🔄 Neustart / Wechseln</button>
-            </div>
-        </div>
-
-        <div style="text-align: center; margin-top: 2rem; margin-bottom: 4rem;">
-            <p style="color: var(--text-muted); font-size: 0.9rem;">
+</div>
+<div class="chat-container">
+<div class="chat-header">
+<div class="chat-header-avatar">
+<img alt="Marco" onerror="this.src='/assets/img/avatar-placeholder.svg'" src="/assets/img/marco.jpg"/>
+</div>
+<div class="chat-header-info">
+<div class="chat-header-name">Marco (KI-Guide)</div>
+<div class="chat-header-status">Online</div>
+</div>
+</div>
+<div class="chat-body" id="chat-body">
+</div>
+<div class="typing-indicator" id="typing-indicator">
+<div class="dot"></div><div class="dot"></div><div class="dot"></div>
+</div>
+<div class="persona-overlay" id="persona-overlay">
+<h3>KI einfach erklärt.<br/>Wer fragt gerade?</h3>
+<div class="persona-grid">
+<div class="persona-card" onclick="selectPersona('senior')">
+<span class="persona-icon">👴</span>
+<div class="persona-title">Senior / Einsteiger</div>
+<div class="persona-desc">Einfach &amp; Sicher</div>
+</div>
+<div class="persona-card" onclick="selectPersona('adult')">
+<span class="persona-icon">👨‍💼</span>
+<div class="persona-title">Beruf &amp; Alltag</div>
+<div class="persona-desc">Effizient &amp; Praxis</div>
+</div>
+<div class="persona-card" onclick="selectPersona('youth')">
+<span class="persona-icon">🎮</span>
+<div class="persona-title">Jugend &amp; Schule</div>
+<div class="persona-desc">Locker &amp; Future</div>
+</div>
+<div class="persona-card" onclick="selectPersona('skeptic')">
+<span class="persona-icon">🤨</span>
+<div class="persona-title">Skeptiker</div>
+<div class="persona-desc">Kritisch &amp; Fakten</div>
+</div>
+</div>
+</div>
+<div class="chat-controls">
+<button class="chat-btn" onclick="restartChat()">🔄 Neustart / Wechseln</button>
+</div>
+</div>
+<div style="text-align: center; margin-top: 2rem; margin-bottom: 4rem;">
+<p style="color: var(--text-muted); font-size: 0.9rem;">
                 Hinweis: Dies ist ein simulierter Chat. Alle Links öffnen in einem neuen Tab.
             </p>
-            <a href="/ki/tools.html" class="btn btn-primary">Alle KI-Tools ansehen</a>
-        </div>
-    </div>
-  </main>
-
-  <script src="../assets/js/theme.js"></script>
-  <script src="../assets/js/header.js"></script>
-
-  <script>
+<a class="btn btn-primary" href="/ki/tools.html">Alle KI-Tools ansehen</a>
+</div>
+</div>
+</main>
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/js/header.js"></script>
+<script>
     // --- KONFIGURATION & DATEN ---
     
     const PERSONAS = {
