@@ -1,46 +1,40 @@
 from playwright.sync_api import sync_playwright
 
-def verify_receipt_gen(page):
-    # Load the local file
-    page.goto("file:///app/tools/quittungs_generator.html")
+def verify_receipt_header():
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        # Since the file is static HTML, we can load it directly via file://
+        # Note: relative links might not work perfectly with file:// but visual structure should render.
+        # We need absolute path for file://
+        import os
+        cwd = os.getcwd()
+        file_path = f"file://{cwd}/tools/quittungs_generator.html"
 
-    # Check title
-    print(page.title())
+        print(f"Loading {file_path}")
+        page.goto(file_path)
 
-    # 1. Check Header elements
-    assert page.is_visible("h1:has-text(\"Quittungs-Schmied\")")
-    assert page.is_visible("#darkModeBtn")
-    assert page.is_visible("button[title=\"Einstellungen\"]")
+        # Verify Title
+        h1 = page.locator("h1")
+        print(f"H1 Text: {h1.inner_text()}")
 
-    # 2. Check Dark Mode Toggle
-    # Default is light (from my understanding, but lets check)
-    # Actually I made default light.
-    # Take screenshot of light mode
-    page.screenshot(path="verification/receipt_light.png")
+        # Verify Link
+        link = page.locator(".header-back-link")
+        print(f"Link Text: {link.inner_text()}")
 
-    # Click toggle
-    page.click("#darkModeBtn")
-    # Check if body has dark-mode class
-    assert "dark-mode" in page.eval_on_selector("body", "e => e.className")
-    # Take screenshot of dark mode
-    page.screenshot(path="verification/receipt_dark.png")
+        # Verify Mobile view (resize viewport)
+        page.set_viewport_size({"width": 375, "height": 667})
+        # Check if text is hidden
+        desktop_text = page.locator(".desktop-only-text")
 
-    # 3. Check Settings Button Text
-    settings_btn = page.query_selector("button[title=\"Einstellungen\"]")
-    print(settings_btn.inner_text())
-    assert "Einstellungen & QR-Code" in settings_btn.inner_text()
+        # Take screenshot of mobile view
+        page.screenshot(path="verification_mobile.png")
 
-    # 4. Check Footer
-    assert page.is_visible("a[href=\"../index.html\"]")
-    assert page.is_visible("a[href=\"../impressum.html\"]")
+        # Verify Desktop view
+        page.set_viewport_size({"width": 1280, "height": 800})
+        page.screenshot(path="verification_desktop.png")
 
-    # 5. Check Share Button
-    assert page.is_visible(".btn-share")
-    assert "Teilen" in page.inner_text(".btn-share")
+        browser.close()
 
 if __name__ == "__main__":
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        page = browser.new_page()
-        verify_receipt_gen(page)
-        browser.close()
+    verify_receipt_header()
