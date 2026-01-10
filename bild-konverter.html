@@ -1,28 +1,29 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="icon" type="image/png" href="/ws.png" sizes="32x32">
-  <link rel="apple-touch-icon" href="/ws.png" sizes="180x180">
-  <meta name="theme-color" content="#000000">
-  <title>Bild-Konverter für PNG, JPG und WebP – Warenschmiede</title>
-  <meta name="description" content="Bilder im Browser zwischen PNG, JPG und WebP umwandeln – ohne Upload, ohne Tracking, direkt lokal.">
-  <meta name="robots" content="index,follow">
-  <meta name="color-scheme" content="light dark">
-  <link rel="canonical" href="https://www.warenschmiede.com/bild-konverter.html">
-  <meta property="og:title" content="Bild-Konverter für PNG, JPG und WebP – Warenschmiede">
-  <meta property="og:description" content="Bilder im Browser zwischen PNG, JPG und WebP umwandeln – ohne Upload, ohne Tracking, direkt lokal.">
-  <meta name="twitter:title" content="Bild-Konverter für PNG, JPG und WebP – Warenschmiede">
-  <meta name="twitter:description" content="Bilder im Browser zwischen PNG, JPG und WebP umwandeln – ohne Upload, ohne Tracking, direkt lokal.">
-  <meta name="twitter:url" content="https://www.warenschmiede.com/bild-konverter.html">
-  <meta name="twitter:image" content="/assets/og/og-default.jpg">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.warenschmiede.com/bild-konverter.html">
-  <meta property="og:site_name" content="Warenschmiede">
-  <meta property="og:locale" content="de_DE">
-  <meta name="twitter:card" content="summary_large_image">
-  <script>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<link href="/ws.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="/ws.png" rel="apple-touch-icon" sizes="180x180"/>
+<meta content="#000000" name="theme-color"/>
+<title>Bild-Konverter für PNG, JPG und WebP – Warenschmiede</title>
+<meta content="Bilder im Browser zwischen PNG, JPG und WebP umwandeln – ohne Upload, ohne Tracking, direkt lokal." name="description"/>
+<meta content="index,follow" name="robots"/>
+<meta content="light dark" name="color-scheme"/>
+<link href="https://www.warenschmiede.com/bild-konverter.html" rel="canonical"/>
+<meta content="Bild-Konverter für PNG, JPG und WebP – Warenschmiede" property="og:title"/>
+<meta content="Bilder im Browser zwischen PNG, JPG und WebP umwandeln – ohne Upload, ohne Tracking, direkt lokal." property="og:description"/>
+<meta content="Bild-Konverter für PNG, JPG und WebP – Warenschmiede" name="twitter:title"/>
+<meta content="Bilder im Browser zwischen PNG, JPG und WebP umwandeln – ohne Upload, ohne Tracking, direkt lokal." name="twitter:description"/>
+<meta content="https://www.warenschmiede.com/bild-konverter.html" name="twitter:url"/>
+<meta content="/assets/og/og-default.jpg" name="twitter:image"/>
+<meta content="website" property="og:type"/>
+<meta content="https://www.warenschmiede.com/bild-konverter.html" property="og:url"/>
+<meta content="Warenschmiede" property="og:site_name"/>
+<meta content="de_DE" property="og:locale"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<script>
     (function () {
       var storageKey = 'theme-preference';
       var preference = 'system';
@@ -43,16 +44,16 @@
       root.dataset.themePreference = preference;
     })();
   </script>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="/assets/print.css?v=1.0.7" media="print">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Oswald:wght@500;700&family=Orbitron:wght@500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
-  <script>
+<link href="styles.css" rel="stylesheet"/>
+<link href="/assets/print.css?v=1.0.7" media="print" rel="stylesheet"/>
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Oswald:wght@500;700&amp;family=Orbitron:wght@500;700&amp;family=Bebas+Neue&amp;display=swap" rel="stylesheet"/>
+<script>
     window.tailwind = window.tailwind || {};
     window.tailwind.config = { corePlugins: { preflight: false } };
   </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
     .converter-hero {
       text-align: center;
       max-width: 840px;
@@ -195,703 +196,640 @@
   </style>
 </head>
 <body>
-  <header class="site-header" data-header>
-    <div class="ws-nav-container header-grid">
-      <div class="brand">
-        <a class="brand-link" href="/index.html#start">
-          <img src="/assets/images/warenschmiede_logo.png" alt="Warenschmiede Logo" class="brand-logo" width="453" height="276" fetchpriority="high">
-          <div class="brand-text">
-            <span class="brand-name">Warenschmiede</span>
-            <span class="brand-tagline">3D-Druck · Made in Germany</span>
-          </div>
-        </a>
-      </div>
-
-      <nav class="main-nav" aria-label="Hauptnavigation">
-        <div class="nav-menu" id="primary-navigation" data-nav-menu>
-          <ul class="nav-list" id="navList">
-            <li class="nav-item nav-fixed">
-              <a class="nav-link" href="/index.html#start" data-nav-link data-section="start" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html"><span class="nav-ico" aria-hidden="true">🏠</span>Start</a>
-            </li>
-
-            <li class="nav-item nav-fixed">
-              <a class="nav-link" href="/downloads.html" data-nav-link data-path="/downloads , /downloads.html"><span class="nav-ico" aria-hidden="true">📥</span>Downloads</a>
-            </li>
-
-                        <!-- Neuer Dropdown: Online Tools -->
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-highlight nav-tools" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false">
-                <span class="nav-ico" aria-hidden="true">🧮</span>Online Tools ▾
+<header class="site-header" data-header="">
+<div class="ws-nav-container header-grid">
+<div class="brand">
+<a class="brand-link" href="/index.html#start">
+<img alt="Warenschmiede Logo" class="brand-logo" fetchpriority="high" height="276" src="/assets/images/warenschmiede_logo.png" width="453"/>
+<div class="brand-text">
+<span class="brand-name">Warenschmiede</span>
+<span class="brand-tagline">3D-Druck · Made in Germany</span>
+</div>
+</a>
+</div>
+<nav aria-label="Hauptnavigation" class="main-nav">
+<div class="nav-menu" data-nav-menu="" id="primary-navigation">
+<ul class="nav-list" id="navList">
+<li class="nav-item nav-fixed">
+<a class="nav-link" data-nav-link="" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html" data-section="start" href="index.html#start"><span aria-hidden="true" class="nav-ico">🏠</span>Start</a>
+</li>
+<li class="nav-item nav-fixed">
+<a class="nav-link" data-nav-link="" data-path="/downloads , /downloads.html" href="downloads.html"><span aria-hidden="true" class="nav-ico">📥</span>Downloads</a>
+</li>
+<!-- Neuer Dropdown: Online Tools -->
+<li class="nav-item nav-fixed nav-more nav-dropdown nav-highlight nav-tools" data-nav-dropdown="">
+<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button">
+<span aria-hidden="true" class="nav-ico">🧮</span>Online Tools ▾
               </button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/tools/" data-nav-link data-path="/tools , /tools/ , /tools/index.html">
-                    <span class="nav-ico" aria-hidden="true">🗂️</span>Tool-Übersicht (Dashboard)
+<ul class="nav-more-menu" hidden="">
+<li>
+<a class="nav-link" data-nav-link="" data-path="/tools , /tools/ , /tools/index.html" href="tools">
+<span aria-hidden="true" class="nav-ico">🗂️</span>Tool-Übersicht (Dashboard)
                   </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/werkstatt-rechner.html" data-nav-link data-path="/werkstatt-rechner , /werkstatt-rechner.html">
-                    <span class="nav-ico" aria-hidden="true">🛠️</span>Warenschmiede METALL
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/werkstatt-rechner , /werkstatt-rechner.html" href="werkstatt-rechner.html">
+<span aria-hidden="true" class="nav-ico">🛠️</span>Warenschmiede METALL
                   </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/tools/kostenrechner-v2.html" data-nav-link data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html">
-                    <span class="nav-ico" aria-hidden="true">🧮</span>Warenschmiede 3D-Druck Suite
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html" href="tools/kostenrechner-v2.html">
+<span aria-hidden="true" class="nav-ico">🧮</span>Warenschmiede 3D-Druck Suite
                   </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/tools/buero/doku-light/QRCodeMasterPro.html" data-nav-link data-path="/tools/buero/doku-light/QRCodeMasterPro , /tools/buero/doku-light/QRCodeMasterPro.html">
-                    <span class="nav-ico" aria-hidden="true">🔳</span>Warenschmiede QR-Master ULTRA
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/tools/buero/doku-light/QRCodeMasterPro , /tools/buero/doku-light/QRCodeMasterPro.html" href="tools/buero/doku-light/QRCodeMasterPro.html">
+<span aria-hidden="true" class="nav-ico">🔳</span>Warenschmiede QR-Master ULTRA
                   </a>
-                </li>
-              </ul>
-            </li>
-
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🧰</span>Leistungen ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/leistungen/3d-druck.html" data-nav-link data-path="/leistungen/3d-druck , /leistungen/3d-druck.html"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druckauftrag</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/leistungen/cad-prototyping.html" data-nav-link data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html"><span class="nav-ico" aria-hidden="true">📐</span>CAD &amp; Prototyping</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/leistungen/pc-hilfe.html" data-nav-link data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html"><span class="nav-ico" aria-hidden="true">💻</span>PC-Hilfe</a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">🤖</span>Über KI ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li><a class="nav-link" href="/ki/chat.html"><span class="nav-ico" aria-hidden="true">💬</span>Interaktiver KI Versteher (NEU)</a></li>
-                <li>
-                  <a class="nav-link" href="/ki/index.html" data-nav-link data-path="/ki , /ki/ , /ki/index.html"><span class="nav-ico" aria-hidden="true">📖</span>Einführung &amp; Grundlagen</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/prompts.html" data-nav-link data-path="/ki/prompts , /ki/prompts.html"><span class="nav-ico" aria-hidden="true">✍️</span>Prompts für den Alltag</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/promt-trainer.html" data-nav-link data-path="/ki/promt-trainer , /ki/promt-trainer.html"><span class="nav-ico" aria-hidden="true">🧠</span>KI Trainer</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/ki-finder.html" data-nav-link data-path="/ki/ki-finder , /ki/ki-finder.html"><span class="nav-ico" aria-hidden="true">🧭</span>Warenschmiede KI-Finder</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/tools.html" data-nav-link data-path="/ki/tools , /ki/tools.html"><span class="nav-ico" aria-hidden="true">🛠️</span>KI-Werkzeuge</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/so-arbeitest-du-mit-ki.html" data-nav-link data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html"><span class="nav-ico" aria-hidden="true">🧭</span>So arbeitest du mit KI</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/programme-die-du-brauchst.html" data-nav-link data-path="/ki/programme-die-du-brauchst , /ki/programme-die-du-brauchst.html"><span class="nav-ico" aria-hidden="true">💾</span>Programme, die du brauchst</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/chancen-und-risiken.html" data-nav-link data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html"><span class="nav-ico" aria-hidden="true">⚖️</span>KI: Chancen &amp; Risiken</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/faq.html" data-nav-link data-path="/ki/faq , /ki/faq.html"><span class="nav-ico" aria-hidden="true">🔒</span>KI-FAQ &amp; Sicherheit</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ki/lexikon.html" data-nav-link data-path="/ki/lexikon , /ki/lexikon.html"><span class="nav-ico" aria-hidden="true">🔤</span>KI-Lexikon</a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">✉️</span>Kontakt ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/kontakt.html" data-nav-link data-path="/kontakt , /kontakt.html , /warenschmiede/kontakt , /warenschmiede/kontakt.html"><span class="nav-ico" aria-hidden="true">📧</span>Kontakt aufnehmen</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ablauf-anfrage.html" data-nav-link data-path="/ablauf-anfrage , /ablauf-anfrage.html"><span class="nav-ico" aria-hidden="true">📝</span>Ablauf &amp; Anfrage</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/impressum.html" data-nav-link data-path="/impressum , /impressum.html , /warenschmiede/impressum , /warenschmiede/impressum.html"><span class="nav-ico" aria-hidden="true">⚖️</span>Impressum</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ueber-mich.html" data-nav-link data-path="/ueber-mich , /ueber-mich.html , /warenschmiede/ueber-mich.html , /about , /about.html , /warenschmiede/about.html"><span class="nav-ico" aria-hidden="true">👤</span>Über mich</a>
-                </li>
-              </ul>
-            </li>
-
-            <li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown>
-              <button class="nav-more-btn" type="button" aria-haspopup="true" aria-expanded="false"><span class="nav-ico" aria-hidden="true">📦</span>3D-Druck ▾</button>
-              <ul class="nav-more-menu" hidden>
-                <li>
-                  <a class="nav-link" href="/3ddruck-chat.html" data-nav-link data-path="/3ddruck-chat , /3ddruck-chat.html"><span class="nav-ico" aria-hidden="true">💬</span>Interaktiver Berater (Neu)</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/technologien.html" data-nav-link data-path="/technologien , /technologien.html"><span class="nav-ico" aria-hidden="true">🧪</span>FDM / SLA / SLS – Technologien</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/fehlerdatenbank.html" data-nav-link data-path="/fehlerdatenbank , /fehlerdatenbank.html"><span class="nav-ico" aria-hidden="true">🛠️</span>Fehler &amp; Troubleshooting</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/ideenquellen.html" data-nav-link data-path="/ideenquellen , /ideenquellen.html , /ideen , /ideen/ , /ideen/index.html"><span class="nav-ico" aria-hidden="true">💡</span>Ideenquellen &amp; Portale</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/material.html" data-nav-link data-path="/material.html"><span class="nav-ico" aria-hidden="true">📚</span>Materialwissen &amp; Vergleiche</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/druck-tipps.html" data-nav-link data-path="/druck-tipps , /druck-tipps.html"><span class="nav-ico" aria-hidden="true">🧭</span>Tipps &amp; Abläufe / Kosten</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/tools/kostenrechner-v2.html" data-nav-link data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html"><span class="nav-ico" aria-hidden="true">🧮</span>Kosten &amp; Kalkulation</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/slicer-einstellungen.html" data-nav-link data-path="/slicer-einstellungen , /slicer-einstellungen.html"><span class="nav-ico" aria-hidden="true">⚙️</span>Slicer &amp; Einstellungen</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/3ddruck-faq.html" data-nav-link data-path="/3ddruck-faq , /3ddruck-faq.html"><span class="nav-ico" aria-hidden="true">❓</span>Neu beim 3D-Druck?</a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/wartung-reinigung.html" data-nav-link data-path="/wartung-reinigung , /wartung-reinigung.html"><span class="nav-ico" aria-hidden="true">🧼</span>Wartung &amp; Reinigung</a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </nav>
-
-      <div class="header-actions">
-        <button class="theme-toggle" type="button" id="themeToggleBtn" aria-label="Design umschalten: Hell/Dunkel" title="Design umschalten: Hell/Dunkel" aria-pressed="false">
-          <span id="themeIcon" aria-hidden="true">🖥️</span>
-          <span class="theme-toggle__text" id="themeToggleText" aria-live="polite">Helles Design</span>
-        </button>
-
-        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle>
-          <span class="sr-only">Menü öffnen</span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main id="inhalt" class="site-main" tabindex="-1">
-    <section class="section section-hero">
-      <div class="container converter-hero">
-        <p class="hero-eyebrow">Neu im Browser</p>
-        <h1>Pro Bild Konverter (PNG, JPG, WebP)</h1>
-        <p class="hero-lede">Erweiterter Bild-Konverter mit Batch-Funktion, Qualitätsregler und ZIP-Download – alles direkt im Browser.</p>
-        <p class="hero-meta">Unterstützt JPG, PNG und WebP. Die Umwandlung läuft komplett lokal auf deinem Gerät.</p>
-      </div>
-    </section>
-
-    <section class="section ws-section" aria-label="Hinweis zur lokalen Verarbeitung">
-      <div class="container">
-        <div class="callout note">
-          <h3>Alles passiert lokal in deinem Browser</h3>
-          <p>Deine Bilder werden nicht hochgeladen. Die Umwandlung erfolgt mit HTML5 Canvas direkt auf deinem Gerät. Es gibt keine Server-Speicherung, kein Tracking und keine Werbung.</p>
-          <p class="converter-note">Hinweis: Sehr große Dateien können je nach Gerät ein paar Sekunden benötigen.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section ws-section" aria-labelledby="converter-heading">
-      <div class="container">
-        <div class="ws-card" style="margin-bottom: 1.5rem;">
-          <h2 id="converter-heading" class="ws-section-title">Der Pro-Modus für deine Bildkonvertierungen</h2>
-          <p>Der klassische Bild-Konverter ist jetzt umgezogen: Mit dem Pro Bild Konverter kannst du mehrere Dateien gleichzeitig umwandeln, die Qualität steuern, bei Bedarf skalieren und alles als ZIP herunterladen. Die Basis bleibt gleich: kein Upload, keine Server-Speicherung – alles bleibt lokal.</p>
-        </div>
-        <div class="pro-converter">
-          <div class="w-full max-w-6xl mx-auto bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
-            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 flex justify-between items-center">
-              <div>
-                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                  <i class="ph ph-arrows-left-right text-3xl"></i> Pro Bild Konverter
+</li>
+</ul>
+</li>
+<li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown="">
+<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🧰</span>Leistungen ▾</button>
+<ul class="nav-more-menu" hidden="">
+<li>
+<a class="nav-link" data-nav-link="" data-path="/leistungen/3d-druck , /leistungen/3d-druck.html" href="leistungen/3d-druck.html"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druckauftrag</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html" href="leistungen/cad-prototyping.html"><span aria-hidden="true" class="nav-ico">📐</span>CAD &amp; Prototyping</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html" href="leistungen/pc-hilfe.html"><span aria-hidden="true" class="nav-ico">💻</span>PC-Hilfe</a>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown="">
+<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🤖</span>Über KI ▾</button>
+<ul class="nav-more-menu" hidden="">
+<li><a class="nav-link" href="ki/chat.html"><span aria-hidden="true" class="nav-ico">💬</span>Interaktiver KI Versteher (NEU)</a></li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki , /ki/ , /ki/index.html" href="ki/index.html"><span aria-hidden="true" class="nav-ico">📖</span>Einführung &amp; Grundlagen</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/prompts , /ki/prompts.html" href="ki/prompts.html"><span aria-hidden="true" class="nav-ico">✍️</span>Prompts für den Alltag</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/promt-trainer , /ki/promt-trainer.html" href="ki/promt-trainer.html"><span aria-hidden="true" class="nav-ico">🧠</span>KI Trainer</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/ki-finder , /ki/ki-finder.html" href="ki/ki-finder.html"><span aria-hidden="true" class="nav-ico">🧭</span>Warenschmiede KI-Finder</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/tools , /ki/tools.html" href="ki/tools.html"><span aria-hidden="true" class="nav-ico">🛠️</span>KI-Werkzeuge</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html" href="ki/so-arbeitest-du-mit-ki.html"><span aria-hidden="true" class="nav-ico">🧭</span>So arbeitest du mit KI</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/programme-die-du-brauchst , /ki/programme-die-du-brauchst.html" href="ki/programme-die-du-brauchst.html"><span aria-hidden="true" class="nav-ico">💾</span>Programme, die du brauchst</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html" href="ki/chancen-und-risiken.html"><span aria-hidden="true" class="nav-ico">⚖️</span>KI: Chancen &amp; Risiken</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/faq , /ki/faq.html" href="ki/faq.html"><span aria-hidden="true" class="nav-ico">🔒</span>KI-FAQ &amp; Sicherheit</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/lexikon , /ki/lexikon.html" href="ki/lexikon.html"><span aria-hidden="true" class="nav-ico">🔤</span>KI-Lexikon</a>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown="">
+<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">✉️</span>Kontakt ▾</button>
+<ul class="nav-more-menu" hidden="">
+<li>
+<a class="nav-link" data-nav-link="" data-path="/kontakt , /kontakt.html , /warenschmiede/kontakt , /warenschmiede/kontakt.html" href="kontakt.html"><span aria-hidden="true" class="nav-ico">📧</span>Kontakt aufnehmen</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ablauf-anfrage , /ablauf-anfrage.html" href="ablauf-anfrage.html"><span aria-hidden="true" class="nav-ico">📝</span>Ablauf &amp; Anfrage</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/impressum , /impressum.html , /warenschmiede/impressum , /warenschmiede/impressum.html" href="impressum.html"><span aria-hidden="true" class="nav-ico">⚖️</span>Impressum</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ueber-mich , /ueber-mich.html , /warenschmiede/ueber-mich.html , /about , /about.html , /warenschmiede/about.html" href="ueber-mich.html"><span aria-hidden="true" class="nav-ico">👤</span>Über mich</a>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown="">
+<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druck ▾</button>
+<ul class="nav-more-menu" hidden="">
+<li>
+<a class="nav-link" data-nav-link="" data-path="/3ddruck-chat , /3ddruck-chat.html" href="3ddruck-chat.html"><span aria-hidden="true" class="nav-ico">💬</span>Interaktiver Berater (Neu)</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/technologien , /technologien.html" href="technologien.html"><span aria-hidden="true" class="nav-ico">🧪</span>FDM / SLA / SLS – Technologien</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/fehlerdatenbank , /fehlerdatenbank.html" href="fehlerdatenbank.html"><span aria-hidden="true" class="nav-ico">🛠️</span>Fehler &amp; Troubleshooting</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ideenquellen , /ideenquellen.html , /ideen , /ideen/ , /ideen/index.html" href="ideenquellen.html"><span aria-hidden="true" class="nav-ico">💡</span>Ideenquellen &amp; Portale</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/material.html" href="material.html"><span aria-hidden="true" class="nav-ico">📚</span>Materialwissen &amp; Vergleiche</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/druck-tipps , /druck-tipps.html" href="druck-tipps.html"><span aria-hidden="true" class="nav-ico">🧭</span>Tipps &amp; Abläufe / Kosten</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html" href="tools/kostenrechner-v2.html"><span aria-hidden="true" class="nav-ico">🧮</span>Kosten &amp; Kalkulation</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/slicer-einstellungen , /slicer-einstellungen.html" href="slicer-einstellungen.html"><span aria-hidden="true" class="nav-ico">⚙️</span>Slicer &amp; Einstellungen</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/3ddruck-faq , /3ddruck-faq.html" href="3ddruck-faq.html"><span aria-hidden="true" class="nav-ico">❓</span>Neu beim 3D-Druck?</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/wartung-reinigung , /wartung-reinigung.html" href="wartung-reinigung.html"><span aria-hidden="true" class="nav-ico">🧼</span>Wartung &amp; Reinigung</a>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+<div class="header-actions">
+<button aria-label="Design umschalten: Hell/Dunkel" aria-pressed="false" class="theme-toggle" id="themeToggleBtn" title="Design umschalten: Hell/Dunkel" type="button">
+<span aria-hidden="true" id="themeIcon">🖥️</span>
+<span aria-live="polite" class="theme-toggle__text" id="themeToggleText">Helles Design</span>
+</button>
+<button aria-controls="primary-navigation" aria-expanded="false" class="nav-toggle" data-nav-toggle="" type="button">
+<span class="sr-only">Menü öffnen</span>
+<span aria-hidden="true" class="nav-toggle-bar"></span>
+<span aria-hidden="true" class="nav-toggle-bar"></span>
+<span aria-hidden="true" class="nav-toggle-bar"></span>
+</button>
+</div>
+</div>
+</header>
+<main class="site-main" id="inhalt" tabindex="-1">
+<section class="section section-hero">
+<div class="container converter-hero">
+<p class="hero-eyebrow">Neu im Browser</p>
+<h1>Pro Bild Konverter (PNG, JPG, WebP)</h1>
+<p class="hero-lede">Erweiterter Bild-Konverter mit Batch-Funktion, Qualitätsregler und ZIP-Download – alles direkt im Browser.</p>
+<p class="hero-meta">Unterstützt JPG, PNG und WebP. Die Umwandlung läuft komplett lokal auf deinem Gerät.</p>
+</div>
+</section>
+<section aria-label="Hinweis zur lokalen Verarbeitung" class="section ws-section">
+<div class="container">
+<div class="callout note">
+<h3>Alles passiert lokal in deinem Browser</h3>
+<p>Deine Bilder werden nicht hochgeladen. Die Umwandlung erfolgt mit HTML5 Canvas direkt auf deinem Gerät. Es gibt keine Server-Speicherung, kein Tracking und keine Werbung.</p>
+<p class="converter-note">Hinweis: Sehr große Dateien können je nach Gerät ein paar Sekunden benötigen.</p>
+</div>
+</div>
+</section>
+<section aria-labelledby="converter-heading" class="section ws-section">
+<div class="container">
+<div class="ws-card" style="margin-bottom: 1.5rem;">
+<h2 class="ws-section-title" id="converter-heading">Der Pro-Modus für deine Bildkonvertierungen</h2>
+<p>Der klassische Bild-Konverter ist jetzt umgezogen: Mit dem Pro Bild Konverter kannst du mehrere Dateien gleichzeitig umwandeln, die Qualität steuern, bei Bedarf skalieren und alles als ZIP herunterladen. Die Basis bleibt gleich: kein Upload, keine Server-Speicherung – alles bleibt lokal.</p>
+</div>
+<div class="pro-converter">
+<div class="w-full max-w-6xl mx-auto bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
+<div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 flex justify-between items-center">
+<div>
+<h2 class="text-2xl font-bold text-white flex items-center gap-2">
+<i class="ph ph-arrows-left-right text-3xl"></i> Pro Bild Konverter
                 </h2>
-                <p class="text-blue-100 text-sm mt-1">Konvertieren, Komprimieren &amp; Skalieren – lokal im Browser</p>
-              </div>
-              <div class="hidden sm:block text-right">
-                <span class="text-xs bg-white/20 px-2 py-1 rounded text-white">Version 2.0</span>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 h-full lg:h-[700px]">
-              <div class="lg:col-span-1 bg-slate-800 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 flex flex-col gap-6 overflow-y-auto">
-                <div class="space-y-3">
-                  <label class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Ziel-Format</label>
-                  <div class="grid grid-cols-3 gap-2">
-                    <button onclick="setFormat('image/jpeg', 'jpg')" class="format-btn active bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-sm font-medium transition-colors" data-format="jpg">JPG</button>
-                    <button onclick="setFormat('image/png', 'png')" class="format-btn bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 rounded-lg text-sm font-medium transition-colors" data-format="png">PNG</button>
-                    <button onclick="setFormat('image/webp', 'webp')" class="format-btn bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 rounded-lg text-sm font-medium transition-colors" data-format="webp">WEBP</button>
-                  </div>
-                </div>
-
-                <div class="space-y-3" id="quality-container">
-                  <div class="flex justify-between">
-                    <label class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Qualität</label>
-                    <span id="quality-value" class="text-sm font-mono text-blue-400">90%</span>
-                  </div>
-                  <input type="range" id="quality" min="10" max="100" value="90" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-blue-500">
-                  <p class="text-xs text-slate-300">Niedrigere Qualität = kleinere Dateigröße (nur JPG/WEBP).</p>
-                </div>
-
-                <div class="space-y-3">
-                  <div class="flex items-center justify-between">
-                    <label class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Größe ändern</label>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" id="resize-toggle" class="sr-only peer">
-                      <div class="w-11 h-6 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                  </div>
-
-                  <div id="resize-options" class="hidden space-y-2 pt-2 transition-all">
-                    <div class="relative">
-                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="ph ph-arrows-out-line-horizontal text-slate-300"></i>
-                      </div>
-                      <input type="number" id="max-width" placeholder="Max Breite (px)" class="bg-slate-700 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 placeholder-slate-400">
-                    </div>
-                    <p class="text-xs text-slate-300">Seitenverhältnis wird beibehalten.</p>
-                  </div>
-                </div>
-
-                <div class="mt-auto pt-6 border-t border-slate-700">
-                  <button onclick="processAll()" id="convert-btn" disabled class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
-                    <i class="ph ph-play-circle text-xl"></i>
-                    <span>Alle konvertieren</span>
+<p class="text-blue-100 text-sm mt-1">Konvertieren, Komprimieren &amp; Skalieren – lokal im Browser</p>
+</div>
+<div class="hidden sm:block text-right">
+<span class="text-xs bg-white/20 px-2 py-1 rounded text-white">Version 2.0</span>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 h-full lg:h-[700px]">
+<div class="lg:col-span-1 bg-slate-800 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 flex flex-col gap-6 overflow-y-auto">
+<div class="space-y-3">
+<label class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Ziel-Format</label>
+<div class="grid grid-cols-3 gap-2">
+<button class="format-btn active bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-sm font-medium transition-colors" data-format="jpg" onclick="setFormat('image/jpeg', 'jpg')">JPG</button>
+<button class="format-btn bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 rounded-lg text-sm font-medium transition-colors" data-format="png" onclick="setFormat('image/png', 'png')">PNG</button>
+<button class="format-btn bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 rounded-lg text-sm font-medium transition-colors" data-format="webp" onclick="setFormat('image/webp', 'webp')">WEBP</button>
+</div>
+</div>
+<div class="space-y-3" id="quality-container">
+<div class="flex justify-between">
+<label class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Qualität</label>
+<span class="text-sm font-mono text-blue-400" id="quality-value">90%</span>
+</div>
+<input class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-blue-500" id="quality" max="100" min="10" type="range" value="90"/>
+<p class="text-xs text-slate-300">Niedrigere Qualität = kleinere Dateigröße (nur JPG/WEBP).</p>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<label class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Größe ändern</label>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" id="resize-toggle" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+</label>
+</div>
+<div class="hidden space-y-2 pt-2 transition-all" id="resize-options">
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<i class="ph ph-arrows-out-line-horizontal text-slate-300"></i>
+</div>
+<input class="bg-slate-700 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 placeholder-slate-400" id="max-width" placeholder="Max Breite (px)" type="number"/>
+</div>
+<p class="text-xs text-slate-300">Seitenverhältnis wird beibehalten.</p>
+</div>
+</div>
+<div class="mt-auto pt-6 border-t border-slate-700">
+<button class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2" disabled="" id="convert-btn" onclick="processAll()">
+<i class="ph ph-play-circle text-xl"></i>
+<span>Alle konvertieren</span>
+</button>
+<button class="hidden w-full mt-3 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2" id="zip-btn" onclick="downloadAllZip()">
+<i class="ph ph-download-simple text-xl"></i>
+<span>Als ZIP herunterladen</span>
+</button>
+</div>
+</div>
+<div class="lg:col-span-2 bg-slate-900/50 p-6 flex flex-col h-full relative">
+<div class="drop-zone w-full h-48 rounded-2xl flex flex-col justify-center items-center cursor-pointer mb-6 group hover:bg-slate-800/50 transition-colors relative" id="converter-drop-zone">
+<input accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" id="converter-file-input" multiple="" type="file"/>
+<div class="text-center z-0 pointer-events-none">
+<div class="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+<i class="ph ph-cloud-arrow-up text-3xl text-blue-400"></i>
+</div>
+<p class="text-lg text-slate-100 font-medium">Bilder hier ablegen</p>
+<p class="text-sm text-slate-300 mt-1">oder klicken zum Auswählen</p>
+</div>
+</div>
+<div class="flex justify-between items-center mb-3">
+<h3 class="text-slate-200 text-sm font-semibold uppercase tracking-wider">Warteschlange <span class="bg-slate-700 text-white px-2 py-0.5 rounded-full text-xs ml-2" id="converter-file-count">0</span></h3>
+<button class="text-xs text-red-400 hover:text-red-300 flex items-center gap-1" onclick="clearAll()">
+<i class="ph ph-trash"></i> Alle löschen
                   </button>
-                  <button onclick="downloadAllZip()" id="zip-btn" class="hidden w-full mt-3 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
-                    <i class="ph ph-download-simple text-xl"></i>
-                    <span>Als ZIP herunterladen</span>
-                  </button>
-                </div>
-              </div>
-
-              <div class="lg:col-span-2 bg-slate-900/50 p-6 flex flex-col h-full relative">
-                <div id="converter-drop-zone" class="drop-zone w-full h-48 rounded-2xl flex flex-col justify-center items-center cursor-pointer mb-6 group hover:bg-slate-800/50 transition-colors relative">
-                  <input type="file" id="converter-file-input" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                  <div class="text-center z-0 pointer-events-none">
-                    <div class="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-                      <i class="ph ph-cloud-arrow-up text-3xl text-blue-400"></i>
-                    </div>
-                    <p class="text-lg text-slate-100 font-medium">Bilder hier ablegen</p>
-                    <p class="text-sm text-slate-300 mt-1">oder klicken zum Auswählen</p>
-                  </div>
-                </div>
-
-                <div class="flex justify-between items-center mb-3">
-                  <h3 class="text-slate-200 text-sm font-semibold uppercase tracking-wider">Warteschlange <span id="converter-file-count" class="bg-slate-700 text-white px-2 py-0.5 rounded-full text-xs ml-2">0</span></h3>
-                  <button onclick="clearAll()" class="text-xs text-red-400 hover:text-red-300 flex items-center gap-1">
-                    <i class="ph ph-trash"></i> Alle löschen
-                  </button>
-                </div>
-
-                <div id="converter-file-list" class="flex-1 overflow-y-auto space-y-3 pr-2">
-                  <div id="converter-empty-state" class="h-full flex flex-col items-center justify-center text-slate-300 pb-10">
-                    <i class="ph ph-images text-5xl mb-3 opacity-50"></i>
-                    <p>Noch keine Bilder ausgewählt.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="processing-overlay" class="fixed inset-0 bg-slate-900/90 z-50 hidden flex flex-col items-center justify-center">
-          <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <h2 class="text-2xl font-bold text-white">Verarbeite...</h2>
-          <p class="text-slate-200 mt-2" id="progress-text">0 / 0 fertig</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section ws-section" aria-label="GIF Studio">
-      <div class="container">
-        <div class="converter-hero">
-          <p class="eyebrow">GIF Studio</p>
-          <h2 class="ws-section-title">GIF Studio – Bilder als Daumenkino speichern</h2>
-          <p>Hier kannst du aus mehreren Screenshots ein animiertes GIF bauen – ideal für kleine SolidWorks- oder 3D-Druck-Demos. Alle Berechnungen laufen lokal in deinem Browser.</p>
-        </div>
-
-        <div class="gif-studio bg-slate-900/60 border border-slate-800 rounded-3xl shadow-xl p-6 lg:p-8 mt-10">
-          <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            <div class="lg:col-span-2 bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex flex-col gap-6">
-                <div class="flex items-start justify-between gap-3">
-                  <div>
-                    <p class="text-sm uppercase tracking-wide text-blue-400 font-semibold">Einstellungen</p>
-                    <p class="text-slate-200">Steuer die Geschwindigkeit und Breite deines GIFs.</p>
-                  </div>
-                <div class="px-3 py-1 rounded-full bg-slate-800 text-xs text-slate-200 border border-slate-700">Made in Germany</div>
-              </div>
-
-              <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                  <label for="delay-slider" class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Verzögerung</label>
-                  <span id="gif-delay-value" class="text-sm font-mono text-blue-400">120 ms</span>
-                </div>
-                <input id="delay-slider" type="range" min="20" max="500" value="120" step="10" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500" />
-                <p class="text-xs text-slate-300">Kleine Werte = schnelleres GIF.</p>
-              </div>
-
-              <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                  <label for="width-slider" class="text-sm font-semibold text-slate-200 uppercase tracking-wider">GIF Breite</label>
-                  <span id="gif-width-value" class="text-sm font-mono text-blue-400">640 px</span>
-                </div>
-                <input id="width-slider" type="range" min="320" max="1600" value="640" step="10" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500" />
-                <p class="text-xs text-slate-300">Die Höhe wird automatisch passend skaliert.</p>
-              </div>
-
-              <div class="space-y-2 pt-2 border-t border-slate-800">
-                <button id="generate-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2" disabled>
-                  <i class="ph ph-magic-wand text-xl"></i>
-                  <span>GIF-Modul lädt…</span>
-                </button>
-                <button id="gif-clear-btn" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold py-3 px-4 rounded-xl transition-all flex justify-center items-center gap-2">
-                  <i class="ph ph-broom text-lg"></i>
-                  <span>Alle Frames löschen</span>
-                </button>
-              </div>
-
-              <div id="render-status" class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-sm text-slate-100 hidden">
+</div>
+<div class="flex-1 overflow-y-auto space-y-3 pr-2" id="converter-file-list">
+<div class="h-full flex flex-col items-center justify-center text-slate-300 pb-10" id="converter-empty-state">
+<i class="ph ph-images text-5xl mb-3 opacity-50"></i>
+<p>Noch keine Bilder ausgewählt.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed inset-0 bg-slate-900/90 z-50 hidden flex flex-col items-center justify-center" id="processing-overlay">
+<div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+<h2 class="text-2xl font-bold text-white">Verarbeite...</h2>
+<p class="text-slate-200 mt-2" id="progress-text">0 / 0 fertig</p>
+</div>
+</div>
+</section>
+<section aria-label="GIF Studio" class="section ws-section">
+<div class="container">
+<div class="converter-hero">
+<p class="eyebrow">GIF Studio</p>
+<h2 class="ws-section-title">GIF Studio – Bilder als Daumenkino speichern</h2>
+<p>Hier kannst du aus mehreren Screenshots ein animiertes GIF bauen – ideal für kleine SolidWorks- oder 3D-Druck-Demos. Alle Berechnungen laufen lokal in deinem Browser.</p>
+</div>
+<div class="gif-studio bg-slate-900/60 border border-slate-800 rounded-3xl shadow-xl p-6 lg:p-8 mt-10">
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+<div class="lg:col-span-2 bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex flex-col gap-6">
+<div class="flex items-start justify-between gap-3">
+<div>
+<p class="text-sm uppercase tracking-wide text-blue-400 font-semibold">Einstellungen</p>
+<p class="text-slate-200">Steuer die Geschwindigkeit und Breite deines GIFs.</p>
+</div>
+<div class="px-3 py-1 rounded-full bg-slate-800 text-xs text-slate-200 border border-slate-700">Made in Germany</div>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<label class="text-sm font-semibold text-slate-200 uppercase tracking-wider" for="delay-slider">Verzögerung</label>
+<span class="text-sm font-mono text-blue-400" id="gif-delay-value">120 ms</span>
+</div>
+<input class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500" id="delay-slider" max="500" min="20" step="10" type="range" value="120">
+<p class="text-xs text-slate-300">Kleine Werte = schnelleres GIF.</p>
+</input></div>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<label class="text-sm font-semibold text-slate-200 uppercase tracking-wider" for="width-slider">GIF Breite</label>
+<span class="text-sm font-mono text-blue-400" id="gif-width-value">640 px</span>
+</div>
+<input class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500" id="width-slider" max="1600" min="320" step="10" type="range" value="640">
+<p class="text-xs text-slate-300">Die Höhe wird automatisch passend skaliert.</p>
+</input></div>
+<div class="space-y-2 pt-2 border-t border-slate-800">
+<button class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2" disabled="" id="generate-btn">
+<i class="ph ph-magic-wand text-xl"></i>
+<span>GIF-Modul lädt…</span>
+</button>
+<button class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold py-3 px-4 rounded-xl transition-all flex justify-center items-center gap-2" id="gif-clear-btn">
+<i class="ph ph-broom text-lg"></i>
+<span>Alle Frames löschen</span>
+</button>
+</div>
+<div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-sm text-slate-100 hidden" id="render-status">
                 Wird erstellt… das kann ein paar Sekunden dauern, abhängig von Anzahl und Größe der Bilder.
               </div>
-
-              <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-sm text-slate-200 flex items-start gap-3">
-                <i class="ph ph-lightbulb text-xl text-amber-400"></i>
-                <p>Lege Bilder einfach per Drag &amp; Drop ab. Perfekt, um ein SolidWorks-Feature als Daumenkino zu zeigen.</p>
-              </div>
-            </div>
-
-            <div class="lg:col-span-2 flex flex-col gap-4">
-              <div id="drop-zone" class="gif-drop-zone w-full h-52 rounded-2xl flex flex-col justify-center items-center cursor-pointer bg-slate-900/50 border border-slate-800/80 hover:bg-slate-800/60 transition-colors relative">
-                <input id="gif-file-input" type="file" multiple accept="image/*" class="hidden" />
-                <div class="text-center z-0 pointer-events-none">
-                  <div class="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <i class="ph ph-frames text-3xl text-blue-400"></i>
-                  </div>
-                  <p class="text-lg text-slate-100 font-medium">Bilder hier ablegen</p>
-                  <p class="text-sm text-slate-300 mt-1">oder klicken zum Auswählen</p>
-                </div>
-              </div>
-
-              <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex flex-col gap-4">
-                <div class="flex items-center justify-between">
-                  <h3 class="text-slate-200 font-semibold flex items-center gap-2"><i class="ph ph-rocket-launch text-blue-400"></i> Vorschau</h3>
-                  <a id="download-btn" href="#" download="animation.gif" class="hidden text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
-                    <i class="ph ph-download-simple"></i>
-                    <span>GIF herunterladen</span>
-                  </a>
-                </div>
-                <div class="bg-slate-950/60 border border-slate-800 rounded-xl h-64 flex items-center justify-center relative overflow-hidden">
-                  <div id="loading-bar" class="hidden absolute inset-0 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center gap-2 text-slate-200">
-                    <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                    <p class="text-sm">Wird erstellt…</p>
-                  </div>
-                  <img id="gif-preview" src="" alt="GIF Vorschau" class="hidden max-h-[360px] w-auto rounded-lg shadow-lg" loading="lazy" />
-                  <div id="preview-placeholder" class="text-center text-slate-300 flex flex-col items-center gap-2">
-                    <i class="ph ph-monitor-play text-4xl"></i>
-                    <p>GIF Vorschau erscheint hier nach dem Rendern.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="lg:col-span-1 bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex flex-col">
-              <div class="flex items-center justify-between mb-3">
-                <h3 class="text-slate-200 font-semibold flex items-center gap-2"><i class="ph ph-film-script text-blue-400"></i> Frames</h3>
-                <span class="bg-slate-800 text-slate-100 text-xs px-2 py-1 rounded-full border border-slate-700" id="frame-count">0</span>
-              </div>
-              <div id="frames-container" class="frames-scroll flex-1 space-y-3 overflow-y-auto pr-2">
-                <div id="empty-state" class="h-full flex flex-col items-center justify-center text-slate-300">
-                  <i class="ph ph-images text-4xl mb-2 opacity-60"></i>
-                  <p>Noch keine Frames geladen.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="banner-builder" class="section ws-section" aria-label="Banner Builder PRO">
-      <div class="container">
-        <div class="converter-hero">
-          <p class="eyebrow">Banner Builder</p>
-          <h2 class="ws-section-title">Banner Builder – Web-Banner im Browser gestalten</h2>
-          <p>Gestalte simple Website-Banner direkt im Browser. Alles läuft lokal – ideal für schnelle Header, CTA-Boxen oder Social-Teaser.</p>
-        </div>
-
-        <div class="banner-builder-root mt-10 rounded-3xl border border-slate-800 shadow-xl overflow-hidden">
-          <div class="bg-slate-800/60 border-b border-slate-700 flex items-center justify-between px-6 py-4">
-            <div class="flex items-center gap-3">
-              <div class="bg-indigo-600 p-2 rounded-lg">
-                <i class="ph ph-paint-brush-broad text-xl text-white"></i>
-              </div>
-              <div>
-                <p class="text-xs uppercase tracking-wide text-slate-300 font-semibold">Canvas-Designer</p>
-                <h3 class="font-bold text-lg text-white tracking-wide">Banner Builder PRO</h3>
-              </div>
-            </div>
-
-            <button onclick="bannerDownload()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
-              <i class="ph ph-download-simple text-lg"></i> Speichern (PNG)
+<div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-sm text-slate-200 flex items-start gap-3">
+<i class="ph ph-lightbulb text-xl text-amber-400"></i>
+<p>Lege Bilder einfach per Drag &amp; Drop ab. Perfekt, um ein SolidWorks-Feature als Daumenkino zu zeigen.</p>
+</div>
+</div>
+<div class="lg:col-span-2 flex flex-col gap-4">
+<div class="gif-drop-zone w-full h-52 rounded-2xl flex flex-col justify-center items-center cursor-pointer bg-slate-900/50 border border-slate-800/80 hover:bg-slate-800/60 transition-colors relative" id="drop-zone">
+<input accept="image/*" class="hidden" id="gif-file-input" multiple="" type="file">
+<div class="text-center z-0 pointer-events-none">
+<div class="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
+<i class="ph ph-frames text-3xl text-blue-400"></i>
+</div>
+<p class="text-lg text-slate-100 font-medium">Bilder hier ablegen</p>
+<p class="text-sm text-slate-300 mt-1">oder klicken zum Auswählen</p>
+</div>
+</input></div>
+<div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h3 class="text-slate-200 font-semibold flex items-center gap-2"><i class="ph ph-rocket-launch text-blue-400"></i> Vorschau</h3>
+<a class="hidden text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1" download="animation.gif" href="#" id="download-btn">
+<i class="ph ph-download-simple"></i>
+<span>GIF herunterladen</span>
+</a>
+</div>
+<div class="bg-slate-950/60 border border-slate-800 rounded-xl h-64 flex items-center justify-center relative overflow-hidden">
+<div class="hidden absolute inset-0 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center gap-2 text-slate-200" id="loading-bar">
+<div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+<p class="text-sm">Wird erstellt…</p>
+</div>
+<img alt="GIF Vorschau" class="hidden max-h-[360px] w-auto rounded-lg shadow-lg" id="gif-preview" loading="lazy" src="">
+<div class="text-center text-slate-300 flex flex-col items-center gap-2" id="preview-placeholder">
+<i class="ph ph-monitor-play text-4xl"></i>
+<p>GIF Vorschau erscheint hier nach dem Rendern.</p>
+</div>
+</img></div>
+</div>
+</div>
+<div class="lg:col-span-1 bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex flex-col">
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-slate-200 font-semibold flex items-center gap-2"><i class="ph ph-film-script text-blue-400"></i> Frames</h3>
+<span class="bg-slate-800 text-slate-100 text-xs px-2 py-1 rounded-full border border-slate-700" id="frame-count">0</span>
+</div>
+<div class="frames-scroll flex-1 space-y-3 overflow-y-auto pr-2" id="frames-container">
+<div class="h-full flex flex-col items-center justify-center text-slate-300" id="empty-state">
+<i class="ph ph-images text-4xl mb-2 opacity-60"></i>
+<p>Noch keine Frames geladen.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section aria-label="Banner Builder PRO" class="section ws-section" id="banner-builder">
+<div class="container">
+<div class="converter-hero">
+<p class="eyebrow">Banner Builder</p>
+<h2 class="ws-section-title">Banner Builder – Web-Banner im Browser gestalten</h2>
+<p>Gestalte simple Website-Banner direkt im Browser. Alles läuft lokal – ideal für schnelle Header, CTA-Boxen oder Social-Teaser.</p>
+</div>
+<div class="banner-builder-root mt-10 rounded-3xl border border-slate-800 shadow-xl overflow-hidden">
+<div class="bg-slate-800/60 border-b border-slate-700 flex items-center justify-between px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="bg-indigo-600 p-2 rounded-lg">
+<i class="ph ph-paint-brush-broad text-xl text-white"></i>
+</div>
+<div>
+<p class="text-xs uppercase tracking-wide text-slate-300 font-semibold">Canvas-Designer</p>
+<h3 class="font-bold text-lg text-white tracking-wide">Banner Builder PRO</h3>
+</div>
+</div>
+<button class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors" onclick="bannerDownload()">
+<i class="ph ph-download-simple text-lg"></i> Speichern (PNG)
             </button>
-          </div>
-
-          <div class="flex flex-col lg:flex-row h-full overflow-hidden">
-            <div class="w-full lg:w-80 bg-slate-800 border-b lg:border-b-0 lg:border-r border-slate-700 flex flex-col overflow-y-auto shrink-0 z-10">
-              <div class="p-5 border-b border-slate-700">
-                <h3 class="text-xs font-bold text-slate-200 uppercase mb-3 flex items-center gap-2">
-                  <i class="ph ph-ruler"></i> Größe
+</div>
+<div class="flex flex-col lg:flex-row h-full overflow-hidden">
+<div class="w-full lg:w-80 bg-slate-800 border-b lg:border-b-0 lg:border-r border-slate-700 flex flex-col overflow-y-auto shrink-0 z-10">
+<div class="p-5 border-b border-slate-700">
+<h3 class="text-xs font-bold text-slate-200 uppercase mb-3 flex items-center gap-2">
+<i class="ph ph-ruler"></i> Größe
                 </h3>
-                <div class="grid grid-cols-2 gap-2 mb-3">
-                  <button onclick="bannerResizeCanvas(1200, 400)" class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors">
-                    <span class="block font-bold text-white">Hero Groß</span>
-                    <span class="text-slate-300">1200 x 400</span>
-                  </button>
-                  <button onclick="bannerResizeCanvas(800, 200)" class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors">
-                    <span class="block font-bold text-white">Header Blog</span>
-                    <span class="text-slate-300">800 x 200</span>
-                  </button>
-                  <button onclick="bannerResizeCanvas(300, 250)" class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors">
-                    <span class="block font-bold text-white">Sidebar Box</span>
-                    <span class="text-slate-300">300 x 250</span>
-                  </button>
-                  <button onclick="bannerResizeCanvas(1080, 1080)" class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors">
-                    <span class="block font-bold text-white">Instagram/Quadrat</span>
-                    <span class="text-slate-300">1080 x 1080</span>
-                  </button>
-                </div>
-                <div class="flex gap-2 items-center text-xs">
-                  <input type="number" id="banner-custom-w" value="800" class="w-16 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-white">
-                  <span class="text-slate-300">x</span>
-                  <input type="number" id="banner-custom-h" value="400" class="w-16 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-white">
-                  <button onclick="bannerApplyCustomSize()" class="ml-auto text-indigo-400 hover:text-indigo-300">Setzen</button>
-                </div>
-              </div>
-
-              <div class="p-5 border-b border-slate-700 space-y-3">
-                <h3 class="text-xs font-bold text-slate-200 uppercase mb-1 flex items-center gap-2">
-                  <i class="ph ph-plus-circle"></i> Hinzufügen
+<div class="grid grid-cols-2 gap-2 mb-3">
+<button class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors" onclick="bannerResizeCanvas(1200, 400)">
+<span class="block font-bold text-white">Hero Groß</span>
+<span class="text-slate-300">1200 x 400</span>
+</button>
+<button class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors" onclick="bannerResizeCanvas(800, 200)">
+<span class="block font-bold text-white">Header Blog</span>
+<span class="text-slate-300">800 x 200</span>
+</button>
+<button class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors" onclick="bannerResizeCanvas(300, 250)">
+<span class="block font-bold text-white">Sidebar Box</span>
+<span class="text-slate-300">300 x 250</span>
+</button>
+<button class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors" onclick="bannerResizeCanvas(1080, 1080)">
+<span class="block font-bold text-white">Instagram/Quadrat</span>
+<span class="text-slate-300">1080 x 1080</span>
+</button>
+</div>
+<div class="flex gap-2 items-center text-xs">
+<input class="w-16 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-white" id="banner-custom-w" type="number" value="800"/>
+<span class="text-slate-300">x</span>
+<input class="w-16 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-white" id="banner-custom-h" type="number" value="400"/>
+<button class="ml-auto text-indigo-400 hover:text-indigo-300" onclick="bannerApplyCustomSize()">Setzen</button>
+</div>
+</div>
+<div class="p-5 border-b border-slate-700 space-y-3">
+<h3 class="text-xs font-bold text-slate-200 uppercase mb-1 flex items-center gap-2">
+<i class="ph ph-plus-circle"></i> Hinzufügen
                 </h3>
-
-                <button onclick="bannerAddText()" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm">
-                  <i class="ph ph-text-t text-lg text-indigo-400"></i> Text
+<button class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm" onclick="bannerAddText()">
+<i class="ph ph-text-t text-lg text-indigo-400"></i> Text
                 </button>
-
-                <label class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm cursor-pointer">
-                  <i class="ph ph-image text-lg text-emerald-400"></i> Bild hochladen
-                  <input type="file" id="banner-img-upload" class="hidden" accept="image/*" onchange="bannerHandleImageUpload(this)">
-                </label>
-
-                <button onclick="bannerAddRect()" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm">
-                  <i class="ph ph-square text-lg text-blue-400"></i> Box
+<label class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm cursor-pointer">
+<i class="ph ph-image text-lg text-emerald-400"></i> Bild hochladen
+                  <input accept="image/*" class="hidden" id="banner-img-upload" onchange="bannerHandleImageUpload(this)" type="file"/>
+</label>
+<button class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm" onclick="bannerAddRect()">
+<i class="ph ph-square text-lg text-blue-400"></i> Box
                 </button>
-
-                <button onclick="bannerAddButton()" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm">
-                  <i class="ph ph-hand-pointing text-lg text-amber-400"></i> Button
+<button class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm" onclick="bannerAddButton()">
+<i class="ph ph-hand-pointing text-lg text-amber-400"></i> Button
                 </button>
-              </div>
-
-              <div class="p-5 flex-1" id="banner-properties-panel">
-                <h3 class="text-xs font-bold text-slate-200 uppercase mb-4 flex items-center gap-2">
-                  <i class="ph ph-sliders"></i> Eigenschaften
+</div>
+<div class="p-5 flex-1" id="banner-properties-panel">
+<h3 class="text-xs font-bold text-slate-200 uppercase mb-4 flex items-center gap-2">
+<i class="ph ph-sliders"></i> Eigenschaften
                 </h3>
-
-                <div id="banner-no-selection" class="text-slate-300 text-sm italic text-center py-4">
+<div class="text-slate-300 text-sm italic text-center py-4" id="banner-no-selection">
                   Wähle ein Element auf der Leinwand aus.
                 </div>
-
-                <div id="banner-selection-controls" class="hidden space-y-4">
-                  <div>
-                    <label class="block text-xs text-slate-200 mb-1">Farbe</label>
-                    <div class="flex gap-2">
-                      <input type="color" id="banner-color-picker" class="h-8 w-full bg-transparent cursor-pointer rounded overflow-hidden" onchange="bannerUpdateColor(this.value)">
-                    </div>
-                  </div>
-
-                  <div>
-                    <label class="block text-xs text-slate-200 mb-1 flex justify-between">
-                      <span>Deckkraft</span> <span id="banner-opacity-val">100%</span>
-                    </label>
-                    <input type="range" min="0" max="1" step="0.1" value="1" class="w-full h-1 bg-slate-600 rounded appearance-none" oninput="bannerUpdateOpacity(this.value)">
-                  </div>
-
-                  <div id="banner-text-controls" class="hidden space-y-4 pt-4 border-t border-slate-700">
-                    <div>
-                      <label class="block text-xs text-slate-200 mb-1">Schriftart</label>
-                      <select id="banner-font-family" onchange="bannerUpdateFont(this.value)" class="w-full bg-slate-900 border border-slate-600 text-white text-sm rounded p-2">
-                        <option value="Inter">Standard (Inter)</option>
-                        <option value="Oswald">Oswald (Modern)</option>
-                        <option value="Bebas Neue">Bebas (Plakat)</option>
-                        <option value="Orbitron">Orbitron (Sci-Fi/Gaming)</option>
-                      </select>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                      <button onclick="bannerToggleBold()" class="bg-slate-700 p-2 rounded hover:bg-slate-600 text-white"><i class="ph ph-text-b"></i> Fett</button>
-                      <button onclick="bannerToggleItalic()" class="bg-slate-700 p-2 rounded hover:bg-slate-600 text-white"><i class="ph ph-text-italic"></i> Kursiv</button>
-                    </div>
-                  </div>
-
-                  <div class="pt-4 border-t border-slate-700 grid grid-cols-2 gap-2">
-                    <button onclick="bannerBringForward()" class="bg-slate-700 hover:bg-slate-600 text-xs p-2 rounded text-white">Ebene hoch</button>
-                    <button onclick="bannerSendBack()" class="bg-slate-700 hover:bg-slate-600 text-xs p-2 rounded text-white">Ebene runter</button>
-                  </div>
-
-                  <button onclick="bannerDeleteObject()" class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/50 py-2 rounded text-sm mt-4 transition-colors">
-                    <i class="ph ph-trash"></i> Entfernen
+<div class="hidden space-y-4" id="banner-selection-controls">
+<div>
+<label class="block text-xs text-slate-200 mb-1">Farbe</label>
+<div class="flex gap-2">
+<input class="h-8 w-full bg-transparent cursor-pointer rounded overflow-hidden" id="banner-color-picker" onchange="bannerUpdateColor(this.value)" type="color"/>
+</div>
+</div>
+<div>
+<label class="block text-xs text-slate-200 mb-1 flex justify-between">
+<span>Deckkraft</span> <span id="banner-opacity-val">100%</span>
+</label>
+<input class="w-full h-1 bg-slate-600 rounded appearance-none" max="1" min="0" oninput="bannerUpdateOpacity(this.value)" step="0.1" type="range" value="1"/>
+</div>
+<div class="hidden space-y-4 pt-4 border-t border-slate-700" id="banner-text-controls">
+<div>
+<label class="block text-xs text-slate-200 mb-1">Schriftart</label>
+<select class="w-full bg-slate-900 border border-slate-600 text-white text-sm rounded p-2" id="banner-font-family" onchange="bannerUpdateFont(this.value)">
+<option value="Inter">Standard (Inter)</option>
+<option value="Oswald">Oswald (Modern)</option>
+<option value="Bebas Neue">Bebas (Plakat)</option>
+<option value="Orbitron">Orbitron (Sci-Fi/Gaming)</option>
+</select>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<button class="bg-slate-700 p-2 rounded hover:bg-slate-600 text-white" onclick="bannerToggleBold()"><i class="ph ph-text-b"></i> Fett</button>
+<button class="bg-slate-700 p-2 rounded hover:bg-slate-600 text-white" onclick="bannerToggleItalic()"><i class="ph ph-text-italic"></i> Kursiv</button>
+</div>
+</div>
+<div class="pt-4 border-t border-slate-700 grid grid-cols-2 gap-2">
+<button class="bg-slate-700 hover:bg-slate-600 text-xs p-2 rounded text-white" onclick="bannerBringForward()">Ebene hoch</button>
+<button class="bg-slate-700 hover:bg-slate-600 text-xs p-2 rounded text-white" onclick="bannerSendBack()">Ebene runter</button>
+</div>
+<button class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/50 py-2 rounded text-sm mt-4 transition-colors" onclick="bannerDeleteObject()">
+<i class="ph ph-trash"></i> Entfernen
                   </button>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex-1 bg-slate-900 overflow-auto flex items-center justify-center p-8 canvas-container-wrapper relative">
-              <div class="shadow-2xl border border-slate-700 relative max-w-full overflow-auto">
-                <canvas id="banner-canvas"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="safeshare-section" class="section ws-section mt-16" aria-label="SafeShare – EXIF/GPS-Checker">
-      <div class="container">
-        <div class="converter-hero">
-          <h2 class="ws-section-title">SafeShare – Versteckte GPS-Daten prüfen</h2>
-          <p>Finde heraus, ob deine Fotos geheime Standortdaten enthalten und lösche sie mit einem Klick. Alles läuft lokal in deinem Browser – keine Uploads, keine versteckten Kopien.</p>
-          <p>SafeShare zeigt dir Koordinaten auf der Karte an, gibt dir einen Direktlink zu Google Maps und erstellt auf Wunsch eine bereinigte JPG-Version.</p>
-        </div>
-
-        <div class="safeshare-root w-full max-w-5xl mx-auto bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700 flex flex-col lg:flex-row mt-10">
-          <div class="w-full lg:w-5/12 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 bg-slate-900/50">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="bg-indigo-500/10 p-2 rounded-lg text-indigo-400">
-                <i class="ph ph-map-pin text-2xl"></i>
-              </div>
-              <div>
-                <h3 class="font-bold text-white text-lg">SafeShare Map</h3>
-                <p class="text-slate-200 text-xs">Visualisiere versteckte Orte</p>
-              </div>
-            </div>
-
-            <div id="ss-drop-zone" class="w-full aspect-square bg-slate-800 rounded-xl border-2 border-dashed border-slate-600 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500 transition-colors relative overflow-hidden group">
-              <input type="file" id="ss-file-input" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/jpeg, image/jpg, image/png">
-
-              <div id="ss-placeholder" class="text-center pointer-events-none transition-opacity duration-300">
-                <div class="w-16 h-16 rounded-full bg-indigo-500/20 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-                  <i class="ph ph-crosshair text-3xl text-indigo-400"></i>
-                </div>
-                <p class="text-slate-300 font-medium">Foto hier analysieren</p>
-                <p class="text-slate-300 text-xs mt-1">S23 Ultra Fotos funktionieren am besten</p>
-              </div>
-
-              <img id="ss-preview-img" class="absolute inset-0 w-full h-full object-contain z-10 hidden bg-black/80 backdrop-blur-sm" alt="SafeShare Vorschaubild">
-              <div id="ss-scan-line" class="scan-line z-10"></div>
-            </div>
-
-            <div id="ss-file-name" class="text-center text-xs text-slate-300 mt-2 h-4"></div>
-          </div>
-
-          <div class="w-full lg:w-7/12 p-6 flex flex-col bg-slate-800">
-            <div class="flex-grow overflow-y-auto pr-2">
-              <div id="ss-map-wrapper" class="hidden flex-col gap-4 mb-6">
-                <div class="flex justify-between items-center">
-                  <h3 class="text-red-400 font-bold text-sm uppercase flex items-center gap-2 animate-pulse">
-                    <i class="ph ph-warning-circle"></i> Standort gefunden!
+</div>
+</div>
+</div>
+<div class="flex-1 bg-slate-900 overflow-auto flex items-center justify-center p-8 canvas-container-wrapper relative">
+<div class="shadow-2xl border border-slate-700 relative max-w-full overflow-auto">
+<canvas id="banner-canvas"></canvas>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section aria-label="SafeShare – EXIF/GPS-Checker" class="section ws-section mt-16" id="safeshare-section">
+<div class="container">
+<div class="converter-hero">
+<h2 class="ws-section-title">SafeShare – Versteckte GPS-Daten prüfen</h2>
+<p>Finde heraus, ob deine Fotos geheime Standortdaten enthalten und lösche sie mit einem Klick. Alles läuft lokal in deinem Browser – keine Uploads, keine versteckten Kopien.</p>
+<p>SafeShare zeigt dir Koordinaten auf der Karte an, gibt dir einen Direktlink zu Google Maps und erstellt auf Wunsch eine bereinigte JPG-Version.</p>
+</div>
+<div class="safeshare-root w-full max-w-5xl mx-auto bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700 flex flex-col lg:flex-row mt-10">
+<div class="w-full lg:w-5/12 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 bg-slate-900/50">
+<div class="flex items-center gap-3 mb-6">
+<div class="bg-indigo-500/10 p-2 rounded-lg text-indigo-400">
+<i class="ph ph-map-pin text-2xl"></i>
+</div>
+<div>
+<h3 class="font-bold text-white text-lg">SafeShare Map</h3>
+<p class="text-slate-200 text-xs">Visualisiere versteckte Orte</p>
+</div>
+</div>
+<div class="w-full aspect-square bg-slate-800 rounded-xl border-2 border-dashed border-slate-600 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500 transition-colors relative overflow-hidden group" id="ss-drop-zone">
+<input accept="image/jpeg, image/jpg, image/png" class="absolute inset-0 opacity-0 cursor-pointer z-20" id="ss-file-input" type="file"/>
+<div class="text-center pointer-events-none transition-opacity duration-300" id="ss-placeholder">
+<div class="w-16 h-16 rounded-full bg-indigo-500/20 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+<i class="ph ph-crosshair text-3xl text-indigo-400"></i>
+</div>
+<p class="text-slate-300 font-medium">Foto hier analysieren</p>
+<p class="text-slate-300 text-xs mt-1">S23 Ultra Fotos funktionieren am besten</p>
+</div>
+<img alt="SafeShare Vorschaubild" class="absolute inset-0 w-full h-full object-contain z-10 hidden bg-black/80 backdrop-blur-sm" id="ss-preview-img"/>
+<div class="scan-line z-10" id="ss-scan-line"></div>
+</div>
+<div class="text-center text-xs text-slate-300 mt-2 h-4" id="ss-file-name"></div>
+</div>
+<div class="w-full lg:w-7/12 p-6 flex flex-col bg-slate-800">
+<div class="flex-grow overflow-y-auto pr-2">
+<div class="hidden flex-col gap-4 mb-6" id="ss-map-wrapper">
+<div class="flex justify-between items-center">
+<h3 class="text-red-400 font-bold text-sm uppercase flex items-center gap-2 animate-pulse">
+<i class="ph ph-warning-circle"></i> Standort gefunden!
                   </h3>
-                  <a id="ss-gmaps-link" target="_blank" class="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
+<a class="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1" id="ss-gmaps-link" target="_blank">
                     In Google Maps öffnen <i class="ph ph-arrow-square-out"></i>
-                  </a>
-                </div>
-
-                <div class="relative rounded-xl overflow-hidden border border-red-900/40 bg-slate-900">
-                  <div class="absolute inset-0 bg-gradient-to-b from-red-500/10 to-transparent pointer-events-none"></div>
-                  <div id="ss-map" class="map-container"></div>
-                </div>
-
-                <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 grid grid-cols-2 gap-4 text-xs font-mono text-slate-300">
-                  <div>
-                    <span class="text-slate-300 block">Breitengrad (Lat)</span>
-                    <span id="ss-lat-display">--</span>
-                  </div>
-                  <div>
-                    <span class="text-slate-300 block">Längengrad (Lng)</span>
-                    <span id="ss-lng-display">--</span>
-                  </div>
-                </div>
-              </div>
-
-              <div id="ss-safe-state" class="hidden flex flex-col items-center justify-center text-center p-6 border border-emerald-900/30 bg-emerald-900/10 rounded-xl mb-6">
-                <i class="ph ph-shield-check text-6xl text-emerald-500 mb-4"></i>
-                <h3 class="text-white font-bold text-xl">Keine GPS Daten</h3>
-                <p class="text-slate-200 text-sm mt-2">Dieses Bild enthält keinen Standort.</p>
-              </div>
-
-              <div id="ss-metadata-section" class="hidden bg-slate-900 rounded-xl p-4 border border-slate-700 mb-4">
-                <h4 class="text-xs font-bold text-slate-200 uppercase mb-3 pb-2 border-b border-slate-800 flex items-center gap-2">
-                  <i class="ph ph-info"></i> Bild Details
+</a>
+</div>
+<div class="relative rounded-xl overflow-hidden border border-red-900/40 bg-slate-900">
+<div class="absolute inset-0 bg-gradient-to-b from-red-500/10 to-transparent pointer-events-none"></div>
+<div class="map-container" id="ss-map"></div>
+</div>
+<div class="bg-slate-900 p-3 rounded-lg border border-slate-700 grid grid-cols-2 gap-4 text-xs font-mono text-slate-300">
+<div>
+<span class="text-slate-300 block">Breitengrad (Lat)</span>
+<span id="ss-lat-display">--</span>
+</div>
+<div>
+<span class="text-slate-300 block">Längengrad (Lng)</span>
+<span id="ss-lng-display">--</span>
+</div>
+</div>
+</div>
+<div class="hidden flex flex-col items-center justify-center text-center p-6 border border-emerald-900/30 bg-emerald-900/10 rounded-xl mb-6" id="ss-safe-state">
+<i class="ph ph-shield-check text-6xl text-emerald-500 mb-4"></i>
+<h3 class="text-white font-bold text-xl">Keine GPS Daten</h3>
+<p class="text-slate-200 text-sm mt-2">Dieses Bild enthält keinen Standort.</p>
+</div>
+<div class="hidden bg-slate-900 rounded-xl p-4 border border-slate-700 mb-4" id="ss-metadata-section">
+<h4 class="text-xs font-bold text-slate-200 uppercase mb-3 pb-2 border-b border-slate-800 flex items-center gap-2">
+<i class="ph ph-info"></i> Bild Details
                 </h4>
-                <div class="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
-                  <div class="text-slate-300 text-xs">Kamera / Gerät</div>
-                  <div id="ss-meta-model" class="text-slate-200 text-right font-medium truncate">-</div>
-
-                  <div class="text-slate-300 text-xs">Aufnahmedatum</div>
-                  <div id="ss-meta-date" class="text-slate-200 text-right font-medium truncate">-</div>
-
-                  <div class="text-slate-300 text-xs">Software</div>
-                  <div id="ss-meta-soft" class="text-slate-200 text-right font-medium truncate">-</div>
-
-                  <div class="text-slate-300 text-xs">Einstellungen</div>
-                  <div id="ss-meta-settings" class="text-slate-200 text-right font-mono text-xs truncate">-</div>
-                </div>
-              </div>
-
-              <div id="ss-initial-state" class="h-full flex flex-col items-center justify-center text-center p-6 opacity-50">
-                <i class="ph ph-map-trifold text-6xl text-slate-500 mb-4"></i>
-                <p class="text-slate-200 text-sm">Lade ein Bild hoch, um zu sehen,<br>wo es aufgenommen wurde.</p>
-              </div>
-            </div>
-
-            <div class="mt-4 pt-4 border-t border-slate-700 flex gap-3 shrink-0">
-              <button id="ss-clean-btn" disabled onclick="cleanImage()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
-                <i class="ph ph-eraser"></i>
-                <span>GPS & Daten löschen</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section ws-section" aria-label="Datenschutz zum Bild-Konverter">
-      <div class="container">
-        <h2 class="ws-section-title">Datenschutz-Hinweis</h2>
-        <p>Der Bild-Konverter verarbeitet Dateien ausschließlich lokal in deinem Browser. Es findet kein Upload auf Server der Warenschmiede oder Dritter statt, es werden keine Kopien gespeichert oder ausgewertet. Du kannst die Seite einfach schließen und alle Daten sind verschwunden.</p>
-        <p>Damit ist die Nutzung im Sinne meiner <a href="/datenschutz.html">Datenschutzerklärung</a> unkritisch: keine Cookies, kein Tracking, keine Analyse.</p>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <div class="container">
-      <div class="footer__inner">
-        <div class="footer__brand">© 2025 Warenschmiede · Alle Rechte vorbehalten.</div>
-        <nav class="footer__links" aria-label="Rechtliches &amp; Kontakt">
-          <a href="/impressum.html">Impressum</a>
-          <a href="/datenschutz.html">Datenschutzerklärung</a>
-          <a href="/kontakt.html">Kontakt</a>
-        </nav>
-        <div class="footer__notes">
-          <p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
-          <p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
-        </div>
-      </div>
-    </div>
-  </footer>
-  <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
-  <script>
+<div class="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+<div class="text-slate-300 text-xs">Kamera / Gerät</div>
+<div class="text-slate-200 text-right font-medium truncate" id="ss-meta-model">-</div>
+<div class="text-slate-300 text-xs">Aufnahmedatum</div>
+<div class="text-slate-200 text-right font-medium truncate" id="ss-meta-date">-</div>
+<div class="text-slate-300 text-xs">Software</div>
+<div class="text-slate-200 text-right font-medium truncate" id="ss-meta-soft">-</div>
+<div class="text-slate-300 text-xs">Einstellungen</div>
+<div class="text-slate-200 text-right font-mono text-xs truncate" id="ss-meta-settings">-</div>
+</div>
+</div>
+<div class="h-full flex flex-col items-center justify-center text-center p-6 opacity-50" id="ss-initial-state">
+<i class="ph ph-map-trifold text-6xl text-slate-500 mb-4"></i>
+<p class="text-slate-200 text-sm">Lade ein Bild hoch, um zu sehen,<br/>wo es aufgenommen wurde.</p>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-slate-700 flex gap-3 shrink-0">
+<button class="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2" disabled="" id="ss-clean-btn" onclick="cleanImage()">
+<i class="ph ph-eraser"></i>
+<span>GPS &amp; Daten löschen</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section aria-label="Datenschutz zum Bild-Konverter" class="section ws-section">
+<div class="container">
+<h2 class="ws-section-title">Datenschutz-Hinweis</h2>
+<p>Der Bild-Konverter verarbeitet Dateien ausschließlich lokal in deinem Browser. Es findet kein Upload auf Server der Warenschmiede oder Dritter statt, es werden keine Kopien gespeichert oder ausgewertet. Du kannst die Seite einfach schließen und alle Daten sind verschwunden.</p>
+<p>Damit ist die Nutzung im Sinne meiner <a href="/datenschutz.html">Datenschutzerklärung</a> unkritisch: keine Cookies, kein Tracking, keine Analyse.</p>
+</div>
+</section>
+</main>
+<footer class="footer">
+<div class="container">
+<div class="footer__inner">
+<div class="footer__brand">© 2025 Warenschmiede · Alle Rechte vorbehalten.</div>
+<nav aria-label="Rechtliches &amp; Kontakt" class="footer__links">
+<a href="/impressum.html">Impressum</a>
+<a href="/datenschutz.html">Datenschutzerklärung</a>
+<a href="/kontakt.html">Kontakt</a>
+</nav>
+<div class="footer__notes">
+<p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
+<p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
+</div>
+</div>
+</div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+<script>
     const ssFileInput = document.getElementById('ss-file-input');
     const ssPreviewImg = document.getElementById('ss-preview-img');
     const ssScanLine = document.getElementById('ss-scan-line');
@@ -1075,7 +1013,7 @@
       }
     }
   </script>
-  <script>
+<script>
     // State
     let files = [];
     let convertedFiles = [];
@@ -1308,7 +1246,7 @@
 
     setFormat('image/jpeg', 'jpg');
   </script>
-  <script>
+<script>
     (() => {
       const dropZone = document.getElementById('drop-zone');
       const gifFileInput = document.getElementById('gif-file-input');
@@ -1631,7 +1569,7 @@
       setupWorker();
     })();
   </script>
-  <script>
+<script>
     const bannerCanvas = new fabric.Canvas('banner-canvas', {
       backgroundColor: '#1e293b',
       preserveObjectStacking: true
@@ -1860,8 +1798,8 @@
       }
     });
   </script>
-  <script src="assets/js/theme.js" defer></script>
-  <script src="assets/js/header.js" defer></script>
-  <script src="assets/js/whatsapp.js" defer></script>
+<script defer="" src="assets/js/theme.js"></script>
+<script defer="" src="assets/js/header.js"></script>
+<script defer="" src="assets/js/whatsapp.js"></script>
 </body>
 </html>
