@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Damit die App als "echte" App ohne Browserleiste startet (wenn installiert) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+    
+    <title>Arbeitszeiterfassung</title>
+    
+    <!-- Icon für Apple/Android Homescreen -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'><rect width='24' height='24' rx='4'/><circle cx='12' cy='12' r='8' fill='white'/><polyline points='12 6 12 12 16 14' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'><rect width='24' height='24' rx='4'/><circle cx='12' cy='12' r='8' fill='white'/><polyline points='12 6 12 12 16 14' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --warning: #f59e0b;
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding-bottom: 80px; }
+        
+        /* Layout */
+        .container { max-width: 1024px; margin: 0 auto; padding: 16px; }
+        .header { background: #0f172a; color: white; padding: 16px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; font-size: 1.25rem; display: flex; align-items: center; gap: 8px; }
+        
+        /* Buttons */
+        .btn { padding: 8px 16px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; transition: background 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-success { background: var(--success); color: white; width: 100%; justify-content: center; padding: 12px; font-size: 1rem; }
+        .btn-warning { background: var(--warning); color: white; width: 100%; justify-content: center; padding: 12px; font-size: 1rem; }
+        .btn-icon { padding: 8px; background: #334155; color: white; border-radius: 6px; }
+        .btn-icon.active { background: var(--primary); }
+        
+        .btn-action { background: transparent; padding: 6px; border-radius: 4px; color: var(--text-light); border: 1px solid transparent; }
+        .btn-action:hover { background: #f1f5f9; border-color: var(--border); }
+        .btn-edit { color: var(--primary); }
+        .btn-delete { color: #fca5a5; }
+        .btn-delete:hover { color: var(--danger); background: #fef2f2; }
+        
+        /* Cards & Forms */
+        .card { background: var(--card-bg); border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 16px; border: 1px solid var(--border); }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.875rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; background: #f8fafc; }
+        .form-control:focus { outline: 2px solid var(--primary); border-color: transparent; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .stat-box { background: #eff6ff; border: 1px solid #dbeafe; padding: 16px; border-radius: 12px; }
+        .stat-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--primary); letter-spacing: 0.05em; margin-bottom: 4px; }
+        .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+        
+        /* List Items (Mobile) */
+        .entry-item { position: relative; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--border); }
+        .entry-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .entry-date { font-weight: 700; font-size: 1.1rem; }
+        .entry-time { font-family: monospace; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.9rem; color: var(--text-main); }
+        .entry-note { display: inline-block; background: #fffbeb; color: #92400e; border: 1px solid #fcd34d; font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; margin-top: 4px; }
+        .entry-duration { font-weight: 700; color: var(--primary); font-size: 1.25rem; text-align: right; }
+        .action-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+        
+        /* Table (Desktop) */
+        .desktop-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .desktop-table th { text-align: left; padding: 12px; background: #f8fafc; color: var(--text-light); text-transform: uppercase; font-size: 0.75rem; font-weight: 700; border-bottom: 2px solid var(--border); }
+        .desktop-table td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .desktop-table tr:last-child td { border-bottom: none; }
+        .desktop-only { display: none; }
+        .mobile-only { display: block; }
+
+        /* Modal / Install Help */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: flex; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(4px); }
+        .modal-content { background: white; border-radius: 16px; padding: 24px; max-width: 450px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-height: 90vh; overflow-y: auto; }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .instruction-step { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 0.95rem; }
+        .instruction-icon { background: #f1f5f9; padding: 6px; border-radius: 6px; color: #334155; }
+        .warning-box { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 0.9rem; }
+
+        /* Footer */
+        .footer-section { margin-top: 32px; border-top: 1px solid var(--border); padding-top: 24px; }
+        .backup-box { background: #e0e7ff; border: 1px solid #c7d2fe; padding: 16px; border-radius: 12px; }
+        
+        /* Helper Classes */
+        .hidden { display: none !important; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .flex { display: flex; gap: 8px; }
+        
+        /* Responsive */
+        @media (min-width: 640px) {
+            .desktop-only { display: block; }
+            .mobile-only { display: none; }
+        }
+
+        /* Icons (SVG) */
+        svg { width: 20px; height: 20px; vertical-align: middle; stroke-width: 2; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        
+        /* --- PRINT STYLES --- */
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; padding: 0; font-size: 11pt; }
+            .container { max-width: 100%; padding: 0; margin: 0; }
+            .card { border: none; box-shadow: none; padding: 0; margin: 0; }
+            .desktop-table { width: 100%; border: 1px solid #000; }
+            .desktop-table th { background: #eee !important; color: #000; border: 1px solid #000; }
+            .desktop-table td { border: 1px solid #000; padding: 6px; }
+            thead { display: table-header-group; }
+            tr { page-break-inside: avoid; }
+            .mobile-list-container { display: none !important; }
+            .desktop-table-container { display: block !important; margin-bottom: 0; }
+            .signature-section { display: block !important; margin-top: 40px; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header no-print">
+        <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%; padding:0;">
+            <h1>
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Zeiterfassung <span style="font-size:0.8rem; opacity:0.7; font-weight:normal; margin-left:8px;">(V5)</span>
+            </h1>
+            <div class="flex">
+                <button class="btn-icon" title="Als App installieren" onclick="openInstallHelp()">
+                    <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/><path d="M12 11V6"/><path d="M9 9l3 3 3-3"/></svg>
+                </button>
+                <button id="btnViewMobile" class="btn-icon active" title="Handy Ansicht" onclick="switchView('mobile')">
+                    <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                </button>
+                <button id="btnViewDesktop" class="btn-icon" title="PC Ansicht" onclick="switchView('desktop')">
+                    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </button>
+                <button class="btn btn-primary" onclick="openFormForNew()">
+                    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span class="desktop-only" style="display:inline;">Neu</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- Eingabe Formular -->
+        <div id="entryForm" class="card hidden no-print">
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:16px;">
+                <h2 style="margin:0; font-size:1.2rem;" id="formTitle">Eintrag erfassen</h2>
+                <button onclick="closeForm()" class="btn-action" title="Abbrechen"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+            
+            <form onsubmit="saveEntry(event)">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label>Datum</label>
+                    <input type="date" id="inpDate" class="form-control" required>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Start</label>
+                        <input type="time" id="inpStart" value="07:00" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ende</label>
+                        <input type="time" id="inpEnd" value="16:00" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Pause (Minuten)</label>
+                    <input type="number" id="inpPause" value="30" min="0" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Notiz (Optional)</label>
+                    <input type="text" id="inpNote" placeholder="z.B. Inventur" class="form-control">
+                </div>
+                <button type="submit" id="btnSubmit" class="btn btn-success">
+                    <svg viewBox="0 0 24 24" style="margin-right:8px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Speichern
+                </button>
+            </form>
+        </div>
+
+        <!-- Übersicht -->
+        <div class="card">
+            <div class="flex no-print" style="justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h2 style="margin:0; font-size:1.1rem;">Übersicht</h2>
+                <div style="display:flex; gap:8px;">
+                    <button onclick="goToToday()" class="btn-action" title="Gehe zu Heute" style="border:1px solid var(--border);">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </button>
+                    <input type="month" id="monthPicker" class="form-control" style="width:auto; padding:4px 8px;" onchange="renderData()">
+                </div>
+            </div>
+
+            <!-- Print Header -->
+            <div class="print-only hidden" style="text-align:center; margin-bottom:20px;">
+                <h1>Stundennachweis</h1>
+                <h3 id="printMonthLabel"></h3>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Gesamtzeit</div>
+                    <div class="stat-value" id="statTotalTime">00:00 h</div>
+                </div>
+                <div class="stat-box" style="background:#f8fafc; border-color:var(--border);">
+                    <div class="stat-label" style="color:var(--text-light);">Arbeitstage (Netto)</div>
+                    <div class="stat-value" id="statDays">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Listen Ansicht (Mobile) -->
+        <div id="listViewMobile" class="mobile-list-container"></div>
+
+        <!-- Tabellen Ansicht (Desktop) -->
+        <div id="listViewDesktop" class="card desktop-table-container hidden" style="padding:0; overflow:hidden;">
+            <table class="desktop-table">
+                <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>Zeitraum</th>
+                        <th>Pause</th>
+                        <th class="text-right">Dauer</th>
+                        <th>Notiz</th>
+                        <th class="text-center no-print" style="width:100px;">Aktion</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Unterschriften -->
+        <div class="signature-section hidden" style="margin-top: 60px;">
+            <div style="display: flex; justify-content: space-between; gap: 40px;">
+                <div style="flex: 1; border-top: 1px solid black; padding-top: 8px;">
+                    <p style="margin: 0; font-size: 0.9rem;">Datum, Unterschrift Arbeitnehmer/in</p>
+                </div>
+                <div style="flex: 1; border-top: 1px solid black; padding-top: 8px;">
+                    <p style="margin: 0; font-size: 0.9rem;">Datum, Unterschrift Arbeitgeber (zur Kenntnisnahme)</p>
+                </div>
+            </div>
+            <p style="font-size: 0.75rem; color: #64748b; margin-top: 24px; text-align: center;">
+                Dieses Dokument wurde elektronisch erstellt. Es dient als Nachweis der tatsächlich geleisteten Arbeitszeiten.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-section no-print">
+            <h3 style="font-size:0.9rem; margin-bottom:12px;">Daten & Export</h3>
+            <div class="grid-2">
+                <button onclick="exportCSV()" class="btn" style="background:white; border:1px solid var(--border); justify-content:center;">CSV (Excel)</button>
+                <button onclick="window.print()" class="btn" style="background:#1e293b; color:white; justify-content:center;">Drucken / PDF</button>
+            </div>
+            <div class="backup-box" style="margin-top:16px;">
+                <p style="margin:0 0 12px 0; font-size:0.85rem; color:#3730a3;"><strong>Backup:</strong> Daten liegen nur im Browser. Bei Handywechsel Backup laden!</p>
+                <div class="grid-2">
+                    <button onclick="downloadBackup()" class="btn" style="background:#4338ca; color:white; justify-content:center;">Sichern</button>
+                    <button onclick="document.getElementById('fileUpload').click()" class="btn" style="background:white; color:#4338ca; border:1px solid #4338ca; justify-content:center;">Laden</button>
+                    <input type="file" id="fileUpload" accept=".json" style="display:none" onchange="restoreBackup(this)">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- INSTALL HELP MODAL -->
+    <div id="installModal" class="modal-overlay hidden" onclick="if(event.target === this) closeInstallHelp()">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="margin:0;">Zum Startbildschirm</h3>
+                <button onclick="closeInstallHelp()" class="btn-action"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+            
+            <div class="warning-box">
+                <strong>Wichtig:</strong> Diese Option ist in deinem Browser eventuell ausgeblendet, wenn du die Datei direkt vom Handy-Speicher geöffnet hast.
+                <br><br>
+                Nutze den Online-Link (Webseite), damit es sicher funktioniert.
+            </div>
+
+            <div style="background:#f1f5f9; padding:12px; border-radius:8px; margin-bottom:16px;">
+                <h4 style="margin:0 0 8px 0; display:flex; align-items:center; gap:8px;">
+                    <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><path d="M12 18h.01"/></svg> iPhone (Safari)
+                </h4>
+                <div class="instruction-step">
+                    <div class="instruction-icon"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
+                    <span>1. Tippe unten auf <strong>Teilen</strong>.</span>
+                </div>
+                <div class="instruction-step">
+                    <div class="instruction-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M12 8v8"/><path d="M8 12h8"/></svg></div>
+                    <span>2. Wähle <strong>"Zum Home-Bildschirm"</strong>.</span>
+                </div>
+            </div>
+
+            <div style="background:#f0fdf4; padding:12px; border-radius:8px; border:1px solid #dcfce7;">
+                <h4 style="margin:0 0 8px 0; display:flex; align-items:center; gap:8px;">
+                    <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Android (Chrome)
+                </h4>
+                <div class="instruction-step">
+                    <div class="instruction-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div>
+                    <span>1. Tippe auf das <strong>Menü (3 Punkte)</strong>.</span>
+                </div>
+                <div class="instruction-step">
+                    <div class="instruction-icon"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zM12 8v8M8 12h8"/></svg></div>
+                    <span>2. Wähle <strong>"Zum Startbildschirm"</strong> oder "App installieren".</span>
+                </div>
+            </div>
+            
+            <button onclick="closeInstallHelp()" class="btn btn-primary" style="width:100%; margin-top:20px; justify-content:center;">Verstanden</button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        let entries = JSON.parse(localStorage.getItem('workTimeEntries_v2')) || [];
+        
+        window.onload = function() {
+            setToday();
+            if (window.innerWidth >= 640) switchView('desktop');
+            else switchView('mobile');
+            renderData();
+        };
+
+        function setToday() {
+            const now = new Date();
+            document.getElementById('monthPicker').value = now.toISOString().slice(0, 7);
+            document.getElementById('inpDate').value = now.toISOString().slice(0, 10);
+        }
+
+        function goToToday() { setToday(); renderData(); }
+
+        function openFormForNew() {
+            document.getElementById('editId').value = '';
+            document.getElementById('formTitle').textContent = 'Neuen Tag erfassen';
+            document.getElementById('btnSubmit').className = 'btn btn-success';
+            document.getElementById('btnSubmit').innerHTML = '<svg viewBox="0 0 24 24" style="margin-right:8px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Speichern';
+            if(!document.getElementById('inpDate').value) document.getElementById('inpDate').value = new Date().toISOString().slice(0, 10);
+            document.getElementById('entryForm').classList.remove('hidden');
+            document.getElementById('inpDate').focus();
+        }
+
+        function openFormForEdit(id) {
+            const entry = entries.find(e => e.id === id);
+            if(!entry) return;
+            document.getElementById('editId').value = entry.id;
+            document.getElementById('inpDate').value = entry.date;
+            document.getElementById('inpStart').value = entry.start;
+            document.getElementById('inpEnd').value = entry.end;
+            document.getElementById('inpPause').value = entry.pause;
+            document.getElementById('inpNote').value = entry.note || '';
+            document.getElementById('formTitle').textContent = 'Eintrag bearbeiten';
+            document.getElementById('btnSubmit').className = 'btn btn-warning';
+            document.getElementById('btnSubmit').innerHTML = '<svg viewBox="0 0 24 24" style="margin-right:8px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Ändern speichern';
+            document.getElementById('entryForm').classList.remove('hidden');
+            document.getElementById('entryForm').scrollIntoView({behavior: 'smooth'});
+        }
+
+        function closeForm() {
+            document.getElementById('entryForm').classList.add('hidden');
+            document.getElementById('inpNote').value = '';
+        }
+
+        function saveEntry(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editId').value;
+            const date = document.getElementById('inpDate').value;
+            const start = document.getElementById('inpStart').value;
+            const end = document.getElementById('inpEnd').value;
+            const pause = parseInt(document.getElementById('inpPause').value) || 0;
+            const note = document.getElementById('inpNote').value;
+            const duration = calculateDuration(start, end, pause);
+            if (duration < 0) { alert("Fehler: Endzeit muss nach Startzeit sein (abzüglich Pause)."); return; }
+            if (editId) {
+                const index = entries.findIndex(e => String(e.id) === String(editId));
+                if(index > -1) entries[index] = { id: parseInt(editId), date, start, end, pause, duration, note };
+            } else {
+                entries.push({ id: Date.now(), date, start, end, pause, duration, note });
+            }
+            entries.sort((a, b) => new Date(b.date) - new Date(a.date));
+            localStorage.setItem('workTimeEntries_v2', JSON.stringify(entries));
+            document.getElementById('inpNote').value = '';
+            closeForm();
+            renderData();
+        }
+
+        function deleteEntry(id) {
+            if(confirm("Eintrag wirklich löschen?")) {
+                entries = entries.filter(e => e.id !== id);
+                localStorage.setItem('workTimeEntries_v2', JSON.stringify(entries));
+                renderData();
+            }
+        }
+
+        function renderData() {
+            const selectedMonth = document.getElementById('monthPicker').value;
+            const filtered = entries.filter(e => e.date.startsWith(selectedMonth));
+            const totalMin = filtered.reduce((acc, curr) => acc + curr.duration, 0);
+            const uniqueDays = new Set(filtered.map(e => e.date)).size;
+            document.getElementById('statTotalTime').textContent = formatMinutes(totalMin) + " h";
+            document.getElementById('statDays').textContent = uniqueDays;
+            const [y, m] = selectedMonth.split('-');
+            const dateObj = new Date(y, m - 1);
+            document.getElementById('printMonthLabel').textContent = dateObj.toLocaleString('de-DE', { month: 'long', year: 'numeric' });
+
+            const mobileContainer = document.getElementById('listViewMobile');
+            mobileContainer.innerHTML = '';
+            if (filtered.length === 0) {
+                mobileContainer.innerHTML = '<div style="text-align:center; padding:30px; color:#94a3b8;">Keine Einträge für diesen Monat.</div>';
+            } else {
+                filtered.forEach(e => {
+                    const el = document.createElement('div');
+                    el.className = 'card entry-item';
+                    el.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div><div class="entry-date">${formatDate(e.date)}</div><div><span class="entry-time">${e.start} - ${e.end}</span> <span style="font-size:0.8rem; color:#64748b;">Pause: ${e.pause}m</span></div>${e.note ? `<div class="entry-note">${e.note}</div>` : ''}</div>
+                            <div class="text-right"><div class="entry-duration">${formatMinutes(e.duration)} h</div><div class="action-row no-print"><button class="btn-action btn-edit" onclick="openFormForEdit(${e.id})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="btn-action btn-delete" onclick="deleteEntry(${e.id})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div>
+                        </div>`;
+                    mobileContainer.appendChild(el);
+                });
+            }
+
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            filtered.forEach(e => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td><strong>${formatDate(e.date)}</strong></td><td style="font-family:monospace;">${e.start} - ${e.end}</td><td>${e.pause} min</td><td class="text-right" style="font-weight:bold; color:var(--primary);">${formatMinutes(e.duration)} h</td><td>${e.note ? `<span class="entry-note">${e.note}</span>` : '-'}</td><td class="text-center no-print"><button class="btn-action btn-edit" onclick="openFormForEdit(${e.id})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="btn-action btn-delete" onclick="deleteEntry(${e.id})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></td>`;
+                tableBody.appendChild(row);
+            });
+            const totalRow = document.createElement('tr');
+            totalRow.style.background = '#f1f5f9';
+            totalRow.style.fontWeight = 'bold';
+            totalRow.innerHTML = `<td colspan="3" style="text-align:right; text-transform:uppercase;">Gesamt Summe:</td><td class="text-right" style="font-size:1.1rem;">${formatMinutes(totalMin)} h</td><td colspan="2"></td>`;
+            tableBody.appendChild(totalRow);
+        }
+
+        function calculateDuration(start, end, pause) {
+            const [h1, m1] = start.split(':').map(Number);
+            const [h2, m2] = end.split(':').map(Number);
+            return Math.max(0, (h2 * 60 + m2) - (h1 * 60 + m1) - pause);
+        }
+        function formatMinutes(min) { const h = Math.floor(min/60); const m = min%60; return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; }
+        function formatDate(d) { return new Date(d).toLocaleDateString('de-DE', {weekday:'short', day:'2-digit', month:'2-digit', year:'numeric'}); }
+        function switchView(m) {
+            const mob = document.getElementById('listViewMobile'), desk = document.getElementById('listViewDesktop');
+            const bm = document.getElementById('btnViewMobile'), bd = document.getElementById('btnViewDesktop');
+            if (m === 'mobile') { mob.classList.remove('hidden'); desk.classList.add('hidden'); bm.classList.add('active'); bd.classList.remove('active'); }
+            else { mob.classList.add('hidden'); desk.classList.remove('hidden'); bm.classList.remove('active'); bd.classList.add('active'); }
+        }
+        function openInstallHelp() { document.getElementById('installModal').classList.remove('hidden'); }
+        function closeInstallHelp() { document.getElementById('installModal').classList.add('hidden'); }
+        function downloadBackup() {
+            const a = document.createElement('a');
+            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(entries));
+            a.download = "zeiterfassung_backup.json";
+            document.body.appendChild(a); a.click(); a.remove();
+        }
+        function restoreBackup(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imp = JSON.parse(e.target.result);
+                    if(Array.isArray(imp) && confirm(`Importiere ${imp.length} Einträge?`)) {
+                        entries = imp; localStorage.setItem('workTimeEntries_v2', JSON.stringify(entries)); renderData(); alert("Erfolg!");
+                    }
+                } catch(err) { alert("Fehler beim Laden."); }
+            };
+            reader.readAsText(file); input.value = '';
+        }
+        function exportCSV() {
+            const selectedMonth = document.getElementById('monthPicker').value;
+            const filtered = entries.filter(e => e.date.startsWith(selectedMonth));
+            const sorted = [...filtered].sort((a, b) => new Date(a.date) - new Date(b.date));
+            let csv = "Datum;Start;Ende;Pause (Min);Arbeitszeit;Notiz\n";
+            sorted.forEach(e => { csv += `${new Date(e.date).toLocaleDateString('de-DE')};${e.start};${e.end};${e.pause};${formatMinutes(e.duration)};${e.note}\n`; });
+            const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv); a.download = `Stunden_${selectedMonth}.csv`;
+            document.body.appendChild(a); a.click(); a.remove();
+        }
+    </script>
+</body>
+</html>
