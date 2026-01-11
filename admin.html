@@ -7,6 +7,7 @@
     <link href="styles.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="ws.png">
     <meta name="robots" content="noindex, nofollow">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <style>
         /* Admin Specific Styles */
         body {
@@ -303,8 +304,18 @@
         }
     </style>
 </head>
-<body>
-    <div class="admin-container">
+<body x-data="{ auth: false, pass: '' }">
+
+    <!-- Login Container -->
+    <div x-show="!auth" style="display: flex; height: 100vh; align-items: center; justify-content: center; background-color: #f3f4f6;">
+        <div style="background-color: white; padding: 2rem; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); text-align: center;">
+            <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">Admin Login</h2>
+            <input type="password" x-model="pass" @keyup.enter="if(pass==='###Txp123###') { auth=true; loadInventory(); }" style="border: 1px solid #e5e7eb; padding: 0.5rem; border-radius: 0.25rem; margin-bottom: 1rem; width: 100%; display: block;" placeholder="Passwort">
+            <button @click="if(pass==='###Txp123###') { auth=true; loadInventory(); }" style="background-color: #059669; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; border: none; cursor: pointer;">Entsperren</button>
+        </div>
+    </div>
+
+    <div class="admin-container" x-show="auth" style="display: none;">
         <header class="admin-header">
             <div>
                 <h1>🛠️ Warenschmiede Admin Suite</h1>
@@ -725,7 +736,7 @@
         }
 
         // Init
-        loadInventory();
+        // loadInventory(); // Removed auto-load for security
 
     </script>
 </body>
