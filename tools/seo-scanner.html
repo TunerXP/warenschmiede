@@ -8,7 +8,7 @@
     <link href="../styles.css" rel="stylesheet"/>
     <style>
         .scanner-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 40px auto;
             padding: 20px;
         }
@@ -27,6 +27,7 @@
             padding: 12px 16px;
             text-align: left;
             border-bottom: 1px solid var(--border, #e2e8f0);
+            vertical-align: top;
         }
 
         .scanner-table th {
@@ -50,6 +51,21 @@
             gap: 6px;
         }
 
+        .status-warning {
+            color: #d97706;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
         .scan-btn {
             background-color: var(--accent, #d12a2a);
             color: white;
@@ -71,6 +87,22 @@
             cursor: not-allowed;
         }
 
+        .copy-btn {
+            background-color: var(--surface-muted, #f8fafc);
+            color: var(--text, #0f172a);
+            border: 1px solid var(--border, #e2e8f0);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--border, #e2e8f0);
+        }
+
         .loading {
             color: var(--text-muted, #64748b);
             font-style: italic;
@@ -81,7 +113,7 @@
             color: var(--text-muted, #64748b);
             display: block;
             margin-top: 4px;
-            max-width: 400px;
+            max-width: 300px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -109,21 +141,26 @@
     <main class="site-main">
         <div class="scanner-container">
             <h1 class="ws-page-title">SEO Scanner (Intern)</h1>
-            <p>Prüft automatisch Title und Meta-Description der wichtigsten Seiten.</p>
+            <p>Prüft automatisch Title, Meta-Description, OG-Image und H1-Struktur der wichtigsten Seiten.</p>
 
-            <button id="startScan" class="scan-btn">Scan starten</button>
+            <div class="action-bar">
+                <button id="startScan" class="scan-btn">Scan starten</button>
+                <button id="copyReport" class="copy-btn">📋 Bericht für KI kopieren</button>
+            </div>
 
             <table class="scanner-table">
                 <thead>
                     <tr>
                         <th>Seite</th>
-                        <th>Title (Status)</th>
-                        <th>Description (Status)</th>
+                        <th>Title</th>
+                        <th>Descr.</th>
+                        <th>Bild (WhatsApp)</th>
+                        <th>H1 (Struktur)</th>
                     </tr>
                 </thead>
                 <tbody id="resultsBody">
                     <tr>
-                        <td colspan="3" class="loading" style="text-align: center; padding: 20px;">
+                        <td colspan="5" class="loading" style="text-align: center; padding: 20px;">
                             Klicke auf "Scan starten" um die Prüfung zu beginnen.
                         </td>
                     </tr>
@@ -134,7 +171,6 @@
 
     <script>
         const pages = [
-            // ROOT
             '../index.html',
             '../kontakt.html',
             '../ueber-mich.html',
@@ -142,81 +178,27 @@
             '../downloads.html',
             '../impressum.html',
             '../datenschutz.html',
-            '../3ddruck-chat.html',
-            '../3ddruck-faq.html',
-            '../404.html',
-            '../about.html',
-            '../bild-konverter.html',
-            '../druck-kosten.html',
-            '../druck-tipps.html',
-            '../fehlerdatenbank.html',
-            '../ideenquellen.html',
-            '../image-studio.html',
-            '../kostenrechner-hinweise.html',
-            '../leistungen.html',
-            '../material.html',
-            '../slicer-einstellungen.html',
-            '../technologien.html',
-            '../tool.dashboard.html',
-            '../wartung-reinigung.html',
-            '../werkstatt-rechner.html',
-
-            // LEISTUNGEN
+            '../ki/chat.html',
+            '../ki/index.html',
             '../leistungen/3d-druck.html',
             '../leistungen/cad-prototyping.html',
             '../leistungen/pc-hilfe.html',
-
-            // KI
-            '../ki/chat.html',
-            '../ki/index.html',
-            '../ki/anwendungsfinder.html',
-            '../ki/chancen-und-risiken.html',
-            '../ki/faq.html',
-            '../ki/faq-sicherheit.html',
-            '../ki/ki-finder.html',
-            '../ki/lexikon.html',
-            '../ki/programme-die-du-brauchst.html',
-            '../ki/prompts.html',
-            '../ki/promt-trainer.html',
-            '../ki/so-arbeitest-du-mit-ki.html',
-            '../ki/tools.html',
-
-            // TOOLS (Lokaler Ordner)
             'index.html',
             'Zeiterfassung.html',
             'quittungs_generator.html',
             'winkel-rechner.html',
             'welding_trainer.html',
             'kostenrechner-v2.html',
-            'seo-scanner.html',
-
-            // TOOLS Subfolder (Büro)
-            'buero/doku-light/bildgenerator.html',
-            'buero/doku-light/CNCMasterCalc.html',
-            'buero/doku-light/doku-light-print.html',
-            'buero/doku-light/gif-studio.html',
-            'buero/doku-light/index.html',
-            'buero/doku-light/QRCodeMasterPro.html',
-            'buero/doku-light/ReceiptWriterPro.html',
-
-            // DRUCK
-            '../druck/angebot.html',
-            '../druck/ergebnis.html',
-            '../druck/rechnung.html',
-            '../druck/selftest.html',
-
-            // SONSTIGE
-            '../ideen/index.html',
-            '../material/index.html',
-            '../materials/index.html',
-            '../pc-hilfe/index.html',
-            '../spiel/warenschmiede-breakout.html'
+            'seo-scanner.html'
         ];
+
+        let scanResultsData = [];
 
         document.getElementById('startScan').addEventListener('click', async () => {
             const btn = document.getElementById('startScan');
             const tbody = document.getElementById('resultsBody');
 
+            scanResultsData = []; // Reset results
             btn.disabled = true;
             btn.textContent = 'Scanne...';
             tbody.innerHTML = '';
@@ -230,6 +212,8 @@
                     </td>
                     <td>-</td>
                     <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
                 `;
                 tbody.appendChild(row);
 
@@ -241,59 +225,113 @@
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(text, 'text/html');
 
+                    // 1. Title Check
                     const title = doc.querySelector('title')?.innerText.trim();
+                    const titleOk = title && title.length > 0;
+
+                    // 2. Description Check
                     const description = doc.querySelector('meta[name="description"]')?.getAttribute('content')?.trim();
+                    const descOk = description && description.length > 0;
+
+                    // 3. Image Check (og:image)
+                    const ogImage = doc.querySelector('meta[property="og:image"]')?.getAttribute('content')?.trim();
+                    const imageOk = ogImage && ogImage.length > 0;
+
+                    // 4. H1 Check
+                    const h1Count = doc.querySelectorAll('h1').length;
+                    let h1Status = 'FEHLT';
+                    if (h1Count === 1) h1Status = 'OK';
+                    else if (h1Count > 1) h1Status = 'WARNUNG';
+
+                    // Save for report
+                    scanResultsData.push({
+                        url: url,
+                        title: titleOk ? 'OK' : 'FEHLT',
+                        descr: descOk ? 'OK' : 'FEHLT',
+                        image: imageOk ? 'OK' : 'FEHLT',
+                        h1: h1Status
+                    });
+
+                    // Render Cells
 
                     // Title Cell
-                    let titleHtml = '';
-                    if (title) {
-                        titleHtml = `
-                            <div class="status-ok">
-                                <span style="font-size: 1.2em">✓</span> OK
-                            </div>
-                            <span class="meta-content" title="${title}">${title}</span>
-                        `;
-                    } else {
-                        titleHtml = `
-                            <div class="status-error">
-                                <span style="font-size: 1.2em">✗</span> FEHLT
-                            </div>
-                        `;
-                    }
+                    const titleHtml = titleOk ?
+                        `<div class="status-ok">✅ <span class="meta-content" title="${title}">OK</span></div>` :
+                        `<div class="status-error">❌ FEHLT</div>`;
 
                     // Description Cell
-                    let descHtml = '';
-                    if (description) {
-                        descHtml = `
-                            <div class="status-ok">
-                                <span style="font-size: 1.2em">✓</span> OK
-                            </div>
-                            <span class="meta-content" title="${description}">${description}</span>
-                        `;
+                    const descHtml = descOk ?
+                        `<div class="status-ok">✅ <span class="meta-content" title="${description}">OK</span></div>` :
+                        `<div class="status-error">❌ FEHLT</div>`;
+
+                    // Image Cell
+                    const imageHtml = imageOk ?
+                        `<div class="status-ok">✅ <span class="meta-content" title="${ogImage}">OK</span></div>` :
+                        `<div class="status-error">❌ FEHLT</div>`;
+
+                    // H1 Cell
+                    let h1Html = '';
+                    if (h1Count === 1) {
+                        h1Html = `<div class="status-ok">✅ 1 H1</div>`;
+                    } else if (h1Count === 0) {
+                        h1Html = `<div class="status-error">❌ KEINE H1</div>`;
                     } else {
-                        descHtml = `
-                            <div class="status-error">
-                                <span style="font-size: 1.2em">✗</span> FEHLT
-                            </div>
-                        `;
+                        h1Html = `<div class="status-warning">⚠️ ${h1Count} H1</div>`;
                     }
 
                     row.innerHTML = `
                         <td><strong>${url}</strong></td>
                         <td>${titleHtml}</td>
                         <td>${descHtml}</td>
+                        <td>${imageHtml}</td>
+                        <td>${h1Html}</td>
                     `;
 
                 } catch (error) {
+                    console.error(error);
+                    scanResultsData.push({
+                        url: url,
+                        title: 'ERROR',
+                        descr: 'ERROR',
+                        image: 'ERROR',
+                        h1: 'ERROR'
+                    });
                     row.innerHTML = `
                         <td><strong>${url}</strong></td>
-                        <td colspan="2" class="status-error">Fehler beim Laden: ${error.message}</td>
+                        <td colspan="4" class="status-error">Fehler beim Laden: ${error.message}</td>
                     `;
                 }
             }
 
             btn.disabled = false;
             btn.textContent = 'Scan erneut starten';
+        });
+
+        document.getElementById('copyReport').addEventListener('click', async () => {
+            const btn = document.getElementById('copyReport');
+
+            if (scanResultsData.length === 0) {
+                alert('Bitte führen Sie erst einen Scan durch.');
+                return;
+            }
+
+            let report = "SEO SCAN REPORT:\n\n";
+
+            scanResultsData.forEach(item => {
+                report += `Seite: ${item.url} | Title: ${item.title} | Descr: ${item.descr} | Bild: ${item.image} | H1: ${item.h1}\n`;
+            });
+
+            try {
+                await navigator.clipboard.writeText(report);
+                const originalText = btn.textContent;
+                btn.textContent = 'Kopiert!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                alert('Konnte nicht in die Zwischenablage kopieren.');
+            }
         });
     </script>
 </body>
