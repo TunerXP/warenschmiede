@@ -133,15 +133,84 @@
     </main>
 
     <script>
-        const urlsToCheck = [
+        const pages = [
+            // ROOT
             '../index.html',
+            '../kontakt.html',
+            '../ueber-mich.html',
+            '../ablauf-anfrage.html',
+            '../downloads.html',
+            '../impressum.html',
+            '../datenschutz.html',
+            '../3ddruck-chat.html',
+            '../3ddruck-faq.html',
+            '../404.html',
+            '../about.html',
+            '../bild-konverter.html',
+            '../druck-kosten.html',
+            '../druck-tipps.html',
+            '../fehlerdatenbank.html',
+            '../ideenquellen.html',
+            '../image-studio.html',
+            '../kostenrechner-hinweise.html',
+            '../leistungen.html',
+            '../material.html',
+            '../slicer-einstellungen.html',
+            '../technologien.html',
+            '../tool.dashboard.html',
+            '../wartung-reinigung.html',
+            '../werkstatt-rechner.html',
+
+            // LEISTUNGEN
+            '../leistungen/3d-druck.html',
+            '../leistungen/cad-prototyping.html',
+            '../leistungen/pc-hilfe.html',
+
+            // KI
             '../ki/chat.html',
+            '../ki/index.html',
+            '../ki/anwendungsfinder.html',
+            '../ki/chancen-und-risiken.html',
+            '../ki/faq.html',
+            '../ki/faq-sicherheit.html',
+            '../ki/ki-finder.html',
+            '../ki/lexikon.html',
+            '../ki/programme-die-du-brauchst.html',
+            '../ki/prompts.html',
+            '../ki/promt-trainer.html',
+            '../ki/so-arbeitest-du-mit-ki.html',
+            '../ki/tools.html',
+
+            // TOOLS (Lokaler Ordner)
             'index.html',
             'Zeiterfassung.html',
             'quittungs_generator.html',
             'winkel-rechner.html',
             'welding_trainer.html',
-            'kostenrechner-v2.html'
+            'kostenrechner-v2.html',
+            'seo-scanner.html',
+
+            // TOOLS Subfolder (Büro)
+            'buero/doku-light/bildgenerator.html',
+            'buero/doku-light/CNCMasterCalc.html',
+            'buero/doku-light/doku-light-print.html',
+            'buero/doku-light/gif-studio.html',
+            'buero/doku-light/index.html',
+            'buero/doku-light/QRCodeMasterPro.html',
+            'buero/doku-light/ReceiptWriterPro.html',
+
+            // DRUCK
+            '../druck/angebot.html',
+            '../druck/ergebnis.html',
+            '../druck/rechnung.html',
+            '../druck/selftest.html',
+
+            // SONSTIGE
+            '../ideen/index.html',
+            '../material/index.html',
+            '../materials/index.html',
+            '../pc-hilfe/index.html',
+            '../spiel/warenschmiede-breakout.html'
         ];
 
         document.getElementById('startScan').addEventListener('click', async () => {
@@ -152,7 +221,7 @@
             btn.textContent = 'Scanne...';
             tbody.innerHTML = '';
 
-            for (const url of urlsToCheck) {
+            for (const url of pages) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>
