@@ -326,6 +326,16 @@
             <div class="dashboard-grid" id="stats-container">
                 <!-- Populated via JS -->
             </div>
+
+            <div style="margin-top: 30px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <h3>Quick Links</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                    <a href="https://github.com/TunerXP/warenschmiede" target="_blank" class="btn">GitHub Repo</a>
+                    <a href="https://search.google.com/search-console?resource_id=sc-domain%3Awarenschmiede.com" target="_blank" class="btn">Google Search Console</a>
+                    <a href="https://www.warenschmiede.com" target="_blank" class="btn btn-primary">Live Webseite</a>
+                </div>
+            </div>
+
             <div style="margin-top: 40px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                 <h3>System Status</h3>
                 <p>Inventory loaded: <span id="inventory-status" style="font-weight: bold;">Checking...</span></p>
@@ -345,7 +355,10 @@
                     <h3>SEO Scanner (Client-Side)</h3>
                     <p style="font-size: 0.9rem; color: #666;">Checks Title, Description, H1, and OG:Image availability.</p>
                 </div>
-                <button onclick="runSeoScan()" class="btn btn-primary">▶️ Scan Starten</button>
+                <div>
+                    <button onclick="downloadSeoReport()" class="btn" style="margin-right: 10px;">💾 Bericht speichern</button>
+                    <button onclick="runSeoScan()" class="btn btn-primary">▶️ Scan Starten</button>
+                </div>
             </div>
             <div class="table-responsive">
                 <table class="data-table">
@@ -356,6 +369,8 @@
                             <th>Description (Length)</th>
                             <th>H1</th>
                             <th>OG:Image</th>
+                            <th>Robots</th>
+                            <th>In Sitemap?</th>
                         </tr>
                     </thead>
                     <tbody id="seo-results">
@@ -456,12 +471,76 @@
         }
 
         // SEO SCANNER
+        let lastSeoResults = []; // Store results for export
+
+        function downloadSeoReport() {
+            if (lastSeoResults.length === 0) {
+                alert('No scan results to save. Run a scan first!');
+                return;
+            }
+
+            let report = "WARENSCHMIEDE SEO REPORT\n";
+            report += "Generated: " + new Date().toLocaleString() + "\n";
+            report += "--------------------------------------------------\n\n";
+
+            lastSeoResults.forEach(item => {
+                if (item.error) {
+                    report += `FILE: ${item.page}\nERROR: ${item.error}\n\n`;
+                } else {
+                    report += `FILE: ${item.page}\n`;
+                    report += `TITLE: ${item.title}\n`;
+                    report += `DESC:  ${item.desc}\n`;
+                    report += `H1:    ${item.h1}\n`;
+                    report += `ROBOTS: ${item.robots} (${item.robots.includes('noindex') ? 'NOINDEX' : 'INDEX'})\n`;
+                    report += `SITEMAP: ${item.inSitemap}\n`;
+                    report += "--------------------------------------------------\n";
+                }
+            });
+
+            const blob = new Blob([report], {type: 'text/plain'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const dateStr = new Date().toISOString().slice(0,10);
+            a.download = `seo_report_${dateStr}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        async function fetchSitemap() {
+            try {
+                const res = await fetch('sitemap.xml');
+                if (!res.ok) throw new Error("Sitemap not found");
+                const text = await res.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, "text/xml");
+                const locs = xmlDoc.querySelectorAll("loc");
+                const urls = new Set();
+                locs.forEach(loc => {
+                    let url = loc.textContent.trim();
+                    // Normalize: remove domain "https://warenschmiede.com/" or "http://..."
+                    url = url.replace(/^https?:\/\/[^\/]+\/?/, '');
+                    if (url === '') url = 'index.html'; // Root is index.html
+                    if (url.endsWith('/')) url += 'index.html'; // Handle directory paths
+                    urls.add(url);
+                });
+                return urls;
+            } catch (e) {
+                console.error("Sitemap fetch error:", e);
+                return new Set();
+            }
+        }
+
         async function runSeoScan() {
             const tbody = document.getElementById('seo-results');
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Scanning... <span id="scan-progress">0</span>/${inventory.html.length}</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Scanning... <span id="scan-progress">0</span>/${inventory.html.length}</td></tr>';
+
+            // Fetch Sitemap first
+            const sitemapUrls = await fetchSitemap();
 
             // Clear current list to rebuild
             const rows = [];
+            lastSeoResults = []; // Reset storage
             let count = 0;
 
             for (const page of inventory.html) {
@@ -484,6 +563,9 @@
                     const ogImage = doc.querySelector('meta[property="og:image"]');
                     const ogContent = ogImage ? ogImage.content : '';
 
+                    const robotsMeta = doc.querySelector('meta[name="robots"]');
+                    const robotsContent = robotsMeta ? robotsMeta.content : '';
+
                     // Validation logic
                     const titleStatus = title ? 'status-ok' : 'status-error';
                     const titleText = title || '❌ MISSING';
@@ -502,6 +584,27 @@
 
                     const ogStatus = ogContent ? '✅' : '⚠️';
 
+                    // Robots Check
+                    const isNoIndex = robotsContent.toLowerCase().includes('noindex');
+                    const robotsStatus = isNoIndex ? 'status-error' : 'status-ok';
+                    const robotsDisplay = isNoIndex ? '🛑 noindex' : '✅ index';
+
+                    // Sitemap Check
+                    // Normalize page path for comparison
+                    // page is relative like "3ddruck-chat.html" or "tools/Zeiterfassung.html"
+                    // Sitemap URLs in set are normalized to relative path
+                    const pageNormalized = page.startsWith('./') ? page.substring(2) : page;
+                    const inSitemap = sitemapUrls.has(pageNormalized);
+                    const sitemapStatus = inSitemap ? 'status-ok' : 'status-error';
+                    const sitemapDisplay = inSitemap ? '✅ Yes' : '❌ No';
+
+                    // Save data for export
+                    lastSeoResults.push({
+                        page, title: titleText, desc: desc || 'MISSING',
+                        h1: h1Text, og: ogContent || 'MISSING',
+                        robots: robotsContent || 'index', inSitemap: inSitemap ? 'Yes' : 'No'
+                    });
+
                     rows.push(`
                         <tr>
                             <td><a href="${page}" target="_blank" style="font-weight:bold; text-decoration:none; color:#027eb5;">${page}</a></td>
@@ -509,6 +612,8 @@
                             <td class="${descStatus}">${descDisplay}</td>
                             <td class="${h1Status}">${h1Text}</td>
                             <td>${ogStatus} <span style="font-size:0.8rem; color:#666;">${ogContent}</span></td>
+                            <td class="${robotsStatus}">${robotsDisplay}</td>
+                            <td class="${sitemapStatus}">${sitemapDisplay}</td>
                         </tr>
                     `);
 
@@ -516,9 +621,12 @@
                     rows.push(`
                         <tr>
                             <td>${page}</td>
-                            <td colspan="4" class="status-error">Error: ${e.message || e}</td>
+                            <td colspan="6" class="status-error">Error: ${e.message || e}</td>
                         </tr>
                     `);
+                    lastSeoResults.push({
+                         page, error: e.message || e
+                    });
                 }
             }
 
