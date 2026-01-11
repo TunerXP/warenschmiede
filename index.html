@@ -38,6 +38,7 @@
   </script>
 <link href="styles.css" rel="stylesheet"/>
 <link href="/assets/print.css?v=1.0.7" media="print" rel="stylesheet"/>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 <meta content="index,follow" name="robots"/>
 <meta content="light dark" name="color-scheme"/>
 <link href="https://www.warenschmiede.com/" rel="canonical"/>
@@ -339,27 +340,87 @@
 </header>
 <main class="site-main" id="start" tabindex="-1">
 <section class="section container" style="margin-top: 2rem; margin-bottom: 2rem;">
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <article class="ws-card h-full" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 1rem; min-height: 250px;">
-      <div style="font-size: 2.5rem;">🤖</div>
-      <h2 style="margin: 0; font-size: 1.5rem; color: white;">NEU: Der KI-Versteher</h2>
-      <p style="margin: 0; color: rgba(255,255,255,0.9);">Teste den interaktiven Chat. Für Skeptiker, Profis & Einsteiger.</p>
-      <a href="ki/chat.html" class="btn btn-light" style="margin-top: auto;">Jetzt chatten</a>
-    </article>
+  <!-- Slider Container -->
+  <div class="ws-slider"
+       x-data="{ activeSlide: 0, loop: null }"
+       x-init="loop = setInterval(() => { activeSlide = activeSlide === 3 ? 0 : activeSlide + 1 }, 5000)"
+       @mouseenter="clearInterval(loop)"
+       @mouseleave="loop = setInterval(() => { activeSlide = activeSlide === 3 ? 0 : activeSlide + 1 }, 5000)"
+       style="position: relative; overflow: hidden; height: 350px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
 
-    <article class="ws-card h-full" style="background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%); color: white; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 1rem; min-height: 250px;">
-      <div style="font-size: 2.5rem;">🖨️</div>
-      <h2 style="margin: 0; font-size: 1.5rem; color: white;">Idee -> fertiges Teil</h2>
-      <p style="margin: 0; color: rgba(255,255,255,0.9);">Prototyping, Ersatzteile & CAD-Konstruktion aus Donaueschingen.</p>
-      <a href="ablauf-anfrage.html" class="btn btn-light" style="margin-top: auto;">Anfrage starten</a>
-    </article>
+    <!-- Slide 1 -->
+    <div x-show="activeSlide === 0"
+         x-transition:enter="transition ease-out duration-500"
+         x-transition:enter-start="opacity: 0; transform: scale(0.95);"
+         x-transition:enter-end="opacity: 1; transform: scale(1);"
+         x-transition:leave="transition ease-in duration-300"
+         x-transition:leave-start="opacity: 1; transform: scale(1);"
+         x-transition:leave-end="opacity: 0; transform: scale(1.05);"
+         class="slide-content"
+         style="position: absolute; inset: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 2rem; gap: 1rem;">
+      <div style="font-size: 3rem;">🤖</div>
+      <h2 style="margin: 0; font-size: 2rem; color: white; font-weight: bold;">NEU: Der KI-Versteher</h2>
+      <p style="margin: 0; font-size: 1.1rem; color: rgba(255,255,255,0.9); max-width: 600px;">Teste den interaktiven Chat. Für Skeptiker, Profis & Einsteiger.</p>
+      <a href="ki/chat.html" class="btn btn-light" style="margin-top: 1rem;">Jetzt chatten</a>
+    </div>
 
-    <article class="ws-card h-full" style="background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%); color: white; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 1rem; min-height: 250px;">
-      <div style="font-size: 2.5rem;">🛠️</div>
-      <h2 style="margin: 0; font-size: 1.5rem; color: white;">Tools für Macher</h2>
-      <p style="margin: 0; color: rgba(255,255,255,0.9);">Metall-Rechner, Passungen & Gewinde-Tabellen für die Werkstatt.</p>
-      <a href="tools/index.html" class="btn btn-light" style="margin-top: auto;">Tools öffnen</a>
-    </article>
+    <!-- Slide 2 -->
+    <div x-show="activeSlide === 1"
+         x-transition:enter="transition ease-out duration-500"
+         x-transition:enter-start="opacity: 0; transform: scale(0.95);"
+         x-transition:enter-end="opacity: 1; transform: scale(1);"
+         x-transition:leave="transition ease-in duration-300"
+         x-transition:leave-start="opacity: 1; transform: scale(1);"
+         x-transition:leave-end="opacity: 0; transform: scale(1.05);"
+         class="slide-content"
+         style="position: absolute; inset: 0; background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%); color: white; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 2rem; gap: 1rem;">
+      <div style="font-size: 3rem;">🖨️</div>
+      <h2 style="margin: 0; font-size: 2rem; color: white; font-weight: bold;">Idee -> fertiges Teil</h2>
+      <p style="margin: 0; font-size: 1.1rem; color: rgba(255,255,255,0.9); max-width: 600px;">Prototyping, Ersatzteile & CAD-Konstruktion aus Donaueschingen.</p>
+      <a href="ablauf-anfrage.html" class="btn btn-light" style="margin-top: 1rem;">Anfrage starten</a>
+    </div>
+
+    <!-- Slide 3 -->
+    <div x-show="activeSlide === 2"
+         x-transition:enter="transition ease-out duration-500"
+         x-transition:enter-start="opacity: 0; transform: scale(0.95);"
+         x-transition:enter-end="opacity: 1; transform: scale(1);"
+         x-transition:leave="transition ease-in duration-300"
+         x-transition:leave-start="opacity: 1; transform: scale(1);"
+         x-transition:leave-end="opacity: 0; transform: scale(1.05);"
+         class="slide-content"
+         style="position: absolute; inset: 0; background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%); color: white; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 2rem; gap: 1rem;">
+      <div style="font-size: 3rem;">🛠️</div>
+      <h2 style="margin: 0; font-size: 2rem; color: white; font-weight: bold;">Tools für Macher</h2>
+      <p style="margin: 0; font-size: 1.1rem; color: rgba(255,255,255,0.9); max-width: 600px;">Metall-Rechner, Passungen & Gewinde-Tabellen für die Werkstatt.</p>
+      <a href="tools/index.html" class="btn btn-light" style="margin-top: 1rem;">Tools öffnen</a>
+    </div>
+
+    <!-- Slide 4 -->
+    <div x-show="activeSlide === 3"
+         x-transition:enter="transition ease-out duration-500"
+         x-transition:enter-start="opacity: 0; transform: scale(0.95);"
+         x-transition:enter-end="opacity: 1; transform: scale(1);"
+         x-transition:leave="transition ease-in duration-300"
+         x-transition:leave-start="opacity: 1; transform: scale(1);"
+         x-transition:leave-end="opacity: 0; transform: scale(1.05);"
+         class="slide-content"
+         style="position: absolute; inset: 0; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 2rem; gap: 1rem;">
+      <div style="font-size: 3rem;">💾</div>
+      <h2 style="margin: 0; font-size: 2rem; color: white; font-weight: bold;">Neu: Warenschmiede Suite V3</h2>
+      <p style="margin: 0; font-size: 1.1rem; color: rgba(255,255,255,0.9); max-width: 600px;">Die All-in-One Lösung für Verwaltung & Werkstatt. Jetzt kostenlos laden.</p>
+      <a href="downloads.html" class="btn btn-light" style="margin-top: 1rem;">Zum Download</a>
+    </div>
+
+    <!-- Navigation Dots -->
+    <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 10;">
+      <template x-for="i in 4">
+        <button @click="activeSlide = i-1"
+                :style="activeSlide === i-1 ? 'background: white; transform: scale(1.2);' : 'background: rgba(255,255,255,0.5);'"
+                style="width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; transition: all 0.2s;"></button>
+      </template>
+    </div>
+
   </div>
 </section>
 <section aria-labelledby="about-teaser-heading" class="section section-about-teaser">
