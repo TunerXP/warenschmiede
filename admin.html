@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Suite - Warenschmiede</title>
+    <link href="styles.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="ws.png">
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        /* Admin Specific Styles */
+        body {
+            background-color: #f5f7f9;
+        }
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color, #ddd);
+            padding-bottom: 10px;
+        }
+        .admin-header h1 {
+            font-size: 1.5rem;
+            color: #333;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: #e0e0e0;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.2s;
+            color: #555;
+        }
+        .tab-btn:hover {
+            background: #d0d0d0;
+        }
+        .tab-btn.active {
+            background: #008069;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Dashboard Cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            border-top: 4px solid #008069;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #008069;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 1rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .data-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            position: sticky;
+            top: 0;
+        }
+        .data-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        .status-ok { color: #2e7d32; font-weight: bold; }
+        .status-error { color: #c62828; font-weight: bold; }
+        .status-warn { color: #ef6c00; font-weight: bold; }
+
+        /* Gallery */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        .gallery-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .gallery-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .gallery-img-container {
+            height: 150px;
+            background: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .gallery-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .gallery-info {
+            padding: 10px;
+            font-size: 0.8rem;
+            word-break: break-all;
+            background: #fff;
+            border-top: 1px solid #eee;
+            cursor: pointer;
+            color: #555;
+            text-align: center;
+        }
+        .gallery-info:hover {
+            background: #e0f2f1;
+            color: #008069;
+        }
+
+        /* Content Viewer */
+        .content-viewer {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+            height: 70vh;
+        }
+        .file-list {
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 5px;
+        }
+        .file-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.1s;
+        }
+        .file-item:hover {
+            background-color: #f0f0f0;
+        }
+        .file-item.selected {
+            background-color: #e0f2f1;
+            border-left: 4px solid #008069;
+            color: #008069;
+            font-weight: 500;
+        }
+        .editor-area {
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        textarea {
+            flex: 1;
+            width: 100%;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            border: none;
+            resize: none;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #333;
+            outline: none;
+        }
+        .editor-toolbar {
+            padding: 10px 15px;
+            background: #f8f9fa;
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid #ddd;
+            align-items: center;
+        }
+        .file-path-display {
+            font-family: monospace;
+            color: #555;
+            background: #eee;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-right: auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            background: #f0f0f0;
+            border-color: #bbb;
+        }
+        .btn-primary {
+            background: #008069;
+            color: white;
+            border-color: #006d59;
+        }
+        .btn-primary:hover {
+            background: #006d59;
+        }
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .download-list {
+            list-style: none;
+            padding: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .download-list li {
+            border-bottom: 1px solid #eee;
+        }
+        .download-list a {
+            display: block;
+            padding: 15px;
+            text-decoration: none;
+            color: #333;
+            transition: background 0.2s;
+        }
+        .download-list a:hover {
+            background: #f9f9f9;
+            color: #008069;
+        }
+        .download-icon {
+            margin-right: 10px;
+        }
+
+        /* Dark mode support check */
+        @media (prefers-color-scheme: dark) {
+            /* Basic dark mode support could be added here if needed,
+               but staying light for admin interface is usually safer for readability unless global styles override.
+               Since we link styles.css, we might inherit some dark mode traits if data-theme is set.
+            */
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div>
+                <h1>🛠️ Warenschmiede Admin Suite</h1>
+                <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">Manage content, check SEO, and view inventory.</p>
+            </div>
+            <a href="index.html" class="btn">🏠 Zur Startseite</a>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('dashboard', this)">📊 Dashboard</button>
+            <button class="tab-btn" onclick="showTab('seo', this)">🔍 SEO Scan</button>
+            <button class="tab-btn" onclick="showTab('content', this)">📝 Content & Docs</button>
+            <button class="tab-btn" onclick="showTab('gallery', this)">🖼️ Bilder-Galerie</button>
+            <button class="tab-btn" onclick="showTab('downloads', this)">💾 Downloads</button>
+        </div>
+
+        <!-- TABS CONTENT -->
+        <div id="dashboard" class="tab-content active">
+            <div class="dashboard-grid" id="stats-container">
+                <!-- Populated via JS -->
+            </div>
+            <div style="margin-top: 40px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <h3>System Status</h3>
+                <p>Inventory loaded: <span id="inventory-status" style="font-weight: bold;">Checking...</span></p>
+                <div style="margin-top: 15px;">
+                    <button onclick="loadInventory()" class="btn">🔄 Reload Inventory</button>
+                    <a href="generate_inventory.py" class="btn" style="margin-left: 10px;">📄 View Script</a>
+                </div>
+                <p style="margin-top: 10px; font-size: 0.85rem; color: #777;">
+                    Note: If you add new files, you must run <code>python3 generate_inventory.py</code> on the server/local machine to update <code>site_inventory.json</code>.
+                </p>
+            </div>
+        </div>
+
+        <div id="seo" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div>
+                    <h3>SEO Scanner (Client-Side)</h3>
+                    <p style="font-size: 0.9rem; color: #666;">Checks Title, Description, H1, and OG:Image availability.</p>
+                </div>
+                <button onclick="runSeoScan()" class="btn btn-primary">▶️ Scan Starten</button>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 250px;">Page</th>
+                            <th>Title</th>
+                            <th>Description (Length)</th>
+                            <th>H1</th>
+                            <th>OG:Image</th>
+                        </tr>
+                    </thead>
+                    <tbody id="seo-results">
+                        <tr><td colspan="5" style="text-align: center; padding: 30px;">Click 'Scan Starten' to analyze all HTML files found in inventory.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="content" class="tab-content">
+            <div class="content-viewer">
+                <div class="file-list" id="doc-list">
+                    <!-- List of md/txt -->
+                </div>
+                <div class="editor-area">
+                    <div class="editor-toolbar">
+                        <span id="current-file-name" class="file-path-display">Select a file</span>
+                        <button onclick="copyContent()" class="btn btn-sm">📋 Copy</button>
+                        <button onclick="downloadContent()" class="btn btn-sm">⬇️ Download Blob</button>
+                    </div>
+                    <textarea id="file-content" readonly placeholder="Select a file from the list to view its content..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div id="gallery" class="tab-content">
+            <div style="margin-bottom: 15px;">
+                <p>Click on an image or its path to copy the relative path to clipboard.</p>
+            </div>
+            <div class="gallery-grid" id="gallery-container">
+                <!-- Images -->
+            </div>
+        </div>
+
+        <div id="downloads" class="tab-content">
+            <h3>Available Downloads</h3>
+            <ul id="download-list" class="download-list">
+                <!-- Downloads -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let inventory = null;
+        let currentFileContent = '';
+        let currentFileName = '';
+
+        // TAB LOGIC
+        function showTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            if(btn) btn.classList.add('active');
+        }
+
+        // LOAD INVENTORY
+        async function loadInventory() {
+            try {
+                const response = await fetch('site_inventory.json?v=' + Date.now());
+                if (!response.ok) throw new Error("Failed to load inventory. Ensure site_inventory.json exists.");
+                inventory = await response.json();
+
+                document.getElementById('inventory-status').innerText = 'OK (Loaded at ' + new Date().toLocaleTimeString() + ')';
+                document.getElementById('inventory-status').style.color = 'green';
+
+                renderDashboard();
+                renderDocsList();
+                renderGallery();
+                renderDownloads();
+            } catch (e) {
+                document.getElementById('inventory-status').innerText = 'Error: ' + e.message;
+                document.getElementById('inventory-status').style.color = 'red';
+                console.error(e);
+            }
+        }
+
+        function renderDashboard() {
+            const container = document.getElementById('stats-container');
+            container.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${inventory.html.length}</div>
+                    <div class="stat-label">HTML Pages</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${inventory.images.length}</div>
+                    <div class="stat-label">Images</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${inventory.docs.length}</div>
+                    <div class="stat-label">Documents</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${inventory.downloads.length}</div>
+                    <div class="stat-label">Downloads</div>
+                </div>
+            `;
+        }
+
+        // SEO SCANNER
+        async function runSeoScan() {
+            const tbody = document.getElementById('seo-results');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Scanning... <span id="scan-progress">0</span>/${inventory.html.length}</td></tr>';
+
+            // Clear current list to rebuild
+            const rows = [];
+            let count = 0;
+
+            for (const page of inventory.html) {
+                count++;
+                document.getElementById('scan-progress').innerText = count;
+
+                // Fetch page content
+                try {
+                    const res = await fetch(page);
+                    if(!res.ok) throw new Error(res.status);
+
+                    const text = await res.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, 'text/html');
+
+                    const title = doc.querySelector('title')?.innerText || '';
+                    const descMeta = doc.querySelector('meta[name="description"]');
+                    const desc = descMeta ? descMeta.content : '';
+                    const h1 = doc.querySelector('h1')?.innerText || '';
+                    const ogImage = doc.querySelector('meta[property="og:image"]');
+                    const ogContent = ogImage ? ogImage.content : '';
+
+                    // Validation logic
+                    const titleStatus = title ? 'status-ok' : 'status-error';
+                    const titleText = title || '❌ MISSING';
+
+                    const descLen = desc.length;
+                    let descStatus = 'status-ok';
+                    if (!desc) descStatus = 'status-error';
+                    else if (descLen > 160) descStatus = 'status-warn';
+
+                    const descDisplay = desc
+                        ? (desc.substring(0, 40) + (descLen > 40 ? '...' : '') + ` (${descLen})`)
+                        : '❌ MISSING';
+
+                    const h1Status = h1 ? 'status-ok' : 'status-error';
+                    const h1Text = h1 || '❌ MISSING';
+
+                    const ogStatus = ogContent ? '✅' : '⚠️';
+
+                    rows.push(`
+                        <tr>
+                            <td><a href="${page}" target="_blank" style="font-weight:bold; text-decoration:none; color:#027eb5;">${page}</a></td>
+                            <td class="${titleStatus}">${titleText}</td>
+                            <td class="${descStatus}">${descDisplay}</td>
+                            <td class="${h1Status}">${h1Text}</td>
+                            <td>${ogStatus} <span style="font-size:0.8rem; color:#666;">${ogContent}</span></td>
+                        </tr>
+                    `);
+
+                } catch (e) {
+                    rows.push(`
+                        <tr>
+                            <td>${page}</td>
+                            <td colspan="4" class="status-error">Error: ${e.message || e}</td>
+                        </tr>
+                    `);
+                }
+            }
+
+            tbody.innerHTML = rows.join('');
+        }
+
+        // CONTENT VIEWER
+        function renderDocsList() {
+            const list = document.getElementById('doc-list');
+            list.innerHTML = '';
+            inventory.docs.forEach(doc => {
+                const div = document.createElement('div');
+                div.className = 'file-item';
+                div.innerText = doc;
+                div.onclick = () => loadFileContent(doc, div);
+                list.appendChild(div);
+            });
+        }
+
+        async function loadFileContent(path, element) {
+            // UI Update
+            document.querySelectorAll('.file-item').forEach(e => e.classList.remove('selected'));
+            element.classList.add('selected');
+
+            currentFileName = path;
+            document.getElementById('current-file-name').innerText = path;
+            document.getElementById('file-content').value = "Loading...";
+
+            try {
+                const res = await fetch(path);
+                currentFileContent = await res.text();
+                document.getElementById('file-content').value = currentFileContent;
+            } catch (e) {
+                document.getElementById('file-content').value = "Error loading file: " + e.message;
+            }
+        }
+
+        function copyContent() {
+            if (!currentFileContent) return;
+            navigator.clipboard.writeText(currentFileContent).then(() => {
+                const btn = document.querySelector('.editor-toolbar button:nth-child(2)');
+                const originalText = btn.innerText;
+                btn.innerText = '✅ Copied!';
+                setTimeout(() => btn.innerText = originalText, 1500);
+            });
+        }
+
+        function downloadContent() {
+            if (!currentFileContent) return;
+            const blob = new Blob([currentFileContent], {type: 'text/plain'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = currentFileName.split('/').pop();
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // GALLERY
+        function renderGallery() {
+            const container = document.getElementById('gallery-container');
+            container.innerHTML = '';
+            inventory.images.forEach(img => {
+                const div = document.createElement('div');
+                div.className = 'gallery-item';
+                div.innerHTML = `
+                    <div class="gallery-img-container" onclick="copyToClipboard('${img}')">
+                        <img src="${img}" class="gallery-img" loading="lazy">
+                    </div>
+                    <div class="gallery-info" onclick="copyToClipboard('${img}')" title="${img}">
+                        ${img.split('/').pop()}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Simple toast or alert
+                alert('Copied path to clipboard:\n' + text);
+            });
+        }
+
+        // DOWNLOADS
+        function renderDownloads() {
+             const list = document.getElementById('download-list');
+             list.innerHTML = '';
+             inventory.downloads.forEach(dl => {
+                 const li = document.createElement('li');
+                 const name = dl.split('/').pop();
+                 li.innerHTML = `<a href="${dl}" download><span class="download-icon">📦</span> ${name} <span style="font-size:0.8em; color:#888;">(${dl})</span></a>`;
+                 list.appendChild(li);
+             });
+        }
+
+        // Init
+        loadInventory();
+
+    </script>
+</body>
+</html>
