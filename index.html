@@ -338,41 +338,30 @@
 </div>
 </header>
 <main class="site-main" id="start" tabindex="-1">
-<div class="hero-slider-container">
-     <div class="hero-slider" id="heroSlider">
-       <div class="slide active" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-         <div class="slide-content">
-           <div class="slide-icon">🤖</div>
-           <h1>NEU: Der KI-Versteher</h1>
-           <p>Teste den interaktiven Chat. Für Skeptiker, Profis & Einsteiger.</p>
-           <a href="ki/chat.html" class="btn btn-light">Jetzt chatten</a>
-         </div>
-       </div>
+<section class="section container" style="margin-top: 2rem; margin-bottom: 2rem;">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <article class="ws-card h-full" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 1rem; min-height: 250px;">
+      <div style="font-size: 2.5rem;">🤖</div>
+      <h2 style="margin: 0; font-size: 1.5rem; color: white;">NEU: Der KI-Versteher</h2>
+      <p style="margin: 0; color: rgba(255,255,255,0.9);">Teste den interaktiven Chat. Für Skeptiker, Profis & Einsteiger.</p>
+      <a href="ki/chat.html" class="btn btn-light" style="margin-top: auto;">Jetzt chatten</a>
+    </article>
 
-       <div class="slide" style="background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);">
-         <div class="slide-content">
-           <div class="slide-icon">🖨️</div>
-           <h2>Idee -> fertiges Teil</h2>
-           <p>Prototyping, Ersatzteile & CAD-Konstruktion aus Donaueschingen.</p>
-           <a href="ablauf-anfrage.html" class="btn btn-light">Anfrage starten</a>
-         </div>
-       </div>
+    <article class="ws-card h-full" style="background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%); color: white; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 1rem; min-height: 250px;">
+      <div style="font-size: 2.5rem;">🖨️</div>
+      <h2 style="margin: 0; font-size: 1.5rem; color: white;">Idee -> fertiges Teil</h2>
+      <p style="margin: 0; color: rgba(255,255,255,0.9);">Prototyping, Ersatzteile & CAD-Konstruktion aus Donaueschingen.</p>
+      <a href="ablauf-anfrage.html" class="btn btn-light" style="margin-top: auto;">Anfrage starten</a>
+    </article>
 
-       <div class="slide" style="background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);">
-         <div class="slide-content">
-           <div class="slide-icon">🛠️</div>
-           <h2>Tools für Macher</h2>
-           <p>Metall-Rechner, Passungen & Gewinde-Tabellen für die Werkstatt.</p>
-           <a href="tools/index.html" class="btn btn-light">Tools öffnen</a>
-         </div>
-       </div>
-
-     </div>
-
-     <button class="slider-arrow prev" onclick="moveSlide(-1)">&#10094;</button>
-     <button class="slider-arrow next" onclick="moveSlide(1)">&#10095;</button>
-     <div class="slider-dots" id="sliderDots"></div>
-   </div>
+    <article class="ws-card h-full" style="background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%); color: white; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 1rem; min-height: 250px;">
+      <div style="font-size: 2.5rem;">🛠️</div>
+      <h2 style="margin: 0; font-size: 1.5rem; color: white;">Tools für Macher</h2>
+      <p style="margin: 0; color: rgba(255,255,255,0.9);">Metall-Rechner, Passungen & Gewinde-Tabellen für die Werkstatt.</p>
+      <a href="tools/index.html" class="btn btn-light" style="margin-top: auto;">Tools öffnen</a>
+    </article>
+  </div>
+</section>
 <section aria-labelledby="about-teaser-heading" class="section section-about-teaser">
 <div class="container about-teaser">
 <div class="about-teaser__media">
@@ -537,61 +526,6 @@
 <script defer="" src="assets/js/theme.js"></script>
 <script defer="" src="assets/js/header.js"></script>
 <script defer="" src="assets/js/whatsapp.js"></script>
-   <script>
-     let currentSlide = 0;
-     const slides = document.querySelectorAll('.slide');
-     const dotsContainer = document.getElementById('sliderDots');
-     const totalSlides = slides.length;
-     let autoPlayTimer;
-
-     // Init Dots
-     slides.forEach((_, index) => {
-       const dot = document.createElement('div');
-       dot.classList.add('dot');
-       if (index === 0) dot.classList.add('active');
-       dot.onclick = () => goToSlide(index);
-       dotsContainer.appendChild(dot);
-     });
-
-     const dots = document.querySelectorAll('.dot');
-
-     function updateSlider() {
-       const slider = document.getElementById('heroSlider');
-       slider.style.transform = `translateX(-${currentSlide * 100}%)`;
-
-       dots.forEach(dot => dot.classList.remove('active'));
-       dots[currentSlide].classList.add('active');
-     }
-
-     function moveSlide(step) {
-       currentSlide = (currentSlide + step + totalSlides) % totalSlides;
-       updateSlider();
-       resetTimer();
-     }
-
-     function goToSlide(index) {
-       currentSlide = index;
-       updateSlider();
-       resetTimer();
-     }
-
-     function startTimer() {
-       autoPlayTimer = setInterval(() => moveSlide(1), 6000); // Alle 6 Sekunden
-     }
-
-     function resetTimer() {
-       clearInterval(autoPlayTimer);
-       startTimer();
-     }
-
-     // Pause on Hover
-     const container = document.querySelector('.hero-slider-container');
-     container.addEventListener('mouseenter', () => clearInterval(autoPlayTimer));
-     container.addEventListener('mouseleave', startTimer);
-
-     // Start
-     startTimer();
-   </script>
 <script>
   // Auto-Update Copyright Year
   document.getElementById('copyright-year').textContent = new Date().getFullYear();
