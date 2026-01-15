@@ -253,87 +253,125 @@
 </div>
 </div>
 </section>
+
+<!-- Schnellhilfe Section -->
 <section aria-labelledby="schnellhilfe-heading" class="section">
 <div class="container">
 <div class="section-heading">
 <h2 id="schnellhilfe-heading">Schnellhilfe für typische Fehler</h2>
-<p>Die Tabelle zeigt dir die häufigsten Probleme auf einen Blick – inklusive Ursache und schneller Lösung.</p>
+<p>Hier findest du die häufigsten Probleme auf einen Blick – klicke auf einen Fehler für Ursache und Lösung.</p>
 </div>
-<div class="card tips-card">
-<div class="mat-table">
-<table>
-<thead>
-<tr>
-<th scope="col">Problem</th>
-<th scope="col">Wahrscheinliche Ursache</th>
-<th scope="col">Schnelle Lösung</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Warping (Ecken heben sich)</td>
-<td>Druckbett zu kalt oder keine Haftschicht</td>
-<td>Betttemperatur leicht erhöhen, Haftspray oder Klebestift verwenden, erste Schicht langsamer drucken</td>
-</tr>
-<tr>
-<td>Stringing (Fäden)</td>
-<td>Retraction zu niedrig oder Düse zu heiß</td>
-<td>Rückzug erhöhen, Temperatur um 5 °C senken, Düsenfahrt in Cura/PrusaSlicer optimieren</td>
-</tr>
-<tr>
-<td>Schlechte Haftung</td>
-<td>Fettfilm auf dem Bett oder ungleichmäßige Nivellierung</td>
-<td>Bettscheibe mit Isopropanol reinigen, Leveling prüfen, erste Schicht kalibrieren</td>
-</tr>
-<tr>
-<td>Elefantenfuß (untere Schichten breiter)</td>
-<td>Bett zu heiß oder erste Schicht zu stark gequetscht; fehlender Brim oder zu langsame Kühlung</td>
-<td>Betttemperatur leicht senken, erste Schicht etwas höher setzen (Z-Offset anpassen), ggf. Brim nutzen; Kühlung nach den ersten Schichten erhöhen</td>
-</tr>
-<tr>
-<td>Rauhe Oberfläche / „Pickel“ an den Außenwänden</td>
-<td>Überextrusion, zu hohe Temperatur oder ungünstige Seam-Einstellung (Nahtstelle)</td>
-<td>Extrusion/Flow etwas reduzieren (z. B. auf 95–98 %), Temperatur um 5–10 °C senken, „Naht ausblenden“ oder „Naht an Ecke“ im Slicer testen</td>
-</tr>
-<tr>
-<td>Unterextrusion / Lücken in den Wänden</td>
-<td>Extruder fördert zu wenig (verschmutztes Zahnrad, verstopfte Düse, Filament klemmt)</td>
-<td>Düse reinigen, Filamentführung prüfen, Extruderzahnrad säubern, Flow leicht erhöhen und Testwürfel drucken</td>
-</tr>
-<tr>
-<td>Obere Schicht schließt nicht / Infill schimmert durch</td>
-<td>Zu wenig Top-Layer oder zu wenig Infill; zu hohe Geschwindigkeit bei den Deckschichten</td>
-<td>Anzahl der obersten Schichten erhöhen (z. B. 4–6 Layer), Infill auf 15–20 % erhöhen, Top-Layer langsamer drucken</td>
-</tr>
-<tr>
-<td>Brücken hängen durch / Überhänge hängen stark</td>
-<td>Zu schnell, zu heiß oder zu wenig Lüfter beim Bridging; zu große Spannweiten</td>
-<td>Bridging-Geschwindigkeit reduzieren, Temperatur leicht senken, Lüfter bei Bridges erhöhen, ggf. Stützstrukturen oder kleinere Spannweiten planen</td>
-</tr>
-<tr>
-<td>Ghosting / Ringing (Nachschwingungen an Kanten)</td>
-<td>Drucker bewegt sich zu schnell, Mechanik schwingt (lockere Riemen, wackeliger Rahmen)</td>
-<td>Geschwindigkeit und Beschleunigung reduzieren, Riemenspannung prüfen, lockere Schrauben nachziehen, Drucker stabil aufstellen</td>
-</tr>
-<tr>
-<td>Schichtverschiebung (Layer-Shift)</td>
-<td>Stepper verliert Schritte (Kollision, zu hohe Geschwindigkeit, lockere Riemen)</td>
-<td>Geschwindigkeit reduzieren, prüfen ob Bauteil mit Düse oder Kabeln kollidiert, Riemen und Riemenscheiben kontrollieren</td>
-</tr>
-<tr>
-<td>Nylon-/PC-Teile matt, spröde, mit vielen Blasen</td>
-<td>Material ist feucht; Wasser verdampft im Druck und zerstört die Oberfläche</td>
-<td>Filament 4–6 Stunden bei 60–80 °C trocknen (Herstellerangabe beachten), trocken lagern; erst danach erneut testen</td>
-</tr>
-<tr>
-<td>TPU verstopft oder kommt ungleichmäßig</td>
-<td>Zu schnell, zu starker Retract, Bowden-Setup zu „lose“ für flexibles Material</td>
-<td>Geschwindigkeit deutlich reduzieren (z. B. 20–30 mm/s), Retraction stark verringern, fördern in gleichmäßigem Flow; bei Problemen Direktantrieb bevorzugen</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+
+<!-- Warping -->
+<details class="error-card">
+  <summary>🚨 Warping (Ecken heben sich)</summary>
+  <div class="error-content">
+    <div class="cause"><strong>Ursache:</strong> Druckbett zu kalt oder keine Haftschicht; Zugluft kühlt das Bauteil ungleichmäßig.</div>
+    <div class="fix"><strong>Lösung:</strong> Betttemperatur leicht erhöhen, Haftspray oder Klebestift verwenden, erste Schicht langsamer drucken, Zugluft vermeiden.</div>
+    <div class="img-placeholder">[Bild: Warping Beispiel]</div>
+  </div>
+</details>
+
+<!-- Stringing -->
+<details class="error-card">
+  <summary>🕸️ Stringing (Fäden ziehen)</summary>
+  <div class="error-content">
+    <div class="cause"><strong>Ursache:</strong> Retraction (Rückzug) zu niedrig oder Düse zu heiß.</div>
+    <div class="fix"><strong>Lösung:</strong> Rückzug erhöhen, Temperatur um 5 °C senken, Düsenfahrt (Combing) in Cura/PrusaSlicer optimieren.</div>
+    <div class="img-placeholder">[Bild: Stringing Beispiel]</div>
+  </div>
+</details>
+
+<!-- Schlechte Haftung -->
+<details class="error-card">
+  <summary>🧊 Schlechte Haftung</summary>
+  <div class="error-content">
+    <div class="cause"><strong>Ursache:</strong> Fettfilm auf dem Bett, ungleichmäßige Nivellierung oder Z-Offset zu hoch.</div>
+    <div class="fix"><strong>Lösung:</strong> Bettscheibe mit Isopropanol reinigen, Leveling prüfen, erste Schicht kalibrieren (Z-Offset).</div>
+  </div>
+</details>
+
+<!-- Elefantenfuß -->
+<details class="error-card">
+  <summary>🐘 Elefantenfuß (Untere Schichten breit)</summary>
+  <div class="error-content">
+    <div class="cause"><strong>Ursache:</strong> Bett zu heiß oder erste Schicht zu stark gequetscht; fehlender Brim oder zu langsame Kühlung.</div>
+    <div class="fix"><strong>Lösung:</strong> Betttemperatur leicht senken, erste Schicht etwas höher setzen (Z-Offset anpassen), ggf. Brim nutzen.</div>
+  </div>
+</details>
+
+<!-- Rauhe Oberfläche -->
+<details class="error-card">
+  <summary>🌵 Rauhe Oberfläche / „Pickel“</summary>
+  <div class="error-content">
+    <div class="cause"><strong>Ursache:</strong> Überextrusion, zu hohe Temperatur oder ungünstige Seam-Einstellung (Nahtstelle).</div>
+    <div class="fix"><strong>Lösung:</strong> Extrusion/Flow etwas reduzieren (z. B. auf 95–98 %), Temperatur um 5–10 °C senken, „Naht ausblenden“ testen.</div>
+  </div>
+</details>
+
+<!-- Unterextrusion -->
+<details class="error-card">
+  <summary>📉 Unterextrusion / Lücken</summary>
+  <div class="error-content">
+    <div class="cause"><strong>Ursache:</strong> Extruder fördert zu wenig (verschmutztes Zahnrad, verstopfte Düse, Filament klemmt).</div>
+    <div class="fix"><strong>Lösung:</strong> Düse reinigen (Cold Pull), Filamentführung prüfen, Extruderzahnrad säubern, Flow leicht erhöhen.</div>
+  </div>
+</details>
+
+<!-- Obere Schicht offen -->
+<details class="error-card">
+  <summary>🕳️ Obere Schicht schließt nicht</summary>
+  <div class="error-content">
+    <div class="cause"><strong>Ursache:</strong> Zu wenig Top-Layer oder zu wenig Infill; zu hohe Geschwindigkeit bei den Deckschichten.</div>
+    <div class="fix"><strong>Lösung:</strong> Anzahl der obersten Schichten erhöhen (z. B. 4–6 Layer), Infill auf 15–20 % erhöhen, Top-Layer langsamer drucken.</div>
+  </div>
+</details>
+
+<!-- Brücken hängen durch -->
+<details class="error-card">
+  <summary>🌉 Brücken hängen durch</summary>
+  <div class="error-content">
+    <div class="cause"><strong>Ursache:</strong> Zu schnell, zu heiß oder zu wenig Lüfter beim Bridging; zu große Spannweiten.</div>
+    <div class="fix"><strong>Lösung:</strong> Bridging-Geschwindigkeit reduzieren, Temperatur leicht senken, Lüfter bei Bridges auf 100% erhöhen.</div>
+  </div>
+</details>
+
+<!-- Ghosting -->
+<details class="error-card">
+  <summary>👻 Ghosting / Ringing</summary>
+  <div class="error-content">
+    <div class="cause"><strong>Ursache:</strong> Drucker bewegt sich zu schnell, Mechanik schwingt (lockere Riemen, wackeliger Rahmen).</div>
+    <div class="fix"><strong>Lösung:</strong> Geschwindigkeit und Beschleunigung reduzieren, Riemenspannung prüfen, lockere Schrauben nachziehen.</div>
+  </div>
+</details>
+
+<!-- Schichtverschiebung -->
+<details class="error-card">
+  <summary>🏚️ Schichtverschiebung (Layer-Shift)</summary>
+  <div class="error-content">
+    <div class="cause"><strong>Ursache:</strong> Stepper verliert Schritte (Kollision, zu hohe Geschwindigkeit, lockere Riemen, Treiber überhitzt).</div>
+    <div class="fix"><strong>Lösung:</strong> Geschwindigkeit reduzieren, prüfen ob Bauteil mit Düse kollidiert, Riemen kontrollieren, Kühlung Mainboard prüfen.</div>
+  </div>
+</details>
+
+<!-- Nylon/PC Fehler -->
+<details class="error-card">
+  <summary>💦 Nylon/PC matt &amp; Blasen</summary>
+  <div class="error-content">
+    <div class="cause"><strong>Ursache:</strong> Material ist feucht; Wasser verdampft im Druck und zerstört die Oberfläche.</div>
+    <div class="fix"><strong>Lösung:</strong> Filament 4–6 Stunden bei 60–80 °C trocknen (Herstellerangabe beachten), trocken lagern.</div>
+  </div>
+</details>
+
+<!-- TPU Fehler -->
+<details class="error-card">
+  <summary>🐍 TPU verstopft / ungleichmäßig</summary>
+  <div class="error-content">
+    <div class="cause"><strong>Ursache:</strong> Zu schnell, zu starker Retract, Bowden-Setup zu „lose“ für flexibles Material.</div>
+    <div class="fix"><strong>Lösung:</strong> Geschwindigkeit deutlich reduzieren (z. B. 20–30 mm/s), Retraction ausschalten oder minimieren.</div>
+  </div>
+</details>
+
 <div class="tip-box" role="note">
 <span aria-hidden="true" class="tip-box__icon">
 <svg focusable="false" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -346,20 +384,47 @@
 </div>
 </div>
 </section>
+
+<!-- Filament Section -->
 <section aria-labelledby="filament-heading" class="section">
 <div class="container">
 <div class="section-heading">
 <h2 id="filament-heading">Filament lagern &amp; trocknen</h2>
 <p>Feuchtigkeit ist der größte Gegner sauberer Drucke. So bleibt dein Filament einsatzbereit.</p>
 </div>
-<div class="card tips-card">
-<ul>
-<li>Lagere Spulen luftdicht in Boxen mit Silica-Gel oder Reisbeuteln.</li>
-<li>Falls das Filament knistert oder blubbert, trockne es 4–6 Stunden bei 45–55 °C im Trockenofen oder Food-Dryer.</li>
-<li>Beschrifte Spulen mit Kaufdatum und Material, damit du ältere Rollen zuerst nutzt.</li>
-<li>Nylon, PC und viele CF-Filamente reagieren besonders stark auf Feuchtigkeit – hier lohnt sich eine trockene Box oder ein Filamenttrockner.</li>
-</ul>
+
+<div class="info-panel">
+  <div class="info-panel__icon">📦</div>
+  <div class="info-panel__content">
+    <h3 class="info-panel__title">Lagerung</h3>
+    <p class="info-panel__text">Lagere Spulen luftdicht in Boxen mit Silica-Gel oder Reisbeuteln, um Feuchtigkeit fernzuhalten.</p>
+  </div>
 </div>
+
+<div class="info-panel">
+  <div class="info-panel__icon">🔥</div>
+  <div class="info-panel__content">
+    <h3 class="info-panel__title">Trocknung</h3>
+    <p class="info-panel__text">Falls das Filament knistert oder blubbert: Trockne es 4–6 Stunden bei 45–55 °C im Trockenofen oder Food-Dryer.</p>
+  </div>
+</div>
+
+<div class="info-panel">
+  <div class="info-panel__icon">🏷️</div>
+  <div class="info-panel__content">
+    <h3 class="info-panel__title">Organisation</h3>
+    <p class="info-panel__text">Beschrifte Spulen mit Kaufdatum und Material, damit du ältere Rollen zuerst nutzt.</p>
+  </div>
+</div>
+
+<div class="info-panel">
+  <div class="info-panel__icon">💧</div>
+  <div class="info-panel__content">
+    <h3 class="info-panel__title">Spezial-Materialien</h3>
+    <p class="info-panel__text">Nylon, PC und viele CF-Filamente reagieren besonders stark auf Feuchtigkeit – hier lohnt sich eine trockene Box oder ein Filamenttrockner.</p>
+  </div>
+</div>
+
 <div class="tip-box" role="note">
 <span aria-hidden="true" class="tip-box__icon">
 <svg focusable="false" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -372,19 +437,39 @@
 </div>
 </div>
 </section>
+
+<!-- Druckbett Section -->
 <section aria-labelledby="druckbett-heading" class="section">
 <div class="container">
 <div class="section-heading">
 <h2 id="druckbett-heading">Druckbett pflegen &amp; reinigen</h2>
 <p>Ein sauberes Druckbett sorgt für zuverlässige erste Schichten.</p>
 </div>
-<div class="card tips-card">
-<ul>
-<li>Reinige Glas- oder PEI-Platten regelmäßig mit Isopropanol (mind. 70 %).</li>
-<li>Fasse das Bett nach der Reinigung nicht mehr mit bloßen Fingern an – fettfreie Handschuhe helfen.</li>
-<li>Bei hartnäckigen Rückständen hilft warmes Wasser mit etwas Spülmittel, anschließend gründlich trocknen.</li>
-</ul>
+
+<div class="info-panel">
+  <div class="info-panel__icon">🧼</div>
+  <div class="info-panel__content">
+    <h3 class="info-panel__title">Reinigung</h3>
+    <p class="info-panel__text">Reinige Glas- oder PEI-Platten regelmäßig mit Isopropanol (mind. 70 %), um Fette zu entfernen.</p>
+  </div>
 </div>
+
+<div class="info-panel">
+  <div class="info-panel__icon">✋</div>
+  <div class="info-panel__content">
+    <h3 class="info-panel__title">Handling</h3>
+    <p class="info-panel__text">Fasse das Bett nach der Reinigung nicht mehr mit bloßen Fingern an – fettfreie Handschuhe helfen.</p>
+  </div>
+</div>
+
+<div class="info-panel">
+  <div class="info-panel__icon">🧽</div>
+  <div class="info-panel__content">
+    <h3 class="info-panel__title">Hartnäckiger Schmutz</h3>
+    <p class="info-panel__text">Bei hartnäckigen Rückständen hilft warmes Wasser mit etwas Spülmittel, anschließend gründlich trocknen.</p>
+  </div>
+</div>
+
 <div class="tip-box" role="note">
 <span aria-hidden="true" class="tip-box__icon">
 <svg focusable="false" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -397,25 +482,69 @@
 </div>
 </div>
 </section>
+
+<!-- Temperatur Section -->
 <section aria-labelledby="temperatur-heading" class="section">
 <div class="container">
 <div class="section-heading">
 <h2 id="temperatur-heading">Temperatur &amp; Lüfter – Faustregeln</h2>
 <p>Jedes Material reagiert anders. Diese Richtwerte sind mein Ausgangspunkt für stabile Ergebnisse.</p>
 </div>
-<div class="card tips-card">
-<ul>
-<li><strong>PLA:</strong> 200 °C Düse, 60 °C Bett, Lüfter nach der ersten Schicht auf 100 %.</li>
-<li><strong>PETG:</strong> 235 °C Düse, 80 °C Bett, Lüfter maximal 40 % für feste Layer.</li>
-<li><strong>ASA:</strong> 250 °C Düse, 100 °C Bett, Gehäuse geschlossen halten und Lüfter niedrig lassen.</li>
-<li><strong>TPU:</strong> 220 °C Düse, 50 °C Bett, Lüfter moderat (30 %) und langsam drucken (20–30 mm/s).</li>
-<li><strong>Nylon (PA):</strong> 250–260 °C Düse, 70–90 °C Bett; möglichst trocken drucken, Gehäuse geschlossen und Lüfter eher niedrig.</li>
-<li><strong>PC (Polycarbonat):</strong> 260–280 °C Düse, 90–110 °C Bett; geschlossener Bauraum empfohlen, Lüfter sehr gering oder aus.</li>
-<li><strong>PLA Wood:</strong> 200–215 °C Düse, 50–60 °C Bett; langsamer drucken, ggf. 0,6 mm Düse verwenden, um Verstopfungen zu vermeiden.</li>
-<li><strong>CF-PLA / CF-PETG:</strong> Drucktemperatur am oberen Bereich der Herstellerangabe des Basisfilaments, Bett wie PLA/PETG; gehärtete Düse verwenden.</li>
-</ul>
-<p class="tips-card__note">Diese Werte sind Startpunkte. Jeder Drucker und jedes Filament reagiert etwas anders – kleine Testteile helfen, den Sweet Spot zu finden.</p>
+
+<div class="temp-grid">
+  <div class="temp-card">
+    <h3>PLA</h3>
+    <div class="values">🌡️ 200°C | 🛏️ 60°C</div>
+    <small>Lüfter: 100% (ab Layer 2)</small>
+  </div>
+
+  <div class="temp-card">
+    <h3>PETG</h3>
+    <div class="values">🌡️ 235°C | 🛏️ 80°C</div>
+    <small>Lüfter: max. 40%</small>
+  </div>
+
+  <div class="temp-card">
+    <h3>ASA</h3>
+    <div class="values">🌡️ 250°C | 🛏️ 100°C</div>
+    <small>Lüfter: niedrig / Gehäuse zu</small>
+  </div>
+
+  <div class="temp-card">
+    <h3>TPU</h3>
+    <div class="values">🌡️ 220°C | 🛏️ 50°C</div>
+    <small>Lüfter: 30% / langsam</small>
+  </div>
+
+  <div class="temp-card">
+    <h3>Nylon (PA)</h3>
+    <div class="values">🌡️ 255°C | 🛏️ 80°C</div>
+    <small>Lüfter: niedrig / trocken!</small>
+  </div>
+
+  <div class="temp-card">
+    <h3>PC</h3>
+    <div class="values">🌡️ 270°C | 🛏️ 100°C+</div>
+    <small>Lüfter: aus / Gehäuse zu</small>
+  </div>
+
+  <div class="temp-card">
+    <h3>PLA Wood</h3>
+    <div class="values">🌡️ 210°C | 🛏️ 60°C</div>
+    <small>Lüfter: 100% / 0.6mm Düse</small>
+  </div>
+
+  <div class="temp-card">
+    <h3>CF-PLA/PETG</h3>
+    <div class="values">🌡️ +5-10°C | 🛏️ Basis</div>
+    <small>Gehärtete Düse nutzen!</small>
+  </div>
 </div>
+
+<div class="ws-alert ws-alert-info" style="margin-top: 2rem;">
+  <p><strong>Hinweis:</strong> Diese Werte sind Startpunkte. Jeder Drucker und jedes Filament reagiert etwas anders – kleine Testteile (Temp-Tower) helfen, den Sweet Spot zu finden.</p>
+</div>
+
 <div class="tip-box" role="note">
 <span aria-hidden="true" class="tip-box__icon">
 <svg focusable="false" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
