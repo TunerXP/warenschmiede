@@ -3188,3 +3188,210 @@ address {
   background: #f3f4f6;
   border-color: #d1d5db;
 }
+
+/* Redesign Technologien Page */
+
+.tech-section {
+  padding-block: clamp(2rem, 5vw, 4rem);
+  border-bottom: 1px solid var(--border);
+}
+
+.tech-section:last-child {
+  border-bottom: none;
+}
+
+.tech-section__inner {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .tech-section__inner {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Zig-Zag: Default is Image Left (visual first in DOM or grid order), Content Right */
+  /* We can control this via order or DOM structure. Plan says specific structure. */
+  /* FDM: Img Left | Text Right -> Visual first */
+  /* SLA: Text Left | Img Right -> Visual second */
+  /* SLS: Img Left | Text Right -> Visual first */
+
+  /* If we use a consistent DOM structure (Visual, Content), we can swap order with CSS */
+  .tech-section:nth-of-type(odd) .tech-section__inner .tech-section__visual {
+    order: 2;
+  }
+  .tech-section:nth-of-type(odd) .tech-section__inner .tech-section__content {
+    order: 1;
+  }
+}
+
+.tech-section__visual {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  background: var(--surface-muted);
+}
+
+.tech-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  display: block;
+}
+
+.tech-magnifier {
+  background: rgba(15, 23, 42, 0.85);
+  color: #fff;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(4px);
+  /* Place at bottom */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.tech-magnifier::before {
+  content: "🔍";
+}
+
+.tech-section__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tech-label {
+  display: inline-block;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.tech-badges-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-block: 0.5rem;
+}
+
+.tech-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.badge-green {
+  background: #d1fae5;
+  color: #065f46;
+}
+.badge-yellow {
+  background: #fef3c7;
+  color: #92400e;
+}
+.badge-red {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+html[data-theme="dark"] .badge-green { background: #064e3b; color: #d1fae5; }
+html[data-theme="dark"] .badge-yellow { background: #78350f; color: #fef3c7; }
+html[data-theme="dark"] .badge-red { background: #7f1d1d; color: #fee2e2; }
+
+/* Decision Action Cards */
+.tech-recommendations__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.action-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+
+.action-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 12px 24px -10px rgba(0,0,0,0.1);
+}
+
+.action-card__icon {
+  font-size: 2rem;
+  background: var(--surface-muted);
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-bottom: 0.5rem;
+}
+
+.action-card__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.action-card__result {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+/* Modern Table Styles */
+.tech-table table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-block: 1rem;
+}
+
+.tech-table th, .tech-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.tech-table tbody tr:nth-child(odd) {
+  background-color: var(--surface-muted); /* Zebra striping */
+}
+
+.tech-table th {
+  font-weight: 700;
+  color: var(--text-subtle);
+  border-bottom: 2px solid var(--border);
+}
+
+.tech-table .winner {
+  font-weight: 800;
+  color: var(--accent);
+}
