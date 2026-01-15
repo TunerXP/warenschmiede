@@ -3544,3 +3544,207 @@ html[data-theme="dark"] .badge-red { background: #7f1d1d; color: #fee2e2; }
   font-size: 0.9rem;
   color: var(--text);
 }
+
+/* Druck-Tipps Redesign Styles */
+
+/* Error Cards (Schnellhilfe) */
+.error-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  margin-bottom: var(--space-3);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.error-card[open] {
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(209, 42, 42, 0.1);
+}
+
+.error-card summary {
+  padding: var(--space-3) var(--space-4);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: transparent;
+  transition: background-color 0.2s ease;
+}
+
+.error-card summary:hover {
+  background-color: var(--surface-muted);
+}
+
+.error-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.error-content {
+  padding: var(--space-4);
+  background: var(--surface-muted);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.error-content .cause,
+.error-content .fix {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.error-content strong {
+  color: var(--text);
+  font-weight: 700;
+  display: inline-block;
+  min-width: 70px;
+}
+
+.img-placeholder {
+  background: rgba(15, 23, 42, 0.05);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-top: var(--space-2);
+}
+
+/* Temp Grid (Cheat Sheet) */
+.temp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.temp-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: var(--space-4);
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.temp-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+  border-color: var(--accent);
+}
+
+.temp-card h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text);
+}
+
+.temp-card .values {
+  background: var(--surface-muted);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 700;
+  color: var(--text);
+  font-size: 1rem;
+  width: 100%;
+}
+
+.temp-card small {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* Info Panels (Checklists) */
+.info-panel {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: var(--space-4);
+  margin-bottom: var(--space-3);
+  transition: border-color 0.2s ease;
+}
+
+.info-panel:hover {
+  border-color: var(--border); /* Slightly darker border or accent */
+}
+
+.info-panel__icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+  background: var(--surface-muted);
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.info-panel__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.info-panel__title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text);
+  margin-bottom: 0.15rem;
+}
+
+.info-panel__text {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Tip Box (Inline Note) */
+.tip-box {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--surface-muted);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-top: var(--space-3);
+}
+
+.tip-box__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.tip-box__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.tip-box__text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
