@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-
 <html class="ki-page" lang="de">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1" name="viewport"/>
-<link href="/ws.png" rel="icon" sizes="32x32" type="image/png"/>
-<link href="/ws.png" rel="apple-touch-icon" sizes="180x180"/>
-<meta content="#000000" name="theme-color"/>
-<title>KI-Tools Übersicht: Chat, Bild, Video &amp; Büro | Warenschmiede</title>
-<meta content="Kurze Übersicht wichtiger KI-Tools für Chat, Bild, Video, Audio und Büroarbeit – mit klaren Hinweisen und Beispielen für den Alltag." name="description"/>
-<meta content="KI Tools Übersicht, ChatGPT Alternativen, Bild KI Vergleich, Video KI, Audio KI, Warenschmiede" name="keywords"/>
-<meta content="DE-BW" name="geo.region"/>
-<meta content="Donaueschingen" name="geo.placename"/>
-<meta content="47.953;8.499" name="geo.position"/>
-<meta content="47.953,8.499" name="ICBM"/>
-<link as="image" href="../assets/logo.svg" rel="preload"/>
-<script>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <link href="/ws.png" rel="icon" sizes="32x32" type="image/png"/>
+  <link href="/ws.png" rel="apple-touch-icon" sizes="180x180"/>
+  <meta content="#000000" name="theme-color"/>
+  <title>KI-Tools Übersicht: Chat, Bild, Video &amp; Büro | Warenschmiede</title>
+  <meta content="Interaktives Dashboard wichtiger KI-Tools für Chat, Bild, Video, Audio und Büroarbeit." name="description"/>
+  
+  <script>
     (function () {
       var storageKey = 'theme-preference';
       var preference = 'system';
@@ -36,1171 +30,872 @@
       root.dataset.themePreference = preference;
     })();
   </script>
-<link href="../styles.css" rel="stylesheet"/>
-<link href="/assets/print.css?v=1.0.7" media="print" rel="stylesheet"/>
-<meta content="index,follow" name="robots"/>
-<meta content="light dark" name="color-scheme"/>
-<link href="https://www.warenschmiede.com/ki/tools.html" rel="canonical"/>
-<meta content="KI-Tools Übersicht: Chat, Bild, Video &amp; Büro | Warenschmiede" property="og:title"/>
-<meta content="Kurze Übersicht wichtiger KI-Tools für Chat, Bild, Video, Audio und Büroarbeit – mit klaren Hinweisen und Beispielen für den Alltag." property="og:description"/>
-<meta content="KI-Tools Übersicht: Chat, Bild, Video &amp; Büro | Warenschmiede" name="twitter:title"/>
-<meta content="Kurze Übersicht wichtiger KI-Tools für Chat, Bild, Video, Audio und Büroarbeit – mit klaren Hinweisen und Beispielen für den Alltag." name="twitter:description"/>
-<meta content="https://www.warenschmiede.com/ki/tools.html" name="twitter:url"/>
-<meta content="/assets/og/og-default.jpg" name="twitter:image"/>
-<meta content="website" property="og:type"/>
-<meta content="https://www.warenschmiede.com/ki/tools.html" property="og:url"/>
-<meta content="/assets/og/og-default.jpg" property="og:image"/>
-<meta content="Warenschmiede" property="og:site_name"/>
-<meta content="de_DE" property="og:locale"/>
-<meta content="summary_large_image" name="twitter:card"/>
+
+  <link href="../styles.css" rel="stylesheet"/>
+  <link href="/assets/print.css?v=1.0.7" media="print" rel="stylesheet"/>
+
+  <!-- Page Specific Styles for Dashboard Layout -->
+  <style>
+    /* Filter Navigation - Sticky & Clean */
+    .tool-filter-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-body, #fff);
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border-color, #eee);
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      transition: background-color 0.3s ease;
+    }
+    
+    [data-theme="dark"] .tool-filter-nav {
+      background-color: rgba(18, 18, 18, 0.95);
+      border-bottom-color: #333;
+    }
+
+    .filter-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: center;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .filter-btn {
+      background: var(--bg-surface, #f5f5f5);
+      border: 1px solid var(--border-color, #ddd);
+      border-radius: 50px; /* Pill shape */
+      padding: 0.6rem 1.2rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-main, #333);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+    
+    [data-theme="dark"] .filter-btn {
+      background: #2a2a2a;
+      border-color: #444;
+      color: #eee;
+    }
+
+    .filter-btn:hover {
+      background: var(--primary-color, #0056b3);
+      color: white;
+      border-color: var(--primary-color, #0056b3);
+      transform: translateY(-2px);
+    }
+
+    .filter-btn.active {
+      background: var(--primary-color, #0056b3);
+      color: white;
+      border-color: var(--primary-color, #0056b3);
+      box-shadow: 0 4px 10px rgba(0, 86, 179, 0.3);
+    }
+
+    /* Grid Adjustments */
+    .ki-tool-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    /* Categories Visibility Control - THE MAGIC PART */
+    .ki-tools-category {
+      display: none; /* Hidden by default */
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .ki-tools-category.active-category {
+      display: block; /* Only show active */
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Card Compact Style Improvements */
+    .ki-tool-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid var(--border-color, #eee);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg-surface, #fff);
+    }
+    
+    [data-theme="dark"] .ki-tool-card {
+      background: #1e1e1e;
+      border-color: #333;
+    }
+
+    .ki-tool-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .ki-tool-card__head {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border-color, #eee);
+      background: var(--bg-subtle, #f9f9f9);
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    
+    [data-theme="dark"] .ki-tool-card__head {
+      background: #252525;
+      border-bottom-color: #333;
+    }
+
+    .ki-tool-card__body {
+      flex-grow: 1;
+      padding: 1.5rem;
+    }
+    
+    .ki-tool-card__icon {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    /* Hide TOC in dashboard mode as we have tabs */
+    .ki-tools-toc {
+      display: none;
+    }
+
+    .dashboard-intro {
+      text-align: center;
+      margin-bottom: 0.5rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      color: var(--text-muted);
+    }
+    
+    /* Used Card Special Style */
+    .ws-card-used {
+      border-left: 4px solid var(--primary-color, #0056b3);
+    }
+  </style>
+
 </head>
 <body class="ki-page">
+
 <header class="site-header" data-header="">
-<div class="ws-nav-container header-grid">
-<div class="brand">
-<a class="brand-link" href="/index.html#start">
-<img alt="Warenschmiede Logo" class="brand-logo" fetchpriority="high" height="276" src="/assets/images/warenschmiede_logo.png" width="453"/>
-<div class="brand-text">
-<span class="brand-name">Warenschmiede</span>
-<span class="brand-tagline">3D-Druck · Made in Germany</span>
-</div>
-</a>
-</div>
-<nav aria-label="Hauptnavigation" class="main-nav">
-<div class="nav-menu" data-nav-menu="" id="primary-navigation">
-<ul class="nav-list" id="navList">
-<li class="nav-item nav-fixed">
-<a aria-current="page" class="nav-link active" data-nav-link="" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html" data-section="start" href="../index.html#start"><span aria-hidden="true" class="nav-ico">🏠</span>Start</a>
-</li>
-<li class="nav-item nav-fixed">
-<a class="nav-link" data-nav-link="" data-path="/downloads , /downloads.html" href="../downloads.html"><span aria-hidden="true" class="nav-ico">📥</span>Downloads</a>
-</li>
-<!-- Neuer Dropdown: Online Tools -->
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-highlight nav-tools" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button">
-<span aria-hidden="true" class="nav-ico">🧮</span>Online Tools ▾
-              </button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools , /tools/ , /tools/index.html" href="../tools">
-<span aria-hidden="true" class="nav-ico">🗂️</span>Tool-Übersicht (Dashboard)
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/werkstatt-rechner , /werkstatt-rechner.html" href="../werkstatt-rechner.html">
-<span aria-hidden="true" class="nav-ico">🛠️</span>Warenschmiede METALL
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html" href="../tools/kostenrechner-v2.html">
-<span aria-hidden="true" class="nav-ico">🧮</span>Warenschmiede 3D-Druck Suite
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/buero/doku-light/QRCodeMasterPro , /tools/buero/doku-light/QRCodeMasterPro.html" href="../tools/buero/doku-light/QRCodeMasterPro.html">
-<span aria-hidden="true" class="nav-ico">🔳</span>Warenschmiede QR-Master ULTRA
-                  </a>
-</li>
-<li>
-<a class="nav-link" href="../tools/Zeiterfassung.html"><span aria-hidden="true" class="nav-ico">⏱️</span>Zeiterfassung</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🧰</span>Leistungen ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/leistungen/3d-druck , /leistungen/3d-druck.html" href="../leistungen/3d-druck.html"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druckauftrag</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html" href="../leistungen/cad-prototyping.html"><span aria-hidden="true" class="nav-ico">📐</span>CAD &amp; Prototyping</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html" href="../leistungen/pc-hilfe.html"><span aria-hidden="true" class="nav-ico">💻</span>PC-Hilfe</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🤖</span>Über KI ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li><a class="nav-link" href="chat.html"><span aria-hidden="true" class="nav-ico">💬</span>Interaktiver KI Versteher (NEU)</a></li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki , /ki/ , /ki/index.html" href="index.html"><span aria-hidden="true" class="nav-ico">📖</span>Einführung &amp; Grundlagen</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/prompts , /ki/prompts.html" href="prompts.html"><span aria-hidden="true" class="nav-ico">✍️</span>Prompts für den Alltag</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/promt-trainer , /ki/promt-trainer.html" href="promt-trainer.html"><span aria-hidden="true" class="nav-ico">🧠</span>KI Trainer</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/ki-finder , /ki/ki-finder.html" href="ki-finder.html"><span aria-hidden="true" class="nav-ico">🧭</span>Warenschmiede KI-Finder</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/tools , /ki/tools.html" href="tools.html"><span aria-hidden="true" class="nav-ico">🛠️</span>KI-Werkzeuge</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html" href="so-arbeitest-du-mit-ki.html"><span aria-hidden="true" class="nav-ico">🧭</span>So arbeitest du mit KI</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/programme-die-du-brauchst , /ki/programme-die-du-brauchst.html" href="programme-die-du-brauchst.html"><span aria-hidden="true" class="nav-ico">💾</span>Programme, die du brauchst</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html" href="chancen-und-risiken.html"><span aria-hidden="true" class="nav-ico">⚖️</span>KI: Chancen &amp; Risiken</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/faq , /ki/faq.html" href="faq.html"><span aria-hidden="true" class="nav-ico">🔒</span>KI-FAQ &amp; Sicherheit</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/lexikon , /ki/lexikon.html" href="lexikon.html"><span aria-hidden="true" class="nav-ico">🔤</span>KI-Lexikon</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">✉️</span>Kontakt ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt , /kontakt.html , /warenschmiede/kontakt , /warenschmiede/kontakt.html" href="../kontakt.html"><span aria-hidden="true" class="nav-ico">📧</span>Kontakt aufnehmen</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ablauf-anfrage , /ablauf-anfrage.html" href="../ablauf-anfrage.html"><span aria-hidden="true" class="nav-ico">📝</span>Ablauf &amp; Anfrage</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/impressum , /impressum.html , /warenschmiede/impressum , /warenschmiede/impressum.html" href="../impressum.html"><span aria-hidden="true" class="nav-ico">⚖️</span>Impressum</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ueber-mich , /ueber-mich.html , /warenschmiede/ueber-mich.html , /about , /about.html , /warenschmiede/about.html" href="../ueber-mich.html"><span aria-hidden="true" class="nav-ico">👤</span>Über mich</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druck ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/3ddruck-chat , /3ddruck-chat.html" href="../3ddruck-chat.html"><span aria-hidden="true" class="nav-ico">💬</span>Interaktiver Berater (Neu)</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/technologien , /technologien.html" href="../technologien.html"><span aria-hidden="true" class="nav-ico">🧪</span>FDM / SLA / SLS – Technologien</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/fehlerdatenbank , /fehlerdatenbank.html" href="../fehlerdatenbank.html"><span aria-hidden="true" class="nav-ico">🛠️</span>Fehler &amp; Troubleshooting</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ideenquellen , /ideenquellen.html , /ideen , /ideen/ , /ideen/index.html" href="../ideenquellen.html"><span aria-hidden="true" class="nav-ico">💡</span>Ideenquellen &amp; Portale</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/material.html" href="../material.html"><span aria-hidden="true" class="nav-ico">📚</span>Materialwissen &amp; Vergleiche</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tpu-wissen.html" href="../tpu-wissen.html"><span aria-hidden="true" class="nav-ico">💧</span>TPU Spezial-Wissen</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/druck-tipps , /druck-tipps.html" href="../druck-tipps.html"><span aria-hidden="true" class="nav-ico">🧭</span>Tipps &amp; Abläufe / Kosten</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/kostenrechner-v2 , /tools/kostenrechner-v2.html" href="../tools/kostenrechner-v2.html"><span aria-hidden="true" class="nav-ico">🧮</span>Kosten &amp; Kalkulation</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/slicer-einstellungen , /slicer-einstellungen.html" href="../slicer-einstellungen.html"><span aria-hidden="true" class="nav-ico">⚙️</span>Slicer &amp; Einstellungen</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/3ddruck-faq , /3ddruck-faq.html" href="../3ddruck-faq.html"><span aria-hidden="true" class="nav-ico">❓</span>Neu beim 3D-Druck?</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/wartung-reinigung , /wartung-reinigung.html" href="../wartung-reinigung.html"><span aria-hidden="true" class="nav-ico">🧼</span>Wartung &amp; Reinigung</a>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</nav>
-<div class="header-actions">
-<button aria-label="Design umschalten: Hell/Dunkel" aria-pressed="false" class="theme-toggle" id="themeToggleBtn" title="Design umschalten: Hell/Dunkel" type="button">
-<span aria-hidden="true" id="themeIcon">🖥️</span>
-<span aria-live="polite" class="theme-toggle__text" id="themeToggleText">Helles Design</span>
-</button>
-<button aria-controls="primary-navigation" aria-expanded="false" class="nav-toggle" data-nav-toggle="" type="button">
-<span class="sr-only">Menü öffnen</span>
-<span aria-hidden="true" class="nav-toggle-bar"></span>
-<span aria-hidden="true" class="nav-toggle-bar"></span>
-<span aria-hidden="true" class="nav-toggle-bar"></span>
-</button>
-</div>
-</div>
+  <div class="ws-nav-container header-grid">
+    <div class="brand">
+      <a class="brand-link" href="/index.html#start">
+        <img alt="Warenschmiede Logo" class="brand-logo" fetchpriority="high" height="276" src="/assets/images/warenschmiede_logo.png" width="453"/>
+        <div class="brand-text">
+          <span class="brand-name">Warenschmiede</span>
+          <span class="brand-tagline">3D-Druck · Made in Germany</span>
+        </div>
+      </a>
+    </div>
+    <nav aria-label="Hauptnavigation" class="main-nav">
+      <div class="nav-menu" data-nav-menu="" id="primary-navigation">
+        <ul class="nav-list" id="navList">
+          <li class="nav-item nav-fixed">
+            <a class="nav-link" data-nav-link="" href="../index.html#start"><span aria-hidden="true" class="nav-ico">🏠</span>Start</a>
+          </li>
+          <li class="nav-item nav-fixed">
+            <a class="nav-link" data-nav-link="" href="../downloads.html"><span aria-hidden="true" class="nav-ico">📥</span>Downloads</a>
+          </li>
+          <li class="nav-item nav-fixed nav-more nav-dropdown nav-highlight nav-tools" data-nav-dropdown="">
+            <button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button">
+              <span aria-hidden="true" class="nav-ico">🧮</span>Online Tools ▾
+            </button>
+            <ul class="nav-more-menu" hidden="">
+              <li><a class="nav-link" href="../tools"><span aria-hidden="true" class="nav-ico">🗂️</span>Tool-Übersicht (Dashboard)</a></li>
+              <li><a class="nav-link" href="../werkstatt-rechner.html"><span aria-hidden="true" class="nav-ico">🛠️</span>Warenschmiede METALL</a></li>
+              <li><a class="nav-link" href="../tools/kostenrechner-v2.html"><span aria-hidden="true" class="nav-ico">🧮</span>Warenschmiede 3D-Druck Suite</a></li>
+              <li><a class="nav-link" href="../tools/buero/doku-light/QRCodeMasterPro.html"><span aria-hidden="true" class="nav-ico">🔳</span>Warenschmiede QR-Master ULTRA</a></li>
+              <li><a class="nav-link" href="../tools/Zeiterfassung.html"><span aria-hidden="true" class="nav-ico">⏱️</span>Zeiterfassung</a></li>
+            </ul>
+          </li>
+          <li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown="">
+            <button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🧰</span>Leistungen ▾</button>
+            <ul class="nav-more-menu" hidden="">
+              <li><a class="nav-link" href="../leistungen/3d-druck.html"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druckauftrag</a></li>
+              <li><a class="nav-link" href="../leistungen/cad-prototyping.html"><span aria-hidden="true" class="nav-ico">📐</span>CAD &amp; Prototyping</a></li>
+              <li><a class="nav-link" href="../leistungen/pc-hilfe.html"><span aria-hidden="true" class="nav-ico">💻</span>PC-Hilfe</a></li>
+            </ul>
+          </li>
+          <li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown="">
+            <button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🤖</span>Über KI ▾</button>
+            <ul class="nav-more-menu" hidden="">
+              <li><a class="nav-link" href="chat.html"><span aria-hidden="true" class="nav-ico">💬</span>Interaktiver KI Versteher (NEU)</a></li>
+              <li><a class="nav-link" href="index.html"><span aria-hidden="true" class="nav-ico">📖</span>Einführung &amp; Grundlagen</a></li>
+              <li><a class="nav-link" href="prompts.html"><span aria-hidden="true" class="nav-ico">✍️</span>Prompts für den Alltag</a></li>
+              <li><a class="nav-link" href="promt-trainer.html"><span aria-hidden="true" class="nav-ico">🧠</span>KI Trainer</a></li>
+              <li><a class="nav-link" href="ki-finder.html"><span aria-hidden="true" class="nav-ico">🧭</span>Warenschmiede KI-Finder</a></li>
+              <li><a class="nav-link" href="tools.html"><span aria-hidden="true" class="nav-ico">🛠️</span>KI-Werkzeuge</a></li>
+              <li><a class="nav-link" href="so-arbeitest-du-mit-ki.html"><span aria-hidden="true" class="nav-ico">🧭</span>So arbeitest du mit KI</a></li>
+              <li><a class="nav-link" href="programme-die-du-brauchst.html"><span aria-hidden="true" class="nav-ico">💾</span>Programme, die du brauchst</a></li>
+              <li><a class="nav-link" href="chancen-und-risiken.html"><span aria-hidden="true" class="nav-ico">⚖️</span>KI: Chancen &amp; Risiken</a></li>
+              <li><a class="nav-link" href="faq.html"><span aria-hidden="true" class="nav-ico">🔒</span>KI-FAQ &amp; Sicherheit</a></li>
+              <li><a class="nav-link" href="lexikon.html"><span aria-hidden="true" class="nav-ico">🔤</span>KI-Lexikon</a></li>
+            </ul>
+          </li>
+          <li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown="">
+            <button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">✉️</span>Kontakt ▾</button>
+            <ul class="nav-more-menu" hidden="">
+              <li><a class="nav-link" href="../kontakt.html"><span aria-hidden="true" class="nav-ico">📧</span>Kontakt aufnehmen</a></li>
+              <li><a class="nav-link" href="../ablauf-anfrage.html"><span aria-hidden="true" class="nav-ico">📝</span>Ablauf &amp; Anfrage</a></li>
+              <li><a class="nav-link" href="../impressum.html"><span aria-hidden="true" class="nav-ico">⚖️</span>Impressum</a></li>
+              <li><a class="nav-link" href="../ueber-mich.html"><span aria-hidden="true" class="nav-ico">👤</span>Über mich</a></li>
+            </ul>
+          </li>
+          <li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown="">
+            <button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druck ▾</button>
+            <ul class="nav-more-menu" hidden="">
+              <li><a class="nav-link" href="../3ddruck-chat.html"><span aria-hidden="true" class="nav-ico">💬</span>Interaktiver Berater (Neu)</a></li>
+              <li><a class="nav-link" href="../technologien.html"><span aria-hidden="true" class="nav-ico">🧪</span>FDM / SLA / SLS – Technologien</a></li>
+              <li><a class="nav-link" href="../fehlerdatenbank.html"><span aria-hidden="true" class="nav-ico">🛠️</span>Fehler &amp; Troubleshooting</a></li>
+              <li><a class="nav-link" href="../ideenquellen.html"><span aria-hidden="true" class="nav-ico">💡</span>Ideenquellen &amp; Portale</a></li>
+              <li><a class="nav-link" href="../material.html"><span aria-hidden="true" class="nav-ico">📚</span>Materialwissen &amp; Vergleiche</a></li>
+              <li><a class="nav-link" href="../tpu-wissen.html"><span aria-hidden="true" class="nav-ico">💧</span>TPU Spezial-Wissen</a></li>
+              <li><a class="nav-link" href="../druck-tipps.html"><span aria-hidden="true" class="nav-ico">🧭</span>Tipps &amp; Abläufe / Kosten</a></li>
+              <li><a class="nav-link" href="../tools/kostenrechner-v2.html"><span aria-hidden="true" class="nav-ico">🧮</span>Kosten &amp; Kalkulation</a></li>
+              <li><a class="nav-link" href="../slicer-einstellungen.html"><span aria-hidden="true" class="nav-ico">⚙️</span>Slicer &amp; Einstellungen</a></li>
+              <li><a class="nav-link" href="../3ddruck-faq.html"><span aria-hidden="true" class="nav-ico">❓</span>Neu beim 3D-Druck?</a></li>
+              <li><a class="nav-link" href="../wartung-reinigung.html"><span aria-hidden="true" class="nav-ico">🧼</span>Wartung &amp; Reinigung</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="header-actions">
+      <button aria-label="Design umschalten: Hell/Dunkel" aria-pressed="false" class="theme-toggle" id="themeToggleBtn" title="Design umschalten: Hell/Dunkel" type="button">
+        <span aria-hidden="true" id="themeIcon">🖥️</span>
+        <span aria-live="polite" class="theme-toggle__text" id="themeToggleText">Helles Design</span>
+      </button>
+      <button aria-controls="primary-navigation" aria-expanded="false" class="nav-toggle" data-nav-toggle="" type="button">
+        <span class="sr-only">Menü öffnen</span>
+        <span aria-hidden="true" class="nav-toggle-bar"></span>
+        <span aria-hidden="true" class="nav-toggle-bar"></span>
+        <span aria-hidden="true" class="nav-toggle-bar"></span>
+      </button>
+    </div>
+  </div>
 </header>
-<nav aria-label="Brotkrumen" class="breadcrumbs">
-<div class="container breadcrumbs__container">
-<ol class="breadcrumbs__list">
-<li class="breadcrumbs__item"><a href="/index.html">Start</a></li>
-<li class="breadcrumbs__item"><a href="/ki/index.html">Über KI</a></li>
-<li aria-current="page" class="breadcrumbs__item">KI-Tools</li>
-</ol>
-</div>
-</nav>
+
 <main class="site-main ki-tools-main" id="ki-tools" tabindex="-1">
-<section aria-labelledby="ki-tools-heading" class="section ki-tools-hero">
-<div class="container ki-wide ki-tools-hero__inner">
-<div class="ki-hero-center">
-<p class="section-eyebrow">Werkzeuge &amp; Orientierung</p>
-<h1 id="ki-tools-heading">Moderne KI-Tools im Überblick</h1>
-<p class="ki-hero__lede">Welche Arten von KI-Werkzeugen gibt es und wofür taugen sie im Alltag? Diese Seite liefert eine verständliche Marktübersicht für Chat, Bilder, Video, Audio und Büroarbeit – ohne Versions-Wirrwarr.</p>
-<p class="ki-tools-hero__note">Der Markt ändert sich rasant: Neue Modelle, Funktionen und Preise können jederzeit kommen. Bitte prüfe aktuelle Konditionen direkt beim Anbieter.</p>
-</div>
-</div>
-</section>
-<section aria-labelledby="ki-basics-heading" class="section ki-tools-basics">
-<div class="container ki-wide">
-<div class="section-heading">
-<h2 id="ki-basics-heading">Wie du diese Übersicht nutzt</h2>
-<p>Fokus liegt auf typischen Einsatzbereichen, nicht auf Versionsnummern. Die Beispiele zeigen, was heute verbreitet ist – ohne Anspruch auf Vollständigkeit.</p>
-</div>
-<p class="ws-external-note">
-          Hinweis: Die folgenden Links führen zu externen Anbietern. Es handelt sich nicht um Werbung oder Affiliate-Links.
-        </p>
-<p>Für mehr Praxisbeispiele schau bei den <a href="/ki/prompts.html">Prompts</a> vorbei, übe im <a href="/ki/promt-trainer.html">KI-Trainer</a>, lass dir Ideen im <a href="/ki/ki-finder.html">KI-Finder</a> geben oder lies die <a href="/ki/faq.html">FAQ</a> nach.</p>
-<div class="callout note" role="note">
-<h3>Stand 2026</h3>
-<p>Die Übersicht richtet sich nach dem Stand Januar 2026. Funktionen können je nach App, Modus oder Abo variieren – prüfe vor dem Einsatz immer die aktuellen Konditionen und Datenschutzangaben des Anbieters.</p>
-</div>
-<div class="ki-basics-grid">
-<article class="ki-basics-card">
-<div aria-hidden="true" class="ki-basics-card__icon">🧭</div>
-<h3>Einfach einordnen</h3>
-<p>Die Karten sind nach Anwendungsfeldern sortiert: Chat, Bilder, Video, Audio sowie Büro &amp; Spezialfälle.</p>
-<p class="ki-basics-card__hint">Tipps bleiben bewusst allgemein, damit sie auch nach Updates noch passen.</p>
-</article>
-<article class="ki-basics-card">
-<div aria-hidden="true" class="ki-basics-card__icon">⚡</div>
-<h3>Schneller Wandel</h3>
-<p>Funktionen, Namen und Preise können sich jederzeit ändern. Nutze die Übersicht als Momentaufnahme und prüfe Details direkt beim Anbieter.</p>
-<p class="ki-basics-card__hint">Viele Tools bieten kostenlose Einstiegspläne, umfangreichere Varianten kosten meist extra.</p>
-</article>
-<article class="ki-basics-card">
-<div aria-hidden="true" class="ki-basics-card__icon">🤝</div>
-<h3>Fair &amp; transparent</h3>
-<p>Keine Werbung, keine Affiliate-Links. Alle Marken gehören den jeweiligen Anbietern.</p>
-<p class="ki-basics-card__hint">Achte immer auf eigene Datenschutz- und Lizenzprüfungen.</p>
-</article>
-</div>
-<div aria-label="Schnellzugriff" class="ki-tools-toc">
-<p class="section-eyebrow">Direkt zu</p>
-<ul class="ki-tools-toc__list">
-<li><a class="ki-tools-toc__link" href="#ki-wissen">Wissen &amp; Forschung</a></li>
-<li><a class="ki-tools-toc__link" href="#ki-coding">Coding &amp; Entwicklung</a></li>
-<li><a class="ki-tools-toc__link" href="#ki-bild">Bild-KI</a></li>
-<li><a class="ki-tools-toc__link" href="#ki-video">Video-KI</a></li>
-<li><a class="ki-tools-toc__link" href="#ki-audio">Audio &amp; Musik</a></li>
-<li><a class="ki-tools-toc__link" href="#ki-buero">Büro &amp; Spezial-Tools</a></li>
-</ul>
-</div>
-</div>
-</section>
-<section aria-labelledby="ki-wissen" class="section ki-tools-category" id="ki-wissen">
-<div class="container ki-wide">
-<header class="ki-category-header">
-<div aria-hidden="true" class="ki-category-icon">🤝</div>
-<div>
-<p class="section-eyebrow">Recherche &amp; Analyse</p>
-<h2 id="ki-wissen">Wissen &amp; Forschung</h2>
-<p class="ki-section-intro">Recherche, Analyse und Deep Dives – diese Tools helfen dir, Informationen zu verstehen, aufzubereiten und Quellen zu prüfen.</p>
-</div>
-</header>
-<div class="ki-tool-card-grid">
-<article aria-labelledby="tool-notebooklm" class="ki-tool-card ws-card-used">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">📓</div>
-<div>
-<h3 id="tool-notebooklm"><a href="https://notebooklm.google.com" rel="noopener noreferrer" target="_blank">Google NotebookLM</a></h3>
-<p class="ki-tool-card__lede">Der KI-Forschungsassistent für eigene Dokumente.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>PDFs, Webseiten oder Notizen hochladen und befragen.</li>
-<li>Audio Overview: Generiere einen Podcast aus deinen Quellen.</li>
-<li>Zitate und Fakten direkt im Text verifizieren.</li>
-</ul>
-</div>
-</div>
-<p class="ws-card-used-note">Mein Favorit für Deep Dives.</p>
-<div class="ki-tool-card__tag">Ideal für Studium, Recherche und komplexe Projekte.</div>
-</article>
-<article aria-labelledby="tool-chatgpt" class="ki-tool-card ws-card-used">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🧠</div>
-<div>
-<h3 id="tool-chatgpt"><a href="https://chatgpt.com" rel="noopener noreferrer" target="_blank">ChatGPT</a></h3>
-<p class="ki-tool-card__lede">Vielseitiger Assistent für Texte, Ideen, Erklärungen und Code.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Blog- oder E-Mail-Entwürfe, Stil anpassen.</li>
-<li>Code erklären, kleine Skripte erstellen.</li>
-<li>Dateien zusammenfassen oder in Listen bringen.</li>
-</ul>
-</div>
-</div>
-<div class="callout note" role="note">
-<h4>Warenschmiede-Beispiele</h4>
-<ul>
-<li>Song-Ideen für den Kostenrechner</li>
-<li>Zukunftsgeschichte „Donaueschingen – fünfzig Jahre später“</li>
-</ul>
-<p>Details und Hörbeispiele findest du auf der Seite <a href="/ki/index.html#ki-beispiele">Über KI – einfache Erklärungen</a>.</p>
-</div>
-<p class="ws-card-used-note">Nutze ich aktuell regelmäßig.</p>
-<div class="ki-tool-card__tag">Gute Wahl für einen breiten Einstieg.</div>
-</article>
-<article aria-labelledby="tool-gemini" class="ki-tool-card ws-card-used">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🔎</div>
-<div>
-<h3 id="tool-gemini"><a href="https://gemini.google.com" rel="noopener noreferrer" target="_blank">Gemini</a></h3>
-<p class="ki-tool-card__lede">Verknüpft KI-Chat mit Google-Suche und Workspace-Apps.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Aktuelle Infos recherchieren, Quellen prüfen.</li>
-<li>Docs, Sheets oder Gmail mit Vorschlägen ergänzen.</li>
-<li>PDFs, Bilder oder Screenshots analysieren.</li>
-</ul>
-</div>
-</div>
-<p class="ws-card-used-note">Setze ich aktuell selbst ein.</p>
-<div class="ki-tool-card__tag">Passend für alle, die ohnehin mit Google-Workspace arbeiten.</div>
-</article>
-<article aria-labelledby="tool-claude" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">📚</div>
-<div>
-<h3 id="tool-claude"><a href="https://claude.ai" rel="noopener noreferrer" target="_blank">Claude</a></h3>
-<p class="ki-tool-card__lede">Sehr stark bei langen Dokumenten und klaren Zusammenfassungen.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Verträge, Handbücher oder Skripte strukturieren.</li>
-<li>Tonalität an Zielgruppen anpassen.</li>
-<li>Fragen zu umfangreichen PDF-Anhängen beantworten.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Geeignet für Wissensarbeit und Dokumentation.</div>
-</article>
-<article aria-labelledby="tool-perplexity" class="ki-tool-card ws-card-used">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🌐</div>
-<div>
-<h3 id="tool-perplexity"><a href="https://www.perplexity.ai" rel="noopener noreferrer" target="_blank">Perplexity</a></h3>
-<p class="ki-tool-card__lede">Antwort-Suchmaschine mit Live-Websuche und Quellenangaben.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Schnell recherchieren und Quellen verlinken.</li>
-<li>Vergleiche oder Schritt-für-Schritt-Anleitungen erstellen.</li>
-<li>Weitere Fragen stellen, ohne neuen Tab zu öffnen.</li>
-</ul>
-</div>
-</div>
-<p class="ws-card-used-note">Nutze ich regelmäßig für Recherchen.</p>
-<div class="ki-tool-card__tag">Hilfreich für News, Studien und Faktenchecks.</div>
-</article>
-<article aria-labelledby="tool-copilot" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🪟</div>
-<div>
-<h3 id="tool-copilot"><a href="https://copilot.microsoft.com" rel="noopener noreferrer" target="_blank">Microsoft Copilot</a></h3>
-<p class="ki-tool-card__lede">Direkt in Windows und Microsoft 365 integriert.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Word- oder PowerPoint-Inhalte aufbereiten.</li>
-<li>Excel-Listen analysieren, Formeln vorschlagen.</li>
-<li>Teams-Meetings mit Notizen und To-dos sichern.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Ideal für Unternehmen mit Microsoft-Stack.</div>
-</article>
-<article aria-labelledby="tool-mistral" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🇪🇺</div>
-<div>
-<h3 id="tool-mistral"><a href="https://chat.mistral.ai" rel="noopener noreferrer" target="_blank">Mistral / Le Chat</a></h3>
-<p class="ki-tool-card__lede">Moderner europäischer Anbieter mit schnellen Open-Modellen.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Datensparsame Chats in EU-Rechenzentren.</li>
-<li>Fragen zu langen Texten ohne viel Vorarbeit.</li>
-<li>Eigene Projekte mit Open-Source-Modellen starten.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Gut, wenn EU-Hosting und Offenheit wichtig sind.</div>
-</article>
-<article aria-labelledby="tool-deepseek" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">💡</div>
-<div>
-<h3 id="tool-deepseek"><a href="https://www.deepseek.com" rel="noopener noreferrer" target="_blank">DeepSeek</a></h3>
-<p class="ki-tool-card__lede">Preis-Leistungs-starke Alternative mit großem Kontext.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Technische Fragen oder Code-Snippets testen.</li>
-<li>Recherchen mit vielen Nachfragen durchspielen.</li>
-<li>Längere Dokumente Schritt für Schritt prüfen lassen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Spannend, wenn viele Tokens zu fairen Preisen nötig sind.</div>
-</article>
-<article aria-labelledby="tool-grok" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🛰️</div>
-<div>
-<h3 id="tool-grok"><a href="https://grok.x.ai" rel="noopener noreferrer" target="_blank">Grok</a></h3>
-<p class="ki-tool-card__lede">Experimentelle KI von xAI mit direktem Blick auf aktuelle Themen.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Schnelle News- oder Trend-Abfragen.</li>
-<li>Kurze Ideenskizzen und lockerer Schreibstil.</li>
-<li>Tests neuer Funktionen ohne viel Setup.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Eher zum Ausprobieren und für frische Impulse gedacht.</div>
-</article>
-<article aria-labelledby="tool-open-source" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🦙</div>
-<div>
-<h3 id="tool-open-source"><a href="https://ai.meta.com/llama/" rel="noopener noreferrer" target="_blank">Open-Source-Modelle (z. B. Llama)</a></h3>
-<p class="ki-tool-card__lede">Lokal oder selbst gehostet nutzbar, flexibel anpassbar.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Eigene Chatbots ohne externe Datenweitergabe.</li>
-<li>Experimente mit individueller Wissensbasis.</li>
-<li>On-Premise-Lösungen für sensible Daten.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Für Technikaffine oder Teams mit strengen Datenschutzvorgaben.</div>
-</article>
-<article aria-labelledby="tool-lmstudio" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🛡️</div>
-<div>
-<h3 id="tool-lmstudio"><a href="https://lmstudio.ai/" rel="noopener noreferrer" target="_blank">LM Studio</a></h3>
-<p class="ki-tool-card__lede">Führe KI-Modelle (LLMs) komplett offline auf deinem eigenen PC aus. Maximale Privatsphäre, keine Cloud.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>KI-Modelle (LLMs) offline ausführen.</li>
-<li>Maximale Privatsphäre, keine Cloud.</li>
-<li>Kostenlos herunterladen und nutzen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">#Offline #Datenschutz #Kostenlos</div>
-</article>
-</div>
-</div>
-</section>
-<section aria-labelledby="ki-coding" class="section ki-tools-category" id="ki-coding">
-<div class="container ki-wide">
-<header class="ki-category-header">
-<div aria-hidden="true" class="ki-category-icon">💻</div>
-<div>
-<p class="section-eyebrow">Softwareentwicklung</p>
-<h2 id="ki-coding">Coding &amp; Entwicklung</h2>
-<p class="ki-section-intro">Moderne IDEs und Agenten für effizienteres Coden, Debuggen und Deployment.</p>
-</div>
-</header>
-<div class="callout note" role="note">
-<h3>GitHub: Die Kommandozentrale</h3>
-<p>GitHub ist mehr als nur Code-Speicher. Es ist der Ort, an dem du mit KI-Agenten (wie Jules oder Codex) zusammenarbeitest. Hier haben Agenten Zugriff auf deine Projekte und können Aufgaben autonom erledigen.</p>
-</div>
-<div class="ki-tool-card-grid">
-<article aria-labelledby="tool-cursor" class="ki-tool-card ws-card-used">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🖱️</div>
-<div>
-<h3 id="tool-cursor"><a href="https://cursor.com" rel="noopener noreferrer" target="_blank">Cursor</a></h3>
-<p class="ki-tool-card__lede">Die führende AI-First IDE (VS Code Fork) mit Agenten-Modus.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Codebase-weite Änderungen per Chat steuern.</li>
-<li>Intelligente Autocomplete- und Refactoring-Vorschläge.</li>
-<li>Nahtloser Import von VS Code Extensions.</li>
-</ul>
-</div>
-</div>
-<p class="ws-card-used-note">Mein Standard-Editor für Webprojekte.</p>
-<div class="ki-tool-card__tag">Der neue Standard für KI-gestütztes Coden.</div>
-</article>
-<article aria-labelledby="tool-github-copilot" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">✈️</div>
-<div>
-<h3 id="tool-github-copilot"><a href="https://github.com/features/copilot" rel="noopener noreferrer" target="_blank">GitHub Copilot</a></h3>
-<p class="ki-tool-card__lede">Der Klassiker für In-Editor-Assistenz.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Schnelle Code-Vervollständigung im Editor.</li>
-<li>Unit-Tests und Docs generieren.</li>
-<li>Chat im Editor für Erklärungen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Solide Basis für jeden Entwickler.</div>
-</article>
-<article aria-labelledby="tool-antigravity" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🪐</div>
-<div>
-<h3 id="tool-antigravity"><a href="#" rel="noopener noreferrer" target="_blank">Google Antigravity</a></h3>
-<p class="ki-tool-card__lede">Die Next-Gen AI IDE für autonome Entwicklung.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Projektplanung und Architektur-Entwürfe.</li>
-<li>Autonome Umsetzung komplexer Features.</li>
-<li>Tiefe Integration in Google Cloud Services.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Spannend für Cloud-Native Entwickler.</div>
-</article>
-<article aria-labelledby="tool-jules" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🤖</div>
-<div>
-<h3 id="tool-jules"><a href="https://jules.google" rel="noopener noreferrer" target="_blank">Google Jules</a></h3>
-<p class="ki-tool-card__lede">Der autonome Coding-Agent für Repo-Management (Web &amp; CLI).</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>PRs erstellen, Reviews durchführen und Merges managen.</li>
-<li>Bugs autonom finden und fixen.</li>
-<li>Wartung und Updates im Hintergrund erledigen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Ein "Kollege", der nie schläft.</div>
-</article>
-<article aria-labelledby="tool-codex" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🧠</div>
-<div>
-<h3 id="tool-codex"><a href="https://openai.com/index/introducing-codex/" rel="noopener noreferrer" target="_blank">OpenAI Codex</a></h3>
-<p class="ki-tool-card__lede">Der cloudbasierte Software-Engineering-Agent.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Komplexe Systemarchitekturen planen.</li>
-<li>Code-Generierung über API und Chat.</li>
-<li>Nicht nur API, sondern vollwertiger Agent.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Mächtige Engine hinter vielen Tools.</div>
-</article>
-</div>
-</div>
-</section>
-<section aria-labelledby="ki-bild" class="section ki-tools-category" id="ki-bild">
-<div class="container ki-wide">
-<header class="ki-category-header">
-<div aria-hidden="true" class="ki-category-icon">🎨</div>
-<div>
-<p class="section-eyebrow">Bilder &amp; Grafiken</p>
-<h2 id="ki-bild">Bild-KI</h2>
-<p class="ki-section-intro">Aus Text werden Illustrationen, Produktbilder oder Social-Grafiken. Gut für Ideenfindung und schnelle Visuals.</p>
-</div>
-</header>
-<div class="ki-tool-card-grid">
-<article aria-labelledby="tool-flux" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">📸</div>
-<div>
-<h3 id="tool-flux"><a href="https://blackforestlabs.ai/" rel="noopener noreferrer" target="_blank">Flux.1</a></h3>
-<p class="ki-tool-card__lede">Top-Empfehlung für Fotorealismus und Open Source.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Fotorealistische Porträts und Szenen.</li>
-<li>Lokal nutzbar für maximale Kontrolle.</li>
-<li>Hohe Texttreue und Detailgenauigkeit.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Aktueller Qualitätsführer im Open-Source-Bereich.</div>
-</article>
-<article aria-labelledby="tool-midjourney" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🌅</div>
-<div>
-<h3 id="tool-midjourney"><a href="https://www.midjourney.com" rel="noopener noreferrer" target="_blank">Midjourney v7</a></h3>
-<p class="ki-tool-card__lede">Stilvielfalt und präziser Text im Bild – die Referenz für Ästhetik.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Artwork, Poster und Kampagnenmotive.</li>
-<li>Charakter-Design und Concept Art.</li>
-<li>Perfekt integrierte Schriften und Logos.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Gut für Kreative, die einen markanten Stil suchen.</div>
-</article>
-<article aria-labelledby="tool-dalle" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🖼️</div>
-<div>
-<h3 id="tool-dalle"><a href="https://openai.com/index/dall-e-3" rel="noopener noreferrer" target="_blank">DALL·E / OpenAI Images</a></h3>
-<p class="ki-tool-card__lede">Erzeugt vielseitige Stile und lässt sich direkt in Chats nutzen.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Social-Posts und Präsentationen bebildern.</li>
-<li>Bildvarianten und Hintergründe austesten.</li>
-<li>Ideen schnell als Skizze visualisieren.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Praktisch, wenn Text- und Bild-KI kombiniert werden sollen.</div>
-</article>
-<article aria-labelledby="tool-firefly" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🪄</div>
-<div>
-<h3 id="tool-firefly"><a href="https://www.adobe.com/de/products/firefly.html" rel="noopener noreferrer" target="_blank">Adobe Firefly</a></h3>
-<p class="ki-tool-card__lede">Nahtlos in Creative Cloud integriert, kommerzielle Nutzung klar geregelt.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Generative Füllungen in Photoshop/Illustrator.</li>
-<li>Marketing-Assets und Templates anpassen.</li>
-<li>Texteffekte oder Vektorvarianten testen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Empfehlung für Teams, die bereits mit Adobe arbeiten.</div>
-</article>
-<article aria-labelledby="tool-stable" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🛠️</div>
-<div>
-<h3 id="tool-stable"><a href="https://stability.ai/stable-diffusion" rel="noopener noreferrer" target="_blank">Stable-Diffusion-Modelle</a></h3>
-<p class="ki-tool-card__lede">Open-Source-Ansatz mit vielen Community-Workflows und lokalen Optionen.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Eigene Bildgeneratoren oder lokale Tests.</li>
-<li>Feintuning für spezielle Stile oder Produkte.</li>
-<li>Batch-Generierung für Serienmotive.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Für alle, die Kontrolle über Daten und Abläufe brauchen.</div>
-</article>
-<article aria-labelledby="tool-leonardo" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🎯</div>
-<div>
-<h3 id="tool-leonardo"><a href="https://leonardo.ai" rel="noopener noreferrer" target="_blank">Leonardo</a></h3>
-<p class="ki-tool-card__lede">Studio-Features für Mockups, Texturen und saubere Vorlagen.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>E-Commerce-Fotos mit austauschbaren Hintergründen.</li>
-<li>Schnelle Varianten für Produkt- oder Packshots.</li>
-<li>Game-Assets und Isometrie-Styles.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Wenn viele Vorlagen und wiederkehrende Motive nötig sind.</div>
-</article>
-<article aria-labelledby="tool-ideogram" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🖋️</div>
-<div>
-<h3 id="tool-ideogram"><a href="https://ideogram.ai" rel="noopener noreferrer" target="_blank">Ideogram</a></h3>
-<p class="ki-tool-card__lede">Stark bei Logos, Schriften und klaren Designs mit Text im Bild.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Plakate, Flyer oder Social-Grafiken mit lesbaren Schriften.</li>
-<li>Logo-Entwürfe und Wortmarken testen.</li>
-<li>Saubere, kontrastreiche Layouts erzeugen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Gut, wenn Texte im Bild präzise aussehen sollen.</div>
-</article>
-</div>
-</div>
-</section>
-<section aria-labelledby="ki-video" class="section ki-tools-category" id="ki-video">
-<div class="container ki-wide">
-<header class="ki-category-header">
-<div aria-hidden="true" class="ki-category-icon">🎬</div>
-<div>
-<p class="section-eyebrow">Bewegtbild</p>
-<h2 id="ki-video">Video-KI</h2>
-<p class="ki-section-intro">Clips, Effekte oder komplette Szenen aus Text und Bildern. Ideal für schnelle Entwürfe und Social-Media-Formate.</p>
-</div>
-</header>
-<div class="ki-tool-card-grid">
-<article aria-labelledby="tool-sora" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🔭</div>
-<div>
-<h3 id="tool-sora"><a href="https://sora.com" rel="noopener noreferrer" target="_blank">OpenAI Sora</a></h3>
-<p class="ki-tool-card__lede">Der Maßstab für High-End Realismus – schrittweise öffentlich verfügbar (Zugang je nach Region/Konto).</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Längere, kohärente Videos in Kinoqualität.</li>
-<li>Komplexe Szenen mit mehreren Charakteren.</li>
-<li>Realistische Physik und Lichtstimmungen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Für professionelle Produktionen und High-End Content.</div>
-</article>
-<article aria-labelledby="tool-runway" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🚀</div>
-<div>
-<h3 id="tool-runway"><a href="https://runwayml.com" rel="noopener noreferrer" target="_blank">Runway Gen-3</a></h3>
-<p class="ki-tool-card__lede">Fokus auf Cinematic Video, Schnitt und Kontrolle.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Präzise Steuerung von Kamera und Bewegung (Motion Brush).</li>
-<li>Stil-Konsistenz über mehrere Clips hinweg.</li>
-<li>Lip-Sync und fortgeschrittene Editing-Tools.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Die Workstation für Video-Creators.</div>
-</article>
-<article aria-labelledby="tool-kling" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🎬</div>
-<div>
-<h3 id="tool-kling"><a href="#" rel="noopener noreferrer" target="_blank">Kling AI</a></h3>
-<p class="ki-tool-card__lede">Realistische Clips mit hoher Bewegungsqualität.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Action-Szenen und dynamische Bewegungen.</li>
-<li>Lange Clips (bis zu 2 Minuten) ohne Qualitätsverlust.</li>
-<li>Realistische Personendarstellung.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Starke Alternative für realistische Szenen.</div>
-</article>
-<article aria-labelledby="tool-hailuo" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🌊</div>
-<div>
-<h3 id="tool-hailuo"><a href="#" rel="noopener noreferrer" target="_blank">Hailuo</a></h3>
-<p class="ki-tool-card__lede">Beeindruckende Konsistenz und Bildqualität ohne Post-Production.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Werbespots und Social-Media-Content "out of the box".</li>
-<li>Hohe Detailtreue bei Texturen und Gesichtern.</li>
-<li>Schnelle Generierung für iterative Prozesse.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Geheimtipp für visuelle Perfektionisten.</div>
-</article>
-</div>
-</div>
-</section>
-<section aria-labelledby="ki-audio" class="section ki-tools-category" id="ki-audio">
-<div class="container ki-wide">
-<header class="ki-category-header">
-<div aria-hidden="true" class="ki-category-icon">🎧</div>
-<div>
-<p class="section-eyebrow">Stimmen &amp; Musik</p>
-<h2 id="ki-audio">Audio- &amp; Musik-KI</h2>
-<p class="ki-section-intro">Von Voiceover über Hörtexte bis zu generierter Musik – ideal für Videos, Podcasts oder Prototypen.</p>
-</div>
-</header>
-<div class="ki-tool-card-grid">
-<article aria-labelledby="tool-elevenlabs" class="ki-tool-card ws-card-used">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🗣️</div>
-<div>
-<h3 id="tool-elevenlabs"><a href="https://elevenlabs.io" rel="noopener noreferrer" target="_blank">ElevenLabs</a></h3>
-<p class="ki-tool-card__lede">Natürlich klingende Stimmen in vielen Sprachen.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Voiceover für Videos oder Erklärungen.</li>
-<li>Hörbücher, E-Learning oder Podcasts.</li>
-<li>Mehrsprachige Audio-Varianten erstellen.</li>
-</ul>
-</div>
-</div>
-<div class="callout note" role="note">
-<h4>Beispiel aus der Warenschmiede</h4>
-<p>Zukunftsgeschichte über Donaueschingen als Hörbuch, mit ElevenLabs eingesprochen.</p>
-<p>Hörbeispiel und Beschreibung findest du auf der Seite <a href="/ki/index.html#ki-story-beispiel">Über KI – einfache Erklärungen</a>.</p>
-</div>
-<p class="ws-card-used-note">Nutze ich aktuell für Hörtexte.</p>
-<div class="ki-tool-card__tag">Achte auf Einverständnis bei Stimm-Cloning.</div>
-</article>
-<article aria-labelledby="tool-suno" class="ki-tool-card ws-card-used">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🎵</div>
-<div>
-<h3 id="tool-suno"><a href="https://suno.com" rel="noopener noreferrer" target="_blank">Suno</a></h3>
-<p class="ki-tool-card__lede">Erzeugt komplette Songs samt Gesang aus kurzen Prompts.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Jingles und Hintergrundmusik für Videos.</li>
-<li>Schnelle Musikideen und Demos.</li>
-<li>Experimentelle Tracks für Social Media.</li>
-</ul>
-</div>
-</div>
-<div class="callout note" role="note">
-<h4>Beispiel aus der Warenschmiede</h4>
-<p>Song zur Kostenrechner-Anleitung, gemeinsam mit einer Text-KI geplant.</p>
-<p>Den Song und eine kurze Beschreibung findest du unter <a href="/ki/index.html#ki-song-beispiel">Was du mit KI alles machen kannst</a>.</p>
-</div>
-<p class="ws-card-used-note">Setze ich aktuell für Musikideen ein.</p>
-<div class="ki-tool-card__tag">Lizenzbedingungen für kommerzielle Nutzung beachten.</div>
-</article>
-<article aria-labelledby="tool-playht" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🎚️</div>
-<div>
-<h3 id="tool-playht"><a href="https://play.ht" rel="noopener noreferrer" target="_blank">Play.ht</a></h3>
-<p class="ki-tool-card__lede">Stabile Alternative für Voiceover, Hörtexte und Podcasts.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Serien von Audio-Artikeln oder Blogposts erstellen.</li>
-<li>Podcasts mit mehreren Stimmen kombinieren.</li>
-<li>Downloads als MP3 oder WAV für Videos sichern.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Geeignet, wenn viele Sprachvarianten gebraucht werden.</div>
-</article>
-<article aria-labelledby="tool-udio" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🎶</div>
-<div>
-<h3 id="tool-udio"><a href="https://www.udio.com" rel="noopener noreferrer" target="_blank">Udio</a></h3>
-<p class="ki-tool-card__lede">Songs und Beats mit Remix- und Verlängerungsoptionen.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Loops für Social-Clips oder Podcasts.</li>
-<li>Varianten eines Tracks in Sekunden erzeugen.</li>
-<li>Stems exportieren und weiterbearbeiten.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Gut für Kreative, die viele Varianten testen wollen.</div>
-</article>
-<article aria-labelledby="tool-musicgen" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🧩</div>
-<div>
-<h3 id="tool-musicgen"><a href="https://ai.meta.com/blog/musicgen/" rel="noopener noreferrer" target="_blank">MusicGen (Meta)</a></h3>
-<p class="ki-tool-card__lede">Open-Source-Modelle für Musikexperimente und eigene Workflows.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Samples und Loops lokal oder in Notebooks erzeugen.</li>
-<li>Eigene Prompts mit Effekten oder Stilen kombinieren.</li>
-<li>Audio-Ausgaben in DAWs weiterbearbeiten.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Für Bastler, die möglichst viel Kontrolle behalten möchten.</div>
-</article>
-</div>
-</div>
-</section>
-<section aria-labelledby="ki-buero" class="section ki-tools-category" id="ki-buero">
-<div class="container ki-wide">
-<header class="ki-category-header">
-<div aria-hidden="true" class="ki-category-icon">🧰</div>
-<div>
-<p class="section-eyebrow">Alltag &amp; Zusammenarbeit</p>
-<h2 id="ki-buero">Büro- &amp; Spezial-Tools</h2>
-<p class="ki-section-intro">KI unterstützt Notizen, Präsentationen, Content-Produktion und Meetings.</p>
-</div>
-</header>
-<div class="ki-tool-card-grid">
-<article aria-labelledby="tool-notion" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🧭</div>
-<div>
-<h3 id="tool-notion"><a href="https://www.notion.so/product/ai" rel="noopener noreferrer" target="_blank">Notion AI</a></h3>
-<p class="ki-tool-card__lede">Hilft beim Strukturieren von Notizen, Projekten und Wikis.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Meeting-Notizen zusammenfassen.</li>
-<li>Aufgabenlisten und Roadmaps erzeugen.</li>
-<li>Vorlagen für Wissensdatenbanken erstellen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Praktisch für Teams, die bereits in Notion arbeiten.</div>
-</article>
-<article aria-labelledby="tool-canva" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🖌️</div>
-<div>
-<h3 id="tool-canva"><a href="https://www.canva.com/ai/" rel="noopener noreferrer" target="_blank">Canva mit KI-Funktionen</a></h3>
-<p class="ki-tool-card__lede">Magic Write, Bildgenerator und Präsentations-Assistent in einem Design-Tool.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Slides, Social Posts und Flyer beschleunigen.</li>
-<li>Hintergründe entfernen oder Texte kürzen.</li>
-<li>Markenelemente automatisch anwenden.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Für Content-Teams, die schnell Ergebnisse brauchen.</div>
-</article>
-<article aria-labelledby="tool-descript" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🎙️</div>
-<div>
-<h3 id="tool-descript"><a href="https://www.descript.com" rel="noopener noreferrer" target="_blank">Descript / Kapwing</a></h3>
-<p class="ki-tool-card__lede">Video- und Audiobearbeitung per Text, inkl. Transkripten und Auto-Schnitt.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Interviews und Podcasts säubern.</li>
-<li>Clips für Social Media erzeugen.</li>
-<li>Untertitel und B-Roll automatisch ergänzen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Ideal, wenn Video-Workflows möglichst simpel bleiben sollen.</div>
-</article>
-<article aria-labelledby="tool-gamma" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">📊</div>
-<div>
-<h3 id="tool-gamma"><a href="https://gamma.app" rel="noopener noreferrer" target="_blank">Gamma / Tome</a></h3>
-<p class="ki-tool-card__lede">Erstellt Präsentationen aus Stichpunkten und passt Layouts automatisch an.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Pitches, Handouts oder Schulungen vorbereiten.</li>
-<li>Bestehende Inhalte importieren und kürzen.</li>
-<li>Interaktive Elemente wie Karten oder Code einbetten.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Für Teams, die in Minuten eine erste Präsentation brauchen.</div>
-</article>
-<article aria-labelledby="tool-luma-ai" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">📹</div>
-<div>
-<h3 id="tool-luma-ai"><a href="https://lumalabs.ai" rel="noopener noreferrer" target="_blank">Luma AI</a></h3>
-<p class="ki-tool-card__lede">3D- und Kamera-Tools für besondere Shots und kurze Videos.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Produkte oder Räume als kurze Kamerafahrten darstellen.</li>
-<li>3D-Szenen oder Hintergründe aus Fotos erzeugen.</li>
-<li>Kreative Übergänge und Effekte in Clips einbauen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Hilfreich, wenn Videos mehr Tiefe oder Bewegung bekommen sollen.</div>
-</article>
-<article aria-labelledby="tool-meeting" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🗒️</div>
-<div>
-<h3 id="tool-meeting">Meeting-Recorder</h3>
-<p class="ki-tool-card__lede">Nimmt Calls auf, erstellt Zusammenfassungen und To-do-Listen.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Sales- oder Projekt-Calls dokumentieren.</li>
-<li>Automatische Notizen für Workshops.</li>
-<li>Follow-ups als Entwurf verschicken.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Datenschutz beachten: Zustimmung der Teilnehmenden ist Pflicht.</div>
-</article>
-</div>
-</div>
-</section>
-<section aria-labelledby="ki-disclaimer-heading" class="section ki-tools-disclaimer">
-<div class="container ki-wide">
-<div class="ki-disclaimer-card">
-<h2 id="ki-disclaimer-heading">Transparenz- &amp; Rechtshinweis</h2>
-<p>Diese Übersicht ist eine Momentaufnahme und erhebt keinen Anspruch auf Vollständigkeit. Funktionen, Versionen, Preise und Verfügbarkeiten ändern sich laufend.</p>
-<p>Keine Werbung, keine Affiliate-Links. Alle Marken gehören den jeweiligen Anbietern.</p>
-<p>Angaben zu Funktionen und möglichen Kosten sind ohne Gewähr. Prüfe immer selbst die aktuellen AGB, Datenschutz-Hinweise und Preise direkt beim Anbieter.</p>
-</div>
-</div>
-</section>
+  <section aria-labelledby="ki-tools-heading" class="section ki-tools-hero" style="padding-bottom: 1rem;">
+    <div class="container ki-wide ki-tools-hero__inner">
+      <div class="ki-hero-center">
+        <p class="section-eyebrow">Werkzeuge &amp; Orientierung</p>
+        <h1 id="ki-tools-heading">Moderne KI-Tools im Überblick</h1>
+        <p class="ki-hero__lede dashboard-intro">Alles auf einen Blick: Klicke auf eine Kategorie, um die passenden Werkzeuge zu öffnen.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sticky Filter Navigation -->
+  <div class="tool-filter-nav">
+    <div class="container ki-wide">
+      <ul class="filter-list" role="tablist">
+        <!-- Buttons zum Umschalten -->
+        <li><button class="filter-btn active" data-target="ki-wissen" role="tab" aria-selected="true">💬 Chat & Wissen</button></li>
+        <li><button class="filter-btn" data-target="ki-coding" role="tab" aria-selected="false">💻 Coding</button></li>
+        <li><button class="filter-btn" data-target="ki-bild" role="tab" aria-selected="false">🎨 Bild</button></li>
+        <li><button class="filter-btn" data-target="ki-video" role="tab" aria-selected="false">🎬 Video</button></li>
+        <li><button class="filter-btn" data-target="ki-audio" role="tab" aria-selected="false">🎧 Audio</button></li>
+        <li><button class="filter-btn" data-target="ki-buero" role="tab" aria-selected="false">🧰 Büro & Tools</button></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Content Sections (Default: Wissen visible via 'active-category') -->
+  
+  <!-- 1. WISSEN -->
+  <section aria-labelledby="ki-wissen-heading" class="section ki-tools-category active-category" id="ki-wissen">
+    <div class="container ki-wide">
+      <header class="ki-category-header">
+        <div aria-hidden="true" class="ki-category-icon">🤝</div>
+        <div>
+          <p class="section-eyebrow">Recherche &amp; Analyse</p>
+          <h2 id="ki-wissen-heading">Wissen &amp; Forschung</h2>
+          <p class="ki-section-intro">Recherche, Analyse und Deep Dives – Tools, um Informationen zu verstehen und Quellen zu prüfen.</p>
+        </div>
+      </header>
+      <div class="ki-tool-card-grid">
+        <article aria-labelledby="tool-notebooklm" class="ki-tool-card ws-card-used">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">📓</div>
+            <div>
+              <h3 id="tool-notebooklm"><a href="https://notebooklm.google.com" rel="noopener noreferrer" target="_blank">Google NotebookLM</a></h3>
+              <p class="ki-tool-card__lede">Der KI-Forschungsassistent für eigene Dokumente.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>PDFs, Webseiten oder Notizen hochladen und befragen.</li>
+                <li>Audio Overview: Generiere einen Podcast aus deinen Quellen.</li>
+                <li>Zitate und Fakten direkt im Text verifizieren.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Ideal für Studium, Recherche und komplexe Projekte.</div>
+        </article>
+        
+        <article aria-labelledby="tool-chatgpt" class="ki-tool-card ws-card-used">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🧠</div>
+            <div>
+              <h3 id="tool-chatgpt"><a href="https://chatgpt.com" rel="noopener noreferrer" target="_blank">ChatGPT</a></h3>
+              <p class="ki-tool-card__lede">Vielseitiger Assistent für Texte, Ideen, Erklärungen und Code.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Blog- oder E-Mail-Entwürfe, Stil anpassen.</li>
+                <li>Code erklären, kleine Skripte erstellen.</li>
+                <li>Dateien zusammenfassen oder in Listen bringen.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Gute Wahl für einen breiten Einstieg.</div>
+        </article>
+
+        <article aria-labelledby="tool-gemini" class="ki-tool-card ws-card-used">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🔎</div>
+            <div>
+              <h3 id="tool-gemini"><a href="https://gemini.google.com" rel="noopener noreferrer" target="_blank">Gemini</a></h3>
+              <p class="ki-tool-card__lede">Verknüpft KI-Chat mit Google-Suche und Workspace-Apps.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Aktuelle Infos recherchieren, Quellen prüfen.</li>
+                <li>Docs, Sheets oder Gmail mit Vorschlägen ergänzen.</li>
+                <li>PDFs, Bilder oder Screenshots analysieren.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Passend für alle, die ohnehin mit Google-Workspace arbeiten.</div>
+        </article>
+
+        <article aria-labelledby="tool-claude" class="ki-tool-card">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">📚</div>
+            <div>
+              <h3 id="tool-claude"><a href="https://claude.ai" rel="noopener noreferrer" target="_blank">Claude</a></h3>
+              <p class="ki-tool-card__lede">Sehr stark bei langen Dokumenten und klaren Zusammenfassungen.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Verträge, Handbücher oder Skripte strukturieren.</li>
+                <li>Tonalität an Zielgruppen anpassen.</li>
+                <li>Fragen zu umfangreichen PDF-Anhängen beantworten.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Geeignet für Wissensarbeit und Dokumentation.</div>
+        </article>
+
+        <article aria-labelledby="tool-perplexity" class="ki-tool-card ws-card-used">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🌐</div>
+            <div>
+              <h3 id="tool-perplexity"><a href="https://www.perplexity.ai" rel="noopener noreferrer" target="_blank">Perplexity</a></h3>
+              <p class="ki-tool-card__lede">Antwort-Suchmaschine mit Live-Websuche und Quellenangaben.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Schnell recherchieren und Quellen verlinken.</li>
+                <li>Vergleiche oder Schritt-für-Schritt-Anleitungen erstellen.</li>
+                <li>Weitere Fragen stellen, ohne neuen Tab zu öffnen.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Hilfreich für News, Studien und Faktenchecks.</div>
+        </article>
+
+        <article aria-labelledby="tool-mistral" class="ki-tool-card">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🇪🇺</div>
+            <div>
+              <h3 id="tool-mistral"><a href="https://chat.mistral.ai" rel="noopener noreferrer" target="_blank">Mistral / Le Chat</a></h3>
+              <p class="ki-tool-card__lede">Moderner europäischer Anbieter mit schnellen Open-Modellen.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Datensparsame Chats in EU-Rechenzentren.</li>
+                <li>Fragen zu langen Texten ohne viel Vorarbeit.</li>
+                <li>Eigene Projekte mit Open-Source-Modellen starten.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Gut, wenn EU-Hosting und Offenheit wichtig sind.</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. CODING -->
+  <section aria-labelledby="ki-coding-heading" class="section ki-tools-category" id="ki-coding">
+    <div class="container ki-wide">
+      <header class="ki-category-header">
+        <div aria-hidden="true" class="ki-category-icon">💻</div>
+        <div>
+          <p class="section-eyebrow">Softwareentwicklung</p>
+          <h2 id="ki-coding-heading">Coding &amp; Entwicklung</h2>
+          <p class="ki-section-intro">Moderne IDEs und Agenten für effizienteres Coden, Debuggen und Deployment.</p>
+        </div>
+      </header>
+      <div class="ki-tool-card-grid">
+        <article aria-labelledby="tool-cursor" class="ki-tool-card ws-card-used">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🖱️</div>
+            <div>
+              <h3 id="tool-cursor"><a href="https://cursor.com" rel="noopener noreferrer" target="_blank">Cursor</a></h3>
+              <p class="ki-tool-card__lede">Die führende AI-First IDE (VS Code Fork) mit Agenten-Modus.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Codebase-weite Änderungen per Chat steuern.</li>
+                <li>Intelligente Autocomplete- und Refactoring-Vorschläge.</li>
+                <li>Nahtloser Import von VS Code Extensions.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Der neue Standard für KI-gestütztes Coden.</div>
+        </article>
+
+        <article aria-labelledby="tool-github-copilot" class="ki-tool-card">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">✈️</div>
+            <div>
+              <h3 id="tool-github-copilot"><a href="https://github.com/features/copilot" rel="noopener noreferrer" target="_blank">GitHub Copilot</a></h3>
+              <p class="ki-tool-card__lede">Der Klassiker für In-Editor-Assistenz.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Schnelle Code-Vervollständigung im Editor.</li>
+                <li>Unit-Tests und Docs generieren.</li>
+                <li>Chat im Editor für Erklärungen.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Solide Basis für jeden Entwickler.</div>
+        </article>
+
+        <article aria-labelledby="tool-jules" class="ki-tool-card">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🤖</div>
+            <div>
+              <h3 id="tool-jules"><a href="https://jules.google" rel="noopener noreferrer" target="_blank">Google Jules</a></h3>
+              <p class="ki-tool-card__lede">Der autonome Coding-Agent für Repo-Management.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>PRs erstellen, Reviews durchführen.</li>
+                <li>Bugs autonom finden und fixen.</li>
+                <li>Wartung und Updates im Hintergrund erledigen.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Ein "Kollege", der nie schläft.</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. BILD -->
+  <section aria-labelledby="ki-bild-heading" class="section ki-tools-category" id="ki-bild">
+    <div class="container ki-wide">
+      <header class="ki-category-header">
+        <div aria-hidden="true" class="ki-category-icon">🎨</div>
+        <div>
+          <p class="section-eyebrow">Bilder &amp; Grafiken</p>
+          <h2 id="ki-bild-heading">Bild-KI</h2>
+          <p class="ki-section-intro">Aus Text werden Illustrationen, Produktbilder oder Social-Grafiken. Gut für Ideenfindung und schnelle Visuals.</p>
+        </div>
+      </header>
+      <div class="ki-tool-card-grid">
+        <article aria-labelledby="tool-flux" class="ki-tool-card">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">📸</div>
+            <div>
+              <h3 id="tool-flux"><a href="https://blackforestlabs.ai/" rel="noopener noreferrer" target="_blank">Flux.1</a></h3>
+              <p class="ki-tool-card__lede">Top-Empfehlung für Fotorealismus und Open Source.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Fotorealistische Porträts und Szenen.</li>
+                <li>Lokal nutzbar für maximale Kontrolle.</li>
+                <li>Hohe Texttreue und Detailgenauigkeit.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Aktueller Qualitätsführer im Open-Source-Bereich.</div>
+        </article>
+
+        <article aria-labelledby="tool-midjourney" class="ki-tool-card">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🌅</div>
+            <div>
+              <h3 id="tool-midjourney"><a href="https://www.midjourney.com" rel="noopener noreferrer" target="_blank">Midjourney v7</a></h3>
+              <p class="ki-tool-card__lede">Stilvielfalt und präziser Text im Bild – die Referenz für Ästhetik.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Artwork, Poster und Kampagnenmotive.</li>
+                <li>Charakter-Design und Concept Art.</li>
+                <li>Perfekt integrierte Schriften und Logos.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Gut für Kreative, die einen markanten Stil suchen.</div>
+        </article>
+
+        <article aria-labelledby="tool-dalle" class="ki-tool-card">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🖼️</div>
+            <div>
+              <h3 id="tool-dalle"><a href="https://openai.com/index/dall-e-3" rel="noopener noreferrer" target="_blank">DALL·E 3</a></h3>
+              <p class="ki-tool-card__lede">Erzeugt vielseitige Stile und lässt sich direkt in Chats nutzen.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Social-Posts und Präsentationen bebildern.</li>
+                <li>Bildvarianten und Hintergründe austesten.</li>
+                <li>Ideen schnell als Skizze visualisieren.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Praktisch für schnelle Ergebnisse.</div>
+        </article>
+
+        <article aria-labelledby="tool-firefly" class="ki-tool-card">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🪄</div>
+            <div>
+              <h3 id="tool-firefly"><a href="https://www.adobe.com/de/products/firefly.html" rel="noopener noreferrer" target="_blank">Adobe Firefly</a></h3>
+              <p class="ki-tool-card__lede">Nahtlos in Creative Cloud integriert, kommerziell sicher.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Generative Füllungen in Photoshop.</li>
+                <li>Marketing-Assets und Templates anpassen.</li>
+                <li>Texteffekte oder Vektorvarianten testen.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Empfehlung für Adobe-Nutzer.</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. VIDEO -->
+  <section aria-labelledby="ki-video-heading" class="section ki-tools-category" id="ki-video">
+    <div class="container ki-wide">
+      <header class="ki-category-header">
+        <div aria-hidden="true" class="ki-category-icon">🎬</div>
+        <div>
+          <p class="section-eyebrow">Bewegtbild</p>
+          <h2 id="ki-video-heading">Video-KI</h2>
+          <p class="ki-section-intro">Clips, Effekte oder komplette Szenen aus Text und Bildern.</p>
+        </div>
+      </header>
+      <div class="ki-tool-card-grid">
+        <article aria-labelledby="tool-runway" class="ki-tool-card">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🚀</div>
+            <div>
+              <h3 id="tool-runway"><a href="https://runwayml.com" rel="noopener noreferrer" target="_blank">Runway Gen-3</a></h3>
+              <p class="ki-tool-card__lede">Fokus auf Cinematic Video, Schnitt und Kontrolle.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Präzise Steuerung von Kamera und Bewegung.</li>
+                <li>Stil-Konsistenz über mehrere Clips.</li>
+                <li>Lip-Sync und fortgeschrittene Editing-Tools.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Die Workstation für Video-Creators.</div>
+        </article>
+
+        <article aria-labelledby="tool-sora" class="ki-tool-card">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🔭</div>
+            <div>
+              <h3 id="tool-sora"><a href="https://sora.com" rel="noopener noreferrer" target="_blank">OpenAI Sora</a></h3>
+              <p class="ki-tool-card__lede">Hoher Realismus für komplexe Szenen (Zugang eingeschränkt).</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Kinoqualität für längere Szenen.</li>
+                <li>Realistische Physik und Lichtstimmungen.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">High-End Content.</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. AUDIO -->
+  <section aria-labelledby="ki-audio-heading" class="section ki-tools-category" id="ki-audio">
+    <div class="container ki-wide">
+      <header class="ki-category-header">
+        <div aria-hidden="true" class="ki-category-icon">🎧</div>
+        <div>
+          <p class="section-eyebrow">Stimmen &amp; Musik</p>
+          <h2 id="ki-audio-heading">Audio- &amp; Musik-KI</h2>
+          <p class="ki-section-intro">Von Voiceover über Hörtexte bis zu generierter Musik.</p>
+        </div>
+      </header>
+      <div class="ki-tool-card-grid">
+        <article aria-labelledby="tool-elevenlabs" class="ki-tool-card ws-card-used">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🗣️</div>
+            <div>
+              <h3 id="tool-elevenlabs"><a href="https://elevenlabs.io" rel="noopener noreferrer" target="_blank">ElevenLabs</a></h3>
+              <p class="ki-tool-card__lede">Natürlich klingende Stimmen in vielen Sprachen.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Voiceover für Videos oder Erklärungen.</li>
+                <li>Hörbücher, E-Learning oder Podcasts.</li>
+                <li>Mehrsprachige Audio-Varianten erstellen.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Ideal für Vertonungen.</div>
+        </article>
+
+        <article aria-labelledby="tool-suno" class="ki-tool-card ws-card-used">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🎵</div>
+            <div>
+              <h3 id="tool-suno"><a href="https://suno.com" rel="noopener noreferrer" target="_blank">Suno</a></h3>
+              <p class="ki-tool-card__lede">Erzeugt komplette Songs samt Gesang aus kurzen Prompts.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Jingles und Hintergrundmusik für Videos.</li>
+                <li>Schnelle Musikideen und Demos.</li>
+                <li>Experimentelle Tracks für Social Media.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Radio-Qualität auf Knopfdruck.</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. BUERO -->
+  <section aria-labelledby="ki-buero-heading" class="section ki-tools-category" id="ki-buero">
+    <div class="container ki-wide">
+      <header class="ki-category-header">
+        <div aria-hidden="true" class="ki-category-icon">🧰</div>
+        <div>
+          <p class="section-eyebrow">Alltag &amp; Zusammenarbeit</p>
+          <h2 id="ki-buero-heading">Büro- &amp; Spezial-Tools</h2>
+          <p class="ki-section-intro">KI unterstützt Notizen, Präsentationen, Content-Produktion und Meetings.</p>
+        </div>
+      </header>
+      <div class="ki-tool-card-grid">
+        <article aria-labelledby="tool-notion" class="ki-tool-card">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🧭</div>
+            <div>
+              <h3 id="tool-notion"><a href="https://www.notion.so/product/ai" rel="noopener noreferrer" target="_blank">Notion AI</a></h3>
+              <p class="ki-tool-card__lede">Hilft beim Strukturieren von Notizen, Projekten und Wikis.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Meeting-Notizen zusammenfassen.</li>
+                <li>Aufgabenlisten und Roadmaps erzeugen.</li>
+                <li>Vorlagen für Wissensdatenbanken erstellen.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Praktisch für Notion-Teams.</div>
+        </article>
+
+        <article aria-labelledby="tool-canva" class="ki-tool-card">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🖌️</div>
+            <div>
+              <h3 id="tool-canva"><a href="https://www.canva.com/ai/" rel="noopener noreferrer" target="_blank">Canva AI</a></h3>
+              <p class="ki-tool-card__lede">Magic Write & Design-Assistent in einem Tool.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Slides, Social Posts und Flyer beschleunigen.</li>
+                <li>Hintergründe entfernen oder Texte kürzen.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Für schnelles Marketing-Design.</div>
+        </article>
+
+        <article aria-labelledby="tool-descript" class="ki-tool-card">
+          <div class="ki-tool-card__head">
+            <div aria-hidden="true" class="ki-tool-card__icon">🎙️</div>
+            <div>
+              <h3 id="tool-descript"><a href="https://www.descript.com" rel="noopener noreferrer" target="_blank">Descript</a></h3>
+              <p class="ki-tool-card__lede">Video- und Audiobearbeitung per Text.</p>
+            </div>
+          </div>
+          <div class="ki-tool-card__body">
+            <div>
+              <h4>Typische Nutzung</h4>
+              <ul>
+                <li>Interviews und Podcasts schneiden wie ein Word-Dokument.</li>
+                <li>"Ähm" und Pausen automatisch entfernen.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="ki-tool-card__tag">Genial für Podcaster.</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="ki-disclaimer-heading" class="section ki-tools-disclaimer">
+    <div class="container ki-wide">
+      <div class="ki-disclaimer-card">
+        <h2 id="ki-disclaimer-heading">Transparenz- &amp; Rechtshinweis</h2>
+        <p>Diese Übersicht ist eine Momentaufnahme und erhebt keinen Anspruch auf Vollständigkeit. Funktionen, Versionen, Preise und Verfügbarkeiten ändern sich laufend.</p>
+        <p>Keine Werbung, keine Affiliate-Links. Alle Marken gehören den jeweiligen Anbietern.</p>
+        <p>Angaben zu Funktionen und möglichen Kosten sind ohne Gewähr. Prüfe immer selbst die aktuellen AGB, Datenschutz-Hinweise und Preise direkt beim Anbieter.</p>
+      </div>
+    </div>
+  </section>
+
 </main>
+
 <footer class="footer">
-<div class="container">
-<div class="footer__inner">
-<div class="footer__brand">© <span id="copyright-year">2026</span> Warenschmiede · Alle Rechte vorbehalten.</div>
-<nav aria-label="Rechtliches &amp; Kontakt" class="footer__links">
-<a href="/impressum.html">Impressum</a>
-<a href="/datenschutz.html">Datenschutzerklärung</a>
-<a href="/kontakt.html">Kontakt</a>
-</nav>
-<div class="footer__notes">
-<p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
-<p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
-</div>
-</div>
-</div>
+  <div class="container">
+    <div class="footer__inner">
+      <div class="footer__brand">© <span id="copyright-year">2026</span> Warenschmiede · Alle Rechte vorbehalten.</div>
+      <nav aria-label="Rechtliches &amp; Kontakt" class="footer__links">
+        <a href="/impressum.html">Impressum</a>
+        <a href="/datenschutz.html">Datenschutzerklärung</a>
+        <a href="/kontakt.html">Kontakt</a>
+      </nav>
+      <div class="footer__notes">
+        <p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
+        <p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
+      </div>
+    </div>
+  </div>
 </footer>
+
 <script defer="" src="../assets/js/theme.js"></script>
 <script defer="" src="../assets/js/header.js"></script>
 <script defer="" src="../assets/js/whatsapp.js"></script>
 <script>
   // Auto-Update Copyright Year
   document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+  // === DAS HIER HAT GEFEHLT: TAB-LOGIK ===
+  document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('.filter-btn');
+    const sections = document.querySelectorAll('.ki-tools-category');
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // 1. Alle Buttons deaktivieren
+        buttons.forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+        });
+        
+        // 2. Geklickten Button aktivieren
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+
+        // 3. Alle Sektionen ausblenden
+        sections.forEach(sec => sec.classList.remove('active-category'));
+        
+        // 4. Ziel-Sektion einblenden
+        const targetId = btn.getAttribute('data-target');
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) {
+          targetSection.classList.add('active-category');
+          // Smooth scroll zur Sektion (optional, falls sticky header stört)
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    });
+  });
 </script>
 </body>
 </html>
