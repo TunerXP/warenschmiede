@@ -255,7 +255,7 @@
 <div class="ki-pro-con-grid">
 <div class="ki-pro-card ki-pro-card--pro dark:bg-slate-800 dark:text-slate-100">
 <h3>Langsam &amp; Dicht</h3>
-<p>Viele Druckdienste drucken TPU schnell ("High-Speed"), was oft zu Mikro-Undichtigkeiten führt. Wir drucken bewusst langsam, um eine perfekte Schichtverschmelzung zu erreichen. So garantieren wir Wasserdichtigkeit, z.B. für Dichtungen oder Outdoor-Gehäuse.</p>
+<p>Viele Druckdienste setzen auf "High-Speed", doch bei TPU bedeutet langsameres Drucken maximale Schichtverschmelzung. Wir drucken bewusst langsam, damit sich die Schichten chemisch perfekt verbinden. Das Ergebnis: Absolute Wasserdichtigkeit und extrem belastbare Bauteile.</p>
 </div>
 <div class="ki-pro-card ki-pro-card--pro dark:bg-slate-800 dark:text-slate-100">
 <h3>Innere Werte (Gyroid)</h3>
@@ -263,12 +263,20 @@
 </div>
 <div class="ki-pro-card ki-pro-card--pro dark:bg-slate-800 dark:text-slate-100">
 <h3>Aktive Trocknung</h3>
-<p>TPU zieht Wasser wie ein Schwamm. Wir trocknen jedes Filament mindestens 24h aktiv vor dem Druck. Das Ergebnis: Eine blasenfreie, glatte Oberfläche und maximale Stabilität.</p>
+<p>TPU zieht Wasser wie ein Schwamm. Wir trocknen jedes Filament 24 Stunden aktiv vor, um "Popping" (Dampfblasen) zu verhindern. Nur so entsteht eine makellos glatte Oberfläche und maximale innere Bindung.</p>
 </div>
 </div>
-<div class="img-placeholder" style="margin-top: 2rem; background: rgba(0,0,0,0.05); padding: 2rem; text-align: center; border-radius: 12px; border: 1px dashed var(--border);">
-            [BILD: Marco zeigt Gyroid-Infill / Schnittmodell]
-         </div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+  <div class="flex flex-col">
+     <img src="assets/images/tpu_structure.jpg" alt="TPU Structure: Gyroid Infill" class="rounded-lg shadow-md w-full h-auto object-cover">
+     <p class="mt-2 text-sm text-center text-slate-600 dark:text-slate-400">Der innere Aufbau: 10% Gyroid-Füllung mit 3 massiven Außenwänden.</p>
+  </div>
+  <div class="flex flex-col">
+     <img src="assets/images/tpu_flex.jpg" alt="TPU Flexibilität" class="rounded-lg shadow-md w-full h-auto object-cover">
+     <p class="mt-2 text-sm text-center text-slate-600 dark:text-slate-400">Das Ergebnis: Maximale Stabilität bei voller Flexibilität.</p>
+  </div>
+</div>
 </div>
 </div>
 </section>
@@ -290,21 +298,33 @@
 <p>Glaube nicht den Herstellerangaben. Overture sagt "&gt;8h bei 65°C". In der Praxis bei der Warenschmiede trocknen wir oft 24h. Wenn es beim Drucken knistert ("Popping"), ist es zu feucht.</p>
 </div>
 </details>
+
 <details class="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200">
-<summary>Setup &amp; Hardware</summary>
+<summary>Stabilität &amp; Wände</summary>
 <div class="details-content">
 <ul class="feature-list">
-<li><strong>PTFE-Schlauch:</strong> Nutze Capricorn oder Schläuche mit exakt 1.9mm oder 2.0mm Innendurchmesser (oder optimiert auf 3mm ID wenn du einen speziellen Reverse-Bowden fährst).</li>
-<li><strong>Retract minimieren:</strong> Deaktiviere den Einzug oder setze ihn auf maximal 0.5mm - 1mm (Direct Drive). Zu viel Retract führt zu Verstopfung.</li>
+<li><strong>Wandstärke geht vor Infill:</strong> Die Faustformel lautet: 3-4 Wandlinien bringen mehr Stabilität als eine Erhöhung des Infills.</li>
+<li><strong>Height Range Modifiers:</strong> Nutze im Slicer (z.B. Bambu Studio) Modifikatoren, um an kritischen Stellen (wie Schraublöchern) mit 100% Infill zu drucken, während der Rest flexibel bleibt.</li>
 </ul>
 </div>
 </details>
+
 <details class="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200">
-<summary>Slicer-Einstellungen</summary>
+<summary>Geschwindigkeit &amp; Flow</summary>
 <div class="details-content">
 <ul class="feature-list">
-<li><strong>Volumetric Flow:</strong> Begrenze den maximalen Fluss (mm³/s). TPU braucht Zeit zum Schmelzen. Starte konservativ (z.B. 2-4 mm³/s).</li>
-<li><strong>Gyroid Infill:</strong> Nutze Gyroid als Füllmuster. Es druckt sich gleichmäßiger (keine kreuzenden Linien) und macht das Teil in alle Richtungen flexibel.</li>
+<li><strong>Volumetric Flow begrenzen:</strong> Lass dich nicht vom High-Speed-Marketing blenden. Begrenze den Fluss auf 2-4 mm³/s für beste Qualität.</li>
+<li><strong>Small Perimeters:</strong> Drucke kleine Details und Löcher extrem langsam, um eine saubere Kontur zu gewährleisten.</li>
+</ul>
+</div>
+</details>
+
+<details class="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200">
+<summary>No-Gos (Vermeiden!)</summary>
+<div class="details-content">
+<ul class="feature-list">
+<li><strong>Ironing (Glätten):</strong> Bei TPU ausschalten! Es versiegelt die Oberfläche oft hässlich statt sie zu glätten.</li>
+<li><strong>Retract (Rückzug):</strong> So gering wie möglich halten (0.5 - 1.0mm bei Direct Drive), um Verstopfungen im Hotend zu vermeiden.</li>
 </ul>
 </div>
 </details>
