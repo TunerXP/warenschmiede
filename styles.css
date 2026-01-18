@@ -3782,3 +3782,75 @@ html[data-theme="dark"] .dark\:border-slate-700 { border-color: #334155; }
 }
 
 html[data-theme="dark"] .dark\:text-slate-400 { color: #94a3b8; }
+
+/* Service Card Design Restoration */
+.services {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .services {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .services {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.service-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: var(--space-4);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+  border-color: var(--accent);
+}
+
+.service-card__header {
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.service-card__icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.service-card h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.service-card__actions {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.service-card__actions .btn {
+  flex: 1 1 auto;
+}
+
+/* Make the projects card span full width on desktop if it has a lot of content */
+@media (min-width: 640px) {
+  .service-card--projects {
+    grid-column: 1 / -1;
+  }
+}
