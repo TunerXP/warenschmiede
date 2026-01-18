@@ -3854,3 +3854,50 @@ html[data-theme="dark"] .dark\:text-slate-400 { color: #94a3b8; }
     grid-column: 1 / -1;
   }
 }
+
+/* Slicer Guide Modernization */
+.container.ki-wide {
+  max-width: 1320px;
+}
+.container.ki-wide.ki-hero__inner,
+.container.ki-wide.ki-section__inner {
+  max-width: 100%;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.ki-highlight {
+  background-color: var(--surface-muted);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.ki-highlight__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .ki-highlight__inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background-color: rgba(209, 42, 42, 0.05);
+}
