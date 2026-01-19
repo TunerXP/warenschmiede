@@ -1,6 +1,6 @@
 
 import os
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 
 def run():
     with sync_playwright() as p:
@@ -17,33 +17,42 @@ def run():
         # Ensure directory exists
         os.makedirs("verification", exist_ok=True)
 
-        # Screenshot Hero
-        print("Taking screenshot of Hero section...")
-        hero = page.locator(".ki-hero")
-        if hero.count() > 0:
-            hero.screenshot(path="verification/slicer_hero.png")
+        # Verify Page Header
+        print("Verifying Page Header...")
+        header = page.locator(".page-header")
+        expect(header).to_be_visible()
+        header.screenshot(path="verification/slicer_header.png")
+
+        # Verify H1
+        h1 = header.locator("h1")
+        expect(h1).to_have_text("Beste Slicer-Einstellungen für Einsteiger")
+
+        # Verify Section: Basics
+        print("Verifying Basics Section...")
+        basics_heading = page.locator("h2#basics")
+        expect(basics_heading).to_be_visible()
+        # Screenshot the area around the basics heading
+        # Just screenshot the heading's parent (section-heading) and next sibling (card-grid) if possible
+        # But for simplicity, just screenshot the viewport
+        # basics_heading.scroll_into_view_if_needed()
+        # page.screenshot(path="verification/slicer_basics.png")
+
+        # Verify Section: Materials (Table)
+        print("Verifying Materials Section...")
+        materials_heading = page.locator("h2#materials")
+        expect(materials_heading).to_be_visible()
+
+        table = page.locator(".table-wrapper")
+        if table.count() > 0:
+             table.first.scroll_into_view_if_needed()
+             table.first.screenshot(path="verification/slicer_table.png")
         else:
-            print("Hero section not found!")
+             print("Table wrapper not found")
 
-        # Screenshot Section 1
-        print("Taking screenshot of Section 1...")
-        section1 = page.locator("section[aria-labelledby='basics']")
-        if section1.count() > 0:
-            section1.screenshot(path="verification/slicer_section1.png")
-        else:
-            print("Section 1 not found!")
+        # Full page screenshot
+        page.screenshot(path="verification/slicer_full.png", full_page=True)
 
-        # Screenshot Table
-        print("Taking screenshot of Materials Table...")
-        section5 = page.locator("section[aria-labelledby='materials']")
-        if section5.count() > 0:
-            section5.screenshot(path="verification/slicer_table.png")
-        else:
-            print("Section 5 not found!")
-
-        # Screenshot full page for good measure (scaled down maybe?)
-        # page.screenshot(path="verification/slicer_full.png", full_page=True)
-
+        print("Verification complete!")
         browser.close()
 
 if __name__ == "__main__":
