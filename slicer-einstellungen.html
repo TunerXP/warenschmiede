@@ -242,10 +242,10 @@
   <section aria-labelledby="slicer-hero" class="section ki-hero">
     <div class="container ki-wide ki-hero__inner">
       <p class="section-eyebrow">3D-Druck Wissen</p>
-      <h1 id="slicer-hero">Slicer verstehen – Dein Weg zum G-Code</h1>
+      <h1 id="slicer-hero">Beste Slicer-Einstellungen für Einsteiger</h1>
       <p class="ki-hero__lede">
-        Der Slicer ist der Koch, der die Kartoffel (dein Modell) in hauchdünne Scheiben schneidet.
-        Er erstellt den G-Code, den dein Drucker Schicht für Schicht ausführt.
+        Der Slicer zerlegt dein 3D-Modell in Schichten und erzeugt den G‑Code für deinen Drucker.
+        Hier lernst du Programme, Profile und die wichtigsten Einstellungen kennen.
       </p>
       <div class="actions">
         <a class="btn btn-secondary" href="/druck-tipps.html">Zu den Praxis-Tipps & Kosten</a>
@@ -260,12 +260,12 @@
       </div>
       <div class="card-grid">
         <article class="card info-card">
-          <h3>Der Slicer (Die Software)</h3>
-          <p>Er zerlegt dein digitales 3D-Modell in horizontale Schichten ("Layer") und berechnet den Weg, den die Düse fahren muss.</p>
+          <h3>Die Koch-Analogie</h3>
+          <p>Stell dir den Slicer wie einen Koch vor, der eine Kartoffel in hauchdünne Scheiben schneidet. Dein 3D-Modell wird in horizontale Schichten ("Layer") zerlegt. Der Drucker baut diese Schichten dann nacheinander auf.</p>
         </article>
         <article class="card info-card">
-          <h3>Der G-Code (Das Ergebnis)</h3>
-          <p>Eine Textdatei mit Koordinaten (z.B. <code>G1 X10 Y20</code>). Diese Datei sendest du per WLAN oder SD-Karte an den Drucker.</p>
+          <h3>Was ist G-Code?</h3>
+          <p>Das Ergebnis des Slicers. Eine Textdatei mit Koordinaten (z.B. <code>G1 X10 Y20</code>). Diese Datei speicherst du auf der SD-Karte oder sendest sie per WLAN an den Drucker.</p>
         </article>
       </div>
     </div>
@@ -388,32 +388,12 @@
       <div class="table-wrapper">
         <table class="data-table">
           <thead>
-            <tr>
-              <th>Material</th>
-              <th>Düse / Bett</th>
-              <th>Kühlung</th>
-              <th>Einsatz</th>
-            </tr>
+            <tr><th>Material</th><th>Düse / Bett</th><th>Kühlung</th><th>Einsatz</th></tr>
           </thead>
           <tbody>
-            <tr>
-              <td><strong>PLA</strong></td>
-              <td>210°C / 60°C</td>
-              <td>100% (An)</td>
-              <td>Der Allrounder. Einfach, hart, für Deko & Boxen.</td>
-            </tr>
-            <tr>
-              <td><strong>PETG</strong></td>
-              <td>240°C / 75°C</td>
-              <td>30-50%</td>
-              <td>Zäher, hitzestabiler. Für Mechanik & Halter.</td>
-            </tr>
-            <tr>
-              <td><strong>TPU</strong></td>
-              <td>230°C / Kalt</td>
-              <td>An</td>
-              <td>Flexibel wie Gummi. Langsam drucken!</td>
-            </tr>
+            <tr><td><strong>PLA</strong></td><td>210°C / 60°C</td><td>100% (An)</td><td>Der Allrounder. Einfach, hart, für Deko & Boxen.</td></tr>
+            <tr><td><strong>PETG</strong></td><td>240°C / 75°C</td><td>30-50%</td><td>Zäher, hitzestabiler. Für Mechanik & Halter.</td></tr>
+            <tr><td><strong>TPU</strong></td><td>230°C / Kalt</td><td>An</td><td>Flexibel wie Gummi. Langsam drucken!</td></tr>
           </tbody>
         </table>
       </div>
@@ -426,18 +406,9 @@
         <h2 id="preflight">6. Dein Mini-Check vor dem Druck</h2>
       </div>
       <div class="card-grid">
-        <div class="card info-card check-card">
-          <h3>1. Platte sauber?</h3>
-          <p>Fettfinger sind der Feind der Haftung. Einmal mit Spüli & Wasser reinigen.</p>
-        </div>
-        <div class="card info-card check-card">
-          <h3>2. Düse frei?</h3>
-          <p>Hängt noch alter Kunststoff dran? Kurz aufheizen und abwischen.</p>
-        </div>
-        <div class="card info-card check-card">
-          <h3>3. First Layer passt?</h3>
-          <p>Schau dir die erste Schicht an. Wenn die sitzt, läuft meist der ganze Druck durch.</p>
-        </div>
+        <div class="card info-card check-card"><h3>1. Platte sauber?</h3><p>Fettfinger sind der Feind der Haftung. Einmal mit Spüli & Wasser reinigen.</p></div>
+        <div class="card info-card check-card"><h3>2. Düse frei?</h3><p>Hängt noch alter Kunststoff dran? Kurz aufheizen und abwischen.</p></div>
+        <div class="card info-card check-card"><h3>3. First Layer passt?</h3><p>Schau dir die erste Schicht an. Wenn die sitzt, läuft meist der ganze Druck durch.</p></div>
       </div>
     </div>
   </section>
@@ -449,41 +420,22 @@
         <p>Ändere immer nur <strong>eine</strong> Einstellung gleichzeitig!</p>
       </div>
       <div class="card-grid">
-        <div class="card info-card">
-          <h4>🕸️ Stringing (Fäden)</h4>
-          <p>Ursache: Zu heiß oder zu wenig Rückzug.<br>Lösung: Temp. 5°C runter, Retraction prüfen.</p>
-        </div>
-        <div class="card info-card">
-          <h4>🍌 Warping (Ablösen)</h4>
-          <p>Ursache: Zugluft oder fettiges Bett.<br>Lösung: Putzen, Brim einschalten, Tür zu.</p>
-        </div>
-        <div class="card info-card">
-          <h4>📏 Maße falsch</h4>
-          <p>Ursache: Überextrusion.<br>Lösung: Flow kalibrieren, Außenwände zuerst drucken.</p>
-        </div>
+        <div class="card info-card"><h4>🕸️ Stringing (Fäden)</h4><p>Ursache: Zu heiß oder zu wenig Rückzug.<br>Lösung: Temp. 5°C runter, Retraction prüfen.</p></div>
+        <div class="card info-card"><h4>🍌 Warping (Ablösen)</h4><p>Ursache: Zugluft oder fettiges Bett.<br>Lösung: Putzen, Brim einschalten, Tür zu.</p></div>
+        <div class="card info-card"><h4>📏 Maße falsch</h4><p>Ursache: Überextrusion.<br>Lösung: Flow kalibrieren, Außenwände zuerst drucken.</p></div>
       </div>
     </div>
   </section>
 
   <section aria-labelledby="faq" class="section">
     <div class="container ki-wide">
-      <div class="section-heading">
-        <h2 id="faq">8. FAQ & Glossar</h2>
-      </div>
-
+      <div class="section-heading"><h2 id="faq">8. FAQ & Glossar</h2></div>
       <div class="card-grid">
         <article class="card info-card">
           <h3>Häufige Fragen</h3>
-          <details>
-            <summary><strong>Wie speichere ich G-Code?</strong></summary>
-            <div class="details-content"><p>Drücke im Slicer auf "Slice" und dann auf "Export". Die Datei kommt auf die SD-Karte.</p></div>
-          </details>
-          <details>
-            <summary><strong>Was tun bei Fehldrucken?</strong></summary>
-            <div class="details-content"><p>Prüfe zuerst Temperatur und Z-Offset (Abstand Düse-Bett). Meist liegt es an der ersten Schicht.</p></div>
-          </details>
+          <details><summary><strong>Wie speichere ich G-Code?</strong></summary><div class="details-content"><p>Drücke im Slicer auf "Slice" und dann auf "Export".</p></div></details>
+          <details><summary><strong>Was tun bei Fehldrucken?</strong></summary><div class="details-content"><p>Prüfe zuerst Temperatur und Z-Offset (Abstand Düse-Bett).</p></div></details>
         </article>
-
         <article class="card info-card">
             <h3>Begriffe erklärt</h3>
             <table class="data-table" style="width:100%; font-size: 0.9em;">
