@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D-Drucker Finder - Warenschmiede</title>
+    <meta name="description" content="Finde den perfekten 3D-Drucker für deine Bedürfnisse. Ein interaktiver Guide von Marco Hoffmann.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'media',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        ws: {
+                            bg: '#0f172a',
+                            accent: '#3b82f6',
+                        },
+                        bambu: {
+                            green: '#00AE42', // Bambu Lab Green
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #0f172a;
+                color: #f8fafc;
+            }
+        }
+        
+        /* Smooth Fade Transitions */
+        .fade-enter { opacity: 0; transform: scale(0.98); }
+        .fade-enter-active { opacity: 1; transform: scale(1); transition: opacity 0.3s ease-out, transform 0.3s ease-out; }
+        .fade-exit { opacity: 1; transform: scale(1); }
+        .fade-exit-active { opacity: 0; transform: scale(0.98); transition: opacity 0.2s ease-in, transform 0.2s ease-in; }
+
+        .hidden { display: none !important; }
+
+        /* Card Hover Effects */
+        .option-card { cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); border-color: #3b82f6; }
+        
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
+    </style>
+</head>
+<body class="h-screen flex flex-col font-sans antialiased overflow-hidden">
+
+    <!-- Header (Updated with clear Back Link and Branding) -->
+    <header class="flex-none w-full py-4 px-4 sm:px-6 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-50">
+        <div class="container mx-auto max-w-7xl flex items-center justify-between">
+            
+            <!-- Left Side: Back Link & Logo -->
+            <div class="flex items-center gap-6">
+                <!-- Back Link (Fully written out) -->
+                <a href="https://www.warenschmiede.com/3ddruck-faq.html" class="group flex items-center gap-2 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors font-medium text-sm sm:text-base">
+                    <div class="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    </div>
+                    <span>Zurück zur Warenschmiede 3D FAQ</span>
+                </a>
+
+                <!-- Divider (Visible on larger screens) -->
+                <div class="h-8 w-px bg-gray-200 dark:bg-gray-700 hidden lg:block"></div>
+
+                <!-- Logo (Link to Homepage) -->
+                <a href="https://www.warenschmiede.com" class="hidden lg:flex items-center gap-3 hover:opacity-80 transition-opacity">
+                    <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-md">W</div>
+                    <div>
+                        <h1 class="font-bold text-base leading-none text-gray-900 dark:text-white">Warenschmiede.com</h1>
+                        <p class="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold mt-0.5">3D-Druck & Service</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Right Side: Progress -->
+            <div class="flex flex-col items-end w-32 sm:w-48">
+                <div class="flex justify-between w-full text-[10px] font-bold text-gray-400 uppercase mb-1">
+                    <span id="step-text">Start</span>
+                    <span id="progress-text">0%</span>
+                </div>
+                <div class="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-full bg-blue-600 transition-all duration-500 ease-out" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Stage -->
+    <main class="flex-grow relative w-full h-full flex items-center justify-center p-4 sm:p-8 overflow-y-auto sm:overflow-hidden">
+        <div class="w-full max-w-7xl h-full flex flex-col justify-center relative">
+
+            <!-- 1. WELCOME SCREEN (UPDATED - No Icon) -->
+            <div id="view-welcome" class="view-section absolute inset-0 flex flex-col items-center justify-center text-center overflow-y-auto custom-scrollbar">
+                <div class="max-w-2xl w-full py-6 space-y-6 animate-fade-in-up mx-auto">
+                    
+                    <!-- MAIN TITLE & EDITION -->
+                    <div class="space-y-2">
+                        <h1 class="text-4xl sm:text-6xl font-black text-gray-900 dark:text-white tracking-tighter leading-tight">
+                            Warenschmiede<br>
+                            3D-Drucker Finder
+                        </h1>
+                        <p class="text-xl sm:text-2xl font-bold text-[#00AE42] tracking-wide uppercase mt-1">
+                            (BambuLab Edition)
+                        </p>
+                    </div>
+                    
+                    <!-- Subheadline -->
+                    <h2 class="text-xl sm:text-2xl font-medium text-gray-600 dark:text-gray-300">
+                        Welcher Drucker passt zu dir?
+                    </h2>
+
+                    <!-- Disclaimer Box -->
+                    <div class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 p-5 rounded-xl shadow-lg text-left max-w-lg mx-auto">
+                        <div class="flex gap-4">
+                            <div class="bg-blue-100 dark:bg-blue-900/50 p-2 rounded-lg h-fit text-blue-600 dark:text-blue-400">
+                                <i data-lucide="info" class="w-5 h-5"></i>
+                            </div>
+                            <div class="text-sm text-gray-600 dark:text-gray-300">
+                                <p class="font-semibold text-gray-900 dark:text-white mb-1">Transparenz-Hinweis:</p>
+                                <p>Der Finder orientiert sich in erster Linie an den Druckern von <strong>Bambu Lab</strong>, da ich diese selbst nutze. Alternativen anderer Hersteller zeige ich dir im Ergebnisvergleich an.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NEW: PREPARATION BLOCK -->
+                    <div class="max-w-2xl mx-auto mt-6 text-left">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="h-px bg-gray-200 dark:bg-gray-700 flex-grow"></div>
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Gut vorbereitet starten</span>
+                            <div class="h-px bg-gray-200 dark:bg-gray-700 flex-grow"></div>
+                        </div>
+                        
+                        <p class="text-center text-sm text-gray-500 dark:text-gray-400 mb-6">
+                            Wenn du ganz neu im Thema bist, lohnt sich ein Blick in mein Materialwissen und in die Ideenquellen – dort findest du Beispiele, was du später alles drucken kannst.
+                        </p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Material Card -->
+                            <a href="https://www.warenschmiede.com/material.html" target="_blank" class="flex items-start p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-blue-400 dark:hover:border-blue-500 transition-all hover:shadow-md group">
+                                <div class="bg-purple-50 dark:bg-purple-900/30 p-2.5 rounded-lg mr-4 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="layers" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <span class="block font-bold text-gray-900 dark:text-white text-base mb-1 group-hover:text-blue-500 transition-colors">Materialwissen</span>
+                                    <span class="block text-xs text-gray-500 dark:text-gray-400 leading-relaxed">PLA, PETG, ASA, TPU & Co. – einfach erklärt.</span>
+                                </div>
+                            </a>
+                            
+                            <!-- Ideas Card -->
+                            <a href="https://www.warenschmiede.com/ideenquellen.html" target="_blank" class="flex items-start p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:border-blue-400 dark:hover:border-blue-500 transition-all hover:shadow-md group">
+                                <div class="bg-amber-50 dark:bg-amber-900/30 p-2.5 rounded-lg mr-4 text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="lightbulb" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <span class="block font-bold text-gray-900 dark:text-white text-base mb-1 group-hover:text-blue-500 transition-colors">Ideenquellen</span>
+                                    <span class="block text-xs text-gray-500 dark:text-gray-400 leading-relaxed">Modelle & Portale, wo du Druckvorlagen findest.</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Start Button -->
+                    <div class="pt-6 pb-8">
+                        <button onclick="app.start()" class="group inline-flex items-center justify-center px-10 py-5 text-lg font-bold text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-all shadow-xl hover:shadow-blue-500/25 hover:scale-105 active:scale-95">
+                            Jetzt Finder starten
+                            <i data-lucide="arrow-right" class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. QUESTION SCREEN -->
+            <div id="view-question" class="view-section hidden absolute inset-0 flex flex-col items-center justify-center">
+                <div class="w-full max-w-4xl">
+                    <div class="text-center mb-10">
+                        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3 transition-all" id="q-title">Frage</h2>
+                        <p class="text-lg text-gray-500 dark:text-gray-400" id="q-subtitle"></p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="q-options">
+                        <!-- Options injected via JS -->
+                    </div>
+
+                    <div class="mt-12 flex justify-center">
+                        <button onclick="app.prevStep()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 flex items-center px-6 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
+                            <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i> Zurück
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. RESULT SCREEN -->
+            <div id="view-result" class="view-section hidden absolute inset-0 flex flex-col">
+                
+                <div class="flex-none mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                        <i data-lucide="check-circle" class="w-6 h-6 text-green-500 mr-2"></i>
+                        Dein persönliches Ergebnis
+                    </h2>
+                </div>
+
+                <!-- Split Layout -->
+                <div class="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 h-full overflow-hidden">
+                    
+                    <!-- LEFT COL: MAIN RECOMMENDATION -->
+                    <div class="lg:col-span-7 flex flex-col h-full">
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border-2 border-blue-500 h-full flex flex-col overflow-hidden relative">
+                            <!-- Badge -->
+                            <div class="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-4 py-1.5 rounded-bl-xl uppercase tracking-wider shadow-sm z-10">
+                                Top Empfehlung
+                            </div>
+
+                            <!-- Content -->
+                            <div class="p-8 flex-grow flex flex-col justify-center overflow-y-auto custom-scrollbar">
+                                <div class="mb-6">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 mb-4" id="res-class">Klasse</span>
+                                    <h3 class="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight mb-2" id="res-title">Modell</h3>
+                                    <p class="text-xl text-gray-500 dark:text-gray-400 font-medium" id="res-price">Preis</p>
+                                </div>
+                                
+                                <div class="prose dark:prose-invert max-w-none text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-8" id="res-content">
+                                    Beschreibung...
+                                </div>
+
+                                <div class="mt-auto">
+                                    <a href="#" target="_blank" id="res-link" class="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 border border-transparent text-lg font-bold rounded-xl text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-1">
+                                        Bei Bambu Lab ansehen <i data-lucide="external-link" class="w-5 h-5 ml-2"></i>
+                                    </a>
+                                    <p class="text-xs text-gray-400 mt-4">Hinweis: Preise ändern sich täglich. Link führt direkt zum Hersteller.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COL: ALTERNATIVES & NEXT STEPS -->
+                    <div class="lg:col-span-5 flex flex-col gap-6 h-full overflow-y-auto pr-2 custom-scrollbar pb-6">
+                        
+                        <!-- Alternatives Card -->
+                        <div class="bg-gray-50 dark:bg-slate-900/50 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 flex-shrink-0">
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                                <i data-lucide="arrow-left-right" class="w-5 h-5 mr-2 text-gray-500"></i>
+                                Alternativen anderer Marken
+                            </h3>
+                            <div id="res-alternatives" class="space-y-3">
+                                <!-- JS Injected -->
+                            </div>
+                        </div>
+
+                        <!-- NEW: NEXT STEPS BLOCK -->
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 flex-shrink-0">
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Wie geht es jetzt weiter?</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Drucker gefunden? Dann lohnt sich der nächste Schritt: Material auswählen und Grundlagen checken.</p>
+                            
+                            <div class="space-y-3">
+                                <a href="https://www.warenschmiede.com/material.html" target="_blank" class="flex items-center p-3 rounded-xl bg-gray-50 dark:bg-slate-700/50 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group">
+                                    <div class="mr-3 text-purple-500"><i data-lucide="layers" class="w-5 h-5"></i></div>
+                                    <div>
+                                        <div class="font-bold text-sm text-gray-900 dark:text-white group-hover:text-blue-500">Materialwissen & Vergleiche</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">Welches Filament wofür? PLA, PETG, TPU...</div>
+                                    </div>
+                                </a>
+                                
+                                <a href="https://www.warenschmiede.com/3ddruck-faq.html" class="flex items-center p-3 rounded-xl bg-gray-50 dark:bg-slate-700/50 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group">
+                                    <div class="mr-3 text-green-500"><i data-lucide="help-circle" class="w-5 h-5"></i></div>
+                                    <div>
+                                        <div class="font-bold text-sm text-gray-900 dark:text-white group-hover:text-blue-500">3D-Druck FAQ & Einstieg</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">Grundlagen, häufige Fragen und Lexikon.</div>
+                                    </div>
+                                </a>
+
+                                <a href="https://www.warenschmiede.com/ideenquellen.html" class="flex items-center p-3 rounded-xl bg-gray-50 dark:bg-slate-700/50 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group">
+                                    <div class="mr-3 text-amber-500"><i data-lucide="search" class="w-5 h-5"></i></div>
+                                    <div>
+                                        <div class="font-bold text-sm text-gray-900 dark:text-white group-hover:text-blue-500">Ideenquellen & Portale</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">Modelle & Plattformen für den Start.</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Contact / Restart -->
+                        <div class="bg-gray-100 dark:bg-slate-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 flex-shrink-0">
+                            <h4 class="font-bold text-gray-900 dark:text-white mb-2">Unsicher?</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Schick mir deine Auswahl und ich gebe dir meine Meinung dazu.</p>
+                            <div class="flex gap-3">
+                                <a href="/kontakt.html" class="flex-1 inline-flex items-center justify-center px-4 py-2.5 bg-white dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors">
+                                    <i data-lucide="message-circle" class="w-4 h-4 mr-2"></i> Kontakt
+                                </a>
+                                <button onclick="app.reset()" class="inline-flex items-center justify-center px-4 py-2.5 text-gray-500 hover:text-gray-800 dark:hover:text-white transition-colors">
+                                    <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- App Logic -->
+    <script>
+        lucide.createIcons();
+
+        const app = {
+            currentStep: 0,
+            answers: {},
+            questions: [
+                {
+                    id: 'usage',
+                    title: 'Was willst du hauptsächlich drucken?',
+                    options: [
+                        { id: 1, icon: 'gamepad-2', title: 'Spielereien & Deko', desc: 'Figuren, Keycaps, bunte Modelle.' },
+                        { id: 2, icon: 'wrench', title: 'Praktische Teile', desc: 'Halterungen, Ersatzteile, Werkstattkram.' },
+                        { id: 3, icon: 'flask-conical', title: 'Prototypen & Funktion', desc: 'Passgenaue Teile für Hobby oder Beruf.' },
+                        { id: 4, icon: 'help-circle', title: 'Ich weiß es noch nicht', desc: 'Ich will einfach mal anfangen.' }
+                    ]
+                },
+                {
+                    id: 'color',
+                    title: 'Mehrfarbig oder Materialwechsel?',
+                    subtitle: 'Sind dir bunte Drucke oder automatische Wechsel wichtig?',
+                    options: [
+                        { id: 1, icon: 'palette', title: 'Ja, definitiv', desc: 'Ich will öfter mehrfarbig/mehrmaterial drucken.' },
+                        { id: 2, icon: 'circle-dot', title: 'Nein, eine Farbe reicht', desc: 'Hauptsache die Teile funktionieren.' },
+                        { id: 3, icon: 'clock', title: 'Vielleicht später', desc: 'Aktuell kein Muss, aber gut zu haben.' }
+                    ]
+                },
+                {
+                    id: 'comfort',
+                    title: 'Komfort vs. Basteln',
+                    subtitle: 'Willst du einfach drucken oder gerne basteln?',
+                    options: [
+                        { id: 1, icon: 'coffee', title: 'Einfach laufen lassen', desc: 'So wenig Basteln wie möglich. Plug & Play.' },
+                        { id: 2, icon: 'cpu', title: 'Ich bastle gerne', desc: 'Firmware, Mods und Tuning machen mir Spaß.' },
+                        { id: 3, icon: 'sliders-horizontal', title: 'Etwas dazwischen', desc: 'Kontrolle ja, aber kein Vollbausatz.' }
+                    ]
+                },
+                {
+                    id: 'budget',
+                    title: 'Dein Budget für den Start?',
+                    subtitle: 'Nur für den Drucker (ohne Zubehör)',
+                    options: [
+                        { id: 1, icon: 'piggy-bank', title: 'Eher günstig', desc: 'Ich will möglichst klein starten.' },
+                        { id: 2, icon: 'wallet', title: 'Solider Mittelbereich', desc: 'Qualität ist wichtig, darf aber nicht ausufern.' },
+                        { id: 3, icon: 'gem', title: 'Lieber einmal vernünftig', desc: 'Komfort und Features sind mir den Preis wert.' }
+                    ]
+                }
+            ],
+
+            results: {
+                A1_MINI: {
+                    title: "Bambu Lab A1 mini",
+                    class: "Günstiger Einstieg",
+                    price: "ca. 200–250 € (ohne AMS lite)",
+                    link: "https://eu.store.bambulab.com/de/collections/a1-mini",
+                    content: `
+                        <p>Kompakter Einsteiger‑Drucker für einen kleinen Bauraum – ideal, wenn du einfach mal mit PLA starten willst und ein günstiges Gerät suchst.</p>
+                        <p class="mt-4"><strong>Besonderheit:</strong> Das AMS lite für Mehrfarbendruck kann später problemlos ergänzt werden, falls du doch Farbe willst.</p>
+                    `,
+                    alternatives: [
+                        { name: "Prusa MINI+", desc: "Der robuste Klassiker aus Europa (Open Source).", link: "https://www.prusa3d.com/de/kategorie/original-prusa-mini/" },
+                        { name: "Anycubic Kobra 3", desc: "Günstige Option mit Multi-Color Ansatz.", link: "https://de.anycubic.com/" }
+                    ]
+                },
+                A1: {
+                    title: "Bambu Lab A1",
+                    class: "Untere Mittelklasse",
+                    price: "ca. 350–500 €",
+                    link: "https://eu.store.bambulab.com/de/collections/a1-series",
+                    content: `
+                        <p>Größerer Bauraum und mehr Reserven als der A1 mini. Gut, wenn du regelmäßig funktionale Teile und größere Drucke planst.</p>
+                        <p class="mt-4">Ein solider Allrounder, der wenig Platz für Fehler lässt.</p>
+                    `,
+                    alternatives: [
+                        { name: "Creality Ender-3 V3", desc: "Moderner 'Bettschubser', schnell & solide.", link: "https://store.creality.com/de/" },
+                        { name: "Prusa MK4", desc: "Der Maßstab für Zuverlässigkeit & Open Source.", link: "https://www.prusa3d.com/de/kategorie/original-prusa-mk4/" }
+                    ]
+                },
+                P_SERIES: {
+                    title: "Bambu Lab P1S / P2S",
+                    class: "Mittelklasse (CoreXY)",
+                    price: "ca. 700–1.000 €+",
+                    link: "https://eu.store.bambulab.com/de/collections/p1-series",
+                    content: `
+                        <p>Geschlossene CoreXY‑Drucker für höhere Geschwindigkeiten und anspruchsvollere Materialien wie ASA oder ABS. Ideal für funktionale Teile, die zuverlässig laufen sollen.</p>
+                        <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 text-sm text-yellow-800 dark:text-yellow-200">
+                            <strong>Wichtig bei Multi-Color:</strong> Wenn du das AMS nutzt, entsteht durch Spülvorgänge ("Poop") mehr Plastikabfall. Überlege dir, wie du Reste sammeln oder recyceln kannst.
+                        </div>
+                    `,
+                    alternatives: [
+                        { name: "Creality K1C", desc: "Schneller CoreXY, guter Preis.", link: "https://store.creality.com/de/" },
+                        { name: "Qidi Q1 Pro", desc: "Beheizter Bauraum, stark für techn. Materialien.", link: "https://qidi3d.com/" }
+                    ]
+                },
+                X1_SERIES: {
+                    title: "Bambu Lab X1C",
+                    class: "Gehobene Mittelklasse / Semi-Pro",
+                    price: "Vierstellig",
+                    link: "https://eu.store.bambulab.com/de/collections/x1-series",
+                    content: `
+                        <p>High-End‑CoreXY mit vielen Komfortfunktionen (LIDAR, sehr ausgereifte Profile). Spannend, wenn du viel und regelmäßig druckst und Wert auf maximale Bequemlichkeit legst.</p>
+                        <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 text-sm text-yellow-800 dark:text-yellow-200">
+                            <strong>Hinweis zu Abfall:</strong> Auch hier gilt: Das AMS produziert bei Farbwechseln "Purge"-Abfall. Neue Systeme wie die H2-Serie versuchen, dies effizienter zu lösen.
+                        </div>
+                    `,
+                    alternatives: [
+                        { name: "Prusa XL", desc: "Toolchanger-System, riesig & modular (weniger Abfall!).", link: "https://www.prusa3d.com/de/kategorie/original-prusa-xl/" },
+                        { name: "Creality K1 Max", desc: "Viel Bauraum für weniger Geld.", link: "https://store.creality.com/de/" }
+                    ]
+                },
+                H2_SERIES: {
+                    title: "Bambu Lab H2-Serie",
+                    class: "Profi-Bereich",
+                    price: "ab ca. 1.400 €",
+                    link: "https://eu.store.bambulab.com/", 
+                    content: `
+                        <p>Große Drucker für viel Bauraum, hohe Temperaturen und professionelle Anwendungen. Spannend, wenn du sehr regelmäßig druckst, große Teile brauchst oder beruflich mit 3D‑Druck arbeitest.</p>
+                        <p class="mt-4 font-semibold text-green-600 dark:text-green-400">Nachhaltigerer Ansatz:</p>
+                        <p>Diese neueren Systeme (wie H2D) zielen oft darauf ab, Multi-Material effizienter und mit deutlich weniger Abfall zu realisieren als klassische AMS-Lösungen.</p>
+                    `,
+                    alternatives: [
+                        { name: "Prusa XL", desc: "Der Platzhirsch bei großen Multi-Tool Druckern.", link: "https://www.prusa3d.com/de/kategorie/original-prusa-xl/" },
+                        { name: "RatRig V-Core", desc: "High-End Bausatz für echte Profis.", link: "https://ratrig.com/" }
+                    ]
+                }
+            },
+
+            init() {
+                setTimeout(() => {
+                    this.showView('view-welcome');
+                }, 100);
+            },
+
+            start() {
+                this.currentStep = 0;
+                this.answers = {};
+                this.showView('view-question');
+                this.renderQuestion();
+            },
+
+            renderQuestion() {
+                const q = this.questions[this.currentStep];
+                
+                const stepEl = document.getElementById('step-text');
+                const titleEl = document.getElementById('q-title');
+                const subEl = document.getElementById('q-subtitle');
+                
+                titleEl.style.opacity = 0;
+                subEl.style.opacity = 0;
+
+                setTimeout(() => {
+                    document.getElementById('step-text').innerText = `Frage ${this.currentStep + 1} / ${this.questions.length}`;
+                    titleEl.innerText = q.title;
+                    subEl.innerText = q.subtitle || '';
+                    
+                    titleEl.style.opacity = 1;
+                    subEl.style.opacity = 1;
+                }, 200);
+
+                const progress = ((this.currentStep + 1) / this.questions.length) * 100;
+                document.getElementById('progress-bar').style.width = `${progress}%`;
+                document.getElementById('progress-text').innerText = `${Math.round(progress)}%`;
+
+                const container = document.getElementById('q-options');
+                container.innerHTML = '';
+
+                q.options.forEach((opt, index) => {
+                    const btn = document.createElement('div');
+                    btn.style.animationDelay = `${index * 100}ms`;
+                    btn.className = 'option-card group p-6 rounded-2xl border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-slate-800 flex items-start gap-5 animate-fade-in-up opacity-0 fill-mode-forwards';
+                    btn.onclick = () => this.selectOption(opt.id);
+                    
+                    btn.innerHTML = `
+                        <div class="flex-shrink-0 w-14 h-14 rounded-full bg-blue-50 dark:bg-slate-700 text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-colors flex items-center justify-center">
+                            <i data-lucide="${opt.icon}" class="w-7 h-7"></i>
+                        </div>
+                        <div class="flex-grow text-left">
+                            <h3 class="font-bold text-gray-900 dark:text-white text-xl mb-1">${opt.title}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 leading-snug">${opt.desc}</p>
+                        </div>
+                        <div class="self-center opacity-0 group-hover:opacity-100 transition-opacity text-blue-500">
+                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </div>
+                    `;
+                    container.appendChild(btn);
+                });
+                lucide.createIcons();
+            },
+
+            selectOption(optionId) {
+                const currentQId = this.questions[this.currentStep].id;
+                this.answers[currentQId] = optionId;
+
+                if (this.currentStep < this.questions.length - 1) {
+                    this.currentStep++;
+                    this.renderQuestion();
+                } else {
+                    this.showResult();
+                }
+            },
+
+            prevStep() {
+                if (this.currentStep > 0) {
+                    this.currentStep--;
+                    this.renderQuestion();
+                } else {
+                    this.showView('view-welcome');
+                    document.getElementById('progress-bar').style.width = '0%';
+                }
+            },
+
+            calculateResult() {
+                const { usage, color, comfort, budget } = this.answers;
+
+                // LOGIC 1: High Budget & (Profi Use OR High Comfort/Color) -> High End
+                if (budget === 3) {
+                    if (usage === 3) return 'H2_SERIES'; // Profi Use -> H2
+                    return 'X1_SERIES'; // High Budget -> X1C
+                }
+
+                // LOGIC 2: Multi-Color Preference -> P1S (Best Sweetspot)
+                if (color === 1) {
+                    return 'P_SERIES';
+                }
+
+                // LOGIC 3: Mid Budget
+                if (budget === 2) {
+                    // If comfort is key or usage is practical -> A1 is great
+                    return 'A1';
+                }
+
+                // LOGIC 4: Default / Low Budget -> A1 Mini
+                return 'A1_MINI';
+            },
+
+            showResult() {
+                const resultKey = this.calculateResult();
+                const resultData = this.results[resultKey];
+
+                document.getElementById('res-title').innerText = resultData.title;
+                document.getElementById('res-class').innerText = resultData.class;
+                document.getElementById('res-price').innerText = resultData.price;
+                document.getElementById('res-content').innerHTML = resultData.content;
+                document.getElementById('res-link').href = resultData.link;
+
+                const altsContainer = document.getElementById('res-alternatives');
+                altsContainer.innerHTML = '';
+                resultData.alternatives.forEach(alt => {
+                    const el = document.createElement('a');
+                    el.href = alt.link;
+                    el.target = "_blank";
+                    el.className = "flex items-center p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors group";
+                    el.innerHTML = `
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-bold text-base text-gray-900 dark:text-white">${alt.name}</span>
+                                <i data-lucide="external-link" class="w-4 h-4 text-gray-400 group-hover:text-blue-500"></i>
+                            </div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 leading-snug">${alt.desc}</p>
+                        </div>
+                    `;
+                    altsContainer.appendChild(el);
+                });
+
+                this.showView('view-result');
+                document.getElementById('progress-bar').style.width = '100%';
+                
+                setTimeout(() => lucide.createIcons(), 100);
+            },
+
+            reset() {
+                this.currentStep = 0;
+                this.answers = {};
+                this.showView('view-welcome');
+                document.getElementById('progress-bar').style.width = '0%';
+            },
+
+            showView(viewId) {
+                document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('.view-section').forEach(el => el.classList.remove('fade-enter-active'));
+                
+                const target = document.getElementById(viewId);
+                target.classList.remove('hidden');
+                
+                target.classList.add('fade-enter');
+                requestAnimationFrame(() => {
+                    target.classList.add('fade-enter-active');
+                    target.classList.remove('fade-enter');
+                });
+            }
+        };
+
+        app.init();
+        
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fade-in-up {
+                animation: fadeInUp 0.5s ease-out forwards;
+            }
+            .fill-mode-forwards {
+                animation-fill-mode: forwards;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
