@@ -3942,10 +3942,18 @@ html[data-theme="dark"] .dark\:text-slate-400 { color: #94a3b8; }
 @media (max-width: 1024px) {
     /* Apply forcing styles only when the menu is open to prevent it from being permanently visible */
     #primary-navigation.is-open, .nav-menu.is-open {
-        height: calc(100vh - 80px) !important; /* Volle Höhe minus Header */
-        overflow-y: scroll !important;         /* Scrollen erzwingen */
-        padding-bottom: 100px !important;      /* Platz für den Finger unten */
-        display: block !important;             /* Sicherstellen, dass es kein Flex-Problem ist */
+        position: fixed !important;
+        top: 80px !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain !important;
+        background-color: var(--surface) !important;
+        height: auto !important; /* Reset height constraint if any */
+        padding-bottom: 100px !important;
+        display: block !important;
+        z-index: 9999 !important; /* Ensure it's on top */
     }
 }
 
@@ -3954,7 +3962,9 @@ html[data-theme="dark"] .dark\:text-slate-400 { color: #94a3b8; }
 .nav-3d .nav-more-btn:hover,
 .nav-tools .nav-more-btn:hover,
 .nav-3d .nav-more-btn:focus-visible,
-.nav-tools .nav-more-btn:focus-visible {
+.nav-tools .nav-more-btn:focus-visible,
+.nav-3d:hover .nav-more-btn,
+.nav-tools:hover .nav-more-btn {
     border-color: var(--accent);
     box-shadow: 0 0 0 2px rgba(209, 42, 42, 0.25);
     background: var(--btn-bg-hover);
