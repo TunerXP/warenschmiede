@@ -3940,30 +3940,39 @@ html[data-theme="dark"] .dark\:text-slate-400 { color: #94a3b8; }
 
 /* Mobile Navigation Fix: Force Scrolling */
 @media (max-width: 1024px) {
-    /* Apply forcing styles only when the menu is open to prevent it from being permanently visible */
     #primary-navigation.is-open, .nav-menu.is-open {
-        position: fixed !important;
-        top: 80px !important;
-        bottom: 0 !important;
+        position: fixed !important;      /* Fixiert das Menü am Bildschirm */
+        top: 80px !important;            /* Startet unter dem Header */
+        bottom: 0 !important;            /* Geht bis zum unteren Rand */
         left: 0 !important;
         right: 0 !important;
-        overflow-y: auto !important;
-        overscroll-behavior: contain !important;
-        background-color: var(--surface) !important;
-        height: auto !important; /* Reset height constraint if any */
-        padding-bottom: 100px !important;
+        width: 100% !important;
+        height: auto !important;         /* Nimmt den verfügbaren Platz */
+        overflow-y: auto !important;     /* Erzwingt eigenen Scrollbalken */
+        overscroll-behavior: contain !important;    /* WICHTIG: Verhindert Scrollen des Hintergrunds */
+        z-index: 9999;
         display: block !important;
-        z-index: 9999 !important; /* Ensure it's on top */
+        /* Keep original styling props */
+        background-color: var(--surface) !important;
+        padding-bottom: 100px !important;
     }
 }
 
-/* Fix for Online Tools & 3D-Druck Hover Effect (Red Stripes/Leuchten) */
-/* Mimic the .active style on hover for both elements to ensure consistency */
+/* Fix for Online Tools & 3D-Druck Hover Effect */
+/* Copy rules 1:1 for both classes as requested */
+
+/* 1. 3D-Druck (.nav-3d) */
 .nav-3d .nav-more-btn:hover,
-.nav-tools .nav-more-btn:hover,
 .nav-3d .nav-more-btn:focus-visible,
+.nav-3d:hover .nav-more-btn {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(209, 42, 42, 0.25);
+    background: var(--btn-bg-hover);
+}
+
+/* 2. Online Tools (.nav-tools) - Design Kopie */
+.nav-tools .nav-more-btn:hover,
 .nav-tools .nav-more-btn:focus-visible,
-.nav-3d:hover .nav-more-btn,
 .nav-tools:hover .nav-more-btn {
     border-color: var(--accent);
     box-shadow: 0 0 0 2px rgba(209, 42, 42, 0.25);
