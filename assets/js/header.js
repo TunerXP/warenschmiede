@@ -1,6 +1,6 @@
 (() => {
   const initialize = () => {
-    const header = document.querySelector('[data-header]');
+    const header = document.querySelector('.site-header');
     const toggle = document.querySelector('[data-nav-toggle]');
     const menu = document.querySelector('[data-nav-menu]');
     const body = document.body;
@@ -59,9 +59,35 @@
     link.classList.toggle('active', isActive);
   };
 
-  if (!header || !menu) {
-    return;
-  }
+    if (!header) {
+      return;
+    }
+
+    const updateHeaderOffset = () => {
+      const height = Math.ceil(header.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--header-offset', `${height}px`);
+    };
+
+    const scheduleHeaderOffsetUpdate = () => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(updateHeaderOffset);
+      });
+    };
+
+    updateHeaderOffset();
+    scheduleHeaderOffsetUpdate();
+    window.addEventListener('load', updateHeaderOffset);
+    window.addEventListener('resize', updateHeaderOffset);
+    window.addEventListener('orientationchange', updateHeaderOffset);
+
+    if ('ResizeObserver' in window) {
+      const headerObserver = new ResizeObserver(() => updateHeaderOffset());
+      headerObserver.observe(header);
+    }
+
+    if (!menu) {
+      return;
+    }
 
   let scrollPosition = 0;
 

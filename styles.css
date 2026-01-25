@@ -41,6 +41,7 @@
   --badge-tg-fg: #92400e;
   --badge-gc-bg: #fee2e2;
   --badge-gc-fg: #7f1d1d;
+  --header-offset: 88px;
   --ws-section-space: 16px;
   --ws-section-space-small: 16px;
   --tooltip-trigger-bg: #f1f5f9;
@@ -730,7 +731,7 @@ body.menu-open {
 }
 
 [data-section-target] {
-  scroll-margin-top: 96px;
+  scroll-margin-top: calc(var(--header-offset) + 16px);
 }
 
 /* Buttons */
@@ -842,6 +843,16 @@ body.menu-open {
 /* Sections */
 .site-main {
   display: block;
+  padding-top: var(--header-offset);
+}
+
+.hero-slider-section {
+  margin-top: 0;
+  margin-bottom: 2rem;
+}
+
+:where(section, [id]) {
+  scroll-margin-top: calc(var(--header-offset) + 16px);
 }
 
 .section {
