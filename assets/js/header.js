@@ -3,6 +3,7 @@
     const header = document.querySelector('[data-header]');
     const toggle = document.querySelector('[data-nav-toggle]');
     const menu = document.querySelector('[data-nav-menu]');
+    const body = document.body;
     const navLinks = menu ? Array.from(menu.querySelectorAll('[data-nav-link]')) : [];
     const dropdowns = Array.from(document.querySelectorAll('[data-nav-dropdown]'))
       .map((root) => {
@@ -62,15 +63,40 @@
     return;
   }
 
+  let scrollPosition = 0;
+
+  const lockBodyScroll = () => {
+    if (!body || body.classList.contains('menu-open')) {
+      return;
+    }
+    scrollPosition = window.scrollY || window.pageYOffset;
+    body.style.top = `-${scrollPosition}px`;
+    body.classList.add('menu-open');
+  };
+
+  const unlockBodyScroll = () => {
+    if (!body || !body.classList.contains('menu-open')) {
+      return;
+    }
+    body.classList.remove('menu-open');
+    const top = body.style.top;
+    body.style.top = '';
+    const restorePosition = top ? Math.abs(parseInt(top, 10)) : scrollPosition;
+    window.scrollTo(0, restorePosition || 0);
+    scrollPosition = 0;
+  };
+
   const closeMenu = () => {
     menu.classList.remove('is-open');
     toggle?.setAttribute('aria-expanded', 'false');
     closeAllDropdowns();
+    unlockBodyScroll();
   };
 
   const openMenu = () => {
     menu.classList.add('is-open');
     toggle?.setAttribute('aria-expanded', 'true');
+    lockBodyScroll();
   };
 
   const toggleMenu = () => {
