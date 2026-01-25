@@ -43,7 +43,7 @@ def verify_fixes():
         page_desktop.goto(f"file://{cwd}/index.html")
 
         # Hover over "Online Tools"
-        tools_btn = page_desktop.locator(".nav-tools .nav-more-btn")
+        tools_btn = page_desktop.locator("button.nav-more-btn", has_text="Online Tools")
         tools_btn.hover()
         page_desktop.screenshot(path="verification/online_tools_hover.png")
 
