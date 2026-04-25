@@ -1,0 +1,1158 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Zeiterfassung Plus v1 | Warenschmiede</title>
+  <meta name="description" content="Lokale Zeiterfassung für Handy und PC mit Monatsübersicht, Backup, CSV und sauberem PDF-/Druckexport." />
+  <style>
+    :root {
+      --bg: #eef3f8;
+      --card: #ffffff;
+      --card-soft: #f8fafc;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #dbe4ee;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --green: #16a34a;
+      --amber: #f59e0b;
+      --red: #dc2626;
+      --dark: #0f172a;
+      --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+      --radius: 18px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: calc(88px + var(--safe-bottom));
+    }
+
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(15, 23, 42, 0.96);
+      color: white;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.18);
+    }
+
+    .header-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      min-width: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1.12rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .brand small {
+      display: block;
+      margin-top: 2px;
+      color: rgba(255,255,255,0.68);
+      font-size: 0.75rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .back-link {
+      color: rgba(255,255,255,0.82);
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+
+    .back-link:hover { background: rgba(255,255,255,0.08); }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #ffffff, #eef6ff);
+      border-color: #cfe2ff;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero:after {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      right: -70px;
+      top: -90px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.10);
+      pointer-events: none;
+    }
+
+    .month-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .month-title {
+      min-width: 0;
+    }
+
+    .month-title h2 {
+      margin: 0;
+      font-size: 1.35rem;
+      letter-spacing: -0.03em;
+    }
+
+    .month-title p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .month-picker {
+      min-width: 160px;
+      width: auto;
+      background: white;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.82);
+      border: 1px solid #dbeafe;
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .stat label {
+      display: block;
+      color: var(--primary-dark);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .stat strong {
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .quick-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      transition: transform 0.08s ease, background 0.18s ease, box-shadow 0.18s ease;
+      text-decoration: none;
+    }
+
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--primary); color: white; box-shadow: 0 8px 18px rgba(37,99,235,0.22); }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-green { background: var(--green); color: white; }
+    .btn-dark { background: var(--dark); color: white; }
+    .btn-light { background: #fff; border: 1px solid var(--line); color: var(--text); }
+    .btn-red { background: var(--red); color: white; }
+    .btn-amber { background: var(--amber); color: white; }
+    .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+    .btn-small { padding: 8px 10px; min-height: 36px; border-radius: 10px; font-size: 0.86rem; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    .field label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 0.83rem;
+    }
+
+    .field input, .field textarea, .field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      background: #f8fafc;
+      color: var(--text);
+      outline: none;
+      min-height: 44px;
+    }
+
+    .field textarea { min-height: 74px; resize: vertical; }
+    .field input:focus, .field textarea:focus, .field select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+      background: #fff;
+    }
+
+    .form-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .section-title h2, .section-title h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+    }
+
+    .muted { color: var(--muted); }
+    .tiny { font-size: 0.82rem; }
+
+    .entry-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .entry {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 13px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+    }
+
+    .entry-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .entry-date {
+      font-weight: 900;
+      font-size: 1rem;
+    }
+
+    .entry-time {
+      color: var(--muted);
+      margin-top: 3px;
+      font-size: 0.92rem;
+    }
+
+    .entry-duration {
+      color: var(--primary);
+      font-weight: 950;
+      font-size: 1.15rem;
+      white-space: nowrap;
+    }
+
+    .entry-note {
+      margin-top: 8px;
+      display: inline-block;
+      background: #fff7ed;
+      color: #9a3412;
+      border: 1px solid #fed7aa;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 0.82rem;
+    }
+
+    .entry-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 34px 14px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.7);
+    }
+
+    .desktop-table-wrap {
+      overflow-x: auto;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      display: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      min-width: 720px;
+    }
+
+    th, td {
+      padding: 11px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td.num, th.num { text-align: right; }
+    .sum-row td { font-weight: 900; background: #f1f5f9; }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .notice {
+      padding: 12px;
+      border-radius: 14px;
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      color: #3730a3;
+      font-size: 0.9rem;
+      margin-top: 12px;
+    }
+
+    .footer-links {
+      text-align: center;
+      margin: 28px 0 8px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .footer-links a { color: var(--muted); text-decoration: none; margin: 0 6px; }
+    .footer-links a:hover { text-decoration: underline; }
+
+    .bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 40;
+      background: rgba(255,255,255,0.94);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+      padding: 10px 14px calc(10px + var(--safe-bottom));
+    }
+
+    .bottom-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 10px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      background: rgba(15, 23, 42, 0.58);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 14px;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal {
+      width: min(560px, 100%);
+      background: white;
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.30);
+      max-height: 92vh;
+      overflow: auto;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .modal-head h2 { margin: 0; font-size: 1.18rem; }
+    .hidden { display: none !important; }
+    .print-only { display: none; }
+
+    .print-page { display: none; }
+
+    @media (min-width: 760px) {
+      body { padding-bottom: 20px; }
+      .bottom-bar { display: none; }
+      .wrap { padding: 20px; }
+      .stats { grid-template-columns: repeat(4, 1fr); }
+      .desktop-table-wrap { display: block; }
+      .entry-list { display: none; }
+      .modal-backdrop { align-items: center; }
+      .quick-row { grid-template-columns: repeat(4, 1fr); }
+      .tools-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    @media (max-width: 520px) {
+      .back-link { padding: 7px 8px; font-size: 0.76rem; }
+      .brand small { max-width: 190px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .quick-row, .form-grid, .form-actions, .tools-grid { grid-template-columns: 1fr; }
+      .month-picker { width: 100%; }
+      .month-row { align-items: stretch; }
+      .stat strong { font-size: 1.12rem; }
+    }
+
+    @media print {
+      @page { size: A4 portrait; margin: 12mm; }
+      html, body { background: #fff !important; color: #000; padding: 0; }
+      .no-print, .app-header, .wrap, .bottom-bar, .modal-backdrop { display: none !important; }
+      .print-only, .print-page { display: block !important; }
+      .print-page {
+        font-family: Arial, sans-serif;
+        font-size: 10.5pt;
+        color: #000;
+      }
+      .print-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+      }
+      .print-header h1 { margin: 0; font-size: 18pt; }
+      .print-header p { margin: 4px 0 0; }
+      .print-meta {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin: 12px 0;
+      }
+      .print-meta div {
+        border: 1px solid #000;
+        padding: 6px;
+        min-height: 34px;
+      }
+      .print-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 9.5pt;
+      }
+      .print-table th, .print-table td {
+        border: 1px solid #000;
+        padding: 5px;
+      }
+      .print-table th { background: #eee !important; }
+      .print-table .num { text-align: right; }
+      .print-sum td { font-weight: bold; background: #eee !important; }
+      .signature-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+        margin-top: 42px;
+        break-inside: avoid;
+      }
+      .signature-line {
+        border-top: 1px solid #000;
+        padding-top: 6px;
+        min-height: 34px;
+      }
+      .print-note {
+        margin-top: 18px;
+        font-size: 8.5pt;
+        color: #444;
+        text-align: center;
+      }
+      tr { break-inside: avoid; }
+      thead { display: table-header-group; }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header no-print">
+    <div class="header-inner">
+      <div class="brand">
+        <h1>⏱️ Zeiterfassung Plus <span style="font-size:.78rem;opacity:.7;font-weight:700;">v1</span></h1>
+        <small>lokal · ohne Konto · PDF/CSV/Backup</small>
+      </div>
+      <div class="top-actions">
+        <a class="back-link" href="../index.html">← Warenschmiede</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap no-print">
+    <section class="card hero">
+      <div class="month-row">
+        <div class="month-title">
+          <h2 id="monthTitle">Monat</h2>
+          <p id="statusLine">Daten werden nur auf diesem Gerät gespeichert.</p>
+        </div>
+        <div class="field" style="margin:0;">
+          <input id="monthPicker" class="month-picker" type="month" onchange="render()" />
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><label>Gesamt</label><strong id="statTotal">00:00 h</strong></div>
+        <div class="stat"><label>Tage</label><strong id="statDays">0</strong></div>
+        <div class="stat"><label>Ø / Tag</label><strong id="statAverage">00:00 h</strong></div>
+        <div class="stat"><label>Einträge</label><strong id="statEntries">0</strong></div>
+      </div>
+      <div class="quick-row">
+        <button class="btn btn-primary" onclick="openEntryModal()">＋ Arbeitstag eintragen</button>
+        <button class="btn btn-light" onclick="quickToday()">Heute Standardzeit</button>
+        <button class="btn btn-light" onclick="goToToday()">Heute anzeigen</button>
+        <button class="btn btn-dark" onclick="prepareAndPrint()">PDF / Drucken</button>
+      </div>
+    </section>
+
+    <section class="card" id="settingsCard">
+      <div class="section-title">
+        <h2>Person & Standardwerte</h2>
+        <button class="btn btn-small btn-ghost" onclick="toggleSettings()" id="settingsToggle">Einklappen</button>
+      </div>
+      <div id="settingsBody">
+        <div class="form-grid">
+          <div class="field"><label>Name</label><input id="setName" placeholder="z. B. Max Mustermann" /></div>
+          <div class="field"><label>Firma / Bereich</label><input id="setCompany" placeholder="optional" /></div>
+          <div class="field"><label>Standard Start</label><input id="setStart" type="time" value="07:00" /></div>
+          <div class="field"><label>Standard Ende</label><input id="setEnd" type="time" value="16:00" /></div>
+          <div class="field"><label>Standard Pause Minuten</label><input id="setPause" type="number" min="0" step="5" value="30" /></div>
+          <div class="field"><label>Notiz Standard</label><input id="setNote" placeholder="optional" /></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-green" onclick="saveSettings()">Standardwerte speichern</button>
+          <button class="btn btn-light" onclick="resetSettings()">Zurücksetzen</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">
+        <h2>Einträge</h2>
+        <span class="muted tiny" id="entryHint">aktueller Monat</span>
+      </div>
+      <div class="entry-list" id="entryList"></div>
+      <div class="desktop-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Start</th>
+              <th>Ende</th>
+              <th>Pause</th>
+              <th class="num">Dauer</th>
+              <th>Notiz</th>
+              <th class="num">Aktion</th>
+            </tr>
+          </thead>
+          <tbody id="entryTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title"><h2>Daten & Export</h2></div>
+      <div class="tools-grid">
+        <button class="btn btn-light" onclick="exportCSV()">CSV exportieren</button>
+        <button class="btn btn-dark" onclick="prepareAndPrint()">PDF / Drucken</button>
+        <button class="btn btn-light" onclick="downloadBackup()">Backup sichern</button>
+        <button class="btn btn-light" onclick="document.getElementById('backupFile').click()">Backup laden</button>
+        <input id="backupFile" type="file" accept=".json,application/json" style="display:none" onchange="restoreBackup(this)" />
+      </div>
+      <div class="notice">
+        <strong>Wichtig:</strong> Die Daten liegen nur lokal in diesem Browser. Bei Handywechsel, Browserlöschung oder neuem Gerät vorher ein Backup sichern.
+      </div>
+    </section>
+
+    <div class="footer-links">
+      <a href="../index.html">Zurück zur Warenschmiede</a> ·
+      <a href="../impressum.html">Impressum</a> ·
+      <a href="../datenschutz.html">Datenschutz</a>
+    </div>
+  </main>
+
+  <div class="bottom-bar no-print">
+    <div class="bottom-inner">
+      <button class="btn btn-primary" onclick="openEntryModal()">＋ Eintragen</button>
+      <button class="btn btn-dark" onclick="prepareAndPrint()">PDF</button>
+    </div>
+  </div>
+
+  <div id="entryModal" class="modal-backdrop hidden no-print" onclick="if(event.target === this) closeEntryModal()">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="modalTitle">Arbeitstag eintragen</h2>
+        <button class="btn btn-small btn-ghost" onclick="closeEntryModal()">Schließen</button>
+      </div>
+      <input id="entryId" type="hidden" />
+      <div class="form-grid">
+        <div class="field full"><label>Datum</label><input id="entryDate" type="date" /></div>
+        <div class="field"><label>Start</label><input id="entryStart" type="time" /></div>
+        <div class="field"><label>Ende</label><input id="entryEnd" type="time" /></div>
+        <div class="field"><label>Pause Minuten</label><input id="entryPause" type="number" min="0" step="5" /></div>
+        <div class="field"><label>Dauer</label><input id="entryDurationPreview" readonly /></div>
+        <div class="field full"><label>Notiz</label><input id="entryNote" placeholder="z. B. Inventur, Samstag, Projekt..." /></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-green" onclick="saveEntry()" id="saveEntryBtn">Speichern</button>
+        <button class="btn btn-light" onclick="closeEntryModal()">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="print-page" id="printPage">
+    <div class="print-header">
+      <div>
+        <h1>Stundennachweis</h1>
+        <p id="printMonth">Monat</p>
+      </div>
+      <div style="text-align:right;">
+        <strong>Zeiterfassung Plus v1</strong><br />
+        <span>Erstellt: <span id="printCreated"></span></span>
+      </div>
+    </div>
+    <div class="print-meta">
+      <div><strong>Name</strong><br /><span id="printName">-</span></div>
+      <div><strong>Firma / Bereich</strong><br /><span id="printCompany">-</span></div>
+      <div><strong>Gesamtzeit</strong><br /><span id="printTotal">00:00 h</span></div>
+    </div>
+    <table class="print-table">
+      <thead>
+        <tr>
+          <th>Datum</th>
+          <th>Start</th>
+          <th>Ende</th>
+          <th>Pause</th>
+          <th class="num">Dauer</th>
+          <th>Notiz</th>
+        </tr>
+      </thead>
+      <tbody id="printRows"></tbody>
+    </table>
+    <div class="signature-row">
+      <div class="signature-line">Datum, Unterschrift Arbeitnehmer/in</div>
+      <div class="signature-line">Datum, Unterschrift Arbeitgeber/in</div>
+    </div>
+    <p class="print-note">Dieses Dokument wurde lokal im Browser erstellt. Die Daten werden nicht an einen Server übertragen.</p>
+  </section>
+
+  <script>
+    const ENTRY_KEY = 'ws_time_entries_plus_v1';
+    const SETTINGS_KEY = 'ws_time_settings_plus_v1';
+    const OLD_KEY = 'workTimeEntries_v2';
+
+    let entries = [];
+    let settings = {
+      name: '',
+      company: '',
+      start: '07:00',
+      end: '16:00',
+      pause: 30,
+      note: ''
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    window.addEventListener('load', () => {
+      loadData();
+      initMonth();
+      bindLiveDuration();
+      render();
+    });
+
+    function todayISO() {
+      const d = new Date();
+      d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+      return d.toISOString().slice(0, 10);
+    }
+
+    function currentMonthISO() {
+      return todayISO().slice(0, 7);
+    }
+
+    function loadData() {
+      try {
+        const storedSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null');
+        if (storedSettings) settings = { ...settings, ...storedSettings };
+      } catch (_) {}
+
+      const plusRaw = localStorage.getItem(ENTRY_KEY);
+      if (plusRaw) {
+        try { entries = JSON.parse(plusRaw) || []; } catch (_) { entries = []; }
+      } else {
+        try {
+          const old = JSON.parse(localStorage.getItem(OLD_KEY) || '[]');
+          if (Array.isArray(old) && old.length) {
+            entries = old.map(e => ({
+              id: Number(e.id) || Date.now() + Math.floor(Math.random()*10000),
+              date: e.date,
+              start: e.start,
+              end: e.end,
+              pause: Number(e.pause) || 0,
+              note: e.note || '',
+              duration: Number.isFinite(Number(e.duration)) ? Number(e.duration) : calcDuration(e.start, e.end, Number(e.pause)||0)
+            })).filter(e => e.date && e.start && e.end);
+            saveEntries();
+          }
+        } catch (_) { entries = []; }
+      }
+
+      $('setName').value = settings.name;
+      $('setCompany').value = settings.company;
+      $('setStart').value = settings.start;
+      $('setEnd').value = settings.end;
+      $('setPause').value = settings.pause;
+      $('setNote').value = settings.note;
+    }
+
+    function saveEntries() {
+      localStorage.setItem(ENTRY_KEY, JSON.stringify(entries));
+    }
+
+    function saveSettings() {
+      settings = {
+        name: $('setName').value.trim(),
+        company: $('setCompany').value.trim(),
+        start: $('setStart').value || '07:00',
+        end: $('setEnd').value || '16:00',
+        pause: Number($('setPause').value) || 0,
+        note: $('setNote').value.trim()
+      };
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      toast('Standardwerte gespeichert.');
+      render();
+    }
+
+    function resetSettings() {
+      if (!confirm('Standardwerte zurücksetzen?')) return;
+      settings = { name: '', company: '', start: '07:00', end: '16:00', pause: 30, note: '' };
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      loadData();
+      render();
+    }
+
+    function initMonth() {
+      $('monthPicker').value = currentMonthISO();
+    }
+
+    function goToToday() {
+      $('monthPicker').value = currentMonthISO();
+      render();
+    }
+
+    function selectedMonthEntries() {
+      const m = $('monthPicker').value || currentMonthISO();
+      return entries
+        .filter(e => e.date && e.date.startsWith(m))
+        .sort((a, b) => String(a.date).localeCompare(String(b.date)) || String(a.start).localeCompare(String(b.start)));
+    }
+
+    function render() {
+      const month = $('monthPicker').value || currentMonthISO();
+      const filtered = selectedMonthEntries();
+      const total = filtered.reduce((sum, e) => sum + (Number(e.duration) || 0), 0);
+      const days = new Set(filtered.map(e => e.date)).size;
+      const avg = days ? Math.round(total / days) : 0;
+      const monthDate = new Date(month + '-01T12:00:00');
+      const monthLabel = monthDate.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+
+      $('monthTitle').textContent = monthLabel;
+      $('statusLine').textContent = `${filtered.length} Einträge im ausgewählten Monat · Daten lokal gespeichert`;
+      $('entryHint').textContent = monthLabel;
+      $('statTotal').textContent = formatMinutes(total) + ' h';
+      $('statDays').textContent = days;
+      $('statAverage').textContent = formatMinutes(avg) + ' h';
+      $('statEntries').textContent = filtered.length;
+
+      renderMobile(filtered);
+      renderTable(filtered, total);
+    }
+
+    function renderMobile(filtered) {
+      const list = $('entryList');
+      list.innerHTML = '';
+      if (!filtered.length) {
+        list.innerHTML = '<div class="empty">Noch keine Einträge für diesen Monat.<br><br><button class="btn btn-primary" onclick="openEntryModal()">＋ Ersten Arbeitstag eintragen</button></div>';
+        return;
+      }
+      filtered.forEach(e => {
+        const div = document.createElement('div');
+        div.className = 'entry';
+        div.innerHTML = `
+          <div class="entry-head">
+            <div>
+              <div class="entry-date">${escapeHTML(formatDate(e.date))}</div>
+              <div class="entry-time">${escapeHTML(e.start)} – ${escapeHTML(e.end)} · Pause ${Number(e.pause)||0} min</div>
+            </div>
+            <div class="entry-duration">${formatMinutes(e.duration)} h</div>
+          </div>
+          ${e.note ? `<div class="entry-note">${escapeHTML(e.note)}</div>` : ''}
+          <div class="entry-actions">
+            <button class="btn btn-small btn-light" onclick="editEntry(${e.id})">Bearbeiten</button>
+            <button class="btn btn-small btn-ghost" onclick="deleteEntry(${e.id})">Löschen</button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function renderTable(filtered, total) {
+      const body = $('entryTable');
+      body.innerHTML = '';
+      if (!filtered.length) {
+        body.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#64748b;padding:28px;">Keine Einträge für diesen Monat.</td></tr>';
+        return;
+      }
+      filtered.forEach(e => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${escapeHTML(formatDate(e.date))}</strong></td>
+          <td>${escapeHTML(e.start)}</td>
+          <td>${escapeHTML(e.end)}</td>
+          <td>${Number(e.pause)||0} min</td>
+          <td class="num"><strong>${formatMinutes(e.duration)} h</strong></td>
+          <td>${escapeHTML(e.note || '-')}</td>
+          <td class="num"><button class="btn btn-small btn-light" onclick="editEntry(${e.id})">Edit</button> <button class="btn btn-small btn-ghost" onclick="deleteEntry(${e.id})">X</button></td>
+        `;
+        body.appendChild(tr);
+      });
+      const sum = document.createElement('tr');
+      sum.className = 'sum-row';
+      sum.innerHTML = `<td colspan="4" class="num">Gesamt</td><td class="num">${formatMinutes(total)} h</td><td colspan="2"></td>`;
+      body.appendChild(sum);
+    }
+
+    function bindLiveDuration() {
+      ['entryStart', 'entryEnd', 'entryPause'].forEach(id => $(id).addEventListener('input', updateDurationPreview));
+    }
+
+    function openEntryModal(preset = {}) {
+      $('entryId').value = preset.id || '';
+      $('modalTitle').textContent = preset.id ? 'Arbeitstag bearbeiten' : 'Arbeitstag eintragen';
+      $('entryDate').value = preset.date || todayISO();
+      $('entryStart').value = preset.start || settings.start || '07:00';
+      $('entryEnd').value = preset.end || settings.end || '16:00';
+      $('entryPause').value = preset.pause ?? settings.pause ?? 30;
+      $('entryNote').value = preset.note ?? settings.note ?? '';
+      updateDurationPreview();
+      $('entryModal').classList.remove('hidden');
+      setTimeout(() => $('entryDate').focus(), 60);
+    }
+
+    function closeEntryModal() {
+      $('entryModal').classList.add('hidden');
+    }
+
+    function quickToday() {
+      const date = todayISO();
+      const existing = entries.find(e => e.date === date && e.start === settings.start && e.end === settings.end);
+      if (existing && !confirm('Für heute gibt es bereits einen ähnlichen Eintrag. Trotzdem hinzufügen?')) return;
+      entries.push({
+        id: Date.now(),
+        date,
+        start: settings.start || '07:00',
+        end: settings.end || '16:00',
+        pause: Number(settings.pause) || 0,
+        note: settings.note || '',
+        duration: calcDuration(settings.start || '07:00', settings.end || '16:00', Number(settings.pause)||0)
+      });
+      saveEntries();
+      $('monthPicker').value = date.slice(0, 7);
+      render();
+      toast('Heute wurde eingetragen.');
+    }
+
+    function editEntry(id) {
+      const e = entries.find(x => Number(x.id) === Number(id));
+      if (!e) return;
+      openEntryModal(e);
+    }
+
+    function saveEntry() {
+      const id = $('entryId').value;
+      const date = $('entryDate').value;
+      const start = $('entryStart').value;
+      const end = $('entryEnd').value;
+      const pause = Number($('entryPause').value) || 0;
+      const note = $('entryNote').value.trim();
+      if (!date || !start || !end) { alert('Bitte Datum, Start und Ende ausfüllen.'); return; }
+      const duration = calcDuration(start, end, pause);
+      if (duration <= 0) { alert('Die berechnete Arbeitszeit ist 0 oder negativ. Bitte Zeiten und Pause prüfen.'); return; }
+      if (id) {
+        const idx = entries.findIndex(e => Number(e.id) === Number(id));
+        if (idx >= 0) entries[idx] = { id: Number(id), date, start, end, pause, note, duration };
+      } else {
+        entries.push({ id: Date.now(), date, start, end, pause, note, duration });
+      }
+      saveEntries();
+      $('monthPicker').value = date.slice(0, 7);
+      closeEntryModal();
+      render();
+    }
+
+    function deleteEntry(id) {
+      const e = entries.find(x => Number(x.id) === Number(id));
+      if (!e) return;
+      if (!confirm(`Eintrag vom ${formatDate(e.date)} löschen?`)) return;
+      entries = entries.filter(x => Number(x.id) !== Number(id));
+      saveEntries();
+      render();
+    }
+
+    function updateDurationPreview() {
+      const start = $('entryStart').value;
+      const end = $('entryEnd').value;
+      const pause = Number($('entryPause').value) || 0;
+      const duration = start && end ? calcDuration(start, end, pause) : 0;
+      $('entryDurationPreview').value = formatMinutes(Math.max(0, duration)) + ' h';
+    }
+
+    function calcDuration(start, end, pause) {
+      const [sh, sm] = String(start).split(':').map(Number);
+      const [eh, em] = String(end).split(':').map(Number);
+      if (![sh, sm, eh, em].every(Number.isFinite)) return 0;
+      return (eh * 60 + em) - (sh * 60 + sm) - (Number(pause) || 0);
+    }
+
+    function formatMinutes(min) {
+      min = Math.max(0, Math.round(Number(min) || 0));
+      const h = Math.floor(min / 60);
+      const m = min % 60;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+
+    function formatDate(iso) {
+      const d = new Date(iso + 'T12:00:00');
+      return d.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    function preparePrint() {
+      const filtered = selectedMonthEntries();
+      const total = filtered.reduce((sum, e) => sum + (Number(e.duration) || 0), 0);
+      const month = $('monthPicker').value || currentMonthISO();
+      const monthDate = new Date(month + '-01T12:00:00');
+      const monthLabel = monthDate.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+      $('printMonth').textContent = monthLabel;
+      $('printCreated').textContent = new Date().toLocaleDateString('de-DE');
+      $('printName').textContent = settings.name || '-';
+      $('printCompany').textContent = settings.company || '-';
+      $('printTotal').textContent = formatMinutes(total) + ' h';
+      const rows = $('printRows');
+      rows.innerHTML = '';
+      filtered.forEach(e => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escapeHTML(formatDate(e.date))}</td>
+          <td>${escapeHTML(e.start)}</td>
+          <td>${escapeHTML(e.end)}</td>
+          <td>${Number(e.pause)||0} min</td>
+          <td class="num">${formatMinutes(e.duration)} h</td>
+          <td>${escapeHTML(e.note || '')}</td>
+        `;
+        rows.appendChild(tr);
+      });
+      const sum = document.createElement('tr');
+      sum.className = 'print-sum';
+      sum.innerHTML = `<td colspan="4" class="num">Gesamt</td><td class="num">${formatMinutes(total)} h</td><td></td>`;
+      rows.appendChild(sum);
+    }
+
+    function prepareAndPrint() {
+      preparePrint();
+      window.print();
+    }
+
+    function exportCSV() {
+      const filtered = selectedMonthEntries();
+      const month = $('monthPicker').value || currentMonthISO();
+      let csv = 'Datum;Start;Ende;Pause (Minuten);Dauer;Notiz\n';
+      filtered.forEach(e => {
+        csv += `${formatDate(e.date)};${e.start};${e.end};${Number(e.pause)||0};${formatMinutes(e.duration)};${String(e.note||'').replaceAll(';', ',')}\n`;
+      });
+      downloadText(`Zeiterfassung_${month}.csv`, csv, 'text/csv;charset=utf-8');
+    }
+
+    function downloadBackup() {
+      const payload = {
+        app: 'Zeiterfassung Plus',
+        version: 1,
+        created: new Date().toISOString(),
+        settings,
+        entries
+      };
+      const stamp = new Date().toISOString().slice(0, 19).replace('T', '_').replaceAll(':', '-');
+      downloadText(`zeiterfassung_plus_backup_${stamp}.json`, JSON.stringify(payload, null, 2), 'application/json;charset=utf-8');
+    }
+
+    function restoreBackup(input) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          const importedEntries = Array.isArray(data) ? data : data.entries;
+          const importedSettings = Array.isArray(data) ? null : data.settings;
+          if (!Array.isArray(importedEntries)) throw new Error('Keine Eintragsliste gefunden.');
+          if (!confirm(`${importedEntries.length} Einträge aus Backup laden? Aktuelle Einträge werden ersetzt.`)) return;
+          entries = importedEntries.map(e => ({
+            id: Number(e.id) || Date.now() + Math.floor(Math.random()*10000),
+            date: e.date,
+            start: e.start,
+            end: e.end,
+            pause: Number(e.pause) || 0,
+            note: e.note || '',
+            duration: Number.isFinite(Number(e.duration)) ? Number(e.duration) : calcDuration(e.start, e.end, Number(e.pause)||0)
+          })).filter(e => e.date && e.start && e.end);
+          if (importedSettings) settings = { ...settings, ...importedSettings };
+          localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+          saveEntries();
+          loadData();
+          render();
+          toast('Backup wurde geladen.');
+        } catch (err) {
+          alert('Backup konnte nicht geladen werden: ' + err.message);
+        } finally {
+          input.value = '';
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function downloadText(filename, text, type) {
+      const blob = new Blob([text], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function toggleSettings() {
+      const body = $('settingsBody');
+      const btn = $('settingsToggle');
+      body.classList.toggle('hidden');
+      btn.textContent = body.classList.contains('hidden') ? 'Ausklappen' : 'Einklappen';
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    }
+
+    function toast(msg) {
+      const el = document.createElement('div');
+      el.textContent = msg;
+      el.style.position = 'fixed';
+      el.style.left = '50%';
+      el.style.bottom = 'calc(92px + env(safe-area-inset-bottom, 0px))';
+      el.style.transform = 'translateX(-50%)';
+      el.style.background = '#0f172a';
+      el.style.color = '#fff';
+      el.style.padding = '10px 14px';
+      el.style.borderRadius = '999px';
+      el.style.zIndex = '200';
+      el.style.boxShadow = '0 12px 30px rgba(0,0,0,.22)';
+      el.style.fontWeight = '800';
+      el.style.fontSize = '.88rem';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2100);
+    }
+  </script>
+</body>
+</html>
