@@ -404,6 +404,25 @@
       margin-top: 12px;
     }
 
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      font-weight: 850;
+      color: var(--text);
+      min-height: 46px;
+    }
+
+    .check-row input {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--primary);
+    }
+
     .footer-links {
       text-align: center;
       margin: 28px 0 8px;
@@ -600,17 +619,22 @@
 
     <section class="card" id="settingsCard">
       <div class="section-title">
-        <h2>Person & Standardwerte</h2>
-        <button class="btn btn-small btn-ghost" onclick="toggleSettings()" id="settingsToggle">Einklappen</button>
+        <div>
+          <h2>Person & Optionen</h2>
+          <div class="muted tiny" id="settingsSummary">Name, Arbeitgeber und optionale Vorgaben</div>
+        </div>
+        <button class="btn btn-small btn-ghost" onclick="toggleSettings()" id="settingsToggle">Ausklappen</button>
       </div>
-      <div id="settingsBody">
+      <div id="settingsBody" class="hidden">
         <div class="form-grid">
           <div class="field"><label>Name</label><input id="setName" placeholder="z. B. Max Mustermann" /></div>
           <div class="field"><label>Firma / Bereich</label><input id="setCompany" placeholder="optional" /></div>
-          <div class="field"><label>Standard Start</label><input id="setStart" type="time" value="07:00" /></div>
-          <div class="field"><label>Standard Ende</label><input id="setEnd" type="time" value="16:00" /></div>
-          <div class="field"><label>Standard Pause Minuten</label><input id="setPause" type="number" min="0" step="5" value="30" /></div>
-          <div class="field"><label>Notiz Standard</label><input id="setNote" placeholder="optional" /></div>
+          <label class="check-row full"><input id="setUseDefaults" type="checkbox" onchange="syncOptionVisibility()" /> Standardzeiten verwenden</label>
+          <div class="field default-field"><label>Standard Start</label><input id="setStart" type="time" value="07:00" /></div>
+          <div class="field default-field"><label>Standard Ende</label><input id="setEnd" type="time" value="16:00" /></div>
+          <div class="field default-field"><label>Standard Pause Minuten</label><input id="setPause" type="number" min="0" step="5" value="30" /></div>
+          <label class="check-row full"><input id="setUseNote" type="checkbox" onchange="syncOptionVisibility()" /> Notizfeld verwenden</label>
+          <div class="field full note-field"><label>Notiz Standard</label><input id="setNote" placeholder="optional" /></div>
         </div>
         <div class="form-actions">
           <button class="btn btn-green" onclick="saveSettings()">Standardwerte speichern</button>
@@ -738,6 +762,8 @@
     let settings = {
       name: '',
       company: '',
+      useDefaults: false,
+      useNote: false,
       start: '07:00',
       end: '16:00',
       pause: 30,
@@ -792,10 +818,13 @@
 
       $('setName').value = settings.name;
       $('setCompany').value = settings.company;
+      $('setUseDefaults').checked = !!settings.useDefaults;
+      $('setUseNote').checked = !!settings.useNote;
       $('setStart').value = settings.start;
       $('setEnd').value = settings.end;
       $('setPause').value = settings.pause;
       $('setNote').value = settings.note;
+      syncOptionVisibility();
     }
 
     function saveEntries() {
@@ -806,10 +835,12 @@
       settings = {
         name: $('setName').value.trim(),
         company: $('setCompany').value.trim(),
+        useDefaults: $('setUseDefaults').checked,
+        useNote: $('setUseNote').checked,
         start: $('setStart').value || '07:00',
         end: $('setEnd').value || '16:00',
         pause: Number($('setPause').value) || 0,
-        note: $('setNote').value.trim()
+        note: $('setUseNote').checked ? $('setNote').value.trim() : ''
       };
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
       toast('Standardwerte gespeichert.');
@@ -818,7 +849,7 @@
 
     function resetSettings() {
       if (!confirm('Standardwerte zurücksetzen?')) return;
-      settings = { name: '', company: '', start: '07:00', end: '16:00', pause: 30, note: '' };
+      settings = { name: '', company: '', useDefaults: false, useNote: false, start: '07:00', end: '16:00', pause: 30, note: '' };
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
       loadData();
       render();
@@ -920,13 +951,15 @@
     }
 
     function openEntryModal(preset = {}) {
+      const isEdit = !!preset.id;
       $('entryId').value = preset.id || '';
-      $('modalTitle').textContent = preset.id ? 'Arbeitstag bearbeiten' : 'Arbeitstag eintragen';
+      $('modalTitle').textContent = isEdit ? 'Arbeitstag bearbeiten' : 'Arbeitstag eintragen';
       $('entryDate').value = preset.date || todayISO();
-      $('entryStart').value = preset.start || settings.start || '07:00';
-      $('entryEnd').value = preset.end || settings.end || '16:00';
-      $('entryPause').value = preset.pause ?? settings.pause ?? 30;
-      $('entryNote').value = preset.note ?? settings.note ?? '';
+      $('entryStart').value = preset.start || (settings.useDefaults ? settings.start : '');
+      $('entryEnd').value = preset.end || (settings.useDefaults ? settings.end : '');
+      $('entryPause').value = preset.pause ?? (settings.useDefaults ? settings.pause : 0);
+      $('entryNote').value = preset.note ?? (settings.useNote ? settings.note : '');
+      $('entryNote').closest('.field').classList.toggle('hidden', !settings.useNote);
       updateDurationPreview();
       $('entryModal').classList.remove('hidden');
       setTimeout(() => $('entryDate').focus(), 60);
@@ -937,6 +970,10 @@
     }
 
     function quickToday() {
+      if (!settings.useDefaults) {
+        alert('Standardzeiten sind deaktiviert. Öffne „Person & Optionen“ und aktiviere Standardzeiten oder trage den Tag manuell ein.');
+        return;
+      }
       const date = todayISO();
       const existing = entries.find(e => e.date === date && e.start === settings.start && e.end === settings.end);
       if (existing && !confirm('Für heute gibt es bereits einen ähnlichen Eintrag. Trotzdem hinzufügen?')) return;
@@ -946,7 +983,7 @@
         start: settings.start || '07:00',
         end: settings.end || '16:00',
         pause: Number(settings.pause) || 0,
-        note: settings.note || '',
+        note: settings.useNote ? (settings.note || '') : '',
         duration: calcDuration(settings.start || '07:00', settings.end || '16:00', Number(settings.pause)||0)
       });
       saveEntries();
@@ -967,7 +1004,7 @@
       const start = $('entryStart').value;
       const end = $('entryEnd').value;
       const pause = Number($('entryPause').value) || 0;
-      const note = $('entryNote').value.trim();
+      const note = settings.useNote ? $('entryNote').value.trim() : '';
       if (!date || !start || !end) { alert('Bitte Datum, Start und Ende ausfüllen.'); return; }
       const duration = calcDuration(start, end, pause);
       if (duration <= 0) { alert('Die berechnete Arbeitszeit ist 0 oder negativ. Bitte Zeiten und Pause prüfen.'); return; }
@@ -1129,6 +1166,21 @@
       const btn = $('settingsToggle');
       body.classList.toggle('hidden');
       btn.textContent = body.classList.contains('hidden') ? 'Ausklappen' : 'Einklappen';
+    }
+
+    function syncOptionVisibility() {
+      const useDefaults = $('setUseDefaults')?.checked;
+      const useNote = $('setUseNote')?.checked;
+      document.querySelectorAll('.default-field').forEach(el => el.classList.toggle('hidden', !useDefaults));
+      document.querySelectorAll('.note-field').forEach(el => el.classList.toggle('hidden', !useNote));
+      const parts = [];
+      const name = $('setName')?.value?.trim();
+      const company = $('setCompany')?.value?.trim();
+      if (name) parts.push(name);
+      if (company) parts.push(company);
+      parts.push(useDefaults ? 'Standardzeiten aktiv' : 'Zeiten manuell');
+      parts.push(useNote ? 'Notizen aktiv' : 'ohne Notizen');
+      if ($('settingsSummary')) $('settingsSummary').textContent = parts.join(' · ');
     }
 
     function escapeHTML(value) {
