@@ -854,7 +854,9 @@
       doc.setFont('helvetica', 'normal');
       items.forEach(item => {
         const lineTotal = item.price * item.qty;
-        const text = `${item.qty}x ${item.name}`;
+        const qtyText = String(item.qty).replace('.', ',');
+        const unitText = money(item.price).replace(' €',' EUR');
+        const text = `${qtyText}x ${item.name} à ${unitText}`;
         const lines = doc.splitTextToSize(text, 50);
         doc.text(lines, 5, y);
         doc.text(money(lineTotal).replace(' €',' EUR'), 75, y, { align:'right' });
