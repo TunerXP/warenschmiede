@@ -521,6 +521,11 @@
           <div class="field"><label>QR-Code Art</label><select id="qrType"><option value="vcard">vCard / Kontakt</option><option value="paypal">PayPal.me Link</option><option value="none">Kein QR-Code</option></select></div>
           <div class="field"><label>QR-Daten</label><input id="qrData" placeholder="Telefonnummer oder PayPal.me Name" /></div>
           <div class="field"><label>Quittungs-Prefix</label><input id="receiptPrefix" value="Q" maxlength="8" /></div>
+          <label class="check-row" style="grid-column:1/-1;">
+            <span>Standard-Rechtstext verwenden<small>Für Kleinunternehmer nach deutschem §19 UStG. Haken entfernen, um den Text anzupassen.</small></span>
+            <input id="useDefaultLegalText" type="checkbox" checked onchange="syncLegalTextField()" />
+          </label>
+          <div class="field" style="grid-column:1/-1;"><label>Rechtstext auf der Quittung</label><input id="legalText" placeholder="Rechtstext" onkeydown="legalTextEnter(event)" /></div>
         </div>
         <div class="grid-actions">
           <button class="btn btn-green" onclick="saveSettings()">Firmendaten speichern</button>
@@ -626,7 +631,9 @@
     let history = [];
     let companyData = {
       name: '', owner: '', street: '', zip: '', city: '', taxId: '',
-      qrType: 'vcard', qrData: '', prefix: 'Q'
+      qrType: 'vcard', qrData: '', prefix: 'Q',
+      useDefaultLegalText: true,
+      legalText: 'Kein Ausweis von USt. gem. §19 UStG.'
     };
 
     const $ = (id) => document.getElementById(id);
@@ -652,6 +659,8 @@
         companyData = { ...companyData, ...(saved || old || {}) };
         if (companyData.qrType === undefined) companyData.qrType = 'vcard';
         if (!companyData.prefix) companyData.prefix = 'Q';
+        if (typeof companyData.useDefaultLegalText !== 'boolean') companyData.useDefaultLegalText = true;
+        if (!companyData.legalText) companyData.legalText = 'Kein Ausweis von USt. gem. §19 UStG.';
       } catch (_) {}
 
       try {
@@ -672,6 +681,9 @@
       $('qrType').value = companyData.qrType || 'vcard';
       $('qrData').value = companyData.qrData || '';
       $('receiptPrefix').value = companyData.prefix || 'Q';
+      $('useDefaultLegalText').checked = companyData.useDefaultLegalText !== false;
+      $('legalText').value = companyData.legalText || 'Kein Ausweis von USt. gem. §19 UStG.';
+      syncLegalTextField();
       updateCompanySummary();
     }
 
@@ -683,15 +695,18 @@
       $('companySummary').textContent = parts.length ? parts.join(' · ') : 'Absender einmal eintragen';
     }
 
-    function saveSettings() {
+    function saveSettings(showMessage = true) {
       companyData = {
         name: $('myCompany').value.trim(), owner: $('myName').value.trim(), street: $('myStreet').value.trim(),
         zip: $('myZip').value.trim(), city: $('myCity').value.trim(), taxId: $('myTaxId').value.trim(),
-        qrType: $('qrType').value, qrData: $('qrData').value.trim(), prefix: ($('receiptPrefix').value.trim() || 'Q')
+        qrType: $('qrType').value, qrData: $('qrData').value.trim(), prefix: ($('receiptPrefix').value.trim() || 'Q'),
+        useDefaultLegalText: $('useDefaultLegalText').checked,
+        legalText: $('legalText').value.trim() || 'Kein Ausweis von USt. gem. §19 UStG.'
       };
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(companyData));
       updateCompanySummary();
-      toast('Firmendaten gespeichert.');
+      syncLegalTextField();
+      if (showMessage) toast('Firmendaten gespeichert.');
     }
 
     function toggleDark() {
@@ -873,7 +888,7 @@
       doc.setFontSize(12); doc.setFont('helvetica', 'bold');
       doc.text('GESAMT', 5, y); doc.text(money(total).replace(' €',' EUR'), 75, y, { align:'right' }); y += 6;
       doc.setFontSize(7); doc.setFont('helvetica', 'normal');
-      if (isSmallBiz) doc.text('Kein Ausweis von USt. gem. §19 UStG.', centerX, y, { align:'center' });
+      if (isSmallBiz) doc.text(companyData.legalText || 'Kein Ausweis von USt. gem. §19 UStG.', centerX, y, { align:'center' });
       else {
         const net = total / 1.19;
         const tax = total - net;
@@ -908,29 +923,30 @@
     function generatePDF(mode = 'download') {
       if (!items.length) return alert('Keine Posten auf der Quittung.');
       try {
-        saveSettings();
+        saveSettings(false);
         const { doc, filename, total, docNum } = createPDFDoc();
         doc.save(filename);
         saveToHistory(total, docNum);
-        toast('PDF wurde erstellt.');
+        askClearAfterReceipt('PDF wurde erstellt.');
       } catch (err) { alert(err.message); }
     }
 
     async function sharePDF() {
       if (!items.length) return alert('Keine Posten auf der Quittung.');
       try {
-        saveSettings();
+        saveSettings(false);
         const { doc, filename, total, docNum } = createPDFDoc();
         const blob = doc.output('blob');
         const file = new File([blob], filename, { type: 'application/pdf' });
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           await navigator.share({ files: [file], title: 'Quittung', text: 'Hier ist Ihre Quittung.' });
           saveToHistory(total, docNum);
-          toast('Quittung geteilt.');
+          askClearAfterReceipt('Quittung geteilt.');
         } else {
           doc.save(filename);
           saveToHistory(total, docNum);
           alert('Teilen wird auf diesem Gerät nicht unterstützt. PDF wurde gespeichert.');
+          askClearAfterReceipt('PDF wurde erstellt.');
         }
       } catch (err) {
         if (String(err.name) !== 'AbortError') alert('Teilen fehlgeschlagen: ' + err.message);
@@ -1032,13 +1048,39 @@
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
-    function resetFormOnly() {
-      if (!confirm('Kunde, Posten, Rabatt und Zahlart zurücksetzen?')) return;
+    function resetFormOnly(ask = true) {
+      if (ask && !confirm('Kunde, Posten, Rabatt und Zahlart zurücksetzen?')) return;
       $('custName').value = ''; $('custStreet').value = ''; $('custZip').value = ''; $('custCity').value = '';
       items = [];
       $('discount').value = '0';
       setPay('Bar');
       renderItems();
+    }
+
+    function askClearAfterReceipt(message) {
+      const shouldClear = confirm(`${message}
+
+Formular für die nächste Quittung leeren?`);
+      if (shouldClear) resetFormOnly(false);
+      else toast(message);
+    }
+
+    function syncLegalTextField() {
+      const useDefault = $('useDefaultLegalText')?.checked;
+      const input = $('legalText');
+      if (!input) return;
+      input.readOnly = !!useDefault;
+      input.style.opacity = useDefault ? '0.62' : '1';
+      input.style.background = useDefault ? 'var(--soft)' : 'var(--card)';
+      if (useDefault) input.value = 'Kein Ausweis von USt. gem. §19 UStG.';
+    }
+
+    function legalTextEnter(event) {
+      if (event.key !== 'Enter') return;
+      event.preventDefault();
+      $('useDefaultLegalText').checked = true;
+      saveSettings(false);
+      toast('Rechtstext übernommen und gesperrt.');
     }
 
     function escapeHTML(value) {
