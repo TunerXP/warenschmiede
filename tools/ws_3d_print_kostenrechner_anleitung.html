@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anleitung · Warenschmiede 3D-Druck Kostenrechner Plus</title>
+  <meta name="description" content="Anleitung für den Warenschmiede 3D-Druck Kostenrechner Plus: Einrichtung, Kalkulation, Dokumente, History, JSON, PDF, E-Rechnung und sichere Nutzung." />
+  <meta name="robots" content="index, follow" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --accent:#eb9824; --ink:#0f172a; --soft:#fff7ed; }
+    html { scroll-behavior:smooth; }
+    body { font-family: Inter, sans-serif; background: #0f172a; color:#0f172a; }
+    .mono { font-family:'JetBrains Mono', monospace; }
+    .glass { background: rgba(255,255,255,.92); backdrop-filter: blur(14px); }
+    .card { background:#fff; border:1px solid #e2e8f0; border-radius:1.25rem; box-shadow:0 8px 26px rgba(15,23,42,.08); }
+    .pill { border-radius:999px; padding:.35rem .7rem; font-size:.75rem; font-weight:800; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:.45rem; border-radius:.85rem; padding:.75rem 1rem; font-weight:900; font-size:.9rem; transition:.18s ease; }
+    .btn:hover { transform:translateY(-1px); }
+    .btn-primary { background:var(--accent); color:white; box-shadow:0 12px 26px rgba(235,152,36,.24); }
+    .btn-muted { background:#f1f5f9; color:#334155; border:1px solid #e2e8f0; }
+    .toc a { display:block; padding:.55rem .75rem; border-radius:.75rem; font-weight:750; color:#475569; }
+    .toc a:hover { background:#fff7ed; color:#c2410c; }
+    .step { counter-increment: step; position:relative; }
+    .step:before { content:counter(step); display:flex; align-items:center; justify-content:center; width:2rem; height:2rem; border-radius:999px; background:var(--accent); color:white; font-weight:900; position:absolute; left:0; top:.1rem; }
+    .step-content { padding-left:3rem; }
+    .hint-list li { margin-top:.55rem; padding-left:.15rem; }
+    details summary { list-style:none; cursor:pointer; }
+    details summary::-webkit-details-marker { display:none; }
+    mark { background:#ffedd5; color:#9a3412; border-radius:.25rem; padding:0 .2rem; }
+    .print-only { display:none; }
+    @media print {
+      body { background:white; }
+      .no-print { display:none !important; }
+      .print-only { display:block; }
+      .card { box-shadow:none; break-inside:avoid; }
+      main { max-width:none !important; }
+      a { color:inherit; text-decoration:none; }
+    }
+  </style>
+</head>
+<body x-data="guideApp()" class="min-h-screen">
+  <div class="fixed inset-0 no-print pointer-events-none opacity-80" aria-hidden="true">
+    <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-orange-500 blur-3xl opacity-25"></div>
+    <div class="absolute top-1/3 -right-40 w-[34rem] h-[34rem] rounded-full bg-blue-500 blur-3xl opacity-15"></div>
+  </div>
+
+  <header class="relative no-print border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div>
+        <div class="flex flex-wrap gap-2 mb-3">
+          <a class="pill bg-white/10 text-white hover:bg-white/20" href="https://www.warenschmiede.com/">← Zur Homepage</a>
+          <a class="pill bg-white/10 text-white hover:bg-white/20" href="ws_3d_print_kostenrechner.html">Kostenrechner öffnen</a>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">Anleitung<br><span class="text-orange-300">3D-Druck Kostenrechner Plus</span></h1>
+        <p class="text-slate-300 mt-3 max-w-3xl">Einrichtung, Kalkulation, Dokumente, History, JSON, PDF, E-Rechnung und praktische Tipps für saubere Angebote, Rechnungen und Lieferscheine.</p>
+      </div>
+      <div class="glass rounded-2xl p-4 w-full lg:w-[360px]">
+        <div class="text-xs font-black uppercase tracking-wider text-slate-500">Schnellstart</div>
+        <div class="mt-2 grid grid-cols-2 gap-2 text-sm">
+          <button class="btn btn-primary !py-2" @click="scrollToId('schnellstart')">Loslegen</button>
+          <button class="btn btn-muted !py-2" @click="scrollToId('speichern')">Speichern?</button>
+        </div>
+        <p class="text-xs text-slate-500 mt-3">Tipp: Die Anleitung kannst du direkt neben dem Tool auf der Webseite ablegen.</p>
+        <div class="mt-3 rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs text-slate-600">
+          <div class="font-black text-slate-800">Stand</div>
+          <div>Anleitung 1.0.0 · passend zu Tool-Version 1.9.2</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 lg:grid lg:grid-cols-[280px_1fr] gap-8">
+    <aside class="no-print hidden lg:block">
+      <div class="sticky top-6 card p-3 toc">
+        <div class="px-3 py-2 text-xs font-black uppercase tracking-wider text-slate-400">Anleitung</div>
+        <a href="#ueberblick">Überblick</a>
+        <a href="#schnellstart">Schnellstart</a>
+        <a href="#kalkulation">3D-Druck kalkulieren</a>
+        <a href="#presets">Presets</a>
+        <a href="#dokumente">Dokumenttypen</a>
+
+        <div class="mt-3 px-3 py-2 text-xs font-black uppercase tracking-wider text-slate-400 border-t border-slate-200 pt-4">Praxis</div>
+        <a href="#praxis">Dokumente richtig nutzen</a>
+        <a href="#sichtbarkeit">Transparenz & Kompaktmodus</a>
+        <a href="#speichern">History, JSON & PDF</a>
+        <a href="#pruefen">Prüfmodus</a>
+
+        <div class="mt-3 px-3 py-2 text-xs font-black uppercase tracking-wider text-slate-400 border-t border-slate-200 pt-4">Recht & Sicherheit</div>
+        <a href="#recht">Steuer & Rechtstext</a>
+        <a href="#erechnung">E-Rechnung</a>
+        <a href="#hinweise">Hinweise & Absicherung</a>
+        <a href="#faq">FAQ</a>
+
+        <div class="mt-4 rounded-xl bg-orange-50 border border-orange-200 p-3 text-xs text-orange-950/80">
+          <strong class="block text-orange-950">Kurz gesagt</strong>
+          PDF versenden, JSON archivieren, History nur als Browser-Komfort nutzen.
+        </div>
+      </div>
+    </aside>
+
+    <section class="space-y-8">
+      <section id="ueberblick" class="card p-6 sm:p-8">
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-5">
+          <div>
+            <p class="pill bg-orange-100 text-orange-700 inline-flex mb-4">Warenschmiede Tool-Anleitung</p>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900">Wofür ist das Tool gedacht?</h2>
+            <p class="mt-3 text-slate-600 leading-relaxed max-w-3xl">Der Kostenrechner hilft dabei, 3D-Druckaufträge zu kalkulieren und daraus direkt ein Angebot, eine Rechnung oder einen Lieferschein zu erstellen. Die Arbeit passiert links im Tool, die Dokumentvorschau siehst du rechts. Firmendaten, Logo, QR-Code, Steuertexte, Bankdaten und Presets liegen in den Einstellungen.</p>
+          </div>
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 min-w-[240px]">
+            <div class="text-xs font-black uppercase tracking-wider text-slate-400">Merksatz</div>
+            <p class="font-extrabold text-slate-800 mt-1">Kalkulation intern sauber, Ausgabe nach außen kontrolliert.</p>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-4 mt-7">
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5">
+            <div class="text-2xl">🧮</div><h3 class="font-black mt-2">Kalkulieren</h3><p class="text-sm text-slate-600 mt-1">Material, Druckzeit, Strom, Maschine, Arbeit, Ausschuss, Fixkosten und Marge.</p>
+          </div>
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5">
+            <div class="text-2xl">📄</div><h3 class="font-black mt-2">Dokumente</h3><p class="text-sm text-slate-600 mt-1">Angebot, Rechnung oder Lieferschein mit PDF-/Druckausgabe.</p>
+          </div>
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5">
+            <div class="text-2xl">💾</div><h3 class="font-black mt-2">Sichern</h3><p class="text-sm text-slate-600 mt-1">History für Komfort, JSON für bearbeitbare Projektdateien, PDF für Kunden.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="schnellstart" class="card p-6 sm:p-8">
+        <h2 class="text-2xl font-black">Schnellstart in 7 Schritten</h2>
+        <div class="mt-6 space-y-5" style="counter-reset: step;">
+          <div class="step"><div class="step-content"><h3 class="font-black">Einstellungen öffnen</h3><p class="text-slate-600">Trage zuerst eigene Firmendaten, Logo, Bankdaten, Steuertext und Standardwerte ein. Diese Daten werden lokal im Browser gespeichert.</p></div></div>
+          <div class="step"><div class="step-content"><h3 class="font-black">Dokumenttyp wählen</h3><p class="text-slate-600">Wähle Angebot, Rechnung oder Lieferschein. Danach prüfst du Nummer, Datum, Projekt und je nach Typ das Gültigkeits- oder Fälligkeitsdatum.</p></div></div>
+          <div class="step"><div class="step-content"><h3 class="font-black">Kundendaten eintragen</h3><p class="text-slate-600">Name, Adresse, Kundennummer und Ansprechpartner eintragen. Für Testdokumente kannst du natürlich Musterdaten verwenden.</p></div></div>
+          <div class="step"><div class="step-content"><h3 class="font-black">Druckposition anlegen</h3><p class="text-slate-600">Bauteilname, Menge, Material, Gewicht und Druckzeit eintragen. Presets für Material, Drucker und Kalkulationsprofil beschleunigen die Eingabe.</p></div></div>
+          <div class="step"><div class="step-content"><h3 class="font-black">Zusatzpositionen ergänzen</h3><p class="text-slate-600">Versand, CAD-Arbeit, Montage, Verpackung oder freie Artikel kannst du als Zusatzposition einfügen.</p></div></div>
+          <div class="step"><div class="step-content"><h3 class="font-black">Prüfen</h3><p class="text-slate-600">Der Prüfmodus zeigt typische Lücken: fehlende Kundendaten, Bankdaten, Rechtstext, QR-Inhalt oder keine Positionen.</p></div></div>
+          <div class="step"><div class="step-content"><h3 class="font-black">PDF/JSON speichern</h3><p class="text-slate-600">PDF ist das fertige Dokument. JSON ist die bearbeitbare Projektdatei. Am besten beides zusammen im Kundenordner ablegen.</p></div></div>
+        </div>
+      </section>
+
+      <section id="kalkulation" class="card p-6 sm:p-8">
+        <h2 class="text-2xl font-black">3D-Druck richtig kalkulieren</h2>
+        <p class="text-slate-600 mt-3">Der Rechner arbeitet grundsätzlich netto. Steuer oder Kleinunternehmer-Hinweis werden erst im Dokumentbereich ergänzt.</p>
+        <div class="overflow-x-auto mt-6">
+          <table class="w-full text-sm border-separate border-spacing-0 overflow-hidden rounded-2xl border border-slate-200">
+            <thead class="bg-slate-100 text-slate-700"><tr><th class="text-left p-3">Wert</th><th class="text-left p-3">Bedeutung</th><th class="text-left p-3">Praxis-Tipp</th></tr></thead>
+            <tbody class="divide-y divide-slate-200">
+              <tr><td class="p-3 font-bold">Gewicht</td><td class="p-3 text-slate-600">Materialverbrauch in Gramm.</td><td class="p-3 text-slate-600">Aus dem Slicer übernehmen.</td></tr>
+              <tr><td class="p-3 font-bold">Druckzeit</td><td class="p-3 text-slate-600">Laufzeit in Stunden.</td><td class="p-3 text-slate-600">Auch Rüstzeit kann über Arbeit/Fixkosten berücksichtigt werden.</td></tr>
+              <tr><td class="p-3 font-bold">Materialpreis</td><td class="p-3 text-slate-600">Preis pro kg Filament.</td><td class="p-3 text-slate-600">Lieber realistischen Einkaufspreis inkl. Versand verwenden.</td></tr>
+              <tr><td class="p-3 font-bold">Maschinenkosten</td><td class="p-3 text-slate-600">Verschleiß, Abnutzung, Gerätelaufzeit.</td><td class="p-3 text-slate-600">Als €/h hinterlegen, damit es einfach bleibt.</td></tr>
+              <tr><td class="p-3 font-bold">Arbeit</td><td class="p-3 text-slate-600">Entfernen, Reinigen, Verpacken, kurze Nacharbeit.</td><td class="p-3 text-slate-600">Nicht vergessen: Deine Zeit ist nicht kostenlos.</td></tr>
+              <tr><td class="p-3 font-bold">Ausschuss</td><td class="p-3 text-slate-600">Risikozuschlag für Fehldrucke.</td><td class="p-3 text-slate-600">Bei Einzelstücken oder kritischem Material höher ansetzen.</td></tr>
+              <tr><td class="p-3 font-bold">Marge</td><td class="p-3 text-slate-600">Aufschlag auf die Kosten.</td><td class="p-3 text-slate-600">Nicht mit Steuer verwechseln. Steuer kommt danach.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="mt-6 rounded-2xl bg-orange-50 border border-orange-200 p-5">
+          <h3 class="font-black text-orange-900">Wichtig bei kleinen Teilen</h3>
+          <p class="text-orange-900/80 mt-1">Ein Teil kann rechnerisch nur wenige Cent Material kosten. Der Verkaufspreis darf trotzdem höher sein, weil Aufwand, Einrichtung, Risiko, Verpackung, Kommunikation und Wert für den Kunden ebenfalls zählen.</p>
+        </div>
+      </section>
+
+      <section id="presets" class="card p-6 sm:p-8">
+        <h2 class="text-2xl font-black">Presets: Material, Drucker und Profile</h2>
+        <p class="text-slate-600 mt-3">Presets sind Vorlagen. Sie sparen Zeit und sorgen dafür, dass du nicht jedes Mal dieselben Werte neu eintragen musst.</p>
+        <div class="grid md:grid-cols-3 gap-4 mt-6">
+          <div class="rounded-2xl border border-slate-200 p-5 bg-slate-50/60">
+            <h3 class="font-black flex items-center justify-between gap-3"><span>Materialien</span><span class="pill bg-orange-100 text-orange-700">€/kg</span></h3>
+            <p class="text-sm text-slate-600 mt-3">Hier legst du Filamentnamen, €/kg und optional CO₂-Werte ab. Eigene Sorten wie „Bambu PLA Matte Weiß“ oder „PETG-CF Schwarz“ sind sinnvoll.</p>
+            <ul class="hint-list text-sm text-slate-600 mt-3 list-disc list-inside">
+              <li>Materialpreis realistisch mit Versand/Restverlust kalkulieren.</li>
+              <li>Für teure Spezialfilamente eigene Presets anlegen.</li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-slate-200 p-5 bg-slate-50/60">
+            <h3 class="font-black flex items-center justify-between gap-3"><span>Drucker</span><span class="pill bg-orange-100 text-orange-700">€/h</span></h3>
+            <p class="text-sm text-slate-600 mt-3">Hier liegen Watt, Lastfaktor und Maschinenkosten €/h. Die Werte sind Richtwerte und können pro Auftrag angepasst werden.</p>
+            <ul class="hint-list text-sm text-slate-600 mt-3 list-disc list-inside">
+              <li>Für schnelle/teure Drucker einen höheren Maschinensatz nutzen.</li>
+              <li>Wartung, Düsen, Platten und Verschleiß grob einpreisen.</li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-slate-200 p-5 bg-slate-50/60">
+            <h3 class="font-black flex items-center justify-between gap-3"><span>Profile</span><span class="pill bg-orange-100 text-orange-700">Marge</span></h3>
+            <p class="text-sm text-slate-600 mt-3">Profile bündeln Marge, Arbeit, Lohnsatz und Ausschuss. Zum Beispiel Hobby, Standard Verkauf, Gewerblich oder Express.</p>
+            <ul class="hint-list text-sm text-slate-600 mt-3 list-disc list-inside">
+              <li>Für Einzelstücke und Expressaufträge höhere Profile nutzen.</li>
+              <li>Für private Tests kann ein schlankes Profil reichen.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="dokumente" class="card p-6 sm:p-8">
+        <h2 class="text-2xl font-black">Angebot, Rechnung und Lieferschein</h2>
+        <div class="grid md:grid-cols-3 gap-4 mt-6">
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5"><h3 class="font-black">Angebot</h3><p class="text-sm text-slate-600 mt-2">Für Preisvorschläge. Enthält optional „gültig bis“. Bankdaten können bei Angeboten optional eingeblendet werden.</p></div>
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5"><h3 class="font-black">Rechnung</h3><p class="text-sm text-slate-600 mt-2">Für fertige Abrechnung. Enthält Fälligkeitsdatum, Bankdaten und Steuer-/Rechtstext.</p></div>
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5"><h3 class="font-black">Lieferschein</h3><p class="text-sm text-slate-600 mt-2">Für Übergabe/Versand. Preise werden ausgeblendet, Mengen und Positionen bleiben sichtbar.</p></div>
+        </div>
+        <p class="text-sm text-slate-500 mt-5">Die Dokumentnummer bleibt bewusst manuell kontrollierbar. Das Tool kann eine nächste Nummer vorschlagen, erzwingt sie aber nicht.</p>
+      </section>
+
+      <section id="praxis" class="card p-6 sm:p-8">
+        <h2 class="text-2xl font-black">Praxis: Angebot, Rechnung und Lieferschein richtig nutzen</h2>
+        <p class="text-slate-600 mt-3">Dieser Abschnitt ist für Nutzer gedacht, die noch wenig Erfahrung mit Dokumenten haben. Er ersetzt keine Beratung, gibt aber einen sauberen Arbeitsrahmen.</p>
+
+        <div class="grid md:grid-cols-3 gap-4 mt-6">
+          <div class="rounded-2xl bg-orange-50 border border-orange-200 p-5">
+            <h3 class="font-black text-orange-950">1. Erst Angebot</h3>
+            <p class="text-sm text-orange-950/80 mt-2">Ein Angebot ist sinnvoll, wenn der Kunde vorab einen Preis sehen und zustimmen soll. Hier kannst du eine Gültigkeit eintragen, zum Beispiel 10 oder 14 Tage.</p>
+          </div>
+          <div class="rounded-2xl bg-blue-50 border border-blue-200 p-5">
+            <h3 class="font-black text-blue-950">2. Dann Rechnung</h3>
+            <p class="text-sm text-blue-950/80 mt-2">Die Rechnung kommt, wenn der Auftrag geliefert oder abgeschlossen ist. Prüfe Nummer, Datum, Kunde, Positionen, Zahlungsziel, Bankdaten und Steuertext.</p>
+          </div>
+          <div class="rounded-2xl bg-green-50 border border-green-200 p-5">
+            <h3 class="font-black text-green-950">3. Optional Lieferschein</h3>
+            <p class="text-sm text-green-950/80 mt-2">Der Lieferschein begleitet Ware oder Übergabe. Er zeigt Mengen und Positionen, aber keine Preise. Gut, wenn Paket und Rechnung getrennt laufen.</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4 mt-6">
+          <div class="rounded-2xl border border-slate-200 p-5 bg-slate-50/70">
+            <h3 class="font-black">Rechnungsnummern sauber führen</h3>
+            <ul class="hint-list text-sm text-slate-600 mt-3 list-disc list-inside">
+              <li>Nutze eindeutige Nummern, zum Beispiel <span class="mono">RE-2026-001</span>.</li>
+              <li>Keine Nummer doppelt vergeben.</li>
+              <li>Testdokumente klar als Test markieren oder nicht im echten Archiv verwenden.</li>
+              <li>Der Nummernvorschlag ist ein Helfer, die finale Kontrolle bleibt beim Nutzer.</li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-slate-200 p-5 bg-slate-50/70">
+            <h3 class="font-black">Vor dem Versenden prüfen</h3>
+            <ul class="hint-list text-sm text-slate-600 mt-3 list-disc list-inside">
+              <li>Name und Anschrift von Anbieter und Kunde vollständig?</li>
+              <li>Datum, Nummer, Leistungsbeschreibung und Mengen plausibel?</li>
+              <li>Preise, Rabatte, Zusatzpositionen und Gesamtbetrag richtig?</li>
+              <li>Bei Rechnung: Zahlungsziel, Bankdaten und Steuer-/Rechtstext prüfen.</li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-slate-200 p-5 bg-slate-50/70">
+            <h3 class="font-black">Was man besser nicht macht</h3>
+            <ul class="hint-list text-sm text-slate-600 mt-3 list-disc list-inside">
+              <li>Keine fertige Rechnung versenden, wenn nur ein Angebot gemeint ist.</li>
+              <li>Keine Umsatzsteuer ausweisen, wenn man die Kleinunternehmerregelung nutzt.</li>
+              <li>Keine Kalkulationsdetails zeigen, wenn der Kunde nur einen sauberen Endpreis braucht.</li>
+              <li>PDF nicht als einzige Sicherung verwenden, wenn später Änderungen möglich sein sollen.</li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-slate-200 p-5 bg-slate-50/70">
+            <h3 class="font-black">Finanzamt & Ablage</h3>
+            <ul class="hint-list text-sm text-slate-600 mt-3 list-disc list-inside">
+              <li>PDF und JSON am besten gemeinsam im Kunden- oder Jahresordner speichern.</li>
+              <li>Bei echten Rechnungen auf eine nachvollziehbare, fortlaufende Ablage achten.</li>
+              <li>Steuernummer/USt-IdNr. und Steuertext nur passend zur eigenen Situation verwenden.</li>
+              <li>Bei Unsicherheit Steuerberater, Finanzamt oder offizielle Informationen prüfen.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-2xl bg-slate-900 text-white p-5">
+          <h3 class="font-black">Einfacher Praxis-Workflow</h3>
+          <p class="text-slate-300 mt-2">Angebot erstellen → PDF und JSON speichern → nach Annahme Rechnung daraus erzeugen → Rechnungsnummer prüfen → PDF und JSON im Kundenordner ablegen → bei Lieferung optional Lieferschein erstellen.</p>
+        </div>
+      </section>
+
+      <section id="sichtbarkeit" class="card p-6 sm:p-8">
+        <h2 class="text-2xl font-black">Transparenz, Kundensicht und Kompaktmodus</h2>
+        <p class="text-slate-600 mt-3">Nicht jeder Kunde muss deine komplette interne Kalkulation sehen. Darum kann jede Druckposition unterschiedlich dargestellt werden.</p>
+        <div class="grid md:grid-cols-3 gap-4 mt-6">
+          <div class="rounded-2xl border border-slate-200 p-5"><h3 class="font-black">Nur Artikel</h3><p class="text-sm text-slate-600 mt-2">Zeigt nur Bezeichnung, Menge und Preis. Gut für normale Kundenangebote.</p></div>
+          <div class="rounded-2xl border border-slate-200 p-5"><h3 class="font-black">Artikel + Material</h3><p class="text-sm text-slate-600 mt-2">Zeigt Material, Gewicht und Druckzeit. Gut, wenn etwas technischer wirken darf.</p></div>
+          <div class="rounded-2xl border border-slate-200 p-5"><h3 class="font-black">Kalkulation sichtbar</h3><p class="text-sm text-slate-600 mt-2">Zeigt Material, Strom, Maschine, Arbeit, Ausschuss/Fix und Marge. Nur nutzen, wenn Transparenz gewünscht ist.</p></div>
+        </div>
+        <div class="mt-6 bg-slate-900 text-white rounded-2xl p-5">
+          <h3 class="font-black">Kompaktmodus</h3>
+          <p class="text-slate-300 mt-2">Der Kompaktmodus verdichtet das PDF. Zusätzlich kann er Kalkulationsdetails automatisch für die Ausgabe ausblenden, ohne deine internen Einstellungen pro Position zu verändern.</p>
+        </div>
+      </section>
+
+      <section id="speichern" class="card p-6 sm:p-8">
+        <h2 class="text-2xl font-black">Speichern: History, JSON, PDF und Backup</h2>
+        <p class="text-slate-600 mt-3">Das ist der wichtigste Bereich, damit später keine Verwirrung entsteht.</p>
+        <div class="grid md:grid-cols-2 gap-4 mt-6">
+          <div class="rounded-2xl bg-blue-50 border border-blue-200 p-5"><h3 class="font-black text-blue-950">History</h3><p class="text-sm text-blue-950/80 mt-2">Lokaler Schnellverlauf im Browser. Praktisch zum Wiederfinden, aber kein Ersatz für Projektdateien.</p></div>
+          <div class="rounded-2xl bg-green-50 border border-green-200 p-5"><h3 class="font-black text-green-950">Projekt-JSON</h3><p class="text-sm text-green-950/80 mt-2">Die bearbeitbare Datei. Diese Datei brauchst du, wenn du ein Dokument später wieder ändern willst.</p></div>
+          <div class="rounded-2xl bg-orange-50 border border-orange-200 p-5"><h3 class="font-black text-orange-950">PDF / Druck</h3><p class="text-sm text-orange-950/80 mt-2">Das fertige Kundendokument. Gut zum Versenden und Archivieren, aber nicht zum Weiterbearbeiten.</p></div>
+          <div class="rounded-2xl bg-purple-50 border border-purple-200 p-5"><h3 class="font-black text-purple-950">History-Backup</h3><p class="text-sm text-purple-950/80 mt-2">Exportiert den lokalen Verlauf. Nützlich, wenn die History sehr wichtig wird oder auf einen anderen Browser übertragen werden soll.</p></div>
+        </div>
+        <div class="mt-6 rounded-2xl border border-slate-200 p-5">
+          <h3 class="font-black">Empfohlene Ordnerstruktur</h3>
+          <pre class="mono text-sm bg-slate-950 text-slate-100 rounded-xl p-4 mt-3 overflow-x-auto">Kunde_Anja_Musterfrau/
+├─ ANG-2026-001.pdf
+├─ ANG-2026-001.json
+├─ RE-2026-001.pdf
+└─ RE-2026-001.json</pre>
+        </div>
+      </section>
+
+      <section id="pruefen" class="card p-6 sm:p-8">
+        <h2 class="text-2xl font-black">Prüfmodus vor PDF/Druck</h2>
+        <p class="text-slate-600 mt-3">Der Prüfmodus ist eine Sicherheitsrunde. Er blockiert nicht grundsätzlich, aber er weist auf mögliche Lücken hin.</p>
+        <div class="grid sm:grid-cols-2 gap-3 mt-5 text-sm">
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">✓ Dokumentnummer vorhanden?</div>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">✓ Kunde eingetragen?</div>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">✓ Positionen vorhanden?</div>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">✓ Bankdaten bei Rechnung vollständig?</div>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">✓ Rechtstext vorhanden?</div>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">✓ QR-Code hat Inhalt?</div>
+        </div>
+      </section>
+
+      <section id="recht" class="card p-6 sm:p-8">
+        <h2 class="text-2xl font-black">Steuer, Kleinunternehmer und Rechtstext</h2>
+        <p class="text-slate-600 mt-3">Das Tool kann Steuertexte anzeigen, ersetzt aber keine steuerliche oder rechtliche Prüfung. Nutzer sollten ihre Angaben eigenverantwortlich prüfen.</p>
+        <div class="grid md:grid-cols-2 gap-4 mt-6">
+          <div class="rounded-2xl bg-red-50 border border-red-200 p-5">
+            <h3 class="font-black text-red-950">Kleinunternehmer</h3>
+            <p class="text-sm text-red-950/80 mt-2">Wer die Kleinunternehmerregelung nutzt, sollte keine Umsatzsteuer ausweisen und einen passenden Hinweis auf die Steuerbefreiung verwenden.</p>
+          </div>
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5">
+            <h3 class="font-black">Mit Umsatzsteuer</h3>
+            <p class="text-sm text-slate-600 mt-2">Wer Umsatzsteuer ausweist, sollte Steuersatz, Steuerbetrag, Netto- und Gesamtbetrag sauber prüfen und nur passende Steuersätze verwenden.</p>
+          </div>
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5">
+            <h3 class="font-black">Pflichtangaben</h3>
+            <p class="text-sm text-slate-600 mt-2">Typische Rechnungsangaben sind u. a. Name/Adresse, Datum, eindeutige Nummer, Leistungsbeschreibung, Mengen/Preise und je nach Fall Steuerangaben.</p>
+          </div>
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5">
+            <h3 class="font-black">DACH-Nutzung</h3>
+            <p class="text-sm text-slate-600 mt-2">Für Deutschland, Österreich und Schweiz können unterschiedliche Anforderungen gelten. Deshalb sind eigene Rechtstexte und Prüfung wichtig.</p>
+          </div>
+        </div>
+        <div class="mt-5 rounded-2xl bg-red-50 border border-red-200 p-5">
+          <h3 class="font-black text-red-950">Wichtiger Hinweis</h3>
+          <p class="text-red-950/80 mt-2">Gerade bei Rechnungen, Kleinunternehmerregelung, MwSt, DACH-Nutzung und Pflichtangaben sollte der Text zur eigenen Situation passen. Im Zweifel bitte fachlich prüfen lassen.</p>
+        </div>
+      </section>
+
+      <section id="erechnung" class="card p-6 sm:p-8">
+        <h2 class="text-2xl font-black">E-Rechnung: Was dieses Tool kann und was nicht</h2>
+        <p class="text-slate-600 mt-3">Eine E-Rechnung ist nicht einfach ein normales PDF per E-Mail. Für echte E-Rechnungen werden strukturierte, maschinenlesbare Daten benötigt, zum Beispiel im Format XRechnung oder ZUGFeRD. Dieses Tool erstellt klassische PDF-/Druckdokumente und bearbeitbare JSON-Projektdateien, aber aktuell keine normkonforme E-Rechnung.</p>
+
+        <div class="grid md:grid-cols-3 gap-4 mt-6">
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5">
+            <h3 class="font-black">PDF</h3>
+            <p class="text-sm text-slate-600 mt-2">Gut lesbares Kundendokument und Archivkopie. Ein normales PDF ist aber nicht automatisch eine E-Rechnung.</p>
+          </div>
+          <div class="rounded-2xl bg-green-50 border border-green-200 p-5">
+            <h3 class="font-black text-green-950">JSON-Projektdatei</h3>
+            <p class="text-sm text-green-950/80 mt-2">Bearbeitbarer Stand aus dem Kostenrechner. Praktisch für spätere Änderungen, aber ebenfalls keine E-Rechnung.</p>
+          </div>
+          <div class="rounded-2xl bg-orange-50 border border-orange-200 p-5">
+            <h3 class="font-black text-orange-950">XRechnung / ZUGFeRD</h3>
+            <p class="text-sm text-orange-950/80 mt-2">Strukturierte Rechnungsformate für maschinelle Verarbeitung. Dafür sollte geprüfte E-Rechnungssoftware verwendet werden.</p>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-2xl border border-slate-200 p-5">
+          <h3 class="font-black">Was Nutzer praktisch machen können</h3>
+          <div class="mt-4 grid md:grid-cols-2 gap-4">
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+              <h4 class="font-black">Sicherer Weg</h4>
+              <p class="text-sm text-slate-600 mt-2">Die Werte aus dem Tool oder aus dem PDF in eine geeignete E-Rechnungssoftware übertragen und dort XRechnung oder ZUGFeRD erzeugen. Danach die erzeugte Datei prüfen.</p>
+            </div>
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+              <h4 class="font-black">PDF-Konvertierung</h4>
+              <p class="text-sm text-slate-600 mt-2">Manche Fremdsoftware kann PDF-Rechnungen auslesen und daraus E-Rechnungsdaten erstellen. Das Ergebnis sollte besonders sorgfältig geprüft werden, weil automatische Erkennung Fehler machen kann.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-2xl bg-red-50 border border-red-200 p-5">
+          <h3 class="font-black text-red-950">Wichtiger Hinweis zur Veröffentlichung</h3>
+          <p class="text-red-950/80 mt-2">Dieses Tool ist kein Ersatz für geprüfte Buchhaltungs- oder E-Rechnungssoftware. Für verpflichtende E-Rechnungen, B2B-Fälle, öffentliche Auftraggeber oder besondere Anforderungen sollte geeignete Software genutzt oder fachlicher Rat eingeholt werden.</p>
+        </div>
+      </section>
+
+      <section id="hinweise" class="card p-6 sm:p-8">
+        <h2 class="text-2xl font-black">Hinweise, Absicherung und Verantwortung</h2>
+        <p class="text-slate-600 mt-3">Das Tool soll die Arbeit erleichtern und typische Rechen- und Organisationsfehler reduzieren. Trotzdem bleibt es wichtig, jedes Dokument vor dem Versenden kurz selbst zu prüfen.</p>
+
+        <div class="grid md:grid-cols-2 gap-4 mt-6">
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5">
+            <h3 class="font-black">Keine Rechts- oder Steuerberatung</h3>
+            <p class="text-sm text-slate-600 mt-2">Steuertexte, Kleinunternehmer-Hinweise, MwSt.-Angaben und Pflichtangaben müssen zur eigenen Situation passen. Im Zweifel bitte fachlich prüfen lassen.</p>
+          </div>
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5">
+            <h3 class="font-black">Dokumente vor Versand prüfen</h3>
+            <p class="text-sm text-slate-600 mt-2">Der Prüfmodus hilft, ersetzt aber keine Endkontrolle. Nummer, Kunde, Datum, Preise, Bankdaten, Rechtstext und PDF-Ausgabe sollten vor dem Senden geprüft werden.</p>
+          </div>
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5">
+            <h3 class="font-black">Lokale Datenhaltung</h3>
+            <p class="text-sm text-slate-600 mt-2">Die Eingaben und die History liegen lokal im Browser. Für eine dauerhafte Ablage sollten Projekt-JSON und PDF zusätzlich in eigenen Ordnern gespeichert werden.</p>
+          </div>
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-5">
+            <h3 class="font-black">Kostenloses Hilfswerkzeug</h3>
+            <p class="text-sm text-slate-600 mt-2">Der Kostenrechner wurde als praktisches Hilfswerkzeug für 3D-Druck-Kalkulationen erstellt. Eine Gewähr für Vollständigkeit, rechtliche Richtigkeit oder fehlerfreie Ausgabe kann nicht übernommen werden.</p>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-2xl bg-slate-900 text-white p-5">
+          <h3 class="font-black">Empfohlener Arbeitsablauf</h3>
+          <p class="text-slate-300 mt-2">Erst kalkulieren, dann prüfen, dann als PDF ausgeben und zusätzlich die JSON-Projektdatei speichern. So bleibt das Kundendokument sauber archiviert und der Auftrag später weiterbearbeitbar.</p>
+        </div>
+      </section>
+
+      <section id="faq" class="card p-6 sm:p-8">
+        <h2 class="text-2xl font-black">Häufige Fragen</h2>
+        <div class="mt-5 space-y-3">
+          <template x-for="item in faq" :key="item.q">
+            <details class="rounded-2xl border border-slate-200 p-4">
+              <summary class="font-black flex items-center justify-between gap-3"><span x-text="item.q"></span><span class="text-orange-600">+</span></summary>
+              <p class="text-slate-600 mt-3" x-text="item.a"></p>
+            </details>
+          </template>
+        </div>
+      </section>
+
+      <section class="card p-6 sm:p-8 no-print">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-black">Bereit?</h2>
+            <p class="text-slate-600 mt-1">Öffne den Kostenrechner und lege mit deinem ersten Dokument los.</p>
+          </div>
+          <a class="btn btn-primary" href="ws_3d_print_kostenrechner.html">Kostenrechner öffnen</a>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="relative no-print max-w-7xl mx-auto px-4 sm:px-6 pb-8 text-center text-slate-400 text-sm">
+    <p>Warenschmiede 3D-Druck Kostenrechner Plus · Anleitung 1.0.0 · passend zu Tool 1.9.2 · Nutzung auf eigene Prüfung</p>
+  </footer>
+
+  <script>
+    function guideApp(){
+      return {
+        faq: [
+          {q:'Kann ich ein PDF später wieder bearbeiten?', a:'Nein. Ein PDF ist das fertige Dokument. Zum späteren Bearbeiten brauchst du die passende JSON-Projektdatei.'},
+          {q:'Wo liegt die History?', a:'Die History liegt lokal im Browser. Sie ist bequem, aber nicht so sicher wie eine gespeicherte JSON-Datei auf deinem PC.'},
+          {q:'Wird meine History in der JSON-Datei gespeichert?', a:'Nein. Projektdatei und History sind getrennt. Das schützt davor, dass alte fremde Kundendaten versehentlich in einer Projektdatei landen.'},
+          {q:'Warum kann ich die Kalkulation ausblenden?', a:'Weil interne Kosten und sichtbarer Kundenpreis getrennt betrachtet werden sollten. Nicht jeder Auftrag braucht volle Transparenz.'},
+          {q:'Was macht der Kompaktmodus?', a:'Er reduziert Abstände und kann Kalkulationsdetails nur für die Ausgabe ausblenden. Dadurch passen mehr Positionen auf eine Seite.'},
+          {q:'Kann ich nur Zusatzpositionen abrechnen?', a:'Ja. Du kannst alle 3D-Druckpositionen löschen und reine Zusatzpositionen wie Versand, CAD-Arbeit oder Artikel abrechnen.'},
+          {q:'Erstellt das Tool eine E-Rechnung?', a:'Nein. Das Tool erstellt PDF-/Druckdokumente und JSON-Projektdateien. Für XRechnung oder ZUGFeRD sollte geeignete E-Rechnungssoftware verwendet werden.'}
+        ],
+        scrollToId(id){ document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'}); }
+      }
+    }
+  </script>
+</body>
+</html>

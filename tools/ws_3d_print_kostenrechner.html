@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Warenschmiede 3D-Druck Kostenrechner Plus</title>
+  <meta name="tool-version" content="1.9.2">
+  <meta name="description" content="Neutraler 3D-Druck Kostenrechner für Angebote, Rechnungen und Lieferscheine. Mit Presets, Logo, QR-Code, Steuertexten und lokaler Speicherung." />
+  <meta name="robots" content="index, follow" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --accent: #2563eb; --accent-soft: #dbeafe; --ink: #0f172a; }
+    * { box-sizing: border-box; }
+    body { font-family: Inter, sans-serif; background: #0f172a; color: #1e293b; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .input { width: 100%; border: 1px solid #cbd5e1; background: #e2e8f0; border-radius: .7rem; padding: .62rem .75rem; font-weight: 650; outline: none; min-height: 42px; }
+    .input:focus { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .label { display: flex; justify-content: space-between; align-items: center; font-size: .68rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: .05em; margin: 0 0 .25rem .1rem; }
+    .card { background: white; border: 1px solid #e2e8f0; border-radius: 1rem; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
+    .btn { border-radius: .75rem; padding: .65rem .9rem; font-size: .82rem; font-weight: 800; transition: .18s ease; display: inline-flex; align-items: center; justify-content: center; gap: .45rem; }
+    .btn-primary { background: var(--accent); color: white; box-shadow: 0 8px 18px rgba(37,99,235,.22); }
+    .btn-primary:hover { filter: brightness(.96); transform: translateY(-1px); }
+    .btn-soft { background: var(--accent-soft); color: var(--accent); }
+    .btn-muted { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+    .a4 { width: 210mm; min-height: 297mm; height: 297mm; background: white; padding: 16mm; box-shadow: 0 25px 60px rgba(0,0,0,.4); overflow: hidden; display: flex; flex-direction: column; page-break-after: always; break-after: page; }
+    .a4:last-child { page-break-after: auto; break-after: auto; }
+    .a4.compact-doc { padding: 11mm 13mm; font-size: 9pt; }
+    .a4.compact-doc header { padding-bottom: .75rem !important; margin-bottom: .85rem !important; }
+    .a4.compact-doc h1 { font-size: 1.45rem !important; }
+    .a4.compact-doc h2 { font-size: 1.55rem !important; }
+    .a4.compact-doc h3 { font-size: 1rem !important; margin-bottom: .25rem !important; }
+    .a4.compact-doc table { font-size: 8.8pt !important; }
+    .a4.compact-doc th { padding-top: .28rem !important; padding-bottom: .28rem !important; }
+    .a4.compact-doc td { padding-top: .42rem !important; padding-bottom: .42rem !important; }
+    .a4.compact-doc footer { padding-top: .45rem !important; font-size: 6.5pt !important; }
+    .a4.compact-doc .qrPrint { width: 54px !important; height: 54px !important; }
+    .page-stack { display: flex; flex-direction: column; align-items: center; gap: 2rem; }
+    .hint { font-size: .72rem; color: #64748b; line-height: 1.35; }
+    .minihead { font-size: .64rem; font-weight: 900; color: #64748b; text-transform: uppercase; letter-spacing: .05em; padding: 0 .25rem; }
+    .doc-row { break-inside: avoid; page-break-inside: avoid; }
+    .toggle { width: 44px; height: 24px; border-radius: 999px; background: #cbd5e1; position: relative; flex: none; transition: .18s; }
+    .toggle:before { content: ''; width: 18px; height: 18px; border-radius: 999px; background: white; position: absolute; left: 3px; top: 3px; transition: .18s; box-shadow: 0 1px 3px rgba(0,0,0,.22); }
+    .toggle.on { background: var(--accent); }
+    .toggle.on:before { transform: translateX(20px); }
+    .modal { backdrop-filter: blur(8px); }
+    details summary { list-style: none; }
+    details summary::-webkit-details-marker { display: none; }
+    [x-cloak] { display: none !important; }
+    @media (max-width: 1100px) {
+      body { overflow: auto !important; }
+      .shell { height: auto !important; display: block !important; }
+      aside { width: 100% !important; height: auto !important; position: relative !important; }
+      main { height: auto !important; overflow: visible !important; padding: 1rem !important; }
+      .a4 { transform-origin: top center; transform: scale(.58); margin-bottom: -118mm; }
+    }
+    @media print {
+      @page { size: A4 portrait; margin: 0; }
+      body { background: white !important; margin: 0; }
+      aside, .no-print, .modal-layer { display: none !important; }
+      main { padding: 0 !important; margin: 0 !important; display: block !important; overflow: visible !important; background: white !important; }
+      .a4 { width: 210mm !important; height: 297mm !important; min-height: 297mm !important; box-shadow: none !important; margin: 0 !important; break-after: page; page-break-after: always; transform: none !important; }
+      .a4:last-child { break-after: auto; page-break-after: auto; }
+    }
+  </style>
+</head>
+<body x-data="app()" x-init="init()" :style="`--accent:${theme.color};--accent-soft:${softColor(theme.color)}`" class="h-screen overflow-hidden">
+  <div class="shell h-screen flex">
+    <aside class="no-print w-[520px] h-full bg-slate-50 border-r border-slate-300 shadow-2xl flex flex-col z-20">
+      <header class="bg-white border-b border-slate-200 p-4 space-y-3">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs font-bold">
+              <a href="https://www.warenschmiede.com/" class="text-slate-500 hover:text-[var(--accent)]">← Zurück zur Homepage</a>
+              <a href="ws_3d_print_kostenrechner_anleitung.html" class="text-slate-500 hover:text-[var(--accent)]">Anleitung öffnen</a>
+            </div>
+            <h1 class="text-xl font-extrabold text-slate-900 mt-2 leading-tight">Warenschmiede<br><span class="text-[var(--accent)]">3D-Druck Kostenrechner Plus</span></h1>
+            <p class="text-xs text-slate-500 mt-1">Kalkulieren · Angebot · Rechnung · Lieferschein</p>
+          </div>
+          <button class="btn btn-soft" @click="settingsOpen=true">⚙ Einstellungen</button>
+        </div>
+        <div class="grid grid-cols-3 gap-2 bg-slate-100 rounded-xl p-1">
+          <button class="btn !py-2" :class="doc.type==='angebot'?'btn-primary':'btn-muted'" @click="setDocType('angebot')">Angebot</button>
+          <button class="btn !py-2" :class="doc.type==='rechnung'?'btn-primary':'btn-muted'" @click="setDocType('rechnung')">Rechnung</button>
+          <button class="btn !py-2" :class="doc.type==='lieferschein'?'btn-primary':'btn-muted'" @click="setDocType('lieferschein')">Liefersch.</button>
+        </div>
+      </header>
+
+      <section class="flex-1 overflow-y-auto p-4 space-y-4">
+        <div class="card p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-extrabold text-slate-800">Dokument</h2>
+            <span class="text-xs font-bold text-slate-400" x-text="titleForDoc()"></span>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <div class="flex items-center justify-between gap-2"><label class="label">Nummer</label><button class="text-[11px] font-extrabold text-[var(--accent)] hover:underline" @click="useNextNumber()" :title="'Vorschlag aus lokaler History: '+nextNumberSuggestion(doc.type)">Vorschlag übernehmen</button></div>
+              <input class="input mono" x-model="doc.number">
+              <div class="hint mt-1">Vorschlag: <button class="font-bold text-[var(--accent)] hover:underline" @click="useNextNumber()" x-text="nextNumberSuggestion(doc.type)"></button> · bleibt bewusst manuell kontrollierbar.</div>
+            </div>
+            <div><label class="label">Datum</label><input type="date" class="input" x-model="doc.date"></div>
+            <div class="col-span-2"><label class="label">Projekt / Betreff</label><input class="input" x-model="doc.project" placeholder="z. B. Sparschwein Serie"></div>
+            <template x-if="doc.type==='angebot'"><div><label class="label">Gültig bis</label><input type="date" class="input" x-model="doc.validUntil"></div></template>
+            <template x-if="doc.type==='rechnung'"><div><label class="label">Fällig am</label><input type="date" class="input" x-model="doc.dueDate"></div></template>
+          </div>
+        </div>
+
+        <div class="card p-4">
+          <h2 class="font-extrabold text-slate-800 mb-3">Kunde</h2>
+          <div class="space-y-3">
+            <div><label class="label">Name / Firma</label><input class="input" x-model="customer.name" placeholder="Kundenname"></div>
+            <div><label class="label">Adresse</label><textarea rows="3" class="input" x-model="customer.address" placeholder="Straße&#10;PLZ Ort"></textarea></div>
+            <div class="grid grid-cols-2 gap-3">
+              <div><label class="label">Kunden-Nr.</label><input class="input" x-model="customer.id"></div>
+              <div><label class="label">Ansprechpartner</label><input class="input" x-model="customer.contact"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="flex items-end justify-between">
+            <h2 class="font-extrabold text-white">3D-Druck Positionen</h2>
+            <button class="btn btn-soft !py-2" @click="addJob()">+ Bauteil</button>
+          </div>
+
+          <template x-for="(job, idx) in jobs" :key="job.id">
+            <div class="card overflow-hidden">
+              <div class="p-3 bg-slate-100 border-b border-slate-200 flex items-center justify-between gap-2 cursor-pointer" @click="job.open=!job.open">
+                <div class="min-w-0 flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-[var(--accent)] text-white font-extrabold flex items-center justify-center" x-text="idx+1"></div>
+                  <div class="min-w-0">
+                    <div class="font-extrabold text-slate-800 truncate" x-text="job.name || 'Neues Bauteil'"></div>
+                    <div class="text-xs text-slate-500 mono"><span x-text="job.quantity"></span>x · <span x-text="money(unitPrice(job))"></span> / Stk · <span x-text="money(positionTotal(job))"></span></div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button class="btn btn-muted !p-2" @click.stop="duplicateJob(idx)" title="Kopieren">⧉</button>
+                  <button class="btn btn-muted !p-2 hover:!text-red-600" @click.stop="removeJob(idx)" title="Löschen">×</button>
+                  <span class="text-slate-400" x-text="job.open?'⌃':'⌄'"></span>
+                </div>
+              </div>
+
+              <div x-show="job.open" class="p-4 space-y-4">
+                <div class="grid grid-cols-4 gap-3">
+                  <div class="col-span-3"><label class="label">Artikel / Bauteil</label><input class="input" x-model="job.name" placeholder="z. B. Piggybank rot"></div>
+                  <div><label class="label">Menge</label><input type="number" min="1" step="1" class="input text-center" x-model.number="job.quantity"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div><label class="label">Material-Preset</label><select class="input" x-model="job.materialId" @change="applyMaterial(job)"><template x-for="m in presets.materials" :key="m.id"><option :value="m.id" x-text="m.name"></option></template></select></div>
+                  <div><label class="label">Drucker-Preset</label><select class="input" x-model="job.printerId" @change="applyPrinter(job)"><template x-for="p in presets.printers" :key="p.id"><option :value="p.id" x-text="p.name"></option></template></select></div>
+                  <div><label class="label">Kalkulationsprofil</label><select class="input" x-model="job.profileId" @change="applyProfile(job)"><template x-for="p in presets.profiles" :key="p.id"><option :value="p.id" x-text="p.name"></option></template></select></div>
+                  <div><label class="label">Sichtbarkeit</label><select class="input" x-model="job.publicMode"><option value="compact">Nur Artikel</option><option value="normal">Artikel + Materialdaten</option><option value="transparent">Kalkulation zeigen</option></select></div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                  <div><label class="label">Gewicht <span>g</span></label><input type="number" step="1" class="input text-right" x-model.number="job.weight"></div>
+                  <div><label class="label">Druckzeit <span>h</span></label><input type="number" step="0.1" class="input text-right" x-model.number="job.time"></div>
+                  <div><label class="label">Material <span>€/kg</span></label><input type="number" step="0.01" class="input text-right" x-model.number="job.priceKg"></div>
+                </div>
+
+                <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-3">
+                  <div class="flex items-center justify-between gap-3">
+                    <div>
+                      <div class="text-xs font-extrabold text-slate-500 uppercase">Endpreis netto / Stück</div>
+                      <div class="text-[11px] text-slate-400">Automatisch berechnet oder bewusst manuell gesetzt</div>
+                    </div>
+                    <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-500" @click="toggleManual(job)">
+                      manuell <span class="toggle" :class="job.manual?'on':''"></span>
+                    </label>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3 items-start">
+                    <input type="number" step="0.01" class="input text-right text-lg mono" :disabled="!job.manual" :class="!job.manual?'opacity-70':''" :value="job.manual ? job.manualPrice : calculatedUnit(job).toFixed(2)" @input="job.manualPrice=parseFloat($event.target.value)||0">
+                    <div class="text-right">
+                      <div class="text-xs text-slate-500">Positionssumme</div>
+                      <div class="text-2xl font-extrabold text-[var(--accent)] mono" x-text="money(positionTotal(job))"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <details class="rounded-xl border border-slate-200 overflow-hidden">
+                  <summary class="p-3 bg-white font-extrabold text-sm text-slate-600 cursor-pointer flex justify-between"><span>Interne Detail-Kalkulation</span><span>+</span></summary>
+                  <div class="p-3 bg-slate-50 space-y-3">
+                    <div class="grid grid-cols-3 gap-3">
+                      <div><label class="label">Strom €/kWh</label><input type="number" step="0.01" class="input text-right" x-model.number="job.energyPrice"></div>
+                      <div><label class="label">Verbrauch W</label><input type="number" class="input text-right" x-model.number="job.watts"></div>
+                      <div><label class="label">Last %</label><input type="number" class="input text-right" x-model.number="job.loadFactor"></div>
+                      <div><label class="label">Maschine €/h</label><input type="number" step="0.01" class="input text-right" x-model.number="job.machineHourly"></div>
+                      <div><label class="label">Arbeit min</label><input type="number" class="input text-right" x-model.number="job.laborMinutes"></div>
+                      <div><label class="label">Lohn €/h</label><input type="number" class="input text-right" x-model.number="job.hourlyRate"></div>
+                      <div><label class="label">Ausschuss %</label><input type="number" class="input text-right" x-model.number="job.failRate"></div>
+                      <div><label class="label">Fixkosten €</label><input type="number" step="0.01" class="input text-right" x-model.number="job.fixedCost"></div>
+                      <div><label class="label">Marge %</label><input type="number" class="input text-right" x-model.number="job.marginPercent"></div>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 p-3 text-xs space-y-1">
+                      <template x-for="row in breakdown(job)" :key="row.label"><div class="flex justify-between"><span x-text="row.label"></span><strong class="mono" x-text="money(row.value)"></strong></div></template>
+                    </div>
+                  </div>
+                </details>
+              </div>
+            </div>
+          </template>
+          <div x-show="jobs.length===0" class="card p-5 text-center border-dashed border-2 border-slate-300 bg-white/90">
+            <div class="text-3xl mb-2">🧾</div>
+            <h3 class="font-extrabold text-slate-800">Keine 3D-Druckpositionen</h3>
+            <p class="hint mt-1">Du kannst auch reine Zusatzpositionen abrechnen, z. B. CAD-Arbeit, Versand, Ersatzteile oder Dienstleistungen.</p>
+            <button class="btn btn-soft mt-3" @click="addJob()">+ 3D-Druck Bauteil hinzufügen</button>
+          </div>
+        </div>
+
+        <div class="card p-4">
+          <div class="flex items-center justify-between mb-3"><h2 class="font-extrabold text-slate-800">Zusatzpositionen</h2><button class="btn btn-soft !py-2" @click="extras.push({desc:'',qty:1,price:0,show:true})">+ Position</button></div>
+          <div class="hidden md:grid grid-cols-[1fr_64px_94px_32px] gap-2 mb-2"><div class="minihead">Beschreibung</div><div class="minihead text-center">Menge</div><div class="minihead text-right">€/Stk</div><div></div></div>
+          <div class="space-y-2">
+            <template x-for="(item, idx) in extras" :key="idx">
+              <div class="grid grid-cols-[1fr_64px_94px_32px] gap-2 items-start">
+                <input class="input" x-model="item.desc" placeholder="Versand, CAD-Arbeit, Montage ...">
+                <input type="number" class="input text-center" x-model.number="item.qty">
+                <input type="number" step="0.01" class="input text-right" x-model.number="item.price">
+                <button class="btn btn-muted !p-2 hover:!text-red-600" @click="extras.splice(idx,1)">×</button>
+              </div>
+            </template>
+          </div>
+        </div>
+      </section>
+
+      <footer class="bg-white border-t border-slate-200 p-4 space-y-3">
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="bg-slate-50 rounded-xl p-2"><div class="text-[10px] font-bold text-slate-400 uppercase">Netto</div><div class="mono font-extrabold" x-text="money(subtotal())"></div></div>
+          <div class="bg-slate-50 rounded-xl p-2"><div class="text-[10px] font-bold text-slate-400 uppercase">Steuer</div><div class="mono font-extrabold" x-text="money(vat())"></div></div>
+          <div class="bg-[var(--accent-soft)] rounded-xl p-2"><div class="text-[10px] font-bold text-[var(--accent)] uppercase">Gesamt</div><div class="mono font-extrabold text-[var(--accent)]" x-text="money(total())"></div></div>
+        </div>
+        <div class="grid grid-cols-6 gap-2">
+          <button class="btn btn-muted" @click="rememberHistory('Manuell gemerkt')">Merken</button>
+          <button class="btn btn-muted" @click="historyOpen=true">History</button>
+          <button class="btn btn-muted" @click="openPreflight()">Prüfen</button>
+          <button class="btn btn-muted" @click="exportFile()">Speichern</button>
+          <label class="btn btn-muted cursor-pointer">Laden<input type="file" accept=".json" class="hidden" @change="importFile"></label>
+          <button class="btn btn-primary" @click="printDoc()">PDF/Druck</button>
+        </div>
+        <div class="space-y-2">
+          <label class="flex items-center justify-between gap-3 text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-xl p-2 cursor-pointer" @click="output.compactPdf=!output.compactPdf">
+            <span><strong>Kompaktmodus PDF</strong> · mehr Positionen pro Seite, weniger Weißraum</span>
+            <span class="toggle" :class="output.compactPdf?'on':''"></span>
+          </label>
+          <label x-show="output.compactPdf" x-transition class="flex items-center justify-between gap-3 text-xs text-slate-600 bg-amber-50 border border-amber-200 rounded-xl p-2 cursor-pointer" @click="output.compactForceArticle=!output.compactForceArticle">
+            <span><strong>Kompakt-Ausgabe</strong> · Kalkulationsdetails im PDF automatisch ausblenden und nur Artikel zeigen</span>
+            <span class="toggle" :class="output.compactForceArticle?'on':''"></span>
+          </label>
+        </div>
+        <div x-show="historyNotice" x-transition class="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-xl p-2" x-text="historyNotice"></div>
+        <div x-show="output.showStorageInfo" class="text-[11px] text-slate-500 leading-snug bg-slate-50 border border-slate-200 rounded-xl p-2">PDF = fertiges Dokument · JSON = bearbeitbare Projektdatei · History = lokaler Schnellverlauf im Browser.</div>
+      </footer>
+    </aside>
+
+    <main class="flex-1 h-full overflow-auto p-8 bg-slate-900">
+      <div class="page-stack">
+      <template x-for="page in getPages()" :key="page.number">
+      <div class="a4" :class="output.compactPdf ? 'compact-doc' : ''">
+        <header x-show="page.first" class="flex justify-between gap-8 border-b-4 pb-5 mb-6" style="border-color: var(--accent)">
+          <div class="flex gap-4 items-start min-w-0">
+            <template x-if="company.logo"><img :src="company.logo" :style="`width:${company.logoWidth}px`" class="object-contain max-h-24"></template>
+            <div>
+              <h1 class="text-3xl font-extrabold text-slate-900 leading-none" x-text="company.name || 'Ihre Firma'"></h1>
+              <p class="text-sm font-bold text-slate-500 mt-2" x-text="company.slogan"></p>
+            </div>
+          </div>
+          <div class="text-right text-xs leading-relaxed text-slate-600 shrink-0">
+            <strong class="text-slate-900" x-text="company.owner"></strong><br>
+            <span x-text="company.street"></span><br>
+            <span x-text="company.zip"></span> <span x-text="company.city"></span><br>
+            <span x-text="company.email"></span><br>
+            <span x-text="company.phone"></span>
+          </div>
+        </header>
+
+        <section x-show="page.first" class="flex justify-between gap-8 mb-6">
+          <div class="w-[90mm]">
+            <div class="text-[8px] underline text-slate-400 mb-2"><span x-text="company.name || 'Ihre Firma'"></span> · <span x-text="company.street"></span> · <span x-text="company.zip"></span> <span x-text="company.city"></span></div>
+            <div class="font-extrabold text-slate-900" x-text="customer.name || 'Kundenname'"></div>
+            <div class="whitespace-pre-line text-slate-600 text-sm" x-text="customer.address"></div>
+            <template x-if="customer.contact"><div class="text-xs text-slate-500 mt-2">Ansprechpartner: <span x-text="customer.contact"></span></div></template>
+          </div>
+          <div class="text-right shrink-0">
+            <h2 class="text-3xl font-extrabold text-slate-900" x-text="titleForDoc()"></h2>
+            <div class="grid grid-cols-[auto_auto] gap-x-4 gap-y-1 justify-end text-sm mt-3 text-slate-600">
+              <span>Nr.</span><strong class="mono text-slate-900" x-text="doc.number"></strong>
+              <span>Datum</span><span x-text="date(doc.date)"></span>
+              <template x-if="customer.id"><span>Kd.-Nr.</span></template><template x-if="customer.id"><span x-text="customer.id"></span></template>
+              <template x-if="doc.type==='angebot' && doc.validUntil"><span>Gültig bis</span></template><template x-if="doc.type==='angebot' && doc.validUntil"><span x-text="date(doc.validUntil)"></span></template>
+              <template x-if="doc.type==='rechnung' && doc.dueDate"><span>Fällig am</span></template><template x-if="doc.type==='rechnung' && doc.dueDate"><span x-text="date(doc.dueDate)"></span></template>
+            </div>
+          </div>
+        </section>
+
+        <section x-show="page.first" class="mb-4">
+          <h3 class="text-xl font-extrabold text-slate-900" x-text="doc.project || 'Projekt / Betreff'"></h3>
+        </section>
+
+        <section x-show="!page.first" class="mb-4 border-b-2 pb-3 flex justify-between items-end" style="border-color: var(--accent)">
+          <div><div class="text-lg font-extrabold text-slate-900" x-text="titleForDoc() + ' – Fortsetzung'"></div><div class="text-xs text-slate-500" x-text="doc.number"></div></div>
+          <div class="text-xs text-slate-500">Seite <span x-text="page.number"></span> / <span x-text="page.totalPages"></span></div>
+        </section>
+
+        <section class="flex-1">
+          <table class="w-full text-sm">
+            <thead class="border-b-2" style="border-color: var(--accent)">
+              <tr class="text-left text-xs uppercase tracking-wide text-[var(--accent)]">
+                <th class="py-2 w-10">Pos</th><th class="py-2">Beschreibung</th><th class="py-2 text-right w-16">Menge</th>
+                <template x-if="doc.type!=='lieferschein'"><th class="py-2 text-right w-24">Einzel</th></template>
+                <template x-if="doc.type!=='lieferschein'"><th class="py-2 text-right w-24">Gesamt</th></template>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <template x-for="(line, idx) in page.lines" :key="line.key">
+                <tr class="doc-row">
+                  <td class="py-3 align-top text-slate-400 mono text-xs" x-text="line.pos"></td>
+                  <td class="py-3 align-top">
+                    <div class="font-extrabold text-slate-800" x-text="line.desc"></div>
+                    <template x-if="line.details"><div class="text-xs text-slate-500 mt-1 whitespace-pre-line" x-text="line.details"></div></template>
+                    <template x-if="line.transparent"><div class="text-[10px] text-slate-500 mt-2 bg-slate-50 rounded-lg p-2 border border-slate-100 whitespace-pre-line" x-text="line.transparent"></div></template>
+                  </td>
+                  <td class="py-3 align-top text-right" x-text="line.qty"></td>
+                  <template x-if="doc.type!=='lieferschein'"><td class="py-3 align-top text-right mono" x-text="money(line.price)"></td></template>
+                  <template x-if="doc.type!=='lieferschein'"><td class="py-3 align-top text-right mono font-extrabold" x-text="money(line.total)"></td></template>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </section>
+
+        <template x-if="page.last && doc.type!=='lieferschein'">
+          <section class="mt-6 border-t-2 pt-4 flex justify-end" style="border-color: var(--accent)">
+            <div class="w-72 space-y-1">
+              <div class="flex justify-between text-sm"><span>Netto</span><strong class="mono" x-text="money(subtotal())"></strong></div>
+              <template x-if="tax.enabled"><div class="flex justify-between text-sm"><span x-text="`USt. ${tax.rate}%`"></span><strong class="mono" x-text="money(vat())"></strong></div></template>
+              <div class="flex justify-between text-xl font-extrabold border-t pt-2"><span>Gesamt</span><span class="mono text-[var(--accent)]" x-text="money(total())"></span></div>
+              <div class="text-[10px] text-slate-500 bg-slate-50 rounded-lg border border-slate-100 p-2 text-right whitespace-pre-line" x-text="activeLegalText()"></div>
+            </div>
+          </section>
+        </template>
+
+        <footer class="mt-auto pt-4 border-t border-slate-200 grid grid-cols-[1fr_1fr_auto] gap-4 text-[8px] text-slate-500 uppercase leading-relaxed">
+          <div><strong class="block text-slate-800" x-text="company.name || 'Ihre Firma'"></strong><span x-text="company.street"></span><br><span x-text="company.zip"></span> <span x-text="company.city"></span></div>
+          <div x-show="showBankOnDocument()"><strong class="block text-slate-800">Bankverbindung</strong>IBAN: <span x-text="payment.iban"></span><br>BIC: <span x-text="payment.bic"></span><br><span x-text="payment.bank"></span></div>
+          <div class="text-right flex flex-col items-end gap-1">
+            <div x-show="page.last && qr.enabled" class="qrPrint w-[72px] h-[72px]"></div>
+            <span x-show="page.last && qr.enabled" x-text="qr.label || 'QR-Code'"></span>
+            <span>Seite <span x-text="page.number"></span> / <span x-text="page.totalPages"></span></span>
+          </div>
+        </footer>
+      </div>
+      </template>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-layer no-print fixed inset-0 z-50 modal bg-slate-950/65 flex items-center justify-center p-4" x-show="settingsOpen" x-transition>
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[92vh] overflow-hidden flex flex-col">
+      <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="text-xl font-extrabold text-slate-900">Einstellungen</h2>
+            <span class="text-[11px] font-extrabold px-2 py-1 rounded-lg bg-slate-200 text-slate-600" x-text="'Tool-Version ' + appVersion"></span>
+          </div>
+          <p class="text-xs text-slate-500">Daten bleiben lokal im Browser. Für öffentliche Nutzung neutral vorbereitet.</p>
+        </div>
+        <div class="flex gap-2">
+          <a class="btn btn-soft" href="ws_3d_print_kostenrechner_anleitung.html" target="_blank" rel="noopener">Anleitung</a>
+          <button class="btn btn-muted" @click="settingsOpen=false">Schließen</button>
+        </div>
+      </div>
+      <div class="flex flex-col md:flex-row min-h-0">
+        <nav class="md:w-56 bg-slate-50 border-r border-slate-200 p-3 flex md:flex-col gap-2 overflow-auto">
+          <template x-for="tab in tabs" :key="tab.id"><button class="btn justify-start whitespace-nowrap" :class="activeTab===tab.id?'btn-primary':'btn-muted'" @click="activeTab=tab.id" x-text="tab.label"></button></template>
+        </nav>
+        <div class="flex-1 overflow-auto p-5 space-y-5">
+          <section x-show="activeTab==='firma'" class="space-y-4">
+            <h3 class="font-extrabold text-slate-900">Eigene Firmendaten</h3>
+            <div class="grid md:grid-cols-2 gap-3">
+              <div><label class="label">Firma</label><input class="input" x-model="company.name"></div>
+              <div><label class="label">Inhaber / Name</label><input class="input" x-model="company.owner"></div>
+              <div class="md:col-span-2"><label class="label">Slogan</label><input class="input" x-model="company.slogan"></div>
+              <div><label class="label">Straße</label><input class="input" x-model="company.street"></div>
+              <div><label class="label">PLZ / Ort</label><div class="grid grid-cols-[100px_1fr] gap-2"><input class="input" x-model="company.zip"><input class="input" x-model="company.city"></div></div>
+              <div><label class="label">E-Mail</label><input class="input" x-model="company.email"></div>
+              <div><label class="label">Telefon</label><input class="input" x-model="company.phone"></div>
+            </div>
+          </section>
+
+          <section x-show="activeTab==='design'" class="space-y-4">
+            <h3 class="font-extrabold text-slate-900">Logo & Design</h3>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="card p-4 space-y-3"><label class="label">Logo hochladen</label><input type="file" accept="image/*" class="input" @change="loadLogo"><template x-if="company.logo"><img :src="company.logo" class="max-h-28 object-contain bg-slate-50 rounded-xl p-2 border"></template><label class="label">Logo-Breite px</label><input type="range" min="50" max="180" x-model.number="company.logoWidth" class="w-full"></div>
+              <div class="card p-4 space-y-3"><label class="label">Akzentfarbe</label><input type="color" class="input h-14" x-model="theme.color"><p class="text-sm text-slate-500">Die Farbe wird für Buttons, Linien und Summen genutzt.</p></div>
+            </div>
+          </section>
+
+          <section x-show="activeTab==='zahlung'" class="space-y-4">
+            <h3 class="font-extrabold text-slate-900">Bank & Zahlung</h3>
+            <div class="grid md:grid-cols-2 gap-3">
+              <div><label class="label">Bank</label><input class="input" x-model="payment.bank"></div>
+              <div><label class="label">Kontoinhaber</label><input class="input" x-model="payment.accountName"></div>
+              <div><label class="label">IBAN</label><input class="input mono" x-model="payment.iban"></div>
+              <div><label class="label">BIC</label><input class="input mono" x-model="payment.bic"></div>
+              <div><label class="label">Zahlungsziel Tage</label><input type="number" class="input" x-model.number="payment.days"></div>
+              <div><label class="label">Zahlungslink optional</label><input class="input" x-model="payment.link"></div>
+            </div>
+            <label class="flex items-center justify-between card p-3 cursor-pointer" @click="payment.showOnOffer=!payment.showOnOffer"><span class="font-bold">Bankdaten auch auf Angeboten anzeigen</span><span class="toggle" :class="payment.showOnOffer?'on':''"></span></label>
+          </section>
+
+          <section x-show="activeTab==='steuer'" class="space-y-4">
+            <h3 class="font-extrabold text-slate-900">Steuer & Rechtstext</h3>
+            <div class="grid md:grid-cols-3 gap-3">
+              <label class="card p-3 flex items-center justify-between cursor-pointer" @click="tax.enabled=!tax.enabled"><span class="font-bold">Umsatzsteuer berechnen</span><span class="toggle" :class="tax.enabled?'on':''"></span></label>
+              <div><label class="label">Steuersatz %</label><input type="number" step="0.1" class="input" x-model.number="tax.rate"></div>
+              <div><label class="label">Profil</label><select class="input" x-model="tax.profile"><option value="de_small">DE Kleinunternehmer</option><option value="de_vat">DE mit Umsatzsteuer</option><option value="at_small">AT Kleinunternehmer</option><option value="ch_custom">CH / frei</option><option value="custom">Eigener Text</option></select></div>
+            </div>
+            <div><label class="label">Eigener / editierbarer Rechtstext</label><textarea rows="5" class="input" x-model="tax.customText"></textarea><p class="text-xs text-slate-500 mt-2">Hinweis: Steuertexte bitte eigenverantwortlich prüfen lassen.</p></div>
+          </section>
+
+          <section x-show="activeTab==='presets'" class="space-y-5">
+            <h3 class="font-extrabold text-slate-900">Presets</h3><p class="hint">Die grauen Felder sind bewusst direkt editierbar. Die Spaltenüberschriften zeigen klar, ob dort Preis, Verbrauch, Last oder Marge eingetragen wird.</p>
+            <div class="card p-4 space-y-3">
+              <div class="flex justify-between items-start gap-3"><div><h4 class="font-extrabold">Materialien</h4><p class="hint">Name · Einkaufspreis pro kg · optionaler CO₂-Wert. Diese Werte werden in neue Druckpositionen übernommen.</p></div><button class="btn btn-soft" @click="addMaterial()">+ Material</button></div>
+              <div class="hidden md:grid md:grid-cols-[1fr_110px_80px_32px] gap-2"><div class="minihead">Materialname</div><div class="minihead text-right">€/kg</div><div class="minihead text-right">CO₂ kg/kg</div><div></div></div>
+              <template x-for="(m, idx) in presets.materials" :key="m.id"><div class="grid md:grid-cols-[1fr_110px_80px_32px] gap-2"><input class="input" x-model="m.name" title="Materialname, z. B. PLA Matte Weiß" placeholder="Materialname"><input type="number" step="0.01" class="input text-right" x-model.number="m.priceKg" title="Materialpreis in Euro pro Kilogramm" placeholder="€/kg"><input type="number" step="0.1" class="input text-right" x-model.number="m.co2" title="Optional: CO₂-Wert kg CO₂ pro kg Material" placeholder="CO₂"><button class="btn btn-muted !p-2" @click="presets.materials.splice(idx,1)" title="Material löschen">×</button></div></template>
+            </div>
+            <div class="card p-4 space-y-3">
+              <div class="flex justify-between items-start gap-3"><div><h4 class="font-extrabold">Drucker</h4><p class="hint">Name · typischer Verbrauch · Maschinenkosten pro Stunde · durchschnittliche Last. Alles sind editierbare Richtwerte.</p></div><button class="btn btn-soft" @click="addPrinter()">+ Drucker</button></div>
+              <div class="hidden md:grid md:grid-cols-[1fr_100px_110px_100px_32px] gap-2"><div class="minihead">Druckername</div><div class="minihead text-right">Watt</div><div class="minihead text-right">Maschine €/h</div><div class="minihead text-right">Last %</div><div></div></div>
+              <template x-for="(p, idx) in presets.printers" :key="p.id"><div class="grid md:grid-cols-[1fr_100px_110px_100px_32px] gap-2"><input class="input" x-model="p.name" title="Druckername oder Druckergruppe" placeholder="Druckername"><input type="number" class="input text-right" x-model.number="p.watts" title="Durchschnittlicher Verbrauch in Watt" placeholder="Watt"><input type="number" step="0.01" class="input text-right" x-model.number="p.machineHourly" title="Maschinenkosten/Verschleiß pro Druckstunde" placeholder="€/h"><input type="number" class="input text-right" x-model.number="p.loadFactor" title="Durchschnittliche Last in Prozent" placeholder="Last %"><button class="btn btn-muted !p-2" @click="presets.printers.splice(idx,1)" title="Drucker löschen">×</button></div></template>
+            </div>
+            <div class="card p-4 space-y-3">
+              <div class="flex justify-between items-start gap-3"><div><h4 class="font-extrabold">Kalkulationsprofile</h4><p class="hint">Profile setzen Marge, Nacharbeit, Stundenlohn und Ausschuss automatisch. Ideal für Hobby, Verkauf, Express oder Prototypen.</p></div><button class="btn btn-soft" @click="addProfile()">+ Profil</button></div>
+              <div class="hidden md:grid md:grid-cols-[1fr_90px_90px_90px_90px_32px] gap-2"><div class="minihead">Profilname</div><div class="minihead text-right">Marge %</div><div class="minihead text-right">Arbeit min</div><div class="minihead text-right">Lohn €/h</div><div class="minihead text-right">Ausschuss %</div><div></div></div>
+              <template x-for="(p, idx) in presets.profiles" :key="p.id"><div class="grid md:grid-cols-[1fr_90px_90px_90px_90px_32px] gap-2"><input class="input" x-model="p.name" title="Profilname, z. B. Standard Verkauf" placeholder="Profilname"><input type="number" class="input text-right" x-model.number="p.marginPercent" title="Gewinnmarge in Prozent" placeholder="Marge %"><input type="number" class="input text-right" x-model.number="p.laborMinutes" title="Nachbearbeitung/Arbeitszeit in Minuten pro Stück" placeholder="Min"><input type="number" class="input text-right" x-model.number="p.hourlyRate" title="Interner Stundenlohn in Euro pro Stunde" placeholder="€/h"><input type="number" class="input text-right" x-model.number="p.failRate" title="Ausschuss-/Fehlerrate in Prozent" placeholder="%"><button class="btn btn-muted !p-2" @click="presets.profiles.splice(idx,1)" title="Profil löschen">×</button></div></template>
+            </div>
+          </section>
+
+          <section x-show="activeTab==='qr'" class="space-y-4">
+            <h3 class="font-extrabold text-slate-900">QR-Code</h3>
+            <label class="card p-3 flex items-center justify-between cursor-pointer" @click="qr.enabled=!qr.enabled; renderQr()"><span class="font-bold">QR-Code auf Dokument anzeigen</span><span class="toggle" :class="qr.enabled?'on':''"></span></label>
+            <div class="grid md:grid-cols-2 gap-3"><div><label class="label">Beschriftung</label><input class="input" x-model="qr.label" @input="renderQr"></div><div><label class="label">Typ</label><select class="input" x-model="qr.type" @change="renderQr"><option value="url">Website / Link</option><option value="email">E-Mail</option><option value="phone">Telefon</option><option value="text">Freitext</option><option value="payment">Zahlungslink</option></select></div><div class="md:col-span-2"><label class="label">Inhalt</label><textarea rows="4" class="input" x-model="qr.value" @input="renderQr"></textarea></div></div>
+          </section>
+
+
+          <section x-show="activeTab==='ausgabe'" class="space-y-4">
+            <h3 class="font-extrabold text-slate-900">Ausgabe & Prüfung</h3>
+            <div class="grid md:grid-cols-2 gap-3">
+              <label class="card p-4 flex items-center justify-between gap-3 cursor-pointer" @click="output.compactPdf=!output.compactPdf">
+                <div><strong>Kompaktmodus für PDF/Druck</strong><p class="hint mt-1">Reduziert Abstände, Schriftgrößen und QR-Code. Sinnvoll bei vielen Positionen oder langer transparenter Kalkulation.</p></div>
+                <span class="toggle" :class="output.compactPdf?'on':''"></span>
+              </label>
+              <label class="card p-4 flex items-center justify-between gap-3 cursor-pointer" :class="!output.compactPdf?'opacity-60':''" @click="output.compactForceArticle=!output.compactForceArticle">
+                <div><strong>Kompakt: nur Artikel anzeigen</strong><p class="hint mt-1">Blendet Material-/Kalkulationsdetails im Kompaktmodus nur für PDF/Vorschau aus. Intern bleiben die Dropdowns unverändert.</p></div>
+                <span class="toggle" :class="output.compactForceArticle?'on':''"></span>
+              </label>
+              <label class="card p-4 flex items-center justify-between gap-3 cursor-pointer" @click="output.showStorageInfo=!output.showStorageInfo">
+                <div><strong>Speicher-Hinweise anzeigen</strong><p class="hint mt-1">Blendet im Tool kurze Hinweise zu History, JSON und PDF ein.</p></div>
+                <span class="toggle" :class="output.showStorageInfo?'on':''"></span>
+              </label>
+            </div>
+            <div class="card p-4 text-sm text-slate-600 space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <div><strong>Tool-Version:</strong> <span x-text="appVersion"></span><br><span class="hint">Interne Versionsnummer der Plus-Version. Die öffentliche Datei kann trotzdem neutral <code>ws_3d_print_kostenrechner.html</code> heißen.</span></div>
+                <a class="btn btn-soft" href="ws_3d_print_kostenrechner_anleitung.html" target="_blank" rel="noopener">Anleitung öffnen</a>
+              </div>
+            </div>
+            <div class="card p-4 space-y-3">
+              <div class="flex items-center justify-between gap-3">
+                <div><h4 class="font-extrabold text-slate-800">Prüfmodus</h4><p class="hint">Prüft typische Stolperstellen vor PDF/Druck: Nummer, Kunde, Positionen, Steuertext, Bankdaten und lange Dokumente.</p></div>
+                <button class="btn btn-soft" @click="openPreflight()">Dokument prüfen</button>
+              </div>
+              <div class="grid md:grid-cols-4 gap-2 text-xs">
+                <div class="bg-slate-50 rounded-xl p-3 border"><strong>History</strong><br><span class="text-slate-500">Komfort-Verlauf im Browser.</span></div>
+                <div class="bg-slate-50 rounded-xl p-3 border"><strong>JSON</strong><br><span class="text-slate-500">Bearbeitbare Projektdatei.</span></div>
+                <div class="bg-slate-50 rounded-xl p-3 border"><strong>PDF</strong><br><span class="text-slate-500">Fertiges Kundendokument.</span></div>
+                <div class="bg-slate-50 rounded-xl p-3 border"><strong>Backup</strong><br><span class="text-slate-500">Sicherung der History.</span></div>
+              </div>
+            </div>
+          </section>
+
+          <section x-show="activeTab==='daten'" class="space-y-4">
+            <h3 class="font-extrabold text-slate-900">Daten & Zurücksetzen</h3>
+            <div class="card p-4 text-sm text-slate-600 space-y-2"><p><strong>Daten bleiben lokal im Browser.</strong> Es wird nichts an die Warenschmiede übertragen.</p><p>Für Rechnungen und Steuertexte gilt: bitte selbst prüfen oder fachlich prüfen lassen.</p></div>
+            <div class="card p-4 space-y-3">
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <h4 class="font-extrabold text-slate-800">History / zuletzt gemerkte Dokumente</h4>
+                  <p class="hint">Die History ist ein schneller lokaler Verlauf in genau diesem Browser. Sie ersetzt keine JSON-Projektdatei. Wenn eine Datei später auf einen anderen PC, USB-Stick oder anderen Browser wandert, weiß die History davon nichts.</p>
+                </div>
+                <div class="flex gap-2 shrink-0">
+                  <button class="btn btn-soft" @click="rememberHistory('Manuell gemerkt')">Aktuellen Stand merken</button>
+                  <button class="btn btn-muted" @click="historyOpen=true">History anzeigen</button>
+                </div>
+              </div>
+              <div x-show="historyNotice" class="hint bg-green-50 text-green-700 rounded-xl p-3 border border-green-200" x-text="historyNotice"></div>
+              <div class="grid md:grid-cols-3 gap-3 text-xs">
+                <div class="bg-slate-50 rounded-xl p-3 border border-slate-200"><strong>History</strong><br><span class="text-slate-500">Lokaler Schnellverlauf im gleichen Browser. Gleiche unveränderte Stände werden nicht doppelt angelegt.</span></div>
+                <div class="bg-slate-50 rounded-xl p-3 border border-slate-200"><strong>JSON speichern</strong><br><span class="text-slate-500">Ein einzelnes Projekt/Dokument zum Archivieren, Verschieben und später Laden. Die History ist darin nicht enthalten.</span></div>
+                <div class="bg-slate-50 rounded-xl p-3 border border-slate-200"><strong>PDF/Druck</strong><br><span class="text-slate-500">Fertiges Kundendokument. Nicht zum Weiterbearbeiten geeignet; dafür immer zusätzlich JSON speichern.</span></div>
+              </div>
+              <div class="card p-3 bg-amber-50 border-amber-200 text-xs text-amber-900">
+                <strong>Empfehlung:</strong> Pro Auftrag einen PC-Ordner anlegen und dort PDF + passende JSON-Datei ablegen. Die History ist bequem, aber kein Ersatz für deine eigene Ablage.
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button x-show="history.length" class="btn btn-muted" @click="exportHistory()">History-Backup speichern</button>
+                <label class="btn btn-muted cursor-pointer">History-Backup laden<input type="file" accept=".json" class="hidden" @change="importHistory"></label>
+                <button x-show="history.length" class="btn btn-muted hover:!text-red-600" @click="clearHistory()">History leeren</button>
+              </div>
+            </div>
+            <button class="btn btn-muted hover:!text-red-600" @click="resetAll()">Alle lokalen Daten zurücksetzen</button>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-layer no-print fixed inset-0 z-[60] modal bg-slate-950/65 flex items-center justify-center p-4" x-show="historyOpen" x-transition x-cloak>
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-7xl max-h-[92vh] overflow-hidden flex flex-col">
+      <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-900">History anzeigen</h2>
+          <p class="text-xs text-slate-500">Lokale Browser-History. Unveränderte Stände werden erkannt und nicht doppelt angelegt. Für dauerhafte Sicherung bitte zusätzlich als JSON speichern.</p>
+        </div>
+        <div class="flex gap-2">
+          <button x-show="history.length" class="btn btn-muted" @click="exportHistory()">Backup speichern</button>
+          <label class="btn btn-muted cursor-pointer">Backup laden<input type="file" accept=".json" class="hidden" @change="importHistory"></label>
+          <button class="btn btn-muted" @click="historyOpen=false">Schließen</button>
+        </div>
+      </div>
+      <div class="p-4 overflow-auto">
+        <div x-show="history.length" class="card p-4 mb-4 bg-slate-50">
+          <div class="grid lg:grid-cols-[1fr_180px_180px] gap-3 items-end">
+            <label class="block">
+              <span class="label">Suche</span>
+              <input class="input bg-white" type="search" x-model="historySearch" placeholder="Nummer, Kunde, Projekt, Betrag oder Grund suchen …">
+            </label>
+            <label class="block">
+              <span class="label">Zeitraum</span>
+              <select class="input bg-white" x-model="historyDateFilter">
+                <option value="all">Alle Einträge</option>
+                <option value="today">Heute</option>
+                <option value="30">Letzte 30 Tage</option>
+                <option value="year">Aktuelles Jahr</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="label">Sortierung</span>
+              <select class="input bg-white" x-model="historySort">
+                <option value="newest">Neueste zuerst</option>
+                <option value="oldest">Älteste zuerst</option>
+                <option value="number">Nummer aufsteigend</option>
+                <option value="amount_desc">Betrag absteigend</option>
+              </select>
+            </label>
+          </div>
+          <div class="hint mt-2">Die Suche filtert nur die lokale Browser-History. Projektdateien auf deinem PC bleiben davon unabhängig.</div>
+        </div>
+        <div x-show="history.length===0" class="card p-5 text-slate-500 text-sm">Noch keine History vorhanden. Nutze <strong>Merken</strong>, <strong>Speichern</strong>, <strong>Laden</strong> oder <strong>PDF/Druck</strong>, damit hier Einträge entstehen.</div>
+        <div x-show="history.length" class="grid lg:grid-cols-3 gap-4">
+          <template x-for="col in [{type:'angebot',title:'Angebote',prefix:'ANG-'},{type:'rechnung',title:'Rechnungen',prefix:'RE-'},{type:'lieferschein',title:'Lieferscheine',prefix:'LS-'}]" :key="col.type">
+            <section class="card p-4 min-w-0">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-extrabold text-slate-900" x-text="col.title"></h3>
+                <span class="text-[11px] font-bold px-2 py-1 rounded-lg bg-slate-100 text-slate-500" x-text="historyFiltered(col.type).length + ' / ' + historyByType(col.type).length + ' Einträge'"></span>
+              </div>
+              <div x-show="historyFiltered(col.type).length===0" class="hint bg-slate-50 border border-slate-200 rounded-xl p-3">Keine passenden Einträge für diesen Dokumenttyp oder Filter.</div>
+              <div class="space-y-2 max-h-[58vh] overflow-auto pr-1">
+                <template x-for="h in historyFiltered(col.type)" :key="h.id">
+                  <div class="bg-slate-50 rounded-xl border border-slate-200 p-3 space-y-2">
+                    <div class="flex items-start justify-between gap-2">
+                      <div class="min-w-0">
+                        <div class="font-extrabold text-slate-800 truncate" x-text="h.data?.doc?.number || 'ohne Nummer'"></div>
+                        <div class="text-xs text-slate-600 truncate" x-text="h.data?.customer?.name || 'kein Kunde'"></div>
+                        <div class="text-[11px] text-slate-500 truncate" x-text="h.data?.doc?.project || 'kein Betreff'"></div>
+                      </div>
+                      <div class="text-right text-[11px] text-slate-500 shrink-0" x-text="formatDateTime(h.savedAt)"></div>
+                    </div>
+                    <div class="flex items-center justify-between gap-2 text-[11px] text-slate-500">
+                      <span x-text="h.reason"></span>
+                      <span class="font-bold" x-text="historyTotal(h)"></span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                      <button class="btn btn-soft !py-2" @click="loadHistoryRecord(h)">Laden</button>
+                      <button class="btn btn-muted !py-2 hover:!text-red-600" @click="deleteHistoryById(h.id)">Löschen</button>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </section>
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal-layer no-print fixed inset-0 z-[70] modal bg-slate-950/65 flex items-center justify-center p-4" x-show="preflightOpen" x-transition x-cloak>
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-900">Prüfmodus</h2>
+          <p class="text-xs text-slate-500">Schneller Check vor PDF/Druck. Hinweise ersetzen keine steuerliche Prüfung.</p>
+        </div>
+        <button class="btn btn-muted" @click="preflightOpen=false">Schließen</button>
+      </div>
+      <div class="p-5 overflow-auto space-y-4">
+        <template x-if="preflightWarnings().length===0">
+          <div class="card p-5 bg-green-50 border-green-200 text-green-800">
+            <h3 class="font-extrabold text-lg">Sieht sauber aus.</h3>
+            <p class="text-sm mt-1">Keine typischen Pflicht- oder Plausibilitätsprobleme gefunden. Bitte Inhalt trotzdem fachlich prüfen.</p>
+          </div>
+        </template>
+        <template x-if="preflightWarnings().length>0">
+          <div class="space-y-2">
+            <template x-for="w in preflightWarnings()" :key="w.title">
+              <div class="rounded-xl border p-3" :class="w.level==='kritisch'?'bg-red-50 border-red-200 text-red-900':'bg-amber-50 border-amber-200 text-amber-900'">
+                <div class="flex items-start justify-between gap-3">
+                  <strong x-text="w.title"></strong>
+                  <span class="text-[10px] font-extrabold uppercase" x-text="w.level"></span>
+                </div>
+                <p class="text-sm mt-1" x-text="w.text"></p>
+              </div>
+            </template>
+          </div>
+        </template>
+        <div class="grid md:grid-cols-2 gap-3 text-xs">
+          <div class="bg-slate-50 rounded-xl p-3 border"><strong>Kompaktmodus</strong><br><span class="text-slate-500">Bei vielen Positionen oder transparenten Kalkulationen aktivieren.</span></div>
+          <div class="bg-slate-50 rounded-xl p-3 border"><strong>Archiv-Tipp</strong><br><span class="text-slate-500">Immer PDF und passende JSON zusammen im Kundenordner speichern.</span></div>
+        </div>
+      </div>
+      <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-between gap-2">
+        <button class="btn btn-muted" @click="preflightOpen=false">Zurück bearbeiten</button>
+        <div class="flex gap-2">
+          <button class="btn btn-soft" @click="output.compactPdf=!output.compactPdf" x-text="output.compactPdf?'Kompaktmodus aus':'Kompaktmodus an'"></button>
+          <button class="btn btn-primary" @click="forcePrint()">Jetzt PDF/Druck starten</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+function app(){ return {
+  appVersion:'1.9.2',
+  settingsOpen:false, historyOpen:false, preflightOpen:false, historyNotice:'', historySearch:'', historyDateFilter:'all', historySort:'newest', activeTab:'firma', tabs:[{id:'firma',label:'Firma'},{id:'design',label:'Logo & Design'},{id:'zahlung',label:'Zahlung'},{id:'steuer',label:'Steuer'},{id:'presets',label:'Presets'},{id:'qr',label:'QR-Code'},{id:'ausgabe',label:'Ausgabe'},{id:'daten',label:'Daten'}],
+  theme:{color:'#2563eb'},
+  company:{name:'',owner:'',slogan:'',street:'',zip:'',city:'',email:'',phone:'',logo:'',logoWidth:90},
+  customer:{name:'',address:'',id:'',contact:''},
+  doc:{type:'angebot',number:'ANG-2026-001',date:new Date().toISOString().slice(0,10),project:'',validUntil:'',dueDate:''},
+  payment:{bank:'',accountName:'',iban:'',bic:'',days:14,link:'',showOnOffer:false},
+  tax:{enabled:false,rate:19,profile:'de_small',customText:'Gemäß Kleinunternehmerregelung wird keine Umsatzsteuer berechnet.\nDer Rechnungsbetrag ist ohne Abzug fällig.'},
+  qr:{enabled:false,type:'url',value:'https://www.warenschmiede.com/',label:'Zur Website'},
+  output:{compactPdf:false, compactForceArticle:false, showStorageInfo:true},
+  presets:{materials:[],printers:[],profiles:[]}, jobs:[], extras:[{desc:'Versandpauschale',qty:1,price:4.90}], history:[],
+  init(){ const hist=localStorage.getItem('ws3d-plus-history'); if(hist){ try{ this.history=JSON.parse(hist)||[]; }catch(e){ this.history=[]; } } const saved=localStorage.getItem('ws3d-plus'); if(saved){ try{ this.applySnapshot(JSON.parse(saved)); }catch(e){} } else { this.seed(); this.addJob(); } this.$watch('$data',()=>{ localStorage.setItem('ws3d-plus', JSON.stringify(this.snapshot())); this.$nextTick(()=>this.renderQr()); },{deep:true}); this.$nextTick(()=>this.renderQr()); },
+  applySnapshot(data){ if(!data) return; const keepHistory=this.history; const keepOpen=this.historyOpen; const keepNotice=this.historyNotice; Object.assign(this, data); if(!this.output) this.output={compactPdf:false,compactForceArticle:false,showStorageInfo:true}; if(this.output.compactForceArticle===undefined) this.output.compactForceArticle=false; this.history=keepHistory; this.historyOpen=keepOpen; this.historyNotice=keepNotice; },
+  seed(){ this.presets.materials=[{id:'pla',name:'PLA Standard',priceKg:20,co2:2.5},{id:'pla_plus',name:'PLA+',priceKg:25,co2:2.6},{id:'petg',name:'PETG',priceKg:25,co2:3.5},{id:'asa',name:'ASA',priceKg:35,co2:4.2},{id:'tpu',name:'TPU',priceKg:38,co2:3.2},{id:'custom',name:'Eigenes Material',priceKg:25,co2:0}]; this.presets.printers=[{id:'a1',name:'Bambu Lab A1 / ähnlich',watts:180,machineHourly:1.5,loadFactor:70},{id:'x1c',name:'Bambu Lab X1C / ähnlich',watts:250,machineHourly:2.5,loadFactor:75},{id:'custom',name:'Eigener Drucker',watts:200,machineHourly:2,loadFactor:70}]; this.presets.profiles=[{id:'standard',name:'Standard Verkauf',marginPercent:35,laborMinutes:10,hourlyRate:50,failRate:5},{id:'hobby',name:'Selbstkosten / Hobby',marginPercent:10,laborMinutes:5,hourlyRate:25,failRate:3},{id:'business',name:'Gewerblich sauber',marginPercent:60,laborMinutes:15,hourlyRate:60,failRate:8},{id:'express',name:'Express / Einzelstück',marginPercent:85,laborMinutes:20,hourlyRate:70,failRate:10}]; },
+  softColor(hex){ const h=hex.replace('#',''); const r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16); return `rgba(${r},${g},${b},.13)`; },
+  uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); },
+  blankJob(){ const j={id:this.uid(),open:true,name:'',quantity:1,materialId:this.presets.materials[0]?.id||'custom',printerId:this.presets.printers[0]?.id||'custom',profileId:this.presets.profiles[0]?.id||'standard',publicMode:'compact',weight:0,time:0,priceKg:25,energyPrice:.40,watts:200,loadFactor:70,machineHourly:2,laborMinutes:10,hourlyRate:50,failRate:5,fixedCost:0,marginPercent:35,manual:false,manualPrice:0}; this.applyMaterial(j); this.applyPrinter(j); this.applyProfile(j); return j; },
+  addJob(){ this.jobs.push(this.blankJob()); }, removeJob(i){ this.jobs.splice(i,1); }, duplicateJob(i){ const c=JSON.parse(JSON.stringify(this.jobs[i])); c.id=this.uid(); c.open=true; c.name=c.name?c.name+' Kopie':''; this.jobs.splice(i+1,0,c); },
+  addMaterial(){ this.presets.materials.push({id:this.uid(),name:'Neues Material',priceKg:25,co2:0}); }, addPrinter(){ this.presets.printers.push({id:this.uid(),name:'Neuer Drucker',watts:200,machineHourly:2,loadFactor:70}); }, addProfile(){ this.presets.profiles.push({id:this.uid(),name:'Neues Profil',marginPercent:30,laborMinutes:10,hourlyRate:50,failRate:5}); },
+  applyMaterial(j){ const m=this.presets.materials.find(x=>x.id===j.materialId); if(m) j.priceKg=m.priceKg; }, applyPrinter(j){ const p=this.presets.printers.find(x=>x.id===j.printerId); if(p){ j.watts=p.watts; j.machineHourly=p.machineHourly; j.loadFactor=p.loadFactor; } }, applyProfile(j){ const p=this.presets.profiles.find(x=>x.id===j.profileId); if(p){ j.marginPercent=p.marginPercent; j.laborMinutes=p.laborMinutes; j.hourlyRate=p.hourlyRate; j.failRate=p.failRate; } },
+  toggleManual(j){ j.manual=!j.manual; if(j.manual) j.manualPrice=Number(this.calculatedUnit(j).toFixed(2)); },
+  calcParts(j){ const mat=(Number(j.weight)||0)/1000*(Number(j.priceKg)||0); const kwh=(Number(j.watts)||0)*(Number(j.loadFactor)||0)/100/1000*(Number(j.time)||0); const energy=kwh*(Number(j.energyPrice)||0); const machine=(Number(j.time)||0)*(Number(j.machineHourly)||0); const labor=(Number(j.laborMinutes)||0)/60*(Number(j.hourlyRate)||0); const base=mat+energy+machine+labor+(Number(j.fixedCost)||0); const fail=base*(Number(j.failRate)||0)/100; const self=base+fail; const margin=self*(Number(j.marginPercent)||0)/100; return {mat,energy,machine,labor,fix:Number(j.fixedCost)||0,fail,self,margin,total:self+margin}; },
+  calculatedUnit(j){ return this.calcParts(j).total; }, unitPrice(j){ return j.manual ? (Number(j.manualPrice)||0) : this.calculatedUnit(j); }, positionTotal(j){ return this.unitPrice(j)*(Number(j.quantity)||0); },
+  breakdown(j){ const p=this.calcParts(j); return [{label:'Material',value:p.mat},{label:'Strom',value:p.energy},{label:'Maschine',value:p.machine},{label:'Arbeit',value:p.labor},{label:'Fixkosten',value:p.fix},{label:'Ausschuss',value:p.fail},{label:'Selbstkosten',value:p.self},{label:'Marge',value:p.margin},{label:'Verkaufspreis netto',value:p.total}]; },
+  documentLines(){ const lines=this.jobs.map((j,i)=>{ const m=this.presets.materials.find(x=>x.id===j.materialId); const mode=(this.output?.compactPdf && this.output?.compactForceArticle) ? 'compact' : j.publicMode; let details=''; if(mode==='normal') details=`Material: ${m?.name||''} · ${j.weight||0} g · ${j.time||0} h Druckzeit`; let transparent=''; if(mode==='transparent'){ const p=this.calcParts(j); transparent=`Kalkulation sichtbar:\nMaterial ${this.money(p.mat)}, Strom ${this.money(p.energy)}, Maschine ${this.money(p.machine)}, Arbeit ${this.money(p.labor)}, Ausschuss/Fix ${this.money(p.fail+p.fix)}, Marge ${this.money(p.margin)}`; } return {key:j.id,desc:j.name||'3D-Druck Bauteil',qty:j.quantity,price:this.unitPrice(j),total:this.positionTotal(j),details,transparent,units: transparent ? (this.output?.compactPdf?3:4) : (details ? 2 : 1)}; }); this.extras.forEach((e,i)=>lines.push({key:'e'+i,desc:e.desc||'Zusatzposition',qty:e.qty||1,price:e.price||0,total:(e.qty||1)*(e.price||0),units:1})); return lines.map((l,i)=>({...l,pos:String(i+1).padStart(2,'0')})); },
+  getPages(){ const all=this.documentLines(); const pages=[]; let cur=[]; let used=0; let limit=this.output?.compactPdf?16:10; const nextLimit=this.output?.compactPdf?24:16; const push=()=>{ pages.push({number:pages.length+1,first:pages.length===0,lines:cur}); cur=[]; used=0; limit=nextLimit; }; all.forEach(line=>{ const u=Math.max(1,line.units||1); if(cur.length && used+u>limit) push(); cur.push(line); used+=u; }); if(cur.length || !pages.length) push(); pages.forEach((p,i)=>{ p.totalPages=pages.length; p.last=i===pages.length-1; }); return pages; },
+  subtotal(){ return this.documentLines().reduce((s,l)=>s+(Number(l.total)||0),0); }, vat(){ return this.tax.enabled ? this.subtotal()*(Number(this.tax.rate)||0)/100 : 0; }, total(){ return this.subtotal()+this.vat(); }, money(v){ return new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(Number(v)||0); }, date(d){ return d?new Date(d+'T00:00:00').toLocaleDateString('de-DE'):''; },
+  titleForDoc(){ return this.doc.type==='rechnung'?'Rechnung':this.doc.type==='lieferschein'?'Lieferschein':'Angebot'; }, setDocType(t){ this.doc.type=t; const core=(this.doc.number||'001').replace(/^(ANG|RE|LS)-/,''); this.doc.number=(t==='rechnung'?'RE-':t==='lieferschein'?'LS-':'ANG-')+core; },
+  activeLegalText(){ if(this.tax.profile==='custom' || this.tax.profile==='ch_custom') return this.tax.customText; if(this.tax.profile==='de_vat') return `Leistungsdatum entspricht Rechnungsdatum.\nZahlbar innerhalb von ${this.payment.days||14} Tagen netto.`; if(this.tax.profile==='at_small') return `Umsatzsteuerfrei aufgrund der Kleinunternehmerregelung.\nZahlbar innerhalb von ${this.payment.days||14} Tagen ohne Abzug.`; return this.tax.customText || `Gemäß §19 UStG wird keine Umsatzsteuer berechnet.\nZahlbar innerhalb von ${this.payment.days||14} Tagen ohne Abzug.`; },
+  showBankOnDocument(){ return this.doc.type==='rechnung' || (this.doc.type==='angebot' && this.payment.showOnOffer); },
+  qrContent(){ if(this.qr.type==='payment') return this.payment.link || this.qr.value; if(this.qr.type==='email') return 'mailto:'+this.qr.value; if(this.qr.type==='phone') return 'tel:'+this.qr.value; return this.qr.value; },
+  renderQr(){ this.$nextTick(()=>{ const els=document.querySelectorAll('.qrPrint'); if(!els.length) return; els.forEach(el=>{ el.innerHTML=''; if(this.qr.enabled && window.QRCode && this.qrContent()) new QRCode(el,{text:this.qrContent(),width:72,height:72,correctLevel:QRCode.CorrectLevel.M}); }); }); },
+  loadLogo(e){ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>this.company.logo=ev.target.result; r.readAsDataURL(f); e.target.value=''; },
+  snapshot(){ return {theme:this.theme,company:this.company,customer:this.customer,doc:this.doc,payment:this.payment,tax:this.tax,qr:this.qr,output:this.output,presets:this.presets,jobs:this.jobs,extras:this.extras}; },
+  historyLabel(){ const parts=[this.titleForDoc(), this.doc.number||'ohne Nummer']; if(this.customer.name) parts.push(this.customer.name); if(this.doc.project) parts.push(this.doc.project); return parts.join(' · '); },
+  stableStringify(obj){
+    const seen=new WeakSet();
+    const norm=(v)=>{
+      if(v && typeof v==='object'){
+        if(seen.has(v)) return null;
+        seen.add(v);
+        if(Array.isArray(v)) return v.map(norm);
+        return Object.keys(v).sort().reduce((a,k)=>{ a[k]=norm(v[k]); return a; },{});
+      }
+      return v;
+    };
+    return JSON.stringify(norm(obj));
+  },
+  historyKey(data){
+    let str=this.stableStringify(data);
+    let h=0;
+    for(let i=0;i<str.length;i++){ h=((h<<5)-h)+str.charCodeAt(i); h|=0; }
+    return String(h)+'-'+str.length;
+  },
+  saveHistoryStore(){ localStorage.setItem('ws3d-plus-history', JSON.stringify(this.history.slice(0,500))); },
+  rememberHistory(reason='Manuell gemerkt'){
+    const data=JSON.parse(JSON.stringify(this.snapshot()));
+    const key=this.historyKey(data);
+    const existingIndex=this.history.findIndex(h=>h.key===key);
+    if(existingIndex>=0){
+      const existing=this.history[existingIndex];
+      existing.savedAt=new Date().toISOString();
+      existing.reason=reason+' · unverändert erkannt';
+      existing.label=this.historyLabel();
+      this.history.splice(existingIndex,1);
+      this.history=[existing, ...this.history].slice(0,500);
+      this.saveHistoryStore();
+      this.historyNotice='Stand war bereits in der History – Eintrag wurde nach oben verschoben.';
+      setTimeout(()=>{ this.historyNotice=''; },4000);
+      return;
+    }
+    const item={id:this.uid(),key,savedAt:new Date().toISOString(),reason,label:this.historyLabel(),data};
+    this.history=[item, ...this.history].slice(0,500);
+    this.saveHistoryStore();
+    this.historyNotice='Neuer Stand in der lokalen History gespeichert: '+(this.doc.number||this.titleForDoc());
+    setTimeout(()=>{ this.historyNotice=''; },4000);
+  },
+  historyByType(t){ return this.history.filter(h=>(h.data?.doc?.type||'angebot')===t).sort((a,b)=>new Date(b.savedAt)-new Date(a.savedAt)); },
+  historyAmount(h){ const d=h?.data; if(!d) return 0; const jobs=d.jobs||[], extras=d.extras||[]; const jobSum=jobs.reduce((s,j)=>{ const unit=j.manual ? (Number(j.manualPrice)||0) : this.calcPartsFor(j).total; return s + unit*(Number(j.quantity)||0); },0); const extraSum=extras.reduce((s,e)=>s+(Number(e.qty)||1)*(Number(e.price)||0),0); const vat=(d.tax?.enabled ? (jobSum+extraSum)*(Number(d.tax?.rate)||0)/100 : 0); return jobSum+extraSum+vat; },
+  historyTotal(h){ return this.money(this.historyAmount(h)); },
+  historyFiltered(t){
+    const q=String(this.historySearch||'').toLowerCase().trim();
+    const now=new Date();
+    let list=this.historyByType(t).filter(h=>{
+      const saved=h.savedAt ? new Date(h.savedAt) : new Date(0);
+      if(this.historyDateFilter==='today' && saved.toDateString()!==now.toDateString()) return false;
+      if(this.historyDateFilter==='30' && (now-saved)>(30*24*60*60*1000)) return false;
+      if(this.historyDateFilter==='year' && saved.getFullYear()!==now.getFullYear()) return false;
+      if(!q) return true;
+      const d=h.data||{};
+      const hay=[h.reason,h.label,d.doc?.number,d.doc?.project,d.customer?.name,d.customer?.address,this.historyTotal(h),this.formatDateTime(h.savedAt)].filter(Boolean).join(' ').toLowerCase();
+      return hay.includes(q);
+    });
+    if(this.historySort==='oldest') list=list.sort((a,b)=>new Date(a.savedAt)-new Date(b.savedAt));
+    if(this.historySort==='number') list=list.sort((a,b)=>String(a.data?.doc?.number||'').localeCompare(String(b.data?.doc?.number||''),'de',{numeric:true}));
+    if(this.historySort==='amount_desc') list=list.sort((a,b)=>this.historyAmount(b)-this.historyAmount(a));
+    return list;
+  },
+  calcPartsFor(j){ const mat=(Number(j.weight)||0)/1000*(Number(j.priceKg)||0); const kwh=(Number(j.watts)||0)*(Number(j.loadFactor)||0)/100/1000*(Number(j.time)||0); const energy=kwh*(Number(j.energyPrice)||0); const machine=(Number(j.time)||0)*(Number(j.machineHourly)||0); const labor=(Number(j.laborMinutes)||0)/60*(Number(j.hourlyRate)||0); const base=mat+energy+machine+labor+(Number(j.fixedCost)||0); const fail=base*(Number(j.failRate)||0)/100; const self=base+fail; const margin=self*(Number(j.marginPercent)||0)/100; return {total:self+margin}; },
+  loadHistoryRecord(h){ if(!h) return; if(confirm('Diesen gespeicherten Stand laden? Der aktuelle Arbeitsstand wird ersetzt.')){ this.applySnapshot(JSON.parse(JSON.stringify(h.data))); this.historyOpen=false; this.renderQr(); } },
+  loadHistoryItem(i){ this.loadHistoryRecord(this.history[i]); },
+  deleteHistoryById(id){ if(confirm('Diesen History-Eintrag wirklich löschen?')){ this.history=this.history.filter(h=>h.id!==id); this.saveHistoryStore(); } },
+  deleteHistoryItem(i){ if(confirm('Diesen History-Eintrag wirklich löschen?')){ this.history.splice(i,1); this.saveHistoryStore(); } },
+  clearHistory(){ if(confirm('History wirklich leeren?')){ this.history=[]; this.saveHistoryStore(); } },
+  prefixForType(t){ return t==='rechnung'?'RE':t==='lieferschein'?'LS':'ANG'; },
+  nextNumberSuggestion(t=this.doc.type){
+    const prefix=this.prefixForType(t);
+    const year=new Date().getFullYear();
+    let max=0;
+    (this.history||[]).forEach(h=>{
+      const n=h?.data?.doc?.number || '';
+      const m=String(n).match(new RegExp('^'+prefix+'-(\\d{4})-(\\d+)$'));
+      if(m && Number(m[1])===year) max=Math.max(max, Number(m[2])||0);
+    });
+    const current=String(this.doc.number||'').match(new RegExp('^'+prefix+'-'+year+'-(\\d+)$'));
+    if(current) max=Math.max(max, Number(current[1])||0);
+    return `${prefix}-${year}-${String(max+1).padStart(3,'0')}`;
+  },
+  useNextNumber(){ this.doc.number=this.nextNumberSuggestion(this.doc.type); },
+  exportHistory(){
+    const payload={kind:'Warenschmiede 3D-Druck Kostenrechner Plus History Backup',version:1,toolVersion:this.appVersion,exportedAt:new Date().toISOString(),history:this.history||[]};
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='ws_3d_print_kostenrechner_history_'+new Date().toISOString().slice(0,10)+'.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    this.historyNotice='History-Backup wurde als JSON gespeichert.';
+    setTimeout(()=>{ this.historyNotice=''; },4000);
+  },
+  importHistory(e){
+    const f=e.target.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=ev=>{
+      try{
+        const payload=JSON.parse(ev.target.result);
+        const imported=Array.isArray(payload) ? payload : (payload.history||[]);
+        if(!Array.isArray(imported)) throw new Error('Keine History gefunden');
+        const byKey=new Map((this.history||[]).map(h=>[h.key||h.id,h]));
+        imported.forEach(h=>{ if(h && h.data){ byKey.set(h.key||h.id||this.historyKey(h.data), h); } });
+        this.history=Array.from(byKey.values()).sort((a,b)=>new Date(b.savedAt||0)-new Date(a.savedAt||0)).slice(0,500);
+        this.saveHistoryStore();
+        this.historyNotice='History-Backup geladen und mit vorhandener History zusammengeführt.';
+        setTimeout(()=>{ this.historyNotice=''; },5000);
+      }catch(err){ alert('History-Backup konnte nicht geladen werden.'); }
+    };
+    r.readAsText(f); e.target.value='';
+  },
+  formatDateTime(v){ return v ? new Date(v).toLocaleString('de-DE') : ''; },
+
+  preflightWarnings(){
+    const w=[];
+    const hasLines=this.documentLines().length>0;
+    if(!this.doc.number) w.push({level:'kritisch',title:'Dokumentnummer fehlt',text:'Bitte eine eindeutige Nummer eintragen oder den Nummernvorschlag übernehmen.'});
+    if(!this.customer.name) w.push({level:'hinweis',title:'Kunde fehlt',text:'Für ein echtes Dokument sollte mindestens Name/Firma des Kunden eingetragen sein.'});
+    if(!hasLines) w.push({level:'kritisch',title:'Keine Positionen vorhanden',text:'Es gibt weder 3D-Druckpositionen noch Zusatzpositionen. Das Dokument wäre leer.'});
+    if(this.doc.type==='rechnung' && (!this.doc.dueDate)) w.push({level:'hinweis',title:'Fälligkeitsdatum fehlt',text:'Bei Rechnungen ist ein Fälligkeitsdatum praktisch und sauberer.'});
+    if(this.doc.type==='rechnung' && this.showBankOnDocument() && (!this.payment.iban || !this.payment.bic)) w.push({level:'hinweis',title:'Bankdaten unvollständig',text:'Bei Rechnungen werden Bankdaten angezeigt. IBAN/BIC sind noch nicht vollständig eingetragen.'});
+    if(this.doc.type!=='lieferschein' && !String(this.activeLegalText()||'').trim()) w.push({level:'hinweis',title:'Rechtstext fehlt',text:'Für Angebot/Rechnung sollte ein passender Steuer- oder Zahlungshinweis eingetragen sein.'});
+    if(this.qr.enabled && !this.qrContent()) w.push({level:'hinweis',title:'QR-Code ohne Inhalt',text:'Der QR-Code ist aktiviert, aber es ist kein nutzbarer Inhalt hinterlegt.'});
+    const pages=this.getPages().length;
+    if(pages>2 && !this.output.compactPdf) w.push({level:'hinweis',title:'Mehrseitiges Dokument',text:'Das Dokument hat '+pages+' Seiten. Der Kompaktmodus kann bei langen Rechnungen helfen.'});
+    if(this.jobs.some(j=>j.publicMode==='transparent') && !this.output.compactPdf) w.push({level:'hinweis',title:'Transparente Kalkulation braucht Platz',text:'Mindestens eine Position zeigt die Kalkulation. Bei vielen Positionen kann der Kompaktmodus sinnvoll sein.'});
+    return w;
+  },
+  openPreflight(){ this.preflightOpen=true; },
+  forcePrint(){ this.preflightOpen=false; this.rememberHistory('PDF/Druck gestartet'); document.title=`${this.titleForDoc()}_${this.doc.number||''}`; window.print(); },
+  exportFile(){ this.rememberHistory('Als JSON gespeichert'); const blob=new Blob([JSON.stringify(this.snapshot(),null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(this.doc.number||'kalkulation')+'.json'; a.click(); URL.revokeObjectURL(a.href); },
+  importFile(e){ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{ try{ this.applySnapshot(JSON.parse(ev.target.result)); this.rememberHistory('Aus JSON geladen'); this.renderQr(); }catch(err){ alert('Datei konnte nicht geladen werden.'); } }; r.readAsText(f); e.target.value=''; },
+  printDoc(){ const issues=this.preflightWarnings(); if(issues.length){ this.preflightOpen=true; return; } this.forcePrint(); }, resetAll(){ if(confirm('Alle lokal gespeicherten Daten und die History löschen?')){ localStorage.removeItem('ws3d-plus'); localStorage.removeItem('ws3d-plus-history'); location.reload(); } }
+}}
+</script>
+</body>
+</html>
