@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Suite - Warenschmiede</title>
-    <link href="styles.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="ws.png">
+    <link href="../styles.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../ws.png">
     <meta name="robots" content="noindex, nofollow">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <style>
@@ -321,7 +321,7 @@
                 <h1>🛠️ Warenschmiede Admin Suite</h1>
                 <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">Manage content, check SEO, and view inventory.</p>
             </div>
-            <a href="index.html" class="btn">🏠 Zur Startseite</a>
+            <a href="../index.html" class="btn">🏠 Zur Startseite</a>
         </header>
 
         <div class="tabs">
@@ -353,7 +353,7 @@
                 <p>Inventory loaded: <span id="inventory-status" style="font-weight: bold;">Checking...</span></p>
                 <div style="margin-top: 15px;">
                     <button onclick="loadInventory()" class="btn">🔄 Reload Inventory</button>
-                    <a href="generate_inventory.py" class="btn" style="margin-left: 10px;">📄 View Script</a>
+                    <a href="../generate_inventory.py" class="btn" style="margin-left: 10px;">📄 View Script</a>
                 </div>
                 <p style="margin-top: 10px; font-size: 0.85rem; color: #777;">
                     Note: If you add new files, you must run <code>python3 generate_inventory.py</code> on the server/local machine to update <code>site_inventory.json</code>.
@@ -442,7 +442,7 @@
         // LOAD INVENTORY
         async function loadInventory() {
             try {
-                const response = await fetch('site_inventory.json?v=' + Date.now());
+                const response = await fetch('../site_inventory.json?v=' + Date.now());
                 if (!response.ok) throw new Error("Failed to load inventory. Ensure site_inventory.json exists.");
                 inventory = await response.json();
 
@@ -564,9 +564,17 @@
             return value.toLowerCase();
         }
 
+        function toAdminRelativePath(input) {
+            if (!input) return input;
+            const value = String(input).trim();
+            if (/^(https?:)?\/\//i.test(value) || value.startsWith('data:') || value.startsWith('#')) return value;
+            if (value.startsWith('../') || value.startsWith('./')) return value;
+            return '../' + value.replace(/^\//, '');
+        }
+
         async function fetchSitemap() {
             try {
-                const res = await fetch('sitemap.xml');
+                const res = await fetch('../sitemap.xml');
                 if (!res.ok) throw new Error("Sitemap not found");
                 const text = await res.text();
                 const parser = new DOMParser();
@@ -607,7 +615,7 @@
 
                 // Fetch page content
                 try {
-                    const res = await fetch(page);
+                    const res = await fetch(toAdminRelativePath(page));
                     if(!res.ok) throw new Error(res.status);
 
                     const text = await res.text();
@@ -682,7 +690,7 @@
 
                     rows.push(`
                         <tr>
-                            <td><a href="${page}" target="_blank" style="font-weight:bold; text-decoration:none; color:#027eb5;">${page}</a></td>
+                            <td><a href="${toAdminRelativePath(page)}" target="_blank" style="font-weight:bold; text-decoration:none; color:#027eb5;">${page}</a></td>
                             <td class="${titleStatus}">${titleText}</td>
                             <td class="${descStatus}">${descDisplay}</td>
                             <td class="${h1CellStatus}">${h1CellText}</td>
@@ -760,7 +768,7 @@
             document.getElementById('file-content').value = "Loading...";
 
             try {
-                const res = await fetch(path);
+                const res = await fetch(toAdminRelativePath(path));
                 currentFileContent = await res.text();
                 document.getElementById('file-content').value = currentFileContent;
             } catch (e) {
@@ -798,7 +806,7 @@
                 div.className = 'gallery-item';
                 div.innerHTML = `
                     <div class="gallery-img-container" onclick="copyToClipboard('${img}')">
-                        <img src="${img}" class="gallery-img" loading="lazy">
+                        <img src="${toAdminRelativePath(img)}" class="gallery-img" loading="lazy">
                     </div>
                     <div class="gallery-info" onclick="copyToClipboard('${img}')" title="${img}">
                         ${img.split('/').pop()}
@@ -822,7 +830,7 @@
              inventory.downloads.forEach(dl => {
                  const li = document.createElement('li');
                  const name = dl.split('/').pop();
-                 li.innerHTML = `<a href="${dl}" download><span class="download-icon">📦</span> ${name} <span style="font-size:0.8em; color:#888;">(${dl})</span></a>`;
+                 li.innerHTML = `<a href="${toAdminRelativePath(dl)}" download><span class="download-icon">📦</span> ${name} <span style="font-size:0.8em; color:#888;">(${dl})</span></a>`;
                  list.appendChild(li);
              });
         }
