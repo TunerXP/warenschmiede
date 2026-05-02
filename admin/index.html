@@ -543,14 +543,16 @@
         function normalizeComparablePath(input) {
             if (!input) return 'index.html';
             let value = String(input).trim();
-            value = value.replace(/^https?:\/\/(www\.)?warenschmiede\.com/i, '');
-            value = value.replace(/^https?:\/\/[^\/]+/i, '');
+            // Match any domain structure specifically related to warenschmiede including www/non-www
+            value = value.replace(/^https?:\/\/(www\.)?warenschmiede\.com\/?/i, '');
+            // General external domains or absolute URLs without specific mapping
+            value = value.replace(/^https?:\/\/[^\/]+\/?/i, '');
             value = value.split('#')[0].split('?')[0];
             value = value.replace(/^\.?\//, '');
             if (!value) return 'index.html';
             if (value.endsWith('/')) value += 'index.html';
-            value = value.replace(/\/index\.html$/i, '.html');
-            if (value === '.html') value = 'index.html';
+            value = value.replace(/\/index\.html$/i, '/index.html');
+            if (value === '.html' || value === '/') value = 'index.html';
             return value.toLowerCase();
         }
 
@@ -613,9 +615,16 @@
                     const doc = parser.parseFromString(text, 'text/html');
 
                     const title = doc.querySelector('title')?.innerText || '';
-                    const descMeta = doc.querySelector('meta[name="description"]');
-                    const desc = descMeta ? descMeta.content : '';
-                    const h1 = doc.querySelector('h1')?.innerText || '';
+                    const descMeta = doc.querySelector('meta[name="description" i]');
+                    const desc = descMeta ? descMeta.content || descMeta.getAttribute('content') : '';
+                    let h1 = '';
+                    const h1El = doc.querySelector('h1');
+                    if (h1El) {
+                        // Replace <br> tags with spaces before extracting text
+                        const clone = h1El.cloneNode(true);
+                        clone.querySelectorAll('br').forEach(br => br.replaceWith(' '));
+                        h1 = clone.innerText.replace(/\s+/g, ' ').trim();
+                    }
                     const ogImage = doc.querySelector('meta[property="og:image"]');
                     const ogContent = ogImage ? ogImage.content : '';
 
