@@ -365,7 +365,7 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <div>
                     <h3>SEO Scanner (Client-Side)</h3>
-                    <p style="font-size: 0.9rem; color: #666;">Checks Title, Description, H1, and OG:Image availability.</p>
+                    <p style="font-size: 0.9rem; color: #666;">Checks Title, Description, H1, OG:Image, Robots und Abgleich mit Sitemap/Inventory.</p>
                 </div>
                 <div>
                     <button onclick="downloadSeoReport()" class="btn" style="margin-right: 10px;">💾 Bericht speichern</button>
@@ -386,7 +386,7 @@
                         </tr>
                     </thead>
                     <tbody id="seo-results">
-                        <tr><td colspan="5" style="text-align: center; padding: 30px;">Click 'Scan Starten' to analyze all HTML files found in inventory.</td></tr>
+                        <tr><td colspan="7" style="text-align: center; padding: 30px;">Click 'Scan Starten' to analyze all HTML files found in inventory.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -462,6 +462,28 @@
 
         function renderDashboard() {
             const container = document.getElementById('stats-container');
+            const seoStats = `
+                <div class="stat-card">
+                    <div class="stat-number">${lastSeoSummary.inventoryHtmlCount || inventory.html.length}</div>
+                    <div class="stat-label">Inventory HTML</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${lastSeoSummary.sitemapUrlCount || 0}</div>
+                    <div class="stat-label">Sitemap URLs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${lastSeoSummary.indexableCount || 0}</div>
+                    <div class="stat-label">Indexierbar</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${lastSeoSummary.noindexCount || 0}</div>
+                    <div class="stat-label">Noindex Seiten</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${(lastSeoSummary.warnings || 0) + (lastSeoSummary.errors || 0)}</div>
+                    <div class="stat-label">SEO Warn/Fehler</div>
+                </div>
+            `;
             container.innerHTML = `
                 <div class="stat-card">
                     <div class="stat-number">${inventory.html.length}</div>
@@ -479,11 +501,20 @@
                     <div class="stat-number">${inventory.downloads.length}</div>
                     <div class="stat-label">Downloads</div>
                 </div>
+                ${seoStats}
             `;
         }
 
         // SEO SCANNER
         let lastSeoResults = []; // Store results for export
+        let lastSeoSummary = {
+            inventoryHtmlCount: 0,
+            sitemapUrlCount: 0,
+            indexableCount: 0,
+            noindexCount: 0,
+            warnings: 0,
+            errors: 0
+        };
 
         function downloadSeoReport() {
             if (lastSeoResults.length === 0) {
@@ -519,6 +550,20 @@
             URL.revokeObjectURL(url);
         }
 
+        function normalizeComparablePath(input) {
+            if (!input) return 'index.html';
+            let value = String(input).trim();
+            value = value.replace(/^https?:\/\/(www\.)?warenschmiede\.com/i, '');
+            value = value.replace(/^https?:\/\/[^\/]+/i, '');
+            value = value.split('#')[0].split('?')[0];
+            value = value.replace(/^\.?\//, '');
+            if (!value) return 'index.html';
+            if (value.endsWith('/')) value += 'index.html';
+            value = value.replace(/\/index\.html$/i, '.html');
+            if (value === '.html') value = 'index.html';
+            return value.toLowerCase();
+        }
+
         async function fetchSitemap() {
             try {
                 const res = await fetch('sitemap.xml');
@@ -529,12 +574,8 @@
                 const locs = xmlDoc.querySelectorAll("loc");
                 const urls = new Set();
                 locs.forEach(loc => {
-                    let url = loc.textContent.trim();
-                    // Normalize: remove domain "https://warenschmiede.com/" or "http://..."
-                    url = url.replace(/^https?:\/\/[^\/]+\/?/, '');
-                    if (url === '') url = 'index.html'; // Root is index.html
-                    if (url.endsWith('/')) url += 'index.html'; // Handle directory paths
-                    urls.add(url);
+                    const normalized = normalizeComparablePath(loc.textContent || '');
+                    urls.add(normalized);
                 });
                 return urls;
             } catch (e) {
@@ -549,11 +590,16 @@
 
             // Fetch Sitemap first
             const sitemapUrls = await fetchSitemap();
+            const inventoryNormalized = new Set((inventory?.html || []).map(normalizeComparablePath));
 
             // Clear current list to rebuild
             const rows = [];
             lastSeoResults = []; // Reset storage
             let count = 0;
+            let indexableCount = 0;
+            let noindexCount = 0;
+            let warnings = 0;
+            let errors = 0;
 
             for (const page of inventory.html) {
                 count++;
@@ -597,24 +643,41 @@
                     const ogStatus = ogContent ? '✅' : '⚠️';
 
                     // Robots Check
-                    const isNoIndex = robotsContent.toLowerCase().includes('noindex');
-                    const robotsStatus = isNoIndex ? 'status-error' : 'status-ok';
-                    const robotsDisplay = isNoIndex ? '🛑 noindex' : '✅ index';
+                    const robotsRaw = (robotsContent || 'index,follow').toLowerCase();
+                    const isNoIndex = robotsRaw.includes('noindex');
+                    const isNoIndexFollow = robotsRaw.includes('noindex') && robotsRaw.includes('follow');
+                    const isIndexFollow = robotsRaw.includes('index') && robotsRaw.includes('follow') && !isNoIndex;
+                    const robotsStatus = isNoIndex ? 'status-warn' : 'status-ok';
+                    const robotsDisplay = isNoIndex ? `🛑 ${robotsRaw}` : `✅ ${robotsRaw}`;
+                    if (isNoIndex) noindexCount++; else indexableCount++;
 
                     // Sitemap Check
                     // Normalize page path for comparison
                     // page is relative like "3ddruck-chat.html" or "tools/Zeiterfassung.html"
                     // Sitemap URLs in set are normalized to relative path
-                    const pageNormalized = page.startsWith('./') ? page.substring(2) : page;
+                    const pageNormalized = normalizeComparablePath(page);
                     const inSitemap = sitemapUrls.has(pageNormalized);
-                    const sitemapStatus = inSitemap ? 'status-ok' : 'status-error';
-                    const sitemapDisplay = inSitemap ? '✅ Yes' : '❌ No';
+                    const sitemapStatus = inSitemap ? 'status-ok' : 'status-warn';
+                    const sitemapDisplay = inSitemap ? '✅ Yes' : '⚠️ No';
+
+                    // Combined evaluation
+                    let evaluationStatus = 'status-ok';
+                    if (isIndexFollow && !inSitemap) evaluationStatus = 'status-warn';
+                    if (isNoIndex && inSitemap) evaluationStatus = 'status-error';
+                    if (!isIndexFollow && !isNoIndex && !inSitemap) evaluationStatus = 'status-warn';
+                    if (evaluationStatus === 'status-error') errors++;
+                    else if (evaluationStatus === 'status-warn') warnings++;
+
+                    // Redirect/noindex/follow pages without H1 are warnings only
+                    const h1CellStatus = (!h1 && isNoIndexFollow) ? 'status-warn' : h1Status;
+                    const h1CellText = (!h1 && isNoIndexFollow) ? '⚠️ MISSING (redirect/noindex,follow allowed)' : h1Text;
 
                     // Save data for export
                     lastSeoResults.push({
                         page, title: titleText, desc: desc || 'MISSING',
                         h1: h1Text, og: ogContent || 'MISSING',
-                        robots: robotsContent || 'index', inSitemap: inSitemap ? 'Yes' : 'No'
+                        robots: robotsRaw, inSitemap: inSitemap ? 'Yes' : 'No',
+                        status: evaluationStatus
                     });
 
                     rows.push(`
@@ -622,10 +685,10 @@
                             <td><a href="${page}" target="_blank" style="font-weight:bold; text-decoration:none; color:#027eb5;">${page}</a></td>
                             <td class="${titleStatus}">${titleText}</td>
                             <td class="${descStatus}">${descDisplay}</td>
-                            <td class="${h1Status}">${h1Text}</td>
+                            <td class="${h1CellStatus}">${h1CellText}</td>
                             <td>${ogStatus} <span style="font-size:0.8rem; color:#666;">${ogContent}</span></td>
-                            <td class="${robotsStatus}">${robotsDisplay}</td>
-                            <td class="${sitemapStatus}">${sitemapDisplay}</td>
+                            <td class="${evaluationStatus} ${robotsStatus}">${robotsDisplay}</td>
+                            <td class="${evaluationStatus} ${sitemapStatus}">${sitemapDisplay}</td>
                         </tr>
                     `);
 
@@ -642,7 +705,36 @@
                 }
             }
 
+            const inventoryOnly = [...inventoryNormalized].filter(url => !sitemapUrls.has(url));
+            const sitemapOnly = [...sitemapUrls].filter(url => !inventoryNormalized.has(url));
+            const noindexInSitemap = lastSeoResults
+                .filter(item => !item.error && item.robots.includes('noindex') && item.inSitemap === 'Yes')
+                .map(item => normalizeComparablePath(item.page));
+
+            if (inventoryOnly.length > 0) {
+                warnings += inventoryOnly.length;
+                rows.push(`<tr><td colspan="7" class="status-warn">⚠️ Inventory HTML nicht in Sitemap (${inventoryOnly.length}): ${inventoryOnly.join(', ')}</td></tr>`);
+            }
+            if (sitemapOnly.length > 0) {
+                warnings += sitemapOnly.length;
+                rows.push(`<tr><td colspan="7" class="status-warn">⚠️ Sitemap-URLs nicht in Inventory (${sitemapOnly.length}): ${sitemapOnly.join(', ')}</td></tr>`);
+            }
+            if (noindexInSitemap.length > 0) {
+                errors += noindexInSitemap.length;
+                rows.push(`<tr><td colspan="7" class="status-error">❌ noindex-Seiten in Sitemap (${noindexInSitemap.length}): ${noindexInSitemap.join(', ')}</td></tr>`);
+            }
+
+            lastSeoSummary = {
+                inventoryHtmlCount: inventory.html.length,
+                sitemapUrlCount: sitemapUrls.size,
+                indexableCount,
+                noindexCount,
+                warnings,
+                errors
+            };
+
             tbody.innerHTML = rows.join('');
+            renderDashboard();
         }
 
         // CONTENT VIEWER
