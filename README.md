@@ -66,7 +66,6 @@ CNCMasterCalc (/tools/buero/doku-light/CNCMasterCalc.html)
 
 Büro / Doku-Light:
 
-Dokumenten-Tool Light (/tools/buero/doku-light/)
 
 QR-Master ULTRA (/tools/buero/doku-light/QRCodeMasterPro.html)
 
