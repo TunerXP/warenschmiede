@@ -16,9 +16,11 @@ REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 INCLUDED_SITEMAP_PATHS = {
     "tools/kostenrechner-v2.html",
     "tools/index.html",
+    "tools/Zeiterfassung_Plus.html",
 }
 EXCLUDED_SITEMAP_PATHS = {
     "tools/buero/doku-light.html",
+    "material/index.html",
 }
 
 EXCLUDED_SITEMAP_PREFIXES = (
