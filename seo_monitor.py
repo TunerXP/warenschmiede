@@ -11,7 +11,7 @@ from collections import defaultdict
 from typing import Dict, Iterable, List, Tuple
 from urllib.parse import urlparse
 
-BASE_URL = "https://warenschmiede.com"
+BASE_URL = "https://www.warenschmiede.com"
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 INCLUDED_SITEMAP_PATHS = {
     "tools/kostenrechner-v2.html",
@@ -25,6 +25,7 @@ EXCLUDED_SITEMAP_PATHS = {
 
 EXCLUDED_SITEMAP_PREFIXES = (
     "druck/",
+    "logs/",
 )
 
 
@@ -185,7 +186,7 @@ def normalize_href(href: str) -> str | None:
         return None
 
     if parsed.scheme in {"http", "https"}:
-        if parsed.netloc and parsed.netloc not in {"www.warenschmiede.com", "warenschmiede.com"}:
+        if parsed.netloc and parsed.netloc not in {"www.warenschmiede.com"}:
             return None
         path = parsed.path or ""
     else:

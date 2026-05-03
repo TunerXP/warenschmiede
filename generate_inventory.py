@@ -9,7 +9,7 @@ def generate_inventory(root_dir):
         "downloads": []
     }
 
-    ignore_dirs = {'.git', '.vscode', 'node_modules', '.vs', '__pycache__'}
+    ignore_dirs = {'.git', '.vscode', 'node_modules', '.vs', '__pycache__', 'logs'}
     image_extensions = {'.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp'}
     doc_extensions = {'.md', '.txt'}
     download_extensions = {'.zip', '.pdf', '.stl', '.gcode'}
