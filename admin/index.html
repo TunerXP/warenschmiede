@@ -343,11 +343,53 @@
                 <p>Inventory loaded: <span id="inventory-status" style="font-weight: bold;">Checking...</span></p>
                 <div style="margin-top: 15px;">
                     <button onclick="loadInventory()" class="btn">🔄 Reload Inventory</button>
-                    <a href="../generate_inventory.py" class="btn" style="margin-left: 10px;">📄 View Script</a>
                 </div>
-                <p style="margin-top: 10px; font-size: 0.85rem; color: #777;">
-                    Note: If you add new files, you must run <code>python3 generate_inventory.py</code> on the server/local machine to update <code>site_inventory.json</code>.
-                </p>
+
+                <div style="margin-top: 25px; padding: 15px; background: #f8f9fa; border-left: 4px solid var(--accent, #027eb5); border-radius: 4px;">
+                    <h4 style="margin-top: 0; margin-bottom: 10px; color: #333;">Inventory aktualisieren</h4>
+                    <p style="font-size: 0.9rem; color: #555; margin-bottom: 15px; line-height: 1.4;">
+                        Das Inventory wird nicht im Browser erzeugt. Es muss per PowerShell/SSH auf dem IONOS-Server aktualisiert werden. Danach soll <code>site_inventory.json</code> vom IONOS-Server zurück ins lokale Projekt/GitHub gesichert werden.
+                    </p>
+
+                    <div style="font-size: 0.85rem; color: #333; display: flex; flex-direction: column; gap: 12px;">
+                        <div>
+                            <strong>Schritt 1:</strong> PowerShell öffnen
+                        </div>
+
+                        <div>
+                            <strong>Schritt 2:</strong> Bei IONOS per SSH anmelden<br>
+                            <div style="display: flex; align-items: center; margin-top: 4px;">
+                                <code style="background: #e9ecef; padding: 4px 8px; border-radius: 3px; flex-grow: 1;">ssh u122508312@access1079920426.webspace-data.io</code>
+                                <button onclick="copyCmd('ssh u122508312@access1079920426.webspace-data.io', this)" class="btn" style="padding: 4px 8px; font-size: 0.8rem; margin-left: 8px;">📋 Kopieren</button>
+                            </div>
+                            <em style="color: #666; display: block; margin-top: 4px;">Hinweis: SSH-Passwort eingeben. Beim Tippen werden keine Zeichen angezeigt.</em>
+                        </div>
+
+                        <div>
+                            <strong>Schritt 3:</strong> Inventory auf dem Server neu erzeugen<br>
+                            <div style="display: flex; align-items: center; margin-top: 4px;">
+                                <code style="background: #e9ecef; padding: 4px 8px; border-radius: 3px; flex-grow: 1;">python3 generate_inventory.py</code>
+                                <button onclick="copyCmd('python3 generate_inventory.py', this)" class="btn" style="padding: 4px 8px; font-size: 0.8rem; margin-left: 8px;">📋 Kopieren</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <strong>Schritt 4:</strong> Prüfen, ob die Datei aktualisiert wurde<br>
+                            <div style="display: flex; align-items: center; margin-top: 4px;">
+                                <code style="background: #e9ecef; padding: 4px 8px; border-radius: 3px; flex-grow: 1;">ls -l site_inventory.json</code>
+                                <button onclick="copyCmd('ls -l site_inventory.json', this)" class="btn" style="padding: 4px 8px; font-size: 0.8rem; margin-left: 8px;">📋 Kopieren</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <strong>Schritt 5:</strong> <code>site_inventory.json</code> per FileZilla vom IONOS-Server herunterladen und im lokalen Projekt/GitHub ersetzen.
+                        </div>
+
+                        <div>
+                            <strong>Schritt 6:</strong> Im Admin-Dashboard „Reload Inventory“ klicken und danach den SEO-Scan neu starten.
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -832,6 +874,19 @@
                  li.innerHTML = `<a href="${toAdminRelativePath(dl)}" download><span class="download-icon">📦</span> ${name} <span style="font-size:0.8em; color:#888;">(${dl})</span></a>`;
                  list.appendChild(li);
              });
+        }
+
+        // HELPER
+        function copyCmd(text, btnElement) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btnElement.innerText;
+                btnElement.innerText = '✅ Kopiert!';
+                setTimeout(() => {
+                    btnElement.innerText = originalText;
+                }, 1500);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
         }
 
         // Init
