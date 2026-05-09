@@ -3229,18 +3229,19 @@ address {
   background: linear-gradient(to bottom, var(--surface), rgba(209, 42, 42, 0.02));
 }
 
-.software-header {
+.software-header,
+.download-card-header {
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: var(--space-3);
 }
 
 .software-title-area {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-3);
-  justify-content: space-between;
+  gap: var(--space-2);
+  min-width: 0;
 }
 
 .software-title-area h3 {
@@ -3248,26 +3249,49 @@ address {
   font-size: clamp(1.3rem, 3vw, 1.6rem);
 }
 
-.download-tool-image {
-  display: block;
-  width: min(75%, 560px);
-  max-width: 560px;
-  height: auto;
-  margin: 14px auto 12px auto;
-  border-radius: 10px;
-  object-fit: contain;
+.download-card-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 380px);
+  gap: 24px;
+  align-items: center;
 }
 
-@media (max-width: 700px) {
-  .download-tool-image {
-    width: 100%;
-    max-width: 100%;
-    margin: 12px auto;
-  }
+.download-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.download-card-media-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.download-card-media {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 14px;
+  background: #f6f8fb;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .08);
+}
+
+.download-card-media.logo-wide {
+  max-width: 360px;
+  padding: 10px;
+}
+
+.download-card-media.preview {
+  max-width: 380px;
 }
 
 .software-badges {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 0.5rem;
 }
 
@@ -3290,7 +3314,6 @@ address {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
-  margin-top: 0.5rem;
 }
 
 .software-actions .file-info {
@@ -3304,6 +3327,27 @@ address {
   font-size: 0.95rem;
 }
 
+@media (max-width: 800px) {
+  .download-card-body {
+    grid-template-columns: 1fr;
+  }
+
+  .download-card-media {
+    max-width: 100%;
+    margin: 12px auto;
+  }
+
+  .software-header,
+  .download-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .software-badges {
+    justify-content: flex-start;
+  }
+}
 /* Details & Summary */
 .software-details summary,
 .security-warning summary {
