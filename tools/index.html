@@ -47,9 +47,28 @@
 <link href="/assets/print.css?v=1.0.7" media="print" rel="stylesheet"/>
 <style>
     .tool-dashboard-hero {
-      max-width: 960px;
+      max-width: 1040px;
       margin: 0 auto var(--space-6);
-      text-align: center;
+      display: grid;
+      gap: var(--space-4);
+    }
+
+    .tool-hero-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 244, 244, 0.98) 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: clamp(1rem, 2vw, 1.8rem);
+      box-shadow: 0 28px 60px -48px rgba(185, 28, 28, 0.55);
+    }
+
+    .tool-hero-kicker {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 0.3rem 0.8rem;
+      background: rgba(185, 28, 28, 0.12);
+      color: #991b1b;
+      font-weight: 700;
+      margin-bottom: var(--space-2);
     }
 
     .tool-search {
@@ -72,6 +91,7 @@
       display: grid;
       gap: var(--space-4);
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      align-items: stretch;
     }
 
     .tool-card {
@@ -83,19 +103,22 @@
       flex-direction: column;
       gap: var(--space-3);
       box-shadow: 0 20px 50px -40px rgba(15, 23, 42, 0.6);
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      min-height: 100%;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .tool-card:hover,
     .tool-card:focus-within {
       transform: translateY(-3px);
       border-color: var(--accent);
+      box-shadow: 0 28px 50px -44px rgba(15, 23, 42, 0.9);
     }
 
     .tool-card__header {
       display: flex;
       gap: var(--space-3);
-      align-items: center;
+      align-items: flex-start;
+      flex-direction: column;
     }
 
     .tool-card__icon {
@@ -106,6 +129,17 @@
     .tool-card__summary {
       margin: 0;
       color: var(--text-subtle);
+    }
+
+    .tool-card__media {
+      width: 100%;
+      max-width: 180px;
+      height: 120px;
+      object-fit: contain;
+      border-radius: 14px;
+      background: #f6f8fb;
+      padding: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
     }
 
     .tool-card__actions {
@@ -339,10 +373,56 @@
 <main class="site-main" tabindex="-1">
 <section aria-labelledby="tools-heading" class="section ws-section">
 <div class="container tool-dashboard-hero">
-<h1 class="ws-section-title" id="tools-heading">🗂️ Tool-Übersicht</h1>
-<p class="lead">Alle Rechner, Helfer und Browser-Tools der Warenschmiede an einem Ort. Öffne die Tools direkt oder klappe die Details für Funktionen und Einsatzfälle auf.</p>
+<div class="tool-hero-card">
+<span class="tool-hero-kicker">Tool-Werkstatt</span>
+<h1 class="ws-section-title" id="tools-heading">Warenschmiede Tool-Werkstatt</h1>
+<p class="lead">Praktische Online-Tools, Rechner und Helfer aus der Warenschmiede – für 3D-Druck, Werkstatt, Büro und Dokumente.</p>
+</div>
 <label class="sr-only" for="toolSearch">Tools durchsuchen</label>
 <input class="tool-search" id="toolSearch" name="tool-search" placeholder="Tools filtern (z.B. 3D-Druck, QR, CNC)" type="search"/>
+</div>
+</section>
+<section aria-labelledby="highlights-heading" class="section ws-section">
+<div class="container tool-group">
+<div class="tool-group__header">
+<h2 class="ws-section-title" id="highlights-heading">Highlights / Neue Tools</h2>
+<p class="tool-group__lede">Empfohlene Haupttools mit den aktuell wichtigsten Funktionen und Workflows.</p>
+</div>
+<div class="tool-dashboard-grid">
+<article class="tool-card" data-keywords="quicksafe unterweisung unterweisungsnachweis mehrsprachig pdf html portable windows sicherheit arbeitsschutz" data-tool-card="">
+<div class="tool-card__header">
+<img alt="Quicksafe Unterweisungs-Generator" class="tool-card__media" src="/dateien/logo_quicksafe.png"/>
+<div>
+<h3 class="ws-card-title">Quicksafe Unterweisungs-Generator</h3>
+<p class="tool-card__summary">Mehrsprachige Unterweisungsnachweise als HTML/PDF – portable Windows-App mit Sprachverwaltung, Zusatzseiten und Backup-Funktion.</p>
+</div>
+</div>
+<div class="tool-card__actions">
+<a class="btn btn-primary" href="/downloads.html">Download &amp; Anleitung</a>
+<span class="pill pill-secondary">Windows</span>
+<span class="pill pill-secondary">Portable</span>
+<span class="pill pill-secondary">HTML/PDF</span>
+<span class="pill pill-secondary">v2.1.1.0</span>
+</div>
+</article>
+<article class="tool-card" data-keywords="3d druck kostenrechner plus angebot rechnung lieferschein presets logo qr history json projektdateien pdf druck pruefmodus kompaktmodus" data-tool-card="">
+<div class="tool-card__header">
+<img alt="Warenschmiede 3D-Druck Kostenrechner Plus" class="tool-card__media" src="/tools/3D-Druck_KostenrechnerPlus01.png"/>
+<div>
+<h3 class="ws-card-title">Warenschmiede 3D-Druck Kostenrechner Plus</h3>
+<p class="tool-card__summary">Online-Tool zur Kalkulation von 3D-Druckkosten mit Angebots-, Rechnungs- und Lieferschein-Ausgabe. Inklusive Presets, Logo, QR-Code, History, JSON-Projektdateien, PDF/Druckausgabe, Prüfmodus und Kompaktmodus.</p>
+</div>
+</div>
+<div class="tool-card__actions">
+<a class="btn btn-outline" href="/tools/ws_3d_print_kostenrechner.html">Online starten</a>
+<a class="btn btn-secondary" href="/tools/ws_3d_print_kostenrechner_anleitung.html">Anleitung</a>
+<span class="pill pill-secondary">Online</span>
+<span class="pill pill-secondary">3D-Druck</span>
+<span class="pill pill-secondary">PDF/JSON</span>
+<span class="pill pill-secondary">Plus</span>
+</div>
+</article>
+</div>
 </div>
 </section>
 <section aria-labelledby="fabrication-heading" class="section ws-section">
@@ -352,40 +432,6 @@
 <p class="tool-group__lede">Rechner und Helfer für 3D-Druck, Metallbearbeitung und CNC – schnell startklar direkt im Browser.</p>
 </div>
 <div class="tool-dashboard-grid">
-<article class="tool-card" data-keywords="3d druck suite plus kostenrechner angebot rechnung lieferschein pdf json" data-tool-card="">
-<div class="tool-card__header">
-<div aria-hidden="true" class="tool-card__icon">✨</div>
-<div>
-<h3 class="ws-card-title">Warenschmiede 3D-Druck Suite Plus</h3>
-<p class="tool-card__summary">Moderner 3D-Druck Kostenrechner für Angebote, Rechnungen und Lieferscheine. Mit Presets, History, PDF/Druck, JSON-Projektdateien, QR-Code, Logo und Kompaktmodus.</p>
-</div>
-</div>
-<div class="tool-card__actions">
-<a class="btn btn-outline" href="/tools/ws_3d_print_kostenrechner.html">Online starten</a>
-<a class="btn btn-secondary" href="/tools/ws_3d_print_kostenrechner_anleitung.html">Anleitung</a>
-<span class="pill pill-secondary">Aktuelle Version</span>
-<span class="pill pill-secondary">Plus</span>
-<span class="pill pill-secondary">Online</span>
-<span class="pill pill-secondary">Version 1.9.2</span>
-</div>
-</article>
-<article class="tool-card" data-keywords="3d druck suite kalkulation kosten angebot pdf" data-tool-card="">
-<div class="tool-card__header">
-<div aria-hidden="true" class="tool-card__icon">🧮</div>
-<div>
-<h3 class="ws-card-title">Warenschmiede 3D-Druck Suite</h3>
-<p class="tool-card__summary">Komplette Kalkulations- und Angebotsstrecke inkl. PDF-Generator für Angebote, Rechnungen und Lieferscheine.</p>
-</div>
-</div>
-<div class="tool-card__actions">
-<a class="btn btn-primary" href="/tools/kostenrechner-v2.html">Öffnen</a>
-<span class="pill pill-secondary">3D-Druck</span>
-</div>
-<details>
-<summary>Details anzeigen</summary>
-<p>Material- und Zeitberechnungen, Energie- und Maschinenkosten, Auftragsspeicher sowie Export als PDF oder CSV – ideal für schnelle Angebote.</p>
-</details>
-</article>
 <article class="tool-card" data-keywords="werkstatt metall drehbank fraesen tabellen schnittdaten" data-tool-card="">
 <div class="tool-card__header">
 <div aria-hidden="true" class="tool-card__icon">🛠️</div>
@@ -440,8 +486,8 @@
 <section aria-labelledby="admin-heading" class="section ws-section">
 <div class="container tool-group">
 <div class="tool-group__header">
-<h2 class="ws-section-title" id="admin-heading">Büro &amp; Verwaltung</h2>
-<p class="tool-group__lede">Tools für professionelle Verwaltung und Organisation.</p>
+<h2 class="ws-section-title" id="admin-heading">Downloads &amp; Portable Tools</h2>
+<p class="tool-group__lede">Downloadbare und portable Helfer für den direkten Einsatz unter Windows.</p>
 </div>
 <div class="tool-dashboard-grid">
 <article class="tool-card" data-keywords="quittung receipt generator beleg pdf büro" data-tool-card="">
@@ -485,17 +531,19 @@
 <p>Datenschutzfreundlich (lokale Speicherung), Export-Funktion (CSV/PDF) und Offline-fähig.</p>
 </details>
 </article>
-<article class="tool-card" data-keywords="quittung receipt generator beleg pdf" data-tool-card="">
+<article class="tool-card" data-keywords="quittungsblock quittung beleg receiptwriterpro belege barzahlung browser" data-tool-card="">
 <div class="tool-card__header">
 <div aria-hidden="true" class="tool-card__icon">🧾</div>
 <div>
-<h3 class="ws-card-title">Quittungs-Generator</h3>
-<p class="tool-card__summary">Quittungen in wenigen Klicks erstellen und ausdrucken.</p>
+<h3 class="ws-card-title">Quittungsblock</h3>
+<p class="tool-card__summary">Einfacher digitaler Quittungsblock für schnelle Belege direkt im Browser.</p>
 </div>
 </div>
 <div class="tool-card__actions">
-<a class="btn btn-primary" href="/tools/buero/doku-light/ReceiptWriterPro.html">Öffnen</a>
+<a class="btn btn-primary" href="/tools/buero/doku-light/ReceiptWriterPro.html">Quittung öffnen</a>
 <span class="pill pill-secondary">Belege</span>
+<span class="pill pill-secondary">Büro</span>
+<span class="pill pill-secondary">Browser</span>
 </div>
 <details>
 <summary>Details anzeigen</summary>
@@ -569,8 +617,8 @@
 <section aria-labelledby="learning-heading" class="section ws-section">
 <div class="container tool-group">
 <div class="tool-group__header">
-<h2 class="ws-section-title" id="learning-heading">Lernen &amp; Wissen</h2>
-<p class="tool-group__lede">Training und Wissenstests für Ausbildung und Beruf.</p>
+<h2 class="ws-section-title" id="learning-heading">Sonstige Helfer</h2>
+<p class="tool-group__lede">Spezial-Tools für Training, Wissen und zusätzliche Praxisanwendungen.</p>
 </div>
 <div class="tool-dashboard-grid">
 <article class="tool-card" data-keywords="schweißen trainer ausbildung quiz welding" data-tool-card="">
