@@ -1,1296 +1,668 @@
 <!DOCTYPE html>
-<html lang="de" class="dark">
+<html lang="de" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warenschmiede Metall</title>
-    <meta name="description" content="Metall-Rechner für Schnittdaten und Passungen. Berechne Drehzahlen, Vorschübe, Gewinde und ISO-Toleranzen direkt online.">
-    <link rel="canonical" href="https://www.warenschmiede.com/werkstatt-rechner.html">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        slate: { 850: '#151e2e', 900: '#0f172a' },
-                        metal: { 500: '#64748b', 600: '#475569' }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { font-family: 'Inter', system-ui, sans-serif; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
-        
-        .input-group label {
-            display: flex; align-items: center; gap: 4px;
-            font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-bottom: 0.25rem;
-        }
-        .input-field {
-            width: 100%; background-color: #1e293b; border: 1px solid #334155; color: white;
-            padding: 0.75rem; border-radius: 0.5rem; font-family: monospace; font-size: 1rem;
-            transition: all 0.2s;
-        }
-        .input-field:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2); }
-        .input-error { border-color: #ef4444; background-color: #450a0a; }
-        
-        /* Tooltip Style */
-        .tooltip { position: relative; display: inline-flex; cursor: help; align-items: center; }
-        .tooltip .tooltiptext {
-            visibility: hidden; width: 220px; background-color: #0f172a; color: #cbd5e1; text-align: left;
-            border-radius: 6px; padding: 10px; position: absolute; z-index: 50; bottom: 135%; left: 50%;
-            margin-left: -110px; opacity: 0; transition: opacity 0.3s; border: 1px solid #475569;
-            font-size: 0.75rem; font-weight: normal; text-transform: none; line-height: 1.4;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); pointer-events: none;
-        }
-        .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
-        .tooltip .tooltiptext::after {
-            content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px;
-            border-width: 5px; border-style: solid; border-color: #475569 transparent transparent transparent;
-        }
-
-        .tab-content { display: none; animation: fadeIn 0.2s ease-out; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        .result-box {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 1px solid #334155;
-        }
-        
-        .nav-btn { white-space: nowrap; }
-        .nav-btn.active { color: #f97316; border-bottom-color: #f97316; } /* Orange-500 */
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Warenschmiede METALL Plus v2 – Werkstatt-Rechner</title>
+  <meta name="description" content="Moderner heller Werkstatt-Rechner für Schnittdaten, Toleranzen, ISO-Passungen, Gewinde, Schrauben, Einheiten, Winkel und Materialgewicht.">
+  <link rel="canonical" href="https://www.warenschmiede.com/werkstatt-rechner.html">
+  <style>
+    :root {
+      --bg:#f4f7fb;
+      --paper:#ffffff;
+      --paper-soft:#f8fafc;
+      --text:#102033;
+      --muted:#607086;
+      --line:#dbe3ef;
+      --blue:#0b5aa8;
+      --blue2:#0284c7;
+      --red:#e11d2e;
+      --orange:#f97316;
+      --green:#047857;
+      --yellow:#b45309;
+      --shadow:0 22px 60px -42px rgba(15,23,42,.55);
+      --radius:22px;
+      --font:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+    [data-theme="dark"] {
+      --bg:#0b1120;
+      --paper:#111827;
+      --paper-soft:#172033;
+      --text:#e6edf7;
+      --muted:#9aa9bd;
+      --line:#26364d;
+      --blue:#60a5fa;
+      --blue2:#38bdf8;
+      --red:#fb7185;
+      --orange:#fdba74;
+      --green:#34d399;
+      --yellow:#fbbf24;
+      --shadow:0 22px 60px -40px rgba(0,0,0,.92);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at top left, rgba(11,90,168,.13), transparent 34rem),
+        radial-gradient(circle at top right, rgba(249,115,22,.11), transparent 30rem),
+        var(--bg);
+      font-family:var(--font);
+      color:var(--text);
+    }
+    a{color:inherit;text-decoration:none}
+    .topbar{
+      position:sticky;top:0;z-index:50;
+      backdrop-filter:blur(18px);
+      background:color-mix(in srgb,var(--paper) 90%,transparent);
+      border-bottom:1px solid var(--line);
+    }
+    .topbar-inner{
+      max-width:1500px;margin:auto;padding:12px clamp(14px,2vw,28px);
+      display:flex;justify-content:space-between;align-items:center;gap:14px;
+    }
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .mark{
+      width:48px;height:48px;border-radius:16px;display:grid;place-items:center;color:#fff;
+      background:linear-gradient(135deg,var(--blue),#0ea5e9 55%,var(--orange));
+      box-shadow:0 16px 32px -22px var(--blue);
+      flex:0 0 auto;
+      font-size:1.35rem;
+    }
+    .brand h1{margin:0;font-size:clamp(1.05rem,2vw,1.38rem);line-height:1.08;letter-spacing:-.02em}
+    .brand small{display:block;color:var(--muted);font-size:.76rem;margin-top:3px}
+    .top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .btn{
+      border:1px solid var(--line);background:var(--paper);color:var(--text);
+      border-radius:999px;padding:10px 14px;font-weight:800;font-size:.88rem;cursor:pointer;
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;
+      transition:.18s ease;
+    }
+    .btn:hover,.btn:focus-visible{transform:translateY(-1px);border-color:color-mix(in srgb,var(--blue) 42%,var(--line));box-shadow:0 16px 34px -28px rgba(15,23,42,.8);outline:none}
+    .btn-primary{background:linear-gradient(135deg,var(--red),#ef4444);border-color:transparent;color:#fff}
+    .btn-blue{background:linear-gradient(135deg,var(--blue),var(--blue2));border-color:transparent;color:#fff}
+    .btn-green{background:linear-gradient(135deg,#047857,#10b981);border-color:transparent;color:#fff}
+    .shell{max-width:1500px;margin:auto;padding:clamp(14px,2vw,28px)}
+    .hero{
+      border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);overflow:hidden;
+      background:
+        radial-gradient(circle at 90% 20%, rgba(249,115,22,.12), transparent 26rem),
+        linear-gradient(135deg,var(--paper),color-mix(in srgb,var(--paper) 80%,#eaf3ff));
+      padding:clamp(22px,4vw,42px);
+      display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,.7fr);gap:24px;align-items:center;
+    }
+    .eyebrow{margin:0 0 9px;color:var(--blue);font-size:.78rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase}
+    .hero h2{margin:0;font-size:clamp(2rem,4vw,3.4rem);line-height:1.02;letter-spacing:-.055em}
+    .hero p{margin:14px 0 0;color:var(--muted);line-height:1.65;max-width:760px}
+    .hero-card{
+      border:1px solid color-mix(in srgb,var(--line) 70%,#fca5a5 30%);
+      border-radius:22px;background:color-mix(in srgb,var(--paper) 90%,transparent);
+      padding:18px;box-shadow:0 18px 44px -34px rgba(15,23,42,.7)
+    }
+    .hero-list{margin:0;padding:0;list-style:none;display:grid;gap:10px;font-size:.92rem}
+    .hero-list li{display:flex;gap:9px;align-items:flex-start;color:var(--muted)}
+    .hero-list b{color:var(--text)}
+    .tabs-wrap{position:sticky;top:74px;z-index:40;margin:18px 0}
+    .tabs{
+      display:flex;gap:8px;overflow:auto;padding:8px;border:1px solid var(--line);border-radius:20px;
+      background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(14px);
+      box-shadow:0 15px 40px -36px rgba(15,23,42,.6);
+    }
+    .tab-btn{
+      white-space:nowrap;border:1px solid transparent;background:transparent;color:var(--muted);
+      border-radius:14px;padding:10px 13px;font-weight:900;cursor:pointer;transition:.18s ease;
+      display:flex;align-items:center;gap:7px;font-size:.88rem;
+    }
+    .tab-btn:hover{background:var(--paper-soft);color:var(--text)}
+    .tab-btn.active{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 14px 28px -22px var(--blue)}
+    .tab{display:none;animation:fade .22s ease}
+    .tab.active{display:block}
+    @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .grid{display:grid;grid-template-columns:minmax(300px,520px) minmax(300px,1fr);gap:18px;align-items:start}
+    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .panel{
+      border:1px solid var(--line);border-radius:var(--radius);background:color-mix(in srgb,var(--paper) 94%,transparent);
+      box-shadow:var(--shadow);overflow:hidden;
+    }
+    .panel-head{
+      padding:18px 20px 14px;border-bottom:1px solid var(--line);
+      background:linear-gradient(135deg,color-mix(in srgb,#eaf3ff 78%,transparent),transparent);
+    }
+    .panel-head h3{margin:0;font-size:1.25rem;letter-spacing:-.02em}
+    .panel-head p{margin:7px 0 0;color:var(--muted);font-size:.9rem;line-height:1.45}
+    .panel-body{padding:18px 20px}
+    .form-grid{display:grid;gap:13px}
+    .row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .row-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    label{display:block;font-size:.74rem;font-weight:900;text-transform:uppercase;letter-spacing:.055em;color:var(--muted);margin:0 0 6px}
+    input,select,textarea{
+      width:100%;border:1px solid var(--line);border-radius:14px;background:var(--paper);color:var(--text);
+      padding:11px 12px;font:inherit;font-size:.94rem;outline:none;transition:.18s ease;
+    }
+    input:focus,select:focus,textarea:focus{border-color:color-mix(in srgb,var(--blue) 68%,var(--line));box-shadow:0 0 0 4px color-mix(in srgb,var(--blue) 13%,transparent)}
+    textarea{min-height:88px;resize:vertical}
+    .note{color:var(--muted);font-size:.8rem;line-height:1.45;margin:8px 0 0}
+    .result-main{
+      border-radius:24px;padding:24px;text-align:center;
+      background:
+        radial-gradient(circle at top right,rgba(249,115,22,.15),transparent 20rem),
+        linear-gradient(135deg,color-mix(in srgb,var(--paper-soft) 85%,var(--paper)),var(--paper));
+      border:1px solid var(--line);
+      min-height:180px;display:grid;place-items:center;
+    }
+    .result-main small{display:block;color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.09em}
+    .result-main .big{font-family:var(--mono);font-size:clamp(2.35rem,6vw,4.8rem);font-weight:1000;color:var(--red);line-height:1;margin:10px 0}
+    .unit{color:var(--muted);font-weight:800}
+    .result-list{display:grid;gap:10px;margin-top:14px}
+    .metric{
+      display:flex;justify-content:space-between;align-items:center;gap:12px;
+      border:1px solid var(--line);background:var(--paper-soft);border-radius:16px;padding:13px 14px;
+    }
+    .metric span:first-child{color:var(--muted);font-size:.84rem;font-weight:850}
+    .metric strong{font-family:var(--mono);font-size:1.05rem}
+    .good{color:var(--green)!important}.warn{color:var(--yellow)!important}.bad{color:var(--red)!important}.blue{color:var(--blue)!important}.orange{color:var(--orange)!important}
+    table{width:100%;border-collapse:collapse;font-size:.86rem}
+    th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left}
+    th{color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.07em;background:var(--paper-soft)}
+    td.mono{font-family:var(--mono);font-weight:800}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px;background:var(--paper)}
+    .pillrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .pill{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 10px;color:var(--muted);font-weight:850;font-size:.76rem}
+    .quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+    .quick{
+      border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:9px;
+      cursor:pointer;font-weight:900;color:var(--text);transition:.18s ease;text-align:center;
+    }
+    .quick:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--blue) 48%,var(--line))}
+    .visual{
+      border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,var(--paper-soft),var(--paper));
+      padding:16px;min-height:180px;display:grid;place-items:center;color:var(--muted)
+    }
+    .shaft-visual{width:min(420px,100%);height:180px;position:relative}
+    .hole{position:absolute;left:8%;right:8%;top:42%;height:28px;border-radius:999px;background:color-mix(in srgb,var(--green) 25%,transparent);border:2px solid var(--green)}
+    .shaft{position:absolute;left:14%;right:14%;top:51%;height:22px;border-radius:999px;background:color-mix(in srgb,var(--blue) 25%,transparent);border:2px solid var(--blue)}
+    .axis{position:absolute;left:5%;right:5%;top:58%;border-top:1px dashed var(--muted);opacity:.55}
+    .footer-note{
+      margin-top:18px;border:1px solid var(--line);border-radius:18px;background:var(--paper-soft);padding:14px;color:var(--muted);
+      font-size:.84rem;line-height:1.5;
+    }
+    .history{display:grid;gap:8px;margin-top:12px;max-height:210px;overflow:auto}
+    .history-item{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:10px;font-size:.8rem;color:var(--muted);cursor:pointer}
+    .history-item b{display:block;color:var(--text);margin-bottom:3px}
+    dialog{border:0;border-radius:24px;max-width:min(760px,calc(100vw - 24px));background:var(--paper);color:var(--text);box-shadow:0 32px 100px -48px rgba(0,0,0,.95);padding:0}
+    dialog::backdrop{background:rgba(15,23,42,.55);backdrop-filter:blur(5px)}
+    .modal-head{display:flex;justify-content:space-between;gap:14px;align-items:center;border-bottom:1px solid var(--line);padding:18px 20px}
+    .modal-body{padding:20px;color:var(--muted);line-height:1.58}
+    .modal-body h3{margin:18px 0 8px;color:var(--text)}
+    .x{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--text);cursor:pointer}
+    .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(18px);opacity:0;background:#0f172a;color:#fff;border-radius:999px;padding:11px 16px;font-weight:900;pointer-events:none;transition:.22s ease;z-index:80}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    @media(max-width:1050px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}.tabs-wrap{top:92px}}
+    @media(max-width:720px){
+      .topbar-inner{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}
+      .hero{padding:22px}.row,.row-3,.grid-3{grid-template-columns:1fr}.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .tabs-wrap{position:relative;top:auto}.brand h1{font-size:1.1rem}
+      .hide-mobile{display:none}
+    }
+    @media print{.topbar,.tabs-wrap,.hero,.btn,.history,.footer-note{display:none!important}body{background:#fff}.shell{padding:0}.panel{box-shadow:none;border:0}.tab{display:block!important}}
+  </style>
 </head>
-<body class="bg-slate-900 text-slate-200 h-screen flex flex-col overflow-hidden">
-
-    <!-- Header -->
-    <header class="bg-slate-800 border-b border-slate-700 h-16 shrink-0 flex items-center justify-between px-4 z-20 shadow-lg">
-        <div class="flex items-center gap-3">
-            <div class="bg-gradient-to-br from-amber-600 to-orange-700 p-2 rounded-lg text-white shadow-lg shadow-orange-500/20">
-                <i class="ph ph-wrench text-xl"></i>
-            </div>
-            <div>
-                <h1 class="font-bold tracking-wide text-lg leading-tight text-white">Warenschmiede <span class="text-orange-500 italic">METALL</span></h1>
-                <p class="text-[10px] text-slate-400">CNC & Fertigungstechnik</p>
-            </div>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/tools/" title="Zur Tool-Werkstatt">
+        <div class="mark">⚙️</div>
+        <div>
+          <h1>Warenschmiede <span class="orange">METALL Plus</span></h1>
+          <small>Werkstatt-Rechner · hell · praxisnah · CNC & Metall</small>
         </div>
-        <div class="flex items-center gap-4">
-            <a href="https://www.warenschmiede.com/downloads.html" target="_blank" class="text-xs text-slate-400 hover:text-white transition flex items-center gap-1">
-                <i class="ph ph-download-simple"></i> Downloads
-            </a>
-            <a href="https://www.warenschmiede.com/" target="_blank" class="text-xs text-slate-400 hover:text-white transition flex items-center gap-1">
-                <i class="ph ph-house"></i> Home
-            </a>
+      </a>
+      <div class="top-actions">
+        <a class="btn" href="/tools/">🗂️ <span class="hide-mobile">Tools</span></a>
+        <a class="btn" href="/">🏠 <span class="hide-mobile">Start</span></a>
+        <button class="btn" id="btnTheme" type="button">🌓 Design</button>
+        <button class="btn btn-blue" id="btnHelp" type="button">Hilfe</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Warenschmiede Werkstatt-Rechner</p>
+        <h2>Rechnen wie in der Werkstatt, nicht wie im Schulbuch.</h2>
+        <p>
+          Schnittdaten, Passungen, Gewinde, Schrauben, Gewicht und kleine Praxishelfer in einem hellen, ruhigen Tool.
+          Gedacht für schnelle Entscheidungen an PC, Tablet oder Smartphone – mit Richtwerten, Lernhinweisen und Export-Notizen.
+        </p>
+        <div class="pillrow">
+          <span class="pill">CNC</span><span class="pill">Werkzeugbau</span><span class="pill">Material</span><span class="pill">Toleranzen</span><span class="pill">lokal im Browser</span>
         </div>
-    </header>
+      </div>
+      <div class="hero-card">
+        <p class="eyebrow">Auf einen Blick</p>
+        <ul class="hero-list">
+          <li>✓ <span><b>Schnittdaten:</b> Drehzahl, Vorschub und Zeitspanvolumen</span></li>
+          <li>✓ <span><b>Passungen:</b> H7/h6, H7/g6, H7/p6 und mehr</span></li>
+          <li>✓ <span><b>Gewinde:</b> M, MF, UNC und UNF mit Kernloch</span></li>
+          <li>✓ <span><b>Material:</b> Gewicht für Rund, Vierkant, Flach und Rohr</span></li>
+          <li>✓ <span><b>Praxis:</b> Notizen, Verlauf, Warnungen und Beispiele</span></li>
+        </ul>
+      </div>
+    </section>
 
-    <!-- Navigation Tabs -->
-    <nav class="bg-slate-800/50 border-b border-slate-700 overflow-x-auto">
-        <div class="flex px-2 min-w-max">
-            <button onclick="switchTab('schnitt')" class="nav-btn active flex items-center gap-2 px-4 py-3 text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition-colors">
-                <i class="ph ph-aperture"></i> Schnittdaten
-            </button>
-            <button onclick="switchTab('toleranzen')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition-colors">
-                <i class="ph ph-ruler"></i> Toleranzen ISO 2768
-            </button>
-            <button onclick="switchTab('iso')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition-colors">
-                <i class="ph ph-ruler-precision"></i> ISO-Passungen
-            </button>
-            <button onclick="switchTab('gewinde')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition-colors">
-                <i class="ph ph-screw"></i> Gewinde & Kernlöcher
-            </button>
-            <button onclick="switchTab('schrauben')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition-colors">
-                <i class="ph ph-nut"></i> Schrauben & Senkungen
-            </button>
-            <button onclick="switchTab('einheiten')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition-colors">
-                <i class="ph ph-arrows-left-right"></i> Einheiten & Umrechner
-            </button>
-            <button onclick="switchTab('gewicht')" class="nav-btn flex items-center gap-2 px-4 py-3 text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition-colors">
-                <i class="ph ph-scales"></i> Material & Gewicht
-            </button>
+    <div class="tabs-wrap">
+      <nav class="tabs" aria-label="Werkstatt-Rechner Bereiche">
+        <button class="tab-btn active" data-tab="schnitt">🌀 Schnittdaten</button>
+        <button class="tab-btn" data-tab="toleranzen">📏 ISO 2768</button>
+        <button class="tab-btn" data-tab="passungen">🎯 Passungen</button>
+        <button class="tab-btn" data-tab="gewinde">🔩 Gewinde</button>
+        <button class="tab-btn" data-tab="schrauben">🧰 Schrauben</button>
+        <button class="tab-btn" data-tab="einheiten">↔️ Einheiten</button>
+        <button class="tab-btn" data-tab="gewicht">⚖️ Gewicht</button>
+        <button class="tab-btn" data-tab="winkel">📐 Winkel</button>
+      </nav>
+    </div>
+
+    <!-- Schnittdaten -->
+    <section class="tab active" id="tab-schnitt">
+      <div class="grid">
+        <div class="panel">
+          <div class="panel-head"><p class="eyebrow">Schnittdaten</p><h3>Drehzahl & Vorschub</h3><p>Material wählen, Richtwerte laden und direkt rechnen.</p></div>
+          <div class="panel-body form-grid">
+            <div class="row">
+              <div><label>Material</label><select id="cutMat"><option value="steel">Stahl allgemein</option><option value="inox">Edelstahl / VA</option><option value="alu">Aluminium</option><option value="plastic">Kunststoff</option><option value="cast">Guss</option></select></div>
+              <div><label>Bearbeitung</label><select id="cutOp"><option value="drill">Bohren</option><option value="millRough">Fräsen Schruppen</option><option value="millFinish">Fräsen Schlichten</option><option value="turn">Drehen</option></select></div>
+            </div>
+            <button class="btn btn-blue" type="button" onclick="loadCutPreset()">⚡ Richtwerte laden</button>
+            <div class="row">
+              <div><label>Werkzeug-Ø d [mm]</label><input id="cutD" type="number" value="10" step="0.1"></div>
+              <div><label>Schnittgeschw. vc [m/min]</label><input id="cutVc" type="number" value="120" step="1"></div>
+            </div>
+            <div class="row">
+              <div><label>Zähnezahl z</label><input id="cutZ" type="number" value="4" step="1"></div>
+              <div><label>Vorschub/Zahn fz [mm]</label><input id="cutFz" type="number" value="0.05" step="0.01"></div>
+            </div>
+            <div class="row">
+              <div><label>Schnitttiefe ap [mm]</label><input id="cutAp" type="number" placeholder="optional" step="0.1"></div>
+              <div><label>Schnittbreite ae [mm]</label><input id="cutAe" type="number" placeholder="optional" step="0.1"></div>
+            </div>
+            <div><label>Notiz / Auftrag optional</label><input id="cutNote" type="text" placeholder="z.B. Fräser Ø10, 1.7131, Nut schruppen"></div>
+            <div class="row">
+              <button class="btn btn-green" type="button" onclick="saveHistory('schnitt')">Merken</button>
+              <button class="btn" type="button" onclick="copySummary('schnitt')">Zusammenfassung kopieren</button>
+            </div>
+          </div>
         </div>
-    </nav>
-
-    <!-- Main Content Area -->
-    <main class="flex-1 overflow-y-auto p-4 sm:p-6 relative max-w-5xl mx-auto w-full">
-
-        <!-- TAB 1: SCHNITTDATEN -->
-        <div id="tab-schnitt" class="tab-content active">
-            <div class="mb-6">
-                <h2 class="text-xl font-bold text-white mb-1">Schnittdaten-Rechner</h2>
-                <p class="text-sm text-slate-400">Hier berechnest du Drehzahl, Vorschub und Zeitspanvolumen. Wähle einfach dein Material und Werkzeug.</p>
+        <div>
+          <div class="panel">
+            <div class="panel-body">
+              <div class="result-main">
+                <div><small>Drehzahl n</small><div class="big" id="cutN">3820</div><div class="unit">U/min</div></div>
+              </div>
+              <div class="result-list">
+                <div class="metric"><span>Vorschubgeschwindigkeit vf</span><strong><span id="cutVf">764</span> mm/min</strong></div>
+                <div class="metric"><span>Zeitspanvolumen Q</span><strong><span id="cutQ">--</span> cm³/min</strong></div>
+                <div class="metric"><span>Bewertung</span><strong id="cutWarn" class="good">Richtwert prüfen</strong></div>
+              </div>
+              <div class="footer-note">Hinweis: Richtwerte ersetzen keine Herstellerdaten. Bei kleinen Werkzeugen, langen Auskragungen, schlechter Spannung oder alten Maschinen vorsichtig reduzieren.</div>
             </div>
-
-            <!-- Presets -->
-            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 mb-6 shadow-md">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-                    <div class="input-group">
-                        <label>Material</label>
-                        <select id="cut-mat" class="input-field text-sm cursor-pointer">
-                            <option value="steel">Stahl (allgemein)</option>
-                            <option value="inox">Edelstahl (VA)</option>
-                            <option value="alu">Aluminium</option>
-                            <option value="plastic">Kunststoff</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Bearbeitung</label>
-                        <select id="cut-op" class="input-field text-sm cursor-pointer">
-                            <option value="drill">Bohren (HSS/VHM)</option>
-                            <option value="mill_rough">Fräsen (Schruppen)</option>
-                            <option value="mill_finish">Fräsen (Schlichten)</option>
-                        </select>
-                    </div>
-                    <button onclick="loadCuttingPresets()" class="bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 px-4 rounded-lg transition text-sm flex items-center justify-center gap-2 shadow-lg hover:shadow-orange-500/20">
-                        <i class="ph ph-lightning"></i> Richtwerte laden
-                    </button>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Inputs -->
-                <div class="space-y-4">
-                    <div class="input-group">
-                        <label>Werkzeug-Ø d [mm]</label>
-                        <input type="number" id="inp-d" class="input-field" value="10" min="0.1" oninput="calcSchnitt()">
-                    </div>
-
-                    <div class="input-group">
-                        <label>
-                            Schnittgeschw. vc [m/min]
-                            <span class="tooltip"><i class="ph ph-info text-orange-500 ml-1"></i>
-                                <span class="tooltiptext">Die Geschwindigkeit, mit der die Schneide am Werkstück entlangfährt.</span>
-                            </span>
-                        </label>
-                        <input type="number" id="inp-vc" class="input-field" value="120" oninput="calcSchnitt()">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="input-group">
-                            <label>Zähnezahl z</label>
-                            <input type="number" id="inp-z" class="input-field" value="4" min="1" oninput="calcSchnitt()">
-                        </div>
-                        <div class="input-group">
-                            <label>
-                                Vorschub/Zahn fz [mm]
-                                <span class="tooltip"><i class="ph ph-info text-orange-500 ml-1"></i>
-                                    <span class="tooltiptext">Weg, den das Werkzeug pro Zahn vorankommt.</span>
-                                </span>
-                            </label>
-                            <input type="number" id="inp-fz" class="input-field" value="0.05" oninput="calcSchnitt()">
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4 pt-2 border-t border-slate-700">
-                        <div class="input-group">
-                            <label>Schnitttiefe ap [mm]</label>
-                            <input type="number" id="inp-ap" class="input-field text-slate-400 placeholder-slate-600" placeholder="Optional" oninput="calcSchnitt()">
-                        </div>
-                        <div class="input-group">
-                            <label>Schnittbreite ae [mm]</label>
-                            <input type="number" id="inp-ae" class="input-field text-slate-400 placeholder-slate-600" placeholder="Optional" oninput="calcSchnitt()">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Results -->
-                <div class="flex flex-col gap-4">
-                    <div class="result-box p-6 rounded-2xl shadow-xl flex-1 flex flex-col justify-center items-center text-center relative overflow-hidden group">
-                        <span class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Drehzahl (n)</span>
-                        <div id="res-n" class="text-5xl font-mono font-bold text-orange-500 group-hover:scale-105 transition-transform">3820</div>
-                        <div class="text-slate-500 text-sm mt-1">U/min</div>
-                        <div id="rpm-warning" class="hidden absolute bottom-2 bg-red-900/90 text-red-200 text-[10px] px-3 py-1 rounded-full border border-red-700 animate-pulse font-bold flex items-center gap-1">
-                            <i class="ph ph-warning"></i> Sehr hoch! Maschine prüfen.
-                        </div>
-                    </div>
-                    
-                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs text-slate-400 uppercase font-bold">Vorschubgeschw. (vf)</span>
-                            <span class="text-xl font-mono font-bold text-white"><span id="res-vf">764</span> <span class="text-sm font-normal text-slate-500">mm/min</span></span>
-                        </div>
-                        <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                            <div class="bg-blue-500 h-full w-2/3 opacity-50"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-slate-400 uppercase font-bold">Zeitspanvolumen (Q)</span>
-                            <span class="text-lg font-mono font-bold text-slate-300"><span id="res-q">--</span> <span class="text-xs font-normal text-slate-500">cm³/min</span></span>
-                        </div>
-                    </div>
-                    <p class="text-[10px] text-slate-500 text-center mt-2 italic">Hinweis: Alle Werte sind Richtwerte. Beachte immer die Angaben der Hersteller.</p>
-                </div>
-            </div>
+          </div>
+          <div class="history" id="historySchnitt"></div>
         </div>
+      </div>
+    </section>
 
-        <!-- TAB 2: TOLERANZEN ISO 2768 -->
-        <div id="tab-toleranzen" class="tab-content">
-            <div class="mb-6">
-                <h2 class="text-xl font-bold text-white mb-1">Allgemeintoleranzen nach DIN ISO 2768-1</h2>
-                <p class="text-sm text-slate-400">Gültig für lineare Maße, wenn auf der Zeichnung kein spezielles Toleranzfeld angegeben ist.</p>
+    <!-- ISO2768 -->
+    <section class="tab" id="tab-toleranzen">
+      <div class="grid">
+        <div class="panel">
+          <div class="panel-head"><p class="eyebrow">DIN ISO 2768-1</p><h3>Allgemeintoleranzen</h3><p>Für Längenmaße ohne eigene Toleranzangabe.</p></div>
+          <div class="panel-body form-grid">
+            <div class="row">
+              <div><label>Nennmaß [mm]</label><input id="tolDim" type="number" placeholder="z.B. 45" value="45" step="0.01"></div>
+              <div><label>Toleranzklasse</label><select id="tolClass"><option value="f">fein (f)</option><option value="m" selected>mittel (m)</option><option value="c">grob (c)</option></select></div>
             </div>
-
-            <!-- Mini Rechner -->
-            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 max-w-2xl mx-auto mb-8 shadow-lg">
-                <h3 class="font-bold text-slate-200 mb-4 flex items-center gap-2"><i class="ph ph-calculator text-blue-400"></i> Toleranz-Check</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <div class="input-group">
-                        <label>Nennmaß in mm</label>
-                        <input type="number" id="tol2768-dim" class="input-field" placeholder="z.B. 45" oninput="calcToleranz2768()">
-                    </div>
-                    <div class="input-group">
-                        <label>Toleranzklasse</label>
-                        <select id="tol2768-class" class="input-field cursor-pointer" onchange="calcToleranz2768()">
-                            <option value="f">fein (f)</option>
-                            <option value="m" selected>mittel (m) - Standard</option>
-                            <option value="c">grob (c)</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div id="tol2768-res" class="bg-slate-900 p-4 rounded-lg border border-slate-600 text-center hidden transition-all">
-                    <div class="text-sm text-slate-400 uppercase tracking-wide text-[10px] mb-1">Ergebnis</div>
-                    <div class="text-2xl font-bold text-white mb-1">±<span id="tol2768-val">0.3</span> mm</div>
-                    <div class="text-sm font-mono text-blue-400">Bereich: <span id="tol2768-range">44.70 - 45.30</span> mm</div>
-                </div>
-                <div id="tol2768-error" class="hidden text-red-400 text-xs text-center mt-2">Dieses Tool deckt Nennmaße von 0,5 mm bis 2000 mm ab.</div>
+            <div class="quick-grid">
+              <button class="quick" onclick="setVal('tolDim',6)">6</button><button class="quick" onclick="setVal('tolDim',30)">30</button><button class="quick" onclick="setVal('tolDim',120)">120</button><button class="quick" onclick="setVal('tolDim',400)">400</button>
             </div>
-
-            <!-- Tabelle -->
-            <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-lg opacity-90 hover:opacity-100 transition-opacity">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs text-left">
-                        <thead class="text-slate-400 bg-slate-950 uppercase font-bold">
-                            <tr>
-                                <th class="p-3">Nennmaßbereich</th>
-                                <th class="p-3 text-center text-green-400 border-l border-slate-800">fein (f)</th>
-                                <th class="p-3 text-center text-blue-400 border-l border-slate-800">mittel (m)</th>
-                                <th class="p-3 text-center text-yellow-400 border-l border-slate-800">grob (c)</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-700 text-slate-300 font-mono">
-                            <tr class="hover:bg-slate-700/50"><td class="p-3">0.5 bis 3</td><td class="text-center border-l border-slate-700">±0.05</td><td class="text-center border-l border-slate-700">±0.1</td><td class="text-center border-l border-slate-700">±0.2</td></tr>
-                            <tr class="hover:bg-slate-700/50"><td class="p-3">über 3 bis 6</td><td class="text-center border-l border-slate-700">±0.05</td><td class="text-center border-l border-slate-700">±0.1</td><td class="text-center border-l border-slate-700">±0.3</td></tr>
-                            <tr class="hover:bg-slate-700/50"><td class="p-3">über 6 bis 30</td><td class="text-center border-l border-slate-700">±0.1</td><td class="text-center border-l border-slate-700">±0.2</td><td class="text-center border-l border-slate-700">±0.5</td></tr>
-                            <tr class="hover:bg-slate-700/50"><td class="p-3">über 30 bis 120</td><td class="text-center border-l border-slate-700">±0.15</td><td class="text-center border-l border-slate-700">±0.3</td><td class="text-center border-l border-slate-700">±0.8</td></tr>
-                            <tr class="hover:bg-slate-700/50"><td class="p-3">über 120 bis 400</td><td class="text-center border-l border-slate-700">±0.2</td><td class="text-center border-l border-slate-700">±0.5</td><td class="text-center border-l border-slate-700">±1.2</td></tr>
-                            <tr class="hover:bg-slate-700/50"><td class="p-3">über 400 bis 1000</td><td class="text-center border-l border-slate-700">±0.3</td><td class="text-center border-l border-slate-700">±0.8</td><td class="text-center border-l border-slate-700">±2.0</td></tr>
-                            <tr class="hover:bg-slate-700/50"><td class="p-3">über 1000 bis 2000</td><td class="text-center border-l border-slate-700">±0.5</td><td class="text-center border-l border-slate-700">±1.2</td><td class="text-center border-l border-slate-700">±3.0</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="p-3 bg-slate-900/50 text-[10px] text-slate-500 border-t border-slate-700">
-                    <i class="ph ph-info mr-1"></i> Diese Werte gelten nur für Längenmaße ohne eigene Toleranzangabe. Form-, Lage- und Oberflächentoleranzen müssen separat definiert werden.
-                </div>
-            </div>
+            <div class="footer-note">Gültigkeitsbereich im Tool: 0,5 bis 2000 mm. Für Winkel, Form/Lage und Oberflächen gelten eigene Angaben.</div>
+          </div>
         </div>
-
-        <!-- TAB 3: ISO PASSUNGEN -->
-        <div id="tab-iso" class="tab-content">
-            <div class="mb-6">
-                <h2 class="text-xl font-bold text-white mb-1">ISO-Passungsrechner</h2>
-                <p class="text-sm text-slate-400">Berechne, wie Bohrung und Welle zueinander passen (Spiel, Übergang, Presssitz).</p>
+        <div class="panel">
+          <div class="panel-body">
+            <div class="result-main"><div><small>Toleranz</small><div class="big">±<span id="tolVal">0.30</span></div><div class="unit">mm</div></div></div>
+            <div class="result-list">
+              <div class="metric"><span>Untermaß</span><strong><span id="tolMin">44.70</span> mm</strong></div>
+              <div class="metric"><span>Obermaß</span><strong><span id="tolMax">45.30</span> mm</strong></div>
+              <div class="metric"><span>Bereich</span><strong id="tolRange">44.70 – 45.30</strong></div>
             </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <!-- Calculator -->
-                <div class="lg:col-span-7 bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
-                    
-                    <!-- Presets -->
-                    <div class="mb-6">
-                        <label class="input-label text-orange-400">Schnellauswahl (Presets)</label>
-                        <select id="iso-preset" class="input-field text-sm cursor-pointer" onchange="applyIsoPreset()">
-                            <option value="">-- Individuell wählen --</option>
-                            <option value="H7-h6">H7 / h6 - Spielpassung (leicht beweglich)</option>
-                            <option value="H7-g6">H7 / g6 - Spielpassung (leichtes Spiel)</option>
-                            <option value="H7-f7">H7 / f7 - Enge Spielpassung</option>
-                            <option value="H7-k6">H7 / k6 - Übergangspassung</option>
-                            <option value="H7-p6">H7 / p6 - Übermaßpassung (Presssitz)</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-6 border-t border-slate-700 pt-4">
-                        <label class="input-label">Nennmaß (mm)</label>
-                        <input type="number" id="iso-dim" class="input-field text-center text-xl font-bold" placeholder="20" oninput="calcIsoFit()">
-                        <p class="text-[10px] text-slate-500 mt-1 text-center">Bereich: 1 - 500 mm</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 mb-6 relative">
-                        <!-- Bohrung -->
-                        <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
-                            <div class="flex items-center gap-2 mb-2 justify-center text-green-400 font-bold uppercase text-xs">
-                                <i class="ph ph-circle-notch"></i> Bohrung
-                            </div>
-                            <div class="flex gap-1 justify-center">
-                                <select id="iso-hole-char" class="input-field text-center w-16 px-1" onchange="calcIsoFit()">
-                                    <option value="H">H</option><option value="G">G</option><option value="F">F</option><option value="P">P</option>
-                                </select>
-                                <select id="iso-hole-num" class="input-field text-center w-16 px-1" onchange="calcIsoFit()">
-                                    <option value="6">6</option><option value="7" selected>7</option><option value="8">8</option><option value="9">9</option>
-                                </select>
-                            </div>
-                            <div class="mt-3 text-center">
-                                <div id="res-hole-dev" class="font-mono text-xs text-slate-400">--</div>
-                                <div id="res-hole-range" class="font-mono font-bold text-sm text-white mt-1">--</div>
-                            </div>
-                        </div>
-
-                        <!-- Welle -->
-                        <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
-                            <div class="flex items-center gap-2 mb-2 justify-center text-blue-400 font-bold uppercase text-xs">
-                                <i class="ph ph-circle"></i> Welle
-                            </div>
-                            <div class="flex gap-1 justify-center">
-                                <select id="iso-shaft-char" class="input-field text-center w-16 px-1" onchange="calcIsoFit()">
-                                    <option value="h" selected>h</option><option value="g">g</option><option value="f">f</option><option value="k">k</option><option value="m">m</option><option value="p">p</option>
-                                </select>
-                                <select id="iso-shaft-num" class="input-field text-center w-16 px-1" onchange="calcIsoFit()">
-                                    <option value="5">5</option><option value="6" selected>6</option><option value="7">7</option><option value="9">9</option>
-                                </select>
-                            </div>
-                            <div class="mt-3 text-center">
-                                <div id="res-shaft-dev" class="font-mono text-xs text-slate-400">--</div>
-                                <div id="res-shaft-range" class="font-mono font-bold text-sm text-white mt-1">--</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Fit Result -->
-                    <div id="fit-result-box" class="bg-slate-900 p-4 rounded-lg border border-slate-600 text-center hidden animate-pulse-once">
-                        <div class="text-xs text-slate-400 uppercase tracking-widest mb-1">Erwartete Passungsart</div>
-                        <div id="fit-type" class="text-xl font-bold text-white mb-2">Spielpassung</div>
-                        <div class="text-xs font-mono text-slate-300 bg-slate-800 inline-block px-2 py-1 rounded" id="fit-values">Min: 0.020 / Max: 0.054</div>
-                    </div>
-                    <div id="fit-error" class="text-center text-red-400 text-xs mt-4 hidden bg-red-900/20 p-2 rounded">
-                        Diese Kombination ist im Tool noch nicht hinterlegt. Bitte wähle eine typische Passung.
-                    </div>
-                </div>
-
-                <!-- Info Column (Lernkasten) -->
-                <div class="lg:col-span-5 space-y-4">
-                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
-                        <h4 class="font-bold text-sm text-white mb-3 flex items-center gap-2"><i class="ph ph-graduation-cap text-orange-500 text-lg"></i> Passung lesen lernen</h4>
-                        <div class="text-xs text-slate-300 space-y-3 leading-relaxed">
-                            <p><strong>Beispiel: 20 H7/g6</strong></p>
-                            <ul class="list-disc pl-4 space-y-1 text-slate-400">
-                                <li><strong>20</strong> = Nennmaß in mm</li>
-                                <li><strong>H7</strong> = Bohrung (Großbuchstabe)</li>
-                                <li><strong>g6</strong> = Welle (Kleinbuchstabe)</li>
-                                <li><strong>Zahl</strong> = Toleranzgrad (kleiner = genauer)</li>
-                            </ul>
-                            <div class="bg-slate-900 p-2 rounded border border-slate-700 mt-2">
-                                <p class="text-slate-400 mb-1">Ergebnis im Beispiel:</p>
-                                <p class="text-green-400">Bohrung: 20,000 – 20,021 mm</p>
-                                <p class="text-blue-400">Welle: 19,979 – 19,994 mm</p>
-                                <p class="text-white mt-1 border-t border-slate-700 pt-1">→ Immer Spiel (0,006 – 0,042 mm)</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 text-xs text-slate-400">
-                        <h5 class="font-bold text-slate-200 mb-2">Passungsarten</h5>
-                        <div class="space-y-2">
-                            <div class="flex items-center gap-2"><span class="w-2 h-2 bg-green-500 rounded-full"></span> <span><strong>Spiel:</strong> Teile bewegen sich (z.B. Lager).</span></div>
-                            <div class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-500 rounded-full"></span> <span><strong>Übergang:</strong> Klemmen oder Rutschen möglich.</span></div>
-                            <div class="flex items-center gap-2"><span class="w-2 h-2 bg-red-500 rounded-full"></span> <span><strong>Übermaß:</strong> Feste Verbindung (Presssitz).</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
+      <div class="panel" style="margin-top:18px">
+        <div class="panel-head"><h3>Tabelle Schnellübersicht</h3></div>
+        <div class="panel-body"><div class="table-wrap"><table id="tolTable"></table></div></div>
+      </div>
+    </section>
 
-        <!-- TAB 4: GEWINDE -->
-        <div id="tab-gewinde" class="tab-content">
-            <div class="mb-6">
-                <h2 class="text-xl font-bold text-white mb-1">Gewinde & Kernlöcher</h2>
-                <p class="text-sm text-slate-400">Finde sofort den richtigen Bohrer für dein Gewinde. Metrisch & Zoll (UNC/UNF).</p>
+    <!-- Passungen -->
+    <section class="tab" id="tab-passungen">
+      <div class="grid">
+        <div class="panel">
+          <div class="panel-head"><p class="eyebrow">ISO-Passungen</p><h3>Bohrung & Welle</h3><p>Typische Passungen als schneller Praxischeck.</p></div>
+          <div class="panel-body form-grid">
+            <div><label>Schnellauswahl</label><select id="fitPreset" onchange="applyFitPreset()"><option value="">Individuell</option><option value="H7-h6">H7 / h6 – leicht beweglich</option><option value="H7-g6">H7 / g6 – kleines Spiel</option><option value="H7-f7">H7 / f7 – enge Spielpassung</option><option value="H7-k6">H7 / k6 – Übergang</option><option value="H7-p6">H7 / p6 – Presssitz</option></select></div>
+            <div><label>Nennmaß [mm]</label><input id="fitDim" type="number" value="20" step="0.01"></div>
+            <div class="row">
+              <div><label>Bohrung</label><div class="row"><select id="holeChar"><option>H</option><option>G</option><option>F</option></select><select id="holeNum"><option>6</option><option selected>7</option><option>8</option></select></div></div>
+              <div><label>Welle</label><div class="row"><select id="shaftChar"><option selected>h</option><option>g</option><option>f</option><option>k</option><option>p</option></select><select id="shaftNum"><option>5</option><option selected>6</option><option>7</option></select></div></div>
             </div>
-
-            <div class="max-w-xl mx-auto">
-                <!-- Calculator Widget -->
-                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg mb-8">
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="input-group">
-                            <label>Gewindeart</label>
-                            <select id="th-type" class="input-field cursor-pointer" onchange="updateThreadList()">
-                                <option value="M">Metrisch Regel (M)</option>
-                                <option value="MF">Metrisch Fein (MF)</option>
-                                <option value="UNC">Zoll Grob (UNC)</option>
-                                <option value="UNF">Zoll Fein (UNF)</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>Größe</label>
-                            <select id="th-size" class="input-field cursor-pointer font-bold" onchange="calcThread()">
-                                <!-- Populated by JS -->
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center py-4 bg-slate-900 rounded-xl border border-slate-700 relative">
-                        <div class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Kernlochdurchmesser (Bohrer)</div>
-                        <div class="text-5xl font-mono font-bold text-indigo-400 mb-2"><span id="res-thread-drill">--</span> <span class="text-lg text-slate-500">mm</span></div>
-                        <div class="text-xs text-slate-500" id="thread-hint">
-                            Faustformel: Nennmaß – Steigung ≈ Kernloch
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Table Preview -->
-                <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
-                    <div class="bg-slate-950 p-3 border-b border-slate-700 flex justify-between items-center">
-                        <h4 class="text-sm font-bold text-white">Schnellübersicht (Gängige Größen)</h4>
-                    </div>
-                    <div class="p-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm font-mono">
-                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M6</span><span class="text-indigo-400 font-bold">5.0</span></div>
-                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M8</span><span class="text-indigo-400 font-bold">6.8</span></div>
-                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M10</span><span class="text-indigo-400 font-bold">8.5</span></div>
-                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>1/4"-20</span><span class="text-orange-400 font-bold">5.1</span></div>
-                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>5/16"-18</span><span class="text-orange-400 font-bold">6.6</span></div>
-                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>3/8"-16</span><span class="text-orange-400 font-bold">8.0</span></div>
-                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>1/2"-13</span><span class="text-orange-400 font-bold">10.8</span></div>
-                        <div class="flex justify-between border-b border-slate-700 pb-1"><span>M16</span><span class="text-indigo-400 font-bold">14.0</span></div>
-                    </div>
-                </div>
-            </div>
+            <div class="footer-note">Die Daten sind als typische Werkstatt-Schnellhilfe hinterlegt. Für kritische Bauteile immer Norm-/Tabellenbuch prüfen.</div>
+          </div>
         </div>
-
-        <!-- TAB 5: SCHRAUBEN & SENKUNGEN -->
-        <div id="tab-schrauben" class="tab-content">
-            <div class="mb-6">
-                <h2 class="text-xl font-bold text-white mb-1">Bohrungen & Senkungen</h2>
-                <p class="text-sm text-slate-400">Maße für Durchgangslöcher und Senkungen (DIN 974 / 7991).</p>
+        <div class="panel">
+          <div class="panel-body">
+            <div class="visual"><div class="shaft-visual"><div class="axis"></div><div class="hole"></div><div class="shaft"></div></div></div>
+            <div class="result-list">
+              <div class="metric"><span>Passungsart</span><strong id="fitType" class="good">Spielpassung</strong></div>
+              <div class="metric"><span>Bohrung Bereich</span><strong id="holeRange">20.000 – 20.021</strong></div>
+              <div class="metric"><span>Welle Bereich</span><strong id="shaftRange">19.987 – 20.000</strong></div>
+              <div class="metric"><span>Spiel / Übermaß</span><strong id="fitValues">0 bis 34 µm Spiel</strong></div>
             </div>
-
-            <div class="max-w-2xl mx-auto">
-                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                        <div class="input-group">
-                            <label>Schraubenart</label>
-                            <select id="scr-type" class="input-field text-sm cursor-pointer" onchange="calcScrew()">
-                                <option value="912">Zylinderkopf (DIN 912)</option>
-                                <option value="7991">Senkkopf (DIN 7991)</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>Größe</label>
-                            <select id="scr-size" class="input-field text-sm cursor-pointer font-bold" onchange="calcScrew()">
-                                <option value="M3">M3</option>
-                                <option value="M4">M4</option>
-                                <option value="M5">M5</option>
-                                <option value="M6">M6</option>
-                                <option value="M8">M8</option>
-                                <option value="M10">M10</option>
-                                <option value="M12">M12</option>
-                                <option value="M16">M16</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>
-                                Spielklasse
-                                <span class="tooltip"><i class="ph ph-info text-slate-500 ml-1"></i>
-                                    <span class="tooltiptext">Bestimmt den Zapfen-Ø! eng: f, mittel: m, groß: c.</span>
-                                </span>
-                            </label>
-                            <select id="scr-fit" class="input-field text-sm cursor-pointer" onchange="calcScrew()">
-                                <option value="f">eng (f)</option>
-                                <option value="m" selected>mittel (m)</option>
-                                <option value="c">groß (c)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Results Layout -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">
-                        <!-- Through Hole -->
-                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-600 text-center h-full flex flex-col justify-center relative">
-                            <div class="text-[10px] text-slate-400 uppercase font-bold mb-2">Bohrung / Zapfen-Ø</div>
-                            <div class="text-4xl font-mono font-bold text-white mb-1"><span id="res-scr-hole">--</span> <span class="text-lg text-slate-500">mm</span></div>
-                            <div class="text-[10px] text-orange-400 font-bold" id="res-scr-fit-text">Mittel (m)</div>
-                            <div class="absolute top-2 right-2 text-slate-600 text-xs"><i class="ph ph-ruler"></i></div>
-                        </div>
-
-                        <!-- Counterbore Info -->
-                        <div class="space-y-3">
-                            <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
-                                <span class="text-xs text-slate-400">Schraubenkopf-Ø (dk):</span>
-                                <span class="font-mono font-bold text-white" id="res-scr-dk">-- mm</span>
-                            </div>
-                            
-                            <!-- Zylinder Spec (DIN 974) -->
-                            <div id="res-spec-912" class="hidden space-y-3">
-                                <div class="bg-blue-900/20 p-3 rounded-lg border border-blue-800/30">
-                                    <div class="text-xs font-bold text-blue-300 mb-2 flex items-center gap-2"><i class="ph ph-arrow-fat-down"></i> Zapfensenkung (DIN 974-1)</div>
-                                    <div class="flex justify-between items-center mb-1">
-                                        <span class="text-xs text-slate-400">Senk-Ø (d2):</span>
-                                        <span class="font-mono font-bold text-white" id="res-scr-cb-dia">-- mm</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-xs text-slate-400">Senktiefe (t):</span>
-                                        <span class="font-mono font-bold text-white" id="res-scr-cb-depth">-- mm</span>
-                                    </div>
-                                </div>
-                                <div class="text-[9px] text-slate-500 leading-tight">
-                                    Hinweis: Zapfensenker muss zur gewählten Bohrung (<span class="res-fit-ref font-bold">m</span>) passen. Tiefe t = Kopfhöhe k + 0.4mm.
-                                </div>
-                            </div>
-
-                            <!-- Senk Spec (DIN 7991) -->
-                            <div id="res-spec-7991" class="hidden space-y-3">
-                                <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
-                                    <span class="text-xs text-orange-400 font-bold">Senk-Ø (d_senk):</span>
-                                    <span class="font-mono font-bold text-white" id="res-scr-cs-dia">-- mm</span>
-                                </div>
-                                <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 flex justify-between items-center">
-                                    <span class="text-xs text-orange-400 font-bold">Senktiefe (t):</span>
-                                    <span class="font-mono font-bold text-white" id="res-scr-cs-depth">-- mm</span>
-                                </div>
-                                <div class="text-[10px] text-slate-500 text-center">90° Senkung für bündigen Sitz.</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <p class="text-[10px] text-slate-500 mt-6 text-center border-t border-slate-700 pt-2">
-                        Maße sind Richtwerte nach DIN 974-1 (Reihe 1) und DIN ISO 273.
-                    </p>
-
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
+    </section>
 
-        <!-- TAB 6: EINHEITEN & UMRECHNER (NEU) -->
-        <div id="tab-einheiten" class="tab-content">
-            <div class="mb-6">
-                <h2 class="text-xl font-bold text-white mb-1">Einheiten & Umrechner</h2>
-                <p class="text-sm text-slate-400">Hier wandelst du schnell typische Einheiten um oder rechnest Schnittdaten rückwärts.</p>
+    <!-- Gewinde -->
+    <section class="tab" id="tab-gewinde">
+      <div class="grid">
+        <div class="panel">
+          <div class="panel-head"><p class="eyebrow">Gewinde</p><h3>Kernloch & Steigung</h3><p>Metrisch, Feingewinde und Zollgewinde.</p></div>
+          <div class="panel-body form-grid">
+            <div class="row">
+              <div><label>Gewindeart</label><select id="threadType"></select></div>
+              <div><label>Größe</label><select id="threadSize"></select></div>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- A) Einheiten-Rechner -->
-                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
-                    <h3 class="font-bold text-slate-200 mb-4 flex items-center gap-2"><i class="ph ph-arrows-left-right text-indigo-400"></i> Umrechnen</h3>
-                    
-                    <!-- Länge -->
-                    <div class="mb-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700/50">
-                        <div class="text-xs text-slate-500 uppercase font-bold mb-2">Länge (mm ↔ Zoll)</div>
-                        <div class="grid grid-cols-2 gap-2 items-center">
-                            <div class="relative">
-                                <input type="number" id="conv-mm" class="input-field pr-8" placeholder="mm" oninput="calcUnit('mm_inch')">
-                                <span class="absolute right-2 top-3 text-xs text-slate-500">mm</span>
-                            </div>
-                            <div class="relative">
-                                <input type="number" id="conv-inch" class="input-field pr-8" placeholder="inch" oninput="calcUnit('inch_mm')">
-                                <span class="absolute right-2 top-3 text-xs text-slate-500">in</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Winkel -->
-                    <div class="mb-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700/50">
-                        <div class="text-xs text-slate-500 uppercase font-bold mb-2">Winkel (Grad ↔ Radiant)</div>
-                        <div class="grid grid-cols-2 gap-2 items-center">
-                            <div class="relative">
-                                <input type="number" id="conv-deg" class="input-field pr-8" placeholder="deg" oninput="calcUnit('deg_rad')">
-                                <span class="absolute right-2 top-3 text-xs text-slate-500">°</span>
-                            </div>
-                            <div class="relative">
-                                <input type="number" id="conv-rad" class="input-field pr-8" placeholder="rad" oninput="calcUnit('rad_deg')">
-                                <span class="absolute right-2 top-3 text-xs text-slate-500">rad</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Geschwindigkeit -->
-                    <div class="p-4 bg-slate-900/50 rounded-lg border border-slate-700/50">
-                        <div class="text-xs text-slate-500 uppercase font-bold mb-2">Geschwindigkeit (m/min ↔ m/s)</div>
-                        <div class="grid grid-cols-2 gap-2 items-center">
-                            <div class="relative">
-                                <input type="number" id="conv-mmin" class="input-field pr-12" placeholder="m/min" oninput="calcUnit('mmin_ms')">
-                                <span class="absolute right-2 top-3 text-xs text-slate-500">m/min</span>
-                            </div>
-                            <div class="relative">
-                                <input type="number" id="conv-ms" class="input-field pr-8" placeholder="m/s" oninput="calcUnit('ms_mmin')">
-                                <span class="absolute right-2 top-3 text-xs text-slate-500">m/s</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- B) Schnittdaten Rückwärts & Lernbox -->
-                <div class="space-y-6">
-                    <!-- Rückwärts Rechner -->
-                    <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
-                        <h3 class="font-bold text-slate-200 mb-4 flex items-center gap-2"><i class="ph ph-arrow-u-up-left text-orange-400"></i> Schnittdaten-Rückwärts</h3>
-                        <p class="text-xs text-slate-400 mb-4">Berechne vc oder n, wenn du den jeweils anderen Wert hast.</p>
-                        
-                        <div class="flex gap-2 mb-4 bg-slate-900 p-1 rounded-lg">
-                            <button onclick="toggleReverseMode('n')" id="btn-rev-n" class="flex-1 py-1 text-xs rounded font-bold bg-slate-700 text-white transition">Ich habe: n (Drehzahl)</button>
-                            <button onclick="toggleReverseMode('vc')" id="btn-rev-vc" class="flex-1 py-1 text-xs rounded font-bold text-slate-400 hover:text-white transition">Ich habe: vc (Schnitt)</button>
-                        </div>
-
-                        <div class="space-y-3">
-                            <div class="input-group">
-                                <label>Werkzeug-Ø d [mm]</label>
-                                <input type="number" id="rev-d" class="input-field" value="10" oninput="calcReverseSchnitt()">
-                            </div>
-                            
-                            <div id="input-rev-n" class="input-group">
-                                <label>Gegebene Drehzahl n [U/min]</label>
-                                <input type="number" id="rev-in-n" class="input-field" value="3000" oninput="calcReverseSchnitt()">
-                            </div>
-                            
-                            <div id="input-rev-vc" class="input-group hidden">
-                                <label>Gegebene Schnittgeschw. vc [m/min]</label>
-                                <input type="number" id="rev-in-vc" class="input-field" value="100" oninput="calcReverseSchnitt()">
-                            </div>
-
-                            <div class="mt-4 pt-4 border-t border-slate-700 text-center">
-                                <div class="text-xs text-slate-500 uppercase font-bold mb-1" id="res-rev-label">Ergebnis: Schnittgeschw. (vc)</div>
-                                <div class="text-3xl font-mono font-bold text-white"><span id="res-rev-val">--</span> <span class="text-sm text-slate-400" id="res-rev-unit">m/min</span></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Lernkasten -->
-                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
-                        <h4 class="font-bold text-sm text-white mb-3 flex items-center gap-2"><i class="ph ph-lightbulb text-yellow-500 text-lg"></i> Beispiele aus der Praxis</h4>
-                        <ul class="text-xs text-slate-300 space-y-2 list-disc pl-4">
-                            <li><strong>10 mm Bohrer:</strong> Bei vc = 25 m/min brauchst du ca. 800 U/min.</li>
-                            <li><strong>Zoll:</strong> 12,7 mm entsprechen genau 1/2" (Halbzeoll).</li>
-                            <li><strong>Speed:</strong> 600 m/min sind umgerechnet 10 m/s.</li>
-                        </ul>
-                    </div>
-                </div>
+            <div class="row">
+              <button class="btn btn-blue" onclick="copySummary('thread')" type="button">Wert kopieren</button>
+              <button class="btn" onclick="openTab('schrauben')" type="button">Zu Schrauben</button>
             </div>
+            <div class="footer-note">Faustformel für metrische Gewinde: Kernloch ≈ Nennmaß − Steigung. Bei besonderen Werkstoffen und Gewindeformern bitte Herstellerangaben nutzen.</div>
+          </div>
         </div>
-
-        <!-- TAB 7: MATERIAL & GEWICHT (NEU) -->
-        <div id="tab-gewicht" class="tab-content">
-            <div class="mb-6">
-                <h2 class="text-xl font-bold text-white mb-1">Material & Gewicht</h2>
-                <p class="text-sm text-slate-400">Berechne das Gewicht von Rundmaterial, Vierkant, Flachstahl und Rohren.</p>
+        <div class="panel">
+          <div class="panel-body">
+            <div class="result-main"><div><small>Kernlochbohrer</small><div class="big"><span id="threadDrill">5.0</span></div><div class="unit">mm</div></div></div>
+            <div class="result-list">
+              <div class="metric"><span>Auswahl</span><strong id="threadName">M6</strong></div>
+              <div class="metric"><span>Typ</span><strong id="threadKind">Metrisch Regel</strong></div>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                <!-- Rechner -->
-                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
-                    
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div class="input-group">
-                            <label>Material</label>
-                            <select id="mat-type" class="input-field text-sm cursor-pointer" onchange="calcMaterialWeight()">
-                                <option value="7.85">Stahl (7.85)</option>
-                                <option value="7.9">Edelstahl (7.9)</option>
-                                <option value="2.7">Aluminium (2.7)</option>
-                                <option value="8.5">Messing (8.5)</option>
-                                <option value="8.9">Kupfer (8.9)</option>
-                                <option value="1.2">Kunststoff (ca. 1.2)</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>Profil</label>
-                            <select id="mat-shape" class="input-field text-sm cursor-pointer" onchange="updateShapeInputs()">
-                                <option value="round">Rund (voll)</option>
-                                <option value="square">Vierkant</option>
-                                <option value="flat">Flach</option>
-                                <option value="tube">Rohr</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Dynamic Inputs -->
-                    <div class="space-y-3 mb-6 bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-                        
-                        <!-- Rund -->
-                        <div id="shape-round" class="shape-group">
-                            <div class="input-group">
-                                <label>Durchmesser d [mm]</label>
-                                <input type="number" id="dim-d" class="input-field" value="20" oninput="calcMaterialWeight()">
-                            </div>
-                        </div>
-
-                        <!-- Square -->
-                        <div id="shape-square" class="shape-group hidden">
-                            <div class="input-group">
-                                <label>Seitenlänge a [mm]</label>
-                                <input type="number" id="dim-a" class="input-field" value="20" oninput="calcMaterialWeight()">
-                            </div>
-                        </div>
-
-                        <!-- Flat -->
-                        <div id="shape-flat" class="shape-group hidden">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="input-group">
-                                    <label>Breite b [mm]</label>
-                                    <input type="number" id="dim-b" class="input-field" value="50" oninput="calcMaterialWeight()">
-                                </div>
-                                <div class="input-group">
-                                    <label>Stärke h [mm]</label>
-                                    <input type="number" id="dim-h" class="input-field" value="10" oninput="calcMaterialWeight()">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Tube -->
-                        <div id="shape-tube" class="shape-group hidden">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="input-group">
-                                    <label>Außen-Ø D [mm]</label>
-                                    <input type="number" id="dim-D_out" class="input-field" value="40" oninput="calcMaterialWeight()">
-                                </div>
-                                <div class="input-group">
-                                    <label>Innen-Ø d [mm]</label>
-                                    <input type="number" id="dim-d_in" class="input-field" value="30" oninput="calcMaterialWeight()">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Common -->
-                        <div class="grid grid-cols-2 gap-4 mt-3 border-t border-slate-700 pt-3">
-                            <div class="input-group">
-                                <label>Länge L [mm]</label>
-                                <input type="number" id="dim-L" class="input-field" value="1000" oninput="calcMaterialWeight()">
-                            </div>
-                            <div class="input-group">
-                                <label>Stückzahl</label>
-                                <input type="number" id="dim-n" class="input-field" value="1" oninput="calcMaterialWeight()">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Result -->
-                    <div class="bg-slate-900 p-4 rounded-lg border border-slate-600">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs text-slate-400 uppercase">Gewicht pro Stück</span>
-                            <span class="font-mono font-bold text-white"><span id="res-weight-single">0.00</span> kg</span>
-                        </div>
-                        <div class="flex justify-between items-center pt-2 border-t border-slate-700">
-                            <span class="text-xs text-orange-400 font-bold uppercase">Gesamtgewicht</span>
-                            <span class="text-2xl font-mono font-bold text-orange-500"><span id="res-weight-total">0.00</span> kg</span>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Info Box -->
-                <div class="space-y-6">
-                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
-                        <h4 class="font-bold text-sm text-white mb-3 flex items-center gap-2"><i class="ph ph-question text-blue-400 text-lg"></i> Wofür brauche ich das?</h4>
-                        <ul class="text-xs text-slate-300 space-y-2 list-disc pl-4 leading-relaxed">
-                            <li><strong>Heben:</strong> Schnell checken, ob du das Rohteil alleine auf die Maschine wuchten kannst (ab 25 kg besser Kran!).</li>
-                            <li><strong>Kalkulation:</strong> Wenn du Materialpreis pro kg kennst, hast du sofort den Preis.</li>
-                            <li><strong>Sägen:</strong> Prüfen, ob der Restbestand im Lager für den Auftrag reicht (Länge abschätzen).</li>
-                        </ul>
-                    </div>
-
-                    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
-                        <h4 class="font-bold text-sm text-white mb-2">Rechenbeispiel</h4>
-                        <div class="bg-slate-900 p-3 rounded text-xs font-mono text-slate-400 border border-slate-700">
-                            1 m Rundstahl Ø 30 mm (Stahl)<br>
-                            Fläche A ≈ 706,9 mm²<br>
-                            Volumen V ≈ 706,9 cm³<br>
-                            Gewicht ≈ 706,9 * 7,85 / 1000<br>
-                            = <span class="text-white font-bold">5,55 kg</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+          </div>
         </div>
+      </div>
+      <div class="panel" style="margin-top:18px"><div class="panel-head"><h3>Gängige Größen</h3></div><div class="panel-body"><div class="table-wrap"><table id="threadQuick"></table></div></div></div>
+    </section>
 
-    </main>
+    <!-- Schrauben -->
+    <section class="tab" id="tab-schrauben">
+      <div class="grid">
+        <div class="panel">
+          <div class="panel-head"><p class="eyebrow">Schrauben</p><h3>Durchgangsloch & Senkung</h3><p>Für Zylinderkopf und Senkkopf.</p></div>
+          <div class="panel-body form-grid">
+            <div class="row">
+              <div><label>Schraubenart</label><select id="scrType"><option value="912">Zylinderkopf DIN 912</option><option value="7991">Senkkopf DIN 7991</option></select></div>
+              <div><label>Größe</label><select id="scrSize"><option>M3</option><option>M4</option><option>M5</option><option selected>M6</option><option>M8</option><option>M10</option><option>M12</option><option>M16</option></select></div>
+            </div>
+            <div><label>Spielklasse</label><select id="scrFit"><option value="f">eng</option><option value="m" selected>mittel</option><option value="c">groß</option></select></div>
+            <div class="footer-note">Die Werte sind Richtwerte für schnelle Planung. Bei Zeichnungen und Serienfertigung gelten die angegebenen Normen und Firmenstandards.</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-body">
+            <div class="result-main"><div><small>Durchgangsloch</small><div class="big"><span id="scrHole">6.6</span></div><div class="unit">mm</div></div></div>
+            <div class="result-list">
+              <div class="metric"><span>Kopfdurchmesser dk</span><strong id="scrDk">10.0 mm</strong></div>
+              <div class="metric"><span>Senkdurchmesser</span><strong id="scrCounterDia">11.0 mm</strong></div>
+              <div class="metric"><span>Senktiefe</span><strong id="scrDepth">6.4 mm</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <script>
-        // --- Navigation Logic ---
-        function switchTab(id) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            // Reset nav buttons
-            document.querySelectorAll('.nav-btn').forEach(el => {
-                el.classList.remove('active', 'text-orange-500', 'border-orange-500');
-                el.classList.add('text-slate-400', 'border-transparent');
-            });
-            
-            // Show target
-            document.getElementById('tab-' + id).classList.add('active');
-            
-            // Highlight button
-            const ids = ['schnitt', 'toleranzen', 'iso', 'gewinde', 'schrauben', 'einheiten', 'gewicht'];
-            const idx = ids.indexOf(id);
-            if(idx > -1) {
-                const btns = document.querySelectorAll('.nav-btn');
-                btns[idx].classList.remove('text-slate-400', 'border-transparent');
-                btns[idx].classList.add('active', 'text-orange-500', 'border-orange-500');
-            }
-        }
+    <!-- Einheiten -->
+    <section class="tab" id="tab-einheiten">
+      <div class="grid-3">
+        <div class="panel"><div class="panel-head"><h3>mm ↔ Zoll</h3></div><div class="panel-body form-grid"><div><label>Millimeter</label><input id="mmVal" type="number" value="12.7" oninput="conv('mm')"></div><div><label>Zoll</label><input id="inchVal" type="number" value="0.5" oninput="conv('inch')"></div></div></div>
+        <div class="panel"><div class="panel-head"><h3>Grad ↔ Radiant</h3></div><div class="panel-body form-grid"><div><label>Grad</label><input id="degVal" type="number" value="45" oninput="conv('deg')"></div><div><label>Radiant</label><input id="radVal" type="number" value="0.7854" oninput="conv('rad')"></div></div></div>
+        <div class="panel"><div class="panel-head"><h3>vc ↔ n rückwärts</h3></div><div class="panel-body form-grid"><div><label>Ø d [mm]</label><input id="revD" type="number" value="10"></div><div><label>Drehzahl n [U/min]</label><input id="revN" type="number" value="3000"></div><div class="result-list"><div class="metric"><span>vc</span><strong><span id="revVc">94.2</span> m/min</strong></div></div></div></div>
+      </div>
+    </section>
 
-        /* =========================================
-           1. SCHNITTDATEN RECHNER
-           ========================================= */
-        function loadCuttingPresets() {
-            const mat = document.getElementById('cut-mat').value;
-            const op = document.getElementById('cut-op').value;
-            
-            // Richtwerte [vc, fz]
-            const presets = {
-                steel: { drill: [25, 0.1], mill_rough: [120, 0.05], mill_finish: [180, 0.03] },
-                inox:  { drill: [15, 0.08], mill_rough: [80, 0.04], mill_finish: [120, 0.03] },
-                alu:   { drill: [80, 0.2],  mill_rough: [400, 0.1], mill_finish: [600, 0.08] },
-                plastic: { drill: [60, 0.2], mill_rough: [300, 0.15], mill_finish: [400, 0.1] }
-            };
+    <!-- Gewicht -->
+    <section class="tab" id="tab-gewicht">
+      <div class="grid">
+        <div class="panel">
+          <div class="panel-head"><p class="eyebrow">Material</p><h3>Gewicht berechnen</h3><p>Rund, Vierkant, Flach und Rohr.</p></div>
+          <div class="panel-body form-grid">
+            <div class="row">
+              <div><label>Material</label><select id="matType"><option value="7.85">Stahl 7.85</option><option value="7.9">Edelstahl 7.90</option><option value="2.70">Aluminium 2.70</option><option value="8.50">Messing 8.50</option><option value="8.90">Kupfer 8.90</option><option value="1.20">Kunststoff ca. 1.20</option></select></div>
+              <div><label>Profil</label><select id="shapeType"><option value="round">Rund voll</option><option value="square">Vierkant</option><option value="flat">Flach</option><option value="tube">Rohr</option></select></div>
+            </div>
+            <div id="shapeInputs"></div>
+            <div class="row"><div><label>Länge [mm]</label><input id="matL" type="number" value="1000"></div><div><label>Stückzahl</label><input id="matQty" type="number" value="1"></div></div>
+            <div><label>Materialpreis optional [€/kg]</label><input id="matPrice" type="number" placeholder="z.B. 2.50" step="0.01"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-body">
+            <div class="result-main"><div><small>Gesamtgewicht</small><div class="big"><span id="matTotal">2.47</span></div><div class="unit">kg</div></div></div>
+            <div class="result-list">
+              <div class="metric"><span>Gewicht pro Stück</span><strong><span id="matSingle">2.47</span> kg</strong></div>
+              <div class="metric"><span>Materialkosten</span><strong id="matCost">--</strong></div>
+              <div class="metric"><span>Hebehinweis</span><strong id="matLift" class="good">von Hand meist unkritisch</strong></div>
+            </div>
+            <div class="footer-note">Praxis: Ab ca. 25 kg pro Teil lieber Hebehilfe/Kran einplanen – je nach Form, Griffmöglichkeit und Arbeitshöhe.</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-            if (presets[mat] && presets[mat][op]) {
-                const [vc, fz] = presets[mat][op];
-                document.getElementById('inp-vc').value = vc;
-                document.getElementById('inp-fz').value = fz;
-                
-                if (op === 'drill') document.getElementById('inp-z').value = 2;
-                else if (document.getElementById('inp-z').value == 2) document.getElementById('inp-z').value = 4;
+    <!-- Winkel -->
+    <section class="tab" id="tab-winkel">
+      <div class="grid">
+        <div class="panel">
+          <div class="panel-head"><p class="eyebrow">Winkel & Dreieck</p><h3>Rechtwinkliges Dreieck</h3><p>Für Zuschnitt, Vorrichtungen, Anreißen und schnelle Skizzen.</p></div>
+          <div class="panel-body form-grid">
+            <div class="row">
+              <div><label>Gegenkathete a [mm]</label><input id="triA" type="number" value="50"></div>
+              <div><label>Ankathete b [mm]</label><input id="triB" type="number" value="100"></div>
+            </div>
+            <div class="footer-note">Berechnet Winkel α = atan(a/b), Hypotenuse und Steigung. Ideal für schnelle Plausibilitätschecks.</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-body">
+            <div class="result-main"><div><small>Winkel α</small><div class="big"><span id="triAngle">26.57</span></div><div class="unit">Grad</div></div></div>
+            <div class="result-list">
+              <div class="metric"><span>Hypotenuse c</span><strong><span id="triC">111.80</span> mm</strong></div>
+              <div class="metric"><span>Steigung</span><strong><span id="triSlope">50.0</span> %</strong></div>
+              <div class="metric"><span>Verhältnis</span><strong id="triRatio">1 : 2.00</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-                calcSchnitt();
-            }
-        }
+  </div>
 
-        function calcSchnitt() {
-            const d = parseFloat(document.getElementById('inp-d').value) || 0;
-            const vc = parseFloat(document.getElementById('inp-vc').value) || 0;
-            const z = parseFloat(document.getElementById('inp-z').value) || 0;
-            const fz = parseFloat(document.getElementById('inp-fz').value) || 0;
-            const ap = parseFloat(document.getElementById('inp-ap').value) || 0;
-            const ae = parseFloat(document.getElementById('inp-ae').value) || 0;
+  <dialog id="helpDialog">
+    <div class="modal-head"><div><p class="eyebrow">Hilfe</p><h2 style="margin:0">Warenschmiede METALL Plus</h2></div><button class="x" onclick="helpDialog.close()">×</button></div>
+    <div class="modal-body">
+      <p>Das Tool ist als schneller Werkstatthelfer gedacht: Werte eingeben, Ergebnis prüfen, bei Bedarf Notiz kopieren oder Schnittdaten merken.</p>
+      <h3>Wichtig</h3>
+      <p>Alle Tabellen- und Richtwerte sind praxisnahe Hilfen, aber keine Freigabe für sicherheitskritische Bauteile. Für Zeichnungen, Serienfertigung, Gewährleistung oder Kundenteile immer Norm, Tabellenbuch, Herstellerdaten und betriebliche Vorgaben prüfen.</p>
+      <h3>Datenschutz</h3>
+      <p>Die Berechnungen laufen im Browser. Verlauf/Notizen werden nur lokal im Browser gespeichert.</p>
+    </div>
+  </dialog>
 
-            if (d <= 0 || vc <= 0) {
-                document.getElementById('res-n').innerText = "0";
-                document.getElementById('res-vf').innerText = "0";
-                return;
-            }
+  <div class="toast" id="toast">Erledigt</div>
 
-            const n = (vc * 1000) / (Math.PI * d);
-            const vf = n * z * fz;
-            let q = 0;
-            if (ap > 0 && ae > 0) {
-                q = (ap * ae * vf) / 1000;
-            }
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+function num(id){return parseFloat($(id)?.value)||0}
+function setText(id,v){const e=$(id); if(e)e.textContent=v}
+function round(v,d=2){return Number.isFinite(v)?v.toFixed(d):"--"}
+function toast(t){$("toast").textContent=t;$("toast").classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>$("toast").classList.remove("show"),1600)}
+function setVal(id,v){$(id).value=v;calcAll()}
 
-            document.getElementById('res-n').innerText = n.toFixed(0);
-            document.getElementById('res-vf').innerText = vf.toFixed(0);
-            document.getElementById('res-q').innerText = q > 0 ? q.toFixed(1) : "--";
+const tolRows=[
+  [0.5,3,0.05,0.1,0.2],[3,6,0.05,0.1,0.3],[6,30,0.1,0.2,0.5],
+  [30,120,0.15,0.3,0.8],[120,400,0.2,0.5,1.2],[400,1000,0.3,0.8,2.0],[1000,2000,0.5,1.2,3.0]
+];
+const fitData=[
+  {max:3,H7:[10,0],H8:[14,0],h6:[0,-6],g6:[-2,-8],f7:[-6,-16],k6:[6,0],p6:[12,6]},
+  {max:6,H7:[12,0],H8:[18,0],h6:[0,-8],g6:[-4,-12],f7:[-10,-22],k6:[9,1],p6:[20,12]},
+  {max:10,H7:[15,0],H8:[22,0],h6:[0,-9],g6:[-5,-14],f7:[-13,-28],k6:[10,1],p6:[24,15]},
+  {max:18,H7:[18,0],H8:[27,0],h6:[0,-11],g6:[-6,-17],f7:[-16,-34],k6:[12,1],p6:[29,18]},
+  {max:30,H7:[21,0],H8:[33,0],h6:[0,-13],g6:[-7,-20],f7:[-20,-41],k6:[15,2],p6:[35,22]},
+  {max:50,H7:[25,0],H8:[39,0],h6:[0,-16],g6:[-9,-25],f7:[-25,-50],k6:[18,2],p6:[42,26]},
+  {max:80,H7:[30,0],H8:[46,0],h6:[0,-19],g6:[-10,-29],f7:[-30,-60],k6:[21,2],p6:[51,32]},
+  {max:120,H7:[35,0],H8:[54,0],h6:[0,-22],g6:[-12,-34],f7:[-36,-71],k6:[25,3],p6:[59,37]},
+  {max:500,H7:[63,0],H8:[97,0],h6:[0,-40],g6:[-20,-60],f7:[-68,-131],k6:[45,5],p6:[108,68]}
+];
+const threads={
+ "Metrisch Regel (M)":{"M3":2.5,"M4":3.3,"M5":4.2,"M6":5.0,"M8":6.8,"M10":8.5,"M12":10.2,"M14":12.0,"M16":14.0,"M18":15.5,"M20":17.5,"M24":21.0,"M30":26.5,"M36":32.0},
+ "Metrisch Fein (MF)":{"M6 x 0.75":5.25,"M8 x 1.0":7.0,"M10 x 1.0":9.0,"M10 x 1.25":8.8,"M12 x 1.5":10.5,"M16 x 1.5":14.5,"M20 x 1.5":18.5,"M24 x 2.0":22.0,"M30 x 2.0":28.0},
+ "UNC":{"1/4-20":5.1,"5/16-18":6.6,"3/8-16":8.0,"7/16-14":9.4,"1/2-13":10.8,"5/8-11":13.5,"3/4-10":16.5},
+ "UNF":{"1/4-28":5.5,"5/16-24":6.9,"3/8-24":8.5,"7/16-20":9.9,"1/2-20":11.5,"5/8-18":14.5,"3/4-16":17.5}
+};
+const screw={
+ M3:{holes:{f:3.2,m:3.4,c:3.6},dk:5.5,k:3,cb:6.5,cs:6.3},
+ M4:{holes:{f:4.3,m:4.5,c:4.8},dk:7,k:4,cb:8,cs:8.4},
+ M5:{holes:{f:5.3,m:5.5,c:5.8},dk:8.5,k:5,cb:10,cs:10.4},
+ M6:{holes:{f:6.4,m:6.6,c:7.0},dk:10,k:6,cb:11,cs:12.4},
+ M8:{holes:{f:8.4,m:9.0,c:10.0},dk:13,k:8,cb:15,cs:16.5},
+ M10:{holes:{f:10.5,m:11.0,c:12.0},dk:16,k:10,cb:18,cs:20.5},
+ M12:{holes:{f:13.0,m:13.5,c:14.5},dk:18,k:12,cb:20,cs:24.8},
+ M16:{holes:{f:17.0,m:17.5,c:18.5},dk:24,k:16,cb:26,cs:33.0}
+};
+const shapeDefs={
+ round:`<div><label>Durchmesser d [mm]</label><input id="matD" type="number" value="20"></div>`,
+ square:`<div><label>Seitenlänge a [mm]</label><input id="matA" type="number" value="20"></div>`,
+ flat:`<div class="row"><div><label>Breite b [mm]</label><input id="matB" type="number" value="50"></div><div><label>Stärke h [mm]</label><input id="matH" type="number" value="10"></div></div>`,
+ tube:`<div class="row"><div><label>Außen-Ø D [mm]</label><input id="matDo" type="number" value="40"></div><div><label>Innen-Ø d [mm]</label><input id="matDi" type="number" value="30"></div></div>`
+};
 
-            const warn = document.getElementById('rpm-warning');
-            if (n > 20000) warn.classList.remove('hidden');
-            else warn.classList.add('hidden');
-        }
-
-        /* =========================================
-           2. TOLERANZEN ISO 2768
-           ========================================= */
-        const tol2768Table = [
-            { max: 3, vals: [0.05, 0.1, 0.2] },
-            { max: 6, vals: [0.05, 0.1, 0.3] },
-            { max: 30, vals: [0.1, 0.2, 0.5] },
-            { max: 120, vals: [0.15, 0.3, 0.8] },
-            { max: 400, vals: [0.2, 0.5, 1.2] },
-            { max: 1000, vals: [0.3, 0.8, 2.0] },
-            { max: 2000, vals: [0.5, 1.2, 3.0] }
-        ];
-
-        function calcToleranz2768() {
-            const dim = parseFloat(document.getElementById('tol2768-dim').value);
-            const cls = document.getElementById('tol2768-class').value;
-            const resBox = document.getElementById('tol2768-res');
-            const errBox = document.getElementById('tol2768-error');
-
-            if (!dim || dim < 0.5 || dim > 2000) {
-                resBox.classList.add('hidden');
-                if(dim) errBox.classList.remove('hidden');
-                return;
-            }
-            errBox.classList.add('hidden');
-
-            const entry = tol2768Table.find(e => dim <= e.max);
-            
-            let idx = 0; // f
-            if (cls === 'm') idx = 1;
-            if (cls === 'c') idx = 2;
-
-            const tol = entry.vals[idx];
-            
-            document.getElementById('tol2768-val').innerText = tol.toFixed(2);
-            document.getElementById('tol2768-range').innerText = (dim - tol).toFixed(2) + " - " + (dim + tol).toFixed(2);
-            resBox.classList.remove('hidden');
-        }
-
-        /* =========================================
-           3. ISO PASSUNGEN
-           ========================================= */
-        const isoData = [
-            { max: 3,   H7:[10,0], H8:[14,0], h6:[0,-6], g6:[-2,-8], f7:[-6,-16], k6:[6,0], p6:[12,6] },
-            { max: 6,   H7:[12,0], H8:[18,0], h6:[0,-8], g6:[-4,-12], f7:[-10,-22], k6:[9,1], p6:[20,12] },
-            { max: 10,  H7:[15,0], H8:[22,0], h6:[0,-9], g6:[-5,-14], f7:[-13,-28], k6:[10,1], p6:[24,15] },
-            { max: 18,  H7:[18,0], H8:[27,0], h6:[0,-11], g6:[-6,-17], f7:[-16,-34], k6:[12,1], p6:[29,18] },
-            { max: 30,  H7:[21,0], H8:[33,0], h6:[0,-13], g6:[-7,-20], f7:[-20,-41], k6:[15,2], p6:[35,22] },
-            { max: 50,  H7:[25,0], H8:[39,0], h6:[0,-16], g6:[-9,-25], f7:[-25,-50], k6:[18,2], p6:[42,26] },
-            { max: 80,  H7:[30,0], H8:[46,0], h6:[0,-19], g6:[-10,-29], f7:[-30,-60], k6:[21,2], p6:[51,32] },
-            { max: 120, H7:[35,0], H8:[54,0], h6:[0,-22], g6:[-12,-34], f7:[-36,-71], k6:[25,3], p6:[59,37] },
-            { max: 500, H7:[63,0], H8:[97,0], h6:[0,-40], g6:[-20,-60], f7:[-68,-131], k6:[45,5], p6:[108,68] } 
-        ];
-
-        function applyIsoPreset() {
-            const val = document.getElementById('iso-preset').value;
-            if(!val) return;
-            
-            const [hole, shaft] = val.split('-');
-            document.getElementById('iso-hole-char').value = hole.charAt(0);
-            document.getElementById('iso-hole-num').value = hole.charAt(1);
-            document.getElementById('iso-shaft-char').value = shaft.charAt(0);
-            document.getElementById('iso-shaft-num').value = shaft.charAt(1);
-            
-            calcIsoFit();
-        }
-
-        function getIsoValues(dim, code) {
-            const entry = isoData.find(e => dim <= e.max);
-            if (!entry) return null;
-            if (entry[code]) return entry[code];
-            return null;
-        }
-
-        function calcIsoFit() {
-            const dim = parseFloat(document.getElementById('iso-dim').value);
-            const holeCode = document.getElementById('iso-hole-char').value + document.getElementById('iso-hole-num').value;
-            const shaftCode = document.getElementById('iso-shaft-char').value + document.getElementById('iso-shaft-num').value;
-
-            const resBox = document.getElementById('fit-result-box');
-            const errBox = document.getElementById('fit-error');
-
-            if (!dim || dim < 1 || dim > 500) {
-                resBox.classList.add('hidden');
-                errBox.classList.add('hidden');
-                return;
-            }
-
-            const hVals = getIsoValues(dim, holeCode);
-            const sVals = getIsoValues(dim, shaftCode);
-
-            if (hVals && sVals) {
-                errBox.classList.add('hidden');
-                resBox.classList.remove('hidden');
-
-                const hUp = hVals[0] / 1000;
-                const hLo = hVals[1] / 1000;
-                const sUp = sVals[0] / 1000;
-                const sLo = sVals[1] / 1000;
-
-                document.getElementById('res-hole-dev').innerText = `${fmt(hUp)} / ${fmt(hLo)}`;
-                document.getElementById('res-shaft-dev').innerText = `${fmt(sUp)} / ${fmt(sLo)}`;
-
-                const hMax = dim + hUp;
-                const hMin = dim + hLo;
-                const sMax = dim + sUp;
-                const sMin = dim + sLo;
-
-                document.getElementById('res-hole-range').innerText = `${hMin.toFixed(3)} - ${hMax.toFixed(3)}`;
-                document.getElementById('res-shaft-range').innerText = `${sMin.toFixed(3)} - ${sMax.toFixed(3)}`;
-
-                const maxClearance = hMax - sMin; 
-                const minClearance = hMin - sMax; 
-
-                const typeEl = document.getElementById('fit-type');
-                const valEl = document.getElementById('fit-values');
-
-                if (minClearance >= 0) {
-                    typeEl.innerText = "Spielpassung";
-                    typeEl.className = "text-xl font-bold text-green-400 mb-2";
-                    valEl.innerText = `Spiel: ${(minClearance * 1000).toFixed(0)} bis ${(maxClearance * 1000).toFixed(0)} µm`;
-                } else if (maxClearance <= 0) {
-                    typeEl.innerText = "Übermaßpassung (Presssitz)";
-                    typeEl.className = "text-xl font-bold text-red-400 mb-2";
-                    valEl.innerText = `Übermaß: ${(Math.abs(maxClearance) * 1000).toFixed(0)} bis ${(Math.abs(minClearance) * 1000).toFixed(0)} µm`;
-                } else {
-                    typeEl.innerText = "Übergangspassung";
-                    typeEl.className = "text-xl font-bold text-yellow-400 mb-2";
-                    valEl.innerText = `Übergang: ${(Math.abs(minClearance)*1000).toFixed(0)} µm Übermaß bis ${(maxClearance*1000).toFixed(0)} µm Spiel`;
-                }
-
-            } else {
-                resBox.classList.add('hidden');
-                errBox.classList.remove('hidden');
-            }
-        }
-        
-        function fmt(num) { return (num >= 0 ? '+' : '') + num.toFixed(3); }
-
-        /* =========================================
-           4. GEWINDE & KERNLÖCHER
-           ========================================= */
-        const threads = {
-            'M': {
-                'M1': 0.75, 'M1.2': 0.95, 'M1.6': 1.25, 'M2': 1.6, 'M2.5': 2.05,
-                'M3': 2.5, 'M4': 3.3, 'M5': 4.2, 'M6': 5.0, 'M8': 6.8, 
-                'M10': 8.5, 'M12': 10.2, 'M14': 12.0, 'M16': 14.0, 'M18': 15.5, 
-                'M20': 17.5, 'M22': 19.5, 'M24': 21.0, 'M27': 24.0, 'M30': 26.5, 
-                'M33': 29.5, 'M36': 32.0
-            },
-            'MF': {
-                'M3 x 0.35': 2.65, 'M4 x 0.5': 3.5, 'M5 x 0.5': 4.5, 'M6 x 0.75': 5.25,
-                'M8 x 1.0': 7.0, 'M10 x 1.0': 9.0, 'M10 x 1.25': 8.8, 
-                'M12 x 1.25': 10.8, 'M12 x 1.5': 10.5, 'M14 x 1.5': 12.5, 
-                'M16 x 1.5': 14.5, 'M18 x 1.5': 16.5, 'M20 x 1.5': 18.5,
-                'M22 x 1.5': 20.5, 'M24 x 1.5': 22.5, 'M24 x 2.0': 22.0,
-                'M27 x 2.0': 25.0, 'M30 x 2.0': 28.0, 'M32 x 1.5': 30.5
-            },
-            'UNC': {
-                'No. 1 - 64': 1.5, 'No. 2 - 56': 1.85, 'No. 3 - 48': 2.1, 'No. 4 - 40': 2.35,
-                'No. 5 - 40': 2.65, 'No. 6 - 32': 2.85, 'No. 8 - 32': 3.5, 'No. 10 - 24': 3.9,
-                'No. 12 - 24': 4.5, '1/4" - 20': 5.1, '5/16" - 18': 6.6, '3/8" - 16': 8.0, 
-                '7/16" - 14': 9.4, '1/2" - 13': 10.8, '9/16" - 12': 12.2, '5/8" - 11': 13.5, 
-                '3/4" - 10': 16.5, '7/8" - 9': 19.5, '1" - 8': 22.25, '1 1/8" - 7': 25.0, 
-                '1 1/4" - 7': 28.25, '1 1/2" - 6': 34.0
-            },
-            'UNF': {
-                'No. 0 - 80': 1.25, 'No. 1 - 72': 1.55, 'No. 2 - 64': 1.9, 'No. 3 - 56': 2.15,
-                'No. 4 - 48': 2.4, 'No. 5 - 44': 2.7, 'No. 6 - 40': 2.95, 'No. 8 - 36': 3.5,
-                'No. 10 - 32': 4.1, 'No. 12 - 28': 4.7, '1/4" - 28': 5.5, '5/16" - 24': 6.9, 
-                '3/8" - 24': 8.5, '7/16" - 20': 9.9, '1/2" - 20': 11.5, '9/16" - 18': 12.9, 
-                '5/8" - 18': 14.5, '3/4" - 16': 17.5, '7/8" - 14': 20.4, '1" - 12': 23.25, 
-                '1" - 14': 23.5, '1 1/8" - 12': 26.5, '1 1/4" - 12': 29.5, '1 1/2" - 12': 36.0
-            }
-        };
-
-        function updateThreadList() {
-            const type = document.getElementById('th-type').value;
-            const sizeSelect = document.getElementById('th-size');
-            const hint = document.getElementById('thread-hint');
-            sizeSelect.innerHTML = '';
-            
-            if (type.startsWith('UN')) {
-                hint.innerText = "Kernloch für metrische Bohrer (mm) angenähert.";
-            } else {
-                hint.innerText = "Faustformel: Nennmaß – Steigung ≈ Kernloch";
-            }
-            
-            for (const key in threads[type]) {
-                const opt = document.createElement('option');
-                opt.value = threads[type][key];
-                opt.innerText = key;
-                sizeSelect.appendChild(opt);
-            }
-            calcThread();
-        }
-
-        function calcThread() {
-            const val = document.getElementById('th-size').value;
-            document.getElementById('res-thread-drill').innerText = val;
-        }
-
-        /* =========================================
-           5. SCHRAUBEN & SENKUNGEN
-           ========================================= */
-        const screwData = {
-            'M3': { hole_f: 3.2, hole_m: 3.4, hole_c: 3.6, dk_912: 5.5, k_912: 3.0, d2_974: 6.0, dk_7991: 6.0, k_7991: 1.7 },
-            'M4': { hole_f: 4.3, hole_m: 4.5, hole_c: 4.8, dk_912: 7.0, k_912: 4.0, d2_974: 8.0, dk_7991: 8.0, k_7991: 2.3 },
-            'M5': { hole_f: 5.3, hole_m: 5.5, hole_c: 5.8, dk_912: 8.5, k_912: 5.0, d2_974: 10.0, dk_7991: 10.0, k_7991: 2.8 },
-            'M6': { hole_f: 6.4, hole_m: 6.6, hole_c: 7.0, dk_912: 10.0, k_912: 6.0, d2_974: 11.0, dk_7991: 12.0, k_7991: 3.3 },
-            'M8': { hole_f: 8.4, hole_m: 9.0, hole_c: 10.0, dk_912: 13.0, k_912: 8.0, d2_974: 15.0, dk_7991: 16.0, k_7991: 4.4 },
-            'M10': { hole_f: 10.5, hole_m: 11.0, hole_c: 12.0, dk_912: 16.0, k_912: 10.0, d2_974: 18.0, dk_7991: 20.0, k_7991: 5.5 },
-            'M12': { hole_f: 13.0, hole_m: 13.5, hole_c: 14.5, dk_912: 18.0, k_912: 12.0, d2_974: 20.0, dk_7991: 24.0, k_7991: 6.5 },
-            'M16': { hole_f: 17.0, hole_m: 17.5, hole_c: 18.5, dk_912: 24.0, k_912: 16.0, d2_974: 26.0, dk_7991: 30.0, k_7991: 7.5 }
-        };
-
-        function calcScrew() {
-            const type = document.getElementById('scr-type').value;
-            const size = document.getElementById('scr-size').value;
-            const fit = document.getElementById('scr-fit').value;
-            
-            const data = screwData[size];
-            
-            // Durchgangsbohrung
-            let hole = data['hole_' + fit];
-            document.getElementById('res-scr-hole').innerText = hole.toFixed(1);
-            
-            const fitMap = { 'f': 'Eng (fein)', 'm': 'Standard (mittel)', 'c': 'Groß (grob)' };
-            document.getElementById('res-scr-fit-text').innerText = fitMap[fit];
-            
-            const refEls = document.querySelectorAll('.res-fit-ref');
-            refEls.forEach(el => el.innerText = fit);
-
-            // Kopfdaten
-            if (type === '912') {
-                document.getElementById('res-scr-dk').innerText = data.dk_912.toFixed(1) + " mm";
-                
-                // Zapfensenkung DIN 974-1 (Reihe 1)
-                document.getElementById('res-scr-cb-dia').innerText = data.d2_974.toFixed(1) + " mm";
-                // Tiefe = k + 0.4mm
-                const depth = data.k_912 + 0.4;
-                document.getElementById('res-scr-cb-depth').innerText = depth.toFixed(1) + " mm";
-
-                document.getElementById('res-spec-912').classList.remove('hidden');
-                document.getElementById('res-spec-7991').classList.add('hidden');
-            } else {
-                document.getElementById('res-scr-dk').innerText = data.dk_7991.toFixed(1) + " mm";
-                
-                // Senkung für Senkkopf: Ø = dk, Tiefe ≈ k
-                document.getElementById('res-scr-cs-dia').innerText = data.dk_7991.toFixed(1) + " mm";
-                document.getElementById('res-scr-cs-depth').innerText = data.k_7991.toFixed(1) + " mm";
-                
-                document.getElementById('res-spec-912').classList.add('hidden');
-                document.getElementById('res-spec-7991').classList.remove('hidden');
-            }
-        }
-
-        /* =========================================
-           6. EINHEITEN & UMRECHNER
-           ========================================= */
-        function calcUnit(convType) {
-            // convType = 'mm_inch', 'inch_mm', 'deg_rad', etc.
-            
-            if(convType === 'mm_inch') {
-                const mm = parseFloat(document.getElementById('conv-mm').value);
-                if(!isNaN(mm)) document.getElementById('conv-inch').value = (mm / 25.4).toFixed(4);
-            } else if(convType === 'inch_mm') {
-                const inch = parseFloat(document.getElementById('conv-inch').value);
-                if(!isNaN(inch)) document.getElementById('conv-mm').value = (inch * 25.4).toFixed(2);
-            }
-            
-            else if(convType === 'deg_rad') {
-                const deg = parseFloat(document.getElementById('conv-deg').value);
-                if(!isNaN(deg)) document.getElementById('conv-rad').value = (deg * (Math.PI / 180)).toFixed(4);
-            } else if(convType === 'rad_deg') {
-                const rad = parseFloat(document.getElementById('conv-rad').value);
-                if(!isNaN(rad)) document.getElementById('conv-deg').value = (rad * (180 / Math.PI)).toFixed(2);
-            }
-            
-            else if(convType === 'mmin_ms') {
-                const mmin = parseFloat(document.getElementById('conv-mmin').value);
-                if(!isNaN(mmin)) document.getElementById('conv-ms').value = (mmin / 60).toFixed(2);
-            } else if(convType === 'ms_mmin') {
-                const ms = parseFloat(document.getElementById('conv-ms').value);
-                if(!isNaN(ms)) document.getElementById('conv-mmin').value = (ms * 60).toFixed(0);
-            }
-        }
-
-        // --- Schnittdaten Rückwärts ---
-        let revMode = 'n'; // We have N, want VC
-
-        function toggleReverseMode(mode) {
-            revMode = mode;
-            // UI Switch
-            if(mode === 'n') {
-                document.getElementById('btn-rev-n').classList.remove('text-slate-400', 'hover:text-white');
-                document.getElementById('btn-rev-n').classList.add('bg-slate-700', 'text-white');
-                
-                document.getElementById('btn-rev-vc').classList.add('text-slate-400', 'hover:text-white');
-                document.getElementById('btn-rev-vc').classList.remove('bg-slate-700', 'text-white');
-                
-                document.getElementById('input-rev-n').classList.remove('hidden');
-                document.getElementById('input-rev-vc').classList.add('hidden');
-                
-                document.getElementById('res-rev-label').innerText = "Ergebnis: Schnittgeschw. (vc)";
-                document.getElementById('res-rev-unit').innerText = "m/min";
-            } else {
-                document.getElementById('btn-rev-vc').classList.remove('text-slate-400', 'hover:text-white');
-                document.getElementById('btn-rev-vc').classList.add('bg-slate-700', 'text-white');
-                
-                document.getElementById('btn-rev-n').classList.add('text-slate-400', 'hover:text-white');
-                document.getElementById('btn-rev-n').classList.remove('bg-slate-700', 'text-white');
-                
-                document.getElementById('input-rev-vc').classList.remove('hidden');
-                document.getElementById('input-rev-n').classList.add('hidden');
-                
-                document.getElementById('res-rev-label').innerText = "Ergebnis: Drehzahl (n)";
-                document.getElementById('res-rev-unit').innerText = "U/min";
-            }
-            calcReverseSchnitt();
-        }
-
-        function calcReverseSchnitt() {
-            const d = parseFloat(document.getElementById('rev-d').value);
-            const resVal = document.getElementById('res-rev-val');
-            
-            if(!d || d <= 0) { resVal.innerText = "--"; return; }
-
-            if(revMode === 'n') {
-                // Have n, want vc = (d * PI * n) / 1000
-                const n = parseFloat(document.getElementById('rev-in-n').value);
-                if(!n || n < 0) { resVal.innerText = "--"; return; }
-                const vc = (d * Math.PI * n) / 1000;
-                resVal.innerText = vc.toFixed(1);
-            } else {
-                // Have vc, want n = (vc * 1000) / (d * PI)
-                const vc = parseFloat(document.getElementById('rev-in-vc').value);
-                if(!vc || vc < 0) { resVal.innerText = "--"; return; }
-                const n = (vc * 1000) / (d * Math.PI);
-                resVal.innerText = n.toFixed(0);
-            }
-        }
-
-        /* =========================================
-           7. MATERIAL & GEWICHT
-           ========================================= */
-        function updateShapeInputs() {
-            const shape = document.getElementById('mat-shape').value;
-            // Hide all
-            document.querySelectorAll('.shape-group').forEach(el => el.classList.add('hidden'));
-            // Show active
-            document.getElementById('shape-' + shape).classList.remove('hidden');
-            calcMaterialWeight();
-        }
-
-        function calcMaterialWeight() {
-            const rho = parseFloat(document.getElementById('mat-type').value); // g/cm3
-            const shape = document.getElementById('mat-shape').value;
-            const L = parseFloat(document.getElementById('dim-L').value); // mm
-            const n = parseFloat(document.getElementById('dim-n').value);
-            
-            if(!L || L <= 0 || !n || n <= 0) {
-                document.getElementById('res-weight-single').innerText = "0.00";
-                document.getElementById('res-weight-total').innerText = "0.00";
-                return;
-            }
-
-            let A = 0; // mm2
-
-            if(shape === 'round') {
-                const d = parseFloat(document.getElementById('dim-d').value);
-                if(d > 0) A = Math.PI * Math.pow(d/2, 2);
-            } else if(shape === 'square') {
-                const a = parseFloat(document.getElementById('dim-a').value);
-                if(a > 0) A = a * a;
-            } else if(shape === 'flat') {
-                const b = parseFloat(document.getElementById('dim-b').value);
-                const h = parseFloat(document.getElementById('dim-h').value);
-                if(b > 0 && h > 0) A = b * h;
-            } else if(shape === 'tube') {
-                const D = parseFloat(document.getElementById('dim-D_out').value);
-                const d = parseFloat(document.getElementById('dim-d_in').value);
-                if(D > 0 && D > d) A = Math.PI * (Math.pow(D/2, 2) - Math.pow(d/2, 2));
-            }
-
-            // Calc Volume in cm3 (A is mm2, L is mm -> V = mm3 / 1000)
-            const V_cm3 = (A * L) / 1000;
-            
-            // Weight = Vol * Density (g) / 1000 -> kg
-            const weightOne = (V_cm3 * rho) / 1000;
-            const weightTotal = weightOne * n;
-
-            document.getElementById('res-weight-single').innerText = weightOne.toFixed(2);
-            document.getElementById('res-weight-total').innerText = weightTotal.toFixed(2);
-        }
-
-        // Init Calls
-        updateThreadList();
-        loadCuttingPresets();
-        calcScrew();
-    </script>
+function openTab(id){
+  $$(".tab-btn").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));
+  $$(".tab").forEach(t=>t.classList.toggle("active",t.id==="tab-"+id));
+  history.replaceState(null,"","#"+id);
+  setTimeout(()=>window.scrollTo({top:0,behavior:"smooth"}),30);
+}
+function calcSchnitt(){
+  const d=num("cutD"), vc=num("cutVc"), z=num("cutZ"), fz=num("cutFz"), ap=num("cutAp"), ae=num("cutAe");
+  const n=d>0?(vc*1000)/(Math.PI*d):0, vf=n*z*fz, q=ap>0&&ae>0?(ap*ae*vf)/1000:0;
+  setText("cutN",round(n,0)); setText("cutVf",round(vf,0)); setText("cutQ",q?round(q,1):"--");
+  const w=$("cutWarn"); w.className=""; 
+  if(n>20000){w.textContent="sehr hoch";w.classList.add("bad")} else if(vf>3000){w.textContent="Vorschub hoch";w.classList.add("warn")} else {w.textContent="Richtwert prüfen";w.classList.add("good")}
+}
+function loadCutPreset(){
+  const data={
+    steel:{drill:[25,.1,2],millRough:[120,.05,4],millFinish:[180,.03,4],turn:[160,.12,1]},
+    inox:{drill:[15,.08,2],millRough:[80,.04,4],millFinish:[120,.03,4],turn:[90,.10,1]},
+    alu:{drill:[80,.2,2],millRough:[400,.1,3],millFinish:[600,.08,3],turn:[450,.18,1]},
+    plastic:{drill:[60,.2,2],millRough:[300,.15,2],millFinish:[400,.10,2],turn:[250,.15,1]},
+    cast:{drill:[22,.1,2],millRough:[110,.06,4],millFinish:[150,.04,4],turn:[130,.14,1]}
+  };
+  const p=data[$("cutMat").value][$("cutOp").value];
+  $("cutVc").value=p[0]; $("cutFz").value=p[1]; $("cutZ").value=p[2]; calcSchnitt(); toast("Richtwerte geladen");
+}
+function calcTol(){
+  const d=num("tolDim"), cls=$("tolClass").value;
+  const idx={f:2,m:3,c:4}[cls];
+  const row=tolRows.find(r=>d>=r[0]&&d<=r[1]) || tolRows.find(r=>d<=r[1]);
+  if(!row){setText("tolVal","--");return}
+  const t=row[idx]; setText("tolVal",round(t,2)); setText("tolMin",round(d-t,2)); setText("tolMax",round(d+t,2)); setText("tolRange",`${round(d-t,2)} – ${round(d+t,2)}`);
+}
+function renderTolTable(){
+  $("tolTable").innerHTML=`<thead><tr><th>Nennmaßbereich</th><th>fein f</th><th>mittel m</th><th>grob c</th></tr></thead><tbody>`+
+  tolRows.map(r=>`<tr><td>${r[0]} bis ${r[1]} mm</td><td class="mono">±${r[2]}</td><td class="mono">±${r[3]}</td><td class="mono">±${r[4]}</td></tr>`).join("")+"</tbody>";
+}
+function applyFitPreset(){const v=$("fitPreset").value;if(!v)return;const [h,s]=v.split("-");$("holeChar").value=h[0];$("holeNum").value=h[1];$("shaftChar").value=s[0];$("shaftNum").value=s[1];calcFit()}
+function fitVals(dim,code){const e=fitData.find(x=>dim<=x.max);return e?e[code]:null}
+function calcFit(){
+  const d=num("fitDim"), hc=$("holeChar").value+$("holeNum").value, sc=$("shaftChar").value+$("shaftNum").value;
+  let hv=fitVals(d,hc), sv=fitVals(d,sc);
+  if(!hv||!sv){setText("fitType","nicht hinterlegt");return}
+  const hmax=d+hv[0]/1000,hmin=d+hv[1]/1000,smax=d+sv[0]/1000,smin=d+sv[1]/1000;
+  const maxClear=hmax-smin,minClear=hmin-smax;
+  setText("holeRange",`${round(hmin,3)} – ${round(hmax,3)}`); setText("shaftRange",`${round(smin,3)} – ${round(smax,3)}`);
+  const ft=$("fitType"); ft.className="";
+  if(minClear>=0){ft.textContent="Spielpassung";ft.classList.add("good");setText("fitValues",`${round(minClear*1000,0)} bis ${round(maxClear*1000,0)} µm Spiel`)}
+  else if(maxClear<=0){ft.textContent="Übermaßpassung";ft.classList.add("bad");setText("fitValues",`${round(Math.abs(maxClear)*1000,0)} bis ${round(Math.abs(minClear)*1000,0)} µm Übermaß`)}
+  else{ft.textContent="Übergangspassung";ft.classList.add("warn");setText("fitValues",`${round(Math.abs(minClear)*1000,0)} µm Übermaß bis ${round(maxClear*1000,0)} µm Spiel`)}
+}
+function initThreads(){
+  const tt=$("threadType"); tt.innerHTML=Object.keys(threads).map(k=>`<option>${k}</option>`).join("");
+  tt.onchange=()=>{populateThreads();calcThread()}; $("threadSize").onchange=calcThread; populateThreads();
+  $("threadQuick").innerHTML="<thead><tr><th>Gewinde</th><th>Kernloch</th></tr></thead><tbody>"+Object.entries(threads["Metrisch Regel (M)"]).slice(3,14).map(([k,v])=>`<tr><td>${k}</td><td class="mono">${v} mm</td></tr>`).join("")+"</tbody>";
+}
+function populateThreads(){const list=threads[$("threadType").value];$("threadSize").innerHTML=Object.keys(list).map(k=>`<option>${k}</option>`).join("")}
+function calcThread(){const kind=$("threadType").value, name=$("threadSize").value, val=threads[kind][name];setText("threadDrill",round(val,2).replace(".00",""));setText("threadName",name);setText("threadKind",kind)}
+function calcScrew(){const s=screw[$("scrSize").value], fit=$("scrFit").value, type=$("scrType").value;setText("scrHole",s.holes[fit].toFixed(1));setText("scrDk",s.dk.toFixed(1)+" mm");setText("scrCounterDia",(type==="912"?s.cb:s.cs).toFixed(1)+" mm");setText("scrDepth",(type==="912"?s.k+0.4:s.k).toFixed(1)+" mm")}
+function conv(mode){
+  if(mode==="mm") $("inchVal").value=round(num("mmVal")/25.4,4);
+  if(mode==="inch") $("mmVal").value=round(num("inchVal")*25.4,3);
+  if(mode==="deg") $("radVal").value=round(num("degVal")*Math.PI/180,4);
+  if(mode==="rad") $("degVal").value=round(num("radVal")*180/Math.PI,3);
+  calcReverse();
+}
+function calcReverse(){const d=num("revD"), n=num("revN");setText("revVc",round(Math.PI*d*n/1000,1))}
+function updateShape(){const type=$("shapeType").value;$("shapeInputs").innerHTML=shapeDefs[type];$$("input",$("shapeInputs")).forEach(e=>e.oninput=calcWeight);calcWeight()}
+function calcWeight(){
+  const dens=num("matType"), type=$("shapeType").value, L=num("matL"), qty=num("matQty")||1; let area=0;
+  if(type==="round") area=Math.PI*Math.pow(num("matD"),2)/4;
+  if(type==="square") area=Math.pow(num("matA"),2);
+  if(type==="flat") area=num("matB")*num("matH");
+  if(type==="tube") area=Math.PI*(Math.pow(num("matDo"),2)-Math.pow(num("matDi"),2))/4;
+  const kg=area*L*dens/1000000, total=kg*qty; setText("matSingle",round(kg,2)); setText("matTotal",round(total,2));
+  const price=num("matPrice"); setText("matCost",price?round(total*price,2)+" €":"--");
+  const lift=$("matLift"); lift.className="";
+  if(kg>=25){lift.textContent="Hebehilfe/Kran einplanen";lift.classList.add("bad")} else if(kg>=15){lift.textContent="vorsichtig heben";lift.classList.add("warn")} else {lift.textContent="von Hand meist unkritisch";lift.classList.add("good")}
+}
+function calcTriangle(){const a=num("triA"),b=num("triB"), c=Math.hypot(a,b), ang=Math.atan2(a,b)*180/Math.PI;setText("triAngle",round(ang,2));setText("triC",round(c,2));setText("triSlope",b?round(a/b*100,1):"--");setText("triRatio",b?`1 : ${round(b/a,2)}`:"--")}
+function saveHistory(type){
+  let item={time:new Date().toLocaleString("de-DE")};
+  if(type==="schnitt"){item.title=$("cutNote").value||"Schnittdaten"; item.text=`n ${$("cutN").textContent} U/min · vf ${$("cutVf").textContent} mm/min · Ø ${$("cutD").value} · vc ${$("cutVc").value}`;}
+  const key="ws_metall_history_"+type; const arr=JSON.parse(localStorage.getItem(key)||"[]"); arr.unshift(item); localStorage.setItem(key,JSON.stringify(arr.slice(0,12))); renderHistory(); toast("Gemerkte Notiz gespeichert");
+}
+function renderHistory(){const arr=JSON.parse(localStorage.getItem("ws_metall_history_schnitt")||"[]");$("historySchnitt").innerHTML=arr.map(x=>`<div class="history-item"><b>${x.title}</b>${x.text}<br><small>${x.time}</small></div>`).join("")}
+function copySummary(type){
+  let txt="";
+  if(type==="schnitt") txt=`Schnittdaten: Ø ${$("cutD").value} mm, vc ${$("cutVc").value} m/min, z ${$("cutZ").value}, fz ${$("cutFz").value} mm → n ${$("cutN").textContent} U/min, vf ${$("cutVf").textContent} mm/min`;
+  if(type==="thread") txt=`${$("threadName").textContent}: Kernloch ${$("threadDrill").textContent} mm (${$("threadKind").textContent})`;
+  navigator.clipboard?.writeText(txt).then(()=>toast("Kopiert")).catch(()=>alert(txt));
+}
+function calcAll(){calcSchnitt();calcTol();calcFit();calcThread();calcScrew();calcReverse();calcWeight();calcTriangle()}
+function init(){
+  $$(".tab-btn").forEach(b=>b.onclick=()=>openTab(b.dataset.tab));
+  $("btnTheme").onclick=()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==="dark"?"light":"dark"};
+  $("btnHelp").onclick=()=>helpDialog.showModal();
+  $$("input,select").forEach(e=>e.addEventListener("input",calcAll));
+  $$("select").forEach(e=>e.addEventListener("change",calcAll));
+  $("shapeType").addEventListener("change",updateShape);
+  initThreads(); updateShape(); renderTolTable(); renderHistory(); calcAll();
+  const hash=location.hash.replace("#",""); if(hash && $("tab-"+hash)) openTab(hash);
+}
+document.addEventListener("DOMContentLoaded",init);
+</script>
 </body>
 </html>
