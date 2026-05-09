@@ -391,6 +391,24 @@
 </aside>
 </div>
 </section>
+<section class="home-tool-showcase" aria-labelledby="home-tool-showcase-heading">
+<div class="home-tool-showcase-head">
+<h2 id="home-tool-showcase-heading">Neue &amp; praktische Tools</h2>
+<p>Aktuelle Werkzeuge aus der Warenschmiede – lokal, online oder direkt als Download nutzbar.</p>
+</div>
+<div class="home-tool-slider" aria-label="Tool-Showcase" tabindex="0">
+<a class="home-tool-card" href="/downloads.html">
+<img alt="Quicksafe Unterweisungs-Generator Vorschau" loading="lazy" src="/dateien/logo_quicksafe.png"/>
+<h3>Quicksafe Unterweisungs-Generator v2.1.1.0</h3>
+<p>Mehrsprachige Unterweisungsnachweise als HTML/PDF – portable Windows-App.</p>
+</a>
+<a class="home-tool-card" href="/tools/ws_3d_print_kostenrechner.html">
+<img alt="Warenschmiede 3D-Druck Kostenrechner Plus Vorschau" loading="lazy" src="/tools/3D-Druck_KostenrechnerPlus01.png"/>
+<h3>Warenschmiede 3D-Druck Kostenrechner Plus</h3>
+<p>Online-Kalkulation für Angebote, Rechnungen, Lieferscheine, PDF/JSON und lokale Speicherung.</p>
+</a>
+</div>
+</section>
 <section aria-labelledby="about-teaser-heading" class="section section-about-teaser">
 <div class="container about-teaser">
 <div class="about-teaser__media">
@@ -567,6 +585,24 @@
 <script>
   // Auto-Update Copyright Year
   document.getElementById('copyright-year').textContent = new Date().getFullYear();
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var slider = document.querySelector('.home-tool-slider');
+    if (!slider) return;
+
+    var cards = slider.querySelectorAll('.home-tool-card');
+    if (cards.length < 2) return;
+
+    var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    var index = 0;
+    setInterval(function () {
+      index = (index + 1) % cards.length;
+      cards[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }, 5500);
+  });
 </script>
 </body>
 </html>
