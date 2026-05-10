@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Warenschmiede CNC Fräsen-Einrichtsblatt Plus v1.0.35.0</title>
+  <meta name="description" content="Digitales CNC-Fräsen-Einrichtsblatt mit Fräsmaschinen, Projekten, Werkzeugen, Nullpunkten, Aufspannskizze, JSON Backup und Druckausgabe.">
+  <link rel="stylesheet" href="assets/css/cnc-einrichtblatt.css">
+</head>
+<body>
+<header class="topbar no-print compact-topbar">
+  <div class="brand compact-brand">
+    <div class="logo mini-logo">W</div>
+    <div>
+      <h1>Warenschmiede CNC Fräsen-Einrichtsblatt Plus <span>v1.0.35.0</span></h1>
+    </div>
+  </div>
+  <div class="top-actions grouped-actions">
+    <a class="btn small" href="https://www.warenschmiede.com/">↩ Warenschmiede</a>
+    <button class="btn small" id="btnDemo">Demo laden</button>
+    <button class="btn small export" id="btnExport">⬇ JSON Export / Backup speichern</button>
+    <label class="btn small import filebtn">⬆ JSON Import / Backup laden<input id="importFile" type="file" accept=".json" hidden></label>
+    <button class="btn small primary" onclick="window.print()">🖨 Drucken / PDF</button>
+    <span class="blank-control"><label for="blankToolCount">Blanko T</label><select id="blankToolCount" title="Werkzeugplätze im Blanko-Druck"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option selected>15</option><option>16</option><option>17</option><option>18</option><option>19</option><option>20</option></select></span><button class="btn small" id="btnBlankPrint" type="button">□ Blanko-Druck</button>
+  </div>
+</header>
+
+<main class="shell">
+
+  <nav class="tabs no-print" id="tabs">
+    <button data-tab="dashboard" class="active">Übersicht</button>
+    <button data-tab="settings">Einstellungen</button>
+    <button data-tab="machines">Maschinen</button>
+    <button data-tab="projects">Projekte</button>
+    <button data-tab="sheet">Einrichtblatt</button>
+    <button data-tab="sketch">Aufspannskizze</button>
+    <button data-tab="tools">Werkzeuge</button>
+    <button data-tab="print">Druckvorschau</button>
+  </nav>
+
+  <section class="tab active" id="tab-dashboard">
+    <div class="dashboard-home">
+      <div class="panel dashboard-hero">
+        <div class="panel-head"><h3>Übersicht</h3><p>Status, Bestand und letzte Aktionen deiner lokalen Einrichtblatt-Datenbank.</p></div>
+        <div class="panel-body">
+          <div class="stats-grid" id="dashboardStats"></div>
+          <div class="dashboard-hint">
+            <b>Workflow:</b> Maschine anlegen → Projekt erstellen → Aufspannskizze bauen → Werkzeuge/Nullpunkte ergänzen → PDF oder Blanko drucken.
+          </div>
+        </div>
+      </div>
+      <div class="layout dashboard-info-layout">
+        <div class="panel">
+          <div class="panel-head"><h3>Letzte Aktivitäten</h3><p>Automatische Historie für neue, kopierte, geänderte und gelöschte Datensätze.</p></div>
+          <div class="panel-body">
+            <div class="toolbar"><button class="btn small" id="clearHistory" type="button">Historie leeren</button></div>
+            <div id="historyList" class="history-list"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Schnellzugriff</h3><p>Letzte Projekte und Projektstatus auf einen Blick.</p></div>
+          <div class="panel-body">
+            <div class="toolbar"><input id="dashboardSearch" placeholder="Schnellsuche Projekt / Zeichnungsnummer..."><button class="btn primary" id="dashboardNewProject">+ Projekt</button></div>
+            <div id="dashboardProjects" class="cards compact-projects"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-settings">
+    <div class="panel"><div class="panel-head"><h3>Firmenangaben / neutraler Modus</h3><p>Für öffentliche Nutzung bleibt alles frei editierbar.</p></div>
+      <div class="panel-body form grid2">
+        <div><label>Firmenname im Druckkopf</label><input id="companyName"></div>
+        <div><label>Untertitel / Bereich</label><input id="companySub"></div>
+        <div><label>Standard-Hinweis 1</label><input id="footerNote1"></div>
+        <div><label>Standard-Hinweis 2</label><input id="footerNote2"></div>
+        <div><label>Standard-Hinweis 3</label><input id="footerNote3"></div>
+        <div><label>Standard-Hinweis 4</label><input id="footerNote4"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-machines">
+    <div class="layout machines-layout">
+      <aside class="panel machine-side-panel"><div class="panel-head"><h3>Maschinenliste</h3><p>Suchen und nach Achsen filtern.</p></div><div class="panel-body machine-list-body">
+        <div class="machine-filterbar">
+          <input id="machineSearch" placeholder="Maschine, Steuerung, Aufnahme suchen...">
+          <select id="machineAxisFilter" title="Achsen filtern">
+            <option value="">Alle Achsen</option>
+            <option value="3">3 Achsen</option>
+            <option value="4">4 Achsen</option>
+            <option value="5">5 Achsen</option>
+            <option value="6">6 Achsen</option>
+          </select>
+        </div>
+        <div id="machineList" class="machine-list-scroll"></div>
+        <button class="btn primary wide" id="newMachine">+ Maschine</button>
+      </div></aside>
+      <div class="panel machine-edit-panel"><div class="panel-head"><h3>Maschine bearbeiten</h3><p>Hier definierst du, was die Maschine grundsätzlich kann.</p></div>
+        <div class="panel-body form" id="machineForm">
+          <div class="grid3">
+            <div><label>Name</label><input id="m_name"></div>
+            <div><label>Typ</label><select id="m_kind"><option value="mill">Fräsmaschine</option></select></div>
+            <div><label>Steuerung</label><input id="m_control" placeholder="Heidenhain, Siemens..."></div>
+          </div>
+          <div class="grid3">
+            <div><label>Achsen</label><select id="m_axes"><option selected>3</option><option>4</option><option>5</option><option>6</option></select></div>
+            <div><label>Magazinplätze</label><input id="m_magazines" type="number" min="0" value="20"></div>
+            <div><label>Aufnahme</label><input id="m_taper" placeholder="SK40, HSK63, VDI40, Capto..."></div>
+          </div>
+          <div class="grid3">
+            <label class="check"><input id="m_coolant" type="checkbox"> KSS an/aus</label>
+            <div><label>KSS Öl-Gemisch [%]</label><input id="m_coolantMix" type="number" min="0" max="20" step="0.1" placeholder="z.B. 6-9"></div>
+            <label class="check"><input id="m_longbed" type="checkbox"> Langbett</label>
+            <label class="check"><input id="m_divider" type="checkbox"> Trennwand möglich</label>
+            <label class="check"><input id="m_pallet" type="checkbox"> Wechseltisch / Tisch 1+2</label>
+          </div>
+          <div><label>Notizen zur Maschine</label><textarea id="m_notes"></textarea></div>
+          <div class="toolbar"><button class="btn primary" id="saveMachine">Maschine speichern</button><button class="btn danger" id="deleteMachine">Löschen</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-projects">
+    <div class="panel"><div class="panel-head"><h3>Projektverwaltung</h3><p>Ein Projekt ist dein digitales Einrichtblatt. Suche, öffnen, ändern, erneut drucken.</p></div>
+      <div class="panel-body">
+        <div class="project-context"><b>Aktive Maschine:</b> <span id="projectActiveMachine">bitte Maschine auswählen</span></div>
+        <div class="toolbar project-filter"><select id="projectMachineFilter" aria-label="Maschine für Projektliste auswählen"></select><input id="projectSearch" placeholder="Suche Projektname oder Zeichnungsnummer..."><button class="btn primary" id="newProject">+ Projekt</button></div>
+        <div id="projectList" class="cards"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-sheet">
+    <div class="panel"><div class="panel-head"><h3>Einrichtblatt-Kopf</h3><p>Maschine auswählen und Kopfdaten für den Auftrag pflegen.</p></div>
+      <div class="panel-body form">
+        <div class="grid3">
+          <div><label>Projektname</label><input id="p_name" placeholder="Demo Halterplatte OP10"></div>
+          <div><label>Maschine suchen / wählen</label><input id="p_machineSearch" placeholder="Maschine suchen..."><select id="p_machine"></select></div>
+          <div><label>Datum</label><input id="p_date" type="date"></div>
+        </div>
+        <div id="projectMachineCapabilities" class="capability-box"></div>
+        <div class="grid3 project-status-row">
+          <div><label>Status / Ampel</label><select id="p_status"><option value="draft">🔴 Entwurf</option><option value="sample">🟡 Muster</option><option value="active">🟢 Aktiv</option></select></div>
+          <div class="status-help"><label>Status-Hinweis</label><div class="helpbox">🔴 Entwurf · 🟡 Muster · 🟢 Aktiv</div></div>
+          <div><label>Kurznotiz Verwaltung</label><input id="p_projectNote" placeholder="z. B. OP geändert, neue Spannung, freigegeben..."></div>
+        </div>
+        <div class="grid3">
+          <div><label>Teile-Bezeichnung</label><input id="p_part"></div>
+          <div><label>Zeichnung Nr.</label><input id="p_drawing"></div>
+          <div><label>Programm Nr. / Hauptprogramm</label><input id="p_program"></div>
+        </div>
+        <div id="programModeBox" class="program-box"></div>
+        <div class="grid3">
+          <div><label>Arbeitsgang Nr.</label><input id="p_operation"></div>
+          <div><label>Material</label><input id="p_material"></div>
+          <div><label>Name</label><input id="p_operator"></div>
+        </div>
+        <div class="grid2">
+          <div><label>Aufspannung</label><input id="p_setup"></div>
+          <div><label>Spannbacken</label><input id="p_jaws"></div>
+          <div><label>Spannvorrichtung</label><input id="p_fixture"></div>
+          <div><label>Schraubstock / Spannung</label><input id="p_clamping"></div>
+        </div>
+        <div><label>Notizen</label><textarea id="p_notes"></textarea></div>
+        <div class="toolbar"><button class="btn primary" id="saveProject">Projekt speichern</button><button class="btn" id="copyProject">Projekt kopieren</button><button class="btn danger" id="deleteProject">Projekt löschen</button></div>
+      </div>
+    </div>
+    <div class="panel mt"><div class="panel-head"><h3>Nullpunkte / Koordinaten</h3><p>Gleicher Name je Seite ist erlaubt: G54 links und G54 rechts sind getrennte Einträge.</p></div>
+      <div class="panel-body"><div class="toolbar"><button class="btn" data-add-offset="left">+ Nullpunkt links</button><button class="btn" data-add-offset="right">+ Nullpunkt rechts</button><button class="btn" data-add-offset="center">+ Nullpunkt Mitte/frei</button></div><div id="offsetTable"></div></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-sketch">
+    <div class="layout sketch-layout split-sketch-layout">
+      <aside class="panel no-print sketch-tools-left"><div class="panel-head"><h3>Bausteine</h3><p>Baustein wählen und später in der Fläche verschieben.</p></div>
+        <div class="panel-body form compact-buttons sketch-palette">
+          <div class="palette-group"><h4>Spannung / Tisch</h4>
+            <button class="btn" data-shape-btn="viseH">Schraubstock quer</button>
+            <button class="btn" data-shape-btn="viseV">Schraubstock längs</button>
+            <button class="btn" data-shape-btn="fixture">Vorrichtung</button>
+            <button class="btn" data-shape-btn="stop">Anschlag</button>
+            <button class="btn" data-shape-btn="divider">Trennwand</button>
+            <button class="btn subtle" data-shape-btn="table">Tisch / Fläche</button>
+          </div>
+          <div class="palette-group"><h4>Werkstück</h4>
+            <button class="btn" data-shape-btn="raw">Rohteil</button>
+            <button class="btn" data-shape-btn="hole">Bohrung / Loch</button>
+            <button class="btn" data-shape-btn="slot">Langloch</button>
+          </div>
+          <div class="palette-group"><h4>Hinweise / Maße</h4>
+            <button class="btn" data-shape-btn="text">Textfeld</button>
+            <button class="btn" data-shape-btn="measure">Maßpfeil frei</button>
+            <button class="btn" id="edgeMeasureBtn" type="button">Kantenmaß</button>
+          </div>
+          <div class="palette-group"><h4>Aktionen</h4>
+            <button class="btn primary" id="applyMachineTemplate" type="button">Vorlage aus Maschine</button>
+            <button class="btn" id="copyShape" type="button">Auswahl kopieren</button>
+            <button class="btn" id="groupShapes" type="button">Auswahl gruppieren</button>
+            <button class="btn" id="ungroupShapes" type="button">Gruppe lösen</button>
+            <button class="btn" id="copyOpposite180" type="button">Gegenseite 180° kopieren</button>
+          </div>
+        </div>
+      </aside>
+
+      <div class="panel sketch-canvas-panel"><div class="panel-head"><h3>Aufspannskizze</h3><p>Langbett nutzt die ganze Fläche. Wechseltisch kann automatisch als Tisch 1 / Tisch 2 aufgebaut werden. Nullpunkte bleiben immer sichtbar.</p></div>
+        <div class="panel-body"><svg id="sketchSvg" viewBox="0 0 900 420" role="img" aria-label="Aufspannskizze"></svg><p class="note">Tipp: Nullpunkt-Preset rechts anklicken, dann direkt in die Skizze klicken.</p></div>
+      </div>
+
+      <aside class="panel no-print sketch-tools-right"><div class="panel-head"><h3>Nullpunkte / Objekt</h3><p id="npModeHint">G54 links und G54 rechts sind getrennt möglich.</p></div>
+        <div class="panel-body form">
+          <label>Nullpunkt-Presets</label>
+          <div class="np-preset-grid" id="offsetPresetGrid">
+            <button class="np-btn" data-offset-preset="G54" data-side="left">G54 L</button><button class="np-btn" data-offset-preset="G54" data-side="right">G54 R</button>
+            <button class="np-btn" data-offset-preset="G55" data-side="left">G55 L</button><button class="np-btn" data-offset-preset="G55" data-side="right">G55 R</button>
+            <button class="np-btn" data-offset-preset="G56" data-side="left">G56 L</button><button class="np-btn" data-offset-preset="G56" data-side="right">G56 R</button>
+            <button class="np-btn" data-offset-preset="G57" data-side="left">G57 L</button><button class="np-btn" data-offset-preset="G57" data-side="right">G57 R</button>
+            <button class="np-btn" data-offset-preset="G58" data-side="left">G58 L</button><button class="np-btn" data-offset-preset="G58" data-side="right">G58 R</button>
+            <button class="np-btn" data-offset-preset="G59" data-side="left">G59 L</button><button class="np-btn" data-offset-preset="G59" data-side="right">G59 R</button>
+          </div>
+          <p class="note small-note">Preset anklicken, grünes Feld zeigt aktiv, dann Position wählen.</p>
+          <div id="presetStatus" class="preset-status">Kein Nullpunkt-Preset aktiv.</div>
+          <p class="note small-note">Mehrfachauswahl: Shift/Strg + Klick. Tastatur: Entf, Strg+C, Strg+V.</p>
+          <div class="toolbar"><button class="btn" id="rotateShape">90° drehen</button><button class="btn danger" id="deleteShape">Objekt löschen</button></div>
+          <div class="tool-mini-block"><b>Ausrichten</b><div class="mini-grid three"><button class="btn" data-align="left">Links</button><button class="btn" data-align="centerX">X Mitte</button><button class="btn" data-align="right">Rechts</button><button class="btn" data-align="top">Oben</button><button class="btn" data-align="centerY">Y Mitte</button><button class="btn" data-align="bottom">Unten</button></div></div>
+          <label class="check"><input id="showShapeLabels" type="checkbox"> Beschriftungen in Skizze anzeigen</label>
+          <label class="check"><input id="printShapeLabels" type="checkbox"> Beschriftungen im Druck anzeigen</label>
+          <label class="check"><input id="showGroupOutline" type="checkbox"> Gruppenrahmen anzeigen</label>
+          <div class="tool-mini-block color-tool"><b>Objektfarbe</b><div class="color-grid" id="shapeColorGrid">
+            <button class="color-btn color-none" data-shape-color="" title="Standard">×</button>
+            <button class="color-btn" style="--c:#bfdbfe;--s:#1d4ed8" data-shape-color="blue" title="Blau"></button>
+            <button class="color-btn" style="--c:#bbf7d0;--s:#15803d" data-shape-color="green" title="Grün"></button>
+            <button class="color-btn" style="--c:#fef08a;--s:#a16207" data-shape-color="yellow" title="Gelb"></button>
+            <button class="color-btn" style="--c:#fed7aa;--s:#c2410c" data-shape-color="orange" title="Orange"></button>
+            <button class="color-btn" style="--c:#fecaca;--s:#b91c1c" data-shape-color="red" title="Rot"></button>
+            <button class="color-btn" style="--c:#ddd6fe;--s:#7c3aed" data-shape-color="violet" title="Violett"></button>
+            <button class="color-btn" style="--c:#e5e7eb;--s:#374151" data-shape-color="gray" title="Grau"></button>
+          </div><p class="note small-note">Farbe gilt für die aktuelle Auswahl oder Gruppe.</p></div>
+          <button class="btn" id="clearSketch">Skizze leeren</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-tools">
+    <div class="layout">
+      <aside class="panel"><div class="panel-head"><h3>Werkzeuge im Projekt</h3><p>Jedes neue Projekt startet leer. T-Nummern dürfen je Projekt anders belegt sein.</p></div><div class="panel-body"><button class="btn primary wide" id="newTool">+ Werkzeug im Projekt</button><div id="toolList"></div></div></aside>
+      <div class="panel"><div class="panel-head"><h3>Werkzeug bearbeiten</h3></div>
+        <div class="panel-body form">
+          <div class="grid3"><div><label>T-Nr.</label><input id="t_no" placeholder="T1"></div><div><label>Name</label><input id="t_name"></div><div><label>Typ</label><select id="t_type"><option>VHM-Fräser</option><option>HSS-Fräser</option><option>Wendeplattenfräser</option><option>Bohrer</option><option>Zentrierer / NC-Anbohrer</option><option>Reibahle</option><option>Gewindebohrer</option><option>Gewindefräser</option><option>Senker</option><option>Messwerkzeug</option><option>Planfräser / Messerkopf</option><option>Fasenfräser</option><option>T-Nutenfräser</option><option>Formfräser</option><option>Angetriebenes Werkzeug / Aggregat</option><option>Sonderwerkzeug</option></select></div></div>
+          <div class="grid3"><div><label>Ø</label><input id="t_dia" type="number" step="0.01"></div><div><label>Zähne</label><input id="t_teeth" type="number"></div><div><label>Halter/Aufnahme</label><input id="t_holder"></div></div>
+          <div class="grid3"><div><label>vc</label><input id="t_vc" type="number"></div><div><label>fz/fn</label><input id="t_fz" type="number" step="0.001"></div><div><label>Kühlung</label><input id="t_coolant" placeholder="KSS, Luft..."></div></div>
+          <div class="grid3"><div><label>Drehzahl n [U/min]</label><input id="t_rpm" type="number"></div><div><label>Vorschub vf [mm/min]</label><input id="t_feed" type="number"></div><div><label>Berechnung</label><button class="btn" id="calcToolValues" type="button">n / vf berechnen</button></div></div>
+          <div><label>Bemerkung</label><textarea id="t_notes"></textarea></div>
+          <div class="toolbar"><button class="btn primary" id="saveTool">Werkzeug im Projekt speichern</button><button class="btn danger" id="deleteTool">Löschen</button></div>
+          <div class="info-box"><b>Praxis-Hinweis:</b> Beim Fräsen wird der Vorschub meist mit <b>vf = n · z · fz</b> berechnet. Beim Bohren ist <b>fz/fn</b> als Vorschub pro Umdrehung nutzbar. Schnittdaten immer nach Werkzeughersteller, Werkstoff, Spannung und Maschine prüfen.</div>
+        </div>
+      </div>
+    </div>
+    
+  </section>
+
+  <section class="tab" id="tab-print">
+    <div class="panel no-print"><div class="panel-head"><h3>Druckvorschau</h3><p>Neutrale Druckvorschau für Einrichtblatt, Nullpunkte, Skizze und Werkzeugfolge.</p></div><div class="panel-body"><div class="toolbar"><button class="btn primary" onclick="window.print()">Jetzt drucken / als PDF speichern</button><span class="blank-control in-panel"><label for="blankToolCountPreview">Blanko T</label><select id="blankToolCountPreview" title="Werkzeugplätze im Blanko-Druck"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option selected>15</option><option>16</option><option>17</option><option>18</option><option>19</option><option>20</option></select></span><button class="btn" id="btnBlankPrintPreview" type="button">Blanko-Vorlage drucken</button></div></div></div>
+    <div class="print-preview"><div id="printSheet" class="print-sheet"></div></div>
+  </section>
+</main>
+
+<footer class="app-footer no-print"><span>© 2026 Warenschmiede</span><a href="https://www.warenschmiede.com/">warenschmiede.com</a><a href="/impressum.html">Impressum</a><a href="/datenschutz.html">Datenschutz</a><span>Alle Angaben ohne Gewähr · Nutzung auf eigene Verantwortung.</span></footer>
+<div id="toast" class="toast"></div>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
