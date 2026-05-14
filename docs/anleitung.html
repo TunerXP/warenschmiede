@@ -1,539 +1,514 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Ausführliche Anleitung und Dokumentation für den Quicksafe Unterweisungs-Generator. Funktionen, Konfiguration und erste Schritte erklärt." />
-  <title>Quicksafe Unterweisungs-Generator – Anleitung</title>
-  <style>
-    :root {
-      --primary: #003877;
-      --primary-soft: #eaf2ff;
-      --bg: #f3f5f8;
-      --card: #ffffff;
-      --text: #1f2937;
-      --muted: #667085;
-      --line: #d7dee8;
-      --warn-bg: #fff7df;
-      --warn-border: #e2a400;
-      --ok-bg: #eafaf0;
-      --ok-border: #23a455;
-      --danger-bg: #fff0f0;
-      --danger-border: #c83b3b;
-      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-      --radius: 16px;
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Arial, sans-serif;
-      color: var(--text);
-      background: var(--bg);
-      line-height: 1.55;
-    }
-
-    header {
-      background: linear-gradient(135deg, var(--primary), #0058ad);
-      color: white;
-      padding: 34px 24px 30px;
-      text-align: center;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: clamp(28px, 4vw, 42px);
-      letter-spacing: -0.03em;
-    }
-
-    header p {
-      margin: 10px auto 0;
-      max-width: 900px;
-      color: rgba(255,255,255,0.9);
-      font-size: 16px;
-    }
-
-    .version-line {
-      margin-top: 14px;
-      display: inline-flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-    }
-
-    .version-pill {
-      background: rgba(255,255,255,0.16);
-      border: 1px solid rgba(255,255,255,0.28);
-      color: white;
-      border-radius: 999px;
-      padding: 7px 12px;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: rgba(255,255,255,0.94);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .nav-inner {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 10px 18px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-    }
-
-    .nav-inner a {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 14px;
-      padding: 7px 10px;
-      border-radius: 999px;
-    }
-
-    .nav-inner a:hover { background: var(--primary-soft); }
-
-    main {
-      max-width: 1180px;
-      margin: 26px auto 60px;
-      padding: 0 18px;
-    }
-
-    section {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(215,222,232,0.75);
-      margin: 18px 0;
-      padding: clamp(18px, 3vw, 32px);
-      overflow: hidden;
-    }
-
-    h2 {
-      color: var(--primary);
-      margin: 0 0 14px;
-      font-size: 26px;
-      letter-spacing: -0.02em;
-    }
-
-    h3 {
-      margin: 24px 0 10px;
-      color: #0f3767;
-      font-size: 19px;
-    }
-
-    .lead { font-size: 17px; color: #344054; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      margin: 18px 0 8px;
-    }
-
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin: 18px 0 8px;
-    }
-
-    .step-card {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 14px;
-      background: #fbfdff;
-      min-height: 110px;
-    }
-
-    .step-card strong {
-      display: block;
-      color: var(--primary);
-      margin-bottom: 6px;
-    }
-
-    .note, .warn, .ok, .danger {
-      border-left: 5px solid;
-      padding: 13px 15px;
-      border-radius: 10px;
-      margin: 16px 0;
-    }
-
-    .note { background: var(--primary-soft); border-color: var(--primary); }
-    .warn { background: var(--warn-bg); border-color: var(--warn-border); }
-    .ok { background: var(--ok-bg); border-color: var(--ok-border); }
-    .danger { background: var(--danger-bg); border-color: var(--danger-border); }
-
-    figure {
-      margin: 18px 0 26px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      overflow: hidden;
-      background: #fff;
-    }
-
-    figure img {
-      width: 100%;
-      display: block;
-      background: #f7f7f7;
-    }
-
-    figcaption {
-      padding: 10px 14px;
-      color: var(--muted);
-      font-size: 14px;
-      border-top: 1px solid var(--line);
-      background: #fafafa;
-    }
-
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      align-items: start;
-    }
-
-    ul, ol { padding-left: 22px; }
-    li { margin: 5px 0; }
-    code {
-      background: #eef2f7;
-      padding: 2px 6px;
-      border-radius: 6px;
-      font-family: Consolas, monospace;
-      font-size: 0.95em;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0;
-      font-size: 15px;
-    }
-
-    th, td {
-      border: 1px solid var(--line);
-      padding: 10px;
-      text-align: left;
-      vertical-align: top;
-    }
-
-    th {
-      background: var(--primary-soft);
-      color: var(--primary);
-    }
-
-    footer {
-      text-align: center;
-      color: var(--muted);
-      padding: 30px 18px 46px;
-      font-size: 14px;
-    }
-
-    .small { font-size: 14px; color: var(--muted); }
-
-    @media (max-width: 900px) {
-      .grid, .grid-3, .two-col { grid-template-columns: 1fr; }
-      nav { position: static; }
-    }
-
-    @media print {
-      nav { display: none; }
-      body { background: white; }
-      section { box-shadow: none; break-inside: avoid; }
-      figure { break-inside: avoid; }
-      a { color: black; text-decoration: none; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quicksafe Unterweisungs-Generator v2.1.1.0 – Anleitung</title>
+<style>
+:root {
+  --primary:#004a99;
+  --primary-dark:#00346d;
+  --bg:#f3f5f8;
+  --card:#ffffff;
+  --text:#20242a;
+  --muted:#5f6875;
+  --line:#dbe3ee;
+  --warn:#fff7df;
+  --warn-line:#d29a00;
+  --ok:#ecfff0;
+  --ok-line:#168a2d;
+  --info:#eef6ff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Segoe UI,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.58;
+}
+header{
+  background:linear-gradient(135deg,var(--primary),#001f44);
+  color:#fff;
+  padding:46px 28px;
+  text-align:center;
+}
+header h1{margin:0;font-size:36px;letter-spacing:.2px}
+header p{margin:12px auto 0;max-width:920px;font-size:17px;opacity:.96}
+main{max-width:1180px;margin:28px auto;padding:0 18px}
+.card{
+  background:var(--card);
+  border-radius:16px;
+  padding:26px;
+  margin:20px 0;
+  box-shadow:0 6px 20px rgba(0,0,0,.075);
+  border-left:6px solid var(--primary);
+}
+h2{color:var(--primary);margin:0 0 14px;font-size:25px}
+h3{color:var(--primary-dark);margin:22px 0 8px}
+a{color:var(--primary);font-weight:600}
+code{background:#eef2f7;padding:2px 7px;border-radius:6px}
+ul,ol{margin-top:8px}
+.notice,.ok,.info{
+  padding:16px 18px;
+  border-radius:12px;
+  margin:16px 0;
+}
+.notice{background:var(--warn);border-left:6px solid var(--warn-line)}
+.ok{background:var(--ok);border-left:6px solid var(--ok-line)}
+.info{background:var(--info);border-left:6px solid var(--primary)}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:14px;
+}
+.tile{
+  background:#f8fafc;
+  border:1px solid #e1e6ee;
+  border-radius:14px;
+  padding:16px;
+}
+.tile b{color:var(--primary)}
+.toc{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:10px;
+  margin-top:12px;
+}
+.toc a{
+  display:block;
+  background:#f8fafc;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px 12px;
+  text-decoration:none;
+}
+figure{
+  margin:18px 0 6px;
+  background:#f9fbfe;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+}
+figure img{
+  width:100%;
+  height:auto;
+  display:block;
+  border-radius:10px;
+  border:1px solid #d7dee9;
+}
+figcaption{
+  color:var(--muted);
+  font-size:13px;
+  text-align:center;
+  margin-top:8px;
+}
+.tablewrap{overflow-x:auto}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin:14px 0;
+}
+th,td{
+  border:1px solid var(--line);
+  padding:10px;
+  text-align:left;
+  vertical-align:top;
+}
+th{background:#f2f6fb;color:var(--primary)}
+.footer{
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  padding:32px 18px;
+}
+.small{font-size:14px;color:var(--muted)}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Quicksafe Unterweisungs-Generator</h1>
-    <p>Ausführliche Anleitung für Einrichtung, Inhalte, Sprachen verwalten, Arbeitszeiten inklusive optionalem Samstag, Übersetzungen, Dokumentausgabe und Backup.</p>
-    <div class="version-line">
-      <span class="version-pill">Software-Version: 2.0.6.1</span>
-      <span class="version-pill">Anleitungsstand: 26.04.2026</span>
-    </div>
-  </header>
+<header>
+  <h1>Quicksafe Unterweisungs-Generator</h1>
+  <p>Ausführliche Anleitung für Version <b>2.1.1.0 stabil</b> – mehrsprachige Unterweisungsnachweise lokal erstellen, übersetzen, prüfen und als HTML/PDF ausgeben.</p>
+</header>
 
-  <nav>
-    <div class="nav-inner">
-      <a href="#start">Start</a>
-      <a href="#zielgruppe">Für wen?</a>
-      <a href="#schnellstart">5-Minuten-Start</a>
-      <a href="#erststart">Erster Start</a>
-      <a href="#unterweisung">Unterweisung</a>
-      <a href="#design">Firmendaten & Design</a>
-      <a href="#inhalte">Inhalte</a>
-      <a href="#uebersetzungen">Übersetzungen</a>
-      <a href="#ausgabe">HTML / PDF</a>
-      <a href="#dateien-ordner">Dateien & Ordner</a>
-      <a href="#backup">Backup</a>
-      <a href="#hilfe-info">Hilfe & Info</a>
-      <a href="#fehlerhilfe">Fehlerhilfe</a>
-    </div>
-  </nav>
+<main>
+<section class="card" id="ueberblick">
+  <h2>1. Überblick</h2>
+  <p>Der Quicksafe Unterweisungs-Generator erstellt strukturierte Unterweisungsnachweise für neue Mitarbeiter. Das Tool arbeitet mit lokalen Daten, speichert Einstellungen in der <code>config.json</code> und erzeugt HTML- sowie PDF-Dokumente.</p>
 
-  <main>
-    <section id="start">
-      <h2>1. Grundidee des Programms</h2>
-      <p class="lead">Der Quicksafe Unterweisungs-Generator erstellt mehrsprachige Unterweisungsnachweise für neue Mitarbeiter. Das Programm verwaltet Firmendaten, Ansprechpartner, Sicherheitsregeln, Unterweisungsphasen, Arbeitszeiten und Übersetzungen.</p>
-      <div class="grid">
-        <div class="step-card"><strong>1. Firmendaten</strong>Grundstammdaten, Adresse, Dokumentfarbe und Logo einrichten.</div>
-        <div class="step-card"><strong>2. Inhalte</strong>Ansprechpartner, Regeln, Phasen und Arbeitszeiten inklusive optionalem Samstag pflegen.</div>
-        <div class="step-card"><strong>3. Übersetzungen</strong>Automatisch erzeugen, prüfen und manuell korrigieren.</div>
-        <div class="step-card"><strong>4. Unterweisung</strong>Mitarbeiterdaten eintragen und HTML oder PDF erstellen.</div>
-      </div>
-      <div class="warn"><strong>Wichtiger Hinweis:</strong> Das Programm unterstützt die Dokumentation. Die eigentliche Unterweisung muss weiterhin persönlich, verständlich und fachlich korrekt durchgeführt werden.</div>
-    </section>
+  <div class="grid">
+    <div class="tile"><b>Unterweisung</b><br>Name, Personalnummer und Drucksprache wählen. Danach HTML-Vorschau oder PDF erzeugen.</div>
+    <div class="tile"><b>Firmendaten & Design</b><br>Firma, Adresse, Farbe und Logo eintragen.</div>
+    <div class="tile"><b>Inhalte</b><br>Ansprechpartner, Arbeitszeiten, PSA, Regeln, Phasen und Zusatzseiten pflegen.</div>
+    <div class="tile"><b>Übersetzungen</b><br>Sprachen aktivieren, automatische Übersetzung starten und manuell korrigieren.</div>
+    <div class="tile"><b>Hilfe & Info</b><br>Schnellhilfe, Ordner, Backup, Credits und Hinweise zur Nutzung.</div>
+  </div>
 
-    <section id="zielgruppe">
-      <h2>2. Für wen ist das Programm gedacht?</h2>
-      <p>Quicksafe richtet sich an kleine und mittlere Betriebe, die Erstunterweisungen einfacher, einheitlicher und mehrsprachig dokumentieren möchten.</p>
-      <div class="grid-3">
-        <div class="step-card"><strong>Sicherheitsbeauftragte</strong>Regeln, PSA-Hinweise und Unterweisungspunkte strukturiert vorbereiten.</div>
-        <div class="step-card"><strong>Vorarbeiter & Paten</strong>Neue Mitarbeiter nachvollziehbar durch Arbeitsplatz, Regeln und Zuständigkeiten führen.</div>
-        <div class="step-card"><strong>Personalwesen / Büro</strong>Nachweise sauber ablegen, prüfen und bei Bedarf als PDF ausgeben.</div>
-      </div>
-      <div class="note">Das Tool ersetzt keine Arbeitsschutzberatung und keine persönliche Unterweisung. Es hilft dabei, Inhalte und Nachweise sauber zu erstellen und aufzubewahren.</div>
-    </section>
+  <p class="notice"><b>Wichtig:</b> Das Programm unterstützt die Dokumentation. Die eigentliche Unterweisung muss weiterhin persönlich, verständlich und fachlich korrekt durchgeführt werden. Automatische Übersetzungen sollten bei sicherheitsrelevanten Inhalten geprüft werden.</p>
 
-    <section id="schnellstart">
-      <h2>3. So startest du in 5 Minuten</h2>
-      <p>Für den ersten Test muss nicht jede Einstellung perfekt sein. Wichtig ist, einmal den kompletten Ablauf durchzuspielen.</p>
-      <ol>
-        <li><strong>ZIP vollständig entpacken</strong> und das Programm aus dem entpackten Ordner starten.</li>
-        <li><strong>Firmendaten & Design</strong> öffnen und Firma, Farbe oder Logo prüfen.</li>
-        <li><strong>Inhalte</strong> prüfen: Ansprechpartner, Sicherheitsregeln, Unterweisungsphasen und Arbeitszeiten.</li>
-        <li><strong>Übersetzungen</strong> öffnen und fehlende Übersetzungen ergänzen oder kontrollieren.</li>
-        <li><strong>Unterweisung</strong> öffnen, Testname eintragen und ein PDF erstellen.</li>
-      </ol>
-      <div class="ok"><strong>Tipp:</strong> Vor größeren Änderungen zuerst ein Backup erstellen. Danach ein Testdokument erzeugen und kurz prüfen, ob Layout, Sprache und Inhalte passen.</div>
-    </section>
+  
+<figure>
+  <a href="screenshots/01_start.png" target="_blank" rel="noopener">
+    <img src="screenshots/01_start.png" alt="Startseite mit Mitarbeiterdaten, Drucksprache, HTML-Vorschau und PDF-Erstellung">
+  </a>
+  <figcaption>Startseite mit Mitarbeiterdaten, Drucksprache, HTML-Vorschau und PDF-Erstellung – Klick öffnet das Bild groß.</figcaption>
+</figure>
 
-    <section id="erststart">
-      <h2>4. Erster Start & Windows-Sicherheitshinweise</h2>
-      <p>Der Quicksafe Unterweisungs-Generator ist als portables Windows-Programm gedacht. Er muss nicht klassisch installiert werden. Trotzdem können beim ersten Start Windows- oder Sicherheitsmeldungen erscheinen, besonders wenn die EXE neu heruntergeladen oder von einem anderen PC kopiert wurde.</p>
+</section>
 
-      <div class="warn"><strong>Mögliche Meldung beim ersten Start:</strong> Windows SmartScreen oder Microsoft Defender kann darauf hinweisen, dass der Herausgeber unbekannt ist. Das bedeutet nicht automatisch, dass das Programm gefährlich ist. Häufig erscheint diese Meldung bei eigenen, kleinen oder internen Programmen ohne kostenpflichtiges Code-Signing-Zertifikat.</div>
+<section class="card" id="inhaltsverzeichnis">
+  <h2>2. Inhaltsverzeichnis</h2>
+  <div class="toc">
+    <a href="#start">Start und erster Ablauf</a>
+    <a href="#firmendaten">Firmendaten & Design</a>
+    <a href="#inhalte-seite1">Inhalte Seite 1</a>
+    <a href="#arbeitszeiten">Arbeitszeiten</a>
+    <a href="#seite2">Seite 2: Regeln & PSA</a>
+    <a href="#seite3">Seite 3: Unterweisungsphasen</a>
+    <a href="#zusatzseiten">Zusatzseiten</a>
+    <a href="#uebersetzungen">Übersetzungen</a>
+    <a href="#ausgabe">HTML/PDF-Ausgabe</a>
+    <a href="#backup">Backup & Muster-config</a>
+    <a href="#haftung">Haftungsausschluss & wichtige Hinweise</a>
+    <a href="#fehlerhilfe">Kurze Fehlerhilfe</a>
+  </div>
+</section>
 
-      <h3>Empfohlener Umgang</h3>
-      <ol>
-        <li>ZIP-Datei vollständig entpacken und das Programm aus dem entpackten Ordner starten.</li>
-        <li>Nur Versionen verwenden, die aus einer vertrauenswürdigen Quelle stammen.</li>
-        <li>Bei Windows-SmartScreen auf <strong>Weitere Informationen</strong> und danach auf <strong>Trotzdem ausführen</strong> klicken, wenn die Quelle bekannt und vertrauenswürdig ist.</li>
-        <li>Falls Windows die Datei blockiert: Rechtsklick auf die EXE, <strong>Eigenschaften</strong> öffnen und unten bei Sicherheit gegebenenfalls <strong>Zulassen</strong> aktivieren.</li>
-      </ol>
+<section class="card" id="start">
+  <h2>3. Start und erster Ablauf</h2>
+  <ol>
+    <li>ZIP vollständig entpacken.</li>
+    <li><code>Quicksafe_UnterweisungsGenerator.exe</code> starten.</li>
+    <li>Im Tab <b>Firmendaten & Design</b> Firmenangaben prüfen.</li>
+    <li>Im Tab <b>Inhalte</b> Ansprechpartner, Regeln, Arbeitszeiten und Zusatzseiten pflegen.</li>
+    <li>Im Tab <b>Übersetzungen</b> Sprachen aktivieren und Übersetzungen prüfen.</li>
+    <li>Im Tab <b>Unterweisung</b> Name, Personalnummer und Sprache wählen.</li>
+    <li>HTML-Vorschau oder PDF erstellen.</li>
+  </ol>
+  <p class="info"><b>Tipp:</b> Vor größeren Änderungen im Info-Tab ein Config-Backup erstellen.</p>
+</section>
 
-      <div class="note"><strong>Firewall-Hinweis:</strong> Für die automatische Übersetzung benötigt das Programm eine Internetverbindung zum Übersetzungsdienst. Wenn eine Firewall nachfragt, betrifft das in der Regel diese Übersetzungsfunktion. Dokumente können mit vorhandenen Daten auch ohne erneute Übersetzung erstellt werden.</div>
+<section class="card" id="firmendaten">
+  <h2>4. Firmendaten & Design</h2>
+  <p>Hier werden Firmendaten, Dokumentfarbe und Logo gepflegt. Diese Angaben erscheinen später im Dokumentkopf der HTML- und PDF-Ausgabe.</p>
+  <ul>
+    <li><b>Firmenlogo statt Text oben verwenden:</b> nutzt ein Logo, falls vorhanden.</li>
+    <li><b>Dokumentfarbe:</b> steuert die Hauptfarbe der Ausgabedokumente.</li>
+    <li><b>Logo auswählen / entfernen:</b> verwaltet das Logo im Tool.</li>
+    <li><b>Firmendaten:</b> Firma, Adresse, Telefon, Fax, E-Mail und Website.</li>
+  </ul>
+  
+<figure>
+  <a href="screenshots/02_firmendaten_design.png" target="_blank" rel="noopener">
+    <img src="screenshots/02_firmendaten_design.png" alt="Firmendaten &amp; Design – zentrierter Formularbereich">
+  </a>
+  <figcaption>Firmendaten &amp; Design – zentrierter Formularbereich – Klick öffnet das Bild groß.</figcaption>
+</figure>
 
-      <div class="danger"><strong>Wichtig:</strong> Wenn eine Sicherheitssoftware eine konkrete Bedrohung meldet oder Dateien aus unbekannter Quelle stammen, sollte das Programm nicht einfach gestartet werden. In diesem Fall die Quelle prüfen, einen Virenscan durchführen und nur vertrauenswürdige Versionen verwenden.</div>
-    </section>
+</section>
 
-    <section id="unterweisung">
-      <h2>5. Tab „Unterweisung“</h2>
-      <p>Hier wird das konkrete Dokument für einen Mitarbeiter erstellt. Eingetragen werden Name, optional Personalnummer und die gewünschte Sprache.</p>
-      <figure>
-        <img src="screenshots/01_unterweisung_start.png" alt="Tab Unterweisung mit Mitarbeiterdaten und Ausgabebuttons" />
-        <figcaption>Tab „Unterweisung“: Name, Personalnummer, Sprache wählen und danach HTML-Vorschau oder PDF erstellen.</figcaption>
-      </figure>
-      <ol>
-        <li>Name des Mitarbeiters eintragen.</li>
-        <li>Personalnummer eintragen, falls benötigt.</li>
-        <li>Drucksprache auswählen.</li>
-        <li>HTML-Vorschau oder PDF erstellen.</li>
-      </ol>
-      <div class="note">Deutsch ist die Originalsprache. Bei anderen Sprachen wird das Dokument bilingual aufgebaut: Deutsch plus gewählte Übersetzung.</div>
-    </section>
+<section class="card" id="inhalte-seite1">
+  <h2>5. Inhalte Seite 1 – Ansprechpartner und Organisation</h2>
+  <p>Seite 1 ist für organisatorische Informationen gedacht. Hier werden Geschäftsleitung, Betriebsleiter, Vorarbeiter/Bereiche, Spezialfunktionen, Verwaltung, Ansprechpartner, Notfallrollen und Ersthelfer gepflegt.</p>
+  <ul>
+    <li>Mehrere Namen können eingetragen und sortiert werden.</li>
+    <li>Zusätzliche Ansprechpartner sind optional.</li>
+    <li>Notfallrollen wie Brandschutzhelfer, Evakuierungshelfer, Sammelpunkt und Alarmfall können ergänzt werden.</li>
+    <li>Das freie Infofeld kann für kurze betriebliche Zusatzinformationen genutzt werden.</li>
+  </ul>
+  
+<figure>
+  <a href="screenshots/03_inhalte_seite1a.png" target="_blank" rel="noopener">
+    <img src="screenshots/03_inhalte_seite1a.png" alt="Inhalte Seite 1 – oberer Bereich mit Ansprechpartnern">
+  </a>
+  <figcaption>Inhalte Seite 1 – oberer Bereich mit Ansprechpartnern – Klick öffnet das Bild groß.</figcaption>
+</figure>
 
-    <section id="design">
-      <h2>6. Tab „Firmendaten & Design“</h2>
-      <p>In diesem Bereich werden die Stammdaten und das Erscheinungsbild des Dokuments gepflegt.</p>
-      <figure>
-        <img src="screenshots/02_firmendaten_design.png" alt="Firmendaten und Design-Einstellungen" />
-        <figcaption>Firmendaten, Kontaktangaben, Dokumentfarbe und Logo-Einstellungen.</figcaption>
-      </figure>
-      <h3>Dokumentfarbe</h3>
-      <p>Die Dokumentfarbe steuert die Hauptfarbe des erzeugten Dokuments. Sie wird für Balken, Linien und Akzente verwendet. Der Farbcode kann direkt eingetragen oder über die Farbauswahl gesetzt werden.</p>
-      <h3>Logo verwenden</h3>
-      <p>Wenn „Firmenlogo statt Text oben verwenden“ aktiv ist, wird das hinterlegte Logo im Dokumentkopf verwendet. Über <strong>Logo auswählen</strong> wird eine Bilddatei gewählt und automatisch in den passenden Ordner kopiert. Über <strong>Logo entfernen</strong> kann es wieder gelöscht werden.</p>
-      <div class="ok">Tipp: Für eine neutrale Weitergabe des Programms stehen echte Firmendaten nur in der <code>config.json</code>, nicht fest im Programmcode.</div>
-    </section>
+  
+<figure>
+  <a href="screenshots/03_inhalte_seite1b.png" target="_blank" rel="noopener">
+    <img src="screenshots/03_inhalte_seite1b.png" alt="Inhalte Seite 1 – weiterer Bereich mit Zusatzrollen und Infofeld">
+  </a>
+  <figcaption>Inhalte Seite 1 – weiterer Bereich mit Zusatzrollen und Infofeld – Klick öffnet das Bild groß.</figcaption>
+</figure>
 
-    <section id="inhalte">
-      <h2>7. Tab „Inhalte“</h2>
-      <p>Hier werden alle fachlichen und organisatorischen Inhalte gepflegt, die später im Unterweisungsdokument erscheinen.</p>
+</section>
 
-      <h3>7.1 Ansprechpartner und Rollen</h3>
-      <figure>
-        <img src="screenshots/03_inhalte_oben.png" alt="Inhalte oberer Bereich mit Geschäftsleitung, Betriebsleiter und Vorarbeitern" />
-        <figcaption>Oberer Inhaltsbereich: Geschäftsleitung, Betriebsleiter, Vorarbeiter und Sicherheitsbeauftragter.</figcaption>
-      </figure>
+<section class="card" id="arbeitszeiten">
+  <h2>6. Arbeitszeiten</h2>
+  <p>Die Arbeitszeiten können flexibel gepflegt werden. Je nach Bedarf können Standardzeiten, Schichtarbeit oder freie Zeitblöcke verwendet werden.</p>
+  <ul>
+    <li><b>Standard:</b> klassische Tagesarbeitszeiten mit Pausen.</li>
+    <li><b>Schichtarbeit:</b> geeignet für Früh-/Spät-/Nachtschicht oder ähnliche Modelle.</li>
+    <li><b>Freie Zeitblöcke:</b> maximale Flexibilität für individuelle Arbeitszeitmodelle.</li>
+  </ul>
+  <p class="ok">Der Samstag ist optional. Wenn keine Zeiten eingetragen sind, muss er nicht im Dokument erscheinen.</p>
+  
+<figure>
+  <a href="screenshots/04_inhalte_arbeitszeiten_seite1a.png" target="_blank" rel="noopener">
+    <img src="screenshots/04_inhalte_arbeitszeiten_seite1a.png" alt="Arbeitszeiten – erster Bereich">
+  </a>
+  <figcaption>Arbeitszeiten – erster Bereich – Klick öffnet das Bild groß.</figcaption>
+</figure>
 
-      <figure>
-        <img src="screenshots/03b_inhalte_kss_ersthelfer_verwaltung.png" alt="KSS-Beauftragte, Ersthelfer, Personalwesen und Einkauf" />
-        <figcaption>Weiterer Rollenbereich: KSS-Beauftragte, Ersthelfer, Personalwesen und Einkauf.</figcaption>
-      </figure>
+  
+<figure>
+  <a href="screenshots/04_inhalte_arbeitszeiten_seite1b.png" target="_blank" rel="noopener">
+    <img src="screenshots/04_inhalte_arbeitszeiten_seite1b.png" alt="Arbeitszeiten – weiterer Bereich und Detailpflege">
+  </a>
+  <figcaption>Arbeitszeiten – weiterer Bereich und Detailpflege – Klick öffnet das Bild groß.</figcaption>
+</figure>
 
-      <h3>7.2 Sicherheitsregeln</h3>
-      <figure>
-        <img src="screenshots/04_inhalte_regeln.png" alt="Sicherheitsregeln pflegen" />
-        <figcaption>Sicherheitsregeln für Blatt 2. Einträge können hinzugefügt, gelöscht und verschoben werden.</figcaption>
-      </figure>
-      <p>Die Sicherheitsregeln bilden den Kern von Seite 2. Jede Regel wird im Original auf Deutsch gespeichert und kann für die Fremdsprachen übersetzt werden.</p>
+</section>
 
-      <h3>7.3 Unterweisungsphasen</h3>
-      <figure>
-        <img src="screenshots/04b_inhalte_phasen.png" alt="Unterweisungsphasen Teil 1 bis Teil 3" />
-        <figcaption>Teil 1, Teil 2 und Teil 3 der Unterweisung. Diese Punkte erscheinen später auf Blatt 3 mit Unterschriftsfeldern.</figcaption>
-      </figure>
+<section class="card" id="seite2">
+  <h2>7. Seite 2 – PSA und wichtige Regeln</h2>
+  <p>Seite 2 enthält die erforderliche Schutzausrüstung und die wichtigen Sicherheitsregeln. Diese Regeln sind bewusst kurz gehalten, damit sie schnell verstanden werden.</p>
+  <ul>
+    <li>PSA kann aktiviert/deaktiviert werden.</li>
+    <li>Regeln können ergänzt, geändert, sortiert oder gelöscht werden.</li>
+    <li>Die Regeln werden in der jeweiligen Drucksprache zweisprachig ausgegeben, wenn eine Fremdsprache gewählt wird.</li>
+  </ul>
+  
+<figure>
+  <a href="screenshots/05_inhalte_seite2_regeln_psa.png" target="_blank" rel="noopener">
+    <img src="screenshots/05_inhalte_seite2_regeln_psa.png" alt="Inhalte Seite 2 – Sicherheitsregeln und PSA">
+  </a>
+  <figcaption>Inhalte Seite 2 – Sicherheitsregeln und PSA – Klick öffnet das Bild groß.</figcaption>
+</figure>
 
-      <h3>7.4 Phasen und Arbeitszeiten</h3>
-      <figure>
-        <img src="screenshots/05_inhalte_phasen_arbeitszeiten.png" alt="Unterweisungsphasen und Arbeitszeiten" />
-        <figcaption>Unterer Inhaltsbereich mit Unterweisungsphasen und Arbeitszeiten. Seit Version 2.0.6 kann zusätzlich Samstag gepflegt werden.</figcaption>
-      </figure>
+</section>
 
-      <p>Die Arbeitszeiten sind in Gruppen aufgebaut. Standardmäßig werden Montag bis Donnerstag und Freitag gepflegt. Zusätzlich gibt es den optionalen Bereich Samstag.</p>
-      <ul>
-        <li>Samstag darf leer bleiben.</li>
-        <li>Wenn Samstag leer ist, wird er im Dokument nicht angezeigt.</li>
-        <li>Wenn Samstag Einträge enthält, erscheint Samstag automatisch auf Seite 1 im Arbeitszeiten-Block.</li>
-        <li>Die Ausgabe ist in festen Zeit-/Beschreibungs-Spalten ausgerichtet. Lange Beschreibungen dürfen umbrechen, bleiben aber optisch sauber in ihrer Spalte.</li>
-      </ul>
-      <div class="note">Die Pfeiltasten ändern die Reihenfolge. Die Papierkorb-Schaltfläche löscht einen Eintrag. Bei Löschvorgängen sollte eine Sicherheitsabfrage beachtet werden.</div>
-    </section>
+<section class="card" id="seite3">
+  <h2>8. Seite 3 – Unterweisungsphasen und Unterschriften</h2>
+  <p>Seite 3 dokumentiert die einzelnen Unterweisungsabschnitte und enthält Unterschriftsbereiche.</p>
+  <ul>
+    <li><b>Teil 1:</b> Vorort-Einweisung</li>
+    <li><b>Teil 2:</b> Vorgesetzter / Pate</li>
+    <li><b>Teil 3:</b> Personalwesen / Büro</li>
+  </ul>
+  <p>Wenn Zusatzseiten aktiv sind, wird automatisch ein kompakter Checkpunkt ergänzt, damit bestätigt werden kann, dass diese Seiten ausgehändigt wurden.</p>
+  
+<figure>
+  <a href="screenshots/06_inhalte_seite3_phasen.png" target="_blank" rel="noopener">
+    <img src="screenshots/06_inhalte_seite3_phasen.png" alt="Inhalte Seite 3 – Unterweisungsphasen und Checkpunkte">
+  </a>
+  <figcaption>Inhalte Seite 3 – Unterweisungsphasen und Checkpunkte – Klick öffnet das Bild groß.</figcaption>
+</figure>
 
-    <section id="uebersetzungen">
-      <h2>8. Tab „Übersetzungen“</h2>
-      <p>Der Übersetzungsbereich dient dazu, Sprachstände zu prüfen, zusätzliche Sprachen zu aktivieren, fehlende Übersetzungen zu ergänzen oder bestehende Übersetzungen manuell zu verbessern.</p>
+</section>
 
-      <h3>8.1 Sprachen verwalten</h3>
-      <figure>
-        <img src="screenshots/13_sprachen_verwalten.png" alt="Sprachen verwalten im Tab Übersetzungen" />
-        <figcaption>Sprachverwaltung: aktive Sprachen festlegen, ohne vorhandene Übersetzungen aus der <code>config.json</code> zu löschen.</figcaption>
-      </figure>
-      <ul>
-        <li><strong>Deutsch</strong> bleibt immer aktiv und ist die Originalsprache.</li>
-        <li>Aktive Sprachen erscheinen in der Drucksprachen-Auswahl, im Status und im Editor.</li>
-        <li>Deaktivieren blendet eine Sprache nur aus. Vorhandene Übersetzungen bleiben erhalten.</li>
-        <li>Nach Änderungen an den Haken immer <strong>Sprachauswahl speichern</strong> klicken.</li>
-      </ul>
-      <div class="ok">Empfohlener Ablauf bei neuen Sprachen: Sprache aktivieren → speichern → Status prüfen → fehlende Übersetzungen ergänzen → Test-HTML oder Test-PDF erstellen.</div>
+<section class="card" id="zusatzseiten">
+  <h2>9. Zusatzseiten</h2>
+  <p>Zusatzseiten sind für längere betriebliche Hinweise gedacht, die nicht in das normale 3-Seiten-System passen. Jede Zusatzseite bleibt eine eigene DIN-A4-Seite.</p>
+  <ul>
+    <li>Zusatzseiten können aktiviert/deaktiviert werden.</li>
+    <li>Pro Seite können mehrere kurze Blöcke oder ein langer Block verwendet werden.</li>
+    <li>Weitere Seiten können über <b>+ Seite hinzufügen</b> erstellt werden.</li>
+    <li>Die Zusatzseiten werden automatisch in der Seitenzählung und auf Seite 3 berücksichtigt.</li>
+  </ul>
+  <p class="info"><b>Praxisidee:</b> Für viele kurze Regeln mehrere Blöcke auf einer Zusatzseite verwenden. Für lange Richtlinien lieber eine eigene Seite mit nur einem großen Block nutzen.</p>
 
-      <h3>8.2 Statusübersicht</h3>
-      <figure>
-        <img src="screenshots/06_uebersetzungen_status.png" alt="Übersetzungsstatus" />
-        <figcaption>Statusübersicht der aktiven Sprachen. Deutsch bleibt Originalsprache und wird nicht doppelt übersetzt.</figcaption>
-      </figure>
+  <h3>Bedienung der Zusatzseiten</h3>
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr><th>Bedienelement</th><th>Bedeutung</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Haken links bei einer Seite</td><td>Aktiviert oder deaktiviert die gesamte Zusatzseite. Deaktivierte Seiten werden nicht ausgegeben.</td></tr>
+        <tr><td>Haken links bei einem Block</td><td>Aktiviert oder deaktiviert nur diesen einzelnen Textblock. Praktisch, wenn ein Text ausnahmsweise nicht gedruckt werden soll, aber nicht gelöscht werden soll.</td></tr>
+        <tr><td>Kleines Textfeld</td><td>Dient zur Übersicht und für schnelle Korrekturen. Bei langen Texten ist das Feld bewusst kompakt.</td></tr>
+        <tr><td>Button „Groß“</td><td>Öffnet den Text in einem großen Bearbeitungsfenster. Damit muss ein langer Text nicht im kleinen Feld bearbeitet werden.</td></tr>
+        <tr><td>Pfeile ↑ / ↓</td><td>Verschiebt Seiten oder Blöcke nach oben oder unten.</td></tr>
+        <tr><td>Papierkorb</td><td>Löscht die jeweilige Seite oder den jeweiligen Block.</td></tr>
+        <tr><td>+ Seite hinzufügen</td><td>Erstellt eine weitere Zusatzseite, z. B. Seite 5 oder Seite 6.</td></tr>
+        <tr><td>+ Block</td><td>Fügt auf der jeweiligen Zusatzseite einen weiteren Textblock hinzu.</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-      <h3>8.3 Manueller Übersetzungseditor</h3>
-      <figure>
-        <img src="screenshots/07_uebersetzungen_editor.png" alt="Übersetzungseditor" />
-        <figcaption>Übersetzungseditor: Regeln, Phasen, Header und PSA-Labels können manuell geprüft und bearbeitet werden.</figcaption>
-      </figure>
+  
+<figure>
+  <a href="screenshots/07_zusatzseiten.png" target="_blank" rel="noopener">
+    <img src="screenshots/07_zusatzseiten.png" alt="Zusatzseiten – manuell aufbaubare zusätzliche DIN-A4-Seiten">
+  </a>
+  <figcaption>Zusatzseiten – manuell aufbaubare zusätzliche DIN-A4-Seiten – Klick öffnet das Bild groß.</figcaption>
+</figure>
 
-      <h3>8.4 Standard- und Zusatzsprachen</h3>
-      <p>Die wichtigsten Grundsprachen sind Deutsch, Englisch, Russisch, Ukrainisch, Polnisch und Türkisch. Zusätzlich können weitere europäische Sprachen aktiviert werden, zum Beispiel Französisch, Spanisch, Italienisch, Rumänisch, Kroatisch oder Portugiesisch.</p>
-      <div class="warn">Maschinelle Übersetzungen sollten bei Sicherheitsinhalten immer fachlich geprüft werden. Der Editor ermöglicht Korrekturen direkt im Programm.</div>
-    </section>
+</section>
 
-    <section id="ausgabe">
-      <h2>9. HTML-Vorschau und PDF-Ausgabe</h2>
-      <p>Das Programm kann eine HTML-Vorschau öffnen oder direkt ein PDF erzeugen. Die HTML- und PDF-Ausgabe sollen optisch deckungsgleich sein.</p>
-      <div class="two-col">
-        <figure>
-          <img src="screenshots/10_html_vorschau.png" alt="HTML-Vorschau im Browser" />
-          <figcaption>HTML-Vorschau im Browser.</figcaption>
-        </figure>
-        <figure>
-          <img src="screenshots/11_pdf_ausgabe.png" alt="PDF-Ausgabe im PDF-Viewer" />
-          <figcaption>PDF-Ausgabe als fertiges 3-Seiten-Dokument.</figcaption>
-        </figure>
-      </div>
-      <div class="ok">Ein sauberer Export besteht aus genau drei Seiten: Ansprechpartner/Arbeitszeiten, Sicherheitsregeln/PSA und Unterweisungsnachweis. Der Samstag wird nur angezeigt, wenn dafür Arbeitszeiten gepflegt wurden.</div>
-    </section>
+<section class="card" id="uebersetzungen">
+  <h2>10. Übersetzungen</h2>
+  <p>Deutsch ist die Originalsprache. Aktive Fremdsprachen erscheinen in der Drucksprachen-Auswahl, im Status und in den Übersetzungseditoren.</p>
+  <ul>
+    <li><b>Sprachauswahl speichern:</b> übernimmt die aktivierten Sprachen.</li>
+    <li><b>Status aktualisieren:</b> prüft den Übersetzungsstand.</li>
+    <li><b>Fehlende ergänzen:</b> erzeugt nur leere Übersetzungen.</li>
+    <li><b>Alle neu übersetzen:</b> erzeugt Übersetzungen neu und kann vorhandene Texte überschreiben.</li>
+    <li><b>Großer Editor für Zusatzseiten-Texte:</b> komfortable Bearbeitung langer Zusatzseiten.</li>
+  </ul>
+  <p class="notice"><b>Hinweis:</b> Automatische Übersetzungen reichen oft aus, sollten bei Fachbegriffen, rechtlichen Hinweisen oder sicherheitsrelevanten Texten aber geprüft werden.</p>
+  
+<figure>
+  <a href="screenshots/08_uebersetzungen_status.png" target="_blank" rel="noopener">
+    <img src="screenshots/08_uebersetzungen_status.png" alt="Übersetzungsstatus mit Sprachverwaltung und Aktionen">
+  </a>
+  <figcaption>Übersetzungsstatus mit Sprachverwaltung und Aktionen – Klick öffnet das Bild groß.</figcaption>
+</figure>
 
-    <section id="dateien-ordner">
-      <h2>10. Wichtige Dateien & Ordner</h2>
-      <p>Quicksafe ist portabel aufgebaut. Das bedeutet: Die wichtigen Daten liegen im Programmordner und können bei Bedarf gesichert oder auf einen anderen Stand zurückgesetzt werden.</p>
-      <table>
-        <thead>
-          <tr><th>Datei / Ordner</th><th>Bedeutung</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><code>config.json</code></td><td>Enthält alle gespeicherten Einstellungen, Firmendaten, Ansprechpartner, Sicherheitsregeln, Arbeitszeiten und Übersetzungen. Diese Datei ist praktisch die kleine lokale Datenbank des Programms.</td></tr>
-          <tr><td><code>output</code></td><td>Hier speichert das Programm erzeugte HTML- und PDF-Dokumente.</td></tr>
-          <tr><td><code>backup</code></td><td>Hier werden Config-Backups als ZIP-Dateien abgelegt.</td></tr>
-          <tr><td><code>assets</code></td><td>Enthält Bilder und Symbole, zum Beispiel PSA-Icons und das gewählte Logo.</td></tr>
-          <tr><td><code>docs</code></td><td>Enthält diese Anleitung und die dazugehörigen Screenshots.</td></tr>
-        </tbody>
-      </table>
-      <div class="warn"><strong>Wichtig:</strong> Die <code>config.json</code> nicht löschen, wenn eigene Inhalte bereits gepflegt wurden. Vor Experimenten lieber ein Backup erstellen.</div>
-    </section>
+  
+<figure>
+  <a href="screenshots/09_uebersetzungen_infofenster.png" target="_blank" rel="noopener">
+    <img src="screenshots/09_uebersetzungen_infofenster.png" alt="Infofenster zur automatischen Übersetzung und manuellem Feinschliff">
+  </a>
+  <figcaption>Infofenster zur automatischen Übersetzung und manuellem Feinschliff – Klick öffnet das Bild groß.</figcaption>
+</figure>
 
-    <section id="backup">
-      <h2>11. Backup-Funktion</h2>
-      <p>Vor größeren Änderungen sollte ein Config-Backup erstellt werden. Das Backup speichert die aktuelle <code>config.json</code> in einer ZIP-Datei im Ordner <code>backup</code>.</p>
-      <figure>
-        <img src="screenshots/12_backup_ordner.png" alt="Backup-Ordner mit ZIP-Datei" />
-        <figcaption>Backup-Ordner mit erzeugter ZIP-Datei. Im ZIP liegt die Datei als <code>config.json</code>, der ZIP-Dateiname enthält Datum und Uhrzeit.</figcaption>
-      </figure>
-      <h3>Backup-Regel</h3>
-      <ul>
-        <li>Im ZIP heißt die Datei immer <code>config.json</code>.</li>
-        <li>Der ZIP-Dateiname enthält Datum und Uhrzeit.</li>
-        <li>Dadurch kann ein alter Datenstand später leicht wiederhergestellt werden.</li>
-      </ul>
-    </section>
 
-    <section id="hilfe-info">
-      <h2>12. Hilfe und Info</h2>
-      <p>Die Tabs „Hilfe“ und „Info“ bieten Schnellzugriff auf Kurzhilfe, Anleitung, Kontakt, Ordner und Backup.</p>
-      <div class="two-col">
-        <figure>
-          <img src="screenshots/08_hilfe_tab.png" alt="Hilfe-Tab mit Kurzanleitung" />
-          <figcaption>Hilfe-Tab mit Kurzanleitung und Button zur ausführlichen Anleitung.</figcaption>
-        </figure>
-        <figure>
-          <img src="screenshots/09_info_tab.png" alt="Info-Tab mit Kontakt und Ordnerbuttons" />
-          <figcaption>Info-Tab mit Kontakt, Webseite, Ordnerzugriff und Backup-Funktion.</figcaption>
-        </figure>
-      </div>
-      <p>Die Kontakt-Buttons öffnen das Standard-Mailprogramm oder die Webseite. Die Ordnerbuttons führen direkt zum Programmordner, Output-Ordner, Backup-Ordner oder zur Anleitung.</p>
-      <div class="note"><strong>Output-Ordner:</strong> Dort landen die erzeugten HTML- und PDF-Dokumente. Wenn ein Dokument gesucht wird, ist dieser Ordner meistens die erste Anlaufstelle.</div>
-    </section>
+  <h3>Großer Zusatzseiten-Übersetzungseditor</h3>
+  <p>Der große Editor ist für lange Zusatzseiten gedacht. Links steht der deutsche Originaltext, rechts die gewählte Fremdsprache. So können lange Texte besser geprüft, korrigiert oder neu übersetzt werden.</p>
+  <ul>
+    <li>Sprache wählen.</li>
+    <li>Zusatzblock wählen.</li>
+    <li>Fehlende Übersetzung erzeugen oder Block neu übersetzen.</li>
+    <li>Bei Bedarf manuell korrigieren.</li>
+    <li>Speichern.</li>
+  </ul>
+  
+<figure>
+  <a href="screenshots/10_zusatzseiten_grosser_editor.png" target="_blank" rel="noopener">
+    <img src="screenshots/10_zusatzseiten_grosser_editor.png" alt="Großer Editor für Zusatzseiten-Übersetzungen">
+  </a>
+  <figcaption>Großer Editor für Zusatzseiten-Übersetzungen – Klick öffnet das Bild groß.</figcaption>
+</figure>
 
-    <section id="fehlerhilfe">
-      <h2>13. Kurze Fehlerhilfe</h2>
-      <table>
-        <thead>
-          <tr><th>Problem</th><th>Mögliche Lösung</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Programm startet nicht</td><td>ZIP vollständig entpacken und die EXE aus dem entpackten Ordner starten. Nicht direkt aus der ZIP starten. Bei SmartScreen „Weitere Informationen“ → „Trotzdem ausführen“ wählen, wenn die Quelle vertrauenswürdig ist.</td></tr>
-          <tr><td>Logo wird nicht angezeigt</td><td>Prüfen, ob ein Logo ausgewählt wurde und ob die Datei im <code>assets</code>-Ordner liegt.</td></tr>
-          <tr><td>Übersetzung fehlt</td><td>Tab „Übersetzungen“ öffnen, Status prüfen und fehlende Übersetzungen ergänzen oder manuell eintragen.</td></tr>
-          <tr><td>PDF wird nicht erstellt</td><td>Prüfen, ob Edge oder Chrome installiert ist. Danach erneut PDF erstellen.</td></tr>
-          <tr><td>Änderungen sind falsch</td><td>Ein vorhandenes Backup aus dem Ordner <code>backup</code> entpacken und die <code>config.json</code> zurückkopieren.</td></tr>
-          <tr><td>Samstag wird nicht angezeigt</td><td>Prüfen, ob im Tab „Inhalte“ unter Arbeitszeiten Samstag mindestens ein Eintrag vorhanden ist. Leere Samstagszeiten werden absichtlich ausgeblendet.</td></tr>
-          <tr><td>Anleitung öffnet nicht</td><td>Prüfen, ob <code>docs/anleitung.html</code> vorhanden ist.</td></tr>
-        </tbody>
-      </table>
-      <div class="danger"><strong>Wichtig:</strong> Bei Änderungen an Sicherheitsregeln und Übersetzungen sollte anschließend ein neues Testdokument erzeugt und geprüft werden.</div>
-    </section>
-  </main>
+</section>
 
-  <footer>
-    Quicksafe Unterweisungs-Generator · Software-Version 2.0.6.1 · Anleitungsstand 26.04.2026 · Kontakt: <a href="mailto:info@warenschmiede.com">info@warenschmiede.com</a> · <a href="https://www.warenschmiede.com">www.warenschmiede.com</a>
-  </footer>
+<section class="card" id="ausgabe">
+  <h2>11. HTML-Vorschau und PDF-Ausgabe</h2>
+  <p>Im Tab <b>Unterweisung</b> werden Name, Personalnummer und Drucksprache gewählt. Danach kann eine HTML-Vorschau erstellt oder ein PDF erzeugt werden.</p>
+  <ul>
+    <li><b>HTML erstellen & Vorschau:</b> erzeugt ein HTML-Dokument und öffnet es im Browser.</li>
+    <li><b>PDF erstellen:</b> erzeugt eine PDF-Datei im Output-Ordner.</li>
+    <li><b>Letzte PDF öffnen:</b> öffnet die zuletzt erzeugte PDF.</li>
+  </ul>
+  <p>Die erzeugten Dateien landen im Ordner <code>output</code>.</p>
+  
+<figure>
+  <a href="screenshots/(EN)Unterweisung_Max_Mustermann.html" target="_blank" rel="noopener">
+    <img src="screenshots/11_html_vorschau.png" alt="HTML-Vorschau des erzeugten Unterweisungsdokuments">
+  </a>
+  <figcaption>HTML-Vorschau des erzeugten Unterweisungsdokuments – Klick öffnet das HTML-Beispiel.</figcaption>
+</figure>
+
+  
+<figure>
+  <a href="screenshots/(EN)Unterweisung_Max_Mustermann.pdf" target="_blank" rel="noopener">
+    <img src="screenshots/12_pdf_beispiel.png" alt="PDF-Beispiel mit Logo, Seitenzählung und Dokumentlayout">
+  </a>
+  <figcaption>PDF-Beispiel mit Logo, Seitenzählung und Dokumentlayout – Klick öffnet das PDF-Beispiel.</figcaption>
+</figure>
+
+</section>
+
+<section class="card" id="backup">
+  <h2>12. Backup, Wiederherstellung und Muster-config</h2>
+  <p>Die wichtigsten Einstellungen, Inhalte und Übersetzungen liegen in der <code>config.json</code>. Diese Datei sollte regelmäßig gesichert werden.</p>
+
+  <h3>Backup erstellen</h3>
+  <ol>
+    <li>Tab <b>Info</b> öffnen.</li>
+    <li><b>Config-Backup erstellen</b> anklicken.</li>
+    <li>Das Backup wird im Ordner <code>backup</code> abgelegt.</li>
+  </ol>
+
+  <h3>Muster-Konfiguration verwenden</h3>
+  <p>Im Release-Ordner kann ein Ordner <code>beispiel config</code> liegen. Dort befindet sich eine Muster-Konfiguration als Beispiel.</p>
+  <ol>
+    <li>Programm schließen.</li>
+    <li>Falls bereits eigene Daten eingetragen wurden: vorhandene <code>config.json</code> sichern.</li>
+    <li>Muster-config aus dem Ordner <code>beispiel config</code> kopieren.</li>
+    <li>Die kopierte Datei in <code>config.json</code> umbenennen.</li>
+    <li>Die vorhandene <code>config.json</code> im Programmordner damit ersetzen.</li>
+    <li>Programm neu starten.</li>
+  </ol>
+  <p class="notice"><b>Achtung:</b> Beim Ersetzen der <code>config.json</code> werden vorhandene eigene Einstellungen überschrieben. Daher vorher unbedingt sichern.</p>
+</section>
+
+<section class="card" id="info">
+  <h2>13. Info-Tab, Ordner und Sicherung</h2>
+  <p>Im Info-Tab stehen Versionsangaben, Hinweise, Credits, Kontakt, Ordnerfunktionen und die Backup-Funktion.</p>
+  <ul>
+    <li><b>Programmordner öffnen:</b> öffnet den Hauptordner des Tools.</li>
+    <li><b>Output-Ordner öffnen:</b> zeigt erzeugte HTML/PDF-Dateien.</li>
+    <li><b>Backup-Ordner öffnen:</b> zeigt gespeicherte Config-Backups.</li>
+    <li><b>Anleitung öffnen:</b> öffnet diese HTML-Anleitung.</li>
+    <li><b>Config-Backup erstellen:</b> sichert die aktuelle Konfiguration.</li>
+  </ul>
+  
+<figure>
+  <a href="screenshots/13_info_tab_a.png" target="_blank" rel="noopener">
+    <img src="screenshots/13_info_tab_a.png" alt="Info-Tab – Hinweise und Credits">
+  </a>
+  <figcaption>Info-Tab – Hinweise und Credits – Klick öffnet das Bild groß.</figcaption>
+</figure>
+
+  
+<figure>
+  <a href="screenshots/13_info_tab_b.png" target="_blank" rel="noopener">
+    <img src="screenshots/13_info_tab_b.png" alt="Info-Tab – Kontakt, Ordner und Sicherung">
+  </a>
+  <figcaption>Info-Tab – Kontakt, Ordner und Sicherung – Klick öffnet das Bild groß.</figcaption>
+</figure>
+
+</section>
+
+
+
+<section class="card" id="haftung">
+  <h2>14. Haftungsausschluss & wichtige Hinweise</h2>
+  <p>Der Quicksafe Unterweisungs-Generator ist eine Arbeitshilfe zur Erstellung und Dokumentation von Unterweisungsnachweisen. Das Tool ersetzt keine rechtliche, sicherheitstechnische oder fachliche Prüfung durch das Unternehmen.</p>
+
+  <h3>Wichtig für die Anwendung</h3>
+  <ul>
+    <li>Die Inhalte, Firmendaten, Logos, Regeln, Zusatztexte und Übersetzungen werden vom Anwender bzw. vom Unternehmen gepflegt.</li>
+    <li>Vor dem Einsatz sollten HTML- und PDF-Ausgaben immer geprüft werden.</li>
+    <li>Automatische Übersetzungen können hilfreich sein, sollten bei sicherheitsrelevanten oder rechtlich wichtigen Texten aber fachlich und sprachlich kontrolliert werden.</li>
+    <li>Die eigentliche Unterweisung muss weiterhin persönlich, verständlich und fachlich korrekt durchgeführt werden.</li>
+    <li>Das Tool ist keine Rechtsberatung und keine sicherheitstechnische Freigabe.</li>
+    <li>Für die Richtigkeit, Vollständigkeit und Aktualität der verwendeten Inhalte ist der Anwender bzw. das einsetzende Unternehmen verantwortlich.</li>
+  </ul>
+
+  <h3>Datenschutz und lokale Dateien</h3>
+  <p>Das Programm speichert Konfigurationen, Backups und erzeugte Dokumente lokal im Programmordner. Wenn Dateien weitergegeben oder externe Übersetzungsdienste genutzt werden, gelten die Datenschutz- und Nutzungsbedingungen des jeweiligen Dienstes bzw. Unternehmens.</p>
+
+  <p class="notice"><b>Empfehlung:</b> Vor dem produktiven Einsatz eine eigene Muster-Unterweisung erstellen, intern prüfen lassen und diese geprüfte Konfiguration anschließend als Vorlage sichern.</p>
+</section>
+
+<section class="card" id="fehlerhilfe">
+  <h2>15. Kurze Fehlerhilfe</h2>
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr><th>Problem</th><th>Mögliche Lösung</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Logo fehlt</td><td>Im Tab <b>Firmendaten & Design</b> prüfen, ob ein Logo ausgewählt wurde und ob der assets-Ordner vorhanden ist.</td></tr>
+        <tr><td>Übersetzung fehlt</td><td>Sprache aktivieren, Status aktualisieren und <b>Fehlende ergänzen</b> anklicken.</td></tr>
+        <tr><td>Falsche oder holprige Übersetzung</td><td>Manuell im Übersetzungseditor oder im großen Zusatzseiten-Editor korrigieren.</td></tr>
+        <tr><td>PDF wird nicht erstellt</td><td>Prüfen, ob die PDF-Komponenten im Paket vorhanden sind und das Programm aus dem entpackten Ordner gestartet wurde.</td></tr>
+        <tr><td>Eigene Daten versehentlich überschrieben</td><td>Backup aus dem Ordner <code>backup</code> wiederherstellen.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+</main>
+<div class="footer">
+  Quicksafe Unterweisungs-Generator v2.1.1.0 stabil · Kontakt: info@warenschmiede.com · www.warenschmiede.com
+</div>
 </body>
 </html>
