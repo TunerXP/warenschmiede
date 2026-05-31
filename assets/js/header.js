@@ -333,7 +333,7 @@
 
   const shouldSkipCtaStandardization = () => {
     const path = (window.location.pathname || '').toLowerCase();
-    return /(^|\/)kontakt(?:\/|\.html)?$/.test(path);
+    return /(^|\/)kontakt(?:\/kontakt\.html|\/|\.html)?$/.test(path);
   };
 
   const standardizeCtas = () => {
@@ -487,7 +487,7 @@
       {
         type: 'single',
         label: 'Kontakt',
-        href: '/kontakt.html',
+        href: '/kontakt/kontakt.html',
         keywords: ['kontakt'],
       },
     ];
