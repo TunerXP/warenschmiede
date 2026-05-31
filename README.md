@@ -133,8 +133,6 @@ KI-Bereich
 /ki/prompts.html
 /ki/tools.html
 /ki/lexikon.html
-/ki/ki-finder.html
-/ki/promt-trainer.html
 Tools
 /tools/index.html
 
