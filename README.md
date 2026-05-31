@@ -142,7 +142,7 @@ Wichtige Tools:
 /tools/ws_3d_print_kostenrechner_anleitung.html
 /tools/Zeiterfassung_Plus.html
 /tools/quittungs_generator.html
-/werkstatt-rechner.html
+/tools/werkstatt-rechner.html
 Downloads
 /downloads.html
 /dateien/
@@ -184,8 +184,8 @@ Quittungs-Schmied Plus
 
 Status: online und aktiv.
 
-Warenschmiede METALL
-/werkstatt-rechner.html
+Werkstatt-Rechner Metall Plus
+/tools/werkstatt-rechner.html
 
 Status: online und aktiv.
 
@@ -193,7 +193,7 @@ Status: online und aktiv.
 
 Folgende alte Tools bleiben während der Übergangsphase erreichbar:
 
-/tools/kostenrechner-v2.html
+/tools/3D_Druck_kostenrechner.html
 /tools/Zeiterfassung.html
 
 Geplante Ablösung:
