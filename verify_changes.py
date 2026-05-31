@@ -1,13 +1,14 @@
 import os
-from bs4 import BeautifulSoup
+import re
+
 
 def verify_navigation():
-    # Expected links in Kontakt dropdown (filenames)
+    # Expected links in Kontakt dropdown (root-relative paths)
     expected_contact_files = [
-        'kontakt.html',
-        'ablauf-anfrage.html',
-        'impressum.html',
-        'ueber-mich.html'
+        '/kontakt/kontakt.html',
+        '/kontakt/ablauf-anfrage.html',
+        '/kontakt/impressum.html',
+        '/kontakt/ueber-mich.html'
     ]
 
     html_files = []
@@ -27,50 +28,47 @@ def verify_navigation():
     for file_path in html_files:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
-                soup = BeautifulSoup(f, 'html.parser')
+                html = f.read()
 
-            # Find Contact Dropdown
-            # In index.html it has class "nav-contact"
-            contact_li = soup.find('li', class_='nav-contact')
-
-            if not contact_li:
-                # Look deeper if structure is different?
-                # But our update script was replacing .main-nav, so it should be there if we updated it.
-                # If we skipped it in update_nav, we should flag it here too?
-                # Or maybe it's a file without a menu (e.g. fragments)?
-                # But the user requirement is "ALLE HTML-Dateien ... müssen ... haben".
-
-                # Check if it has a main-nav at all
-                if soup.find('nav', class_='main-nav'):
-                     print(f"[FAIL] {file_path}: Has main-nav but no .nav-contact.")
-                     errors += 1
-                else:
-                     # Maybe a file without nav?
-                     # We can print a warning.
-                     pass
-                     # print(f"[SKIP] {file_path}: No main-nav found.")
+            # Find Contact Dropdown. In the maintained navigation it has class "nav-contact".
+            if 'class="main-nav"' in html and 'nav-contact' not in html:
+                print(f"[FAIL] {file_path}: Has main-nav but no .nav-contact.")
+                errors += 1
                 continue
 
-            # Find the menu inside
-            menu_ul = contact_li.find('ul', class_='nav-more-menu')
-            if not menu_ul:
+            if 'nav-contact' not in html:
+                continue
+
+            contact_start = html.find('nav-contact')
+            menu_start = html.find('nav-more-menu', contact_start)
+            if menu_start == -1:
                 print(f"[FAIL] {file_path}: No .nav-more-menu inside .nav-contact.")
                 errors += 1
                 continue
 
-            links = menu_ul.find_all('a')
-            if len(links) != 4:
-                print(f"[FAIL] {file_path}: Expected 4 links in Kontakt, found {len(links)}.")
-                for l in links:
-                    print(f" - {l.get('href')}")
+            menu_end = html.find('</ul>', menu_start)
+            if menu_end == -1:
+                print(f"[FAIL] {file_path}: Contact menu is missing a closing </ul>.")
                 errors += 1
                 continue
 
-            # Verify link targets existence
-            file_dir = os.path.dirname(file_path)
+            contact_menu = html[menu_start:menu_end]
+            links = re.findall(r'<a\b[^>]*\shref="([^"]+)"', contact_menu)
+            if len(links) != 4:
+                print(f"[FAIL] {file_path}: Expected 4 links in Kontakt, found {len(links)}.")
+                for href in links:
+                    print(f" - {href}")
+                errors += 1
+                continue
 
-            for i, link in enumerate(links):
-                href = link.get('href')
+            for expected in expected_contact_files:
+                if expected not in links:
+                    print(f"[FAIL] {file_path}: Missing Kontakt link target: {expected}")
+                    errors += 1
+
+            # Verify link targets existence.
+            file_dir = os.path.dirname(file_path)
+            for i, href in enumerate(links):
                 if not href:
                     print(f"[FAIL] {file_path}: Link {i} has no href.")
                     errors += 1
@@ -79,11 +77,13 @@ def verify_navigation():
                 if href.startswith('http') or href.startswith('mailto'):
                     continue
 
-                # Remove anchor
-                if '#' in href:
-                    href = href.split('#')[0]
+                # Remove anchor/query.
+                href_without_anchor = href.split('#', 1)[0].split('?', 1)[0]
 
-                target_path = os.path.normpath(os.path.join(file_dir, href))
+                if href_without_anchor.startswith('/'):
+                    target_path = os.path.normpath('.' + href_without_anchor)
+                else:
+                    target_path = os.path.normpath(os.path.join(file_dir, href_without_anchor))
 
                 if not os.path.exists(target_path):
                     print(f"[FAIL] {file_path}: Link target does not exist: {href} (resolved: {target_path})")
@@ -98,5 +98,8 @@ def verify_navigation():
     else:
         print(f"FAILED: Found {errors} errors.")
 
+    return errors
+
+
 if __name__ == "__main__":
-    verify_navigation()
+    raise SystemExit(1 if verify_navigation() else 0)
