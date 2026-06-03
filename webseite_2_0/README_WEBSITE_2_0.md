@@ -1,3 +1,8 @@
-Warenschmiede Webseite 2.0 – Datenschutz v24
+# Warenschmiede Webseite 2.0 – Kontakt v25
 
-Kopieren: datenschutz.html nach webseite_2_0/datenschutz.html, assets zusammenführen.
+Lokale Testversion für `kontakt/kontakt.html` im Light-Steel-Design.
+
+Kopieren:
+
+- `kontakt/kontakt.html` nach `webseite_2_0/kontakt/kontakt.html`
+- `assets/` nach `webseite_2_0/assets/` zusammenführen
