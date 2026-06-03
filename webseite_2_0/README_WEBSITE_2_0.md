@@ -1,7 +1,3 @@
-# Warenschmiede Webseite 2.0 – Ablauf & Anfrage v26
+# Warenschmiede Webseite 2.0 – Kontakt/Recht v27/v28
 
-Light-Steel-Umbau der Seite `kontakt/ablauf-anfrage.html`.
-
-Kopieren:
-- `kontakt/ablauf-anfrage.html` nach `webseite_2_0/kontakt/ablauf-anfrage.html`
-- `assets/` bei Bedarf zusammenführen
+Enthält `kontakt/ueber-mich.html` und `kontakt/impressum.html` im Light-Steel-Grunddesign. Assets bei Bedarf in `webseite_2_0/assets/` zusammenführen.
