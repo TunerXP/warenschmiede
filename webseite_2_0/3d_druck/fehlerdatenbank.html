@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Fehlerdatenbank – 3D-Druck-Probleme schnell lösen · Warenschmiede Webseite 2.0</title>
+<meta content="3D-Druck Fehlerdatenbank: Symptome erkennen, Ursachen verstehen und Lösungen testen – für Haftung, Stringing, Warping, Layer Shift und weitere Druckprobleme." name="description"/>
+<link href="../assets/css/styles.css" rel="stylesheet"/>
+<style>
+.error-hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(280px,.78fr);gap:32px;align-items:stretch;padding:34px;border-radius:28px;background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(235,243,250,.9));box-shadow:0 18px 50px rgba(40,68,95,.13),inset 0 0 0 1px rgba(255,255,255,.82)}
+.error-hero h1{margin:.2rem 0 1rem;font-size:clamp(2.05rem,4vw,3.7rem);letter-spacing:-.045em}.error-hero__side{border-radius:22px;padding:24px;background:rgba(255,255,255,.76);box-shadow:inset 0 0 0 1px rgba(130,150,170,.18),0 0 30px rgba(45,126,255,.11)}
+.error-toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-top:22px}.error-toc a{display:block;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.78);text-decoration:none;color:#27384a;font-weight:850;box-shadow:0 12px 30px rgba(35,60,85,.09),inset 0 0 0 1px rgba(130,150,170,.18)}.error-toc a:hover{box-shadow:0 0 0 2px rgba(45,126,255,.24),0 0 24px rgba(45,126,255,.13),0 12px 30px rgba(35,60,85,.10)}
+.error-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}.error-card{--acc:#2d7eff;position:relative;padding:22px;border-radius:23px;background:rgba(255,255,255,.83);box-shadow:0 16px 36px rgba(35,60,85,.10),0 0 24px color-mix(in srgb,var(--acc) 13%,transparent),inset 0 0 0 1px color-mix(in srgb,var(--acc) 22%,rgba(130,150,170,.18));overflow:hidden}.error-card:before{content:"";position:absolute;left:0;top:0;width:54%;height:3px;background:linear-gradient(90deg,var(--acc),rgba(255,255,255,.45),transparent);box-shadow:0 0 16px color-mix(in srgb,var(--acc) 45%,transparent)}.error-card h3{margin:.1rem 0 .55rem;font-size:1.25rem}.error-card h4{margin:1rem 0 .35rem;font-size:.98rem;color:#2c3e50}.error-card ul{margin:.15rem 0 0;padding-left:1.16rem}.error-tags{display:flex;flex-wrap:wrap;gap:7px;margin:.8rem 0}.error-tag{padding:4px 8px;border-radius:999px;background:rgba(244,248,252,.92);box-shadow:inset 0 0 0 1px rgba(130,150,170,.16);font-size:.78rem;font-weight:850;color:#41566c}
+.error-guide{padding:24px;border-radius:22px;background:rgba(255,255,255,.82);box-shadow:0 14px 32px rgba(35,60,85,.10),0 0 28px rgba(45,126,255,.12),inset 0 0 0 1px rgba(45,126,255,.22)}.error-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.error-step{padding:18px;border-radius:18px;background:rgba(255,255,255,.78);box-shadow:inset 0 0 0 1px rgba(130,150,170,.16)}.error-step strong{display:block;margin-bottom:.3rem;color:#223140}
+.error-checklist{display:grid;gap:13px}.error-check{padding:17px;border-radius:18px;background:rgba(255,255,255,.80);box-shadow:0 10px 26px rgba(35,60,85,.08),inset 0 0 0 1px rgba(130,150,170,.16)}.error-check strong{color:#223140}.error-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}.error-link-card{padding:22px;border-radius:22px;background:rgba(255,255,255,.78);box-shadow:0 14px 32px rgba(35,60,85,.10),inset 0 0 0 1px rgba(130,150,170,.18)}
+@media(max-width:820px){.error-hero{grid-template-columns:1fr;padding:24px}}
+</style>
+</head>
+<body class="theme-light homepage-v18 fehlerdatenbank-page-v39">
+<div id="ws-header"></div>
+<main class="site-main ws-live-content error-db-page" id="inhalt" tabindex="-1">
+<section class="section container">
+<div class="error-hero ws-panel-glow">
+<div>
+<p class="section-eyebrow">Fehler &amp; Troubleshooting</p>
+<h1>Fehlerdatenbank – Probleme schnell lösen</h1>
+<p class="lead">Wenn ein Druck nicht sauber läuft, hilft systematisches Vorgehen mehr als wildes Herumprobieren. Hier findest du typische Symptome, wahrscheinliche Ursachen und erste Lösungen.</p>
+</div>
+<aside class="error-hero__side">
+<h2>Grundregel</h2>
+<p><strong>Immer nur 1–2 Dinge gleichzeitig ändern.</strong> Sonst weißt du nachher nicht, was geholfen hat.</p>
+<p><strong>Erst beobachten:</strong> Was passiert genau? Erste Schicht, Fäden, Ecken, Layer, Oberfläche?</p>
+<p><strong>Dann testen:</strong> Kleine Probedrucke sparen Zeit und Material.</p>
+</aside>
+</div>
+<div class="error-toc"><a href="#vorgehen">Vorgehen</a><a href="#haeufige-fehler">Häufige Fehler</a><a href="#material-check">Material-Check</a><a href="#weiter">Weiterlesen</a></div>
+</section>
+<section class="section container" id="vorgehen">
+<div class="error-guide">
+<p class="section-eyebrow">Systematisch prüfen</p>
+<h2>So nutzt du die Fehlerdatenbank</h2>
+<div class="error-steps">
+<div class="error-step"><strong>1. Symptom erkennen</strong>Sieht es nach Haftung, Fäden, Warping, Layer Shift oder Oberfläche aus?</div>
+<div class="error-step"><strong>2. Ursache eingrenzen</strong>Material, Druckbett, Temperatur, Geschwindigkeit, Mechanik oder Feuchtigkeit prüfen.</div>
+<div class="error-step"><strong>3. Nur gezielt ändern</strong>Eine kleine Änderung testen, Ergebnis anschauen, dann erst weiterdrehen.</div>
+</div>
+</div>
+</section>
+<section class="section container" id="haeufige-fehler">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Troubleshooting</p><h2>Die häufigsten 3D-Druck-Probleme</h2><p>Diese Karten sind bewusst kurz und praxisnah. Später können wir die Datenbank mit Bildern und Detailfällen erweitern.</p></div>
+<div class="error-grid">
+<article class="error-card" style="--acc:#ef4444"><h3>Schlechte Betthaftung</h3><div class="error-tags"><span class="error-tag">PLA</span><span class="error-tag">PETG</span><span class="error-tag">ASA</span><span class="error-tag">First Layer</span></div><h4>Woran erkennst du das?</h4><ul><li>Die erste Schicht löst sich oder wird von der Düse weggeschoben.</li><li>Ecken heben sich früh vom Druckbett.</li></ul><h4>Ursachen</h4><ul><li>Platte fettig, Z-Offset zu hoch, Bett zu kalt oder Zugluft.</li></ul><h4>Erste Lösungen</h4><ul><li>Platte mit warmem Wasser und Spüli reinigen.</li><li>First Layer langsamer drucken und Z-Offset prüfen.</li><li>Bei großen Teilen Brim nutzen.</li></ul></article>
+<article class="error-card" style="--acc:#06b6d4"><h3>Stringing / Fäden</h3><div class="error-tags"><span class="error-tag">PETG</span><span class="error-tag">TPU</span><span class="error-tag">Feuchtigkeit</span></div><h4>Woran erkennst du das?</h4><ul><li>Zwischen zwei Bereichen entstehen dünne Fäden wie Spinnweben.</li></ul><h4>Ursachen</h4><ul><li>Düse zu heiß, Retraction unpassend oder Filament feucht.</li></ul><h4>Erste Lösungen</h4><ul><li>Temperatur um 5 °C senken.</li><li>Filament trocknen.</li><li>Retraction vorsichtig testen, bei TPU nicht übertreiben.</li></ul></article>
+<article class="error-card" style="--acc:#ff972d"><h3>Warping</h3><div class="error-tags"><span class="error-tag">ASA</span><span class="error-tag">ABS</span><span class="error-tag">große Teile</span></div><h4>Woran erkennst du das?</h4><ul><li>Untere Ecken ziehen sich nach oben.</li><li>Das Bauteil wird krumm oder löst sich teilweise.</li></ul><h4>Ursachen</h4><ul><li>Material schrumpft beim Abkühlen, Zugluft, offener Druckraum.</li></ul><h4>Erste Lösungen</h4><ul><li>Gehäuse schließen, Zugluft vermeiden.</li><li>Brim nutzen und Bett-Temperatur passend wählen.</li><li>Bei ASA/ABS Umgebungstemperatur stabil halten.</li></ul></article>
+<article class="error-card" style="--acc:#8b5cf6"><h3>Elefantenfuß</h3><div class="error-tags"><span class="error-tag">Maßhaltigkeit</span><span class="error-tag">First Layer</span></div><h4>Woran erkennst du das?</h4><ul><li>Die untersten Schichten sind breiter als der Rest.</li><li>Teile passen unten nicht sauber in Gegenstücke.</li></ul><h4>Ursachen</h4><ul><li>Z-Offset zu tief, erste Schicht zu stark gequetscht oder Bett zu heiß.</li></ul><h4>Erste Lösungen</h4><ul><li>Z-Offset leicht erhöhen.</li><li>Bett-Temperatur prüfen.</li><li>Bei CAD-Teilen eine kleine Fase vorsehen.</li></ul></article>
+<article class="error-card" style="--acc:#22c55e"><h3>Unterextrusion / Lücken</h3><div class="error-tags"><span class="error-tag">Flow</span><span class="error-tag">Düse</span><span class="error-tag">Extruder</span></div><h4>Woran erkennst du das?</h4><ul><li>Schichten wirken dünn, Linien fehlen oder Wände haben Lücken.</li></ul><h4>Ursachen</h4><ul><li>Düse teilweise verstopft, Filament klemmt oder Extruder fördert ungleichmäßig.</li></ul><h4>Erste Lösungen</h4><ul><li>Düse reinigen oder Cold Pull testen.</li><li>Filamentführung prüfen.</li><li>Extruderzahnrad kontrollieren und Material trocken halten.</li></ul></article>
+<article class="error-card" style="--acc:#64748b"><h3>Layer Shift</h3><div class="error-tags"><span class="error-tag">Mechanik</span><span class="error-tag">Riemen</span><span class="error-tag">Kollision</span></div><h4>Woran erkennst du das?</h4><ul><li>Der Druck ist ab einer bestimmten Höhe seitlich versetzt.</li></ul><h4>Ursachen</h4><ul><li>Kollision mit dem Bauteil, zu hohe Geschwindigkeit, lockere Riemen oder mechanisches Problem.</li></ul><h4>Erste Lösungen</h4><ul><li>Geschwindigkeit reduzieren.</li><li>Riemen und Schrauben prüfen.</li><li>Bauteilhaftung und mögliche Kollisionen beobachten.</li></ul></article>
+<article class="error-card" style="--acc:#f97316"><h3>Rauhe Oberfläche / Pickel</h3><div class="error-tags"><span class="error-tag">Oberfläche</span><span class="error-tag">Seam</span><span class="error-tag">Flow</span></div><h4>Woran erkennst du das?</h4><ul><li>Außenhaut wirkt unruhig, mit kleinen Pickeln oder Blob-Stellen.</li></ul><h4>Ursachen</h4><ul><li>Überextrusion, zu hohe Temperatur, ungünstige Nahtposition oder feuchtes Material.</li></ul><h4>Erste Lösungen</h4><ul><li>Temperatur leicht senken.</li><li>Flow vorsichtig prüfen.</li><li>Nahtposition im Slicer kontrollieren.</li></ul></article>
+<article class="error-card" style="--acc:#2d7eff"><h3>Obere Schicht schließt nicht</h3><div class="error-tags"><span class="error-tag">Top Layer</span><span class="error-tag">Infill</span></div><h4>Woran erkennst du das?</h4><ul><li>Oben sind Löcher, Spalten oder sichtbare Infill-Strukturen.</li></ul><h4>Ursachen</h4><ul><li>Zu wenig Top-Layer, zu wenig Infill oder zu hohe Top-Speed.</li></ul><h4>Erste Lösungen</h4><ul><li>Mehr obere Schichten nutzen.</li><li>Infill leicht erhöhen.</li><li>Top-Layer langsamer drucken.</li></ul></article>
+</div>
+</section>
+<section class="section container" id="material-check">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Material-Check</p><h2>Material und Umgebung nicht unterschätzen</h2><p>Viele Fehler wirken wie Slicerprobleme, kommen aber eigentlich von Filament, Druckbett oder Umgebung.</p></div>
+<div class="error-checklist">
+<div class="error-check"><strong>Feuchtes Filament:</strong> Knistert es beim Drucken, entstehen Blasen oder ungewöhnlich viele Fäden? Dann zuerst trocknen.</div>
+<div class="error-check"><strong>Fettige Platte:</strong> Ein Fingerabdruck kann Haftung ruinieren. Warmes Wasser + Spüli ist oft der beste Reset.</div>
+<div class="error-check"><strong>Zugluft:</strong> Offene Fenster, kalte Luft oder Klimazug können besonders ASA/ABS und große Teile verziehen.</div>
+<div class="error-check"><strong>Zu viel geändert:</strong> Wenn nach fünf Änderungen nichts mehr nachvollziehbar ist: zurück zum Standardprofil und neu eingrenzen.</div>
+</div>
+</section>
+<section class="section container" id="weiter">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Weiterlesen</p><h2>Passende nächste Schritte</h2></div>
+<div class="error-links"><article class="error-link-card"><h3>Slicer &amp; Einstellungen</h3><p>Wenn du Werte gezielter verstehen und anpassen willst.</p><a class="edge-button accent-blue" href="slicer-einstellungen.html"><span>Slicer lesen</span></a></article><article class="error-link-card"><h3>Materialwissen</h3><p>Wenn du prüfen willst, ob dein Material zum Einsatz passt.</p><a class="edge-button accent-green" href="material.html"><span>Material lesen</span></a></article><article class="error-link-card"><h3>Drucken lassen</h3><p>Wenn du nicht selbst tüfteln willst oder ein fertiges Teil brauchst.</p><a class="edge-button accent-red" href="../leistungen/3d-druck.html"><span>3D-Druck-Service</span></a></article></div>
+</section>
+</main>
+<div id="ws-footer"></div>
+<script defer src="../assets/js/ws-layout.js"></script>
+</body>
+</html>
