@@ -1,4 +1,4 @@
-# Warenschmiede Webseite 2.0 – CAD & Prototyping v22
+# Warenschmiede Webseite 2.0 – PC-Hilfe v23
 
 Lokale Testversion. Live-Seite nicht überschreiben.
 
