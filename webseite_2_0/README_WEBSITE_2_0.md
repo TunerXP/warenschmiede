@@ -1,7 +1,3 @@
-# Warenschmiede Webseite 2.0 – PC-Hilfe v23
+Warenschmiede Webseite 2.0 – Datenschutz v24
 
-Lokale Testversion. Live-Seite nicht überschreiben.
-
-Kopieren:
-- `leistungen/cad-prototyping.html` nach `webseite_2_0/leistungen/cad-prototyping.html`
-- `assets/` nach `webseite_2_0/assets/` zusammenführen
+Kopieren: datenschutz.html nach webseite_2_0/datenschutz.html, assets zusammenführen.
