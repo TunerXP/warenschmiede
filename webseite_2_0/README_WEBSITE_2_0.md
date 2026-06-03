@@ -1,8 +1,7 @@
-# Warenschmiede Webseite 2.0 – Kontakt v25
+# Warenschmiede Webseite 2.0 – Ablauf & Anfrage v26
 
-Lokale Testversion für `kontakt/kontakt.html` im Light-Steel-Design.
+Light-Steel-Umbau der Seite `kontakt/ablauf-anfrage.html`.
 
 Kopieren:
-
-- `kontakt/kontakt.html` nach `webseite_2_0/kontakt/kontakt.html`
-- `assets/` nach `webseite_2_0/assets/` zusammenführen
+- `kontakt/ablauf-anfrage.html` nach `webseite_2_0/kontakt/ablauf-anfrage.html`
+- `assets/` bei Bedarf zusammenführen
