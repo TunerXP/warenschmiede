@@ -1,3 +1,7 @@
-# Warenschmiede Webseite 2.0 – Kontakt/Recht v27/v28
+# Warenschmiede Webseite 2.0 – 3D-Druck FAQ v29
 
-Enthält `kontakt/ueber-mich.html` und `kontakt/impressum.html` im Light-Steel-Grunddesign. Assets bei Bedarf in `webseite_2_0/assets/` zusammenführen.
+Lokaler Teststand. Live-Seite nicht direkt ersetzen, erst in `webseite_2_0/` prüfen.
+
+Kopieren:
+- `3d_druck/3ddruck-faq.html` nach `webseite_2_0/3d_druck/3ddruck-faq.html`
+- `assets/` optional zusammenführen.
