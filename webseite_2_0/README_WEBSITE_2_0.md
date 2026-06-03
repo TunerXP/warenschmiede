@@ -1,9 +1,7 @@
-# Warenschmiede Webseite 2.0 · v20 Leistungsseite 3D-Druckauftrag
+# Warenschmiede Webseite 2.0 – CAD & Prototyping v22
 
-Lokale Testversion für `webseite_2_0/leistungen/3d-druck.html`.
+Lokale Testversion. Live-Seite nicht überschreiben.
 
-## Kopieren
-- `leistungen/3d-druck.html` nach `webseite_2_0/leistungen/3d-druck.html`
-- `assets/` mit `webseite_2_0/assets/` zusammenführen
-
-Nicht live hochladen, solange die Webseite 2.0 Baustelle ist.
+Kopieren:
+- `leistungen/cad-prototyping.html` nach `webseite_2_0/leistungen/cad-prototyping.html`
+- `assets/` nach `webseite_2_0/assets/` zusammenführen
