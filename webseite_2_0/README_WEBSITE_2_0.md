@@ -1,0 +1,1 @@
+Warenschmiede Webseite 2.0 – lokale Baustelle. v18 nutzt Light-Steel-Menü, transparentes Header-Logo und neue Leistungsbilder; Projektarbeit & Eigenentwicklungen nutzt nun die hochkante Bildvariante. Keine Live-Seite ändern.
