@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Beste Slicer-Einstellungen für Einsteiger · Warenschmiede Webseite 2.0</title>
+<meta content="Slicer-Einstellungen einfach erklärt: G-Code, Profile, Layerhöhe, Wände, Infill, Temperatur, Support und Fehlerhilfe für 3D-Druck-Einsteiger." name="description"/>
+<link href="../assets/css/styles.css" rel="stylesheet"/>
+<style>
+.slicer-hero{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(280px,.75fr);gap:32px;align-items:stretch;padding:34px;border-radius:28px;background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(235,242,249,.88));box-shadow:0 18px 50px rgba(40,68,95,.13),inset 0 0 0 1px rgba(255,255,255,.82)}
+.slicer-hero h1{margin:.2rem 0 1rem;font-size:clamp(2.05rem,4vw,3.85rem);letter-spacing:-.045em}.slicer-hero__side{border-radius:22px;padding:24px;background:rgba(255,255,255,.74);box-shadow:inset 0 0 0 1px rgba(140,165,190,.18),0 0 32px rgba(45,126,255,.12)}
+.slicer-quick{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.slicer-pill{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.78);box-shadow:inset 0 0 0 1px rgba(130,150,170,.18);font-weight:850;font-size:.9rem;color:#324252}
+.slicer-toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-top:22px}.slicer-toc a{display:block;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.78);text-decoration:none;color:#27384a;font-weight:850;box-shadow:0 12px 30px rgba(35,60,85,.09),inset 0 0 0 1px rgba(130,150,170,.18)}.slicer-toc a:hover{box-shadow:0 0 0 2px rgba(45,126,255,.24),0 0 24px rgba(45,126,255,.13),0 12px 30px rgba(35,60,85,.10)}
+.slicer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px}.slicer-card{--acc:#2d7eff;position:relative;padding:22px;border-radius:23px;background:rgba(255,255,255,.82);box-shadow:0 16px 36px rgba(35,60,85,.10),0 0 24px color-mix(in srgb,var(--acc) 15%,transparent),inset 0 0 0 1px color-mix(in srgb,var(--acc) 22%,rgba(130,150,170,.18));overflow:hidden}.slicer-card:before{content:"";position:absolute;left:0;top:0;width:54%;height:3px;background:linear-gradient(90deg,var(--acc),rgba(255,255,255,.45),transparent);box-shadow:0 0 16px color-mix(in srgb,var(--acc) 45%,transparent)}.slicer-card h3{margin:.1rem 0 .55rem;font-size:1.34rem}.slicer-card p:last-child{margin-bottom:0}.slicer-card ul,.slicer-card ol{padding-left:1.18rem;margin-bottom:0}.slicer-meta{display:grid;gap:9px;margin:14px 0}.slicer-meta div{padding:10px 12px;border-radius:14px;background:rgba(246,249,252,.88);box-shadow:inset 0 0 0 1px rgba(130,150,170,.15)}
+.setting-list{display:grid;gap:12px}.setting-item{padding:16px;border-radius:18px;background:rgba(255,255,255,.78);box-shadow:inset 0 0 0 1px rgba(130,150,170,.18)}.setting-item strong{display:block;margin-bottom:4px;color:#223140}.setting-item code{padding:.1rem .35rem;border-radius:6px;background:rgba(25,40,60,.08)}
+.slicer-table{width:100%;border-collapse:collapse;border-radius:20px;overflow:hidden;background:rgba(255,255,255,.82);box-shadow:inset 0 0 0 1px rgba(130,150,170,.18)}.slicer-table th,.slicer-table td{text-align:left;padding:13px 15px;border-bottom:1px solid rgba(130,150,170,.18);vertical-align:top}.slicer-table th{background:rgba(241,246,251,.94);font-weight:850}.slicer-note{padding:24px;border-radius:22px;background:rgba(255,255,255,.80);box-shadow:0 14px 32px rgba(35,60,85,.10),0 0 28px rgba(45,126,255,.12),inset 0 0 0 1px rgba(45,126,255,.22)}.slicer-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}.slicer-link-card{padding:22px;border-radius:22px;background:rgba(255,255,255,.78);box-shadow:0 14px 32px rgba(35,60,85,.10),inset 0 0 0 1px rgba(130,150,170,.18)}
+@media(max-width:820px){.slicer-hero{grid-template-columns:1fr;padding:24px}.compare-scroll{overflow-x:auto}.slicer-table{font-size:.92rem}}
+</style>
+</head>
+<body class="theme-light homepage-v18 slicer-page-v37">
+<div id="ws-header"></div>
+<main class="site-main ws-live-content slicer-page" id="inhalt" tabindex="-1">
+<section class="section container">
+<div class="slicer-hero ws-panel-glow">
+<div>
+<p class="section-eyebrow">3D-Druck Wissen</p>
+<h1>Slicer &amp; Einstellungen</h1>
+<p class="lead">Der Slicer ist die Übersetzung zwischen deinem 3D-Modell und dem Drucker. Er entscheidet, wie viele Schichten gedruckt werden, wie stabil dein Teil wird, wie lange es dauert und ob Supports nötig sind.</p>
+<div class="slicer-quick"><span class="slicer-pill">0,20 mm = guter Standard</span><span class="slicer-pill">Wände vor Infill</span><span class="slicer-pill">First Layer prüfen</span><span class="slicer-pill">Materialprofil beachten</span></div>
+</div>
+<aside class="slicer-hero__side">
+<h2>Kurz gesagt</h2>
+<p><strong>Nicht jedes Profil anfassen.</strong> Starte mit einem bewährten Standardprofil.</p>
+<p><strong>Für Funktionsteile:</strong> mehr Wände bringen oft mehr als extrem viel Infill.</p>
+<p><strong>Für Einsteiger:</strong> erst drucken lernen, dann optimieren.</p>
+</aside>
+</div>
+<div class="slicer-toc"><a href="#basics">Grundlagen</a><a href="#software">Programme</a><a href="#profile">Profile</a><a href="#settings">Wichtige Settings</a><a href="#materialwerte">Startwerte</a><a href="#fehlerhilfe">Fehlerhilfe</a></div>
+</section>
+<section class="section container" id="basics">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Grundlagen</p><h2>Was ist ein Slicer und was ist G-Code?</h2><p>Ohne Slicer versteht dein Drucker dein 3D-Modell nicht. Der Slicer schneidet das Modell in Schichten und erzeugt daraus die Fahrwege.</p></div>
+<div class="slicer-grid">
+<article class="slicer-card" style="--acc:#2d7eff"><h3>🍽️ Die Koch-Analogie</h3><p>Stell dir den Slicer wie jemanden vor, der eine Kartoffel in hauchdünne Scheiben schneidet. Dein 3D-Modell wird in horizontale Layer zerlegt.</p><p>Je dünner die Scheiben, desto feiner die Oberfläche — aber desto länger dauert der Druck.</p></article>
+<article class="slicer-card" style="--acc:#ff972d"><h3>🧭 G-Code</h3><p>G-Code ist die Wegbeschreibung für den Drucker. Darin steht, wohin sich Düse und Druckbett bewegen, wie schnell gedruckt wird und wie viel Material fließt.</p><p><code>G1 X10 Y20</code> ist vereinfacht gesagt ein Fahrbefehl.</p></article>
+<article class="slicer-card" style="--acc:#22c55e"><h3>✅ Profil statt Blindflug</h3><p>Ein Profil enthält passende Startwerte für Drucker, Material und Qualität. Gute Profile sparen dir viel Frust.</p><p>Für den Anfang gilt: Profil wählen, First Layer beobachten, erst dann feinjustieren.</p></article>
+</div>
+</section>
+<section class="section container" id="software">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Software</p><h2>Welche Programme sind sinnvoll?</h2><p>Die beste Software ist oft die, die gut zu deinem Drucker passt und stabile Profile mitbringt.</p></div>
+<div class="slicer-grid">
+<article class="slicer-card" style="--acc:#2d7eff"><h3>⭐ Bambu Studio / OrcaSlicer</h3><div class="slicer-meta"><div><strong>Level:</strong> Einsteiger bis Profi.</div><div><strong>Stark bei:</strong> Bambu Lab, modernen Profilen, Mehrfarbdruck und Vorschau.</div><div><strong>Hinweis:</strong> OrcaSlicer ist besonders mächtig, aber etwas voller mit Optionen.</div></div></article>
+<article class="slicer-card" style="--acc:#06b6d4"><h3>Cura</h3><div class="slicer-meta"><div><strong>Level:</strong> Einsteiger bis Fortgeschritten.</div><div><strong>Stark bei:</strong> großer Community und vielen Druckerprofilen.</div><div><strong>Hinweis:</strong> Sehr verbreitet, aber je nach Drucker nicht immer die eleganteste Lösung.</div></div></article>
+<article class="slicer-card" style="--acc:#f97316"><h3>PrusaSlicer</h3><div class="slicer-meta"><div><strong>Level:</strong> Fortgeschritten.</div><div><strong>Stark bei:</strong> stabilen Profilen, klarer Struktur und Open-Source-Nähe.</div><div><strong>Hinweis:</strong> Sehr gut, wenn du verstehen willst, was im Hintergrund passiert.</div></div></article>
+</div>
+</section>
+<section class="section container" id="profile">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Profile</p><h2>Welches Profil wähle ich?</h2><p>Start-Tipp: Nutze zuerst ein Standardprofil mit etwa 0,20 mm Layerhöhe. Das ist fast immer ein guter Mix aus Qualität und Druckzeit.</p></div>
+<div class="slicer-grid">
+<article class="slicer-card" style="--acc:#64748b"><h3>🚀 Entwurf / Draft</h3><p>Dicke Schichten, schneller Druck, gröbere Oberfläche. Gut zum Testen von Form und Größe.</p></article>
+<article class="slicer-card" style="--acc:#22c55e"><h3>✅ Standard</h3><p>Meist 0,20 mm. Der beste Startpunkt für die meisten Drucke.</p></article>
+<article class="slicer-card" style="--acc:#8b5cf6"><h3>💎 Fein / Detail</h3><p>Dünne Schichten, bessere Optik, längere Druckzeit. Sinnvoll bei sichtbaren Oberflächen.</p></article>
+<article class="slicer-card" style="--acc:#ef4444"><h3>💪 Stark / Strong</h3><p>Mehr Wände, mehr obere/untere Schichten und passender Infill. Für Funktionsteile.</p></article>
+</div>
+</section>
+<section class="section container" id="settings">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Einstellungen</p><h2>Die wichtigsten Settings verständlich erklärt</h2><p>Du musst nicht alle 300 Slicer-Optionen kennen. Diese Punkte bringen am Anfang am meisten.</p></div>
+<div class="slicer-grid">
+<article class="slicer-card" style="--acc:#2d7eff"><h3>Struktur &amp; Stabilität</h3><div class="setting-list"><div class="setting-item"><strong>Wände / Perimeters</strong>Mehr Außenwände bringen oft mehr Stabilität als extrem hoher Infill.</div><div class="setting-item"><strong>Infill</strong>15–25 % reichen für viele Teile. Gyroid oder Grid sind gute Startpunkte.</div><div class="setting-item"><strong>Top/Bottom Layers</strong>Mehr Deck- und Bodenschichten machen Flächen dichter und stabiler.</div></div></article>
+<article class="slicer-card" style="--acc:#ff972d"><h3>Druck &amp; Material</h3><div class="setting-list"><div class="setting-item"><strong>Temperatur</strong>Muss zum Filament passen. Zu heiß erzeugt Fäden, zu kalt schwächt Layerhaftung.</div><div class="setting-item"><strong>Geschwindigkeit</strong>Schnell ist schön, aber zu schnell kostet Qualität und Maßhaltigkeit.</div><div class="setting-item"><strong>Kühlung</strong>PLA viel Lüfter, PETG weniger, ASA/ABS eher wenig bis aus.</div></div></article>
+<article class="slicer-card" style="--acc:#22c55e"><h3>Support &amp; Haftung</h3><div class="setting-list"><div class="setting-item"><strong>Supports</strong>Nur wenn nötig. Überhänge über ca. 45° brauchen oft Stütze.</div><div class="setting-item"><strong>Brim</strong>Hilft gegen Warping und verbessert die Haftung am Rand.</div><div class="setting-item"><strong>First Layer</strong>Die erste Schicht entscheidet. Wenn sie schlecht ist, wird der Druck selten gut.</div></div></article>
+</div>
+</section>
+<section class="section container" id="materialwerte">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Startwerte</p><h2>Grobe Startwerte pro Material</h2><p>Herstellerangaben und Druckerprofile sind wichtiger als starre Tabellen — aber als Orientierung helfen diese Werte.</p></div>
+<div class="compare-scroll"><table class="slicer-table"><thead><tr><th>Material</th><th>Düse / Bett</th><th>Kühlung</th><th>Hinweis</th></tr></thead><tbody><tr><th>PLA / PLA+</th><td>ca. 200–220 °C / 55–65 °C</td><td>viel</td><td>einfachster Einstieg</td></tr><tr><th>PETG</th><td>ca. 230–250 °C / 70–85 °C</td><td>mittel</td><td>zäh, kann Fäden ziehen</td></tr><tr><th>TPU</th><td>ca. 220–240 °C / je nach Platte</td><td>mittel</td><td>langsam drucken</td></tr><tr><th>ASA</th><td>ca. 245–265 °C / 90–110 °C</td><td>wenig</td><td>Einhausung sinnvoll</td></tr></tbody></table></div>
+</section>
+<section class="section container" id="preflight">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Check</p><h2>Mini-Check vor dem Druck</h2></div>
+<div class="slicer-grid"><article class="slicer-card" style="--acc:#22c55e"><h3>1. Platte sauber?</h3><p>Fettfinger sind ein Klassiker. Warmes Wasser mit Spüli ist oft wirksamer als hektisches Herumwischen.</p></article><article class="slicer-card" style="--acc:#2d7eff"><h3>2. Filament trocken?</h3><p>PETG, TPU und Nylon ziehen Feuchtigkeit. Knacken, Blasen und Fäden können davon kommen.</p></article><article class="slicer-card" style="--acc:#ff972d"><h3>3. First Layer beobachten?</h3><p>Die erste Schicht ist die Wahrheit. Sitzt sie sauber, steigt die Chance auf einen guten Druck massiv.</p></article></div>
+</section>
+<section class="section container" id="fehlerhilfe">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Fehlerhilfe</p><h2>Typische Fehler und erste Richtung</h2></div>
+<div class="slicer-grid"><article class="slicer-card" style="--acc:#06b6d4"><h3>🕸️ Stringing</h3><p>Meist zu heiß, zu feucht oder Retraction nicht passend. Temperaturtest und trockenes Filament helfen.</p></article><article class="slicer-card" style="--acc:#ef4444"><h3>🍌 Warping</h3><p>Bauteil hebt sich an den Ecken. Häufig: Zugluft, zu wenig Bett-Haftung oder falsches Material für offene Drucker.</p></article><article class="slicer-card" style="--acc:#8b5cf6"><h3>📏 Maße passen nicht</h3><p>Flow, Schrumpfung, Wandstärke und Bauteilorientierung prüfen. Nicht sofort am Drucker wild kalibrieren.</p></article></div>
+</section>
+<section class="section container">
+<div class="slicer-note"><p class="section-eyebrow">Ehrlicher Hinweis</p><h2>Erst Standard lernen, dann optimieren</h2><p>Viele Anfänger verstellen zu früh zu viele Werte. Besser: ein gutes Profil nehmen, Material richtig wählen, First Layer prüfen und erst bei wiederholbaren Problemen gezielt eine Stellschraube ändern.</p></div>
+</section>
+<section class="section container">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Weiterlesen</p><h2>Passende nächste Schritte</h2></div>
+<div class="slicer-links"><article class="slicer-link-card"><h3>Materialwissen</h3><p>Welches Filament zu welchem Zweck passt.</p><a class="edge-button accent-green" href="material.html"><span>Material lesen</span></a></article><article class="slicer-link-card"><h3>Fehlerdatenbank</h3><p>Wenn dein Druck Fäden zieht, sich löst oder Maßprobleme hat.</p><a class="edge-button accent-red" href="fehlerdatenbank.html"><span>Fehler prüfen</span></a></article><article class="slicer-link-card"><h3>Drucken lassen</h3><p>Wenn du nicht selbst tüfteln willst, übernehme ich den Druck.</p><a class="edge-button accent-blue" href="../leistungen/3d-druck.html"><span>3D-Druck-Service</span></a></article></div>
+</section>
+</main>
+<div id="ws-footer"></div>
+<script defer="True" src="../assets/js/ws-layout.js"></script>
+</body>
+</html>
