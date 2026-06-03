@@ -1,4 +1,5 @@
 (function () {
+  document.body.classList.add('ws-fixed-topbar');
   const script = document.currentScript;
   const src = script ? (script.getAttribute('src') || '') : '';
   const base = src.replace(/assets\/js\/ws-layout\.js(?:\?.*)?$/, '');
