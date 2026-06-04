@@ -219,6 +219,39 @@
     .label-title-bar{color:var(--label-accent)!important;background:transparent;padding:0 8px;margin:0!important;line-height:1;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:none}
     .label-preview-stage .label-cell{width:min(100%,300px);min-height:170px}.label-preview-stage .label-cell svg{max-width:238px}.label-preview-stage .label-text{font-size:11px}
     .designer-grid{display:grid;gap:10px}.designer-subhead{margin:4px 0 0;color:var(--accent);font-size:.72rem;font-weight:950;letter-spacing:.1em;text-transform:uppercase}.small-select{min-height:40px;padding:8px 10px}.template-hint.warn{border:1px solid rgba(241,145,62,.24);background:rgba(241,145,62,.07);border-radius:14px;padding:10px 12px}
+
+    .label-cell.label-format-compact{min-height:92px}
+    .label-cell.label-format-normal{min-height:112px}
+    .label-cell.label-format-wide{min-height:104px}
+    .label-cell.label-format-tall{min-height:150px}
+    .label-cell.label-format-sign{min-height:190px}
+    .label-cell.label-density-comfortable{padding:13px}
+    .label-cell.label-density-balanced{padding:10px}
+    .label-cell.label-density-many{padding:7px}
+    .label-cell.label-density-scan{padding:12px}
+    .label-cell.label-format-wide .label-inner{padding-left:calc(var(--bar-side-w) + 12px);padding-right:calc(var(--bar-side-w) + 12px)}
+    .label-cell.label-format-tall .label-inner,.label-cell.label-format-sign .label-inner{gap:8px}
+    .label-cell.label-density-many .label-title-text{font-size:.88em}
+    .label-cell.label-density-scan svg{max-width:100%!important}
+    .label-preview-stage .label-cell.label-format-compact{min-height:132px}
+    .label-preview-stage .label-cell.label-format-normal{min-height:170px}
+    .label-preview-stage .label-cell.label-format-wide{width:min(100%,330px);min-height:150px}
+    .label-preview-stage .label-cell.label-format-tall{width:min(100%,240px);min-height:220px}
+    .label-preview-stage .label-cell.label-format-sign{width:min(100%,350px);min-height:230px}
+    .label-grid.label-sheet-compact{gap:5px}
+    .label-grid.label-sheet-comfortable{gap:12px}
+    .label-grid.label-sheet-scan{gap:10px}
+    @media print{
+      .label-cell.label-format-compact{min-height:22mm}
+      .label-cell.label-format-normal{min-height:28mm}
+      .label-cell.label-format-wide{min-height:25mm}
+      .label-cell.label-format-tall{min-height:39mm}
+      .label-cell.label-format-sign{min-height:50mm}
+      .label-grid.label-sheet-compact{gap:3mm}
+      .label-grid.label-sheet-comfortable{gap:5mm}
+      .label-grid.label-sheet-scan{gap:4mm}
+    }
+
     dialog{border:0;border-radius:24px;padding:0;max-width:min(900px,calc(100vw - 28px));background:var(--surface);color:var(--text);box-shadow:0 28px 90px -46px rgba(0,0,0,.9)}dialog::backdrop{background:rgba(15,23,42,.58);backdrop-filter:blur(5px)}.modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:center}.modal-body{padding:20px;color:var(--muted);line-height:1.58}.close-x{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font-size:1.1rem}
     .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:#0f172a;color:#fff;border-radius:999px;padding:11px 16px;font-weight:850;box-shadow:0 20px 60px -35px #000;transition:.22s ease;z-index:80}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
     @media(max-width:1280px){.main{grid-template-columns:1fr 1fr}.preview-card{position:static}.center-stage{grid-column:1/-1;order:3}}
@@ -509,7 +542,14 @@
               <div class="field color-row"><div><label for="labelBgColor">Etikettfläche</label><input id="labelBgColorText" value="#ffffff"></div><input id="labelBgColor" type="color" value="#ffffff"></div>
               <div class="field"><label for="labelBarcodeSize">Barcode-Größe</label><select id="labelBarcodeSize"><option value="compact">Kompakt</option><option value="balanced" selected>Ausgewogen</option><option value="large">Groß</option><option value="max">Maximal</option></select></div>
             </div>
-            <div class="field"><label for="labelBarcodeTextSize">Barcode-Klartext</label><select id="labelBarcodeTextSize"><option value="9">Klein</option><option value="11" selected>Normal</option><option value="13">Groß</option></select></div>
+            <div class="row">
+              <div class="field"><label for="labelFormat">Etikettenformat</label><select id="labelFormat"><option value="compact">Kompakt</option><option value="normal" selected>Normal</option><option value="wide">Breit</option><option value="tall">Hoch</option><option value="sign">Großes Schild</option></select></div>
+              <div class="field"><label for="labelDensity">A4-Ausnutzung</label><select id="labelDensity"><option value="comfortable">Locker</option><option value="balanced" selected>Ausgewogen</option><option value="many">Viele Etiketten</option><option value="scan">Scanfreundlich</option></select></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="labelManualHeight">Etikettenhöhe</label><select id="labelManualHeight"><option value="auto" selected>Automatisch</option><option value="90">90 px</option><option value="110">110 px</option><option value="130">130 px</option><option value="160">160 px</option><option value="210">210 px</option></select></div>
+              <div class="field"><label for="labelBarcodeTextSize">Barcode-Klartext</label><select id="labelBarcodeTextSize"><option value="9">Klein</option><option value="11" selected>Normal</option><option value="13">Groß</option></select></div>
+            </div>
 
             <p class="designer-subhead">Balken</p>
             <div class="row">
@@ -642,7 +682,7 @@ WS-B001</textarea>
                     <div class="field"><label for="printMargin">A4-Rand <button class="mini-help" type="button" data-help="printMargin" data-title="A4-Rand" data-text="Drucker können nicht immer randlos drucken. Wenn etwas abgeschnitten wird, wähle kleinen, normalen oder großen Rand.">?</button></label><select id="printMargin"><option value="0">Ohne Rand</option><option value="6">Klein</option><option value="12" selected>Normal</option><option value="20">Groß</option></select></div>
                     <div class="field"><label for="labelGap">Etikettenabstand <button class="mini-help" type="button" data-help="labelGap" data-title="Etikettenabstand" data-text="Abstand zwischen den Etiketten auf dem Druckbogen. Größerer Abstand hilft beim Ausschneiden.">?</button></label><select id="labelGap"><option value="4">Eng</option><option value="8" selected>Normal</option><option value="14">Groß</option></select></div>
                   </div>
-                  <p class="field-note" style="margin-top:8px;">A4-Hinweis: Browser-Druckdialog auf A4 und Skalierung 100 % prüfen. Je Drucker kann „randlos“ unterschiedlich funktionieren.</p>
+                  <p class="field-note" style="margin-top:8px;">A4-Hinweis: Papierformat A4 und Skalierung 100 % prüfen. Für kleine Etiketten Barcode-Größe „Groß“ oder „Maximal“ testen.</p>
                 </div>
               </div>
             </details>
@@ -758,6 +798,7 @@ WS-B001</textarea>
           <button type="button" data-help-tab="modes">Arbeitsmodi <span>Einzeln, Kopien, Serie, Liste</span></button>
           <button type="button" data-help-tab="checks">Prüfziffern <span>Basisnummer und Kontrolle</span></button>
           <button type="button" data-help-tab="export">CSV & Projekt <span>Excel, JSON, Versionen</span></button>
+          <button type="button" data-help-tab="formats">Etikettenformate <span>Kompakt, breit, hoch und A4</span></button>
           <button type="button" data-help-tab="print">Druckbogen <span>A4, Etiketten, Rand</span></button>
           <button type="button" data-help-tab="safety">Grenzen <span>Offizielle Nummern & Tests</span></button>
         </nav>
@@ -864,6 +905,20 @@ WS-B001</textarea>
             </div>
             <div class="help-good"><strong>Praxis-Tipp:</strong> Für Serienetiketten zuerst eine Vorlage wählen, dann Farben und Titel anpassen und danach einen Testdruck scannen.</div>
             <div class="help-warning"><strong>Wichtig:</strong> Dekoration außen herum ist gut. Direkt über dem Barcode oder mit zu wenig Kontrast sollte nicht gearbeitet werden.</div>
+          </section>
+
+          <section class="help-page" data-help-page="formats">
+            <h3>Etikettenformate und A4-Ausnutzung</h3>
+            <p>Mit dem Etikettenformat steuerst du, ob das Label eher kompakt, breit, hoch oder als größeres Schild wirken soll. Die A4-Ausnutzung bestimmt, ob mehr Etiketten auf eine Seite passen oder ob mehr Abstand und Scanfläche bleiben.</p>
+            <h4>Praxis-Empfehlung</h4>
+            <ul>
+              <li><strong>Kompakt:</strong> für kleine Kennzeichnungen mit wenig Text.</li>
+              <li><strong>Normal:</strong> guter Standard für die meisten Etiketten.</li>
+              <li><strong>Breit:</strong> gut für längere Barcodes oder lange Titel.</li>
+              <li><strong>Hoch:</strong> sinnvoll, wenn Titel, Balken oder Zusatzinfos mehr Platz brauchen.</li>
+              <li><strong>Scanfreundlich:</strong> mehr Platz für den Barcode und etwas Luft im Druckbild.</li>
+            </ul>
+            <div class="help-good"><strong>Tipp:</strong> Bei sehr kleinen Etiketten vor dem Seriendruck eine Testseite drucken und mit dem Smartphone oder Scanner prüfen.</div>
           </section>
 
           <section class="help-page" data-help-page="print">
@@ -1598,6 +1653,9 @@ WS-B001</textarea>
       const bgColor = v('labelBgColorText') || '#ffffff';
       const barcodeTextSize = Number(v('labelBarcodeTextSize') || 11);
       const barcodeSize = v('labelBarcodeSize') || 'balanced';
+      const labelFormat = v('labelFormat') || 'normal';
+      const labelDensity = v('labelDensity') || 'balanced';
+      const manualHeight = v('labelManualHeight') || 'auto';
       const topBar = v('labelTopBar') === 'true';
       const bottomBar = v('labelBottomBar') === 'true';
       const leftBar = v('labelLeftBar') === 'true';
@@ -1606,7 +1664,7 @@ WS-B001</textarea>
       const sideBarWidth = Number(v('labelSideBarWidth') || 12);
       return {
         template, showTitle, title, pos, titleColor, titleSize, titleStyle, titleAlign, titleJustify, titleSelf, valueText,
-        frameEnabled, radius, frameColor, frameWidth, bgColor, barcodeTextSize, barcodeSize,
+        frameEnabled, radius, frameColor, frameWidth, bgColor, barcodeTextSize, barcodeSize, labelFormat, labelDensity, manualHeight,
         topBar, bottomBar, leftBar, rightBar, barHeight, sideBarWidth,
         topBarColor: v('labelTopBarColorText') || '#2f8edf',
         bottomBarColor: v('labelBottomBarColorText') || '#f1913e',
@@ -1661,8 +1719,9 @@ WS-B001</textarea>
     }
     function createLabelCell(item, design = labelDesign(), preview = false){
       const cell = document.createElement('div');
-      cell.className = 'label-cell ' + templateClass(design.template) + ' label-barcode-' + (design.barcodeSize || 'balanced');
+      cell.className = 'label-cell ' + templateClass(design.template) + ' label-barcode-' + (design.barcodeSize || 'balanced') + ' label-format-' + (design.labelFormat || 'normal') + ' label-density-' + (design.labelDensity || 'balanced');
       cell.style.setProperty('--label-accent', design.titleColor);
+      if(design.manualHeight && design.manualHeight !== 'auto') cell.style.minHeight = design.manualHeight + 'px';
       cell.style.setProperty('--label-bg', design.bgColor);
       cell.style.setProperty('--label-radius', design.radius + 'px');
       cell.style.setProperty('--title-align', design.titleAlign);
@@ -1741,6 +1800,11 @@ WS-B001</textarea>
       const cols = Number($('labelsPerRow').value || 3);
       const design = labelDesign();
       const grid = $('labelGrid');
+      const density = design.labelDensity || 'balanced';
+      grid.classList.remove('label-sheet-compact','label-sheet-comfortable','label-sheet-scan');
+      if(density === 'many') grid.classList.add('label-sheet-compact');
+      if(density === 'comfortable') grid.classList.add('label-sheet-comfortable');
+      if(density === 'scan') grid.classList.add('label-sheet-scan');
       grid.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
       grid.innerHTML = '';
       codes.forEach((item)=>{
@@ -1945,6 +2009,9 @@ WS-B001</textarea>
           labelFrameWidth: getValue('labelFrameWidth'),
           labelBgColor: getValue('labelBgColorText'),
           labelBarcodeSize: getValue('labelBarcodeSize'),
+          labelFormat: getValue('labelFormat'),
+          labelDensity: getValue('labelDensity'),
+          labelManualHeight: getValue('labelManualHeight'),
           labelBarcodeTextSize: getValue('labelBarcodeTextSize'),
           labelTopBar: getValue('labelTopBar'),
           labelTopBarColor: getValue('labelTopBarColorText'),
@@ -2040,6 +2107,9 @@ WS-B001</textarea>
       setValue('labelFrameWidth', state.layout?.labelFrameWidth || '2');
       setValue('labelBgColorText', state.layout?.labelBgColor || '#ffffff'); setValue('labelBgColor', state.layout?.labelBgColor || '#ffffff');
       setValue('labelBarcodeSize', state.layout?.labelBarcodeSize || 'balanced');
+      setValue('labelFormat', state.layout?.labelFormat || 'normal');
+      setValue('labelDensity', state.layout?.labelDensity || 'balanced');
+      setValue('labelManualHeight', state.layout?.labelManualHeight || 'auto');
       setValue('labelBarcodeTextSize', state.layout?.labelBarcodeTextSize || '11');
       setValue('labelTopBar', state.layout?.labelTopBar || 'false');
       setValue('labelTopBarColorText', state.layout?.labelTopBarColor || '#2f8edf'); setValue('labelTopBarColor', state.layout?.labelTopBarColor || '#2f8edf');
