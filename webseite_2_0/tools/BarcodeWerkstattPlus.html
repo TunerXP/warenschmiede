@@ -124,22 +124,45 @@
     .sheet-panel{margin-top:18px;text-align:left}.sheet-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}
     .sheet-preview{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;max-height:420px;overflow:auto}
     .label-grid{display:grid;gap:8px}
-    .label-cell{position:relative;isolation:isolate;overflow:hidden;border:1px dashed #9fb2c5;border-radius:14px;padding:10px;text-align:center;min-height:104px;display:grid;align-content:center;justify-items:center;gap:4px;background:#fff;color:#102033;page-break-inside:avoid;box-shadow:0 10px 24px -22px rgba(15,23,42,.7);--label-accent:#102033}
-    .label-cell svg{max-width:100%;height:auto;position:relative;z-index:2;background:#fff;border-radius:6px}.label-text{position:relative;z-index:2;font:800 10px var(--mono);margin-top:2px;word-break:break-all;color:#102033}
+    .label-grid{display:grid;gap:8px}
+    .label-cell{
+      position:relative;isolation:isolate;overflow:hidden;border:1px solid #9fb2c5;border-radius:16px;padding:10px;
+      text-align:center;min-height:104px;display:grid;align-content:center;justify-items:center;gap:4px;background:#fff;color:#102033;
+      page-break-inside:avoid;break-inside:avoid;box-shadow:0 10px 24px -22px rgba(15,23,42,.7);
+      --label-accent:#102033;--frame-a:#102033;--frame-b:#30445a;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact;background-clip:border-box;
+    }
+    .label-cell svg{max-width:100%;height:auto;position:relative;z-index:2;background:#fff;border-radius:7px;padding:2px}.label-text{position:relative;z-index:2;font:800 10px var(--mono);margin-top:2px;word-break:break-all;color:#102033}
     .label-design-card{margin-top:14px;padding:14px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--surface) 82%,transparent);display:grid;gap:12px}
     .label-design-card h3{margin:0}.label-title-text{position:relative;z-index:3;font-weight:950;margin-bottom:4px;letter-spacing:.04em;line-height:1.1;word-break:break-word;color:var(--label-accent)}
     .label-title-bottom{margin-top:5px;margin-bottom:0}.template-hint{color:var(--muted);font-size:.78rem;line-height:1.35;margin:0}
     .label-design-preview{display:grid;gap:10px;margin-top:2px;padding:12px;border:1px solid color-mix(in srgb,var(--blue) 24%,var(--line));border-radius:16px;background:color-mix(in srgb,var(--blue) 7%,transparent)}
     .label-design-preview-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.label-design-preview-head strong{font-size:.9rem}.label-design-preview-head span{font-size:.76rem;color:var(--muted)}
     .label-preview-stage{display:grid;place-items:center;padding:10px;border-radius:14px;background:rgba(255,255,255,.58);border:1px dashed rgba(159,178,197,.65)}
-    .label-preview-stage .label-cell{width:min(100%,260px);min-height:150px;padding:16px}.label-preview-stage .label-cell svg{max-width:225px}.label-preview-stage .label-text{font-size:11px}
-    .label-cell.frame-none{border:1px dashed #9fb2c5;background:#fff}
-    .label-cell.frame-bold{border:3px solid #102033;border-radius:16px;box-shadow:inset 0 0 0 4px rgba(16,32,51,.05),0 14px 28px -24px rgba(16,32,51,.9)}
+    .label-preview-stage .label-cell{width:min(100%,270px);min-height:158px;padding:16px}.label-preview-stage .label-cell svg{max-width:230px}.label-preview-stage .label-text{font-size:11px}
+    .label-cell.frame-none{border:1px dashed #9fb2c5;background:#fff;box-shadow:0 10px 24px -22px rgba(15,23,42,.7)}
+    .label-cell.frame-bold{border:1px solid transparent;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 3px #102033,inset 0 0 0 7px rgba(16,32,51,.06),0 14px 28px -24px rgba(16,32,51,.9)}
     .label-cell.frame-corner{border:1px solid transparent;border-radius:14px;background:#fff}.label-cell.frame-corner::before{content:"";position:absolute;inset:7px;border:2px solid var(--label-accent);border-radius:10px;clip-path:polygon(0 0,28% 0,28% 10%,10% 10%,10% 28%,0 28%,0 0,72% 0,100% 0,100% 28%,90% 28%,90% 10%,72% 10%,72% 0,100% 72%,100% 100%,72% 100%,72% 90%,90% 90%,90% 72%,100% 72%,28% 100%,0 100%,0 72%,10% 72%,10% 90%,28% 90%,28% 100%);pointer-events:none;z-index:1}
     .label-cell.frame-badge{border:2px solid #d7e4f0;border-radius:18px;background:linear-gradient(180deg,#fff,#f7fbff)}.label-cell.frame-badge .label-title-text{display:inline-block;padding:4px 10px;border-radius:999px;background:var(--label-accent);color:#fff!important;box-shadow:0 8px 18px -14px var(--label-accent)}
-    .label-cell.frame-blue{border:2px solid #2f8edf;border-radius:16px;background:linear-gradient(180deg,#ffffff,#eef6ff)}.label-cell.frame-blue::before{content:"";position:absolute;inset:0 0 auto 0;height:18px;background:linear-gradient(135deg,#2f8edf,#1668b2);z-index:0}.label-cell.frame-blue .label-title-text{background:#2f8edf;color:#fff!important;border-radius:8px;padding:3px 9px}
-    .label-cell.frame-orange{border:2px solid #f1913e;border-radius:16px;background:linear-gradient(180deg,#fffaf4,#fff1df)}.label-cell.frame-orange::before{content:"";position:absolute;inset:0 0 auto 0;height:18px;background:linear-gradient(135deg,#f1913e,#cc6f1e);z-index:0}.label-cell.frame-orange .label-title-text{background:#f1913e;color:#fff!important;border-radius:8px;padding:3px 9px}
-    .label-cell.frame-green{border:2px solid #2baa72;border-radius:16px;background:linear-gradient(180deg,#f8fff9,#eaf8f0)}.label-cell.frame-green::before{content:"";position:absolute;inset:0 0 auto 0;height:18px;background:linear-gradient(135deg,#2baa72,#16814f);z-index:0}.label-cell.frame-green .label-title-text{background:#2baa72;color:#fff!important;border-radius:8px;padding:3px 9px}
+    .label-cell.frame-blue,.label-cell.frame-orange,.label-cell.frame-green,.label-cell.frame-bar-top,.label-cell.frame-bar-bottom,.label-cell.frame-bar-double{
+      border:1px solid transparent;border-radius:16px;box-shadow:inset 0 0 0 2px var(--frame-a),0 14px 28px -24px rgba(15,23,42,.7)
+    }
+    .label-cell.frame-blue{--frame-a:#2f8edf;--frame-b:#1668b2;background:linear-gradient(180deg,#2f8edf 0 18px,#ffffff 18px,#eef6ff 100%)}
+    .label-cell.frame-orange{--frame-a:#f1913e;--frame-b:#cc6f1e;background:linear-gradient(180deg,#f1913e 0 18px,#fffaf4 18px,#fff1df 100%)}
+    .label-cell.frame-green{--frame-a:#2baa72;--frame-b:#16814f;background:linear-gradient(180deg,#2baa72 0 18px,#f8fff9 18px,#eaf8f0 100%)}
+    .label-cell.frame-bar-top{--frame-a:#2f8edf;--frame-b:#1668b2;background:linear-gradient(180deg,var(--frame-a) 0 20px,#ffffff 20px,#f6fbff 100%)}
+    .label-cell.frame-bar-bottom{--frame-a:#f1913e;--frame-b:#cc6f1e;background:linear-gradient(180deg,#ffffff 0 calc(100% - 20px),var(--frame-a) calc(100% - 20px) 100%)}
+    .label-cell.frame-bar-double{--frame-a:#102033;--frame-b:#f1913e;background:linear-gradient(180deg,#102033 0 16px,#ffffff 16px calc(100% - 16px),#f1913e calc(100% - 16px) 100%)}
+    .label-cell.frame-bar-top .label-title-text,.label-cell.frame-bar-bottom .label-title-text,.label-cell.frame-bar-double .label-title-text,
+    .label-cell.frame-blue .label-title-text,.label-cell.frame-orange .label-title-text,.label-cell.frame-green .label-title-text{
+      display:inline-block;border-radius:999px;padding:3px 10px;background:color-mix(in srgb,var(--frame-a) 88%,white);color:#fff!important;box-shadow:0 8px 18px -14px var(--frame-a)
+    }
+    .label-cell.frame-bar-bottom .label-title-bottom,.label-cell.frame-bar-double .label-title-bottom{background:#102033;color:#fff!important}
+    .label-cell.frame-sale{--frame-a:#c2413a;--frame-b:#8f1f1a;border:1px solid transparent;border-radius:18px;background:radial-gradient(circle at 0 0,rgba(194,65,58,.14),transparent 40%),linear-gradient(180deg,#fff,#fff7f7);box-shadow:inset 0 0 0 2px #c2413a,0 14px 28px -24px rgba(15,23,42,.7)}
+    .label-cell.frame-sale .label-title-text{display:inline-block;background:#c2413a;color:#fff!important;border-radius:8px;padding:3px 10px}
+    .label-cell.frame-dark{--frame-a:#102033;--frame-b:#30445a;border:1px solid transparent;border-radius:18px;background:linear-gradient(180deg,#102033 0 22px,#ffffff 22px,#f3f7fb 100%);box-shadow:inset 0 0 0 2px #102033,0 14px 28px -24px rgba(15,23,42,.7)}
+    .label-cell.frame-dark .label-title-text{display:inline-block;background:#102033;color:#fff!important;border-radius:6px;padding:3px 10px}
+    
 
     dialog{border:0;border-radius:24px;padding:0;max-width:min(900px,calc(100vw - 28px));background:var(--surface);color:var(--text);box-shadow:0 28px 90px -46px rgba(0,0,0,.9)}dialog::backdrop{background:rgba(15,23,42,.58);backdrop-filter:blur(5px)}.modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:center}.modal-body{padding:20px;color:var(--muted);line-height:1.58}.close-x{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font-size:1.1rem}
     .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:#0f172a;color:#fff;border-radius:999px;padding:11px 16px;font-weight:850;box-shadow:0 20px 60px -35px #000;transition:.22s ease;z-index:80}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
@@ -378,11 +401,15 @@
               <label for="labelTemplate">Vorlage</label>
               <select id="labelTemplate">
                 <option value="plain" selected>Standard weiß</option>
-                <option value="blue">Blau modern</option>
-                <option value="orange">Orange Warenschmiede</option>
-                <option value="green">Grün Lager / OK</option>
+                <option value="blue">Blau modern · Balken oben</option>
+                <option value="orange">Orange Warenschmiede · Balken oben</option>
+                <option value="green">Grün Lager / OK · Balken oben</option>
+                <option value="barBottom">Balken unten</option>
+                <option value="barDouble">Balken oben & unten</option>
                 <option value="corner">Ecken-Rahmen</option>
                 <option value="badge">Scan-Me-Badge</option>
+                <option value="sale">Rot Aktion / Hinweis</option>
+                <option value="dark">Dunkel Industrie</option>
                 <option value="bold">Industrie kräftig</option>
               </select>
             </div>
@@ -1468,8 +1495,12 @@ WS-B001</textarea>
         blue:'frame-blue',
         orange:'frame-orange',
         green:'frame-green',
+        barBottom:'frame-bar-bottom',
+        barDouble:'frame-bar-double',
         corner:'frame-corner',
         badge:'frame-badge',
+        sale:'frame-sale',
+        dark:'frame-dark',
         bold:'frame-bold'
       })[template] || 'frame-none';
     }
@@ -1480,8 +1511,12 @@ WS-B001</textarea>
         blue:   {show:'true', title:'SCAN ME', color:'#2f8edf', size:'12', pos:'top'},
         orange: {show:'true', title:'WARENSCHMIEDE', color:'#f1913e', size:'12', pos:'top'},
         green:  {show:'true', title:'LAGER', color:'#2baa72', size:'12', pos:'top'},
+        barBottom:{show:'true', title:'ARTIKEL', color:'#102033', size:'12', pos:'bottom'},
+        barDouble:{show:'true', title:'SCAN ME', color:'#102033', size:'12', pos:'top'},
         corner: {show:'true', title:'SCAN ME', color:'#102033', size:'12', pos:'top'},
         badge:  {show:'true', title:'SCAN ME', color:'#102033', size:'12', pos:'top'},
+        sale:   {show:'true', title:'AKTION', color:'#c2413a', size:'12', pos:'top'},
+        dark:   {show:'true', title:'BARCODE', color:'#102033', size:'12', pos:'top'},
         bold:   {show:'true', title:'BARCODE', color:'#102033', size:'15', pos:'top'}
       };
       const p = presets[tpl];
