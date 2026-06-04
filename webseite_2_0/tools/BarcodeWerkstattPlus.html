@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Projektverlauf-Verwaltung v66</title>
+  <title>Barcode-Werkstatt Plus · Versionen pflegen v67</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -86,6 +86,9 @@
     .version-row button{padding:7px 10px;min-height:34px;border-radius:12px;font-size:.78rem}
     .version-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
     .version-actions .delete-version{border-color:rgba(194,65,58,.32);color:#c2413a;background:rgba(194,65,58,.07)}
+    .version-actions .edit-version{border-color:rgba(241,145,62,.32);color:#9a4e10;background:rgba(241,145,62,.08)}
+    .version-actions .csv-version{border-color:rgba(43,170,114,.32);color:#16814f;background:rgba(43,170,114,.08)}
+    .version-actions{min-width:210px}
     .version-actions .delete-version:hover{box-shadow:0 0 0 4px rgba(194,65,58,.11)}
     .version-empty{padding:12px;color:var(--muted);font-size:.84rem}
     .hidden-file{display:none!important}
@@ -319,7 +322,7 @@ WS-B001</textarea>
                 </div>
 
                 <div class="project-status" id="projectStatus">
-                  Projektverlauf wird in der JSON-Datei gespeichert. Alte Versionen können geladen oder gelöscht werden. Eine geladene alte Version wird beim Bearbeiten nicht überschrieben – du speicherst daraus eine neue Version.
+                  Projektverlauf wird in der JSON-Datei gespeichert. Alte Versionen können geladen, umbenannt, als CSV exportiert oder gelöscht werden. Eine geladene alte Version wird beim Bearbeiten nicht überschrieben – du speicherst daraus eine neue Version.
                 </div>
 
                 <div>
@@ -372,7 +375,7 @@ WS-B001</textarea>
   <dialog id="helpDialog">
     <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
     <div class="modal-body">
-      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand ergänzt das Löschen einzelner Versionen im Projektverlauf.</p>
+      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand ergänzt Umbenennen, Notiz ändern und CSV-Export einzelner Versionen.</p>
       <h3>Arbeitsmodi</h3>
       <ul>
         <li><strong>Einzelcode:</strong> ein Barcode, Export als PNG/SVG oder Druck.</li>
@@ -390,7 +393,7 @@ WS-B001</textarea>
       <h3>CSV-Export</h3>
       <p>Die erzeugten Codes können als CSV exportiert werden. Das ist nützlich für Excel, externe Etikettensoftware, Dokumentation oder späteren Nachdruck.</p>
       <h3>Projekt-JSON</h3>
-      <p>Die JSON-Projektdatei speichert den aktuellen Stand der Barcode-Werkstatt und zusätzlich den Versionsverlauf. Alte Versionen können geladen und als neue Version weiterbearbeitet werden, ohne den alten Stand zu überschreiben.</p>
+      <p>Die JSON-Projektdatei speichert den aktuellen Stand der Barcode-Werkstatt und zusätzlich den Versionsverlauf. Alte Versionen können geladen, umbenannt, als CSV exportiert und als neue Version weiterbearbeitet werden, ohne den alten Stand zu überschreiben.</p>
       <h3>Übersicht statt Überladung</h3>
       <p>Die häufigsten Barcode-Arten bleiben direkt als Buttons sichtbar. Weitere Typen werden vorbereitet und später Schritt für Schritt ergänzt, damit das Tool nicht überladen wird.</p>
       <h3>Wichtiger Hinweis</h3>
@@ -912,6 +915,67 @@ WS-B001</textarea>
       if(status) status.textContent = `Version ${version.number} geladen. Änderungen daran werden beim Speichern als neue Version angelegt.`;
       toast('Version geladen');
     }
+    function editProjectVersion(versionId){
+      const version = projectVersions.find(v => v.id === versionId);
+      if(!version){
+        toast('Version nicht gefunden');
+        return;
+      }
+
+      const newTitle = prompt('Neuer Versionstitel:', version.title || ('Version ' + version.number));
+      if(newTitle === null) return;
+
+      const newNote = prompt('Neue Versionsnotiz:', version.note || '');
+      if(newNote === null) return;
+
+      version.title = newTitle.trim() || ('Version ' + version.number);
+      version.note = newNote.trim();
+      version.updatedAt = new Date().toISOString();
+
+      renderVersions();
+      const status = $('projectStatus');
+      if(status) status.textContent = `Version ${version.number} wurde umbenannt. Projekt-JSON danach neu herunterladen, um die Änderung zu sichern.`;
+      toast('Version geändert');
+    }
+    function csvEscapeValue(v){
+      return '"' + String(v ?? '').replace(/"/g,'""') + '"';
+    }
+    function downloadVersionCsv(versionId){
+      const version = projectVersions.find(v => v.id === versionId);
+      if(!version){
+        toast('Version nicht gefunden');
+        return;
+      }
+
+      const codes = version.state?.generatedCodes || [];
+      const rows = [['laufnummer','barcode_typ','barcode_inhalt','menge','modus','beschreibung','version','versionstitel','datum']];
+      codes.forEach((item, idx)=>{
+        rows.push([
+          idx + 1,
+          version.barcodeType || version.state?.barcode?.type || '',
+          item.value || '',
+          item.qty || 1,
+          version.mode || version.state?.barcode?.mode || '',
+          item.note || version.note || '',
+          version.number || '',
+          version.title || '',
+          version.createdAt || ''
+        ]);
+      });
+
+      const csv = rows.map(row => row.map(csvEscapeValue).join(';')).join('\n');
+      const blob = new Blob(['\ufeff' + csv], {type:'text/csv;charset=utf-8'});
+      const a = document.createElement('a');
+      const name = (version.title || ('version_' + version.number))
+        .toLowerCase()
+        .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
+        .replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'') || ('version_' + version.number);
+      a.href = URL.createObjectURL(blob);
+      a.download = `${projectSlug()}_${name}.csv`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast('Versions-CSV erstellt');
+    }
     function deleteProjectVersion(versionId){
       const version = projectVersions.find(v => v.id === versionId);
       if(!version){
@@ -957,6 +1021,8 @@ WS-B001</textarea>
             </div>
             <div class="version-actions">
               <button type="button" onclick="loadProjectVersion('${version.id}')">Laden</button>
+              <button class="edit-version" type="button" onclick="editProjectVersion('${version.id}')">Ändern</button>
+              <button class="csv-version" type="button" onclick="downloadVersionCsv('${version.id}')">CSV</button>
               <button class="delete-version" type="button" onclick="deleteProjectVersion('${version.id}')">Löschen</button>
             </div>
           </div>
