@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Etiketten-Design v79</title>
+  <title>Barcode-Werkstatt Plus · Etiketten-Design v79.1</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -123,22 +123,23 @@
     .code-row:last-child{border-bottom:0}.code-row code{font-family:var(--mono);color:var(--text);word-break:break-all}.code-row span{color:var(--muted)}
     .sheet-panel{margin-top:18px;text-align:left}.sheet-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}
     .sheet-preview{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;max-height:420px;overflow:auto}
-    .label-grid{display:grid;gap:8px}.label-cell{border:1px dashed #9fb2c5;border-radius:10px;padding:8px;text-align:center;min-height:86px;display:grid;align-content:center;justify-items:center;background:#fff;color:#102033;page-break-inside:avoid}
-    .label-cell svg{max-width:100%;height:auto}.label-text{font:700 10px var(--mono);margin-top:4px;word-break:break-all}
+    .label-grid{display:grid;gap:8px}
+    .label-cell{position:relative;isolation:isolate;overflow:hidden;border:1px dashed #9fb2c5;border-radius:14px;padding:10px;text-align:center;min-height:104px;display:grid;align-content:center;justify-items:center;gap:4px;background:#fff;color:#102033;page-break-inside:avoid;box-shadow:0 10px 24px -22px rgba(15,23,42,.7);--label-accent:#102033}
+    .label-cell svg{max-width:100%;height:auto;position:relative;z-index:2;background:#fff;border-radius:6px}.label-text{position:relative;z-index:2;font:800 10px var(--mono);margin-top:2px;word-break:break-all;color:#102033}
     .label-design-card{margin-top:14px;padding:14px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--surface) 82%,transparent);display:grid;gap:12px}
-    .label-design-card h3{margin:0}
-    .label-title-text{font-weight:950;margin-bottom:4px;letter-spacing:.03em;line-height:1.1;word-break:break-word}
-    .label-title-bottom{margin-top:5px;margin-bottom:0}
-    .label-cell.frame-none{border:1px dashed #9fb2c5}
-    .label-cell.frame-soft{border:2px solid #9fb2c5;border-radius:14px}
-    .label-cell.frame-bold{border:3px solid #102033;border-radius:14px}
-    .label-cell.frame-corner{border:0;position:relative;border-radius:10px}
-    .label-cell.frame-corner::before{content:"";position:absolute;inset:6px;border:2px solid currentColor;border-radius:8px;clip-path:polygon(0 0,26% 0,26% 8%,8% 8%,8% 26%,0 26%,0 0,74% 0,100% 0,100% 26%,92% 26%,92% 8%,74% 8%,74% 0,100% 74%,100% 100%,74% 100%,74% 92%,92% 92%,92% 74%,100% 74%,26% 100%,0 100%,0 74%,8% 74%,8% 92%,26% 92%,26% 100%);pointer-events:none}
-    .label-cell.frame-badge .label-title-text{display:inline-block;padding:3px 8px;border-radius:999px;background:currentColor;color:#fff}
-    .label-cell.frame-blue{border:2px solid #2f8edf;border-radius:14px;background:linear-gradient(180deg,#ffffff,#eef6ff)}
-    .label-cell.frame-orange{border:2px solid #f1913e;border-radius:14px;background:linear-gradient(180deg,#fffaf4,#fff1df)}
-    .label-cell.frame-green{border:2px solid #2baa72;border-radius:14px;background:linear-gradient(180deg,#f8fff9,#eaf8f0)}
-    .template-hint{color:var(--muted);font-size:.78rem;line-height:1.35;margin:0}
+    .label-design-card h3{margin:0}.label-title-text{position:relative;z-index:3;font-weight:950;margin-bottom:4px;letter-spacing:.04em;line-height:1.1;word-break:break-word;color:var(--label-accent)}
+    .label-title-bottom{margin-top:5px;margin-bottom:0}.template-hint{color:var(--muted);font-size:.78rem;line-height:1.35;margin:0}
+    .label-design-preview{display:grid;gap:10px;margin-top:2px;padding:12px;border:1px solid color-mix(in srgb,var(--blue) 24%,var(--line));border-radius:16px;background:color-mix(in srgb,var(--blue) 7%,transparent)}
+    .label-design-preview-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.label-design-preview-head strong{font-size:.9rem}.label-design-preview-head span{font-size:.76rem;color:var(--muted)}
+    .label-preview-stage{display:grid;place-items:center;padding:10px;border-radius:14px;background:rgba(255,255,255,.58);border:1px dashed rgba(159,178,197,.65)}
+    .label-preview-stage .label-cell{width:min(100%,260px);min-height:150px;padding:16px}.label-preview-stage .label-cell svg{max-width:225px}.label-preview-stage .label-text{font-size:11px}
+    .label-cell.frame-none{border:1px dashed #9fb2c5;background:#fff}
+    .label-cell.frame-bold{border:3px solid #102033;border-radius:16px;box-shadow:inset 0 0 0 4px rgba(16,32,51,.05),0 14px 28px -24px rgba(16,32,51,.9)}
+    .label-cell.frame-corner{border:1px solid transparent;border-radius:14px;background:#fff}.label-cell.frame-corner::before{content:"";position:absolute;inset:7px;border:2px solid var(--label-accent);border-radius:10px;clip-path:polygon(0 0,28% 0,28% 10%,10% 10%,10% 28%,0 28%,0 0,72% 0,100% 0,100% 28%,90% 28%,90% 10%,72% 10%,72% 0,100% 72%,100% 100%,72% 100%,72% 90%,90% 90%,90% 72%,100% 72%,28% 100%,0 100%,0 72%,10% 72%,10% 90%,28% 90%,28% 100%);pointer-events:none;z-index:1}
+    .label-cell.frame-badge{border:2px solid #d7e4f0;border-radius:18px;background:linear-gradient(180deg,#fff,#f7fbff)}.label-cell.frame-badge .label-title-text{display:inline-block;padding:4px 10px;border-radius:999px;background:var(--label-accent);color:#fff!important;box-shadow:0 8px 18px -14px var(--label-accent)}
+    .label-cell.frame-blue{border:2px solid #2f8edf;border-radius:16px;background:linear-gradient(180deg,#ffffff,#eef6ff)}.label-cell.frame-blue::before{content:"";position:absolute;inset:0 0 auto 0;height:18px;background:linear-gradient(135deg,#2f8edf,#1668b2);z-index:0}.label-cell.frame-blue .label-title-text{background:#2f8edf;color:#fff!important;border-radius:8px;padding:3px 9px}
+    .label-cell.frame-orange{border:2px solid #f1913e;border-radius:16px;background:linear-gradient(180deg,#fffaf4,#fff1df)}.label-cell.frame-orange::before{content:"";position:absolute;inset:0 0 auto 0;height:18px;background:linear-gradient(135deg,#f1913e,#cc6f1e);z-index:0}.label-cell.frame-orange .label-title-text{background:#f1913e;color:#fff!important;border-radius:8px;padding:3px 9px}
+    .label-cell.frame-green{border:2px solid #2baa72;border-radius:16px;background:linear-gradient(180deg,#f8fff9,#eaf8f0)}.label-cell.frame-green::before{content:"";position:absolute;inset:0 0 auto 0;height:18px;background:linear-gradient(135deg,#2baa72,#16814f);z-index:0}.label-cell.frame-green .label-title-text{background:#2baa72;color:#fff!important;border-radius:8px;padding:3px 9px}
 
     dialog{border:0;border-radius:24px;padding:0;max-width:min(900px,calc(100vw - 28px));background:var(--surface);color:var(--text);box-shadow:0 28px 90px -46px rgba(0,0,0,.9)}dialog::backdrop{background:rgba(15,23,42,.58);backdrop-filter:blur(5px)}.modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:center}.modal-body{padding:20px;color:var(--muted);line-height:1.58}.close-x{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font-size:1.1rem}
     .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:#0f172a;color:#fff;border-radius:999px;padding:11px 16px;font-weight:850;box-shadow:0 20px 60px -35px #000;transition:.22s ease;z-index:80}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
@@ -418,6 +419,15 @@
                   <option value="15">Groß</option>
                 </select>
               </div>
+            </div>
+
+            <div class="label-design-preview">
+              <div class="label-design-preview-head">
+                <strong>Etiketten-Vorschau</strong>
+                <span>zeigt immer nur ein Beispiel</span>
+              </div>
+              <div class="label-preview-stage" id="labelDesignPreview"></div>
+              <p class="template-hint">Diese Vorschau ist unabhängig von der Etikettenmenge. Der echte Druckbogen bleibt rechts.</p>
             </div>
           </div>
         </div>
@@ -1271,6 +1281,7 @@ WS-B001</textarea>
       }
 
       validateCurrentInputs(rendererError);
+      renderSingleLabelPreview();
     }
     function updateNumericFieldState(){
       const numeric = isNumericType();
@@ -1486,6 +1497,44 @@ WS-B001</textarea>
       updateLoadedVersionLiveSoon();
       saveLocalDraftSoon();
     }
+    function createLabelCell(item, design = labelDesign(), preview = false){
+      const cell = document.createElement('div');
+      cell.className = 'label-cell ' + templateClass(design.template);
+      cell.style.setProperty('--label-accent', design.color);
+
+      function makeTitle(extraClass = ''){
+        const title = document.createElement('div');
+        title.className = 'label-title-text' + (extraClass ? ' ' + extraClass : '');
+        title.style.fontSize = (preview ? Math.max(design.size + 2, 13) : design.size) + 'px';
+        title.textContent = design.title;
+        return title;
+      }
+
+      if(design.showTitle && design.title && design.pos === 'top') cell.appendChild(makeTitle());
+
+      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      cell.appendChild(svg);
+
+      const label = document.createElement('div');
+      label.className = 'label-text';
+      label.textContent = item.value;
+      cell.appendChild(label);
+
+      if(design.showTitle && design.title && design.pos === 'bottom') cell.appendChild(makeTitle('label-title-bottom'));
+
+      return {cell, svg, label};
+    }
+    function renderSingleLabelPreview(){
+      const box = $('labelDesignPreview');
+      if(!box) return;
+      box.innerHTML = '';
+      const raw = activeInputValue();
+      const value = normalizeValue(raw) || typeInfo[currentType].sample;
+      const item = {value, qty:1, note:''};
+      const made = createLabelCell(item, labelDesign(), true);
+      box.appendChild(made.cell);
+      try { renderBarcodeToSvg(made.svg, item.value, true); } catch(e) { made.label.textContent = 'Fehler: ' + item.value; }
+    }
     function renderSheet(){
       updatePrintLayoutVars();
       const codes = expandedCodes();
@@ -1496,29 +1545,11 @@ WS-B001</textarea>
       grid.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
       grid.innerHTML = '';
       codes.forEach((item)=>{
-        const cell = document.createElement('div');
-        cell.className = 'label-cell ' + templateClass(design.template);
-        cell.style.color = design.color;
-        const titleTop = document.createElement('div');
-        titleTop.className = 'label-title-text';
-        titleTop.style.color = design.color;
-        titleTop.style.fontSize = design.size + 'px';
-        titleTop.textContent = design.title;
-        if(design.showTitle && design.title && design.pos === 'top') cell.appendChild(titleTop);
-        const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-        cell.appendChild(svg);
-        const label = document.createElement('div');
-        label.className = 'label-text';
-        label.textContent = item.value;
-        cell.appendChild(label);
-        if(design.showTitle && design.title && design.pos === 'bottom'){
-          const titleBottom = titleTop.cloneNode(true);
-          titleBottom.classList.add('label-title-bottom');
-          cell.appendChild(titleBottom);
-        }
-        grid.appendChild(cell);
-        try { renderBarcodeToSvg(svg, item.value, true); } catch(e) { label.textContent = 'Fehler: ' + item.value; }
+        const made = createLabelCell(item, design, false);
+        grid.appendChild(made.cell);
+        try { renderBarcodeToSvg(made.svg, item.value, true); } catch(e) { made.label.textContent = 'Fehler: ' + item.value; }
       });
+      renderSingleLabelPreview();
     }
     function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
     function csvEscape(v){ return '"' + String(v ?? '').replace(/"/g,'""') + '"'; }
