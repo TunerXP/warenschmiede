@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Projektverlauf v65</title>
+  <title>Barcode-Werkstatt Plus · Projektverlauf-Verwaltung v66</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -84,6 +84,9 @@
     .version-row strong{color:var(--text)}
     .version-row span{color:var(--muted);display:block;font-size:.78rem;line-height:1.3}
     .version-row button{padding:7px 10px;min-height:34px;border-radius:12px;font-size:.78rem}
+    .version-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+    .version-actions .delete-version{border-color:rgba(194,65,58,.32);color:#c2413a;background:rgba(194,65,58,.07)}
+    .version-actions .delete-version:hover{box-shadow:0 0 0 4px rgba(194,65,58,.11)}
     .version-empty{padding:12px;color:var(--muted);font-size:.84rem}
     .hidden-file{display:none!important}
     .color-row{display:grid;grid-template-columns:1fr 54px;gap:10px;align-items:end}input[type=color]{padding:0;min-height:43px;cursor:pointer}
@@ -316,7 +319,7 @@ WS-B001</textarea>
                 </div>
 
                 <div class="project-status" id="projectStatus">
-                  Projektverlauf wird in der JSON-Datei gespeichert. Eine geladene alte Version wird beim Bearbeiten nicht überschrieben – du speicherst daraus eine neue Version.
+                  Projektverlauf wird in der JSON-Datei gespeichert. Alte Versionen können geladen oder gelöscht werden. Eine geladene alte Version wird beim Bearbeiten nicht überschrieben – du speicherst daraus eine neue Version.
                 </div>
 
                 <div>
@@ -369,7 +372,7 @@ WS-B001</textarea>
   <dialog id="helpDialog">
     <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
     <div class="modal-body">
-      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand ergänzt einen Versionsverlauf innerhalb der Projekt-JSON.</p>
+      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand ergänzt das Löschen einzelner Versionen im Projektverlauf.</p>
       <h3>Arbeitsmodi</h3>
       <ul>
         <li><strong>Einzelcode:</strong> ein Barcode, Export als PNG/SVG oder Druck.</li>
@@ -909,6 +912,31 @@ WS-B001</textarea>
       if(status) status.textContent = `Version ${version.number} geladen. Änderungen daran werden beim Speichern als neue Version angelegt.`;
       toast('Version geladen');
     }
+    function deleteProjectVersion(versionId){
+      const version = projectVersions.find(v => v.id === versionId);
+      if(!version){
+        toast('Version nicht gefunden');
+        return;
+      }
+
+      const title = version.title || ('Version ' + version.number);
+      const ok = confirm(`Version ${version.number} wirklich löschen?\n\n${title}\n\nDiese Version wird aus dem Projektverlauf entfernt. Speichere danach die Projekt-JSON erneut, wenn die Löschung dauerhaft sein soll.`);
+      if(!ok) return;
+
+      projectVersions = projectVersions.filter(v => v.id !== versionId);
+
+      if(currentVersionId === versionId){
+        currentVersionId = null;
+        const status = $('projectStatus');
+        if(status) status.textContent = `Geladene Version ${version.number} wurde gelöscht. Der aktuelle Arbeitsstand bleibt im Tool, ist aber keiner Verlaufsversion mehr zugeordnet.`;
+      } else {
+        const status = $('projectStatus');
+        if(status) status.textContent = `Version ${version.number} gelöscht. Projekt-JSON danach neu herunterladen, um die Änderung zu sichern.`;
+      }
+
+      renderVersions();
+      toast('Version gelöscht');
+    }
     function renderVersions(){
       const box = $('versionList');
       if(!box) return;
@@ -927,7 +955,10 @@ WS-B001</textarea>
               <span>${escapeHtml(version.barcodeType || '')} · ${escapeHtml(version.mode || '')} · ${version.codeCount || 0} Codes · ${date}</span>
               ${version.note ? `<span>${escapeHtml(version.note)}</span>` : ''}
             </div>
-            <button type="button" onclick="loadProjectVersion('${version.id}')">Laden</button>
+            <div class="version-actions">
+              <button type="button" onclick="loadProjectVersion('${version.id}')">Laden</button>
+              <button class="delete-version" type="button" onclick="deleteProjectVersion('${version.id}')">Löschen</button>
+            </div>
           </div>
         `;
       }).join('');
