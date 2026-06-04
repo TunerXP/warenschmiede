@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Versionen pflegen v67</title>
+  <title>Barcode-Werkstatt Plus · Auto-Wiederherstellung v68</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -78,6 +78,8 @@
     .project-actions{display:flex;flex-wrap:wrap;gap:10px}
     .project-meta{display:grid;gap:10px}
     .project-status{font-size:.82rem;color:var(--muted);line-height:1.4;padding:10px 12px;border-radius:14px;background:rgba(47,142,223,.08);border:1px solid rgba(47,142,223,.2)}
+    .autosave-status{font-size:.78rem;color:var(--muted);line-height:1.4;padding:8px 10px;border-radius:12px;background:rgba(43,170,114,.08);border:1px solid rgba(43,170,114,.22)}
+    .clear-local{border-color:rgba(194,65,58,.32);color:#c2413a;background:rgba(194,65,58,.07)}
     .version-list{border:1px solid var(--line);border-radius:16px;overflow:auto;max-height:230px;background:color-mix(in srgb,var(--surface) 78%,transparent)}
     .version-row{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:center;padding:10px;border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent);font-size:.84rem}
     .version-row:last-child{border-bottom:0}
@@ -318,8 +320,11 @@ WS-B001</textarea>
                   <button class="btn btn-good" id="btnVersionSave" type="button">Neue Version im Projekt speichern</button>
                   <button class="btn btn-blue" id="btnProjectExport" type="button">Projekt-JSON herunterladen</button>
                   <button class="btn" id="btnProjectImport" type="button">Projekt-JSON laden</button>
+                  <button class="btn clear-local" id="btnLocalClear" type="button">Lokalen Arbeitsstand löschen</button>
                   <input class="hidden-file" id="projectFileInput" type="file" accept=".json,application/json">
                 </div>
+
+                <div class="autosave-status" id="autosaveStatus">Lokaler Arbeitsstand: noch nicht gespeichert.</div>
 
                 <div class="project-status" id="projectStatus">
                   Projektverlauf wird in der JSON-Datei gespeichert. Alte Versionen können geladen, umbenannt, als CSV exportiert oder gelöscht werden. Eine geladene alte Version wird beim Bearbeiten nicht überschrieben – du speicherst daraus eine neue Version.
@@ -375,7 +380,7 @@ WS-B001</textarea>
   <dialog id="helpDialog">
     <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
     <div class="modal-body">
-      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand ergänzt Umbenennen, Notiz ändern und CSV-Export einzelner Versionen.</p>
+      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand merkt sich Projekt und Versionsverlauf lokal im Browser und stellt sie nach dem Aktualisieren wieder her.</p>
       <h3>Arbeitsmodi</h3>
       <ul>
         <li><strong>Einzelcode:</strong> ein Barcode, Export als PNG/SVG oder Druck.</li>
@@ -393,7 +398,7 @@ WS-B001</textarea>
       <h3>CSV-Export</h3>
       <p>Die erzeugten Codes können als CSV exportiert werden. Das ist nützlich für Excel, externe Etikettensoftware, Dokumentation oder späteren Nachdruck.</p>
       <h3>Projekt-JSON</h3>
-      <p>Die JSON-Projektdatei speichert den aktuellen Stand der Barcode-Werkstatt und zusätzlich den Versionsverlauf. Alte Versionen können geladen, umbenannt, als CSV exportiert und als neue Version weiterbearbeitet werden, ohne den alten Stand zu überschreiben.</p>
+      <p>Die JSON-Projektdatei speichert den aktuellen Stand der Barcode-Werkstatt und zusätzlich den Versionsverlauf. Alte Versionen können geladen, umbenannt, als CSV exportiert und als neue Version weiterbearbeitet werden. Der aktuelle Arbeitsstand wird zusätzlich lokal im Browser zwischengespeichert.</p>
       <h3>Übersicht statt Überladung</h3>
       <p>Die häufigsten Barcode-Arten bleiben direkt als Buttons sichtbar. Weitere Typen werden vorbereitet und später Schritt für Schritt ergänzt, damit das Tool nicht überladen wird.</p>
       <h3>Wichtiger Hinweis</h3>
@@ -611,6 +616,7 @@ WS-B001</textarea>
 
       buildList();
       generate();
+      saveLocalDraftSoon();
     }
     function setMode(mode){
       currentMode = mode;
@@ -623,6 +629,7 @@ WS-B001</textarea>
       $('inputSummary').innerHTML = `<span>${typeInfo[currentType].label}</span><span>${modeInfo[mode].label}</span>`;
       buildList();
       generate();
+      saveLocalDraftSoon();
     }
     function buildList(){
       let list = [];
@@ -737,6 +744,56 @@ WS-B001</textarea>
         a.href = canvas.toDataURL('image/png'); a.download = 'barcode-werkstatt-plus.png'; a.click();
       };
       img.src = url;
+    }
+
+    const LOCAL_DRAFT_KEY = 'warenschmiede.barcodeWerkstatt.autosave.v1';
+    let autosaveTimer = null;
+    let isRestoringLocalDraft = false;
+
+    function saveLocalDraftSoon(){
+      if(isRestoringLocalDraft) return;
+      clearTimeout(autosaveTimer);
+      autosaveTimer = setTimeout(saveLocalDraft, 350);
+    }
+    function saveLocalDraft(){
+      try{
+        const data = collectProjectState();
+        data.localSavedAt = new Date().toISOString();
+        localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(data));
+        const status = $('autosaveStatus');
+        if(status) status.textContent = 'Lokaler Arbeitsstand gespeichert: ' + new Date().toLocaleString('de-DE');
+      }catch(err){
+        const status = $('autosaveStatus');
+        if(status) status.textContent = 'Lokaler Arbeitsstand konnte nicht gespeichert werden.';
+      }
+    }
+    function restoreLocalDraft(){
+      const raw = localStorage.getItem(LOCAL_DRAFT_KEY);
+      if(!raw) return false;
+      try{
+        const data = JSON.parse(raw);
+        if(!data || data.schema !== 'warenschmiede.barcodeWerkstatt.project') return false;
+        isRestoringLocalDraft = true;
+        applyProjectState(data);
+        isRestoringLocalDraft = false;
+        const status = $('autosaveStatus');
+        if(status) {
+          const saved = data.localSavedAt ? new Date(data.localSavedAt).toLocaleString('de-DE') : 'unbekannt';
+          status.textContent = 'Lokaler Arbeitsstand wiederhergestellt: ' + saved;
+        }
+        return true;
+      }catch(err){
+        isRestoringLocalDraft = false;
+        return false;
+      }
+    }
+    function clearLocalDraft(){
+      const ok = confirm('Lokalen Arbeitsstand im Browser wirklich löschen?\\n\\nDie heruntergeladenen JSON-Dateien bleiben natürlich erhalten.');
+      if(!ok) return;
+      localStorage.removeItem(LOCAL_DRAFT_KEY);
+      const status = $('autosaveStatus');
+      if(status) status.textContent = 'Lokaler Arbeitsstand gelöscht.';
+      toast('Lokaler Stand gelöscht');
     }
 
     function projectSlug(){
@@ -877,6 +934,7 @@ WS-B001</textarea>
 
       const status = $('projectStatus');
       if(status) status.textContent = `Projekt geladen: ${data.project?.name || 'ohne Namen'} · ${projectVersions.length} Version(en) im Verlauf`;
+      saveLocalDraftSoon();
       toast('Projekt geladen');
     }
     function saveNewProjectVersion(){
@@ -900,6 +958,7 @@ WS-B001</textarea>
       renderVersions();
       const status = $('projectStatus');
       if(status) status.textContent = `Neue Version gespeichert: Version ${version.number} · ${version.codeCount} Codes`;
+      saveLocalDraftSoon();
       toast('Version gespeichert');
     }
     function loadProjectVersion(versionId){
@@ -913,6 +972,7 @@ WS-B001</textarea>
       renderVersions();
       const status = $('projectStatus');
       if(status) status.textContent = `Version ${version.number} geladen. Änderungen daran werden beim Speichern als neue Version angelegt.`;
+      saveLocalDraftSoon();
       toast('Version geladen');
     }
     function editProjectVersion(versionId){
@@ -922,19 +982,23 @@ WS-B001</textarea>
         return;
       }
 
-      const newTitle = prompt('Neuer Versionstitel:', version.title || ('Version ' + version.number));
+      const oldTitle = version.title || ('Version ' + version.number);
+      const newTitle = prompt('Neuer Versionstitel:', oldTitle);
       if(newTitle === null) return;
 
-      const newNote = prompt('Neue Versionsnotiz:', version.note || '');
+      const oldNote = version.note || '';
+      const newNote = prompt('Neue Versionsnotiz:', oldNote);
       if(newNote === null) return;
 
-      version.title = newTitle.trim() || ('Version ' + version.number);
-      version.note = newNote.trim();
+      const cleanTitle = String(newTitle).trim();
+      version.title = cleanTitle || oldTitle;
+      version.note = String(newNote).trim();
       version.updatedAt = new Date().toISOString();
 
       renderVersions();
+      saveLocalDraftSoon();
       const status = $('projectStatus');
-      if(status) status.textContent = `Version ${version.number} wurde umbenannt. Projekt-JSON danach neu herunterladen, um die Änderung zu sichern.`;
+      if(status) status.textContent = `Version ${version.number} wurde geändert. Projekt-JSON danach neu herunterladen, um die Änderung dauerhaft als Datei zu sichern.`;
       toast('Version geändert');
     }
     function csvEscapeValue(v){
@@ -999,6 +1063,7 @@ WS-B001</textarea>
       }
 
       renderVersions();
+      saveLocalDraftSoon();
       toast('Version gelöscht');
     }
     function renderVersions(){
@@ -1039,6 +1104,7 @@ WS-B001</textarea>
       URL.revokeObjectURL(a.href);
       const status = $('projectStatus');
       if(status) status.textContent = `Projekt-JSON erstellt: ${a.download} · ${projectVersions.length} Version(en)`;
+      saveLocalDraftSoon();
     }
     function openProjectFile(){
       $('projectFileInput')?.click();
@@ -1066,8 +1132,8 @@ WS-B001</textarea>
       document.querySelectorAll('.type-btn').forEach(btn=>btn.addEventListener('click',()=>setType(btn.dataset.type)));
       document.querySelectorAll('.mode-btn').forEach(btn=>btn.addEventListener('click',()=>setMode(btn.dataset.mode)));
       document.querySelectorAll('input,textarea,select').forEach(el=>{
-        el.addEventListener('input',()=>{buildList();generate();});
-        el.addEventListener('change',()=>{buildList();generate();});
+        el.addEventListener('input',()=>{buildList();generate();saveLocalDraftSoon();});
+        el.addEventListener('change',()=>{buildList();generate();saveLocalDraftSoon();});
       });
       syncColor('lineColor','lineColorText'); syncColor('bgColor','bgColorText');
       $('btnBuildList').addEventListener('click',()=>{buildList();toast('Liste erzeugt')});
@@ -1082,14 +1148,19 @@ WS-B001</textarea>
       $('btnProjectExport')?.addEventListener('click',downloadProjectJson);
       $('btnProjectImport')?.addEventListener('click',openProjectFile);
       $('projectFileInput')?.addEventListener('change',event=>readProjectFile(event.target.files?.[0]));
+      $('btnLocalClear')?.addEventListener('click',clearLocalDraft);
       $('btnHelp').addEventListener('click',()=>$('helpDialog').showModal());
       $('helpClose').addEventListener('click',()=>$('helpDialog').close());
       updateNumericFieldState();
       updateDynamicLabels();
       updateStandardWarning();
-      buildList();
-      generate();
-      renderVersions();
+      const restored = restoreLocalDraft();
+      if(!restored){
+        buildList();
+        generate();
+        renderVersions();
+        saveLocalDraftSoon();
+      }
     });
   </script>
 </body>
