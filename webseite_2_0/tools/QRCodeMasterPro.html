@@ -109,6 +109,144 @@
     .switch{appearance:none;width:48px;height:28px;border-radius:999px;background:#cbd5e1;border:0;position:relative;cursor:pointer;flex:0 0 auto}.switch::after{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.18s ease;box-shadow:0 4px 12px rgba(15,23,42,.2)}.switch:checked{background:var(--accent)}.switch:checked::after{transform:translateX(20px)}
     .payload-box{font-family:var(--mono);font-size:.78rem;color:var(--muted);background:color-mix(in srgb,var(--surface) 80%,transparent);border:1px solid var(--line);border-radius:16px;padding:12px;max-height:170px;overflow:auto;white-space:pre-wrap;word-break:break-word;text-align:left}
     dialog{border:0;border-radius:24px;padding:0;max-width:min(720px,calc(100vw - 28px));background:var(--surface);color:var(--text);box-shadow:0 28px 90px -46px rgba(0,0,0,.9)}dialog::backdrop{background:rgba(15,23,42,.58);backdrop-filter:blur(5px)}.modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:center}.modal-body{padding:20px;color:var(--muted);line-height:1.58}.close-x{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font-size:1.1rem}
+
+    .help-dialog {
+      width: min(1040px, calc(100vw - 28px));
+      max-height: min(860px, calc(100vh - 28px));
+    }
+    .help-dialog .modal-body {
+      padding: 0;
+      color: var(--text);
+      max-height: calc(100vh - 150px);
+      overflow: hidden;
+    }
+    .help-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 560px;
+      max-height: calc(100vh - 150px);
+    }
+    .help-nav {
+      border-right: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 78%, transparent);
+      padding: 16px;
+      overflow: auto;
+    }
+    .help-nav button {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      border-radius: 14px;
+      padding: 10px 11px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 850;
+      display: grid;
+      gap: 2px;
+      transition: .16s ease;
+    }
+    .help-nav button span {
+      font-weight: 650;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.25;
+    }
+    .help-nav button:hover,
+    .help-nav button.active {
+      border-color: rgba(241,145,62,.45);
+      background: rgba(241,145,62,.08);
+      box-shadow: 0 0 0 3px rgba(241,145,62,.08);
+    }
+    .help-content {
+      overflow: auto;
+      padding: clamp(18px, 3vw, 28px);
+    }
+    .help-page { display: none; }
+    .help-page.active { display: block; }
+    .help-page h3 {
+      font-size: clamp(1.45rem, 2vw, 2rem);
+      letter-spacing: -.045em;
+      margin: 0 0 12px;
+    }
+    .help-page h4 {
+      margin: 24px 0 8px;
+      font-size: 1.05rem;
+    }
+    .help-page p,
+    .help-page li {
+      color: var(--muted);
+      line-height: 1.58;
+    }
+    .help-page ul {
+      padding-left: 1.2rem;
+    }
+    .help-card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .help-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      background: color-mix(in srgb, var(--surface) 84%, transparent);
+      box-shadow: 0 14px 34px -30px rgba(15,23,42,.45);
+    }
+    .help-card strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .help-example {
+      border-left: 4px solid var(--accent);
+      background: rgba(241,145,62,.08);
+      padding: 12px 14px;
+      border-radius: 14px;
+      color: var(--muted);
+      margin: 12px 0;
+    }
+    .help-warning {
+      border: 1px solid rgba(194,65,58,.28);
+      background: rgba(194,65,58,.08);
+      padding: 13px 14px;
+      border-radius: 16px;
+      color: var(--muted);
+      margin: 14px 0;
+    }
+    .help-mini {
+      font-size: .88rem;
+      color: var(--muted);
+    }
+    .help-kbd {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 1px 7px;
+      background: var(--surface);
+      font-family: var(--mono);
+      font-size: .82em;
+      color: var(--text);
+    }
+    @media (max-width: 760px) {
+      .help-layout {
+        grid-template-columns: 1fr;
+      }
+      .help-nav {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: 8px;
+        max-height: 230px;
+      }
+      .help-card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:#0f172a;color:#fff;border-radius:999px;padding:11px 16px;font-weight:850;box-shadow:0 20px 60px -35px #000;transition:.22s ease;z-index:80}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
     .hide-mobile{}
     @media(max-width:1180px){.main{grid-template-columns:1fr 1fr}.settings-panel{grid-column:1/-1;order:3}.preview-card{position:static}}
@@ -244,7 +382,7 @@
 
       <section class="center-stage">
         <article class="hero-card">
-          <p class="eyebrow">Warenschmiede Tool-Test v51</p>
+          <p class="eyebrow">Warenschmiede Tool-Test v54</p>
           <h2>QR-Codes lokal im Browser erstellen.</h2>
           <p>Dieser Stand nutzt das neue zentrale W-TOOLS-Menü und bringt die wichtigsten alten QR-Modi wieder zurück: SEPA, PayPal, Bewertung, Termin, App-Link und Crypto.</p>
         </article>
@@ -292,14 +430,157 @@
     </main>
   </div>
 
-  <dialog id="helpDialog">
-    <div class="modal-head"><h2>Hilfe zur QR-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
+  <dialog id="helpDialog" class="help-dialog">
+    <div class="modal-head">
+      <div>
+        <p class="eyebrow" style="margin:0 0 4px;">Hilfe & Anleitung</p>
+        <h2>QR-Werkstatt Plus verstehen</h2>
+      </div>
+      <button class="close-x" id="helpClose" type="button" aria-label="Hilfe schließen">×</button>
+    </div>
     <div class="modal-body">
-      <p>Die QR-Werkstatt erstellt QR-Codes lokal im Browser. Die Daten werden nicht an einen Server geschickt.</p>
-      <h3>Tipps</h3>
-      <p>Kurze Inhalte ergeben besser scanbare QR-Codes. Für Drucke am besten vor dem Einsatz mit mehreren Geräten testen.</p>
-      <h3>W-TOOLS-Menü</h3>
-      <p>Das neue kleine Menü ist der Test für zukünftige Warenschmiede-Tools. Es spart Platz und ersetzt die große Homepage-Menübar innerhalb von Tools.</p>
+      <div class="help-layout">
+        <nav class="help-nav" aria-label="Hilfethemen">
+          <button class="active" type="button" data-help-tab="start">Start <span>Was bringt mir das?</span></button>
+          <button type="button" data-help-tab="workflow">Ablauf <span>So erstellst du einen Code</span></button>
+          <button type="button" data-help-tab="types1">QR-Arten 1 <span>Link, Text, WLAN, vCard</span></button>
+          <button type="button" data-help-tab="types2">QR-Arten 2 <span>E-Mail, Telefon, WhatsApp, SMS</span></button>
+          <button type="button" data-help-tab="types3">QR-Arten 3 <span>Standort, Bewertung, SEPA, PayPal</span></button>
+          <button type="button" data-help-tab="types4">QR-Arten 4 <span>Termin, App-Link, Crypto</span></button>
+          <button type="button" data-help-tab="design">Design & Druck <span>Scanbarkeit und Export</span></button>
+          <button type="button" data-help-tab="safety">Sicherheit <span>Datenschutz und Grenzen</span></button>
+        </nav>
+
+        <div class="help-content">
+          <section class="help-page active" data-help-page="start">
+            <h3>Was ist ein QR-Code und wofür ist das Tool gut?</h3>
+            <p>Ein QR-Code ist ein scannbarer Code, der Informationen enthält. Das kann ein Link sein, ein WLAN-Zugang, eine Telefonnummer, ein Kontakt, ein Termin oder auch ein Zahlungshinweis.</p>
+            <p>Die <strong>QR-Werkstatt Plus</strong> hilft dir, solche Codes schnell und sauber zu erstellen — direkt im Browser. Du gibst links den Inhalt ein, passt in der Mitte die Optik an und exportierst rechts den fertigen QR-Code als PNG oder SVG.</p>
+
+            <div class="help-card-grid">
+              <div class="help-card"><strong>Für Alltag und Büro</strong><span class="help-mini">WLAN-Gastzugang, Kontaktkarten, Telefonnummern, E-Mail-Anfragen, Termine oder Bewertungslinks.</span></div>
+              <div class="help-card"><strong>Für Werkstatt und 3D-Druck</strong><span class="help-mini">Links zu Anleitungen, Ersatzteillisten, Auftragsseiten, Materialinfos oder Kundenformularen.</span></div>
+              <div class="help-card"><strong>Für Drucksachen</strong><span class="help-mini">Flyer, Etiketten, Visitenkarten, Verpackungen, Aushänge oder Bedienhinweise.</span></div>
+              <div class="help-card"><strong>Lokal im Browser</strong><span class="help-mini">Die Eingaben werden im Tool verarbeitet. Trotzdem solltest du sensible Daten bewusst einsetzen.</span></div>
+            </div>
+
+            <div class="help-example"><strong>Beispiel:</strong> Du möchtest auf einem Flyer nicht deine ganze Webadresse abdrucken. Du erzeugst einen Link-QR-Code, lädst ihn als PNG herunter und setzt ihn in dein Dokument ein.</div>
+          </section>
+
+          <section class="help-page" data-help-page="workflow">
+            <h3>So nutzt du die QR-Werkstatt Schritt für Schritt</h3>
+            <ol>
+              <li><strong>QR-Art auswählen:</strong> Links wählst du, was der Code machen soll, zum Beispiel Link, WLAN oder vCard.</li>
+              <li><strong>Daten eintragen:</strong> Danach füllst du die passenden Felder aus. Das Tool baut daraus automatisch den richtigen QR-Inhalt.</li>
+              <li><strong>Optik einstellen:</strong> In der Mitte kannst du Farbe, Hintergrund, Größe und Form anpassen.</li>
+              <li><strong>Vorschau prüfen:</strong> Rechts siehst du den QR-Code live. Scanne ihn testweise mit deinem Handy.</li>
+              <li><strong>Exportieren:</strong> Für Bilder und Webseiten reicht oft PNG. Für scharfen Druck oder spätere Bearbeitung ist SVG besser.</li>
+            </ol>
+            <div class="help-warning"><strong>Wichtig:</strong> Vor dem Drucken immer mit mindestens einem Smartphone testen. Besonders bei kleinen Etiketten, farbigen QR-Codes oder transparentem Hintergrund.</div>
+            <h4>Wann PNG, wann SVG?</h4>
+            <ul>
+              <li><strong>PNG:</strong> gut für schnelle Nutzung, Word, E-Mail, einfache Drucke, Webseitenbilder.</li>
+              <li><strong>SVG:</strong> besser für sehr scharfen Druck, größere Schilder, Vektorgrafik, Weiterbearbeitung.</li>
+            </ul>
+          </section>
+
+          <section class="help-page" data-help-page="types1">
+            <h3>QR-Arten: Link, Text, WLAN und vCard</h3>
+            <h4>Link</h4>
+            <p>Öffnet eine Webseite oder Datei-Adresse. Ideal für Homepage, Produktseite, Anleitung, Download, Formular oder Projektseite.</p>
+            <div class="help-example"><strong>Beispiel:</strong> Auf einem 3D-Druck-Auftrag klebt ein QR-Code zur passenden Materialinfo oder zur Angebotsseite.</div>
+
+            <h4>Text</h4>
+            <p>Speichert normalen Text direkt im QR-Code. Das funktioniert auch ohne Internet, solange der Scanner den Text anzeigen kann.</p>
+            <div class="help-example"><strong>Beispiel:</strong> Kurzer Hinweis auf einem Lagerfach: „Düse 0,4 mm, PLA-Profil, geprüft am 03.06.2026“.</div>
+
+            <h4>WLAN</h4>
+            <p>Erstellt einen QR-Code für WLAN-Zugangsdaten. Beim Scan kann ein Smartphone dem Netzwerk beitreten.</p>
+            <div class="help-warning"><strong>Achtung:</strong> Ein WLAN-QR-Code enthält das Passwort. Nur dort verwenden, wo das bewusst gewollt ist, zum Beispiel Gäste-WLAN.</div>
+
+            <h4>vCard</h4>
+            <p>Erstellt eine digitale Kontaktkarte. Beim Scan kann der Kontakt ins Smartphone übernommen werden.</p>
+            <div class="help-example"><strong>Beispiel:</strong> Visitenkarte mit Name, Firma, Telefon, E-Mail und Webseite.</div>
+          </section>
+
+          <section class="help-page" data-help-page="types2">
+            <h3>QR-Arten: E-Mail, Telefon, WhatsApp und SMS</h3>
+            <h4>E-Mail</h4>
+            <p>Öffnet eine neue E-Mail mit Empfänger, Betreff und optionalem Text. Gut für standardisierte Anfragen.</p>
+            <div class="help-example"><strong>Beispiel:</strong> „Projekt anfragen“ mit vorbereiteter Betreffzeile wie „Anfrage 3D-Druckteil“.</div>
+
+            <h4>Telefon</h4>
+            <p>Startet nach dem Scan einen Telefonanruf. Der Nutzer muss den Anruf normalerweise noch bestätigen.</p>
+            <div class="help-example"><strong>Beispiel:</strong> QR-Code auf einem Aushang: „PC-Hilfe anrufen“.</div>
+
+            <h4>WhatsApp</h4>
+            <p>Öffnet einen WhatsApp-Chat mit Nummer und optional vorbereitetem Text.</p>
+            <div class="help-example"><strong>Beispiel:</strong> „Hallo, ich habe eine Frage zu einem 3D-Druckauftrag.“</div>
+
+            <h4>SMS</h4>
+            <p>Öffnet eine SMS mit Nummer und Text. Nützlich, wenn WhatsApp nicht gewünscht ist.</p>
+          </section>
+
+          <section class="help-page" data-help-page="types3">
+            <h3>QR-Arten: Standort, Bewertung, SEPA und PayPal</h3>
+            <h4>Standort</h4>
+            <p>Öffnet einen Ort oder eine Adresse in Google Maps. Gut für Wegbeschreibung, Abholort oder Treffpunkt.</p>
+
+            <h4>Bewertung</h4>
+            <p>Verlinkt auf eine Bewertungsseite, zum Beispiel Google-Bewertung, Shop-Bewertung oder Feedback-Formular.</p>
+            <div class="help-example"><strong>Beispiel:</strong> Nach einem Auftrag erhält der Kunde einen QR-Code: „Bewertung abgeben“.</div>
+
+            <h4>SEPA</h4>
+            <p>Erzeugt einen Zahlungs-QR für Überweisungen. Banking-Apps können die Daten übernehmen, je nach App und Bank.</p>
+            <div class="help-warning"><strong>Wichtig:</strong> IBAN, Empfänger, Betrag und Verwendungszweck genau prüfen. Das Tool ersetzt keine Zahlungsprüfung.</div>
+
+            <h4>PayPal</h4>
+            <p>Öffnet einen PayPal.me- oder Zahlungslink. Am besten nur offizielle PayPal-Links verwenden.</p>
+          </section>
+
+          <section class="help-page" data-help-page="types4">
+            <h3>QR-Arten: Termin, App-Link und Crypto</h3>
+            <h4>Termin</h4>
+            <p>Erstellt einen Kalendertermin im iCalendar-Format. Beim Scan kann ein Smartphone den Termin übernehmen.</p>
+            <div class="help-example"><strong>Beispiel:</strong> Messetermin, Abholtermin, Wartungstermin oder Besprechung.</div>
+
+            <h4>App-Link</h4>
+            <p>Öffnet eine App-Seite, einen App-Store-Link oder eine interne App-Adresse.</p>
+            <div class="help-example"><strong>Beispiel:</strong> QR-Code auf einem Infoblatt, der direkt zur passenden App oder Downloadseite führt.</div>
+
+            <h4>Crypto</h4>
+            <p>Erstellt einen einfachen Krypto-Zahlungslink, zum Beispiel für Bitcoin oder Ethereum.</p>
+            <div class="help-warning"><strong>Achtung:</strong> Wallet-Adressen und Beträge sehr genau prüfen. Krypto-Zahlungen sind oft nicht rückholbar.</div>
+          </section>
+
+          <section class="help-page" data-help-page="design">
+            <h3>Design, Lesbarkeit und Druck</h3>
+            <p>Ein QR-Code darf schön aussehen, aber die Scanbarkeit ist wichtiger als Optik. Besonders bei Druck, kleinen Etiketten oder farbigen Hintergründen solltest du vorsichtig sein.</p>
+            <h4>Gute Regeln</h4>
+            <ul>
+              <li>Hoher Kontrast: dunkler Code auf hellem Hintergrund ist am sichersten.</li>
+              <li>Genügend Rand lassen. QR-Codes brauchen freie Fläche um den Code herum.</li>
+              <li>Nicht zu klein drucken. Für Flyer und Etiketten lieber etwas größer planen.</li>
+              <li>Farbige Codes immer testen. Manche Scanner mögen zu schwache Kontraste nicht.</li>
+              <li>SVG nutzen, wenn der Code groß oder sehr scharf gedruckt werden soll.</li>
+            </ul>
+            <div class="help-example"><strong>Praxis-Tipp:</strong> Für Werkstattetiketten lieber klar und robust: dunkle QR-Farbe, weißer Hintergrund, nicht zu klein, vor dem Seriendruck testen.</div>
+          </section>
+
+          <section class="help-page" data-help-page="safety">
+            <h3>Sicherheit, Datenschutz und Grenzen</h3>
+            <p>Ein QR-Code ist nur ein Träger für Informationen. Wer ihn scannt, sieht oder öffnet genau das, was du hineinschreibst.</p>
+            <ul>
+              <li>Keine privaten Passwörter öffentlich als QR-Code drucken.</li>
+              <li>WLAN-QR-Codes nur für Gästezugänge oder bewusst freigegebene Netzwerke verwenden.</li>
+              <li>Bei Zahlungsdaten immer prüfen, ob Empfänger, IBAN, Betrag und Zweck stimmen.</li>
+              <li>Bei Links keine verdächtigen Weiterleitungen verwenden.</li>
+              <li>Vor Veröffentlichung auf Handy, Tablet und am besten mit mehreren Scanner-Apps testen.</li>
+            </ul>
+            <div class="help-warning"><strong>Grenze des Tools:</strong> Die QR-Werkstatt kann den Code erstellen, aber nicht garantieren, dass jede App jeden Spezialtyp gleich verarbeitet. Deshalb: testen, testen, testen.</div>
+          </section>
+        </div>
+      </div>
     </div>
   </dialog>
   <div class="toast" id="toast">Erledigt</div>
@@ -487,6 +768,16 @@
 
       $('btnHelp').addEventListener('click', () => $('helpDialog').showModal());
       $('helpClose').addEventListener('click', () => $('helpDialog').close());
+
+      document.querySelectorAll('[data-help-tab]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.helpTab;
+          document.querySelectorAll('[data-help-tab]').forEach(b => b.classList.toggle('active', b === btn));
+          document.querySelectorAll('[data-help-page]').forEach(page => {
+            page.classList.toggle('active', page.dataset.helpPage === target);
+          });
+        });
+      });
 
       generate();
     });
