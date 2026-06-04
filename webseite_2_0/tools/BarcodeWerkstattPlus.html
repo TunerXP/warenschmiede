@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Versionsbeschreibung v70</title>
+  <title>Barcode-Werkstatt Plus · Live-Versionen v71</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -306,12 +306,12 @@ WS-B001</textarea>
                   </div>
                   <div class="row">
                     <div class="field">
-                      <label for="versionTitle">Versionstitel</label>
-                      <input id="versionTitle" placeholder="z. B. Erste Filamentrollen-Serie">
+                      <label for="versionTitle">Versionstitel / aktueller Stand</label>
+                      <input id="versionTitle" placeholder="Titel der geladenen oder neuen Version">
                     </div>
                     <div class="field">
-                      <label for="versionNote">Versionsnotiz</label>
-                      <input id="versionNote" placeholder="Was wurde geändert?">
+                      <label for="versionNote">Versionsnotiz / Änderung</label>
+                      <input id="versionNote" placeholder="Notiz zur geladenen oder neuen Version">
                     </div>
                   </div>
                 </div>
@@ -327,7 +327,7 @@ WS-B001</textarea>
                 <div class="autosave-status" id="autosaveStatus">Lokaler Arbeitsstand: noch nicht gespeichert.</div>
 
                 <div class="project-status" id="projectStatus">
-                  Projektverlauf wird in der JSON-Datei gespeichert. Alte Versionen können geladen, umbenannt, als CSV exportiert oder gelöscht werden. Die Beschreibung/Notiz wird je Version mitgeladen. Eine geladene alte Version wird beim Bearbeiten nicht überschrieben – du speicherst daraus eine neue Version.
+                  Projektverlauf wird in der JSON-Datei gespeichert. Geladene Versionen werden live bearbeitet. Wenn du bewusst einen neuen Stand willst, speichere eine neue Version.
                 </div>
 
                 <div>
@@ -380,7 +380,7 @@ WS-B001</textarea>
   <dialog id="helpDialog">
     <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
     <div class="modal-body">
-      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand lädt und speichert die Projektbeschreibung/Versionsnotiz zuverlässig je Version.</p>
+      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand macht geladene Versionen live editierbar und entfernt den umständlichen Ändern-Dialog.</p>
       <h3>Arbeitsmodi</h3>
       <ul>
         <li><strong>Einzelcode:</strong> ein Barcode, Export als PNG/SVG oder Druck.</li>
@@ -398,7 +398,7 @@ WS-B001</textarea>
       <h3>CSV-Export</h3>
       <p>Die erzeugten Codes können als CSV exportiert werden. Das ist nützlich für Excel, externe Etikettensoftware, Dokumentation oder späteren Nachdruck.</p>
       <h3>Projekt-JSON</h3>
-      <p>Die JSON-Projektdatei speichert den aktuellen Stand der Barcode-Werkstatt und zusätzlich den Versionsverlauf. Auch die Projektbeschreibung/Versionsnotiz wird je Version gesichert, damit alte Stände wirklich unterschiedlich wiederhergestellt werden. Der aktuelle Arbeitsstand wird zusätzlich lokal im Browser zwischengespeichert.</p>
+      <p>Die JSON-Projektdatei speichert den aktuellen Stand der Barcode-Werkstatt und zusätzlich den Versionsverlauf. Geladene Versionen werden live bearbeitet; für eine echte Sicherungsdatei lädst du die Projekt-JSON herunter.</p>
       <h3>Übersicht statt Überladung</h3>
       <p>Die häufigsten Barcode-Arten bleiben direkt als Buttons sichtbar. Weitere Typen werden vorbereitet und später Schritt für Schritt ergänzt, damit das Tool nicht überladen wird.</p>
       <h3>Wichtiger Hinweis</h3>
@@ -616,6 +616,7 @@ WS-B001</textarea>
 
       buildList();
       generate();
+      updateLoadedVersionLiveSoon();
       saveLocalDraftSoon();
     }
     function setMode(mode){
@@ -629,6 +630,7 @@ WS-B001</textarea>
       $('inputSummary').innerHTML = `<span>${typeInfo[currentType].label}</span><span>${modeInfo[mode].label}</span>`;
       buildList();
       generate();
+      updateLoadedVersionLiveSoon();
       saveLocalDraftSoon();
     }
     function buildList(){
@@ -796,6 +798,38 @@ WS-B001</textarea>
       toast('Lokaler Stand gelöscht');
     }
 
+
+    function updateLoadedVersionLive(){
+      if(isRestoringLocalDraft || !currentVersionId) return;
+      const version = projectVersions.find(v => v.id === currentVersionId);
+      if(!version) return;
+
+      const snapshot = snapshotState();
+      snapshot.projectText = snapshot.projectText || {};
+      snapshot.projectText.description = getValue('projectDescription') || '';
+
+      version.title = getValue('versionTitle') || version.title || ('Version ' + version.number);
+      version.note = getValue('versionNote') || '';
+      version.projectDescription = getValue('projectDescription') || '';
+      version.updatedAt = new Date().toISOString();
+      version.barcodeType = currentType;
+      version.mode = currentMode;
+      version.codeCount = generatedCodes.length;
+      version.state = snapshot;
+
+      renderVersions();
+    }
+    function updateLoadedVersionLiveSoon(){
+      if(isRestoringLocalDraft || !currentVersionId) return;
+      clearTimeout(window.__wsVersionLiveTimer);
+      window.__wsVersionLiveTimer = setTimeout(()=>{
+        updateLoadedVersionLive();
+        saveLocalDraftSoon();
+        const status = $('projectStatus');
+        if(status) status.textContent = `Version live aktualisiert. Für eine Datei-Sicherung später Projekt-JSON herunterladen.`;
+      }, 350);
+    }
+
     function projectSlug(){
       const raw = ($('projectName')?.value || 'barcode-projekt').trim() || 'barcode-projekt';
       return raw.toLowerCase()
@@ -954,6 +988,14 @@ WS-B001</textarea>
       };
 
       applySnapshotState(state, data.project?.description || '');
+      const loadedVersion = projectVersions.find(v => v.id === currentVersionId);
+      if(loadedVersion){
+        setValue('versionTitle', loadedVersion.title || ('Version ' + loadedVersion.number));
+        setValue('versionNote', loadedVersion.note || '');
+      } else {
+        setValue('versionTitle','');
+        setValue('versionNote','');
+      }
       renderVersions();
 
       const status = $('projectStatus');
@@ -981,11 +1023,11 @@ WS-B001</textarea>
       };
       projectVersions.push(version);
       currentVersionId = version.id;
-      setValue('versionTitle','');
-      setValue('versionNote','');
+      setValue('versionTitle', version.title);
+      setValue('versionNote', version.note);
       renderVersions();
       const status = $('projectStatus');
-      if(status) status.textContent = `Neue Version gespeichert: Version ${version.number} · ${version.codeCount} Codes`;
+      if(status) status.textContent = `Neue Version gespeichert: Version ${version.number} · ${version.codeCount} Codes. Änderungen daran werden jetzt live gespeichert.`;
       saveLocalDraftSoon();
       toast('Version gespeichert');
     }
@@ -996,50 +1038,14 @@ WS-B001</textarea>
         return;
       }
       currentVersionId = version.id;
+      setValue('versionTitle', version.title || ('Version ' + version.number));
+      setValue('versionNote', version.note || '');
       applySnapshotState(version.state, version.projectDescription || '');
       renderVersions();
       const status = $('projectStatus');
-      if(status) status.textContent = `Version ${version.number} geladen. Änderungen daran werden beim Speichern als neue Version angelegt.`;
+      if(status) status.textContent = `Version ${version.number} geladen. Änderungen werden live in dieser Version gespeichert.`;
       saveLocalDraftSoon();
       toast('Version geladen');
-    }
-    function editProjectVersion(versionId){
-      const version = projectVersions.find(v => v.id === versionId);
-      if(!version){
-        toast('Version nicht gefunden');
-        return;
-      }
-
-      const oldTitle = version.title || ('Version ' + version.number);
-      const newTitle = prompt('Neuer Versionstitel:', oldTitle);
-      if(newTitle === null) return;
-
-      const oldNote = version.note || '';
-      const newNote = prompt('Neue Versionsnotiz:', oldNote);
-      if(newNote === null) return;
-
-      const oldDescription = version.projectDescription || version.state?.projectText?.description || '';
-      const newDescription = prompt('Neue Beschreibung / Versionsnotiz im großen Textfeld:', oldDescription);
-      if(newDescription === null) return;
-
-      const cleanTitle = String(newTitle).trim();
-      version.title = cleanTitle || oldTitle;
-      version.note = String(newNote).trim();
-      version.projectDescription = String(newDescription);
-      version.state = version.state || {};
-      version.state.projectText = version.state.projectText || {};
-      version.state.projectText.description = String(newDescription);
-      version.updatedAt = new Date().toISOString();
-
-      if(currentVersionId === version.id){
-        setValue('projectDescription', String(newDescription));
-      }
-
-      renderVersions();
-      saveLocalDraftSoon();
-      const status = $('projectStatus');
-      if(status) status.textContent = `Version ${version.number} wurde geändert. Projekt-JSON danach neu herunterladen, um die Änderung dauerhaft als Datei zu sichern.`;
-      toast('Version geändert');
     }
     function csvEscapeValue(v){
       return '"' + String(v ?? '').replace(/"/g,'""') + '"';
@@ -1095,6 +1101,8 @@ WS-B001</textarea>
 
       if(currentVersionId === versionId){
         currentVersionId = null;
+        setValue('versionTitle','');
+        setValue('versionNote','');
         const status = $('projectStatus');
         if(status) status.textContent = `Geladene Version ${version.number} wurde gelöscht. Der aktuelle Arbeitsstand bleibt im Tool, ist aber keiner Verlaufsversion mehr zugeordnet.`;
       } else {
@@ -1127,7 +1135,6 @@ WS-B001</textarea>
             </div>
             <div class="version-actions">
               <button type="button" onclick="loadProjectVersion('${version.id}')">Laden</button>
-              <button class="edit-version" type="button" onclick="editProjectVersion('${version.id}')">Ändern</button>
               <button class="csv-version" type="button" onclick="downloadVersionCsv('${version.id}')">CSV</button>
               <button class="delete-version" type="button" onclick="deleteProjectVersion('${version.id}')">Löschen</button>
             </div>
@@ -1173,8 +1180,8 @@ WS-B001</textarea>
       document.querySelectorAll('.type-btn').forEach(btn=>btn.addEventListener('click',()=>setType(btn.dataset.type)));
       document.querySelectorAll('.mode-btn').forEach(btn=>btn.addEventListener('click',()=>setMode(btn.dataset.mode)));
       document.querySelectorAll('input,textarea,select').forEach(el=>{
-        el.addEventListener('input',()=>{buildList();generate();saveLocalDraftSoon();});
-        el.addEventListener('change',()=>{buildList();generate();saveLocalDraftSoon();});
+        el.addEventListener('input',()=>{buildList();generate();updateLoadedVersionLiveSoon();saveLocalDraftSoon();});
+        el.addEventListener('change',()=>{buildList();generate();updateLoadedVersionLiveSoon();saveLocalDraftSoon();});
       });
       syncColor('lineColor','lineColorText'); syncColor('bgColor','bgColorText');
       $('btnBuildList').addEventListener('click',()=>{buildList();toast('Liste erzeugt')});
