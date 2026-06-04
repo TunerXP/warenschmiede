@@ -131,7 +131,7 @@
   <button class="mobile-section" type="button">Kontakt<span>▾</span></button>
   <div class="mobile-sub"><a href="${link('kontakt/kontakt.html')}">Kontakt aufnehmen</a><a href="${link('kontakt/ablauf-anfrage.html')}">Ablauf &amp; Anfrage</a><a href="${link('kontakt/impressum.html')}">Impressum</a><a href="${link('kontakt/ueber-mich.html')}">Über mich</a></div>
   <button class="mobile-section" type="button">3D-Druck<span>▾</span></button>
-  <div class="mobile-sub"><a href="${link('3d_druck/3ddruck-faq.html')}">Neu beim 3D-Druck?</a><a href="${link('3d_druck/technologien.html')}">FDM / SLA / SLS – Technologien</a><a href="${link('3d_druck/material.html')}">Materialwissen</a><a href="${link('3d_druck/fehlerdatenbank.html')}">Fehler &amp; Troubleshooting</a><a href="${link('3d_druck/tpu-wissen.html')}">TPU Spezial-Wissen</a><a href="${link('3d_druck/wartung-reinigung.html')}">Wartung &amp; Reinigung</a></div>
+  <div class="mobile-sub"><a href="${link('3d_druck/3ddruck-faq.html')}">Neu beim 3D-Druck?</a><a href="${link('3d_druck/technologien.html')}">FDM / SLA / SLS – Technologien</a><a href="${link('3d_druck/material.html')}">Materialwissen</a><a href="${link('3d_druck/fehlerdatenbank.html')}">Fehler &amp; Troubleshooting</a><a href="${link('3d_druck/tpu-wissen.html')}">TPU Spezial-Wissen</a><a href="${link('3d_druck/wartung-reinigung.html')}">Wartung &amp; Reinigung</a><a href="${link('3d_druck/ideenquellen.html')}">Ideenquellen &amp; Portale</a></div>
 </aside>
 <div id="scrim"></div>`;
 
