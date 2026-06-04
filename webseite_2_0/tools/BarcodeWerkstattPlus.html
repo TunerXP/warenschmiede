@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Übersicht & Profi-Struktur v63</title>
+  <title>Barcode-Werkstatt Plus · Projekt-JSON v64</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -75,6 +75,10 @@
     .advanced-content{border-top:1px solid var(--line);padding:14px;display:grid;gap:12px}
     .select-hint{font-size:.82rem;color:var(--muted);line-height:1.4;margin:8px 0 0}
     .warning-soft{border:1px solid rgba(194,65,58,.25);background:rgba(194,65,58,.07);border-radius:16px;padding:11px 13px;color:var(--muted);font-size:.86rem;line-height:1.45}
+    .project-actions{display:flex;flex-wrap:wrap;gap:10px}
+    .project-meta{display:grid;gap:10px}
+    .project-status{font-size:.82rem;color:var(--muted);line-height:1.4;padding:10px 12px;border-radius:14px;background:rgba(47,142,223,.08);border:1px solid rgba(47,142,223,.2)}
+    .hidden-file{display:none!important}
     .color-row{display:grid;grid-template-columns:1fr 54px;gap:10px;align-items:end}input[type=color]{padding:0;min-height:43px;cursor:pointer}
     .tool-trust-strip-compact{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.tool-trust-strip-compact span{border:1px solid rgba(43,170,114,.26);background:rgba(43,170,114,.08);border-radius:999px;padding:5px 9px;font-size:.76rem;font-weight:850;color:var(--text)}
     .preview-card{text-align:center;padding:clamp(18px,2vw,28px);position:sticky;top:86px}
@@ -267,6 +271,38 @@ WS-B001</textarea>
                 <div class="warning-soft"><strong>Absicht:</strong> Die Basis bleibt einfach sichtbar. Profi-Optionen werden einklappbar gesammelt, damit das Tool mächtig bleibt, aber nicht überladen wirkt.</div>
               </div>
             </details>
+            <details class="advanced-box" open>
+              <summary>Projekt & JSON</summary>
+              <div class="advanced-content">
+                <div class="project-meta">
+                  <div class="row">
+                    <div class="field">
+                      <label for="projectName">Projektname</label>
+                      <input id="projectName" value="Neues Barcode-Projekt" placeholder="z. B. Filamentrollen Etiketten">
+                    </div>
+                    <div class="field">
+                      <label for="projectAuthor">Ersteller optional</label>
+                      <input id="projectAuthor" placeholder="z. B. Marco">
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="projectDescription">Projektbeschreibung / Notiz</label>
+                    <textarea id="projectDescription" placeholder="Wofür ist dieses Projekt gedacht? Was wurde gedruckt? Welche Nummernserie?"></textarea>
+                  </div>
+                </div>
+
+                <div class="project-actions">
+                  <button class="btn btn-blue" id="btnProjectExport" type="button">Projekt als JSON speichern</button>
+                  <button class="btn" id="btnProjectImport" type="button">Projekt aus JSON laden</button>
+                  <input class="hidden-file" id="projectFileInput" type="file" accept=".json,application/json">
+                </div>
+
+                <div class="project-status" id="projectStatus">
+                  JSON speichert den aktuellen Toolstand für die Barcode-Werkstatt selbst. CSV bleibt für Excel und externe Programme.
+                </div>
+              </div>
+            </details>
+
           </div>
         </section>
       </section>
@@ -308,7 +344,7 @@ WS-B001</textarea>
   <dialog id="helpDialog">
     <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
     <div class="modal-body">
-      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand verbessert die Übersicht, bereitet weitere Barcode-Arten vor und sammelt Profi-Optionen einklappbar.</p>
+      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand ergänzt Projektname, Notiz sowie JSON-Export und JSON-Import für wiederladbare Barcode-Projekte.</p>
       <h3>Arbeitsmodi</h3>
       <ul>
         <li><strong>Einzelcode:</strong> ein Barcode, Export als PNG/SVG oder Druck.</li>
@@ -325,6 +361,8 @@ WS-B001</textarea>
       </ul>
       <h3>CSV-Export</h3>
       <p>Die erzeugten Codes können als CSV exportiert werden. Das ist nützlich für Excel, externe Etikettensoftware, Dokumentation oder späteren Nachdruck.</p>
+      <h3>Projekt-JSON</h3>
+      <p>Die JSON-Projektdatei speichert den aktuellen Stand der Barcode-Werkstatt: Barcode-Art, Modus, Eingaben, Layout, Farben und erzeugte Codes. Damit kann ein Projekt später wieder geladen und weiterbearbeitet werden.</p>
       <h3>Übersicht statt Überladung</h3>
       <p>Die häufigsten Barcode-Arten bleiben direkt als Buttons sichtbar. Weitere Typen werden vorbereitet und später Schritt für Schritt ergänzt, damit das Tool nicht überladen wird.</p>
       <h3>Wichtiger Hinweis</h3>
@@ -667,6 +705,147 @@ WS-B001</textarea>
       };
       img.src = url;
     }
+
+    function projectSlug(){
+      const raw = ($('projectName')?.value || 'barcode-projekt').trim() || 'barcode-projekt';
+      return raw.toLowerCase()
+        .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
+        .replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'') || 'barcode_projekt';
+    }
+    function getValue(id){
+      const el = $(id);
+      return el ? el.value : '';
+    }
+    function setValue(id, value){
+      const el = $(id);
+      if(el) el.value = value ?? '';
+    }
+    function collectProjectState(){
+      buildList();
+      return {
+        schema: 'warenschmiede.barcodeWerkstatt.project',
+        schemaVersion: 1,
+        tool: 'Barcode-Werkstatt Plus',
+        createdAt: new Date().toISOString(),
+        project: {
+          name: getValue('projectName'),
+          author: getValue('projectAuthor'),
+          description: getValue('projectDescription')
+        },
+        barcode: {
+          type: currentType,
+          mode: currentMode
+        },
+        inputs: {
+          single: { value: getValue('barcodeValue') },
+          copies: { value: getValue('copyValue'), count: getValue('copyCount'), note: getValue('copyNote') },
+          series: {
+            prefix: getValue('seriesPrefix'),
+            suffix: getValue('seriesSuffix'),
+            start: getValue('seriesStart'),
+            count: getValue('seriesCount'),
+            pad: getValue('seriesPad'),
+            step: getValue('seriesStep'),
+            note: getValue('seriesNote')
+          },
+          manual: { list: getValue('manualList') }
+        },
+        style: {
+          lineColor: getValue('lineColorText'),
+          bgColor: getValue('bgColorText'),
+          barWidth: getValue('barWidth'),
+          barHeight: getValue('barHeight'),
+          showText: getValue('showText'),
+          fontSize: getValue('fontSize')
+        },
+        layout: {
+          labelsPerRow: getValue('labelsPerRow'),
+          copiesPerCode: getValue('copiesPerCode'),
+          labelScale: getValue('labelScale')
+        },
+        generatedCodes: generatedCodes
+      };
+    }
+    function applyProjectState(data){
+      if(!data || data.schema !== 'warenschmiede.barcodeWerkstatt.project'){
+        toast('Keine gültige Barcode-Projektdatei');
+        return;
+      }
+
+      setValue('projectName', data.project?.name || 'Geladenes Barcode-Projekt');
+      setValue('projectAuthor', data.project?.author || '');
+      setValue('projectDescription', data.project?.description || '');
+
+      const type = data.barcode?.type || 'CODE128';
+      const mode = data.barcode?.mode || 'single';
+
+      setValue('barcodeValue', data.inputs?.single?.value || '');
+      setValue('copyValue', data.inputs?.copies?.value || '');
+      setValue('copyCount', data.inputs?.copies?.count || '1');
+      setValue('copyNote', data.inputs?.copies?.note || '');
+
+      setValue('seriesPrefix', data.inputs?.series?.prefix || '');
+      setValue('seriesSuffix', data.inputs?.series?.suffix || '');
+      setValue('seriesStart', data.inputs?.series?.start || '1');
+      setValue('seriesCount', data.inputs?.series?.count || '1');
+      setValue('seriesPad', data.inputs?.series?.pad || '4');
+      setValue('seriesStep', data.inputs?.series?.step || '1');
+      setValue('seriesNote', data.inputs?.series?.note || '');
+
+      setValue('manualList', data.inputs?.manual?.list || '');
+
+      setValue('lineColorText', data.style?.lineColor || '#102033');
+      setValue('lineColor', data.style?.lineColor || '#102033');
+      setValue('bgColorText', data.style?.bgColor || '#ffffff');
+      setValue('bgColor', data.style?.bgColor || '#ffffff');
+      setValue('barWidth', data.style?.barWidth || '2');
+      setValue('barHeight', data.style?.barHeight || '100');
+      setValue('showText', data.style?.showText || 'true');
+      setValue('fontSize', data.style?.fontSize || '18');
+
+      setValue('labelsPerRow', data.layout?.labelsPerRow || '3');
+      setValue('copiesPerCode', data.layout?.copiesPerCode || '1');
+      setValue('labelScale', data.layout?.labelScale || 'medium');
+
+      setType(type);
+      setMode(mode);
+      buildList();
+      generate();
+
+      const status = $('projectStatus');
+      if(status) status.textContent = `Projekt geladen: ${data.project?.name || 'ohne Namen'} · ${data.generatedCodes?.length || generatedCodes.length} Codes`;
+      toast('Projekt geladen');
+    }
+    function downloadProjectJson(){
+      const data = collectProjectState();
+      const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json;charset=utf-8'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = projectSlug() + '.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      const status = $('projectStatus');
+      if(status) status.textContent = `Projekt als JSON erstellt: ${a.download}`;
+    }
+    function openProjectFile(){
+      $('projectFileInput')?.click();
+    }
+    function readProjectFile(file){
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{
+          const data = JSON.parse(reader.result);
+          applyProjectState(data);
+        }catch(err){
+          toast('JSON konnte nicht gelesen werden');
+          const status = $('projectStatus');
+          if(status) status.textContent = 'Fehler beim Laden: Datei ist keine gültige Barcode-Projekt-JSON.';
+        }
+      };
+      reader.readAsText(file, 'utf-8');
+    }
+
     document.addEventListener('DOMContentLoaded',()=>{
       $('toolMenuBtn').addEventListener('click',()=>window.WSToolMenu?.open());
       document.querySelectorAll('.type-btn').forEach(btn=>btn.addEventListener('click',()=>setType(btn.dataset.type)));
@@ -684,6 +863,9 @@ WS-B001</textarea>
       $('btnCopy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('payloadBox').textContent);toast('Barcode-Inhalt kopiert')}catch{toast('Kopieren nicht möglich')}});
       $('btnPrintSheet').addEventListener('click',()=>{buildList();window.print();});
       $('btnTheme').addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'});
+      $('btnProjectExport')?.addEventListener('click',downloadProjectJson);
+      $('btnProjectImport')?.addEventListener('click',openProjectFile);
+      $('projectFileInput')?.addEventListener('change',event=>readProjectFile(event.target.files?.[0]));
       $('btnHelp').addEventListener('click',()=>$('helpDialog').showModal());
       $('helpClose').addEventListener('click',()=>$('helpDialog').close());
       updateNumericFieldState();
