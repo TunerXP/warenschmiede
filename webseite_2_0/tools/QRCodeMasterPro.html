@@ -85,6 +85,25 @@
     textarea{min-height:92px;resize:vertical;line-height:1.45}
     input:focus,textarea:focus,select:focus{border-color:rgba(241,145,62,.78);box-shadow:0 0 0 4px rgba(241,145,62,.13)}
     .mode-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:16px}
+    .mode-category-title{
+      grid-column:1/-1;
+      margin:10px 0 0;
+      color:var(--accent);
+      font-size:.72rem;
+      font-weight:950;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .mode-category-title:first-child{margin-top:0}
+    .mode-category-title::after{
+      content:"";
+      height:1px;
+      flex:1;
+      background:linear-gradient(90deg,rgba(241,145,62,.35),transparent);
+    }
     .mode-btn{
       border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:14px;padding:10px 8px;min-height:66px;
       cursor:pointer;display:grid;place-items:center;gap:4px;text-align:center;font-weight:850;font-size:.78rem;transition:.18s ease;
@@ -99,6 +118,8 @@
     .hero-card p{margin:0;color:var(--muted);line-height:1.6;max-width:780px}
     .trust-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
     .trust-badge{border:1px solid rgba(43,170,114,.28);background:rgba(43,170,114,.08);color:var(--text);border-radius:999px;padding:7px 11px;font-size:.8rem;font-weight:850}
+    .tool-trust-strip-compact{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+    .tool-trust-strip-compact span{border:1px solid rgba(43,170,114,.26);background:rgba(43,170,114,.08);border-radius:999px;padding:5px 9px;font-size:.76rem;font-weight:850;color:var(--text)}
     html[data-theme="dark"] .trust-badge{background:rgba(43,170,114,.13)}
     .preview-card{text-align:center;padding:clamp(18px,2vw,28px);position:sticky;top:86px}
     .qr-frame{display:inline-grid;place-items:center;padding:18px;background:#fff;border:1px solid #e2e8f0;border-radius:30px;box-shadow:0 24px 70px -44px rgba(15,23,42,.9);margin:12px auto 16px;max-width:100%}
@@ -281,23 +302,30 @@
         </div>
         <div class="panel-body">
           <div class="mode-grid" id="modeGrid">
+            <div class="mode-category-title">Allgemein</div>
             <button class="mode-btn active" data-mode="url"><span>🔗</span><span>Link</span></button>
             <button class="mode-btn" data-mode="text"><span>📝</span><span>Text</span></button>
-            <button class="mode-btn" data-mode="wifi"><span>📶</span><span>WLAN</span></button>
+            <button class="mode-btn" data-mode="maps"><span>📍</span><span>Standort</span></button>
+            <button class="mode-btn" data-mode="review"><span>⭐</span><span>Bewertung</span></button>
+
+            <div class="mode-category-title">Kontakt</div>
             <button class="mode-btn" data-mode="vcard"><span>👤</span><span>vCard</span></button>
             <button class="mode-btn" data-mode="email"><span>✉️</span><span>E-Mail</span></button>
             <button class="mode-btn" data-mode="phone"><span>☎️</span><span>Telefon</span></button>
             <button class="mode-btn" data-mode="whatsapp"><span>💬</span><span>WhatsApp</span></button>
             <button class="mode-btn" data-mode="sms"><span>💌</span><span>SMS</span></button>
-            <button class="mode-btn" data-mode="maps"><span>📍</span><span>Standort</span></button>
-            <button class="mode-btn" data-mode="review"><span>⭐</span><span>Bewertung</span></button>
+
+            <div class="mode-category-title">Zahlung</div>
             <button class="mode-btn" data-mode="sepa"><span>🏦</span><span>SEPA</span></button>
             <button class="mode-btn" data-mode="paypal"><span>💶</span><span>PayPal</span></button>
             <button class="mode-btn" data-mode="paymentlink"><span>💳</span><span>Zahlungslink</span></button>
-            <button class="mode-btn" data-mode="wero"><span>🇪🇺</span><span>Wero</span></button>
+            <button class="mode-btn" data-mode="wero"><span>EU</span><span>Wero</span></button>
+            <button class="mode-btn" data-mode="crypto"><span>₿</span><span>Crypto</span></button>
+
+            <div class="mode-category-title">Alltag & Spezial</div>
+            <button class="mode-btn" data-mode="wifi"><span>📶</span><span>WLAN</span></button>
             <button class="mode-btn" data-mode="event"><span>📅</span><span>Termin</span></button>
             <button class="mode-btn" data-mode="app"><span>📲</span><span>App-Link</span></button>
-            <button class="mode-btn" data-mode="crypto"><span>₿</span><span>Crypto</span></button>
           </div>
 
           <div class="hint" id="modeHint">Scan öffnet eine Webseite. Kurze Links ergeben stabilere QR-Codes.</div>
@@ -399,14 +427,14 @@
       </section>
 
       <section class="center-stage">
-        <article class="hero-card">
-          <p class="eyebrow">Warenschmiede Tool-Test v55</p>
-          <h2>QR-Codes lokal im Browser erstellen.</h2>
-          <p>Dieser Stand nutzt das neue zentrale W-TOOLS-Menü und bringt die QR-Arten sauberer in Ordnung – besonders den Zahlungsbereich mit SEPA, PayPal, Zahlungslink und Wero-Vormerkung.</p><div class="trust-strip"><span class="trust-badge">100% werbefrei</span><span class="trust-badge">kein Tracking</span><span class="trust-badge">lokal im Browser</span><span class="trust-badge">verständlich erklärt</span></div>
-        </article>
-
         <section class="panel">
-          <div class="panel-head"><p class="eyebrow">2. Einstellungen</p><h2>Optik & Ausgabe</h2></div>
+          <div class="panel-head">
+            <p class="eyebrow">2. Einstellungen</p>
+            <h2>Optik & Ausgabe</h2>
+            <div class="tool-trust-strip-compact">
+              <span>100% werbefrei</span><span>kein Tracking</span><span>lokal im Browser</span>
+            </div>
+          </div>
           <div class="panel-body settings-grid">
             <div class="settings-card">
               <h3>Farben</h3>
