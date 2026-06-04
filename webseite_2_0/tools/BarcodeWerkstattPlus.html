@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Live-Versionen v71</title>
+  <title>Barcode-Werkstatt Plus · CSV Excel-sicher v72</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -75,6 +75,7 @@
     .advanced-content{border-top:1px solid var(--line);padding:14px;display:grid;gap:12px}
     .select-hint{font-size:.82rem;color:var(--muted);line-height:1.4;margin:8px 0 0}
     .warning-soft{border:1px solid rgba(194,65,58,.25);background:rgba(194,65,58,.07);border-radius:16px;padding:11px 13px;color:var(--muted);font-size:.86rem;line-height:1.45}
+    .csv-safe-note{border:1px solid rgba(43,170,114,.24);background:rgba(43,170,114,.08);border-radius:16px;padding:11px 13px;color:var(--muted);font-size:.86rem;line-height:1.45}
     .project-actions{display:flex;flex-wrap:wrap;gap:10px}
     .project-meta{display:grid;gap:10px}
     .project-status{font-size:.82rem;color:var(--muted);line-height:1.4;padding:10px 12px;border-radius:14px;background:rgba(47,142,223,.08);border:1px solid rgba(47,142,223,.2)}
@@ -326,6 +327,10 @@ WS-B001</textarea>
 
                 <div class="autosave-status" id="autosaveStatus">Lokaler Arbeitsstand: noch nicht gespeichert.</div>
 
+                <div class="csv-safe-note" id="csvSafeNote">
+                  CSV-Export ist Excel-sicher: lange Barcode-Nummern und führende Nullen werden zusätzlich als Textspalte ausgegeben.
+                </div>
+
                 <div class="project-status" id="projectStatus">
                   Projektverlauf wird in der JSON-Datei gespeichert. Geladene Versionen werden live bearbeitet. Wenn du bewusst einen neuen Stand willst, speichere eine neue Version.
                 </div>
@@ -380,7 +385,7 @@ WS-B001</textarea>
   <dialog id="helpDialog">
     <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
     <div class="modal-body">
-      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand macht geladene Versionen live editierbar und entfernt den umständlichen Ändern-Dialog.</p>
+      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand schützt Barcode-Inhalte im CSV-Export vor Excel-Zahlenformaten.</p>
       <h3>Arbeitsmodi</h3>
       <ul>
         <li><strong>Einzelcode:</strong> ein Barcode, Export als PNG/SVG oder Druck.</li>
@@ -396,7 +401,7 @@ WS-B001</textarea>
         <li><strong>ITF-14:</strong> eher für Verpackungen, Kartons und Logistikeinheiten.</li>
       </ul>
       <h3>CSV-Export</h3>
-      <p>Die erzeugten Codes können als CSV exportiert werden. Das ist nützlich für Excel, externe Etikettensoftware, Dokumentation oder späteren Nachdruck.</p>
+      <p>Die erzeugten Codes können als CSV exportiert werden. Zusätzlich enthält die CSV eine Excel-sichere Textspalte, damit lange Barcode-Nummern und führende Nullen nicht als 1,234E+13 oder gekürzte Zahl erscheinen.</p>
       <h3>Projekt-JSON</h3>
       <p>Die JSON-Projektdatei speichert den aktuellen Stand der Barcode-Werkstatt und zusätzlich den Versionsverlauf. Geladene Versionen werden live bearbeitet; für eine echte Sicherungsdatei lädst du die Projekt-JSON herunter.</p>
       <h3>Übersicht statt Überladung</h3>
@@ -1050,6 +1055,57 @@ WS-B001</textarea>
     function csvEscapeValue(v){
       return '"' + String(v ?? '').replace(/"/g,'""') + '"';
     }
+
+    function excelTextValue(value){
+      const raw = String(value ?? '');
+      // Excel interpretiert lange reine Zahlen sonst als Zahl oder wissenschaftliche Schreibweise.
+      // ="..." zwingt Excel zur Textanzeige und erhält führende Nullen.
+      return '="' + raw.replace(/"/g,'""') + '"';
+    }
+    function csvRowsToText(rows){
+      return '\ufeff' + rows.map(row => row.map(csvEscapeValue).join(';')).join('\n');
+    }
+    function buildCsvRowsFromCodes(codes, meta = {}){
+      const rows = [[
+        'laufnummer',
+        'barcode_typ',
+        'barcode_inhalt',
+        'barcode_inhalt_excel',
+        'menge',
+        'modus',
+        'beschreibung',
+        'version',
+        'versionstitel',
+        'datum'
+      ]];
+
+      (codes || []).forEach((item, idx) => {
+        const value = String(item.value ?? '');
+        rows.push([
+          idx + 1,
+          meta.barcodeType || currentType || '',
+          value,
+          excelTextValue(value),
+          item.qty || 1,
+          meta.mode || currentMode || '',
+          item.note || meta.note || '',
+          meta.versionNumber || '',
+          meta.versionTitle || '',
+          meta.date || ''
+        ]);
+      });
+
+      return rows;
+    }
+    function downloadCsvBlob(filename, rows){
+      const csv = csvRowsToText(rows);
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
     function downloadVersionCsv(versionId){
       const version = projectVersions.find(v => v.id === versionId);
       if(!version){
@@ -1058,33 +1114,22 @@ WS-B001</textarea>
       }
 
       const codes = version.state?.generatedCodes || [];
-      const rows = [['laufnummer','barcode_typ','barcode_inhalt','menge','modus','beschreibung','version','versionstitel','datum']];
-      codes.forEach((item, idx)=>{
-        rows.push([
-          idx + 1,
-          version.barcodeType || version.state?.barcode?.type || '',
-          item.value || '',
-          item.qty || 1,
-          version.mode || version.state?.barcode?.mode || '',
-          item.note || version.note || '',
-          version.number || '',
-          version.title || '',
-          version.createdAt || ''
-        ]);
+      const rows = buildCsvRowsFromCodes(codes, {
+        barcodeType: version.barcodeType || version.state?.barcode?.type || '',
+        mode: version.mode || version.state?.barcode?.mode || '',
+        note: version.note || version.projectDescription || '',
+        versionNumber: version.number || '',
+        versionTitle: version.title || '',
+        date: version.createdAt || ''
       });
 
-      const csv = rows.map(row => row.map(csvEscapeValue).join(';')).join('\n');
-      const blob = new Blob(['\ufeff' + csv], {type:'text/csv;charset=utf-8'});
-      const a = document.createElement('a');
       const name = (version.title || ('version_' + version.number))
         .toLowerCase()
         .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
         .replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'') || ('version_' + version.number);
-      a.href = URL.createObjectURL(blob);
-      a.download = `${projectSlug()}_${name}.csv`;
-      a.click();
-      URL.revokeObjectURL(a.href);
-      toast('Versions-CSV erstellt');
+
+      downloadCsvBlob(`${projectSlug()}_${name}.csv`, rows);
+      toast('Excel-sichere Versions-CSV erstellt');
     }
     function deleteProjectVersion(versionId){
       const version = projectVersions.find(v => v.id === versionId);
@@ -1175,6 +1220,10 @@ WS-B001</textarea>
     function escapeHtml(s){
       return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
     }
+
+    function downloadCSV(){ return typeof downloadCsv === 'function' ? downloadCsv() : null; }
+    function exportCSV(){ return typeof downloadCsv === 'function' ? downloadCsv() : null; }
+
     document.addEventListener('DOMContentLoaded',()=>{
       $('toolMenuBtn').addEventListener('click',()=>window.WSToolMenu?.open());
       document.querySelectorAll('.type-btn').forEach(btn=>btn.addEventListener('click',()=>setType(btn.dataset.type)));
