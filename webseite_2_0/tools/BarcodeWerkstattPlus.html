@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Versionstexte v69</title>
+  <title>Barcode-Werkstatt Plus · Versionsbeschreibung v70</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -380,7 +380,7 @@ WS-B001</textarea>
   <dialog id="helpDialog">
     <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
     <div class="modal-body">
-      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand speichert die Projektbeschreibung/Versionsnotiz je Version und korrigiert die Versionsnummerierung.</p>
+      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand lädt und speichert die Projektbeschreibung/Versionsnotiz zuverlässig je Version.</p>
       <h3>Arbeitsmodi</h3>
       <ul>
         <li><strong>Einzelcode:</strong> ein Barcode, Export als PNG/SVG oder Druck.</li>
@@ -852,9 +852,11 @@ WS-B001</textarea>
     }
     function collectProjectState(){
       const snapshot = snapshotState();
+      snapshot.projectText = snapshot.projectText || {};
+      snapshot.projectText.description = getValue('projectDescription') || '';
       return {
         schema: 'warenschmiede.barcodeWerkstatt.project',
-        schemaVersion: 3,
+        schemaVersion: 4,
         tool: 'Barcode-Werkstatt Plus',
         exportedAt: new Date().toISOString(),
         project: {
@@ -867,11 +869,15 @@ WS-B001</textarea>
         versions: projectVersions
       };
     }
-    function applySnapshotState(state){
+    function applySnapshotState(state, fallbackDescription){
       if(!state) return;
 
       if(state.projectText && Object.prototype.hasOwnProperty.call(state.projectText, 'description')){
         setValue('projectDescription', state.projectText.description || '');
+      } else if(typeof fallbackDescription === 'string') {
+        setValue('projectDescription', fallbackDescription);
+      } else {
+        setValue('projectDescription', '');
       }
 
       const type = state.barcode?.type || 'CODE128';
@@ -921,7 +927,17 @@ WS-B001</textarea>
       setValue('projectDescription', data.project?.description || '');
 
       if(Array.isArray(data.versions)){
-        projectVersions = data.versions;
+        projectVersions = data.versions.map(v => {
+          v.state = v.state || {};
+          v.state.projectText = v.state.projectText || {};
+          if(!Object.prototype.hasOwnProperty.call(v.state.projectText, 'description')){
+            v.state.projectText.description = v.projectDescription || '';
+          }
+          if(!Object.prototype.hasOwnProperty.call(v, 'projectDescription')){
+            v.projectDescription = v.state.projectText.description || '';
+          }
+          return v;
+        });
       } else {
         projectVersions = [];
       }
@@ -937,7 +953,7 @@ WS-B001</textarea>
         generatedCodes: data.generatedCodes
       };
 
-      applySnapshotState(state);
+      applySnapshotState(state, data.project?.description || '');
       renderVersions();
 
       const status = $('projectStatus');
@@ -947,6 +963,8 @@ WS-B001</textarea>
     }
     function saveNewProjectVersion(){
       const snapshot = snapshotState();
+      snapshot.projectText = snapshot.projectText || {};
+      snapshot.projectText.description = getValue('projectDescription') || '';
       const maxNumber = projectVersions.reduce((max, v) => Math.max(max, Number(v.number || 0)), 0);
       const nextNumber = maxNumber + 1;
       const version = {
@@ -978,7 +996,7 @@ WS-B001</textarea>
         return;
       }
       currentVersionId = version.id;
-      applySnapshotState(version.state);
+      applySnapshotState(version.state, version.projectDescription || '');
       renderVersions();
       const status = $('projectStatus');
       if(status) status.textContent = `Version ${version.number} geladen. Änderungen daran werden beim Speichern als neue Version angelegt.`;
@@ -1000,10 +1018,22 @@ WS-B001</textarea>
       const newNote = prompt('Neue Versionsnotiz:', oldNote);
       if(newNote === null) return;
 
+      const oldDescription = version.projectDescription || version.state?.projectText?.description || '';
+      const newDescription = prompt('Neue Beschreibung / Versionsnotiz im großen Textfeld:', oldDescription);
+      if(newDescription === null) return;
+
       const cleanTitle = String(newTitle).trim();
       version.title = cleanTitle || oldTitle;
       version.note = String(newNote).trim();
+      version.projectDescription = String(newDescription);
+      version.state = version.state || {};
+      version.state.projectText = version.state.projectText || {};
+      version.state.projectText.description = String(newDescription);
       version.updatedAt = new Date().toISOString();
+
+      if(currentVersionId === version.id){
+        setValue('projectDescription', String(newDescription));
+      }
 
       renderVersions();
       saveLocalDraftSoon();
