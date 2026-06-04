@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Etiketten-Designer v80.1</title>
+  <title>Barcode-Werkstatt Plus</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -166,7 +166,6 @@
 
 
 
-    /* v80 · flexibler Etiketten-Designer: saubere, editierbare Rahmen ohne Schatten-Artefakte */
     .label-cell{
       --label-bg:#ffffff;
       --label-radius:16px;
@@ -436,8 +435,6 @@
 
           <div class="label-design-card">
             <h3>Etiketten-Design</h3>
-            <p class="template-hint warn"><strong>v80:</strong> Die Vorlage ist nur ein Startpunkt. Danach kannst du Rahmen, Radius, Balken und Farben frei anpassen. Der Barcode bleibt in einem weißen Lesebereich und wird nicht von Deko überdeckt.</p>
-
             <div class="field">
               <label for="labelTemplate">Vorlage</label>
               <select id="labelTemplate">
@@ -629,13 +626,6 @@ WS-B001</textarea>
                   </div>
                   <p class="field-note" style="margin-top:8px;">A4-Hinweis: Browser-Druckdialog auf A4 und Skalierung 100 % prüfen. Je Drucker kann „randlos“ unterschiedlich funktionieren.</p>
                 </div>
-              </div>
-            </details>
-            <details class="advanced-box">
-              <summary>Profi-Einstellungen vorbereitet</summary>
-              <div class="advanced-content">
-                <p class="field-note">Hier können später Vorlagen, feste A4-Etikettenmaße, DPI-/Druckqualitätsoptionen, Ruhezone/Rand und Spezialoptionen je Barcode-Art ergänzt werden.</p>
-                <div class="warning-soft"><strong>Absicht:</strong> Die Basis bleibt einfach sichtbar. Profi-Optionen werden einklappbar gesammelt, damit das Tool mächtig bleibt, aber nicht überladen wirkt.</div>
               </div>
             </details>
             <details class="advanced-box" open>
@@ -1580,7 +1570,7 @@ WS-B001</textarea>
       };
     }
     function templateClass(){
-      return 'frame-designer-v80';
+      return 'frame-designer-v80-3';
     }
     function setDesignValue(id, value){
       const el = $(id);
