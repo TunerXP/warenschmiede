@@ -52,6 +52,12 @@
       box-shadow:0 0 0 4px rgba(241,145,62,.08),0 18px 36px -26px rgba(241,145,62,.8);
       font-weight:950;font-size:1.2rem;letter-spacing:-.06em;
     }
+    .tool-logo{
+      width:54px;height:54px;border-radius:16px;object-fit:cover;flex:0 0 auto;
+      border:1px solid rgba(241,145,62,.38);
+      box-shadow:0 0 0 4px rgba(241,145,62,.08),0 18px 36px -26px rgba(15,23,42,.55);
+      background:var(--surface);
+    }
     .brand h1{margin:0;font-size:clamp(1.15rem,2vw,1.55rem);letter-spacing:-.04em;white-space:nowrap}
     .top-actions{display:flex;align-items:center;gap:9px;justify-content:flex-end}
     .btn{
@@ -115,7 +121,7 @@
     <header class="topbar">
       <div class="topbar-inner">
         <div class="brand">
-          <div class="brand-mark" aria-hidden="true">QR</div>
+          <img class="tool-logo" src="../assets/img/qr-werkstatt-plus-logo.png" alt="QR-Werkstatt Plus Logo">
           <div><h1>QR-Werkstatt Plus</h1></div>
         </div>
         <div class="top-actions">
@@ -143,6 +149,12 @@
             <button class="mode-btn" data-mode="whatsapp"><span>💬</span><span>WhatsApp</span></button>
             <button class="mode-btn" data-mode="sms"><span>💌</span><span>SMS</span></button>
             <button class="mode-btn" data-mode="maps"><span>📍</span><span>Standort</span></button>
+            <button class="mode-btn" data-mode="review"><span>⭐</span><span>Bewertung</span></button>
+            <button class="mode-btn" data-mode="sepa"><span>🏦</span><span>SEPA</span></button>
+            <button class="mode-btn" data-mode="paypal"><span>💶</span><span>PayPal</span></button>
+            <button class="mode-btn" data-mode="event"><span>📅</span><span>Termin</span></button>
+            <button class="mode-btn" data-mode="app"><span>📲</span><span>App-Link</span></button>
+            <button class="mode-btn" data-mode="crypto"><span>₿</span><span>Crypto</span></button>
           </div>
 
           <div class="hint" id="modeHint">Scan öffnet eine Webseite. Kurze Links ergeben stabilere QR-Codes.</div>
@@ -188,15 +200,53 @@
             <section class="form-section" data-form="maps">
               <div class="field"><label for="mapsQuery">Adresse oder Ort</label><input id="mapsQuery" placeholder="Donaueschingen"></div>
             </section>
+            <section class="form-section" data-form="review">
+              <div class="field"><label for="reviewUrl">Bewertungs-Link</label><input id="reviewUrl" type="url" placeholder="https://g.page/r/.../review"></div>
+              <p class="field-note">Für Google-Bewertungen, Shop-Bewertungen oder Feedback-Formulare.</p>
+            </section>
+            <section class="form-section" data-form="sepa">
+              <div class="field"><label for="sepaName">Empfänger</label><input id="sepaName" placeholder="Max Mustermann"></div>
+              <div class="field"><label for="sepaIban">IBAN</label><input id="sepaIban" placeholder="DE00 0000 0000 0000 0000 00"></div>
+              <div class="row">
+                <div class="field"><label for="sepaAmount">Betrag EUR</label><input id="sepaAmount" placeholder="25.00"></div>
+                <div class="field"><label for="sepaBic">BIC optional</label><input id="sepaBic" placeholder="GENODE..."></div>
+              </div>
+              <div class="field"><label for="sepaPurpose">Verwendungszweck</label><input id="sepaPurpose" placeholder="Rechnung 2026-001"></div>
+            </section>
+            <section class="form-section" data-form="paypal">
+              <div class="field"><label for="paypalUrl">PayPal-Link</label><input id="paypalUrl" type="url" placeholder="https://paypal.me/deinname"></div>
+              <p class="field-note">Am besten einen offiziellen PayPal.me- oder Zahlungslink verwenden.</p>
+            </section>
+            <section class="form-section" data-form="event">
+              <div class="field"><label for="eventTitle">Titel</label><input id="eventTitle" placeholder="Termin"></div>
+              <div class="row">
+                <div class="field"><label for="eventStart">Start</label><input id="eventStart" type="datetime-local"></div>
+                <div class="field"><label for="eventEnd">Ende</label><input id="eventEnd" type="datetime-local"></div>
+              </div>
+              <div class="field"><label for="eventLocation">Ort</label><input id="eventLocation" placeholder="Donaueschingen"></div>
+              <div class="field"><label for="eventDesc">Beschreibung</label><textarea id="eventDesc" placeholder="Kurze Beschreibung"></textarea></div>
+            </section>
+            <section class="form-section" data-form="app">
+              <div class="field"><label for="appUrl">App- oder Store-Link</label><input id="appUrl" type="url" placeholder="https://..."></div>
+              <p class="field-note">Für App Store, Play Store, Downloadseiten oder interne App-Links.</p>
+            </section>
+            <section class="form-section" data-form="crypto">
+              <div class="row">
+                <div class="field"><label for="cryptoType">Coin</label><select id="cryptoType"><option value="bitcoin">Bitcoin</option><option value="ethereum">Ethereum</option><option value="litecoin">Litecoin</option></select></div>
+                <div class="field"><label for="cryptoAmount">Betrag optional</label><input id="cryptoAmount" placeholder="0.001"></div>
+              </div>
+              <div class="field"><label for="cryptoAddress">Adresse</label><input id="cryptoAddress" placeholder="Wallet-Adresse"></div>
+              <div class="field"><label for="cryptoLabel">Label optional</label><input id="cryptoLabel" placeholder="Warenschmiede"></div>
+            </section>
           </div>
         </div>
       </section>
 
       <section class="center-stage">
         <article class="hero-card">
-          <p class="eyebrow">Warenschmiede Tool-Test v50</p>
+          <p class="eyebrow">Warenschmiede Tool-Test v51</p>
           <h2>QR-Codes lokal im Browser erstellen.</h2>
-          <p>Dieser Stand testet das neue kleine W-TOOLS-Menü: viel Arbeitsfläche im Tool, aber trotzdem schnelle Navigation zur Tool-Übersicht, Downloads, Kontakt und 3D-Druck-Wissen.</p>
+          <p>Dieser Stand nutzt das neue zentrale W-TOOLS-Menü und bringt die wichtigsten alten QR-Modi wieder zurück: SEPA, PayPal, Bewertung, Termin, App-Link und Crypto.</p>
         </article>
 
         <section class="panel">
@@ -270,13 +320,25 @@
       phone:'Startet einen Telefonanruf.',
       whatsapp:'Öffnet einen WhatsApp-Chat mit Nummer und optionaler Nachricht.',
       sms:'Öffnet eine SMS an die Nummer.',
-      maps:'Öffnet eine Suche/Route in Google Maps.'
+      maps:'Öffnet eine Suche/Route in Google Maps.',
+      review:'Öffnet einen Bewertungs- oder Feedback-Link.',
+      sepa:'Erstellt einen SEPA-Überweisungs-QR. Daten vor Nutzung genau prüfen.',
+      paypal:'Öffnet einen PayPal-Link.',
+      event:'Erstellt einen Kalendertermin im iCalendar-Format.',
+      app:'Öffnet einen App- oder Store-Link.',
+      crypto:'Erstellt einen einfachen Crypto-Payment-Link.'
     };
-    const labels = {url:'Link',text:'Text',wifi:'WLAN',vcard:'vCard',email:'E-Mail',phone:'Telefon',whatsapp:'WhatsApp',sms:'SMS',maps:'Standort'};
+    const labels = {url:'Link',text:'Text',wifi:'WLAN',vcard:'vCard',email:'E-Mail',phone:'Telefon',whatsapp:'WhatsApp',sms:'SMS',maps:'Standort',review:'Bewertung',sepa:'SEPA',paypal:'PayPal',event:'Termin',app:'App-Link',crypto:'Crypto'};
 
     function escWifi(value){ return String(value || '').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/:/g,'\\:'); }
     function val(id){ return ($(id)?.value || '').trim(); }
 
+    function dateToIcs(value){
+      if(!value) return '';
+      const d = new Date(value);
+      if(Number.isNaN(d.getTime())) return '';
+      return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
+    }
     function buildPayload(){
       switch(currentMode){
         case 'url': return val('urlValue') || 'https://www.warenschmiede.com/';
@@ -305,6 +367,51 @@
         case 'whatsapp': return `https://wa.me/${val('waPhone').replace(/\\D/g,'')}?text=${encodeURIComponent(val('waText'))}`;
         case 'sms': return `SMSTO:${val('smsPhone')}:${val('smsText')}`;
         case 'maps': return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(val('mapsQuery'))}`;
+        case 'review': return val('reviewUrl') || 'https://www.warenschmiede.com/kontakt/kontakt.html';
+        case 'sepa': {
+          const name = val('sepaName');
+          const iban = val('sepaIban').replace(/\s+/g,'');
+          const bic = val('sepaBic');
+          const amount = val('sepaAmount').replace(',', '.');
+          const purpose = val('sepaPurpose');
+          return [
+            'BCD','002','1','SCT',
+            bic,
+            name,
+            iban,
+            amount ? `EUR${amount}` : '',
+            '',
+            '',
+            purpose
+          ].join('\n');
+        }
+        case 'paypal': return val('paypalUrl') || 'https://paypal.me/';
+        case 'event': {
+          const start = dateToIcs(val('eventStart'));
+          const end = dateToIcs(val('eventEnd')) || start;
+          return [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'BEGIN:VEVENT',
+            `SUMMARY:${val('eventTitle') || 'Termin'}`,
+            start ? `DTSTART:${start}` : '',
+            end ? `DTEND:${end}` : '',
+            val('eventLocation') ? `LOCATION:${val('eventLocation')}` : '',
+            val('eventDesc') ? `DESCRIPTION:${val('eventDesc')}` : '',
+            'END:VEVENT',
+            'END:VCALENDAR'
+          ].filter(Boolean).join('\n');
+        }
+        case 'app': return val('appUrl') || 'https://www.warenschmiede.com/';
+        case 'crypto': {
+          const type = val('cryptoType') || 'bitcoin';
+          const address = val('cryptoAddress');
+          const params = new URLSearchParams();
+          if(val('cryptoAmount')) params.set('amount', val('cryptoAmount'));
+          if(val('cryptoLabel')) params.set('label', val('cryptoLabel'));
+          const qs = params.toString();
+          return `${type}:${address}${qs ? '?' + qs : ''}`;
+        }
         default: return 'Warenschmiede';
       }
     }
