@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Hilfe v78</title>
+  <title>Barcode-Werkstatt Plus · Etiketten-Design v79</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -125,6 +125,21 @@
     .sheet-preview{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;max-height:420px;overflow:auto}
     .label-grid{display:grid;gap:8px}.label-cell{border:1px dashed #9fb2c5;border-radius:10px;padding:8px;text-align:center;min-height:86px;display:grid;align-content:center;justify-items:center;background:#fff;color:#102033;page-break-inside:avoid}
     .label-cell svg{max-width:100%;height:auto}.label-text{font:700 10px var(--mono);margin-top:4px;word-break:break-all}
+    .label-design-card{margin-top:14px;padding:14px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--surface) 82%,transparent);display:grid;gap:12px}
+    .label-design-card h3{margin:0}
+    .label-title-text{font-weight:950;margin-bottom:4px;letter-spacing:.03em;line-height:1.1;word-break:break-word}
+    .label-title-bottom{margin-top:5px;margin-bottom:0}
+    .label-cell.frame-none{border:1px dashed #9fb2c5}
+    .label-cell.frame-soft{border:2px solid #9fb2c5;border-radius:14px}
+    .label-cell.frame-bold{border:3px solid #102033;border-radius:14px}
+    .label-cell.frame-corner{border:0;position:relative;border-radius:10px}
+    .label-cell.frame-corner::before{content:"";position:absolute;inset:6px;border:2px solid currentColor;border-radius:8px;clip-path:polygon(0 0,26% 0,26% 8%,8% 8%,8% 26%,0 26%,0 0,74% 0,100% 0,100% 26%,92% 26%,92% 8%,74% 8%,74% 0,100% 74%,100% 100%,74% 100%,74% 92%,92% 92%,92% 74%,100% 74%,26% 100%,0 100%,0 74%,8% 74%,8% 92%,26% 92%,26% 100%);pointer-events:none}
+    .label-cell.frame-badge .label-title-text{display:inline-block;padding:3px 8px;border-radius:999px;background:currentColor;color:#fff}
+    .label-cell.frame-blue{border:2px solid #2f8edf;border-radius:14px;background:linear-gradient(180deg,#ffffff,#eef6ff)}
+    .label-cell.frame-orange{border:2px solid #f1913e;border-radius:14px;background:linear-gradient(180deg,#fffaf4,#fff1df)}
+    .label-cell.frame-green{border:2px solid #2baa72;border-radius:14px;background:linear-gradient(180deg,#f8fff9,#eaf8f0)}
+    .template-hint{color:var(--muted);font-size:.78rem;line-height:1.35;margin:0}
+
     dialog{border:0;border-radius:24px;padding:0;max-width:min(900px,calc(100vw - 28px));background:var(--surface);color:var(--text);box-shadow:0 28px 90px -46px rgba(0,0,0,.9)}dialog::backdrop{background:rgba(15,23,42,.58);backdrop-filter:blur(5px)}.modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:center}.modal-body{padding:20px;color:var(--muted);line-height:1.58}.close-x{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font-size:1.1rem}
     .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:#0f172a;color:#fff;border-radius:999px;padding:11px 16px;font-weight:850;box-shadow:0 20px 60px -35px #000;transition:.22s ease;z-index:80}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
     @media(max-width:1280px){.main{grid-template-columns:1fr 1fr}.preview-card{position:static}.center-stage{grid-column:1/-1;order:3}}
@@ -354,6 +369,57 @@
             </div>
           </div>
           <div class="content-picker-note" id="modeHint">Ein einzelner Barcode für Artikelnummer, Auftrag oder Lagerfach.</div>
+
+          <div class="label-design-card">
+            <h3>Etiketten-Design</h3>
+            <p class="template-hint">Gestaltet die Etiketten im Druckbogen. Der Barcode selbst bleibt sauber lesbar.</p>
+            <div class="field">
+              <label for="labelTemplate">Vorlage</label>
+              <select id="labelTemplate">
+                <option value="plain" selected>Standard weiß</option>
+                <option value="blue">Blau modern</option>
+                <option value="orange">Orange Warenschmiede</option>
+                <option value="green">Grün Lager / OK</option>
+                <option value="corner">Ecken-Rahmen</option>
+                <option value="badge">Scan-Me-Badge</option>
+                <option value="bold">Industrie kräftig</option>
+              </select>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label for="showLabelTitle">Titel anzeigen</label>
+                <select id="showLabelTitle">
+                  <option value="false" selected>Nein</option>
+                  <option value="true">Ja</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="labelTitlePosition">Titelposition</label>
+                <select id="labelTitlePosition">
+                  <option value="top" selected>Oben</option>
+                  <option value="bottom">Unten</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="labelTitleText">Titeltext</label>
+              <input id="labelTitleText" value="SCAN ME" placeholder="z. B. SCAN ME, Lagerplatz, Artikel">
+            </div>
+            <div class="row">
+              <div class="field color-row">
+                <div><label for="labelTitleColor">Titelfarbe</label><input id="labelTitleColorText" value="#102033"></div>
+                <input id="labelTitleColor" type="color" value="#102033">
+              </div>
+              <div class="field">
+                <label for="labelTitleSize">Titelgröße</label>
+                <select id="labelTitleSize">
+                  <option value="10">Klein</option>
+                  <option value="12" selected>Normal</option>
+                  <option value="15">Groß</option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1376,23 +1442,80 @@ WS-B001</textarea>
         <div class="code-row"><span>${idx+1}</span><code>${escapeHtml(item.value)}</code><span>×${item.qty || 1}</span></div>
       `).join('') : '<div class="code-row"><span>–</span><code>Keine Codes erzeugt</code><span></span></div>';
     }
+    function labelDesign(){
+      const template = getValue('labelTemplate') || 'plain';
+      const showTitle = getValue('showLabelTitle') === 'true';
+      const title = getValue('labelTitleText') || '';
+      const pos = getValue('labelTitlePosition') || 'top';
+      const color = getValue('labelTitleColorText') || '#102033';
+      const size = Number(getValue('labelTitleSize') || 12);
+      return {template, showTitle, title, pos, color, size};
+    }
+    function templateClass(template){
+      return ({
+        plain:'frame-none',
+        blue:'frame-blue',
+        orange:'frame-orange',
+        green:'frame-green',
+        corner:'frame-corner',
+        badge:'frame-badge',
+        bold:'frame-bold'
+      })[template] || 'frame-none';
+    }
+    function applyLabelTemplate(){
+      const tpl = getValue('labelTemplate') || 'plain';
+      const presets = {
+        plain:  {show:'false', title:'', color:'#102033', size:'12', pos:'top'},
+        blue:   {show:'true', title:'SCAN ME', color:'#2f8edf', size:'12', pos:'top'},
+        orange: {show:'true', title:'WARENSCHMIEDE', color:'#f1913e', size:'12', pos:'top'},
+        green:  {show:'true', title:'LAGER', color:'#2baa72', size:'12', pos:'top'},
+        corner: {show:'true', title:'SCAN ME', color:'#102033', size:'12', pos:'top'},
+        badge:  {show:'true', title:'SCAN ME', color:'#102033', size:'12', pos:'top'},
+        bold:   {show:'true', title:'BARCODE', color:'#102033', size:'15', pos:'top'}
+      };
+      const p = presets[tpl];
+      if(!p) return;
+      setValue('showLabelTitle', p.show);
+      setValue('labelTitleText', p.title);
+      setValue('labelTitleColorText', p.color);
+      setValue('labelTitleColor', p.color);
+      setValue('labelTitleSize', p.size);
+      setValue('labelTitlePosition', p.pos);
+      buildList();
+      generate();
+      updateLoadedVersionLiveSoon();
+      saveLocalDraftSoon();
+    }
     function renderSheet(){
       updatePrintLayoutVars();
       const codes = expandedCodes();
       $('sheetCount').textContent = `${codes.length} Etiketten`;
       const cols = Number($('labelsPerRow').value || 3);
+      const design = labelDesign();
       const grid = $('labelGrid');
       grid.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
       grid.innerHTML = '';
       codes.forEach((item)=>{
         const cell = document.createElement('div');
-        cell.className = 'label-cell';
+        cell.className = 'label-cell ' + templateClass(design.template);
+        cell.style.color = design.color;
+        const titleTop = document.createElement('div');
+        titleTop.className = 'label-title-text';
+        titleTop.style.color = design.color;
+        titleTop.style.fontSize = design.size + 'px';
+        titleTop.textContent = design.title;
+        if(design.showTitle && design.title && design.pos === 'top') cell.appendChild(titleTop);
         const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
         cell.appendChild(svg);
         const label = document.createElement('div');
         label.className = 'label-text';
         label.textContent = item.value;
         cell.appendChild(label);
+        if(design.showTitle && design.title && design.pos === 'bottom'){
+          const titleBottom = titleTop.cloneNode(true);
+          titleBottom.classList.add('label-title-bottom');
+          cell.appendChild(titleBottom);
+        }
         grid.appendChild(cell);
         try { renderBarcodeToSvg(svg, item.value, true); } catch(e) { label.textContent = 'Fehler: ' + item.value; }
       });
@@ -1578,6 +1701,14 @@ WS-B001</textarea>
           printMargin: getValue('printMargin'),
           labelGap: getValue('labelGap')
         },
+        labelDesign: {
+          template: getValue('labelTemplate'),
+          showTitle: getValue('showLabelTitle'),
+          titleText: getValue('labelTitleText'),
+          titlePosition: getValue('labelTitlePosition'),
+          titleColor: getValue('labelTitleColorText'),
+          titleSize: getValue('labelTitleSize')
+        },
         generatedCodes: generatedCodes,
         typeDrafts: JSON.parse(JSON.stringify(typeDrafts || {}))
       };
@@ -1646,6 +1777,14 @@ WS-B001</textarea>
       setValue('labelScale', state.layout?.labelScale || 'medium');
       setValue('printMargin', state.layout?.printMargin || '12');
       setValue('labelGap', state.layout?.labelGap || '8');
+
+      setValue('labelTemplate', state.labelDesign?.template || 'plain');
+      setValue('showLabelTitle', state.labelDesign?.showTitle || 'false');
+      setValue('labelTitleText', state.labelDesign?.titleText || 'SCAN ME');
+      setValue('labelTitlePosition', state.labelDesign?.titlePosition || 'top');
+      setValue('labelTitleColorText', state.labelDesign?.titleColor || '#102033');
+      setValue('labelTitleColor', state.labelDesign?.titleColor || '#102033');
+      setValue('labelTitleSize', state.labelDesign?.titleSize || '12');
 
       captureTypeDraft(type);
       setType(type);
@@ -1981,7 +2120,8 @@ WS-B001</textarea>
         el.addEventListener('input',()=>{buildList();generate();updateLoadedVersionLiveSoon();saveLocalDraftSoon();});
         el.addEventListener('change',()=>{buildList();generate();updateLoadedVersionLiveSoon();saveLocalDraftSoon();});
       });
-      syncColor('lineColor','lineColorText'); syncColor('bgColor','bgColorText');
+      syncColor('lineColor','lineColorText'); syncColor('bgColor','bgColorText'); syncColor('labelTitleColor','labelTitleColorText');
+      $('labelTemplate')?.addEventListener('change', applyLabelTemplate);
       $('btnBuildList').addEventListener('click',()=>{buildList();toast('Liste erzeugt')});
       $('btnCsv').addEventListener('click',downloadCsv);
       $('btnGenerate').addEventListener('click',generate);
