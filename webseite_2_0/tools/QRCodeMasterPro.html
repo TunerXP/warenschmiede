@@ -97,6 +97,9 @@
     .hero-card{padding:clamp(20px,3vw,34px);background:linear-gradient(135deg,var(--surface),color-mix(in srgb,var(--surface) 82%,rgba(78,163,241,.2)));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
     .hero-card h2{font-size:clamp(1.8rem,3vw,2.65rem);letter-spacing:-.055em;line-height:1.02;margin:0 0 12px}
     .hero-card p{margin:0;color:var(--muted);line-height:1.6;max-width:780px}
+    .trust-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+    .trust-badge{border:1px solid rgba(43,170,114,.28);background:rgba(43,170,114,.08);color:var(--text);border-radius:999px;padding:7px 11px;font-size:.8rem;font-weight:850}
+    html[data-theme="dark"] .trust-badge{background:rgba(43,170,114,.13)}
     .preview-card{text-align:center;padding:clamp(18px,2vw,28px);position:sticky;top:86px}
     .qr-frame{display:inline-grid;place-items:center;padding:18px;background:#fff;border:1px solid #e2e8f0;border-radius:30px;box-shadow:0 24px 70px -44px rgba(15,23,42,.9);margin:12px auto 16px;max-width:100%}
     #qr-output{width:min(300px,70vw);height:min(300px,70vw);display:grid;place-items:center}
@@ -290,6 +293,8 @@
             <button class="mode-btn" data-mode="review"><span>⭐</span><span>Bewertung</span></button>
             <button class="mode-btn" data-mode="sepa"><span>🏦</span><span>SEPA</span></button>
             <button class="mode-btn" data-mode="paypal"><span>💶</span><span>PayPal</span></button>
+            <button class="mode-btn" data-mode="paymentlink"><span>💳</span><span>Zahlungslink</span></button>
+            <button class="mode-btn" data-mode="wero"><span>🇪🇺</span><span>Wero</span></button>
             <button class="mode-btn" data-mode="event"><span>📅</span><span>Termin</span></button>
             <button class="mode-btn" data-mode="app"><span>📲</span><span>App-Link</span></button>
             <button class="mode-btn" data-mode="crypto"><span>₿</span><span>Crypto</span></button>
@@ -355,6 +360,19 @@
               <div class="field"><label for="paypalUrl">PayPal-Link</label><input id="paypalUrl" type="url" placeholder="https://paypal.me/deinname"></div>
               <p class="field-note">Am besten einen offiziellen PayPal.me- oder Zahlungslink verwenden.</p>
             </section>
+            <section class="form-section" data-form="paymentlink">
+              <div class="field"><label for="paymentUrl">Zahlungslink</label><input id="paymentUrl" type="url" placeholder="https://..."></div>
+              <div class="row">
+                <div class="field"><label for="paymentProvider">Anbieter / Zweck</label><input id="paymentProvider" placeholder="z. B. SumUp, Stripe, Shop, Rechnung"></div>
+                <div class="field"><label for="paymentNote">Hinweis optional</label><input id="paymentNote" placeholder="z. B. Rechnung 2026-001"></div>
+              </div>
+              <p class="field-note">Für allgemeine Zahlungslinks wie Shop, Stripe, SumUp, PayPal-Link, Rechnungsseite oder spätere Zahlungsdienste. Der QR-Code öffnet einfach den angegebenen Link.</p>
+            </section>
+            <section class="form-section" data-form="wero">
+              <div class="field"><label for="weroNote">Wero-Hinweis</label><textarea id="weroNote" readonly>Wero ist als Zahlungsart vorgemerkt. Sobald ein stabiler, praktisch nutzbarer QR-/Link-Standard klar ist, kann diese Funktion sauber ergänzt werden. Nutze bis dahin Zahlungslink allgemein, SEPA oder PayPal.</textarea></div>
+              <div class="field"><label for="weroFallbackUrl">Optionaler Zahlungslink als Übergang</label><input id="weroFallbackUrl" type="url" placeholder="https://..."></div>
+              <p class="field-note">Ehrlicher Platzhalter: Noch keine fertige Wero-QR-Funktion. Der optionale Link erzeugt nur einen normalen Link-QR-Code.</p>
+            </section>
             <section class="form-section" data-form="event">
               <div class="field"><label for="eventTitle">Titel</label><input id="eventTitle" placeholder="Termin"></div>
               <div class="row">
@@ -382,9 +400,9 @@
 
       <section class="center-stage">
         <article class="hero-card">
-          <p class="eyebrow">Warenschmiede Tool-Test v54</p>
+          <p class="eyebrow">Warenschmiede Tool-Test v55</p>
           <h2>QR-Codes lokal im Browser erstellen.</h2>
-          <p>Dieser Stand nutzt das neue zentrale W-TOOLS-Menü und bringt die wichtigsten alten QR-Modi wieder zurück: SEPA, PayPal, Bewertung, Termin, App-Link und Crypto.</p>
+          <p>Dieser Stand nutzt das neue zentrale W-TOOLS-Menü und bringt die QR-Arten sauberer in Ordnung – besonders den Zahlungsbereich mit SEPA, PayPal, Zahlungslink und Wero-Vormerkung.</p><div class="trust-strip"><span class="trust-badge">100% werbefrei</span><span class="trust-badge">kein Tracking</span><span class="trust-badge">lokal im Browser</span><span class="trust-badge">verständlich erklärt</span></div>
         </article>
 
         <section class="panel">
@@ -446,6 +464,7 @@
           <button type="button" data-help-tab="types1">QR-Arten 1 <span>Link, Text, WLAN, vCard</span></button>
           <button type="button" data-help-tab="types2">QR-Arten 2 <span>E-Mail, Telefon, WhatsApp, SMS</span></button>
           <button type="button" data-help-tab="types3">QR-Arten 3 <span>Standort, Bewertung, SEPA, PayPal</span></button>
+          <button type="button" data-help-tab="payment">Zahlungen <span>SEPA, PayPal, Link, Wero</span></button>
           <button type="button" data-help-tab="types4">QR-Arten 4 <span>Termin, App-Link, Crypto</span></button>
           <button type="button" data-help-tab="design">Design & Druck <span>Scanbarkeit und Export</span></button>
           <button type="button" data-help-tab="safety">Sicherheit <span>Datenschutz und Grenzen</span></button>
@@ -538,6 +557,27 @@
             <p>Öffnet einen PayPal.me- oder Zahlungslink. Am besten nur offizielle PayPal-Links verwenden.</p>
           </section>
 
+
+          <section class="help-page" data-help-page="payment">
+            <h3>Zahlungsbereich: sauber, ehrlich und zukunftsfähig</h3>
+            <p>Der Zahlungsbereich ist bewusst getrennt aufgebaut. Nicht jede Zahlungsart funktioniert gleich, und nicht jeder Dienst hat einen offenen QR-Standard. Deshalb unterscheidet die QR-Werkstatt zwischen echten Standards, Links und vorbereiteten Zukunftsfunktionen.</p>
+
+            <h4>SEPA / GiroCode</h4>
+            <p>Für klassische Überweisungen. Der Code enthält Empfänger, IBAN, optional Betrag und Verwendungszweck. Viele Banking-Apps können solche Daten übernehmen.</p>
+            <div class="help-warning"><strong>Wichtig:</strong> SEPA-Daten immer genau prüfen. Ein QR-Code macht die Eingabe bequemer, ersetzt aber keine Kontrolle.</div>
+
+            <h4>PayPal</h4>
+            <p>Für PayPal.me-Links oder offizielle PayPal-Zahlungslinks. Der QR-Code öffnet den Link im Browser oder in der App, je nach Gerät.</p>
+
+            <h4>Zahlungslink allgemein</h4>
+            <p>Für Anbieter wie Shop-Seiten, Stripe, SumUp, Rechnungsportale oder andere Zahlungsseiten. Das ist flexibel und aktuell der sauberste Weg, wenn kein spezieller QR-Standard nötig ist.</p>
+            <div class="help-example"><strong>Beispiel:</strong> Du erstellst eine Rechnungsseite oder einen Zahlungslink und machst daraus einen QR-Code für Rechnung, Lieferschein oder Ausdruck.</div>
+
+            <h4>Wero</h4>
+            <p>Wero ist vorgemerkt, aber noch nicht als fertige QR-Funktion aktiv. Sobald ein stabiler, praktisch nutzbarer QR- oder Link-Standard klar ist, kann die QR-Werkstatt diese Funktion sauber ergänzen.</p>
+            <div class="help-warning"><strong>Ehrlich bleiben:</strong> Die QR-Werkstatt verkauft Wero nicht als fertige Funktion, solange die technische Nutzung nicht sauber geklärt ist. Bis dahin: Zahlungslink allgemein, SEPA oder PayPal verwenden.</div>
+          </section>
+
           <section class="help-page" data-help-page="types4">
             <h3>QR-Arten: Termin, App-Link und Crypto</h3>
             <h4>Termin</h4>
@@ -605,11 +645,13 @@
       review:'Öffnet einen Bewertungs- oder Feedback-Link.',
       sepa:'Erstellt einen SEPA-Überweisungs-QR. Daten vor Nutzung genau prüfen.',
       paypal:'Öffnet einen PayPal-Link.',
+      paymentlink:'Öffnet einen allgemeinen Zahlungslink, z. B. Shop, SumUp, Stripe oder Rechnung.',
+      wero:'Wero ist vorbereitet, aber noch nicht als echte QR-Funktion aktiv.',
       event:'Erstellt einen Kalendertermin im iCalendar-Format.',
       app:'Öffnet einen App- oder Store-Link.',
       crypto:'Erstellt einen einfachen Crypto-Payment-Link.'
     };
-    const labels = {url:'Link',text:'Text',wifi:'WLAN',vcard:'vCard',email:'E-Mail',phone:'Telefon',whatsapp:'WhatsApp',sms:'SMS',maps:'Standort',review:'Bewertung',sepa:'SEPA',paypal:'PayPal',event:'Termin',app:'App-Link',crypto:'Crypto'};
+    const labels = {url:'Link',text:'Text',wifi:'WLAN',vcard:'vCard',email:'E-Mail',phone:'Telefon',whatsapp:'WhatsApp',sms:'SMS',maps:'Standort',review:'Bewertung',sepa:'SEPA',paypal:'PayPal',paymentlink:'Zahlungslink',wero:'Wero',event:'Termin',app:'App-Link',crypto:'Crypto'};
 
     function escWifi(value){ return String(value || '').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/:/g,'\\:'); }
     function val(id){ return ($(id)?.value || '').trim(); }
@@ -667,6 +709,8 @@
           ].join('\n');
         }
         case 'paypal': return val('paypalUrl') || 'https://paypal.me/';
+        case 'paymentlink': return val('paymentUrl') || 'https://www.warenschmiede.com/kontakt/kontakt.html';
+        case 'wero': return val('weroFallbackUrl') || 'https://www.warenschmiede.com/kontakt/kontakt.html';
         case 'event': {
           const start = dateToIcs(val('eventStart'));
           const end = dateToIcs(val('eventEnd')) || start;
