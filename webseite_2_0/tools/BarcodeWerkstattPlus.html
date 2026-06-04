@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · CSV Excel-sicher v72</title>
+  <title>Barcode-Werkstatt Plus · Prüfung & Druckbogen v73</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -76,6 +76,15 @@
     .select-hint{font-size:.82rem;color:var(--muted);line-height:1.4;margin:8px 0 0}
     .warning-soft{border:1px solid rgba(194,65,58,.25);background:rgba(194,65,58,.07);border-radius:16px;padding:11px 13px;color:var(--muted);font-size:.86rem;line-height:1.45}
     .csv-safe-note{border:1px solid rgba(43,170,114,.24);background:rgba(43,170,114,.08);border-radius:16px;padding:11px 13px;color:var(--muted);font-size:.86rem;line-height:1.45}
+    .validation-box{border:1px solid rgba(43,170,114,.28);background:rgba(43,170,114,.08);border-radius:16px;padding:12px 14px;color:var(--muted);font-size:.88rem;line-height:1.45}
+    .validation-box.bad{border-color:rgba(194,65,58,.32);background:rgba(194,65,58,.08)}
+    .validation-box strong{color:var(--text)}
+    .validation-box ul{margin:8px 0 0;padding-left:1.2rem}
+    .field.invalid input,.field.invalid textarea,.field.invalid select{border-color:rgba(194,65,58,.75);box-shadow:0 0 0 4px rgba(194,65,58,.10)}
+    .field.valid input,.field.valid textarea,.field.valid select{border-color:rgba(43,170,114,.65);box-shadow:0 0 0 4px rgba(43,170,114,.08)}
+    :root{--print-gap:8px;--print-padding:12px}
+    .sheet-preview{padding:var(--print-padding)}
+    .label-grid{gap:var(--print-gap)}
     .project-actions{display:flex;flex-wrap:wrap;gap:10px}
     .project-meta{display:grid;gap:10px}
     .project-status{font-size:.82rem;color:var(--muted);line-height:1.4;padding:10px 12px;border-radius:14px;background:rgba(47,142,223,.08);border:1px solid rgba(47,142,223,.2)}
@@ -193,6 +202,7 @@
             <p class="form-help" id="inputHelp">Code128 kann Buchstaben, Zahlen und viele Sonderzeichen enthalten. Gut für interne IDs.</p>
             <div class="final-code-box" id="finalCodeBox"></div>
             <div class="warning-soft" id="standardWarning" style="display:none;"><strong>Hinweis:</strong> Für offizielle Handels-/Logistikcodes brauchst du gültige Nummern aus der passenden Vergabestelle. Für interne Tests und Werkstattetiketten kannst du eigene Nummern verwenden.</div>
+            <div class="validation-box" id="validationBox"><strong>Prüfung:</strong> Eingaben werden geprüft.</div>
 
             <div class="input-block active" data-input="single">
               <div class="field"><label for="barcodeValue" id="singleValueLabel">Barcode-Inhalt</label><input id="barcodeValue" value="WS-2026-001" placeholder="z. B. WS-2026-001"></div>
@@ -277,6 +287,11 @@ WS-B001</textarea>
                     <div class="field"><label for="copiesPerCode">Kopien pro Code</label><input id="copiesPerCode" type="number" min="1" max="99" value="1"></div>
                     <div class="field"><label for="labelScale">Größe</label><select id="labelScale"><option value="small">Klein</option><option value="medium" selected>Mittel</option><option value="large">Groß</option></select></div>
                   </div>
+                  <div class="row" style="margin-top:10px;">
+                    <div class="field"><label for="printMargin">A4-Rand</label><select id="printMargin"><option value="0">Ohne Rand</option><option value="6">Klein</option><option value="12" selected>Normal</option><option value="20">Groß</option></select></div>
+                    <div class="field"><label for="labelGap">Etikettenabstand</label><select id="labelGap"><option value="4">Eng</option><option value="8" selected>Normal</option><option value="14">Groß</option></select></div>
+                  </div>
+                  <p class="field-note" style="margin-top:8px;">A4-Hinweis: Browser-Druckdialog auf A4 und Skalierung 100 % prüfen. Je Drucker kann „randlos“ unterschiedlich funktionieren.</p>
                 </div>
               </div>
             </details>
@@ -385,7 +400,7 @@ WS-B001</textarea>
   <dialog id="helpDialog">
     <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
     <div class="modal-body">
-      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand schützt Barcode-Inhalte im CSV-Export vor Excel-Zahlenformaten.</p>
+      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand ergänzt grün/rote Eingabeprüfung und A4-Druckbogenoptionen.</p>
       <h3>Arbeitsmodi</h3>
       <ul>
         <li><strong>Einzelcode:</strong> ein Barcode, Export als PNG/SVG oder Druck.</li>
@@ -406,6 +421,10 @@ WS-B001</textarea>
       <p>Die JSON-Projektdatei speichert den aktuellen Stand der Barcode-Werkstatt und zusätzlich den Versionsverlauf. Geladene Versionen werden live bearbeitet; für eine echte Sicherungsdatei lädst du die Projekt-JSON herunter.</p>
       <h3>Übersicht statt Überladung</h3>
       <p>Die häufigsten Barcode-Arten bleiben direkt als Buttons sichtbar. Weitere Typen werden vorbereitet und später Schritt für Schritt ergänzt, damit das Tool nicht überladen wird.</p>
+      <h3>Eingabeprüfung</h3>
+      <p>Das Tool zeigt grün/rot, ob die wichtigsten Eingaben passen. Bei EAN/ITF werden Zahlenlänge und Prüfzifferlogik geprüft. Bei Code39 werden ungültige Zeichen gemeldet.</p>
+      <h3>Druckbogen / A4</h3>
+      <p>Der Druckbogen kann mit Rand und Etikettenabstand angepasst werden. Im Browser-Druckdialog sollte A4 und Skalierung 100 % geprüft werden, weil Drucker und Browser Randbereiche unterschiedlich behandeln.</p>
       <h3>Wichtiger Hinweis</h3>
       <p>Für offizielle Handels-EANs oder Logistikstandards brauchst du gültige Nummern aus der passenden Vergabestelle. Frei erfundene EANs sind für interne Tests okay, aber nicht automatisch echte Produktcodes.</p>
     </div>
@@ -552,7 +571,98 @@ WS-B001</textarea>
       if($('seriesStartLabel')) $('seriesStartLabel').textContent = numeric ? 'Start-Basisnummer' : 'Startnummer';
       if($('seriesPadLabel')) $('seriesPadLabel').textContent = numeric ? 'Basisstellen' : 'Stellen';
     }
+
+    function setFieldState(id, state){
+      const el = $(id);
+      if(!el) return;
+      const field = el.closest('.field');
+      if(!field) return;
+      field.classList.remove('valid','invalid');
+      if(state) field.classList.add(state);
+    }
+    function validateCurrentInputs(){
+      const issues = [];
+      ['barcodeValue','copyValue','copyCount','seriesStart','seriesCount','seriesPad','seriesStep','manualList'].forEach(id=>setFieldState(id,''));
+
+      const raw = String(activeInputValue() || '').trim();
+      const info = typeInfo[currentType];
+
+      if(currentMode === 'single'){
+        if(!raw) issues.push('Einzelcode: Barcode-Inhalt fehlt.');
+        setFieldState('barcodeValue', raw ? 'valid' : 'invalid');
+      }
+
+      if(currentMode === 'copies'){
+        const v = String(getValue('copyValue') || '').trim();
+        const count = Number(getValue('copyCount') || 0);
+        if(!v) issues.push('Gleicher Code: Barcode-Inhalt fehlt.');
+        if(!count || count < 1) issues.push('Gleicher Code: Anzahl muss mindestens 1 sein.');
+        setFieldState('copyValue', v ? 'valid' : 'invalid');
+        setFieldState('copyCount', count >= 1 ? 'valid' : 'invalid');
+      }
+
+      if(currentMode === 'series'){
+        const start = Number(getValue('seriesStart') || 0);
+        const count = Number(getValue('seriesCount') || 0);
+        const pad = Number(getValue('seriesPad') || 0);
+        const step = Number(getValue('seriesStep') || 0);
+        if(!Number.isFinite(start)) issues.push('Serie: Startnummer ist ungültig.');
+        if(!count || count < 1) issues.push('Serie: Anzahl muss mindestens 1 sein.');
+        if(pad < 0) issues.push('Serie: Stellen darf nicht negativ sein.');
+        if(!step || !Number.isFinite(step)) issues.push('Serie: Schrittweite fehlt oder ist ungültig.');
+        setFieldState('seriesStart', Number.isFinite(start) ? 'valid' : 'invalid');
+        setFieldState('seriesCount', count >= 1 ? 'valid' : 'invalid');
+        setFieldState('seriesPad', pad >= 0 ? 'valid' : 'invalid');
+        setFieldState('seriesStep', step && Number.isFinite(step) ? 'valid' : 'invalid');
+      }
+
+      if(currentMode === 'manual'){
+        const lines = String(getValue('manualList') || '').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+        if(!lines.length) issues.push('Manuelle Liste: mindestens eine Zeile eintragen.');
+        setFieldState('manualList', lines.length ? 'valid' : 'invalid');
+      }
+
+      if(info.numericOnly){
+        const digits = raw.replace(/\D/g,'');
+        if(!digits) issues.push(`${info.label}: Es werden Ziffern benötigt.`);
+        if(currentMode === 'single' || currentMode === 'copies' || currentMode === 'manual'){
+          if(digits && digits.length !== info.baseLen && digits.length !== info.fullLen){
+            issues.push(`${info.label}: Erwartet ${info.baseLen} Basisziffern oder ${info.fullLen} Stellen inkl. Prüfziffer.`);
+          }
+        }
+      }
+
+      if(currentType === 'CODE39'){
+        const bad = raw && /[^0-9A-Z \-.$/+%]/.test(raw.toUpperCase());
+        if(bad) issues.push('Code39: Nur Großbuchstaben, Zahlen, Leerzeichen und - . $ / + % verwenden.');
+      }
+
+      if(currentType === 'CODE128' && !raw){
+        issues.push('Code128: Barcode-Inhalt darf nicht leer sein.');
+      }
+
+      const box = $('validationBox');
+      if(box){
+        if(issues.length){
+          box.classList.add('bad');
+          box.innerHTML = '<strong>Prüfung: Bitte korrigieren</strong><ul>' + issues.map(x=>`<li>${escapeHtml(x)}</li>`).join('') + '</ul>';
+        } else {
+          box.classList.remove('bad');
+          box.innerHTML = '<strong>Prüfung: Eingaben passen.</strong><br>Barcode kann erzeugt, exportiert und gedruckt werden.';
+        }
+      }
+
+      return {ok: issues.length === 0, issues};
+    }
+    function updatePrintLayoutVars(){
+      const margin = Number(getValue('printMargin') || 12);
+      const gap = Number(getValue('labelGap') || 8);
+      document.documentElement.style.setProperty('--print-padding', margin + 'px');
+      document.documentElement.style.setProperty('--print-gap', gap + 'px');
+    }
+
     function generate(){
+      updatePrintLayoutVars();
       const raw = activeInputValue();
       const value = normalizeValue(raw) || typeInfo[currentType].sample;
       explainFinalCode(raw);
@@ -560,6 +670,7 @@ WS-B001</textarea>
       $('typePill').textContent = typeInfo[currentType].label;
       $('modePill').textContent = modeInfo[currentMode].label;
       $('lengthPill').textContent = `${value.length} Zeichen`;
+      validateCurrentInputs();
       try{
         renderBarcodeToSvg('#barcodeSvg', value);
       }catch(err){
@@ -690,6 +801,7 @@ WS-B001</textarea>
       `).join('') : '<div class="code-row"><span>–</span><code>Keine Codes erzeugt</code><span></span></div>';
     }
     function renderSheet(){
+      updatePrintLayoutVars();
       const codes = expandedCodes();
       $('sheetCount').textContent = `${codes.length} Etiketten`;
       const cols = Number($('labelsPerRow').value || 3);
@@ -884,7 +996,9 @@ WS-B001</textarea>
         layout: {
           labelsPerRow: getValue('labelsPerRow'),
           copiesPerCode: getValue('copiesPerCode'),
-          labelScale: getValue('labelScale')
+          labelScale: getValue('labelScale'),
+          printMargin: getValue('printMargin'),
+          labelGap: getValue('labelGap')
         },
         generatedCodes: generatedCodes
       };
@@ -949,6 +1063,8 @@ WS-B001</textarea>
       setValue('labelsPerRow', state.layout?.labelsPerRow || '3');
       setValue('copiesPerCode', state.layout?.copiesPerCode || '1');
       setValue('labelScale', state.layout?.labelScale || 'medium');
+      setValue('printMargin', state.layout?.printMargin || '12');
+      setValue('labelGap', state.layout?.labelGap || '8');
 
       setType(type);
       setMode(mode);
