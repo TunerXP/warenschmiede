@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Serien & Druckbogen v61</title>
+  <title>Barcode-Werkstatt Plus · Serien & Druckbogen v62</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -59,6 +59,10 @@
     .content-picker-note,.form-help{margin-top:14px;color:var(--muted);font-size:.86rem;line-height:1.45;padding:12px 14px;border-radius:16px;background:color-mix(in srgb,var(--blue) 9%,transparent);border:1px solid color-mix(in srgb,var(--blue) 20%,var(--line))}
     .form-help{margin:0;background:rgba(241,145,62,.08);border-color:rgba(241,145,62,.22)}
     .form-example{color:var(--muted);line-height:1.45;font-size:.86rem;padding:10px 12px;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--surface) 80%,transparent);border-radius:12px;margin:0}
+    .final-code-box{display:none;border:1px solid rgba(47,142,223,.25);background:rgba(47,142,223,.08);border-radius:16px;padding:12px 14px;color:var(--muted);font-size:.86rem;line-height:1.45}
+    .final-code-box.active{display:block}
+    .final-code-box code{font-family:var(--mono);font-weight:850;color:var(--text);background:color-mix(in srgb,var(--surface) 78%,transparent);border:1px solid var(--line);border-radius:8px;padding:1px 6px}
+    .final-code-box strong{color:var(--text)}
     .center-stage{display:grid;gap:18px}
     .input-summary{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.input-summary span{border:1px solid rgba(78,163,241,.25);background:rgba(78,163,241,.08);color:var(--text);border-radius:999px;padding:5px 9px;font-size:.76rem;font-weight:850}
     .input-block{display:none}.input-block.active{display:grid;gap:12px}
@@ -144,14 +148,15 @@
           </div>
           <div class="panel-body grid">
             <p class="form-help" id="inputHelp">Code128 kann Buchstaben, Zahlen und viele Sonderzeichen enthalten. Gut für interne IDs.</p>
+            <div class="final-code-box" id="finalCodeBox"></div>
 
             <div class="input-block active" data-input="single">
-              <div class="field"><label for="barcodeValue">Barcode-Inhalt</label><input id="barcodeValue" value="WS-2026-001" placeholder="z. B. WS-2026-001"></div>
+              <div class="field"><label for="barcodeValue" id="singleValueLabel">Barcode-Inhalt</label><input id="barcodeValue" value="WS-2026-001" placeholder="z. B. WS-2026-001"></div>
               <p class="form-example" id="inputExample"><strong>Beispiel:</strong> Artikelnummer, Auftragsnummer, Lagerfach, interne Werkzeug-ID.</p>
             </div>
 
             <div class="input-block" data-input="copies">
-              <div class="field"><label for="copyValue">Barcode-Inhalt</label><input id="copyValue" value="ART-12345" placeholder="z. B. ART-12345"></div>
+              <div class="field"><label for="copyValue" id="copyValueLabel">Barcode-Inhalt</label><input id="copyValue" value="ART-12345" placeholder="z. B. ART-12345"></div>
               <div class="row">
                 <div class="field"><label for="copyCount">Anzahl Etiketten</label><input id="copyCount" type="number" min="1" max="999" value="24"></div>
                 <div class="field"><label for="copyNote">Beschreibung optional</label><input id="copyNote" placeholder="z. B. Ersatzteil"></div>
@@ -165,15 +170,15 @@
                 <div class="field"><label for="seriesSuffix">Suffix</label><input id="seriesSuffix" placeholder="-A"></div>
               </div>
               <div class="row3">
-                <div class="field"><label for="seriesStart">Startnummer</label><input id="seriesStart" type="number" value="1"></div>
+                <div class="field"><label for="seriesStart" id="seriesStartLabel">Startnummer</label><input id="seriesStart" type="number" value="1"></div>
                 <div class="field"><label for="seriesCount">Anzahl</label><input id="seriesCount" type="number" min="1" max="999" value="30"></div>
-                <div class="field"><label for="seriesPad">Stellen</label><input id="seriesPad" type="number" min="0" max="12" value="4"></div>
+                <div class="field"><label for="seriesPad" id="seriesPadLabel">Stellen</label><input id="seriesPad" type="number" min="0" max="12" value="4"></div>
               </div>
               <div class="row">
                 <div class="field"><label for="seriesStep">Schrittweite</label><input id="seriesStep" type="number" value="1"></div>
                 <div class="field"><label for="seriesNote">Beschreibung optional</label><input id="seriesNote" placeholder="z. B. Lageretiketten"></div>
               </div>
-              <p class="form-example"><strong>Beispiel:</strong> WS-0001, WS-0002, WS-0003 …<br><span id="numericSeriesNote">Bei EAN/ITF werden Prefix und Suffix ignoriert, weil diese Codes nur Zahlen erlauben.</span></p>
+              <p class="form-example"><strong>Beispiel:</strong> WS-0001, WS-0002, WS-0003 …<br><span id="numericSeriesNote">Bei EAN/ITF wird aus der Startnummer eine Basisnummer gebildet und die Prüfziffer automatisch angehängt.</span></p>
             </div>
 
             <div class="input-block" data-input="manual">
@@ -267,7 +272,7 @@ WS-B001</textarea>
   <dialog id="helpDialog">
     <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
     <div class="modal-body">
-      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand korrigiert EAN-13, EAN-8 und ITF-14 robuster für Vorschau, Serien und Druckbogen.</p>
+      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand erklärt EAN-/ITF-Prüfziffern sichtbar und zeigt Basisnummer, Prüfziffer und endgültigen Barcode-Inhalt.</p>
       <h3>Arbeitsmodi</h3>
       <ul>
         <li><strong>Einzelcode:</strong> ein Barcode, Export als PNG/SVG oder Druck.</li>
@@ -292,10 +297,10 @@ WS-B001</textarea>
 
     const typeInfo = {
       CODE128:{label:'Code128',numericOnly:false,hint:'Code128 ist flexibel und gut für interne Nummern, Lager, Aufträge und Werkstattetiketten.',help:'Code128 kann Buchstaben, Zahlen und viele Sonderzeichen enthalten. Gut für interne IDs.',ex:'Artikelnummer, Auftragsnummer, Lagerfach, interne Werkzeug-ID.',sample:'WS-2026-001'},
-      EAN13:{label:'EAN-13',numericOnly:true,baseLen:12,fullLen:13,hint:'EAN-13 nutzt nur Zahlen. Bei 12 Stellen ergänzt das Tool automatisch die Prüfziffer. Prefix/Suffix werden bei EAN ignoriert.',help:'EAN-13 ist für 13-stellige Artikelcodes. Gib 12 Ziffern ein, dann wird die Prüfziffer automatisch ergänzt. Für offizielle Handelsware brauchst du gültige Nummern.',ex:'Beispiel: 400638133393 → 4006381333931.',sample:'400638133393'},
-      EAN8:{label:'EAN-8',numericOnly:true,baseLen:7,fullLen:8,hint:'EAN-8 nutzt nur Zahlen. Bei 7 Stellen ergänzt das Tool automatisch die Prüfziffer. Prefix/Suffix werden bei EAN ignoriert.',help:'EAN-8 ist ein kurzer 8-stelliger Artikelcode. Gib 7 Ziffern ein, dann wird die Prüfziffer automatisch ergänzt.',ex:'Beispiel: 9638507 → 96385074.',sample:'9638507'},
+      EAN13:{label:'EAN-13',numericOnly:true,baseLen:12,fullLen:13,hint:'EAN-13 nutzt 12 Basisziffern plus 1 automatisch berechnete Prüfziffer. Prefix/Suffix werden bei EAN ignoriert.',help:'EAN-13 ist für 13-stellige Artikelcodes. Gib 12 Ziffern ein, dann wird die Prüfziffer automatisch ergänzt. Für offizielle Handelsware brauchst du gültige Nummern.',ex:'Beispiel: 400638133393 → 4006381333931.',sample:'400638133393'},
+      EAN8:{label:'EAN-8',numericOnly:true,baseLen:7,fullLen:8,hint:'EAN-8 nutzt 7 Basisziffern plus 1 automatisch berechnete Prüfziffer. Prefix/Suffix werden bei EAN ignoriert.',help:'EAN-8 ist ein kurzer 8-stelliger Artikelcode. Gib 7 Ziffern ein, dann wird die Prüfziffer automatisch ergänzt.',ex:'Beispiel: 9638507 → 96385074.',sample:'9638507'},
       CODE39:{label:'Code39',numericOnly:false,hint:'Code39 ist einfach und robust für Industrie, Werkstatt und Lager.',help:'Code39 eignet sich für robuste interne Codes. Verwende Großbuchstaben, Zahlen, Leerzeichen und - . $ / + %.',ex:'Beispiel: WERKZEUG-01 oder LAGER A12.',sample:'WERKZEUG-01'},
-      ITF14:{label:'ITF-14',numericOnly:true,baseLen:13,fullLen:14,hint:'ITF-14 nutzt nur Zahlen. Bei 13 Stellen ergänzt das Tool automatisch die Prüfziffer. Prefix/Suffix werden bei ITF-14 ignoriert.',help:'ITF-14 ist für 14-stellige Verpackungs-/Logistikeinheiten. Bei 13 Ziffern ergänzt das Tool die Prüfziffer.',ex:'Beispiel: 1234567890123 → 12345678901231.',sample:'1234567890123'}
+      ITF14:{label:'ITF-14',numericOnly:true,baseLen:13,fullLen:14,hint:'ITF-14 nutzt 13 Basisziffern plus 1 automatisch berechnete Prüfziffer. Prefix/Suffix werden bei ITF-14 ignoriert.',help:'ITF-14 ist für 14-stellige Verpackungs-/Logistikeinheiten. Bei 13 Ziffern ergänzt das Tool die Prüfziffer.',ex:'Beispiel: 1234567890123 → 12345678901231.',sample:'1234567890123'}
     };
     const modeInfo = {
       single:{label:'Einzelcode',hint:'Ein einzelner Barcode für Artikelnummer, Auftrag oder Lagerfach.'},
@@ -379,8 +384,47 @@ WS-B001</textarea>
         margin: 4
       } : {}));
     }
+    function explainFinalCode(rawInput){
+      const box = $('finalCodeBox');
+      if(!box) return;
+
+      if(!isNumericType()){
+        box.classList.remove('active');
+        box.innerHTML = '';
+        return;
+      }
+
+      const info = typeInfo[currentType];
+      let digits = String(rawInput || '').replace(/\D/g,'');
+      if(!digits) digits = String(info.sample || '').replace(/\D/g,'');
+
+      let base = digits;
+      let final = normalizeValue(rawInput);
+      if(digits.length <= info.baseLen) base = digits.padStart(info.baseLen, '0').slice(-info.baseLen);
+      if(digits.length > info.baseLen) base = digits.slice(0, info.baseLen);
+
+      const checkDigit = final.slice(-1);
+      box.classList.add('active');
+      box.innerHTML = `
+        <strong>${info.label} arbeitet mit Prüfziffer:</strong><br>
+        Basisnummer: <code>${base}</code><br>
+        Prüfziffer: <code>${checkDigit}</code><br>
+        Endgültiger Barcode-Inhalt: <code>${final}</code>
+      `;
+    }
+    function updateDynamicLabels(){
+      const numeric = isNumericType();
+      const labelText = numeric ? 'Basisnummer / Ziffern' : 'Barcode-Inhalt';
+      const copyText = numeric ? 'Basisnummer / Ziffern' : 'Barcode-Inhalt';
+      if($('singleValueLabel')) $('singleValueLabel').textContent = labelText;
+      if($('copyValueLabel')) $('copyValueLabel').textContent = copyText;
+      if($('seriesStartLabel')) $('seriesStartLabel').textContent = numeric ? 'Start-Basisnummer' : 'Startnummer';
+      if($('seriesPadLabel')) $('seriesPadLabel').textContent = numeric ? 'Basisstellen' : 'Stellen';
+    }
     function generate(){
-      const value = normalizeValue(activeInputValue()) || typeInfo[currentType].sample;
+      const raw = activeInputValue();
+      const value = normalizeValue(raw) || typeInfo[currentType].sample;
+      explainFinalCode(raw);
       $('payloadBox').textContent = value;
       $('typePill').textContent = typeInfo[currentType].label;
       $('modePill').textContent = modeInfo[currentMode].label;
@@ -433,6 +477,7 @@ WS-B001</textarea>
       $('inputSummary').innerHTML = `<span>${typeInfo[type].label}</span><span>${modeInfo[currentMode].label}</span>`;
 
       updateNumericFieldState();
+      updateDynamicLabels();
 
       if(isNumericType()) {
         applyNumericDefaults();
@@ -450,6 +495,7 @@ WS-B001</textarea>
       document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
       document.querySelectorAll('.input-block').forEach(block=>block.classList.toggle('active', block.dataset.input===mode));
       updateNumericFieldState();
+      updateDynamicLabels();
       $('modeHint').textContent = modeInfo[mode].hint;
       $('inputSummary').innerHTML = `<span>${typeInfo[currentType].label}</span><span>${modeInfo[mode].label}</span>`;
       buildList();
@@ -589,6 +635,7 @@ WS-B001</textarea>
       $('btnHelp').addEventListener('click',()=>$('helpDialog').showModal());
       $('helpClose').addEventListener('click',()=>$('helpDialog').close());
       updateNumericFieldState();
+      updateDynamicLabels();
       buildList();
       generate();
     });
