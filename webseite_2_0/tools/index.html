@@ -1,160 +1,362 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Online Tools · Warenschmiede Webseite 2.0</title>
-  <meta name="description" content="Online-Tools und Rechner der Warenschmiede: 3D-Druck Kostenrechner Plus, QR-Werkstatt, Zeiterfassung, Quittungs-Werkstatt, Bild-Konverter und weitere Helfer." />
-  <link rel="stylesheet" href="../assets/css/styles.css" />
+  <meta name="description" content="Warenschmiede Tool-Werkstatt: 3D-Druck Kostenrechner, QuickSafe, Suite V3, QR, Zeiterfassung, Quittung, Bild-Konverter und Werkstatt-Rechner.">
+  <link rel="stylesheet" href="../assets/css/styles.css">
   <style>
-    .tools-page .tool-search-wrap{margin-top:1.35rem;max-width:720px}.tools-page .tool-search{width:100%;border:1px solid rgba(82,103,125,.35);border-radius:14px;padding:1rem 1.15rem;background:rgba(255,255,255,.72);box-shadow:0 18px 45px rgba(39,62,82,.12);font:inherit;color:var(--ws-ink,#132131)}
-    .tools-page .tool-search:focus{outline:2px solid rgba(235,138,47,.55);outline-offset:3px}.tools-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.35rem}.tool-card{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:1rem;min-height:100%;padding:1.45rem;border:1px solid rgba(92,117,140,.22);border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.78),rgba(231,241,250,.62));box-shadow:0 22px 55px rgba(48,69,88,.13)}
-    .tool-card::before{content:"";position:absolute;inset:-35% auto auto -18%;width:62%;height:72%;background:radial-gradient(circle,rgba(var(--accent-rgb,235,138,47),.18),transparent 64%);pointer-events:none}.tool-card[data-accent="blue"]{--accent-rgb:92,173,245}.tool-card[data-accent="violet"]{--accent-rgb:158,119,255}.tool-card[data-accent="green"]{--accent-rgb:68,190,132}.tool-card[data-accent="steel"]{--accent-rgb:92,117,140}.tool-card[data-accent="amber"]{--accent-rgb:235,138,47}
-    .tool-card h3{margin:.15rem 0 .2rem;font-size:1.45rem}.tool-card p{margin:0;color:var(--ws-muted,#52677d);line-height:1.65}.tool-card__media{width:150px;height:92px;object-fit:contain;border-radius:14px;background:rgba(255,255,255,.58);border:1px solid rgba(92,117,140,.18);padding:.6rem;box-shadow:0 16px 35px rgba(48,69,88,.12)}.tool-card__icon{font-size:2rem;line-height:1}.tool-card__top{display:flex;align-items:flex-start;gap:1rem}.tool-card__actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:auto}.tool-tags{display:flex;flex-wrap:wrap;gap:.45rem}.tool-tag{display:inline-flex;align-items:center;border:1px solid rgba(92,117,140,.23);border-radius:999px;padding:.23rem .62rem;background:rgba(255,255,255,.58);font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#24384c}.tool-empty{display:none;margin-top:1rem;color:var(--ws-muted,#52677d)}.tool-empty.is-visible{display:block}.ws-section .section-intro{max-width:760px}.tool-note{margin-top:1.25rem;padding:1rem 1.15rem;border-radius:16px;border:1px solid rgba(92,117,140,.2);background:rgba(255,255,255,.58);color:var(--ws-muted,#52677d)}@media(max-width:1050px){.tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:720px){.tools-grid{grid-template-columns:1fr}.tool-card__top{flex-direction:column}.tool-card__media{width:100%;max-width:220px}.tools-page .tool-search-wrap{max-width:none}}
+    .tools-page .tools-hero {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: clamp(2rem, 4vw, 4.5rem) 0 clamp(1.5rem, 3vw, 2.5rem);
+    }
+    .tools-page .tools-search-wrap {
+      max-width: 520px;
+      margin-top: 1.25rem;
+    }
+    .tools-page .tools-search-wrap label {
+      display: block;
+      margin-bottom: .45rem;
+      font-weight: 800;
+      color: var(--ws-text, #102033);
+    }
+    .tools-page .tool-search {
+      width: 100%;
+      border: 1px solid rgba(77, 104, 126, .26);
+      border-radius: 14px;
+      background: rgba(255,255,255,.72);
+      padding: .95rem 1.05rem;
+      font: inherit;
+      box-shadow: 0 16px 38px rgba(44, 67, 86, .10);
+      outline: none;
+    }
+    .tools-page .tool-search:focus {
+      border-color: rgba(241, 145, 62, .75);
+      box-shadow: 0 0 0 4px rgba(241, 145, 62, .13), 0 18px 40px rgba(44, 67, 86, .12);
+    }
+    .tools-page .tool-section {
+      max-width: 1180px;
+      margin: 0 auto clamp(2.2rem, 4vw, 4rem);
+    }
+    .tools-page .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(1rem, 2vw, 1.4rem);
+    }
+    .tools-page .tool-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      min-height: 100%;
+      padding: clamp(1.15rem, 2vw, 1.65rem);
+      border: 1px solid rgba(120, 154, 184, .35);
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 8% 0%, rgba(242, 146, 65, .10), transparent 30%),
+        linear-gradient(145deg, rgba(255,255,255,.82), rgba(224,238,249,.72));
+      box-shadow: 0 18px 42px rgba(41, 67, 88, .13);
+    }
+    .tools-page .tool-card[data-accent="blue"] {
+      background: radial-gradient(circle at 8% 0%, rgba(77, 172, 247, .13), transparent 30%),
+                  linear-gradient(145deg, rgba(255,255,255,.82), rgba(224,238,249,.76));
+      border-color: rgba(77, 172, 247, .42);
+    }
+    .tools-page .tool-card[data-accent="violet"] {
+      background: radial-gradient(circle at 8% 0%, rgba(151, 116, 255, .13), transparent 30%),
+                  linear-gradient(145deg, rgba(255,255,255,.82), rgba(232,235,249,.74));
+      border-color: rgba(151, 116, 255, .38);
+    }
+    .tools-page .tool-card[data-accent="green"] {
+      background: radial-gradient(circle at 8% 0%, rgba(64, 190, 126, .13), transparent 30%),
+                  linear-gradient(145deg, rgba(255,255,255,.82), rgba(224,242,236,.72));
+      border-color: rgba(64, 190, 126, .36);
+    }
+    .tools-page .tool-card[data-accent="steel"] {
+      background: radial-gradient(circle at 8% 0%, rgba(92, 119, 142, .12), transparent 30%),
+                  linear-gradient(145deg, rgba(255,255,255,.82), rgba(226,236,244,.72));
+      border-color: rgba(92, 119, 142, .34);
+    }
+    .tools-page .tool-card-head {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+    .tools-page .tool-media,
+    .tools-page .tool-icon {
+      width: 92px;
+      height: 76px;
+      border-radius: 14px;
+      object-fit: contain;
+      background: rgba(255,255,255,.66);
+      border: 1px solid rgba(120, 154, 184, .24);
+      box-shadow: 0 10px 24px rgba(41, 67, 88, .10);
+      display: grid;
+      place-items: center;
+      font-size: 2rem;
+    }
+    .tools-page .tool-card h3 {
+      margin: 0 0 .35rem;
+      line-height: 1.08;
+      font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+    }
+    .tools-page .tool-card p {
+      margin: 0;
+      color: var(--ws-muted, #53677a);
+      line-height: 1.55;
+    }
+    .tools-page .tool-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .45rem;
+      margin-top: .15rem;
+    }
+    .tools-page .tool-tags span {
+      display: inline-flex;
+      align-items: center;
+      padding: .25rem .58rem;
+      border: 1px solid rgba(86, 117, 144, .28);
+      border-radius: 999px;
+      background: rgba(255,255,255,.62);
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .tools-page .tool-actions {
+      display: flex;
+      gap: .7rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: auto;
+      padding-top: .3rem;
+    }
+    .tools-page .tool-details {
+      border-top: 1px solid rgba(86, 117, 144, .20);
+      padding-top: .75rem;
+      margin-top: .3rem;
+    }
+    .tools-page .tool-details summary {
+      cursor: pointer;
+      font-weight: 800;
+      color: #102033;
+    }
+    .tools-page .tool-details ul {
+      margin: .75rem 0 0;
+      padding-left: 1.1rem;
+      color: var(--ws-muted, #53677a);
+    }
+    @media (max-width: 980px) {
+      .tools-page .tool-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 680px) {
+      .tools-page .tool-grid { grid-template-columns: 1fr; }
+      .tools-page .tool-card-head { grid-template-columns: 76px 1fr; }
+      .tools-page .tool-media, .tools-page .tool-icon { width: 76px; height: 64px; }
+    }
   </style>
 </head>
-<body class="theme-light tools-page">
+<body class="theme-light homepage-v18 tools-page">
   <div id="ws-header"></div>
+
   <main class="site-main ws-live-content" id="tools" tabindex="-1">
-    <section class="section container">
-      <div class="ws-panel-soft">
-        <p class="section-eyebrow">Online Tools · Verbindungsstand v46</p>
-        <h1>Warenschmiede Tool-Werkstatt</h1>
-        <p class="section-intro">Hier findest du die wichtigsten Browser-Tools und downloadbaren Helfer der Warenschmiede. In dieser 2.0-Basis werden die Tools zuerst sauber verbunden — die optische Anpassung der einzelnen Tools kommt später Schritt für Schritt.</p>
-        <div class="tool-search-wrap">
-          <label class="sr-only" for="toolSearch">Tools filtern</label>
-          <input class="tool-search" id="toolSearch" type="search" placeholder="Tools filtern: 3D-Druck, QR, Zeit, Quittung, Bild, CNC ..." />
-          <p class="tool-empty" id="toolEmpty">Kein Tool gefunden. Versuch einen anderen Begriff.</p>
-        </div>
+    <section class="section container tools-hero">
+      <p class="section-eyebrow">Online Tools · Verbindungsstand v47</p>
+      <h1>Warenschmiede Tool-Werkstatt</h1>
+      <p class="lead">Hier findest du die wichtigsten Browser-Tools und downloadbaren Helfer der Warenschmiede. In dieser 2.0-Basis werden die Tools zuerst sauber verbunden — die optische Anpassung der einzelnen Tools kommt später Schritt für Schritt.</p>
+
+      <div class="tools-search-wrap">
+        <label for="toolSearch">Tools filtern</label>
+        <input class="tool-search" id="toolSearch" type="search" placeholder="Tools filtern: 3D-Druck, QR, Zeit, Quittung, Bild, CNC ...">
       </div>
     </section>
 
-    <section class="section container" aria-labelledby="highlights-heading">
-      <div class="section-heading">
-        <p class="section-eyebrow">Hauptwerkzeuge</p>
-        <h2 id="highlights-heading">Direkt startklar</h2>
-        <p>Die wichtigsten Werkzeuge zuerst: online starten oder über die Downloadseite beziehen.</p>
-      </div>
-      <div class="tools-grid">
-        <article class="tool-card" data-accent="blue" data-tool-card data-keywords="3d druck kostenrechner plus angebot rechnung lieferschein pdf json online kalkulation">
-          <div class="tool-card__top">
-            <img class="tool-card__media" src="3D-Druck_KostenrechnerPlus01.png" alt="3D-Druck Kostenrechner Plus Vorschau" loading="lazy" />
+    <section class="section tool-section" aria-labelledby="main-tools-heading">
+      <p class="section-eyebrow">Hauptwerkzeuge</p>
+      <h2 id="main-tools-heading">Direkt startklar</h2>
+      <p class="lead">Die wichtigsten Werkzeuge zuerst: online starten oder über die Downloadseite beziehen.</p>
+
+      <div class="tool-grid">
+        <article class="tool-card" data-tool-card data-keywords="3d druck kostenrechner angebot rechnung lieferschein online pdf json kalkulation" data-accent="blue">
+          <div class="tool-card-head">
+            <img class="tool-media" src="3D-Druck_KostenrechnerPlus01.png" alt="3D-Druck Kostenrechner Plus Vorschau" loading="lazy">
             <div>
               <h3>3D-Druck Kostenrechner Plus</h3>
               <p>Online-Kalkulation für Angebote, Rechnungen und Lieferscheine. Mit Presets, History, JSON, PDF/Druckausgabe und Prüfmodus.</p>
             </div>
           </div>
-          <div class="tool-tags"><span class="tool-tag">Online</span><span class="tool-tag">3D-Druck</span><span class="tool-tag">PDF/JSON</span></div>
-          <div class="tool-card__actions">
+          <div class="tool-tags"><span>Online</span><span>3D-Druck</span><span>PDF/JSON</span></div>
+          <div class="tool-actions">
             <a class="edge-button accent-blue" href="ws_3d_print_kostenrechner.html" target="_blank" rel="noopener"><span>Online starten</span></a>
             <a class="edge-button accent-steel" href="ws_3d_print_kostenrechner_anleitung.html" target="_blank" rel="noopener"><span>Anleitung</span></a>
           </div>
         </article>
 
-        <article class="tool-card" data-accent="amber" data-tool-card data-keywords="quicksafe unterweisung unterweisungs generator portable windows download pdf html arbeitsschutz">
-          <div class="tool-card__top">
-            <img class="tool-card__media" src="../dateien/logo_quicksafe.png" alt="Quicksafe Logo" loading="lazy" />
+        <article class="tool-card" data-tool-card data-keywords="quicksafe unterweisung unterweisungsnachweis portable windows download pdf html sicherheit" data-accent="amber">
+          <div class="tool-card-head">
+            <img class="tool-media" src="../dateien/logo_quicksafe.png" alt="QuickSafe Logo" loading="lazy">
             <div>
-              <h3>Quicksafe Unterweisungs-Generator</h3>
+              <h3>QuickSafe Unterweisungs-Generator</h3>
               <p>Portables Windows-Tool für mehrsprachige Unterweisungsnachweise mit HTML-Vorschau und PDF-Ausgabe.</p>
             </div>
           </div>
-          <div class="tool-tags"><span class="tool-tag">Windows</span><span class="tool-tag">Portable</span><span class="tool-tag">Download</span></div>
-          <div class="tool-card__actions">
-            <a class="edge-button primary" href="../downloads.html#quicksafe"><span>Zur Downloadkarte</span></a>
+          <div class="tool-tags"><span>Windows</span><span>Portable</span><span>Download</span></div>
+          <div class="tool-actions">
+            <a class="edge-button primary" href="../downloads.html#quicksafe"><span>Download & Anleitung</span></a>
           </div>
         </article>
 
-        <article class="tool-card" data-accent="violet" data-tool-card data-keywords="warenschmiede suite v3 kundenverwaltung kalkulation pdf download windows offline">
-          <div class="tool-card__top">
-            <div class="tool-card__icon" aria-hidden="true">🧰</div>
+        <article class="tool-card" data-tool-card data-keywords="warenschmiede suite v3 kundenverwaltung kalkulation pdf download windows offline" data-accent="violet">
+          <div class="tool-card-head">
+            <div class="tool-icon" aria-hidden="true">🧰</div>
             <div>
               <h3>Warenschmiede Suite V3</h3>
               <p>All-in-One-Zentrale für Kundenverwaltung, Kalkulation und PDF-Erstellung. Lokal auf dem PC.</p>
             </div>
           </div>
-          <div class="tool-tags"><span class="tool-tag">Windows</span><span class="tool-tag">Offline</span><span class="tool-tag">Beta</span></div>
-          <div class="tool-card__actions">
-            <a class="edge-button accent-violet" href="../downloads.html#suite-v3"><span>Zur Downloadkarte</span></a>
+          <div class="tool-tags"><span>Windows</span><span>Offline</span><span>Beta</span></div>
+          <div class="tool-actions">
+            <a class="edge-button accent-violet" href="../downloads.html#suite-v3"><span>Zur Downloadseite</span></a>
           </div>
         </article>
       </div>
     </section>
 
-    <section class="section container" aria-labelledby="browser-tools-heading">
-      <div class="section-heading">
-        <p class="section-eyebrow">Browser-Werkzeuge</p>
-        <h2 id="browser-tools-heading">Schnelle Helfer im Browser</h2>
-        <p>Diese Tools bleiben erstmal technisch wie sie sind. Wichtig ist jetzt: Sie sind sauber erreichbar und öffnen separat.</p>
-      </div>
-      <div class="tools-grid">
-        <article class="tool-card" data-accent="green" data-tool-card data-keywords="qr code qrcode wlan vcard link generator etiketten barcode">
-          <div class="tool-card__top"><div class="tool-card__icon" aria-hidden="true">🔳</div><div><h3>QR-Werkstatt Plus</h3><p>QR-Codes für Links, WLAN, Texte und weitere Einsatzzwecke erzeugen.</p></div></div>
-          <div class="tool-card__actions"><a class="edge-button accent-green" href="QRCodeMasterPro.html" target="_blank" rel="noopener"><span>Öffnen</span></a></div>
+    <section class="section tool-section" aria-labelledby="browser-tools-heading">
+      <p class="section-eyebrow">Browser-Tools</p>
+      <h2 id="browser-tools-heading">Online-Helfer</h2>
+      <p class="lead">Bestehende Tools werden hier zuerst sauber verlinkt. Design-Angleichung kommt später separat.</p>
+
+      <div class="tool-grid">
+        <article class="tool-card" data-tool-card data-keywords="qr code master wlan vcard link generator barcode etiketten" data-accent="steel">
+          <div class="tool-card-head">
+            <div class="tool-icon" aria-hidden="true">▦</div>
+            <div>
+              <h3>QR-Werkstatt Plus</h3>
+              <p>QR-Codes, WLAN, Links und weitere Code-Helfer direkt im Browser.</p>
+            </div>
+          </div>
+          <div class="tool-tags"><span>QR</span><span>Browser</span></div>
+          <div class="tool-actions">
+            <a class="edge-button accent-steel" href="QRCodeMasterPro.html" target="_blank" rel="noopener"><span>Tool öffnen</span></a>
+          </div>
         </article>
-        <article class="tool-card" data-accent="steel" data-tool-card data-keywords="zeiterfassung zeit arbeitszeit stempeluhr csv online">
-          <div class="tool-card__top"><div class="tool-card__icon" aria-hidden="true">⏱️</div><div><h3>Zeiterfassung</h3><p>Schlichtes Tool zur Arbeitszeiterfassung mit Exportmöglichkeit.</p></div></div>
-          <div class="tool-card__actions"><a class="edge-button accent-steel" href="Zeiterfassung.html" target="_blank" rel="noopener"><span>Öffnen</span></a></div>
+
+        <article class="tool-card" data-tool-card data-keywords="zeiterfassung zeit tracking arbeitszeit stempeluhr csv" data-accent="blue">
+          <div class="tool-card-head">
+            <div class="tool-icon" aria-hidden="true">⏱</div>
+            <div>
+              <h3>Zeiterfassung</h3>
+              <p>Schlichte Zeiterfassung als Browser-Tool. Praktisch für Arbeitszeiten und einfache Übersichten.</p>
+            </div>
+          </div>
+          <div class="tool-tags"><span>Zeit</span><span>CSV</span></div>
+          <div class="tool-actions">
+            <a class="edge-button accent-blue" href="Zeiterfassung.html" target="_blank" rel="noopener"><span>Tool öffnen</span></a>
+          </div>
         </article>
-        <article class="tool-card" data-accent="steel" data-tool-card data-keywords="zeiterfassung plus zeit arbeitszeit export online">
-          <div class="tool-card__top"><div class="tool-card__icon" aria-hidden="true">⏱️</div><div><h3>Zeiterfassung Plus</h3><p>Erweiterte Zeiterfassung, falls die Plus-Version im Tools-Ordner vorhanden ist.</p></div></div>
-          <div class="tool-card__actions"><a class="edge-button accent-steel" href="Zeiterfassung_Plus.html" target="_blank" rel="noopener"><span>Öffnen</span></a></div>
+
+        <article class="tool-card" data-tool-card data-keywords="quittung quittungswerkstatt receipt beleg pdf" data-accent="amber">
+          <div class="tool-card-head">
+            <div class="tool-icon" aria-hidden="true">🧾</div>
+            <div>
+              <h3>Quittungs-Werkstatt</h3>
+              <p>Digitale Quittungen und Belege direkt im Browser erstellen.</p>
+            </div>
+          </div>
+          <div class="tool-tags"><span>Büro</span><span>PDF</span></div>
+          <div class="tool-actions">
+            <a class="edge-button primary" href="ReceiptWriterPro.html" target="_blank" rel="noopener"><span>Tool öffnen</span></a>
+          </div>
         </article>
-        <article class="tool-card" data-accent="amber" data-tool-card data-keywords="quittung quittungs generator rechnung beleg pdf">
-          <div class="tool-card__top"><div class="tool-card__icon" aria-hidden="true">🧾</div><div><h3>Quittungs-Werkstatt Plus</h3><p>Quittungen direkt im Browser erstellen und drucken.</p></div></div>
-          <div class="tool-card__actions"><a class="edge-button primary" href="quittungs_generator.html" target="_blank" rel="noopener"><span>Öffnen</span></a></div>
+
+        <article class="tool-card" data-tool-card data-keywords="bild konverter editor jpg png webp gif banner bilder" data-accent="green">
+          <div class="tool-card-head">
+            <div class="tool-icon" aria-hidden="true">🖼</div>
+            <div>
+              <h3>Bilder Konverter / Editor</h3>
+              <p>Bilder lokal umwandeln, vorbereiten und für Webseiten oder Tools passend machen.</p>
+            </div>
+          </div>
+          <div class="tool-tags"><span>Bild</span><span>Lokal</span></div>
+          <div class="tool-actions">
+            <a class="edge-button accent-green" href="bild-konverter.html" target="_blank" rel="noopener"><span>Tool öffnen</span></a>
+          </div>
         </article>
-        <article class="tool-card" data-accent="amber" data-tool-card data-keywords="receiptwriterpro quittung beleg barzahlung browser">
-          <div class="tool-card__top"><div class="tool-card__icon" aria-hidden="true">🧾</div><div><h3>Quittungs-Werkstatt</h3><p>Einfacher digitaler Quittungsblock für schnelle Belege.</p></div></div>
-          <div class="tool-card__actions"><a class="edge-button primary" href="ReceiptWriterPro.html" target="_blank" rel="noopener"><span>Öffnen</span></a></div>
+
+        <article class="tool-card" data-tool-card data-keywords="werkstatt rechner metall schnittdaten gewinde passungen cnc" data-accent="steel">
+          <div class="tool-card-head">
+            <div class="tool-icon" aria-hidden="true">⚙</div>
+            <div>
+              <h3>Werkstatt-Rechner Metall Plus</h3>
+              <p>Metall, Maße, Schnittdaten und praktische Helfer für Werkstatt und Fertigung.</p>
+            </div>
+          </div>
+          <div class="tool-tags"><span>Werkstatt</span><span>Metall</span></div>
+          <div class="tool-actions">
+            <a class="edge-button accent-steel" href="werkstatt-rechner.html" target="_blank" rel="noopener"><span>Tool öffnen</span></a>
+          </div>
         </article>
-        <article class="tool-card" data-accent="blue" data-tool-card data-keywords="bild konverter editor webp jpg png gif banner bilder">
-          <div class="tool-card__top"><div class="tool-card__icon" aria-hidden="true">🖼️</div><div><h3>Bilder Konverter / Editor</h3><p>Bilder lokal im Browser umwandeln und vorbereiten.</p></div></div>
-          <div class="tool-card__actions"><a class="edge-button accent-blue" href="bild-konverter.html" target="_blank" rel="noopener"><span>Öffnen</span></a></div>
+
+        <article class="tool-card" data-tool-card data-keywords="winkel rechner geometrie mathe cnc zuschnitt" data-accent="violet">
+          <div class="tool-card-head">
+            <div class="tool-icon" aria-hidden="true">∠</div>
+            <div>
+              <h3>Winkel-Rechner</h3>
+              <p>Schnelle Winkel- und Geometriehilfe für Konstruktion, Zuschnitt und Werkstatt.</p>
+            </div>
+          </div>
+          <div class="tool-tags"><span>Geometrie</span><span>Rechner</span></div>
+          <div class="tool-actions">
+            <a class="edge-button accent-violet" href="winkel-rechner.html" target="_blank" rel="noopener"><span>Tool öffnen</span></a>
+          </div>
         </article>
       </div>
     </section>
 
-    <section class="section container" aria-labelledby="werkstatt-heading">
-      <div class="section-heading">
-        <p class="section-eyebrow">Werkstatt & Fertigung</p>
-        <h2 id="werkstatt-heading">Rechner & technische Helfer</h2>
+    <section class="section tool-section" aria-labelledby="cnc-heading">
+      <p class="section-eyebrow">Fertigung & CNC</p>
+      <h2 id="cnc-heading">Einrichtblätter & Praxishelfer</h2>
+
+      <div class="tool-grid">
+        <article class="tool-card" data-tool-card data-keywords="cnc fraesen einrichtblatt maschine nullpunkt werkzeug" data-accent="blue">
+          <div class="tool-card-head">
+            <div class="tool-icon" aria-hidden="true">▣</div>
+            <div>
+              <h3>CNC Fräsen-Einrichtsblatt Plus</h3>
+              <p>Einrichtblätter, Maschineninfos, Nullpunkte und praktische Fertigungsdokumentation.</p>
+            </div>
+          </div>
+          <div class="tool-tags"><span>CNC</span><span>Fräsen</span></div>
+          <div class="tool-actions">
+            <a class="edge-button accent-blue" href="cnc-fraesen-einrichtsblatt-plus/index.html" target="_blank" rel="noopener"><span>Tool öffnen</span></a>
+          </div>
+          <details class="tool-details">
+            <summary>Hinweis</summary>
+            <ul>
+              <li>Falls der Ordner noch nicht in <code>webseite_2_0/tools/</code> liegt, zeigt der Button noch ins Leere.</li>
+            </ul>
+          </details>
+        </article>
       </div>
-      <div class="tools-grid">
-        <article class="tool-card" data-accent="steel" data-tool-card data-keywords="werkstatt rechner metall gewinde passung schnittdaten">
-          <div class="tool-card__top"><div class="tool-card__icon" aria-hidden="true">🛠️</div><div><h3>Werkstatt-Rechner Metall Plus</h3><p>Metall, Maße und praktische Helfer für Werkstatt und Fertigung.</p></div></div>
-          <div class="tool-card__actions"><a class="edge-button accent-steel" href="werkstatt-rechner.html" target="_blank" rel="noopener"><span>Öffnen</span></a></div>
-        </article>
-        <article class="tool-card" data-accent="steel" data-tool-card data-keywords="winkel rechner geometrie fertigung cnc">
-          <div class="tool-card__top"><div class="tool-card__icon" aria-hidden="true">📐</div><div><h3>Winkel-Rechner</h3><p>Schnelle Winkel- und Geometriehilfe.</p></div></div>
-          <div class="tool-card__actions"><a class="edge-button accent-steel" href="winkel-rechner.html" target="_blank" rel="noopener"><span>Öffnen</span></a></div>
-        </article>
-        <article class="tool-card" data-accent="blue" data-tool-card data-keywords="cnc fraesen einrichtblatt plus maschine nullpunkt werkzeuge">
-          <div class="tool-card__top"><div class="tool-card__icon" aria-hidden="true">🏭</div><div><h3>CNC Fräsen-Einrichtsblatt Plus</h3><p>Einrichtblätter und Maschineninfos für Fräsarbeiten.</p></div></div>
-          <div class="tool-card__actions"><a class="edge-button accent-blue" href="cnc-fraesen-einrichtsblatt-plus/index.html" target="_blank" rel="noopener"><span>Öffnen</span></a></div>
-        </article>
-      </div>
-      <div class="tool-note">Hinweis: Falls ein Tool noch nicht im Ordner <code>webseite_2_0/tools</code> liegt, zeigt der Button noch ins Leere. Das ist okay — wir verbinden erst, danach prüfen wir gezielt die fehlenden Dateien.</div>
     </section>
   </main>
+
   <div id="ws-footer"></div>
   <script defer src="../assets/js/ws-layout.js"></script>
   <script>
-    (function(){
+    (function () {
       const input = document.getElementById('toolSearch');
+      if (!input) return;
       const cards = Array.from(document.querySelectorAll('[data-tool-card]'));
-      const empty = document.getElementById('toolEmpty');
-      if(!input) return;
-      input.addEventListener('input', () => {
-        const q = input.value.trim().toLowerCase();
-        let visible = 0;
+      input.addEventListener('input', function () {
+        const query = input.value.trim().toLowerCase();
         cards.forEach(card => {
-          const hay = ((card.dataset.keywords || '') + ' ' + card.textContent).toLowerCase();
-          const show = !q || hay.includes(q);
-          card.hidden = !show;
-          if(show) visible++;
+          const haystack = (card.dataset.keywords + ' ' + card.textContent).toLowerCase();
+          card.hidden = query && !haystack.includes(query);
         });
-        empty?.classList.toggle('is-visible', visible === 0);
       });
     })();
   </script>
