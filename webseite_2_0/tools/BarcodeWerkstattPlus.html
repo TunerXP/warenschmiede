@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · harte Validierung v75</title>
+  <title>Barcode-Werkstatt Plus · Validierungs-Neustart v76</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -49,7 +49,7 @@
     label{font-size:.78rem;font-weight:850;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
     input,textarea,select{width:100%;border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:var(--surface);color:var(--text);font:inherit;font-size:.92rem;outline:none;transition:.18s ease}
     textarea{min-height:160px;resize:vertical;font-family:var(--mono);font-size:.86rem;line-height:1.45}
-    input:focus,textarea:focus,select:focus{border-color:rgba(241,145,62,.78);box-shadow:0 0 0 4px rgba(241,145,62,.13)}
+    input:focus,textarea:focus,select:focus{border-color:rgba(47,142,223,.55)!important;box-shadow:0 0 0 4px rgba(47,142,223,.10)!important}
     .field{display:grid;gap:6px}.field-note{color:var(--muted);font-size:.78rem;margin:0;line-height:1.35}
     .type-grid,.mode-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
     .type-btn,.mode-btn{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:14px;padding:12px 8px;min-height:66px;cursor:pointer;display:grid;place-items:center;gap:4px;text-align:center;font-weight:850;font-size:.8rem;transition:.18s ease}
@@ -78,12 +78,16 @@
     .csv-safe-note{border:1px solid rgba(43,170,114,.24);background:rgba(43,170,114,.08);border-radius:16px;padding:11px 13px;color:var(--muted);font-size:.86rem;line-height:1.45}
     .validation-box{border:1px solid rgba(43,170,114,.28);background:rgba(43,170,114,.08);border-radius:16px;padding:12px 14px;color:var(--muted);font-size:.88rem;line-height:1.45}
     .validation-box.bad{border-color:rgba(194,65,58,.32);background:rgba(194,65,58,.08)}
+    .validation-box.pending{border-color:rgba(241,145,62,.34);background:rgba(241,145,62,.09)}
     .validation-box strong{color:var(--text)}
     .validation-box ul{margin:8px 0 0;padding-left:1.2rem}
     .field.invalid input,.field.invalid textarea,.field.invalid select{border-color:rgba(194,65,58,.75)!important;box-shadow:0 0 0 4px rgba(194,65,58,.10)!important}
     .field.locked input,.field.locked textarea,.field.locked select{background:rgba(203,217,230,.22);color:var(--muted);cursor:not-allowed}
     .field.locked label::after{content:' fest';font-size:.72em;color:var(--muted);font-weight:700;margin-left:.35rem;text-transform:none;letter-spacing:0}
-    .field.valid input,.field.valid textarea,.field.valid select{border-color:rgba(43,170,114,.65);box-shadow:0 0 0 4px rgba(43,170,114,.08)}
+    .field.valid input,.field.valid textarea,.field.valid select{border-color:rgba(43,170,114,.65)!important;box-shadow:0 0 0 4px rgba(43,170,114,.08)!important}
+    .field.pending input,.field.pending textarea,.field.pending select{border-color:rgba(241,145,62,.72)!important;box-shadow:0 0 0 4px rgba(241,145,62,.10)!important}
+    .field.valid input:focus,.field.valid textarea:focus,.field.valid select:focus{border-color:rgba(43,170,114,.72)!important;box-shadow:0 0 0 4px rgba(43,170,114,.11)!important}
+    .field.pending input:focus,.field.pending textarea:focus,.field.pending select:focus{border-color:rgba(241,145,62,.82)!important;box-shadow:0 0 0 4px rgba(241,145,62,.12)!important}
     :root{--print-gap:8px;--print-padding:12px}
     .sheet-preview{padding:var(--print-padding)}
     .label-grid{gap:var(--print-gap)}
@@ -402,7 +406,7 @@ WS-B001</textarea>
   <dialog id="helpDialog">
     <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
     <div class="modal-body">
-      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand sperrt feste EAN/ITF-Felder und macht rot/grün-Prüfung fachlich strenger.</p>
+      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand startet die Eingabeprüfung neu: neutral, grün, orange und rot sind jetzt klar getrennt.</p>
       <h3>Arbeitsmodi</h3>
       <ul>
         <li><strong>Einzelcode:</strong> ein Barcode, Export als PNG/SVG oder Druck.</li>
@@ -580,7 +584,7 @@ WS-B001</textarea>
       if(!el) return;
       const field = el.closest('.field');
       if(!field) return;
-      field.classList.remove('valid','invalid');
+      field.classList.remove('valid','invalid','pending');
       if(state) field.classList.add(state);
     }
     function setFieldLocked(id, locked){
@@ -612,90 +616,175 @@ WS-B001</textarea>
         setFieldState('seriesSuffix','');
       }
     }
+
+    function barcodeMaxLength(){
+      if(currentType === 'EAN13') return 13;
+      if(currentType === 'EAN8') return 8;
+      if(currentType === 'ITF14') return 14;
+      return 80;
+    }
+    function barcodeBaseLength(){
+      if(currentType === 'EAN13') return 12;
+      if(currentType === 'EAN8') return 7;
+      if(currentType === 'ITF14') return 13;
+      return null;
+    }
+    function setInputMaxLengths(){
+      const max = barcodeMaxLength();
+      const base = barcodeBaseLength();
+      ['barcodeValue','copyValue'].forEach(id=>{
+        const el = $(id);
+        if(!el) return;
+        if(isNumericType()){
+          el.maxLength = max;
+          el.inputMode = 'numeric';
+          el.pattern = '[0-9]*';
+        } else {
+          el.maxLength = 80;
+          el.removeAttribute('inputmode');
+          el.removeAttribute('pattern');
+        }
+      });
+      const start = $('seriesStart');
+      if(start){
+        if(isNumericType()){
+          start.maxLength = base;
+          start.inputMode = 'numeric';
+          start.pattern = '[0-9]*';
+        } else {
+          start.maxLength = 20;
+          start.removeAttribute('inputmode');
+          start.removeAttribute('pattern');
+        }
+      }
+      const manual = $('manualList');
+      if(manual){
+        manual.removeAttribute('maxlength');
+      }
+    }
+    function sanitizeNumericInputs(){
+      if(!isNumericType()) return;
+      const max = barcodeMaxLength();
+      const base = barcodeBaseLength();
+
+      ['barcodeValue','copyValue'].forEach(id=>{
+        const el = $(id);
+        if(!el) return;
+        const clean = String(el.value || '').replace(/\D/g,'').slice(0, max);
+        if(el.value !== clean) el.value = clean;
+      });
+
+      const start = $('seriesStart');
+      if(start){
+        const clean = String(start.value || '').replace(/\D/g,'').slice(0, base);
+        if(start.value !== clean) start.value = clean;
+      }
+
+      const step = $('seriesStep');
+      if(step){
+        const clean = String(step.value || '').replace(/\D/g,'').slice(0, 6);
+        if(elValue(step) !== clean) step.value = clean || '1';
+      }
+    }
+    function elValue(el){ return String(el?.value || ''); }
+    function setValidationBox(kind, title, body){
+      const box = $('validationBox');
+      if(!box) return;
+      box.classList.remove('bad','pending');
+      if(kind === 'bad') box.classList.add('bad');
+      if(kind === 'pending') box.classList.add('pending');
+      box.innerHTML = `<strong>${escapeHtml(title)}</strong>${body ? '<br>' + body : ''}`;
+    }
+    function setValidationList(kind, title, issues){
+      const box = $('validationBox');
+      if(!box) return;
+      box.classList.remove('bad','pending');
+      if(kind === 'bad') box.classList.add('bad');
+      if(kind === 'pending') box.classList.add('pending');
+      box.innerHTML = `<strong>${escapeHtml(title)}</strong><ul>` + issues.map(x=>`<li>${escapeHtml(x)}</li>`).join('') + '</ul>';
+    }
     function validateCurrentInputs(rendererError = ''){
       const issues = [];
       ['barcodeValue','copyValue','copyCount','seriesStart','seriesCount','seriesPad','seriesStep','manualList','seriesPrefix','seriesSuffix'].forEach(id=>setFieldState(id,''));
 
+      setInputMaxLengths();
       enforceFixedFields();
 
       const info = typeInfo[currentType];
       const numeric = isNumericType();
+      const baseLen = barcodeBaseLength();
+      const fullLen = barcodeMaxLength();
 
-      function valueForCurrentMode(){
-        if(currentMode === 'single') return String(getValue('barcodeValue') || '').trim();
-        if(currentMode === 'copies') return String(getValue('copyValue') || '').trim();
-        if(currentMode === 'manual') return String(getValue('manualList') || '').trim();
-        if(currentMode === 'series') return String(getValue('seriesStart') || '').trim();
-        return '';
+      function activeFieldIds(){
+        if(currentMode === 'single') return ['barcodeValue'];
+        if(currentMode === 'copies') return ['copyValue','copyCount'];
+        if(currentMode === 'series') return ['seriesStart','seriesCount','seriesStep'];
+        if(currentMode === 'manual') return ['manualList'];
+        return [];
       }
-      function markActiveValue(state){
-        if(currentMode === 'single') setFieldState('barcodeValue', state);
-        if(currentMode === 'copies') setFieldState('copyValue', state);
-        if(currentMode === 'manual') setFieldState('manualList', state);
-        if(currentMode === 'series') setFieldState('seriesStart', state);
-      }
-      function checkNumericValue(fieldId, value, lineNo){
+
+      function checkNumericBarcode(fieldId, value, label, lineNo){
         const raw = String(value || '').trim();
-        const digits = raw.replace(/\D/g,'');
+        const suffix = lineNo ? ` in Zeile ${lineNo}` : '';
+
         if(!raw){
-          issues.push(`${info.label}: Eingabe fehlt${lineNo ? ' in Zeile ' + lineNo : ''}.`);
-          setFieldState(fieldId,'invalid');
+          issues.push(`${label}: Eingabe fehlt${suffix}.`);
+          setFieldState(fieldId, 'invalid');
           return false;
         }
-        if(raw !== digits){
-          issues.push(`${info.label}: Nur Ziffern erlaubt${lineNo ? ' in Zeile ' + lineNo : ''}.`);
-          setFieldState(fieldId,'invalid');
+        if(!/^\d+$/.test(raw)){
+          issues.push(`${label}: Nur Ziffern erlaubt${suffix}.`);
+          setFieldState(fieldId, 'invalid');
           return false;
         }
-        if(digits.length !== info.baseLen && digits.length !== info.fullLen){
-          issues.push(`${info.label}: Erwartet ${info.baseLen} Basisziffern oder ${info.fullLen} Stellen inkl. Prüfziffer${lineNo ? ' in Zeile ' + lineNo : ''}.`);
-          setFieldState(fieldId,'invalid');
+        if(raw.length > fullLen){
+          issues.push(`${label}: Maximal ${fullLen} Ziffern erlaubt${suffix}.`);
+          setFieldState(fieldId, 'invalid');
           return false;
         }
-        setFieldState(fieldId,'valid');
-        return true;
-      }
-      function checkCode39Value(fieldId, value, lineNo){
-        const raw = String(value || '').trim();
-        if(!raw){
-          issues.push(`Code39: Eingabe fehlt${lineNo ? ' in Zeile ' + lineNo : ''}.`);
-          setFieldState(fieldId,'invalid');
+        if(raw.length !== baseLen && raw.length !== fullLen){
+          issues.push(`${label}: ${baseLen} Basisziffern oder ${fullLen} Stellen inkl. Prüfziffer nötig${suffix}.`);
+          setFieldState(fieldId, 'invalid');
           return false;
         }
-        const bad = /[^0-9A-Z \-.$/+%]/.test(raw.toUpperCase());
-        if(bad){
-          issues.push(`Code39: Ungültige Zeichen${lineNo ? ' in Zeile ' + lineNo : ''}. Erlaubt sind Großbuchstaben, Zahlen, Leerzeichen und - . $ / + %.`);
-          setFieldState(fieldId,'invalid');
-          return false;
-        }
-        setFieldState(fieldId,'valid');
-        return true;
-      }
-      function checkCode128Value(fieldId, value, lineNo){
-        const raw = String(value || '').trim();
-        if(!raw){
-          issues.push(`Code128: Eingabe fehlt${lineNo ? ' in Zeile ' + lineNo : ''}.`);
-          setFieldState(fieldId,'invalid');
-          return false;
-        }
-        setFieldState(fieldId,'valid');
+        setFieldState(fieldId, 'valid');
         return true;
       }
 
-      // Modus-Grundprüfung
+      function checkTextBarcode(fieldId, value, label, lineNo){
+        const raw = String(value || '').trim();
+        const suffix = lineNo ? ` in Zeile ${lineNo}` : '';
+        if(!raw){
+          issues.push(`${label}: Eingabe fehlt${suffix}.`);
+          setFieldState(fieldId, 'invalid');
+          return false;
+        }
+        if(raw.length > 80){
+          issues.push(`${label}: Maximal 80 Zeichen erlaubt${suffix}.`);
+          setFieldState(fieldId, 'invalid');
+          return false;
+        }
+        if(currentType === 'CODE39' && /[^0-9A-Z \-.$/+%]/.test(raw.toUpperCase())){
+          issues.push(`Code39: Ungültige Zeichen${suffix}. Erlaubt sind Großbuchstaben, Zahlen, Leerzeichen und - . $ / + %. `);
+          setFieldState(fieldId, 'invalid');
+          return false;
+        }
+        setFieldState(fieldId, 'valid');
+        return true;
+      }
+
       if(currentMode === 'single'){
         const v = getValue('barcodeValue');
-        if(numeric) checkNumericValue('barcodeValue', v);
-        else if(currentType === 'CODE39') checkCode39Value('barcodeValue', v);
-        else checkCode128Value('barcodeValue', v);
+        if(numeric) checkNumericBarcode('barcodeValue', v, info.label);
+        else checkTextBarcode('barcodeValue', v, info.label);
       }
 
       if(currentMode === 'copies'){
         const v = getValue('copyValue');
         const count = Number(getValue('copyCount') || 0);
-        if(numeric) checkNumericValue('copyValue', v);
-        else if(currentType === 'CODE39') checkCode39Value('copyValue', v);
-        else checkCode128Value('copyValue', v);
+
+        if(numeric) checkNumericBarcode('copyValue', v, info.label);
+        else checkTextBarcode('copyValue', v, info.label);
 
         if(!Number.isInteger(count) || count < 1 || count > 999){
           issues.push('Gleicher Code: Anzahl muss zwischen 1 und 999 liegen.');
@@ -713,9 +802,8 @@ WS-B001</textarea>
         } else {
           let ok = true;
           lines.forEach((line, i)=>{
-            if(numeric) ok = checkNumericValue('manualList', line, i + 1) && ok;
-            else if(currentType === 'CODE39') ok = checkCode39Value('manualList', line, i + 1) && ok;
-            else ok = checkCode128Value('manualList', line, i + 1) && ok;
+            if(numeric) ok = checkNumericBarcode('manualList', line, info.label, i + 1) && ok;
+            else ok = checkTextBarcode('manualList', line, info.label, i + 1) && ok;
           });
           if(ok) setFieldState('manualList','valid');
         }
@@ -724,26 +812,28 @@ WS-B001</textarea>
       if(currentMode === 'series'){
         const startRaw = String(getValue('seriesStart') || '').trim();
         const count = Number(getValue('seriesCount') || 0);
-        const pad = Number(getValue('seriesPad') || 0);
         const stepRaw = String(getValue('seriesStep') || '').trim();
         const step = Number(stepRaw);
+        const pad = Number(getValue('seriesPad') || 0);
 
         if(numeric){
-          if(!/^\d+$/.test(startRaw)){
+          if(!startRaw){
+            issues.push(`${info.label}-Serie: Start-Basisnummer fehlt.`);
+            setFieldState('seriesStart','invalid');
+          } else if(!/^\d+$/.test(startRaw)){
             issues.push(`${info.label}-Serie: Start-Basisnummer darf nur Ziffern enthalten.`);
             setFieldState('seriesStart','invalid');
-          } else if(startRaw.length > info.baseLen){
-            issues.push(`${info.label}-Serie: Start-Basisnummer darf maximal ${info.baseLen} Stellen haben.`);
+          } else if(startRaw.length > baseLen){
+            issues.push(`${info.label}-Serie: Start-Basisnummer darf maximal ${baseLen} Stellen haben.`);
             setFieldState('seriesStart','invalid');
           } else {
             setFieldState('seriesStart','valid');
           }
 
-          if(pad !== info.baseLen){
-            issues.push(`${info.label}-Serie: Basisstellen sind fest ${info.baseLen}.`);
+          if(pad !== baseLen){
+            issues.push(`${info.label}-Serie: Basisstellen sind fest ${baseLen}.`);
             setFieldState('seriesPad','invalid');
           } else {
-            // gesperrtes Pflichtfeld neutral lassen, nicht grün aufblasen
             setFieldState('seriesPad','');
           }
 
@@ -754,12 +844,17 @@ WS-B001</textarea>
             setFieldState('seriesStep','valid');
           }
 
-          const maxStart = Number('9'.repeat(Math.min(info.baseLen, 15)));
-          if(Number(startRaw) + Math.max(0, count - 1) * Math.max(1, step) > maxStart){
-            issues.push(`${info.label}-Serie: Startnummer + Anzahl/Schrittweite überschreitet den ${info.baseLen}-stelligen Basisbereich.`);
-            setFieldState('seriesStart','invalid');
-            setFieldState('seriesCount','invalid');
-            setFieldState('seriesStep','invalid');
+          if(Number.isInteger(count) && count >= 1 && count <= 999 && /^\d+$/.test(startRaw) && /^\d+$/.test(stepRaw)){
+            const maxBase = BigInt('9'.repeat(baseLen));
+            const startVal = BigInt(startRaw || '0');
+            const stepVal = BigInt(stepRaw || '1');
+            const endVal = startVal + BigInt(count - 1) * stepVal;
+            if(endVal > maxBase){
+              issues.push(`${info.label}-Serie: Startnummer + Anzahl/Schrittweite überschreitet den ${baseLen}-stelligen Basisbereich.`);
+              setFieldState('seriesStart','invalid');
+              setFieldState('seriesCount','invalid');
+              setFieldState('seriesStep','invalid');
+            }
           }
         } else {
           if(!startRaw || !Number.isFinite(Number(startRaw))){
@@ -787,12 +882,12 @@ WS-B001</textarea>
         if(!Number.isInteger(count) || count < 1 || count > 999){
           issues.push('Serie: Anzahl muss zwischen 1 und 999 liegen.');
           setFieldState('seriesCount','invalid');
-        } else if(!document.getElementById('seriesCount')?.closest('.field')?.classList.contains('invalid')) {
+        } else if(!$('seriesCount')?.closest('.field')?.classList.contains('invalid')){
           setFieldState('seriesCount','valid');
         }
       }
 
-      // optionale Felder bewusst neutral
+      // Optionale oder gesperrte Felder bleiben neutral.
       setFieldState('seriesPrefix','');
       setFieldState('seriesSuffix','');
 
@@ -800,15 +895,10 @@ WS-B001</textarea>
         issues.push('Barcode-Vorschau meldet: ' + rendererError);
       }
 
-      const box = $('validationBox');
-      if(box){
-        if(issues.length){
-          box.classList.add('bad');
-          box.innerHTML = '<strong>Prüfung: Bitte korrigieren</strong><ul>' + issues.map(x=>`<li>${escapeHtml(x)}</li>`).join('') + '</ul>';
-        } else {
-          box.classList.remove('bad');
-          box.innerHTML = '<strong>Prüfung: Eingaben passen.</strong><br>Barcode kann erzeugt, exportiert und gedruckt werden.';
-        }
+      if(issues.length){
+        setValidationList('bad', 'Prüfung: Fehler gefunden', issues);
+      } else {
+        setValidationBox('ok', 'Prüfung: Eingaben passen.', 'Barcode kann erzeugt, exportiert und gedruckt werden.');
       }
 
       return {ok: issues.length === 0, issues};
@@ -822,7 +912,10 @@ WS-B001</textarea>
 
     function generate(){
       updatePrintLayoutVars();
+      setInputMaxLengths();
+      sanitizeNumericInputs();
       enforceFixedFields();
+
       const raw = activeInputValue();
       const value = normalizeValue(raw) || typeInfo[currentType].sample;
       explainFinalCode(raw);
@@ -830,13 +923,17 @@ WS-B001</textarea>
       $('typePill').textContent = typeInfo[currentType].label;
       $('modePill').textContent = modeInfo[currentMode].label;
       $('lengthPill').textContent = `${value.length} Zeichen`;
+
       let rendererError = '';
       try{
         renderBarcodeToSvg('#barcodeSvg', value);
       }catch(err){
+        rendererError = err.message || String(err);
         $('barcodeSvg').innerHTML = '';
-        $('payloadBox').textContent = `Fehler: ${err.message || err}`;
+        $('payloadBox').textContent = `Fehler: ${rendererError}`;
       }
+
+      validateCurrentInputs(rendererError);
     }
     function updateNumericFieldState(){
       const numeric = isNumericType();
