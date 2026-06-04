@@ -40,6 +40,7 @@
           <h3>Haupttools</h3>
           <a class="ws-tool-link" href="${link('tools/ws_3d_print_kostenrechner.html')}"><strong>3D-Druck Kostenrechner Plus</strong><span>Angebot, Rechnung und Lieferschein.</span></a>
           <a class="ws-tool-link" href="${link('tools/QRCodeMasterPro.html')}"><strong>QR-Werkstatt Plus</strong><span>QR-Codes, WLAN, Links und mehr.</span></a>
+          <a class="ws-tool-link" href="${link('tools/BarcodeWerkstattPlus.html')}"><strong>Barcode-Werkstatt Plus</strong><span>EAN, Code128, Code39 und ITF-14.</span></a>
           <a class="ws-tool-link" href="${link('tools/Zeiterfassung_Plus.html')}"><strong>Zeiterfassung Plus</strong><span>Aktuelle Online-Version.</span></a>
           <a class="ws-tool-link" href="${link('tools/ReceiptWriterPro.html')}"><strong>Quittungs-Werkstatt</strong><span>Quittungen im Browser erstellen.</span></a>
         </div>

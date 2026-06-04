@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barcode-Werkstatt Plus · Warenschmiede Tools</title>
+  <meta name="description" content="Barcode-Werkstatt Plus: EAN-13, EAN-8, Code128, Code39 und ITF-14 lokal im Browser erstellen.">
+  <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <style>
+    :root{
+      --bg:#eef6fc; --surface:#ffffff; --card:rgba(255,255,255,.86); --text:#102033; --muted:#5b6f83;
+      --line:#cbd9e6; --accent:#f1913e; --blue:#2f8edf; --good:#2baa72; --bad:#c2413a;
+      --shadow:0 22px 60px -42px rgba(28,53,75,.55); --radius:22px;
+      --font:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    }
+    html[data-theme="dark"]{
+      --bg:#0b1120; --surface:#111827; --card:rgba(15,23,42,.88); --text:#e5eefb; --muted:#9aa9bd;
+      --line:#26364d; --accent:#f1913e; --blue:#60a5fa; --shadow:0 22px 60px -40px rgba(0,0,0,.9);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:var(--font);color:var(--text);
+      background:radial-gradient(circle at 0% 0%,rgba(241,145,62,.13),transparent 28rem),
+                 radial-gradient(circle at 100% 0%,rgba(78,163,241,.15),transparent 30rem),
+                 linear-gradient(135deg,#f7fbff,var(--bg));
+      min-height:100vh;
+    }
+    html[data-theme="dark"] body{background:radial-gradient(circle at 0% 0%,rgba(241,145,62,.12),transparent 28rem),radial-gradient(circle at 100% 0%,rgba(78,163,241,.12),transparent 30rem),var(--bg)}
+    .app-shell{min-height:100vh;display:grid;grid-template-rows:auto 1fr}
+    .topbar{position:sticky;top:0;z-index:40;backdrop-filter:blur(18px);background:color-mix(in srgb,var(--surface) 84%,transparent);border-bottom:1px solid var(--line)}
+    .topbar-inner{max-width:1540px;margin:0 auto;padding:10px clamp(12px,2vw,28px);display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .tool-logo{width:54px;height:54px;border-radius:16px;object-fit:contain;flex:0 0 auto;border:1px solid rgba(241,145,62,.38);box-shadow:0 0 0 4px rgba(241,145,62,.08),0 18px 36px -26px rgba(15,23,42,.55);background:var(--surface)}
+    .brand h1{margin:0;font-size:clamp(1.15rem,2vw,1.55rem);letter-spacing:-.04em;white-space:nowrap}
+    .top-actions{display:flex;align-items:center;gap:9px;justify-content:flex-end}
+    .btn{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:14px;padding:10px 14px;min-height:42px;font-weight:850;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 12px 28px -25px rgba(15,23,42,.75);transition:.18s ease;text-decoration:none}
+    .btn:hover,.btn:focus-visible{transform:translateY(-1px);border-color:rgba(241,145,62,.7);box-shadow:0 0 0 4px rgba(241,145,62,.12),0 16px 32px -24px rgba(15,23,42,.75);outline:none}
+    .btn-blue{background:linear-gradient(135deg,var(--blue),#1668b2);color:white;border-color:transparent}
+    .main{max-width:1540px;margin:0 auto;width:100%;padding:clamp(14px,2vw,28px);display:grid;grid-template-columns:minmax(300px,400px) minmax(360px,1fr) minmax(300px,420px);gap:18px;align-items:start}
+    .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .panel-head{padding:18px 18px 14px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,rgba(78,163,241,.12),transparent)}
+    .panel-body{padding:18px}
+    .eyebrow{color:var(--accent);font-size:.78rem;font-weight:950;letter-spacing:.11em;text-transform:uppercase;margin:0 0 8px}
+    h2,h3{margin:0;line-height:1.15}.panel h2{font-size:1.18rem;letter-spacing:-.02em}.panel h3{font-size:1rem}
+    .grid{display:grid;gap:12px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    label{font-size:.78rem;font-weight:850;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+    input,textarea,select{width:100%;border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:var(--surface);color:var(--text);font:inherit;font-size:.92rem;outline:none;transition:.18s ease}
+    input:focus,textarea:focus,select:focus{border-color:rgba(241,145,62,.78);box-shadow:0 0 0 4px rgba(241,145,62,.13)}
+    .field{display:grid;gap:6px}.field-note{color:var(--muted);font-size:.78rem;margin:0;line-height:1.35}
+    .type-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .type-btn{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:14px;padding:12px 8px;min-height:66px;cursor:pointer;display:grid;place-items:center;gap:4px;text-align:center;font-weight:850;font-size:.8rem;transition:.18s ease}
+    .type-btn span:first-child{font-size:1.4rem}.type-btn:hover{transform:translateY(-1px);border-color:rgba(241,145,62,.65)}
+    .type-btn.active{background:linear-gradient(135deg,var(--blue),#1668b2);color:#fff;border-color:transparent}
+    .content-picker-note,.form-help{margin-top:14px;color:var(--muted);font-size:.86rem;line-height:1.45;padding:12px 14px;border-radius:16px;background:color-mix(in srgb,var(--blue) 9%,transparent);border:1px solid color-mix(in srgb,var(--blue) 20%,var(--line))}
+    .form-help{margin:0;background:rgba(241,145,62,.08);border-color:rgba(241,145,62,.22)}
+    .form-example{color:var(--muted);line-height:1.45;font-size:.86rem;padding:10px 12px;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--surface) 80%,transparent);border-radius:12px;margin:0}
+    .center-stage{display:grid;gap:18px}
+    .input-summary{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.input-summary span{border:1px solid rgba(78,163,241,.25);background:rgba(78,163,241,.08);color:var(--text);border-radius:999px;padding:5px 9px;font-size:.76rem;font-weight:850}
+    .form-section{display:none;gap:12px}.form-section.active{display:grid}
+    .settings-grid{display:grid;gap:14px}.settings-card{padding:14px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--surface) 78%,transparent)}.settings-card h3{margin:0 0 10px}
+    .color-row{display:grid;grid-template-columns:1fr 54px;gap:10px;align-items:end}input[type=color]{padding:0;min-height:43px;cursor:pointer}
+    .tool-trust-strip-compact{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.tool-trust-strip-compact span{border:1px solid rgba(43,170,114,.26);background:rgba(43,170,114,.08);border-radius:999px;padding:5px 9px;font-size:.76rem;font-weight:850;color:var(--text)}
+    .preview-card{text-align:center;padding:clamp(18px,2vw,28px);position:sticky;top:86px}
+    .barcode-frame{display:inline-grid;place-items:center;padding:18px;background:#fff;border:1px solid #e2e8f0;border-radius:26px;box-shadow:0 24px 70px -44px rgba(15,23,42,.9);margin:12px auto 16px;max-width:100%;overflow:auto}
+    #barcodeSvg{max-width:100%;height:auto}
+    .pill-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 0 14px}.pill{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:6px 10px;font-size:.76rem;font-weight:850}
+    .preview-buttons{display:grid;gap:10px;max-width:300px;margin:0 auto}.payload-box{font-family:var(--mono);font-size:.78rem;color:var(--muted);background:color-mix(in srgb,var(--surface) 80%,transparent);border:1px solid var(--line);border-radius:16px;padding:12px;max-height:170px;overflow:auto;white-space:pre-wrap;word-break:break-word;text-align:left}
+    dialog{border:0;border-radius:24px;padding:0;max-width:min(880px,calc(100vw - 28px));background:var(--surface);color:var(--text);box-shadow:0 28px 90px -46px rgba(0,0,0,.9)}dialog::backdrop{background:rgba(15,23,42,.58);backdrop-filter:blur(5px)}.modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:center}.modal-body{padding:20px;color:var(--muted);line-height:1.58}.close-x{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font-size:1.1rem}
+    .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:#0f172a;color:#fff;border-radius:999px;padding:11px 16px;font-weight:850;box-shadow:0 20px 60px -35px #000;transition:.22s ease;z-index:80}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    @media(max-width:1180px){.main{grid-template-columns:1fr 1fr}.preview-card{position:static}.center-stage{grid-column:1/-1;order:3}}
+    @media(max-width:760px){.topbar-inner{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}.main{grid-template-columns:1fr;padding:12px}.row{grid-template-columns:1fr}.panel-body{padding:14px}.brand h1{white-space:normal}}
+    @media print{.topbar,.editor-panel,.center-stage,.preview-buttons,.pill-row,.payload-box,.field-note{display:none!important}body{background:white}.main{display:block;padding:0}.panel{box-shadow:none;border:0}.preview-card{padding:0}.barcode-frame{box-shadow:none;border:0}}
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <img class="tool-logo" src="../assets/img/barcode_logo.svg" alt="Barcode-Werkstatt Plus Logo">
+          <div><h1>Barcode-Werkstatt Plus</h1></div>
+        </div>
+        <div class="top-actions">
+          <button class="ws-tool-menu-btn" type="button" id="toolMenuBtn" aria-label="W-TOOLS-Menü öffnen"><img src="../assets/img/w-tools-menu.png" alt=""></button>
+          <button class="btn" type="button" id="btnTheme">🌓 Hell/Dunkel</button>
+          <button class="btn btn-blue" type="button" id="btnHelp">Hilfe</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="panel editor-panel">
+        <div class="panel-head"><p class="eyebrow">1. Barcode wählen</p><h2>Barcode-Art auswählen</h2></div>
+        <div class="panel-body">
+          <div class="type-grid" id="typeGrid">
+            <button class="type-btn active" data-type="CODE128"><span>▥</span><span>Code128</span></button>
+            <button class="type-btn" data-type="EAN13"><span>🛒</span><span>EAN-13</span></button>
+            <button class="type-btn" data-type="EAN8"><span>🏷️</span><span>EAN-8</span></button>
+            <button class="type-btn" data-type="CODE39"><span>▤</span><span>Code39</span></button>
+            <button class="type-btn" data-type="ITF14"><span>📦</span><span>ITF-14</span></button>
+          </div>
+          <div class="content-picker-note" id="typeHint">Code128 ist flexibel und gut für interne Nummern, Lager, Aufträge und Werkstattetiketten.</div>
+        </div>
+      </section>
+
+      <section class="center-stage">
+        <section class="panel input-panel">
+          <div class="panel-head">
+            <p class="eyebrow">2a. Eingaben</p>
+            <h2>Daten für den Barcode</h2>
+            <div class="input-summary" id="inputSummary"><span>Code128</span><span>Text/Zahlen</span></div>
+          </div>
+          <div class="panel-body grid">
+            <p class="form-help" id="inputHelp">Code128 kann Buchstaben, Zahlen und viele Sonderzeichen enthalten. Gut für interne IDs.</p>
+            <div class="field"><label for="barcodeValue">Barcode-Inhalt</label><input id="barcodeValue" value="WS-2026-001" placeholder="z. B. WS-2026-001"></div>
+            <p class="form-example" id="inputExample"><strong>Beispiel:</strong> Artikelnummer, Auftragsnummer, Lagerfach, interne Werkzeug-ID.</p>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <p class="eyebrow">2b. Einstellungen</p>
+            <h2>Optik & Ausgabe</h2>
+            <div class="tool-trust-strip-compact"><span>100% werbefrei</span><span>kein Tracking</span><span>lokal im Browser</span></div>
+          </div>
+          <div class="panel-body settings-grid">
+            <div class="settings-card">
+              <h3>Farben</h3>
+              <div class="row">
+                <div class="field color-row"><div><label for="lineColor">Strichfarbe</label><input id="lineColorText" value="#102033"></div><input id="lineColor" type="color" value="#102033"></div>
+                <div class="field color-row"><div><label for="bgColor">Hintergrund</label><input id="bgColorText" value="#ffffff"></div><input id="bgColor" type="color" value="#ffffff"></div>
+              </div>
+            </div>
+            <div class="settings-card">
+              <h3>Größe</h3>
+              <div class="row">
+                <div class="field"><label for="barWidth">Strichbreite</label><select id="barWidth"><option value="1">Schmal</option><option value="2" selected>Normal</option><option value="3">Breit</option></select></div>
+                <div class="field"><label for="barHeight">Höhe</label><select id="barHeight"><option value="70">70 px</option><option value="100" selected>100 px</option><option value="140">140 px</option></select></div>
+              </div>
+            </div>
+            <div class="settings-card">
+              <h3>Text</h3>
+              <div class="row">
+                <div class="field"><label for="showText">Klartext anzeigen</label><select id="showText"><option value="true" selected>Ja</option><option value="false">Nein</option></select></div>
+                <div class="field"><label for="fontSize">Schriftgröße</label><select id="fontSize"><option value="14">14 px</option><option value="18" selected>18 px</option><option value="24">24 px</option></select></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="panel preview-card">
+        <p class="eyebrow">3. Vorschau</p>
+        <h2>Barcode-Ausgabe</h2>
+        <div class="barcode-frame"><svg id="barcodeSvg"></svg></div>
+        <div class="pill-row"><span class="pill" id="typePill">Code128</span><span class="pill" id="lengthPill">0 Zeichen</span></div>
+        <div class="preview-buttons">
+          <button class="btn btn-blue" id="btnGenerate" type="button">Barcode aktualisieren</button>
+          <button class="btn" id="btnPng" type="button">PNG herunterladen</button>
+          <button class="btn" id="btnSvg" type="button">SVG herunterladen</button>
+          <button class="btn" id="btnCopy" type="button">Barcode-Inhalt kopieren</button>
+          <button class="btn" onclick="window.print()" type="button">Drucken</button>
+        </div>
+        <p class="field-note" style="text-align:left;max-width:300px;margin:10px auto 6px;">Gespeicherter Barcode-Inhalt:</p>
+        <div class="payload-box" id="payloadBox"></div>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="helpDialog">
+    <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
+    <div class="modal-body">
+      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Sie ist für Artikelnummern, interne Nummern, Etiketten, Lager, Werkstatt und einfache Produktkennzeichnungen gedacht.</p>
+      <h3>Barcode oder QR-Code?</h3>
+      <p><strong>Barcode:</strong> gut für kurze Nummern und Scannerkassen/Lager. <strong>QR-Code:</strong> besser für Links, Kontakte, WLAN, längere Texte und moderne Smartphone-Nutzung.</p>
+      <h3>Barcode-Arten</h3>
+      <ul>
+        <li><strong>Code128:</strong> sehr flexibel für interne Nummern und Text/Zahlen.</li>
+        <li><strong>EAN-13:</strong> klassischer 13-stelliger Artikelcode.</li>
+        <li><strong>EAN-8:</strong> kurzer 8-stelliger Artikelcode.</li>
+        <li><strong>Code39:</strong> einfacher Industrie-/Werkstattcode für Buchstaben und Zahlen.</li>
+        <li><strong>ITF-14:</strong> häufig für Verpackungs-/Logistikeinheiten.</li>
+      </ul>
+      <p>Vor echtem Einsatz immer mit dem Zielscanner testen. Für offizielle Handels-EANs brauchst du gültige Nummern aus der passenden Vergabestelle, nicht einfach frei erfundene Codes.</p>
+    </div>
+  </dialog>
+  <div class="toast" id="toast">Erledigt</div>
+
+  <script defer src="../assets/js/ws-tool-menu.js"></script>
+  <script>
+    const $ = (id)=>document.getElementById(id);
+    let currentType = 'CODE128';
+    const info = {
+      CODE128:{label:'Code128',hint:'Code128 ist flexibel und gut für interne Nummern, Lager, Aufträge und Werkstattetiketten.',help:'Code128 kann Buchstaben, Zahlen und viele Sonderzeichen enthalten. Gut für interne IDs.',ex:'Artikelnummer, Auftragsnummer, Lagerfach, interne Werkzeug-ID.',sample:'WS-2026-001'},
+      EAN13:{label:'EAN-13',hint:'EAN-13 ist der klassische 13-stellige Artikelcode. Die Prüfziffer kann automatisch ergänzt werden, wenn du 12 Stellen eingibst.',help:'EAN-13 nutzt nur Zahlen. Gib 12 Stellen ein, dann ergänzt das Tool die Prüfziffer automatisch. Bei 13 Stellen wird geprüft/gerendert.',ex:'Beispiel: 400638133393 → wird zu 4006381333931.',sample:'400638133393'},
+      EAN8:{label:'EAN-8',hint:'EAN-8 ist ein kurzer 8-stelliger Artikelcode. Die Prüfziffer kann bei 7 Stellen ergänzt werden.',help:'EAN-8 nutzt nur Zahlen. Gib 7 Stellen ein, dann ergänzt das Tool die Prüfziffer automatisch.',ex:'Beispiel: 9638507 → wird zu 96385074.',sample:'9638507'},
+      CODE39:{label:'Code39',hint:'Code39 ist einfach und robust für Industrie, Werkstatt und Lager. Er unterstützt Großbuchstaben, Zahlen und wenige Zeichen.',help:'Code39 eignet sich für robuste interne Codes. Verwende Großbuchstaben, Zahlen, Leerzeichen und - . $ / + %.',ex:'Beispiel: WERKZEUG-01 oder LAGER A12.',sample:'WERKZEUG-01'},
+      ITF14:{label:'ITF-14',hint:'ITF-14 wird oft für Verpackungen und Logistikeinheiten genutzt. 13 Stellen können zur Prüfziffer ergänzt werden.',help:'ITF-14 nutzt 14 Ziffern. Bei 13 Ziffern ergänzt das Tool die Prüfziffer automatisch.',ex:'Beispiel: 1234567890123 → 14-stelliger ITF-14.',sample:'1234567890123'}
+    };
+    function toast(text){const t=$('toast');t.textContent=text;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)}
+    function eanChecksum(digits){
+      const nums = digits.split('').map(Number);
+      let sum = 0;
+      nums.forEach((n,i)=>{ sum += n * ((i % 2 === 0) ? 1 : 3); });
+      return String((10 - (sum % 10)) % 10);
+    }
+    function ean8Checksum(digits){
+      const nums = digits.split('').map(Number);
+      let sum = 0;
+      nums.forEach((n,i)=>{ sum += n * ((i % 2 === 0) ? 3 : 1); });
+      return String((10 - (sum % 10)) % 10);
+    }
+    function normalizeValue(){
+      let v = $('barcodeValue').value.trim();
+      if(currentType === 'EAN13'){
+        v = v.replace(/\D/g,'');
+        if(v.length === 12) v += eanChecksum(v);
+      }
+      if(currentType === 'EAN8'){
+        v = v.replace(/\D/g,'');
+        if(v.length === 7) v += ean8Checksum(v);
+      }
+      if(currentType === 'ITF14'){
+        v = v.replace(/\D/g,'');
+        if(v.length === 13) v += eanChecksum(v);
+      }
+      if(currentType === 'CODE39'){
+        v = v.toUpperCase().replace(/[^0-9A-Z \-.$/+%]/g,'');
+      }
+      return v || info[currentType].sample;
+    }
+    function generate(){
+      const value = normalizeValue();
+      $('payloadBox').textContent = value;
+      $('typePill').textContent = info[currentType].label;
+      $('lengthPill').textContent = `${value.length} Zeichen`;
+      try{
+        JsBarcode('#barcodeSvg', value, {
+          format: currentType,
+          lineColor: $('lineColorText').value || '#102033',
+          background: $('bgColorText').value || '#ffffff',
+          width: Number($('barWidth').value),
+          height: Number($('barHeight').value),
+          displayValue: $('showText').value === 'true',
+          fontSize: Number($('fontSize').value),
+          margin: 16
+        });
+      }catch(err){
+        $('barcodeSvg').innerHTML = '';
+        $('payloadBox').textContent = `Fehler: ${err.message || err}`;
+      }
+    }
+    function setType(type){
+      currentType = type;
+      document.querySelectorAll('.type-btn').forEach(b=>b.classList.toggle('active', b.dataset.type===type));
+      $('typeHint').textContent = info[type].hint;
+      $('inputHelp').textContent = info[type].help;
+      $('inputExample').innerHTML = '<strong>Beispiel:</strong> ' + info[type].ex;
+      $('inputSummary').innerHTML = `<span>${info[type].label}</span><span>${type === 'CODE128' ? 'Text/Zahlen' : 'Zahlen/Code'}</span>`;
+      $('barcodeValue').value = info[type].sample;
+      generate();
+    }
+    function syncColor(a,b){
+      $(a).addEventListener('input',()=>{$(b).value=$(a).value;generate()});
+      $(b).addEventListener('input',()=>{if(/^#[0-9a-fA-F]{6}$/.test($(b).value)){ $(a).value=$(b).value; generate(); }});
+    }
+    function downloadSvg(){
+      const svg = $('barcodeSvg').outerHTML;
+      const blob = new Blob([svg], {type:'image/svg+xml'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = 'barcode-werkstatt-plus.svg'; a.click(); URL.revokeObjectURL(a.href);
+    }
+    function downloadPng(){
+      const svg = $('barcodeSvg').outerHTML;
+      const img = new Image();
+      const blob = new Blob([svg], {type:'image/svg+xml;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width || 900; canvas.height = img.height || 260;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = $('bgColorText').value || '#ffffff';
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(img,0,0);
+        URL.revokeObjectURL(url);
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL('image/png'); a.download = 'barcode-werkstatt-plus.png'; a.click();
+      };
+      img.src = url;
+    }
+    document.addEventListener('DOMContentLoaded',()=>{
+      $('toolMenuBtn').addEventListener('click',()=>window.WSToolMenu?.open());
+      document.querySelectorAll('.type-btn').forEach(btn=>btn.addEventListener('click',()=>setType(btn.dataset.type)));
+      ['barcodeValue','barWidth','barHeight','showText','fontSize'].forEach(id=>$(id).addEventListener('input',generate));
+      ['barWidth','barHeight','showText','fontSize'].forEach(id=>$(id).addEventListener('change',generate));
+      syncColor('lineColor','lineColorText'); syncColor('bgColor','bgColorText');
+      $('btnGenerate').addEventListener('click',generate);
+      $('btnSvg').addEventListener('click',downloadSvg);
+      $('btnPng').addEventListener('click',downloadPng);
+      $('btnCopy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('payloadBox').textContent);toast('Barcode-Inhalt kopiert')}catch{toast('Kopieren nicht möglich')}});
+      $('btnTheme').addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'});
+      $('btnHelp').addEventListener('click',()=>$('helpDialog').showModal());
+      $('helpClose').addEventListener('click',()=>$('helpDialog').close());
+      generate();
+    });
+  </script>
+</body>
+</html>

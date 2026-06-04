@@ -571,10 +571,10 @@
           <button class="btn btn-blue" id="btnGenerate" type="button">QR aktualisieren</button>
           <button class="btn" id="btnPng" type="button">PNG herunterladen</button>
           <button class="btn" id="btnSvg" type="button">SVG herunterladen</button>
-          <button class="btn" id="btnCopy" type="button">Payload kopieren</button>
+          <button class="btn" id="btnCopy" type="button">QR-Inhalt kopieren</button>
           <button class="btn" onclick="window.print()" type="button">Drucken</button>
         </div>
-        <div class="payload-box" id="payloadBox"></div>
+        <p class="field-note" style="text-align:left;max-width:300px;margin:10px auto 6px;">Gespeicherter QR-Inhalt:</p><div class="payload-box" id="payloadBox"></div>
       </aside>
     </main>
   </div>
@@ -959,7 +959,7 @@
       $('btnPng').addEventListener('click', () => qr?.download({name:'qr-werkstatt-plus', extension:'png'}));
       $('btnSvg').addEventListener('click', () => qr?.download({name:'qr-werkstatt-plus', extension:'svg'}));
       $('btnCopy').addEventListener('click', async () => {
-        try { await navigator.clipboard.writeText(currentPayload); toast('Payload kopiert'); }
+        try { await navigator.clipboard.writeText(currentPayload); toast('QR-Inhalt kopiert'); }
         catch { toast('Kopieren nicht möglich'); }
       });
 
