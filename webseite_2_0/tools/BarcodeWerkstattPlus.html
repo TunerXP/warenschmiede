@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Prüfung & Druckbogen v73</title>
+  <title>Barcode-Werkstatt Plus · Eingaben merken & Prüfung v74</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -400,7 +400,7 @@ WS-B001</textarea>
   <dialog id="helpDialog">
     <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
     <div class="modal-body">
-      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand ergänzt grün/rote Eingabeprüfung und A4-Druckbogenoptionen.</p>
+      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand merkt Eingaben je Barcode-Art und korrigiert die rot/grün-Prüfung.</p>
       <h3>Arbeitsmodi</h3>
       <ul>
         <li><strong>Einzelcode:</strong> ein Barcode, Export als PNG/SVG oder Druck.</li>
@@ -437,6 +437,7 @@ WS-B001</textarea>
     let currentType = 'CODE128';
     let currentMode = 'single';
     let generatedCodes = [];
+    let typeDrafts = {};
     let projectVersions = [];
     let currentVersionId = null;
 
@@ -587,6 +588,12 @@ WS-B001</textarea>
       const raw = String(activeInputValue() || '').trim();
       const info = typeInfo[currentType];
 
+      function markActiveValue(state){
+        if(currentMode === 'single') setFieldState('barcodeValue', state);
+        if(currentMode === 'copies') setFieldState('copyValue', state);
+        if(currentMode === 'manual') setFieldState('manualList', state);
+      }
+
       if(currentMode === 'single'){
         if(!raw) issues.push('Einzelcode: Barcode-Inhalt fehlt.');
         setFieldState('barcodeValue', raw ? 'valid' : 'invalid');
@@ -602,15 +609,17 @@ WS-B001</textarea>
       }
 
       if(currentMode === 'series'){
-        const start = Number(getValue('seriesStart') || 0);
+        const startRaw = String(getValue('seriesStart') || '').trim();
         const count = Number(getValue('seriesCount') || 0);
         const pad = Number(getValue('seriesPad') || 0);
         const step = Number(getValue('seriesStep') || 0);
-        if(!Number.isFinite(start)) issues.push('Serie: Startnummer ist ungültig.');
+
+        if(!startRaw || !Number.isFinite(Number(startRaw))) issues.push('Serie: Startnummer ist ungültig.');
         if(!count || count < 1) issues.push('Serie: Anzahl muss mindestens 1 sein.');
         if(pad < 0) issues.push('Serie: Stellen darf nicht negativ sein.');
         if(!step || !Number.isFinite(step)) issues.push('Serie: Schrittweite fehlt oder ist ungültig.');
-        setFieldState('seriesStart', Number.isFinite(start) ? 'valid' : 'invalid');
+
+        setFieldState('seriesStart', startRaw && Number.isFinite(Number(startRaw)) ? 'valid' : 'invalid');
         setFieldState('seriesCount', count >= 1 ? 'valid' : 'invalid');
         setFieldState('seriesPad', pad >= 0 ? 'valid' : 'invalid');
         setFieldState('seriesStep', step && Number.isFinite(step) ? 'valid' : 'invalid');
@@ -623,22 +632,49 @@ WS-B001</textarea>
       }
 
       if(info.numericOnly){
-        const digits = raw.replace(/\D/g,'');
-        if(!digits) issues.push(`${info.label}: Es werden Ziffern benötigt.`);
-        if(currentMode === 'single' || currentMode === 'copies' || currentMode === 'manual'){
-          if(digits && digits.length !== info.baseLen && digits.length !== info.fullLen){
-            issues.push(`${info.label}: Erwartet ${info.baseLen} Basisziffern oder ${info.fullLen} Stellen inkl. Prüfziffer.`);
+        const checkTargets = [];
+
+        if(currentMode === 'single') checkTargets.push(['barcodeValue', getValue('barcodeValue')]);
+        if(currentMode === 'copies') checkTargets.push(['copyValue', getValue('copyValue')]);
+        if(currentMode === 'manual'){
+          const lines = String(getValue('manualList') || '').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+          lines.forEach((line, i)=>checkTargets.push(['manualList', line, i + 1]));
+        }
+
+        for(const [fieldId, value, lineNo] of checkTargets){
+          const digits = String(value || '').replace(/\D/g,'');
+          if(!digits){
+            issues.push(`${info.label}: Es werden Ziffern benötigt${lineNo ? ' in Zeile ' + lineNo : ''}.`);
+            setFieldState(fieldId, 'invalid');
+            continue;
+          }
+          if(digits.length !== info.baseLen && digits.length !== info.fullLen){
+            issues.push(`${info.label}: Erwartet ${info.baseLen} Basisziffern oder ${info.fullLen} Stellen inkl. Prüfziffer${lineNo ? ' in Zeile ' + lineNo : ''}.`);
+            setFieldState(fieldId, 'invalid');
           }
         }
       }
 
       if(currentType === 'CODE39'){
-        const bad = raw && /[^0-9A-Z \-.$/+%]/.test(raw.toUpperCase());
-        if(bad) issues.push('Code39: Nur Großbuchstaben, Zahlen, Leerzeichen und - . $ / + % verwenden.');
+        const checkTargets = [];
+        if(currentMode === 'single') checkTargets.push(['barcodeValue', getValue('barcodeValue')]);
+        if(currentMode === 'copies') checkTargets.push(['copyValue', getValue('copyValue')]);
+        if(currentMode === 'manual'){
+          const lines = String(getValue('manualList') || '').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+          lines.forEach((line, i)=>checkTargets.push(['manualList', line, i + 1]));
+        }
+        for(const [fieldId, value, lineNo] of checkTargets){
+          const bad = value && /[^0-9A-Z \-.$/+%]/.test(String(value).toUpperCase());
+          if(bad){
+            issues.push(`Code39: Ungültige Zeichen${lineNo ? ' in Zeile ' + lineNo : ''}. Erlaubt sind Großbuchstaben, Zahlen, Leerzeichen und - . $ / + %.`);
+            setFieldState(fieldId, 'invalid');
+          }
+        }
       }
 
       if(currentType === 'CODE128' && !raw){
         issues.push('Code128: Barcode-Inhalt darf nicht leer sein.');
+        markActiveValue('invalid');
       }
 
       const box = $('validationBox');
@@ -710,7 +746,51 @@ WS-B001</textarea>
         if(!$('seriesSuffix').value) $('seriesSuffix').value = '-A';
       }
     }
+
+    function captureTypeDraft(type = currentType){
+      typeDrafts[type] = {
+        inputs: {
+          single: { value: getValue('barcodeValue') },
+          copies: { value: getValue('copyValue'), count: getValue('copyCount'), note: getValue('copyNote') },
+          series: {
+            prefix: getValue('seriesPrefix'),
+            suffix: getValue('seriesSuffix'),
+            start: getValue('seriesStart'),
+            count: getValue('seriesCount'),
+            pad: getValue('seriesPad'),
+            step: getValue('seriesStep'),
+            note: getValue('seriesNote')
+          },
+          manual: { list: getValue('manualList') }
+        }
+      };
+    }
+    function restoreTypeDraft(type){
+      const draft = typeDrafts[type];
+      if(!draft || !draft.inputs) return false;
+
+      setValue('barcodeValue', draft.inputs.single?.value || '');
+      setValue('copyValue', draft.inputs.copies?.value || '');
+      setValue('copyCount', draft.inputs.copies?.count || '1');
+      setValue('copyNote', draft.inputs.copies?.note || '');
+
+      setValue('seriesPrefix', draft.inputs.series?.prefix || '');
+      setValue('seriesSuffix', draft.inputs.series?.suffix || '');
+      setValue('seriesStart', draft.inputs.series?.start || '1');
+      setValue('seriesCount', draft.inputs.series?.count || '1');
+      setValue('seriesPad', draft.inputs.series?.pad || '4');
+      setValue('seriesStep', draft.inputs.series?.step || '1');
+      setValue('seriesNote', draft.inputs.series?.note || '');
+
+      setValue('manualList', draft.inputs.manual?.list || '');
+      return true;
+    }
+
     function setType(type){
+      if(type !== currentType){
+        captureTypeDraft(currentType);
+      }
+
       currentType = type;
       document.querySelectorAll('.type-btn').forEach(b=>b.classList.toggle('active', b.dataset.type===type));
       $('typeHint').textContent = typeInfo[type].hint;
@@ -722,12 +802,16 @@ WS-B001</textarea>
       updateDynamicLabels();
       updateStandardWarning();
 
-      if(isNumericType()) {
-        applyNumericDefaults();
-      } else {
-        if(currentMode === 'single') $('barcodeValue').value = typeInfo[type].sample;
-        if(currentMode === 'copies') $('copyValue').value = typeInfo[type].sample;
-        applyTextDefaults();
+      const restored = restoreTypeDraft(type);
+
+      if(!restored){
+        if(isNumericType()) {
+          applyNumericDefaults();
+        } else {
+          if(currentMode === 'single') $('barcodeValue').value = typeInfo[type].sample;
+          if(currentMode === 'copies') $('copyValue').value = typeInfo[type].sample;
+          applyTextDefaults();
+        }
       }
 
       buildList();
@@ -921,6 +1005,7 @@ WS-B001</textarea>
       const version = projectVersions.find(v => v.id === currentVersionId);
       if(!version) return;
 
+      captureTypeDraft(currentType);
       const snapshot = snapshotState();
       snapshot.projectText = snapshot.projectText || {};
       snapshot.projectText.description = getValue('projectDescription') || '';
@@ -962,6 +1047,7 @@ WS-B001</textarea>
       if(el) el.value = value ?? '';
     }
     function snapshotState(){
+      captureTypeDraft(currentType);
       buildList();
       return {
         projectText: {
@@ -1000,7 +1086,8 @@ WS-B001</textarea>
           printMargin: getValue('printMargin'),
           labelGap: getValue('labelGap')
         },
-        generatedCodes: generatedCodes
+        generatedCodes: generatedCodes,
+        typeDrafts: JSON.parse(JSON.stringify(typeDrafts || {}))
       };
     }
     function collectProjectState(){
@@ -1032,6 +1119,8 @@ WS-B001</textarea>
       } else {
         setValue('projectDescription', '');
       }
+
+      typeDrafts = JSON.parse(JSON.stringify(state.typeDrafts || {}));
 
       const type = state.barcode?.type || 'CODE128';
       const mode = state.barcode?.mode || 'single';
@@ -1066,6 +1155,7 @@ WS-B001</textarea>
       setValue('printMargin', state.layout?.printMargin || '12');
       setValue('labelGap', state.layout?.labelGap || '8');
 
+      captureTypeDraft(type);
       setType(type);
       setMode(mode);
       buildList();
