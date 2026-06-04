@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Validierungs-Neustart v76</title>
+  <title>Barcode-Werkstatt Plus · Infoblasen v77</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -134,9 +134,16 @@
       .topbar,.editor-panel,.center-stage,.preview-buttons,.pill-row,.payload-box,.field-note,.barcode-frame,.list-panel,.sheet-head,.preview-card>h2,.preview-card>.eyebrow{display:none!important}
       .main{display:block;padding:0}.panel{box-shadow:none;border:0}.preview-card{padding:0}.sheet-panel{display:block!important;margin:0}.sheet-preview{border:0;padding:0;max-height:none;overflow:visible}.label-grid{gap:4mm}.label-cell{border:1px dashed #999;min-height:24mm}
     }
+  
+    .mini-help{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:999px;border:1px solid rgba(47,142,223,.35);background:rgba(47,142,223,.10);color:var(--text);font-weight:900;font-size:.78rem;cursor:pointer;margin-left:6px;vertical-align:middle}
+    .mini-help:hover{box-shadow:0 0 0 4px rgba(47,142,223,.10)}
+    .help-pop{position:fixed;z-index:9999;max-width:320px;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:var(--surface);box-shadow:0 20px 60px rgba(15,32,51,.18);color:var(--muted);font-size:.86rem;line-height:1.45;display:none}
+    .help-pop strong{color:var(--text)}
+    
   </style>
 </head>
 <body>
+  <div id="miniHelpPop" class="help-pop" role="tooltip"></div>
   <div class="app-shell">
     <header class="topbar">
       <div class="topbar-inner">
@@ -211,14 +218,14 @@
             <div class="validation-box" id="validationBox"><strong>Prüfung:</strong> Eingaben werden geprüft.</div>
 
             <div class="input-block active" data-input="single">
-              <div class="field"><label for="barcodeValue" id="singleValueLabel">Barcode-Inhalt</label><input id="barcodeValue" value="WS-2026-001" placeholder="z. B. WS-2026-001"></div>
+              <div class="field"><label for="barcodeValue" id="singleValueLabel">Barcode-Inhalt <button class="mini-help" type="button" data-help="barcodeValue" data-title="Barcode-Inhalt" data-text="Hier steht der Inhalt, der im Barcode steckt. Bei EAN/ITF kannst du die Basisnummer eingeben; das Tool ergänzt oder prüft die Prüfziffer.">?</button></label><input id="barcodeValue" value="WS-2026-001" placeholder="z. B. WS-2026-001"></div>
               <p class="form-example" id="inputExample"><strong>Beispiel:</strong> Artikelnummer, Auftragsnummer, Lagerfach, interne Werkzeug-ID.</p>
             </div>
 
             <div class="input-block" data-input="copies">
               <div class="field"><label for="copyValue" id="copyValueLabel">Barcode-Inhalt</label><input id="copyValue" value="ART-12345" placeholder="z. B. ART-12345"></div>
               <div class="row">
-                <div class="field"><label for="copyCount">Anzahl Etiketten</label><input id="copyCount" type="number" min="1" max="999" value="24"></div>
+                <div class="field"><label for="copyCount">Anzahl Etiketten <button class="mini-help" type="button" data-help="copyCount" data-title="Anzahl Etiketten" data-text="Erzeugt denselben Barcode mehrfach auf dem Druckbogen, z. B. 24 gleiche Etiketten für denselben Artikel.">?</button></label><input id="copyCount" type="number" min="1" max="999" value="24"></div>
                 <div class="field"><label for="copyNote">Beschreibung optional</label><input id="copyNote" placeholder="z. B. Ersatzteil"></div>
               </div>
               <p class="form-example"><strong>Nutzen:</strong> Einen Artikelcode mehrfach auf einen Bogen drucken.</p>
@@ -230,12 +237,12 @@
                 <div class="field"><label for="seriesSuffix">Suffix</label><input id="seriesSuffix" placeholder="-A"></div>
               </div>
               <div class="row3">
-                <div class="field"><label for="seriesStart" id="seriesStartLabel">Startnummer</label><input id="seriesStart" type="number" value="1"></div>
+                <div class="field"><label for="seriesStart" id="seriesStartLabel">Startnummer <button class="mini-help" type="button" data-help="seriesStart" data-title="Start-Basisnummer" data-text="Die erste Nummer deiner Serie. Bei EAN/ITF ist das die Basisnummer ohne Prüfziffer. Die Prüfziffer wird automatisch berechnet.">?</button></label><input id="seriesStart" type="number" value="1"></div>
                 <div class="field"><label for="seriesCount">Anzahl</label><input id="seriesCount" type="number" min="1" max="999" value="30"></div>
-                <div class="field"><label for="seriesPad" id="seriesPadLabel">Stellen</label><input id="seriesPad" type="number" min="0" max="12" value="4"></div>
+                <div class="field"><label for="seriesPad" id="seriesPadLabel">Stellen <button class="mini-help" type="button" data-help="seriesPad" data-title="Basisstellen / Stellen" data-text="Bei EAN/ITF ist die Länge fest: EAN-13 = 12 Basisziffern, EAN-8 = 7, ITF-14 = 13. Bei Code128/Code39 bestimmt dieser Wert die führenden Nullen.">?</button></label><input id="seriesPad" type="number" min="0" max="12" value="4"></div>
               </div>
               <div class="row">
-                <div class="field"><label for="seriesStep">Schrittweite</label><input id="seriesStep" type="number" value="1"></div>
+                <div class="field"><label for="seriesStep">Schrittweite <button class="mini-help" type="button" data-help="seriesStep" data-title="Schrittweite" data-text="Schrittweite 1 = fortlaufend. Schrittweite 10 = jede zehnte Nummer. Bei EAN/ITF wird für jede neue Basisnummer die Prüfziffer neu berechnet.">?</button></label><input id="seriesStep" type="number" value="1"></div>
                 <div class="field"><label for="seriesNote">Beschreibung optional</label><input id="seriesNote" placeholder="z. B. Lageretiketten"></div>
               </div>
               <p class="form-example"><strong>Beispiel:</strong> WS-0001, WS-0002, WS-0003 …<br><span id="numericSeriesNote">Bei EAN/ITF wird aus der Startnummer eine Basisnummer gebildet und die Prüfziffer automatisch angehängt.</span></p>
@@ -243,7 +250,7 @@
 
             <div class="input-block" data-input="manual">
               <div class="field">
-                <label for="manualList">Liste, eine Zeile pro Barcode</label>
+                <label for="manualList">Liste, eine Zeile pro Barcode <button class="mini-help" type="button" data-help="manualList" data-title="Manuelle Liste" data-text="Ein Code pro Zeile. Gut, wenn du vorhandene Artikelnummern oder Lagercodes gesammelt erzeugen möchtest.">?</button></label>
                 <textarea id="manualList">WS-A001
 WS-A002
 WS-B001</textarea>
@@ -289,13 +296,13 @@ WS-B001</textarea>
                 <div class="settings-card">
                   <h3>Druckbogen</h3>
                   <div class="row3">
-                    <div class="field"><label for="labelsPerRow">Etiketten pro Reihe</label><select id="labelsPerRow"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select></div>
+                    <div class="field"><label for="labelsPerRow">Etiketten pro Reihe <button class="mini-help" type="button" data-help="labelsPerRow" data-title="Etiketten pro Reihe" data-text="Steuert die A4-Druckbogen-Aufteilung. Je mehr Etiketten pro Reihe, desto kleiner wird der Platz pro Etikett.">?</button></label><select id="labelsPerRow"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select></div>
                     <div class="field"><label for="copiesPerCode">Kopien pro Code</label><input id="copiesPerCode" type="number" min="1" max="99" value="1"></div>
                     <div class="field"><label for="labelScale">Größe</label><select id="labelScale"><option value="small">Klein</option><option value="medium" selected>Mittel</option><option value="large">Groß</option></select></div>
                   </div>
                   <div class="row" style="margin-top:10px;">
-                    <div class="field"><label for="printMargin">A4-Rand</label><select id="printMargin"><option value="0">Ohne Rand</option><option value="6">Klein</option><option value="12" selected>Normal</option><option value="20">Groß</option></select></div>
-                    <div class="field"><label for="labelGap">Etikettenabstand</label><select id="labelGap"><option value="4">Eng</option><option value="8" selected>Normal</option><option value="14">Groß</option></select></div>
+                    <div class="field"><label for="printMargin">A4-Rand <button class="mini-help" type="button" data-help="printMargin" data-title="A4-Rand" data-text="Drucker können nicht immer randlos drucken. Wenn etwas abgeschnitten wird, wähle kleinen, normalen oder großen Rand.">?</button></label><select id="printMargin"><option value="0">Ohne Rand</option><option value="6">Klein</option><option value="12" selected>Normal</option><option value="20">Groß</option></select></div>
+                    <div class="field"><label for="labelGap">Etikettenabstand <button class="mini-help" type="button" data-help="labelGap" data-title="Etikettenabstand" data-text="Abstand zwischen den Etiketten auf dem Druckbogen. Größerer Abstand hilft beim Ausschneiden.">?</button></label><select id="labelGap"><option value="4">Eng</option><option value="8" selected>Normal</option><option value="14">Groß</option></select></div>
                   </div>
                   <p class="field-note" style="margin-top:8px;">A4-Hinweis: Browser-Druckdialog auf A4 und Skalierung 100 % prüfen. Je Drucker kann „randlos“ unterschiedlich funktionieren.</p>
                 </div>
@@ -406,7 +413,7 @@ WS-B001</textarea>
   <dialog id="helpDialog">
     <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
     <div class="modal-body">
-      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand startet die Eingabeprüfung neu: neutral, grün, orange und rot sind jetzt klar getrennt.</p>
+      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand ergänzt kurze Hilfeblasen und startet die Eingabeprüfung neu: neutral, grün, orange und rot sind jetzt klar getrennt.</p>
       <h3>Arbeitsmodi</h3>
       <ul>
         <li><strong>Einzelcode:</strong> ein Barcode, Export als PNG/SVG oder Druck.</li>
@@ -1651,6 +1658,57 @@ WS-B001</textarea>
     function downloadCSV(){ return typeof downloadCsv === 'function' ? downloadCsv() : null; }
     function exportCSV(){ return typeof downloadCsv === 'function' ? downloadCsv() : null; }
 
+
+    function setupMiniHelp(){
+      const pop = document.getElementById('miniHelpPop');
+      if(!pop) return;
+
+      function hide(){
+        pop.style.display = 'none';
+      }
+
+      document.addEventListener('click', (event)=>{
+        const btn = event.target.closest('.mini-help');
+        if(!btn){
+          if(!event.target.closest('.help-pop')) hide();
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const title = btn.dataset.title || 'Hinweis';
+        const text = btn.dataset.text || '';
+        pop.innerHTML = `<strong>${escapeHtml(title)}</strong><br>${escapeHtml(text)}`;
+        pop.style.display = 'block';
+
+        const rect = btn.getBoundingClientRect();
+        const margin = 10;
+        let left = rect.left;
+        let top = rect.bottom + margin;
+
+        pop.style.left = left + 'px';
+        pop.style.top = top + 'px';
+
+        const popRect = pop.getBoundingClientRect();
+        if(popRect.right > window.innerWidth - 12){
+          left = window.innerWidth - popRect.width - 12;
+        }
+        if(popRect.bottom > window.innerHeight - 12){
+          top = rect.top - popRect.height - margin;
+        }
+
+        pop.style.left = Math.max(12, left) + 'px';
+        pop.style.top = Math.max(12, top) + 'px';
+      });
+
+      window.addEventListener('scroll', hide, true);
+      window.addEventListener('resize', hide);
+      document.addEventListener('keydown', (event)=>{
+        if(event.key === 'Escape') hide();
+      });
+    }
+
     document.addEventListener('DOMContentLoaded',()=>{
       $('toolMenuBtn').addEventListener('click',()=>window.WSToolMenu?.open());
       document.querySelectorAll('.type-btn').forEach(btn=>btn.addEventListener('click',()=>setType(btn.dataset.type)));
@@ -1678,6 +1736,7 @@ WS-B001</textarea>
       updateNumericFieldState();
       updateDynamicLabels();
       updateStandardWarning();
+      setupMiniHelp();
       const restored = restoreLocalDraft();
       if(!restored){
         buildList();
