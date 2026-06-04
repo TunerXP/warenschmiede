@@ -272,6 +272,64 @@
     }
 
     .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:#0f172a;color:#fff;border-radius:999px;padding:11px 16px;font-weight:850;box-shadow:0 20px 60px -35px #000;transition:.22s ease;z-index:80}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+    .content-picker-note{
+      margin-top:14px;
+      color:var(--muted);
+      font-size:.86rem;
+      line-height:1.45;
+      padding:12px 14px;
+      border-radius:16px;
+      background:color-mix(in srgb,var(--blue) 9%,transparent);
+      border:1px solid color-mix(in srgb,var(--blue) 20%,var(--line));
+    }
+    .input-summary{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+    .input-summary span{
+      border:1px solid rgba(78,163,241,.25);
+      background:rgba(78,163,241,.08);
+      color:var(--text);
+      border-radius:999px;
+      padding:5px 9px;
+      font-size:.76rem;
+      font-weight:850;
+    }
+    .form-section{
+      display:none;
+      gap:12px;
+    }
+    .form-section.active{display:grid}
+    .form-section .form-help{
+      color:var(--muted);
+      line-height:1.5;
+      padding:12px 14px;
+      border-radius:16px;
+      background:rgba(241,145,62,.08);
+      border:1px solid rgba(241,145,62,.22);
+      margin:0;
+    }
+    .form-section .form-example{
+      color:var(--muted);
+      line-height:1.45;
+      font-size:.86rem;
+      padding:10px 12px;
+      border-left:4px solid var(--accent);
+      background:color-mix(in srgb,var(--surface) 80%,transparent);
+      border-radius:12px;
+      margin:0;
+    }
+    .settings-panel-main{
+      display:grid;
+      gap:18px;
+    }
+    .input-panel .panel-head{
+      background:linear-gradient(135deg,rgba(241,145,62,.13),transparent);
+    }
+
     .hide-mobile{}
     @media(max-width:1180px){.main{grid-template-columns:1fr 1fr}.settings-panel{grid-column:1/-1;order:3}.preview-card{position:static}}
     @media(max-width:760px){.topbar-inner{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}.main{grid-template-columns:1fr;padding:12px}.mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.row{grid-template-columns:1fr}.hide-mobile{display:none}.panel-body{padding:14px}.brand h1{white-space:normal}}
@@ -298,7 +356,7 @@
       <section class="panel editor-panel" aria-labelledby="editor-title">
         <div class="panel-head">
           <p class="eyebrow">1. Inhalt wählen</p>
-          <h2 id="editor-title">QR-Inhalt erstellen</h2>
+          <h2 id="editor-title">QR-Art auswählen</h2>
         </div>
         <div class="panel-body">
           <div class="mode-grid" id="modeGrid">
@@ -327,109 +385,153 @@
             <button class="mode-btn" data-mode="event"><span>📅</span><span>Termin</span></button>
             <button class="mode-btn" data-mode="app"><span>📲</span><span>App-Link</span></button>
           </div>
-
-          <div class="hint" id="modeHint">Scan öffnet eine Webseite. Kurze Links ergeben stabilere QR-Codes.</div>
-
-          <div id="forms">
-            <section class="form-section active" data-form="url">
-              <div class="field"><label for="urlValue">Webadresse</label><input id="urlValue" type="url" value="https://www.warenschmiede.com/" placeholder="https://www.warenschmiede.com/"><p class="field-note">Tipp: Immer mit https:// eintragen.</p></div>
-            </section>
-            <section class="form-section" data-form="text">
-              <div class="field"><label for="textValue">Text</label><textarea id="textValue" placeholder="Freier Text für den QR-Code"></textarea></div>
-            </section>
-            <section class="form-section" data-form="wifi">
-              <div class="field"><label for="wifiSsid">WLAN-Name / SSID</label><input id="wifiSsid" placeholder="Mein WLAN"></div>
-              <div class="field"><label for="wifiPass">Passwort</label><input id="wifiPass" placeholder="WLAN-Passwort"></div>
-              <div class="row">
-                <div class="field"><label for="wifiType">Verschlüsselung</label><select id="wifiType"><option value="WPA">WPA/WPA2/WPA3</option><option value="WEP">WEP</option><option value="nopass">Offenes WLAN</option></select></div>
-                <div class="field"><label for="wifiHidden">Versteckt?</label><select id="wifiHidden"><option value="false">Nein</option><option value="true">Ja</option></select></div>
-              </div>
-            </section>
-            <section class="form-section" data-form="vcard">
-              <div class="row"><div class="field"><label for="vcFirst">Vorname</label><input id="vcFirst" placeholder="Max"></div><div class="field"><label for="vcLast">Nachname</label><input id="vcLast" placeholder="Mustermann"></div></div>
-              <div class="field"><label for="vcOrg">Firma</label><input id="vcOrg" placeholder="Musterfirma"></div>
-              <div class="row"><div class="field"><label for="vcPhone">Telefon</label><input id="vcPhone" placeholder="+49 170 1234567"></div><div class="field"><label for="vcEmail">E-Mail</label><input id="vcEmail" placeholder="info@example.de"></div></div>
-              <div class="field"><label for="vcUrl">Website</label><input id="vcUrl" placeholder="https://example.de"></div>
-              <div class="field"><label for="vcAddress">Adresse</label><input id="vcAddress" placeholder="Straße, PLZ Ort"></div>
-            </section>
-            <section class="form-section" data-form="email">
-              <div class="field"><label for="emailTo">Empfänger</label><input id="emailTo" type="email" placeholder="info@example.de"></div>
-              <div class="field"><label for="emailSubject">Betreff</label><input id="emailSubject" placeholder="Anfrage"></div>
-              <div class="field"><label for="emailBody">Text</label><textarea id="emailBody" placeholder="Nachricht"></textarea></div>
-            </section>
-            <section class="form-section" data-form="phone">
-              <div class="field"><label for="phoneValue">Telefonnummer</label><input id="phoneValue" placeholder="+491701234567"></div>
-            </section>
-            <section class="form-section" data-form="whatsapp">
-              <div class="field"><label for="waPhone">WhatsApp Nummer</label><input id="waPhone" placeholder="491701234567"></div>
-              <div class="field"><label for="waText">Nachricht</label><textarea id="waText" placeholder="Hallo, ich habe eine Frage..."></textarea></div>
-            </section>
-            <section class="form-section" data-form="sms">
-              <div class="field"><label for="smsPhone">SMS Nummer</label><input id="smsPhone" placeholder="+491701234567"></div>
-              <div class="field"><label for="smsText">SMS Text</label><textarea id="smsText" placeholder="Nachricht"></textarea></div>
-            </section>
-            <section class="form-section" data-form="maps">
-              <div class="field"><label for="mapsQuery">Adresse oder Ort</label><input id="mapsQuery" placeholder="Donaueschingen"></div>
-            </section>
-            <section class="form-section" data-form="review">
-              <div class="field"><label for="reviewUrl">Bewertungs-Link</label><input id="reviewUrl" type="url" placeholder="https://g.page/r/.../review"></div>
-              <p class="field-note">Für Google-Bewertungen, Shop-Bewertungen oder Feedback-Formulare.</p>
-            </section>
-            <section class="form-section" data-form="sepa">
-              <div class="field"><label for="sepaName">Empfänger</label><input id="sepaName" placeholder="Max Mustermann"></div>
-              <div class="field"><label for="sepaIban">IBAN</label><input id="sepaIban" placeholder="DE00 0000 0000 0000 0000 00"></div>
-              <div class="row">
-                <div class="field"><label for="sepaAmount">Betrag EUR</label><input id="sepaAmount" placeholder="25.00"></div>
-                <div class="field"><label for="sepaBic">BIC optional</label><input id="sepaBic" placeholder="GENODE..."></div>
-              </div>
-              <div class="field"><label for="sepaPurpose">Verwendungszweck</label><input id="sepaPurpose" placeholder="Rechnung 2026-001"></div>
-            </section>
-            <section class="form-section" data-form="paypal">
-              <div class="field"><label for="paypalUrl">PayPal-Link</label><input id="paypalUrl" type="url" placeholder="https://paypal.me/deinname"></div>
-              <p class="field-note">Am besten einen offiziellen PayPal.me- oder Zahlungslink verwenden.</p>
-            </section>
-            <section class="form-section" data-form="paymentlink">
-              <div class="field"><label for="paymentUrl">Zahlungslink</label><input id="paymentUrl" type="url" placeholder="https://..."></div>
-              <div class="row">
-                <div class="field"><label for="paymentProvider">Anbieter / Zweck</label><input id="paymentProvider" placeholder="z. B. SumUp, Stripe, Shop, Rechnung"></div>
-                <div class="field"><label for="paymentNote">Hinweis optional</label><input id="paymentNote" placeholder="z. B. Rechnung 2026-001"></div>
-              </div>
-              <p class="field-note">Für allgemeine Zahlungslinks wie Shop, Stripe, SumUp, PayPal-Link, Rechnungsseite oder spätere Zahlungsdienste. Der QR-Code öffnet einfach den angegebenen Link.</p>
-            </section>
-            <section class="form-section" data-form="wero">
-              <div class="field"><label for="weroNote">Wero-Hinweis</label><textarea id="weroNote" readonly>Wero ist als Zahlungsart vorgemerkt. Sobald ein stabiler, praktisch nutzbarer QR-/Link-Standard klar ist, kann diese Funktion sauber ergänzt werden. Nutze bis dahin Zahlungslink allgemein, SEPA oder PayPal.</textarea></div>
-              <div class="field"><label for="weroFallbackUrl">Optionaler Zahlungslink als Übergang</label><input id="weroFallbackUrl" type="url" placeholder="https://..."></div>
-              <p class="field-note">Ehrlicher Platzhalter: Noch keine fertige Wero-QR-Funktion. Der optionale Link erzeugt nur einen normalen Link-QR-Code.</p>
-            </section>
-            <section class="form-section" data-form="event">
-              <div class="field"><label for="eventTitle">Titel</label><input id="eventTitle" placeholder="Termin"></div>
-              <div class="row">
-                <div class="field"><label for="eventStart">Start</label><input id="eventStart" type="datetime-local"></div>
-                <div class="field"><label for="eventEnd">Ende</label><input id="eventEnd" type="datetime-local"></div>
-              </div>
-              <div class="field"><label for="eventLocation">Ort</label><input id="eventLocation" placeholder="Donaueschingen"></div>
-              <div class="field"><label for="eventDesc">Beschreibung</label><textarea id="eventDesc" placeholder="Kurze Beschreibung"></textarea></div>
-            </section>
-            <section class="form-section" data-form="app">
-              <div class="field"><label for="appUrl">App- oder Store-Link</label><input id="appUrl" type="url" placeholder="https://..."></div>
-              <p class="field-note">Für App Store, Play Store, Downloadseiten oder interne App-Links.</p>
-            </section>
-            <section class="form-section" data-form="crypto">
-              <div class="row">
-                <div class="field"><label for="cryptoType">Coin</label><select id="cryptoType"><option value="bitcoin">Bitcoin</option><option value="ethereum">Ethereum</option><option value="litecoin">Litecoin</option></select></div>
-                <div class="field"><label for="cryptoAmount">Betrag optional</label><input id="cryptoAmount" placeholder="0.001"></div>
-              </div>
-              <div class="field"><label for="cryptoAddress">Adresse</label><input id="cryptoAddress" placeholder="Wallet-Adresse"></div>
-              <div class="field"><label for="cryptoLabel">Label optional</label><input id="cryptoLabel" placeholder="Warenschmiede"></div>
-            </section>
-          </div>
+          <div class="content-picker-note" id="modeHint">Scan öffnet eine Webseite. Kurze Links ergeben stabilere QR-Codes.</div>
         </div>
       </section>
 
       <section class="center-stage">
-        <section class="panel">
+
+        <section class="panel input-panel" aria-labelledby="input-title">
           <div class="panel-head">
-            <p class="eyebrow">2. Einstellungen</p>
+            <p class="eyebrow">2a. Eingaben</p>
+            <h2 id="input-title">Daten für den QR-Code</h2>
+            <div class="input-summary" id="inputSummary"><span>Link</span><span>Webadresse</span></div>
+          </div>
+          <div class="panel-body">
+            <div id="forms">
+              <section class="form-section active" data-form="url">
+                <p class="form-help">Für Webseiten, Dateien, Formulare, Downloads oder Tool-Links. Der QR-Code öffnet die eingetragene Adresse.</p>
+                <div class="field"><label for="urlValue">Webadresse</label><input id="urlValue" type="url" value="https://www.warenschmiede.com/" placeholder="https://www.warenschmiede.com/"><p class="field-note">Tipp: Immer mit https:// eintragen.</p></div>
+                <p class="form-example"><strong>Beispiel:</strong> Link zu einer Anleitung, einem Download, einem Kontaktformular oder einer Produktseite.</p>
+              </section>
+
+              <section class="form-section" data-form="text">
+                <p class="form-help">Speichert Text direkt im QR-Code. Das ist praktisch für kurze Hinweise, Inventarinfos oder Werkstattnotizen.</p>
+                <div class="field"><label for="textValue">Text</label><textarea id="textValue" placeholder="Freier Text für den QR-Code"></textarea></div>
+                <p class="form-example"><strong>Beispiel:</strong> „Düse 0,4 mm · PLA-Profil · geprüft am 03.06.2026“.</p>
+              </section>
+
+              <section class="form-section" data-form="maps">
+                <p class="form-help">Öffnet eine Adresse oder einen Ort in Google Maps.</p>
+                <div class="field"><label for="mapsQuery">Adresse oder Ort</label><input id="mapsQuery" placeholder="Donaueschingen"></div>
+                <p class="form-example"><strong>Beispiel:</strong> Treffpunkt, Abholort, Werkstattadresse oder Messehalle.</p>
+              </section>
+
+              <section class="form-section" data-form="review">
+                <p class="form-help">Verlinkt auf eine Bewertungsseite oder ein Feedback-Formular.</p>
+                <div class="field"><label for="reviewUrl">Bewertungs- oder Feedback-Link</label><input id="reviewUrl" type="url" placeholder="https://g.page/r/.../review"></div>
+                <p class="form-example"><strong>Beispiel:</strong> „Bewertung abgeben“ auf Flyer, Rechnung oder Lieferschein.</p>
+              </section>
+
+              <section class="form-section" data-form="vcard">
+                <p class="form-help">Erstellt eine digitale Kontaktkarte. Beim Scan kann der Kontakt im Smartphone gespeichert werden.</p>
+                <div class="row"><div class="field"><label for="vcFirst">Vorname</label><input id="vcFirst" placeholder="Max"></div><div class="field"><label for="vcLast">Nachname</label><input id="vcLast" placeholder="Mustermann"></div></div>
+                <div class="field"><label for="vcOrg">Firma</label><input id="vcOrg" placeholder="Musterfirma"></div>
+                <div class="row"><div class="field"><label for="vcPhone">Telefon</label><input id="vcPhone" placeholder="+49 170 1234567"></div><div class="field"><label for="vcEmail">E-Mail</label><input id="vcEmail" placeholder="info@example.de"></div></div>
+                <div class="field"><label for="vcUrl">Website</label><input id="vcUrl" placeholder="https://example.de"></div>
+                <div class="field"><label for="vcAddress">Adresse</label><input id="vcAddress" placeholder="Straße, PLZ Ort"></div>
+              </section>
+
+              <section class="form-section" data-form="email">
+                <p class="form-help">Öffnet eine neue E-Mail mit Empfänger, Betreff und optionalem Nachrichtentext.</p>
+                <div class="field"><label for="emailTo">Empfänger</label><input id="emailTo" type="email" placeholder="info@example.de"></div>
+                <div class="field"><label for="emailSubject">Betreff</label><input id="emailSubject" placeholder="Anfrage"></div>
+                <div class="field"><label for="emailBody">Text</label><textarea id="emailBody" placeholder="Nachricht"></textarea></div>
+                <p class="form-example"><strong>Beispiel:</strong> Vorbereitete Projektanfrage für 3D-Druck, PC-Hilfe oder CAD-Service.</p>
+              </section>
+
+              <section class="form-section" data-form="phone">
+                <p class="form-help">Startet einen Telefonanruf. Der Nutzer muss den Anruf normalerweise noch bestätigen.</p>
+                <div class="field"><label for="phoneValue">Telefonnummer</label><input id="phoneValue" placeholder="+491701234567"></div>
+              </section>
+
+              <section class="form-section" data-form="whatsapp">
+                <p class="form-help">Öffnet einen WhatsApp-Chat mit Nummer und optional vorbereitetem Text.</p>
+                <div class="field"><label for="waPhone">WhatsApp Nummer</label><input id="waPhone" placeholder="491701234567"></div>
+                <div class="field"><label for="waText">Nachricht</label><textarea id="waText" placeholder="Hallo, ich habe eine Frage..."></textarea></div>
+              </section>
+
+              <section class="form-section" data-form="sms">
+                <p class="form-help">Öffnet eine SMS mit Nummer und Text.</p>
+                <div class="field"><label for="smsPhone">SMS Nummer</label><input id="smsPhone" placeholder="+491701234567"></div>
+                <div class="field"><label for="smsText">SMS Text</label><textarea id="smsText" placeholder="Nachricht"></textarea></div>
+              </section>
+
+              <section class="form-section" data-form="sepa">
+                <p class="form-help">Erstellt einen SEPA-/GiroCode für Überweisungen. Viele Banking-Apps können Empfänger, IBAN, Betrag und Zweck übernehmen.</p>
+                <div class="field"><label for="sepaName">Empfänger</label><input id="sepaName" placeholder="Max Mustermann"></div>
+                <div class="field"><label for="sepaIban">IBAN</label><input id="sepaIban" placeholder="DE00 0000 0000 0000 0000 00"></div>
+                <div class="row">
+                  <div class="field"><label for="sepaAmount">Betrag EUR</label><input id="sepaAmount" placeholder="25.00"></div>
+                  <div class="field"><label for="sepaBic">BIC optional</label><input id="sepaBic" placeholder="GENODE..."></div>
+                </div>
+                <div class="field"><label for="sepaPurpose">Verwendungszweck</label><input id="sepaPurpose" placeholder="Rechnung 2026-001"></div>
+                <p class="form-example"><strong>Wichtig:</strong> Zahlungsdaten immer prüfen. Das Tool erleichtert die Eingabe, ersetzt aber keine Kontrolle.</p>
+              </section>
+
+              <section class="form-section" data-form="paypal">
+                <p class="form-help">Erstellt einen QR-Code für einen PayPal.me- oder offiziellen PayPal-Zahlungslink.</p>
+                <div class="field"><label for="paypalUrl">PayPal-Link</label><input id="paypalUrl" type="url" placeholder="https://paypal.me/deinname"></div>
+              </section>
+
+              <section class="form-section" data-form="paymentlink">
+                <p class="form-help">Für allgemeine Zahlungslinks wie Shop, Stripe, SumUp, PayPal-Link, Rechnungsseite oder spätere Zahlungsdienste.</p>
+                <div class="field"><label for="paymentUrl">Zahlungslink</label><input id="paymentUrl" type="url" placeholder="https://..."></div>
+                <div class="row">
+                  <div class="field"><label for="paymentProvider">Anbieter / Zweck</label><input id="paymentProvider" placeholder="z. B. SumUp, Stripe, Shop, Rechnung"></div>
+                  <div class="field"><label for="paymentNote">Hinweis optional</label><input id="paymentNote" placeholder="z. B. Rechnung 2026-001"></div>
+                </div>
+              </section>
+
+              <section class="form-section" data-form="wero">
+                <p class="form-help">Wero ist vorgemerkt, aber noch nicht als fertige QR-Funktion aktiv. Bis ein stabiler Standard klar ist, kannst du hier optional einen normalen Zahlungslink hinterlegen.</p>
+                <div class="field"><label for="weroFallbackUrl">Optionaler Zahlungslink als Übergang</label><input id="weroFallbackUrl" type="url" placeholder="https://..."></div>
+                <p class="form-example"><strong>Ehrlich:</strong> Das erzeugt aktuell keinen echten Wero-Spezialcode, sondern nur einen normalen Link-QR-Code.</p>
+              </section>
+
+              <section class="form-section" data-form="crypto">
+                <p class="form-help">Erstellt einen einfachen Krypto-Zahlungslink. Wallet-Adresse und Betrag müssen sehr genau geprüft werden.</p>
+                <div class="row">
+                  <div class="field"><label for="cryptoType">Coin</label><select id="cryptoType"><option value="bitcoin">Bitcoin</option><option value="ethereum">Ethereum</option><option value="litecoin">Litecoin</option></select></div>
+                  <div class="field"><label for="cryptoAmount">Betrag optional</label><input id="cryptoAmount" placeholder="0.001"></div>
+                </div>
+                <div class="field"><label for="cryptoAddress">Adresse</label><input id="cryptoAddress" placeholder="Wallet-Adresse"></div>
+                <div class="field"><label for="cryptoLabel">Label optional</label><input id="cryptoLabel" placeholder="Warenschmiede"></div>
+              </section>
+
+              <section class="form-section" data-form="wifi">
+                <p class="form-help">Erstellt einen QR-Code für einen WLAN-Zugang. Gut für Gäste-WLAN oder interne Aushänge.</p>
+                <div class="field"><label for="wifiSsid">WLAN-Name / SSID</label><input id="wifiSsid" placeholder="Mein WLAN"></div>
+                <div class="field"><label for="wifiPass">Passwort</label><input id="wifiPass" placeholder="WLAN-Passwort"></div>
+                <div class="row">
+                  <div class="field"><label for="wifiType">Verschlüsselung</label><select id="wifiType"><option value="WPA">WPA/WPA2/WPA3</option><option value="WEP">WEP</option><option value="nopass">Offenes WLAN</option></select></div>
+                  <div class="field"><label for="wifiHidden">Versteckt?</label><select id="wifiHidden"><option value="false">Nein</option><option value="true">Ja</option></select></div>
+                </div>
+                <p class="form-example"><strong>Achtung:</strong> Der QR-Code enthält das WLAN-Passwort. Nur bewusst teilen.</p>
+              </section>
+
+              <section class="form-section" data-form="event">
+                <p class="form-help">Erstellt einen Kalendertermin im iCalendar-Format.</p>
+                <div class="field"><label for="eventTitle">Titel</label><input id="eventTitle" placeholder="Termin"></div>
+                <div class="row">
+                  <div class="field"><label for="eventStart">Start</label><input id="eventStart" type="datetime-local"></div>
+                  <div class="field"><label for="eventEnd">Ende</label><input id="eventEnd" type="datetime-local"></div>
+                </div>
+                <div class="field"><label for="eventLocation">Ort</label><input id="eventLocation" placeholder="Donaueschingen"></div>
+                <div class="field"><label for="eventDesc">Beschreibung</label><textarea id="eventDesc" placeholder="Kurze Beschreibung"></textarea></div>
+              </section>
+
+              <section class="form-section" data-form="app">
+                <p class="form-help">Für App-Store-Links, Downloadseiten oder interne App-Links.</p>
+                <div class="field"><label for="appUrl">App- oder Store-Link</label><input id="appUrl" type="url" placeholder="https://..."></div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel settings-panel-main">
+          <div class="panel-head">
+            <p class="eyebrow">2b. Einstellungen</p>
             <h2>Optik & Ausgabe</h2>
             <div class="tool-trust-strip-compact">
               <span>100% werbefrei</span><span>kein Tracking</span><span>lokal im Browser</span>
@@ -457,6 +559,7 @@
             </div>
           </div>
         </section>
+
       </section>
 
       <aside class="panel preview-card">
@@ -806,6 +909,32 @@
     document.addEventListener('DOMContentLoaded', () => {
       $('toolMenuBtn').addEventListener('click', () => window.WSToolMenu?.open());
 
+
+      const summaries = {
+        url:['Link','Webadresse'],
+        text:['Text','Freitext'],
+        maps:['Standort','Adresse / Ort'],
+        review:['Bewertung','Feedback-Link'],
+        vcard:['Kontakt','Name, Firma, Telefon, E-Mail'],
+        email:['E-Mail','Empfänger, Betreff, Text'],
+        phone:['Telefon','Nummer'],
+        whatsapp:['WhatsApp','Nummer + Nachricht'],
+        sms:['SMS','Nummer + Text'],
+        sepa:['SEPA','Empfänger, IBAN, Betrag, Zweck'],
+        paypal:['PayPal','PayPal-Link'],
+        paymentlink:['Zahlungslink','URL + Hinweis'],
+        wero:['Wero','Platzhalter / Link'],
+        crypto:['Crypto','Coin, Adresse, Betrag'],
+        wifi:['WLAN','SSID, Passwort, Typ'],
+        event:['Termin','Start, Ende, Ort'],
+        app:['App-Link','Store- oder App-Adresse']
+      };
+      function updateInputSummary(){
+        const box = $('inputSummary');
+        if(!box) return;
+        box.innerHTML = (summaries[currentMode] || [labels[currentMode] || currentMode]).map(x => `<span>${x}</span>`).join('');
+      }
+
       document.querySelectorAll('.mode-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           currentMode = btn.dataset.mode;
@@ -813,6 +942,7 @@
           btn.classList.add('active');
           document.querySelectorAll('.form-section').forEach(s=>s.classList.toggle('active', s.dataset.form === currentMode));
           $('modeHint').textContent = hints[currentMode] || '';
+          updateInputSummary();
           generate();
         });
       });
@@ -851,6 +981,7 @@
         });
       });
 
+      updateInputSummary();
       generate();
     });
   </script>
