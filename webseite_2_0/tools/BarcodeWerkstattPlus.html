@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Serien & Druckbogen v62</title>
+  <title>Barcode-Werkstatt Plus · Übersicht & Profi-Struktur v63</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -67,6 +67,14 @@
     .input-summary{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.input-summary span{border:1px solid rgba(78,163,241,.25);background:rgba(78,163,241,.08);color:var(--text);border-radius:999px;padding:5px 9px;font-size:.76rem;font-weight:850}
     .input-block{display:none}.input-block.active{display:grid;gap:12px}
     .settings-grid{display:grid;gap:14px}.settings-card{padding:14px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--surface) 78%,transparent)}.settings-card h3{margin:0 0 10px}
+    .advanced-box{border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--surface) 82%,transparent);overflow:hidden}
+    .advanced-box summary{cursor:pointer;list-style:none;padding:14px;font-weight:950;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .advanced-box summary::-webkit-details-marker{display:none}
+    .advanced-box summary::after{content:'▾';color:var(--accent);transition:.18s ease}
+    .advanced-box[open] summary::after{transform:rotate(180deg)}
+    .advanced-content{border-top:1px solid var(--line);padding:14px;display:grid;gap:12px}
+    .select-hint{font-size:.82rem;color:var(--muted);line-height:1.4;margin:8px 0 0}
+    .warning-soft{border:1px solid rgba(194,65,58,.25);background:rgba(194,65,58,.07);border-radius:16px;padding:11px 13px;color:var(--muted);font-size:.86rem;line-height:1.45}
     .color-row{display:grid;grid-template-columns:1fr 54px;gap:10px;align-items:end}input[type=color]{padding:0;min-height:43px;cursor:pointer}
     .tool-trust-strip-compact{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.tool-trust-strip-compact span{border:1px solid rgba(43,170,114,.26);background:rgba(43,170,114,.08);border-radius:999px;padding:5px 9px;font-size:.76rem;font-weight:850;color:var(--text)}
     .preview-card{text-align:center;padding:clamp(18px,2vw,28px);position:sticky;top:86px}
@@ -122,6 +130,21 @@
               <button class="type-btn" data-type="CODE39"><span>▤</span><span>Code39</span></button>
               <button class="type-btn" data-type="ITF14"><span>📦</span><span>ITF-14</span></button>
             </div>
+            <div class="field" style="margin-top:12px;">
+              <label for="extraBarcodeSelect">Weitere Barcode-Arten vorbereiten</label>
+              <select id="extraBarcodeSelect">
+                <option value="">Noch nicht auswählen</option>
+                <option value="UPCA" disabled>UPC-A · später</option>
+                <option value="UPCE" disabled>UPC-E · später</option>
+                <option value="ISBN13" disabled>ISBN-13 · später</option>
+                <option value="GS1128" disabled>GS1-128 · später</option>
+                <option value="DATAMATRIX" disabled>DataMatrix · später</option>
+                <option value="PDF417" disabled>PDF417 · später</option>
+                <option value="PZN8" disabled>PZN/PZN8 · später</option>
+                <option value="SSCC18" disabled>SSCC-18 · später</option>
+              </select>
+              <p class="select-hint">Damit bleibt die Oberfläche übersichtlich. Neue Typen kommen erst dazu, wenn der Kern sauber sitzt.</p>
+            </div>
           </div>
 
           <div class="content-picker-note" id="typeHint">Code128 ist flexibel und gut für interne Nummern, Lager, Aufträge und Werkstattetiketten.</div>
@@ -149,6 +172,7 @@
           <div class="panel-body grid">
             <p class="form-help" id="inputHelp">Code128 kann Buchstaben, Zahlen und viele Sonderzeichen enthalten. Gut für interne IDs.</p>
             <div class="final-code-box" id="finalCodeBox"></div>
+            <div class="warning-soft" id="standardWarning" style="display:none;"><strong>Hinweis:</strong> Für offizielle Handels-/Logistikcodes brauchst du gültige Nummern aus der passenden Vergabestelle. Für interne Tests und Werkstattetiketten kannst du eigene Nummern verwenden.</div>
 
             <div class="input-block active" data-input="single">
               <div class="field"><label for="barcodeValue" id="singleValueLabel">Barcode-Inhalt</label><input id="barcodeValue" value="WS-2026-001" placeholder="z. B. WS-2026-001"></div>
@@ -216,21 +240,33 @@ WS-B001</textarea>
                 <div class="field"><label for="barHeight">Höhe</label><select id="barHeight"><option value="70">70 px</option><option value="100" selected>100 px</option><option value="140">140 px</option></select></div>
               </div>
             </div>
-            <div class="settings-card">
-              <h3>Klartext</h3>
-              <div class="row">
-                <div class="field"><label for="showText">Text anzeigen</label><select id="showText"><option value="true" selected>Ja</option><option value="false">Nein</option></select></div>
-                <div class="field"><label for="fontSize">Schriftgröße</label><select id="fontSize"><option value="12">12 px</option><option value="16">16 px</option><option value="18" selected>18 px</option><option value="24">24 px</option></select></div>
+            <details class="advanced-box" open>
+              <summary>Klartext & Druckbogen</summary>
+              <div class="advanced-content">
+                <div class="settings-card">
+                  <h3>Klartext</h3>
+                  <div class="row">
+                    <div class="field"><label for="showText">Text anzeigen</label><select id="showText"><option value="true" selected>Ja</option><option value="false">Nein</option></select></div>
+                    <div class="field"><label for="fontSize">Schriftgröße</label><select id="fontSize"><option value="12">12 px</option><option value="16">16 px</option><option value="18" selected>18 px</option><option value="24">24 px</option></select></div>
+                  </div>
+                </div>
+                <div class="settings-card">
+                  <h3>Druckbogen</h3>
+                  <div class="row3">
+                    <div class="field"><label for="labelsPerRow">Etiketten pro Reihe</label><select id="labelsPerRow"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select></div>
+                    <div class="field"><label for="copiesPerCode">Kopien pro Code</label><input id="copiesPerCode" type="number" min="1" max="99" value="1"></div>
+                    <div class="field"><label for="labelScale">Größe</label><select id="labelScale"><option value="small">Klein</option><option value="medium" selected>Mittel</option><option value="large">Groß</option></select></div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="settings-card">
-              <h3>Druckbogen</h3>
-              <div class="row3">
-                <div class="field"><label for="labelsPerRow">Etiketten pro Reihe</label><select id="labelsPerRow"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select></div>
-                <div class="field"><label for="copiesPerCode">Kopien pro Code</label><input id="copiesPerCode" type="number" min="1" max="99" value="1"></div>
-                <div class="field"><label for="labelScale">Größe</label><select id="labelScale"><option value="small">Klein</option><option value="medium" selected>Mittel</option><option value="large">Groß</option></select></div>
+            </details>
+            <details class="advanced-box">
+              <summary>Profi-Einstellungen vorbereitet</summary>
+              <div class="advanced-content">
+                <p class="field-note">Hier können später Vorlagen, feste A4-Etikettenmaße, DPI-/Druckqualitätsoptionen, Ruhezone/Rand und Spezialoptionen je Barcode-Art ergänzt werden.</p>
+                <div class="warning-soft"><strong>Absicht:</strong> Die Basis bleibt einfach sichtbar. Profi-Optionen werden einklappbar gesammelt, damit das Tool mächtig bleibt, aber nicht überladen wirkt.</div>
               </div>
-            </div>
+            </details>
           </div>
         </section>
       </section>
@@ -272,7 +308,7 @@ WS-B001</textarea>
   <dialog id="helpDialog">
     <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
     <div class="modal-body">
-      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand erklärt EAN-/ITF-Prüfziffern sichtbar und zeigt Basisnummer, Prüfziffer und endgültigen Barcode-Inhalt.</p>
+      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand verbessert die Übersicht, bereitet weitere Barcode-Arten vor und sammelt Profi-Optionen einklappbar.</p>
       <h3>Arbeitsmodi</h3>
       <ul>
         <li><strong>Einzelcode:</strong> ein Barcode, Export als PNG/SVG oder Druck.</li>
@@ -280,10 +316,19 @@ WS-B001</textarea>
         <li><strong>Serie:</strong> fortlaufende Codes wie WS-0001 bis WS-0100.</li>
         <li><strong>Manuelle Liste:</strong> Codes aus Excel oder eigener Liste einfügen.</li>
       </ul>
+      <h3>Welche Barcode-Art nehme ich?</h3>
+      <ul>
+        <li><strong>Code128:</strong> beste Wahl für interne Werkstatt-, Lager-, Auftrags- und Artikelnummern.</li>
+        <li><strong>Code39:</strong> robust und simpel, aber eingeschränkter als Code128.</li>
+        <li><strong>EAN-13 / EAN-8:</strong> für Artikelcodes mit festen Zahlenlängen und Prüfziffer. Für echte Handelsware nur mit gültigen Nummern verwenden.</li>
+        <li><strong>ITF-14:</strong> eher für Verpackungen, Kartons und Logistikeinheiten.</li>
+      </ul>
       <h3>CSV-Export</h3>
       <p>Die erzeugten Codes können als CSV exportiert werden. Das ist nützlich für Excel, externe Etikettensoftware, Dokumentation oder späteren Nachdruck.</p>
+      <h3>Übersicht statt Überladung</h3>
+      <p>Die häufigsten Barcode-Arten bleiben direkt als Buttons sichtbar. Weitere Typen werden vorbereitet und später Schritt für Schritt ergänzt, damit das Tool nicht überladen wird.</p>
       <h3>Wichtiger Hinweis</h3>
-      <p>Für offizielle Handels-EANs brauchst du gültige Nummern aus der passenden Vergabestelle. Frei erfundene EANs sind für interne Tests okay, aber nicht automatisch echte Produktcodes.</p>
+      <p>Für offizielle Handels-EANs oder Logistikstandards brauchst du gültige Nummern aus der passenden Vergabestelle. Frei erfundene EANs sind für interne Tests okay, aber nicht automatisch echte Produktcodes.</p>
     </div>
   </dialog>
   <div class="toast" id="toast">Erledigt</div>
@@ -412,6 +457,11 @@ WS-B001</textarea>
         Endgültiger Barcode-Inhalt: <code>${final}</code>
       `;
     }
+    function updateStandardWarning(){
+      const box = $('standardWarning');
+      if(!box) return;
+      box.style.display = ['EAN13','EAN8','ITF14'].includes(currentType) ? 'block' : 'none';
+    }
     function updateDynamicLabels(){
       const numeric = isNumericType();
       const labelText = numeric ? 'Basisnummer / Ziffern' : 'Barcode-Inhalt';
@@ -478,6 +528,7 @@ WS-B001</textarea>
 
       updateNumericFieldState();
       updateDynamicLabels();
+      updateStandardWarning();
 
       if(isNumericType()) {
         applyNumericDefaults();
@@ -496,6 +547,7 @@ WS-B001</textarea>
       document.querySelectorAll('.input-block').forEach(block=>block.classList.toggle('active', block.dataset.input===mode));
       updateNumericFieldState();
       updateDynamicLabels();
+      updateStandardWarning();
       $('modeHint').textContent = modeInfo[mode].hint;
       $('inputSummary').innerHTML = `<span>${typeInfo[currentType].label}</span><span>${modeInfo[mode].label}</span>`;
       buildList();
@@ -636,6 +688,7 @@ WS-B001</textarea>
       $('helpClose').addEventListener('click',()=>$('helpDialog').close());
       updateNumericFieldState();
       updateDynamicLabels();
+      updateStandardWarning();
       buildList();
       generate();
     });
