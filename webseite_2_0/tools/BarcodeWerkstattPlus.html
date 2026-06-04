@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Projekt-JSON v64</title>
+  <title>Barcode-Werkstatt Plus · Projektverlauf v65</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -78,6 +78,13 @@
     .project-actions{display:flex;flex-wrap:wrap;gap:10px}
     .project-meta{display:grid;gap:10px}
     .project-status{font-size:.82rem;color:var(--muted);line-height:1.4;padding:10px 12px;border-radius:14px;background:rgba(47,142,223,.08);border:1px solid rgba(47,142,223,.2)}
+    .version-list{border:1px solid var(--line);border-radius:16px;overflow:auto;max-height:230px;background:color-mix(in srgb,var(--surface) 78%,transparent)}
+    .version-row{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:center;padding:10px;border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent);font-size:.84rem}
+    .version-row:last-child{border-bottom:0}
+    .version-row strong{color:var(--text)}
+    .version-row span{color:var(--muted);display:block;font-size:.78rem;line-height:1.3}
+    .version-row button{padding:7px 10px;min-height:34px;border-radius:12px;font-size:.78rem}
+    .version-empty{padding:12px;color:var(--muted);font-size:.84rem}
     .hidden-file{display:none!important}
     .color-row{display:grid;grid-template-columns:1fr 54px;gap:10px;align-items:end}input[type=color]{padding:0;min-height:43px;cursor:pointer}
     .tool-trust-strip-compact{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.tool-trust-strip-compact span{border:1px solid rgba(43,170,114,.26);background:rgba(43,170,114,.08);border-radius:999px;padding:5px 9px;font-size:.76rem;font-weight:850;color:var(--text)}
@@ -272,7 +279,7 @@ WS-B001</textarea>
               </div>
             </details>
             <details class="advanced-box" open>
-              <summary>Projekt & JSON</summary>
+              <summary>Projekt & Verlauf</summary>
               <div class="advanced-content">
                 <div class="project-meta">
                   <div class="row">
@@ -289,16 +296,34 @@ WS-B001</textarea>
                     <label for="projectDescription">Projektbeschreibung / Notiz</label>
                     <textarea id="projectDescription" placeholder="Wofür ist dieses Projekt gedacht? Was wurde gedruckt? Welche Nummernserie?"></textarea>
                   </div>
+                  <div class="row">
+                    <div class="field">
+                      <label for="versionTitle">Versionstitel</label>
+                      <input id="versionTitle" placeholder="z. B. Erste Filamentrollen-Serie">
+                    </div>
+                    <div class="field">
+                      <label for="versionNote">Versionsnotiz</label>
+                      <input id="versionNote" placeholder="Was wurde geändert?">
+                    </div>
+                  </div>
                 </div>
 
                 <div class="project-actions">
-                  <button class="btn btn-blue" id="btnProjectExport" type="button">Projekt als JSON speichern</button>
-                  <button class="btn" id="btnProjectImport" type="button">Projekt aus JSON laden</button>
+                  <button class="btn btn-good" id="btnVersionSave" type="button">Neue Version im Projekt speichern</button>
+                  <button class="btn btn-blue" id="btnProjectExport" type="button">Projekt-JSON herunterladen</button>
+                  <button class="btn" id="btnProjectImport" type="button">Projekt-JSON laden</button>
                   <input class="hidden-file" id="projectFileInput" type="file" accept=".json,application/json">
                 </div>
 
                 <div class="project-status" id="projectStatus">
-                  JSON speichert den aktuellen Toolstand für die Barcode-Werkstatt selbst. CSV bleibt für Excel und externe Programme.
+                  Projektverlauf wird in der JSON-Datei gespeichert. Eine geladene alte Version wird beim Bearbeiten nicht überschrieben – du speicherst daraus eine neue Version.
+                </div>
+
+                <div>
+                  <h3 style="margin:4px 0 10px;">Versionsverlauf</h3>
+                  <div class="version-list" id="versionList">
+                    <div class="version-empty">Noch keine Version im Projekt gespeichert.</div>
+                  </div>
                 </div>
               </div>
             </details>
@@ -344,7 +369,7 @@ WS-B001</textarea>
   <dialog id="helpDialog">
     <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
     <div class="modal-body">
-      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand ergänzt Projektname, Notiz sowie JSON-Export und JSON-Import für wiederladbare Barcode-Projekte.</p>
+      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand ergänzt einen Versionsverlauf innerhalb der Projekt-JSON.</p>
       <h3>Arbeitsmodi</h3>
       <ul>
         <li><strong>Einzelcode:</strong> ein Barcode, Export als PNG/SVG oder Druck.</li>
@@ -362,7 +387,7 @@ WS-B001</textarea>
       <h3>CSV-Export</h3>
       <p>Die erzeugten Codes können als CSV exportiert werden. Das ist nützlich für Excel, externe Etikettensoftware, Dokumentation oder späteren Nachdruck.</p>
       <h3>Projekt-JSON</h3>
-      <p>Die JSON-Projektdatei speichert den aktuellen Stand der Barcode-Werkstatt: Barcode-Art, Modus, Eingaben, Layout, Farben und erzeugte Codes. Damit kann ein Projekt später wieder geladen und weiterbearbeitet werden.</p>
+      <p>Die JSON-Projektdatei speichert den aktuellen Stand der Barcode-Werkstatt und zusätzlich den Versionsverlauf. Alte Versionen können geladen und als neue Version weiterbearbeitet werden, ohne den alten Stand zu überschreiben.</p>
       <h3>Übersicht statt Überladung</h3>
       <p>Die häufigsten Barcode-Arten bleiben direkt als Buttons sichtbar. Weitere Typen werden vorbereitet und später Schritt für Schritt ergänzt, damit das Tool nicht überladen wird.</p>
       <h3>Wichtiger Hinweis</h3>
@@ -377,6 +402,8 @@ WS-B001</textarea>
     let currentType = 'CODE128';
     let currentMode = 'single';
     let generatedCodes = [];
+    let projectVersions = [];
+    let currentVersionId = null;
 
     const typeInfo = {
       CODE128:{label:'Code128',numericOnly:false,hint:'Code128 ist flexibel und gut für interne Nummern, Lager, Aufträge und Werkstattetiketten.',help:'Code128 kann Buchstaben, Zahlen und viele Sonderzeichen enthalten. Gut für interne IDs.',ex:'Artikelnummer, Auftragsnummer, Lagerfach, interne Werkzeug-ID.',sample:'WS-2026-001'},
@@ -720,18 +747,9 @@ WS-B001</textarea>
       const el = $(id);
       if(el) el.value = value ?? '';
     }
-    function collectProjectState(){
+    function snapshotState(){
       buildList();
       return {
-        schema: 'warenschmiede.barcodeWerkstatt.project',
-        schemaVersion: 1,
-        tool: 'Barcode-Werkstatt Plus',
-        createdAt: new Date().toISOString(),
-        project: {
-          name: getValue('projectName'),
-          author: getValue('projectAuthor'),
-          description: getValue('projectDescription')
-        },
         barcode: {
           type: currentType,
           mode: currentMode
@@ -766,6 +784,62 @@ WS-B001</textarea>
         generatedCodes: generatedCodes
       };
     }
+    function collectProjectState(){
+      const snapshot = snapshotState();
+      return {
+        schema: 'warenschmiede.barcodeWerkstatt.project',
+        schemaVersion: 2,
+        tool: 'Barcode-Werkstatt Plus',
+        exportedAt: new Date().toISOString(),
+        project: {
+          name: getValue('projectName'),
+          author: getValue('projectAuthor'),
+          description: getValue('projectDescription')
+        },
+        currentVersionId: currentVersionId,
+        currentState: snapshot,
+        versions: projectVersions
+      };
+    }
+    function applySnapshotState(state){
+      if(!state) return;
+
+      const type = state.barcode?.type || 'CODE128';
+      const mode = state.barcode?.mode || 'single';
+
+      setValue('barcodeValue', state.inputs?.single?.value || '');
+      setValue('copyValue', state.inputs?.copies?.value || '');
+      setValue('copyCount', state.inputs?.copies?.count || '1');
+      setValue('copyNote', state.inputs?.copies?.note || '');
+
+      setValue('seriesPrefix', state.inputs?.series?.prefix || '');
+      setValue('seriesSuffix', state.inputs?.series?.suffix || '');
+      setValue('seriesStart', state.inputs?.series?.start || '1');
+      setValue('seriesCount', state.inputs?.series?.count || '1');
+      setValue('seriesPad', state.inputs?.series?.pad || '4');
+      setValue('seriesStep', state.inputs?.series?.step || '1');
+      setValue('seriesNote', state.inputs?.series?.note || '');
+
+      setValue('manualList', state.inputs?.manual?.list || '');
+
+      setValue('lineColorText', state.style?.lineColor || '#102033');
+      setValue('lineColor', state.style?.lineColor || '#102033');
+      setValue('bgColorText', state.style?.bgColor || '#ffffff');
+      setValue('bgColor', state.style?.bgColor || '#ffffff');
+      setValue('barWidth', state.style?.barWidth || '2');
+      setValue('barHeight', state.style?.barHeight || '100');
+      setValue('showText', state.style?.showText || 'true');
+      setValue('fontSize', state.style?.fontSize || '18');
+
+      setValue('labelsPerRow', state.layout?.labelsPerRow || '3');
+      setValue('copiesPerCode', state.layout?.copiesPerCode || '1');
+      setValue('labelScale', state.layout?.labelScale || 'medium');
+
+      setType(type);
+      setMode(mode);
+      buildList();
+      generate();
+    }
     function applyProjectState(data){
       if(!data || data.schema !== 'warenschmiede.barcodeWerkstatt.project'){
         toast('Keine gültige Barcode-Projektdatei');
@@ -776,45 +850,87 @@ WS-B001</textarea>
       setValue('projectAuthor', data.project?.author || '');
       setValue('projectDescription', data.project?.description || '');
 
-      const type = data.barcode?.type || 'CODE128';
-      const mode = data.barcode?.mode || 'single';
+      if(Array.isArray(data.versions)){
+        projectVersions = data.versions;
+      } else {
+        projectVersions = [];
+      }
 
-      setValue('barcodeValue', data.inputs?.single?.value || '');
-      setValue('copyValue', data.inputs?.copies?.value || '');
-      setValue('copyCount', data.inputs?.copies?.count || '1');
-      setValue('copyNote', data.inputs?.copies?.note || '');
+      currentVersionId = data.currentVersionId || null;
 
-      setValue('seriesPrefix', data.inputs?.series?.prefix || '');
-      setValue('seriesSuffix', data.inputs?.series?.suffix || '');
-      setValue('seriesStart', data.inputs?.series?.start || '1');
-      setValue('seriesCount', data.inputs?.series?.count || '1');
-      setValue('seriesPad', data.inputs?.series?.pad || '4');
-      setValue('seriesStep', data.inputs?.series?.step || '1');
-      setValue('seriesNote', data.inputs?.series?.note || '');
+      const state = data.currentState || {
+        barcode: data.barcode,
+        inputs: data.inputs,
+        style: data.style,
+        layout: data.layout,
+        generatedCodes: data.generatedCodes
+      };
 
-      setValue('manualList', data.inputs?.manual?.list || '');
-
-      setValue('lineColorText', data.style?.lineColor || '#102033');
-      setValue('lineColor', data.style?.lineColor || '#102033');
-      setValue('bgColorText', data.style?.bgColor || '#ffffff');
-      setValue('bgColor', data.style?.bgColor || '#ffffff');
-      setValue('barWidth', data.style?.barWidth || '2');
-      setValue('barHeight', data.style?.barHeight || '100');
-      setValue('showText', data.style?.showText || 'true');
-      setValue('fontSize', data.style?.fontSize || '18');
-
-      setValue('labelsPerRow', data.layout?.labelsPerRow || '3');
-      setValue('copiesPerCode', data.layout?.copiesPerCode || '1');
-      setValue('labelScale', data.layout?.labelScale || 'medium');
-
-      setType(type);
-      setMode(mode);
-      buildList();
-      generate();
+      applySnapshotState(state);
+      renderVersions();
 
       const status = $('projectStatus');
-      if(status) status.textContent = `Projekt geladen: ${data.project?.name || 'ohne Namen'} · ${data.generatedCodes?.length || generatedCodes.length} Codes`;
+      if(status) status.textContent = `Projekt geladen: ${data.project?.name || 'ohne Namen'} · ${projectVersions.length} Version(en) im Verlauf`;
       toast('Projekt geladen');
+    }
+    function saveNewProjectVersion(){
+      const snapshot = snapshotState();
+      const nextNumber = projectVersions.length + 1;
+      const version = {
+        id: 'v' + String(nextNumber).padStart(3,'0') + '_' + Date.now(),
+        number: nextNumber,
+        title: getValue('versionTitle') || `Version ${nextNumber}`,
+        note: getValue('versionNote') || '',
+        createdAt: new Date().toISOString(),
+        barcodeType: currentType,
+        mode: currentMode,
+        codeCount: generatedCodes.length,
+        state: snapshot
+      };
+      projectVersions.push(version);
+      currentVersionId = version.id;
+      setValue('versionTitle','');
+      setValue('versionNote','');
+      renderVersions();
+      const status = $('projectStatus');
+      if(status) status.textContent = `Neue Version gespeichert: Version ${version.number} · ${version.codeCount} Codes`;
+      toast('Version gespeichert');
+    }
+    function loadProjectVersion(versionId){
+      const version = projectVersions.find(v => v.id === versionId);
+      if(!version){
+        toast('Version nicht gefunden');
+        return;
+      }
+      currentVersionId = version.id;
+      applySnapshotState(version.state);
+      renderVersions();
+      const status = $('projectStatus');
+      if(status) status.textContent = `Version ${version.number} geladen. Änderungen daran werden beim Speichern als neue Version angelegt.`;
+      toast('Version geladen');
+    }
+    function renderVersions(){
+      const box = $('versionList');
+      if(!box) return;
+      if(!projectVersions.length){
+        box.innerHTML = '<div class="version-empty">Noch keine Version im Projekt gespeichert.</div>';
+        return;
+      }
+      box.innerHTML = projectVersions.slice().reverse().map(version => {
+        const active = version.id === currentVersionId ? ' · aktuell geladen' : '';
+        const date = version.createdAt ? new Date(version.createdAt).toLocaleString('de-DE') : '-';
+        return `
+          <div class="version-row">
+            <strong>V${version.number}</strong>
+            <div>
+              <strong>${escapeHtml(version.title || ('Version ' + version.number))}${active}</strong>
+              <span>${escapeHtml(version.barcodeType || '')} · ${escapeHtml(version.mode || '')} · ${version.codeCount || 0} Codes · ${date}</span>
+              ${version.note ? `<span>${escapeHtml(version.note)}</span>` : ''}
+            </div>
+            <button type="button" onclick="loadProjectVersion('${version.id}')">Laden</button>
+          </div>
+        `;
+      }).join('');
     }
     function downloadProjectJson(){
       const data = collectProjectState();
@@ -825,7 +941,7 @@ WS-B001</textarea>
       a.click();
       URL.revokeObjectURL(a.href);
       const status = $('projectStatus');
-      if(status) status.textContent = `Projekt als JSON erstellt: ${a.download}`;
+      if(status) status.textContent = `Projekt-JSON erstellt: ${a.download} · ${projectVersions.length} Version(en)`;
     }
     function openProjectFile(){
       $('projectFileInput')?.click();
@@ -845,7 +961,9 @@ WS-B001</textarea>
       };
       reader.readAsText(file, 'utf-8');
     }
-
+    function escapeHtml(s){
+      return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    }
     document.addEventListener('DOMContentLoaded',()=>{
       $('toolMenuBtn').addEventListener('click',()=>window.WSToolMenu?.open());
       document.querySelectorAll('.type-btn').forEach(btn=>btn.addEventListener('click',()=>setType(btn.dataset.type)));
@@ -863,6 +981,7 @@ WS-B001</textarea>
       $('btnCopy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('payloadBox').textContent);toast('Barcode-Inhalt kopiert')}catch{toast('Kopieren nicht möglich')}});
       $('btnPrintSheet').addEventListener('click',()=>{buildList();window.print();});
       $('btnTheme').addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'});
+      $('btnVersionSave')?.addEventListener('click',saveNewProjectVersion);
       $('btnProjectExport')?.addEventListener('click',downloadProjectJson);
       $('btnProjectImport')?.addEventListener('click',openProjectFile);
       $('projectFileInput')?.addEventListener('change',event=>readProjectFile(event.target.files?.[0]));
@@ -873,6 +992,7 @@ WS-B001</textarea>
       updateStandardWarning();
       buildList();
       generate();
+      renderVersions();
     });
   </script>
 </body>
