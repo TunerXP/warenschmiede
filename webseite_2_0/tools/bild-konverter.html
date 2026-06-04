@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<link href="/ws.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="/ws.png" rel="apple-touch-icon" sizes="180x180"/>
+<meta content="#000000" name="theme-color"/>
+<title>Bilder Konverter / Editor – Warenschmiede</title>
+<meta content="Bilder im Browser zwischen PNG, JPG und WebP umwandeln – ohne Upload, ohne Tracking, direkt lokal." name="description"/>
+<meta content="index,follow" name="robots"/>
+<meta content="light dark" name="color-scheme"/>
+<link href="https://www.warenschmiede.com/tools/bild-konverter.html" rel="canonical"/>
+<meta content="Bilder Konverter / Editor – Warenschmiede" property="og:title"/>
+<meta content="Bilder im Browser zwischen PNG, JPG und WebP umwandeln – ohne Upload, ohne Tracking, direkt lokal." property="og:description"/>
+<meta content="Bilder Konverter / Editor – Warenschmiede" name="twitter:title"/>
+<meta content="Bilder im Browser zwischen PNG, JPG und WebP umwandeln – ohne Upload, ohne Tracking, direkt lokal." name="twitter:description"/>
+<meta content="https://www.warenschmiede.com/tools/bild-konverter.html" name="twitter:url"/>
+<meta content="/assets/og/og-default.jpg" name="twitter:image"/>
+<meta content="website" property="og:type"/>
+<meta content="https://www.warenschmiede.com/tools/bild-konverter.html" property="og:url"/>
+<meta content="Warenschmiede" property="og:site_name"/>
+<meta content="de_DE" property="og:locale"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<script>
+    (function () {
+      var storageKey = 'theme-preference';
+      var preference = 'system';
+      try {
+        var stored = localStorage.getItem(storageKey);
+        if (stored === 'light' || stored === 'dark' || stored === 'system') {
+          preference = stored;
+        }
+      } catch (error) { }
+      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+      var resolved = preference === 'dark'
+        ? 'dark'
+        : preference === 'light'
+          ? 'light'
+          : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
+      var root = document.documentElement;
+      root.dataset.theme = resolved;
+      root.dataset.themePreference = preference;
+    })();
+  </script>
+<link href="/styles.css" rel="stylesheet"/>
+<link href="/assets/print.css?v=1.0.7" media="print" rel="stylesheet"/>
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Oswald:wght@500;700&amp;family=Orbitron:wght@500;700&amp;family=Bebas+Neue&amp;display=swap" rel="stylesheet"/>
+<script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = { corePlugins: { preflight: false } };
+  </script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    .converter-hero {
+      text-align: center;
+      max-width: 840px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 960px) {
+      .converter-hero {
+        text-align: left;
+      }
+    }
+
+    .pro-converter .drop-zone {
+      transition: all 0.3s ease;
+      background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%233B82F6FF' stroke-width='2' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+    }
+
+    .pro-converter .drop-zone.dragover {
+      background-color: #1e293b;
+      transform: scale(1.01);
+    }
+
+    .pro-converter ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .pro-converter ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+
+    .pro-converter ::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 4px;
+    }
+
+    .pro-converter ::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+
+    .gif-studio .gif-drop-zone {
+      transition: all 0.3s ease;
+      background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%236b8ff2' stroke-width='2' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+    }
+
+    .gif-studio .gif-drop-zone.dragover {
+      background-color: #1e293b;
+      transform: scale(1.01);
+    }
+
+    .gif-studio .frames-scroll::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .gif-studio .frames-scroll::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+
+    .gif-studio .frames-scroll::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 4px;
+    }
+
+    .banner-builder-root {
+      font-family: 'Inter', sans-serif;
+      background-color: #0f172a;
+      color: #e2e8f0;
+    }
+
+    .banner-builder-root .canvas-container-wrapper {
+      background-image: linear-gradient(45deg, #1e293b 25%, transparent 25%), linear-gradient(-45deg, #1e293b 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1e293b 75%), linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    }
+
+    .banner-builder-root ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .banner-builder-root ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+
+    .banner-builder-root ::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 3px;
+    }
+
+    .safeshare-root {
+      font-family: 'Inter', sans-serif;
+      color: #e2e8f0;
+    }
+
+    .safeshare-root .scan-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: #f43f5e;
+      box-shadow: 0 0 15px #f43f5e;
+      animation: scan 2s linear infinite;
+      display: none;
+    }
+
+    @keyframes scan {
+      0% {
+        top: 0%;
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      90% {
+        opacity: 1;
+      }
+
+      100% {
+        top: 100%;
+        opacity: 0;
+      }
+    }
+
+    .safeshare-root .map-container {
+      height: 300px;
+      width: 100%;
+      border-radius: 0.75rem;
+      z-index: 1;
+    }
+
+    .safeshare-root .leaflet-layer,
+    .safeshare-root .leaflet-control-zoom-in,
+    .safeshare-root .leaflet-control-zoom-out,
+    .safeshare-root .leaflet-control-attribution {
+      filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+    }
+  </style>
+</head>
+<body>
+<header class="site-header" data-header="">
+<div class="ws-nav-container header-grid">
+<div class="brand">
+<a class="brand-link" href="/index.html#start">
+<img alt="Warenschmiede Logo" class="brand-logo" fetchpriority="high" height="276" src="/assets/images/warenschmiede_logo.png" width="453"/>
+<div class="brand-text">
+<span class="brand-name">Warenschmiede</span>
+<span class="brand-tagline">3D-Druck · Made in Germany</span>
+</div>
+</a>
+</div>
+<nav aria-label="Hauptnavigation" class="main-nav">
+<div class="nav-menu" data-nav-menu="" id="primary-navigation">
+<ul class="nav-list" id="navList">
+<li class="nav-item nav-fixed">
+<a aria-current="page" class="nav-link active" data-nav-link="" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html" data-section="start" href="/index.html#start"><span aria-hidden="true" class="nav-ico">🏠</span>Start</a>
+</li>
+<li class="nav-item nav-fixed">
+<a class="nav-link" data-nav-link="" data-path="/downloads , /downloads.html" href="/downloads.html"><span aria-hidden="true" class="nav-ico">📥</span>Downloads</a>
+</li>
+<!-- Neuer Dropdown: Online Tools -->
+<li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown="">
+<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button">
+<span aria-hidden="true" class="nav-ico">🧮</span>Online Tools ▾
+              </button>
+<ul class="nav-more-menu" hidden="">
+<li>
+<a class="nav-link" data-nav-link="" data-path="/tools , /tools/ , /tools/index.html" href="/tools/">
+<span aria-hidden="true" class="nav-ico">🗂️</span>Tool-Übersicht (Dashboard)
+                  </a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/tools/werkstatt-rechner , /tools/werkstatt-rechner.html" href="/tools/werkstatt-rechner.html">
+<span aria-hidden="true" class="nav-ico">🛠️</span>Werkstatt-Rechner Metall Plus
+                  </a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/tools/3D_Druck_kostenrechner , /tools/3D_Druck_kostenrechner.html" href="/tools/3D_Druck_kostenrechner.html">
+<span aria-hidden="true" class="nav-ico">🧮</span>Warenschmiede 3D-Druck Suite
+                  </a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/tools/ws_3d_print_kostenrechner , /tools/ws_3d_print_kostenrechner.html" href="/tools/ws_3d_print_kostenrechner.html">
+<span aria-hidden="true" class="nav-ico">✨</span>Warenschmiede 3D-Druck Suite Plus (NEU)
+                  </a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/tools/QRCodeMasterPro , /tools/QRCodeMasterPro.html" href="/tools/QRCodeMasterPro.html">
+<span aria-hidden="true" class="nav-ico">🔳</span>Warenschmiede QR-Master ULTRA
+                  </a>
+</li>
+<li>
+<a class="nav-link" href="/tools/Zeiterfassung_Plus.html"><span aria-hidden="true" class="nav-ico">⏱️</span>Zeiterfassung Plus</a>
+</li>
+<li>
+<a class="nav-link" href="/tools/Zeiterfassung.html"><span aria-hidden="true" class="nav-ico">⏱️</span>Zeiterfassung</a>
+</li>
+<li>
+<a class="nav-link" href="/tools/quittungs_generator.html"><span aria-hidden="true" class="nav-ico">🧾</span>Quittungs-Werkstatt Plus</a>
+</li>
+<li>
+<a class="nav-link" href="/tools/ReceiptWriterPro.html"><span aria-hidden="true" class="nav-ico">🧾</span>Quittungs-Werkstatt</a>
+</li>
+<li>
+<a class="nav-link" href="/tools/bild-konverter.html"><span aria-hidden="true" class="nav-ico">🖼️</span>Bilder Konverter / Editor</a>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown="">
+<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🧰</span>Leistungen ▾</button>
+<ul class="nav-more-menu" hidden="">
+<li>
+<a class="nav-link" data-nav-link="" data-path="/leistungen/3d-druck , /leistungen/3d-druck.html" href="/leistungen/3d-druck.html"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druckauftrag</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html" href="/leistungen/cad-prototyping.html"><span aria-hidden="true" class="nav-ico">📐</span>CAD &amp; Prototyping</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html" href="/leistungen/pc-hilfe.html"><span aria-hidden="true" class="nav-ico">💻</span>PC-Hilfe</a>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown="">
+<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🤖</span>Über KI ▾</button>
+<ul class="nav-more-menu" hidden="">
+<li><a class="nav-link" href="/ki/chat.html"><span aria-hidden="true" class="nav-ico">💬</span>Interaktiver KI Versteher (NEU)</a></li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki , /ki/ , /ki/index.html" href="/ki/index.html"><span aria-hidden="true" class="nav-ico">📖</span>Einführung &amp; Grundlagen</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/prompts , /ki/prompts.html" href="/ki/prompts.html"><span aria-hidden="true" class="nav-ico">✍️</span>Prompts für den Alltag</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/tools , /ki/tools.html" href="/ki/tools.html"><span aria-hidden="true" class="nav-ico">🛠️</span>KI-Werkzeuge</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html" href="/ki/so-arbeitest-du-mit-ki.html"><span aria-hidden="true" class="nav-ico">🧭</span>So arbeitest du mit KI</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html" href="/ki/chancen-und-risiken.html"><span aria-hidden="true" class="nav-ico">⚖️</span>KI: Chancen &amp; Risiken</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/faq , /ki/faq.html" href="/ki/faq.html"><span aria-hidden="true" class="nav-ico">🔒</span>KI-FAQ &amp; Sicherheit</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/ki/lexikon , /ki/lexikon.html" href="/ki/lexikon.html"><span aria-hidden="true" class="nav-ico">🔤</span>KI-Lexikon</a>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown="">
+<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">✉️</span>Kontakt ▾</button>
+<ul class="nav-more-menu" hidden="">
+<li>
+<a class="nav-link" data-nav-link="" data-path="/kontakt/kontakt , /kontakt/kontakt.html , /warenschmiede/kontakt/kontakt , /warenschmiede/kontakt/kontakt.html" href="/kontakt/kontakt.html"><span aria-hidden="true" class="nav-ico">📧</span>Kontakt aufnehmen</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/kontakt/ablauf-anfrage , /kontakt/ablauf-anfrage.html , /warenschmiede/kontakt/ablauf-anfrage , /warenschmiede/kontakt/ablauf-anfrage.html" href="/kontakt/ablauf-anfrage.html"><span aria-hidden="true" class="nav-ico">📝</span>Ablauf &amp; Anfrage</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/kontakt/impressum , /kontakt/impressum.html , /warenschmiede/kontakt/impressum , /warenschmiede/kontakt/impressum.html" href="/kontakt/impressum.html"><span aria-hidden="true" class="nav-ico">⚖️</span>Impressum</a>
+</li>
+<li>
+<a class="nav-link" data-nav-link="" data-path="/kontakt/ueber-mich , /kontakt/ueber-mich.html , /warenschmiede/kontakt/ueber-mich , /warenschmiede/kontakt/ueber-mich.html , /about , /about.html , /warenschmiede/about.html" href="/kontakt/ueber-mich.html"><span aria-hidden="true" class="nav-ico">👤</span>Über mich</a>
+</li>
+</ul>
+</li>
+<li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown="">
+<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druck ▾</button>
+<ul class="nav-more-menu" hidden="">
+<!-- 1. HIGHLIGHT -->
+<!-- 2. EINSTIEG -->
+<li>
+<a class="nav-link" href="/3d_druck/3ddruck-faq.html"><span aria-hidden="true" class="nav-ico">❓</span>Neu beim 3D-Druck?</a>
+</li>
+<!-- 3. GRUNDLAGEN -->
+<li>
+<a class="nav-link" href="/3d_druck/technologien.html"><span aria-hidden="true" class="nav-ico">🧪</span>FDM / SLA / SLS – Technologien</a>
+</li>
+<li>
+<a class="nav-link" href="/3d_druck/material.html"><span aria-hidden="true" class="nav-ico">📚</span>Materialwissen &amp; Vergleiche</a>
+</li>
+<!-- 4. PRAXIS -->
+<li>
+<a class="nav-link" href="/3d_druck/slicer-einstellungen.html"><span aria-hidden="true" class="nav-ico">⚙️</span>Slicer &amp; Einstellungen</a>
+</li>
+<li>
+<a class="nav-link" href="/3d_druck/druck-tipps.html"><span aria-hidden="true" class="nav-ico">💡</span>Tipps &amp; Abläufe / Kosten</a>
+</li>
+<!-- 5. TOOLS & HILFE -->
+<li>
+<a class="nav-link" href="/3d_druck/fehlerdatenbank.html"><span aria-hidden="true" class="nav-ico">🛠️</span>Fehler &amp; Troubleshooting</a>
+</li>
+<!-- 6. SPEZIAL -->
+<li>
+<a class="nav-link" href="/3d_druck/tpu-wissen.html"><span aria-hidden="true" class="nav-ico">💧</span>TPU Spezial-Wissen</a>
+</li>
+<li>
+<a class="nav-link" href="/3d_druck/ideenquellen.html"><span aria-hidden="true" class="nav-ico">💡</span>Ideenquellen &amp; Portale</a>
+</li>
+<li>
+<a class="nav-link" href="/3d_druck/wartung-reinigung.html"><span aria-hidden="true" class="nav-ico">🧼</span>Wartung &amp; Reinigung</a>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+<div class="header-actions">
+<button aria-label="Design umschalten: Hell/Dunkel" aria-pressed="false" class="theme-toggle" id="themeToggleBtn" title="Design umschalten: Hell/Dunkel" type="button">
+<span aria-hidden="true" id="themeIcon">🖥️</span>
+<span aria-live="polite" class="theme-toggle__text" id="themeToggleText">Helles Design</span>
+</button>
+<button aria-controls="primary-navigation" aria-expanded="false" class="nav-toggle" data-nav-toggle="" type="button">
+<span class="sr-only">Menü öffnen</span>
+<span aria-hidden="true" class="nav-toggle-bar"></span>
+<span aria-hidden="true" class="nav-toggle-bar"></span>
+<span aria-hidden="true" class="nav-toggle-bar"></span>
+</button>
+</div>
+</div>
+</header>
+<main class="site-main" id="inhalt" tabindex="-1">
+<section class="section section-hero">
+<div class="container converter-hero">
+<p class="hero-eyebrow">Neu im Browser</p>
+<h1>Pro Bild Konverter (PNG, JPG, WebP)</h1>
+<p class="hero-lede">Erweiterter Bild-Konverter mit Batch-Funktion, Qualitätsregler und ZIP-Download – alles direkt im Browser.</p>
+<p class="hero-meta">Unterstützt JPG, PNG und WebP. Die Umwandlung läuft komplett lokal auf deinem Gerät.</p>
+</div>
+</section>
+<section aria-label="Hinweis zur lokalen Verarbeitung" class="section ws-section">
+<div class="container">
+<div class="callout note">
+<h3>Alles passiert lokal in deinem Browser</h3>
+<p>Deine Bilder werden nicht hochgeladen. Die Umwandlung erfolgt mit HTML5 Canvas direkt auf deinem Gerät. Es gibt keine Server-Speicherung, kein Tracking und keine Werbung.</p>
+<p class="converter-note">Hinweis: Sehr große Dateien können je nach Gerät ein paar Sekunden benötigen.</p>
+</div>
+</div>
+</section>
+<section aria-labelledby="converter-heading" class="section ws-section">
+<div class="container">
+<div class="ws-card" style="margin-bottom: 1.5rem;">
+<h2 class="ws-section-title" id="converter-heading">Der Pro-Modus für deine Bildkonvertierungen</h2>
+<p>Der klassische Bild-Konverter ist jetzt umgezogen: Mit dem Pro Bild Konverter kannst du mehrere Dateien gleichzeitig umwandeln, die Qualität steuern, bei Bedarf skalieren und alles als ZIP herunterladen. Die Basis bleibt gleich: kein Upload, keine Server-Speicherung – alles bleibt lokal.</p>
+</div>
+<div class="pro-converter">
+<div class="w-full max-w-6xl mx-auto bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
+<div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 flex justify-between items-center">
+<div>
+<h2 class="text-2xl font-bold text-white flex items-center gap-2">
+<i class="ph ph-arrows-left-right text-3xl"></i> Pro Bild Konverter
+                </h2>
+<p class="text-blue-100 text-sm mt-1">Konvertieren, Komprimieren &amp; Skalieren – lokal im Browser</p>
+</div>
+<div class="hidden sm:block text-right">
+<span class="text-xs bg-white/20 px-2 py-1 rounded text-white">Version 2.0</span>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 h-full lg:h-[700px]">
+<div class="lg:col-span-1 bg-slate-800 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 flex flex-col gap-6 overflow-y-auto">
+<div class="space-y-3">
+<label class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Ziel-Format</label>
+<div class="grid grid-cols-3 gap-2">
+<button class="format-btn active bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-sm font-medium transition-colors" data-format="jpg" onclick="setFormat('image/jpeg', 'jpg')">JPG</button>
+<button class="format-btn bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 rounded-lg text-sm font-medium transition-colors" data-format="png" onclick="setFormat('image/png', 'png')">PNG</button>
+<button class="format-btn bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 rounded-lg text-sm font-medium transition-colors" data-format="webp" onclick="setFormat('image/webp', 'webp')">WEBP</button>
+</div>
+</div>
+<div class="space-y-3" id="quality-container">
+<div class="flex justify-between">
+<label class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Qualität</label>
+<span class="text-sm font-mono text-blue-400" id="quality-value">90%</span>
+</div>
+<input class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-blue-500" id="quality" max="100" min="10" type="range" value="90"/>
+<p class="text-xs text-slate-300">Niedrigere Qualität = kleinere Dateigröße (nur JPG/WEBP).</p>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<label class="text-sm font-semibold text-slate-200 uppercase tracking-wider">Größe ändern</label>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" id="resize-toggle" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+</label>
+</div>
+<div class="hidden space-y-2 pt-2 transition-all" id="resize-options">
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<i class="ph ph-arrows-out-line-horizontal text-slate-300"></i>
+</div>
+<input class="bg-slate-700 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 placeholder-slate-400" id="max-width" placeholder="Max Breite (px)" type="number"/>
+</div>
+<p class="text-xs text-slate-300">Seitenverhältnis wird beibehalten.</p>
+</div>
+</div>
+<div class="mt-auto pt-6 border-t border-slate-700">
+<button class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2" disabled="" id="convert-btn" onclick="processAll()">
+<i class="ph ph-play-circle text-xl"></i>
+<span>Alle konvertieren</span>
+</button>
+<button class="hidden w-full mt-3 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2" id="zip-btn" onclick="downloadAllZip()">
+<i class="ph ph-download-simple text-xl"></i>
+<span>Als ZIP herunterladen</span>
+</button>
+</div>
+</div>
+<div class="lg:col-span-2 bg-slate-900/50 p-6 flex flex-col h-full relative">
+<div class="drop-zone w-full h-48 rounded-2xl flex flex-col justify-center items-center cursor-pointer mb-6 group hover:bg-slate-800/50 transition-colors relative" id="converter-drop-zone">
+<input accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" id="converter-file-input" multiple="" type="file"/>
+<div class="text-center z-0 pointer-events-none">
+<div class="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+<i class="ph ph-cloud-arrow-up text-3xl text-blue-400"></i>
+</div>
+<p class="text-lg text-slate-100 font-medium">Bilder hier ablegen</p>
+<p class="text-sm text-slate-300 mt-1">oder klicken zum Auswählen</p>
+</div>
+</div>
+<div class="flex justify-between items-center mb-3">
+<h3 class="text-slate-200 text-sm font-semibold uppercase tracking-wider">Warteschlange <span class="bg-slate-700 text-white px-2 py-0.5 rounded-full text-xs ml-2" id="converter-file-count">0</span></h3>
+<button class="text-xs text-red-400 hover:text-red-300 flex items-center gap-1" onclick="clearAll()">
+<i class="ph ph-trash"></i> Alle löschen
+                  </button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-3 pr-2" id="converter-file-list">
+<div class="h-full flex flex-col items-center justify-center text-slate-300 pb-10" id="converter-empty-state">
+<i class="ph ph-images text-5xl mb-3 opacity-50"></i>
+<p>Noch keine Bilder ausgewählt.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed inset-0 bg-slate-900/90 z-50 hidden flex flex-col items-center justify-center" id="processing-overlay">
+<div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+<h2 class="text-2xl font-bold text-white">Verarbeite...</h2>
+<p class="text-slate-200 mt-2" id="progress-text">0 / 0 fertig</p>
+</div>
+</div>
+</section>
+<section aria-label="GIF Studio" class="section ws-section">
+<div class="container">
+<div class="converter-hero">
+<p class="eyebrow">GIF Studio</p>
+<h2 class="ws-section-title">GIF Studio – Bilder als Daumenkino speichern</h2>
+<p>Hier kannst du aus mehreren Screenshots ein animiertes GIF bauen – ideal für kleine SolidWorks- oder 3D-Druck-Demos. Alle Berechnungen laufen lokal in deinem Browser.</p>
+</div>
+<div class="gif-studio bg-slate-900/60 border border-slate-800 rounded-3xl shadow-xl p-6 lg:p-8 mt-10">
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+<div class="lg:col-span-2 bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex flex-col gap-6">
+<div class="flex items-start justify-between gap-3">
+<div>
+<p class="text-sm uppercase tracking-wide text-blue-400 font-semibold">Einstellungen</p>
+<p class="text-slate-200">Steuer die Geschwindigkeit und Breite deines GIFs.</p>
+</div>
+<div class="px-3 py-1 rounded-full bg-slate-800 text-xs text-slate-200 border border-slate-700">Made in Germany</div>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<label class="text-sm font-semibold text-slate-200 uppercase tracking-wider" for="delay-slider">Verzögerung</label>
+<span class="text-sm font-mono text-blue-400" id="gif-delay-value">120 ms</span>
+</div>
+<input class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500" id="delay-slider" max="500" min="20" step="10" type="range" value="120"/>
+<p class="text-xs text-slate-300">Kleine Werte = schnelleres GIF.</p>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<label class="text-sm font-semibold text-slate-200 uppercase tracking-wider" for="width-slider">GIF Breite</label>
+<span class="text-sm font-mono text-blue-400" id="gif-width-value">640 px</span>
+</div>
+<input class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500" id="width-slider" max="1600" min="320" step="10" type="range" value="640"/>
+<p class="text-xs text-slate-300">Die Höhe wird automatisch passend skaliert.</p>
+</div>
+<div class="space-y-2 pt-2 border-t border-slate-800">
+<button class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2" disabled="" id="generate-btn">
+<i class="ph ph-magic-wand text-xl"></i>
+<span>GIF-Modul lädt…</span>
+</button>
+<button class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold py-3 px-4 rounded-xl transition-all flex justify-center items-center gap-2" id="gif-clear-btn">
+<i class="ph ph-broom text-lg"></i>
+<span>Alle Frames löschen</span>
+</button>
+</div>
+<div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-sm text-slate-100 hidden" id="render-status">
+                Wird erstellt… das kann ein paar Sekunden dauern, abhängig von Anzahl und Größe der Bilder.
+              </div>
+<div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 text-sm text-slate-200 flex items-start gap-3">
+<i class="ph ph-lightbulb text-xl text-amber-400"></i>
+<p>Lege Bilder einfach per Drag &amp; Drop ab. Perfekt, um ein SolidWorks-Feature als Daumenkino zu zeigen.</p>
+</div>
+</div>
+<div class="lg:col-span-2 flex flex-col gap-4">
+<div class="gif-drop-zone w-full h-52 rounded-2xl flex flex-col justify-center items-center cursor-pointer bg-slate-900/50 border border-slate-800/80 hover:bg-slate-800/60 transition-colors relative" id="drop-zone">
+<input accept="image/*" class="hidden" id="gif-file-input" multiple="" type="file"/>
+<div class="text-center z-0 pointer-events-none">
+<div class="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
+<i class="ph ph-frames text-3xl text-blue-400"></i>
+</div>
+<p class="text-lg text-slate-100 font-medium">Bilder hier ablegen</p>
+<p class="text-sm text-slate-300 mt-1">oder klicken zum Auswählen</p>
+</div>
+</div>
+<div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h3 class="text-slate-200 font-semibold flex items-center gap-2"><i class="ph ph-rocket-launch text-blue-400"></i> Vorschau</h3>
+<a class="hidden text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1" download="animation.gif" href="#" id="download-btn">
+<i class="ph ph-download-simple"></i>
+<span>GIF herunterladen</span>
+</a>
+</div>
+<div class="bg-slate-950/60 border border-slate-800 rounded-xl h-64 flex items-center justify-center relative overflow-hidden">
+<div class="hidden absolute inset-0 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center gap-2 text-slate-200" id="loading-bar">
+<div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+<p class="text-sm">Wird erstellt…</p>
+</div>
+<img alt="GIF Vorschau" class="hidden max-h-[360px] w-auto rounded-lg shadow-lg" id="gif-preview" loading="lazy" src=""/>
+<div class="text-center text-slate-300 flex flex-col items-center gap-2" id="preview-placeholder">
+<i class="ph ph-monitor-play text-4xl"></i>
+<p>GIF Vorschau erscheint hier nach dem Rendern.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-1 bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex flex-col">
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-slate-200 font-semibold flex items-center gap-2"><i class="ph ph-film-script text-blue-400"></i> Frames</h3>
+<span class="bg-slate-800 text-slate-100 text-xs px-2 py-1 rounded-full border border-slate-700" id="frame-count">0</span>
+</div>
+<div class="frames-scroll flex-1 space-y-3 overflow-y-auto pr-2" id="frames-container">
+<div class="h-full flex flex-col items-center justify-center text-slate-300" id="empty-state">
+<i class="ph ph-images text-4xl mb-2 opacity-60"></i>
+<p>Noch keine Frames geladen.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section aria-label="Banner Builder PRO" class="section ws-section" id="banner-builder">
+<div class="container">
+<div class="converter-hero">
+<p class="eyebrow">Banner Builder</p>
+<h2 class="ws-section-title">Banner Builder – Web-Banner im Browser gestalten</h2>
+<p>Gestalte simple Website-Banner direkt im Browser. Alles läuft lokal – ideal für schnelle Header, CTA-Boxen oder Social-Teaser.</p>
+</div>
+<div class="banner-builder-root mt-10 rounded-3xl border border-slate-800 shadow-xl overflow-hidden">
+<div class="bg-slate-800/60 border-b border-slate-700 flex items-center justify-between px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="bg-indigo-600 p-2 rounded-lg">
+<i class="ph ph-paint-brush-broad text-xl text-white"></i>
+</div>
+<div>
+<p class="text-xs uppercase tracking-wide text-slate-300 font-semibold">Canvas-Designer</p>
+<h3 class="font-bold text-lg text-white tracking-wide">Banner Builder PRO</h3>
+</div>
+</div>
+<button class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors" onclick="bannerDownload()">
+<i class="ph ph-download-simple text-lg"></i> Speichern (PNG)
+            </button>
+</div>
+<div class="flex flex-col lg:flex-row h-full overflow-hidden">
+<div class="w-full lg:w-80 bg-slate-800 border-b lg:border-b-0 lg:border-r border-slate-700 flex flex-col overflow-y-auto shrink-0 z-10">
+<div class="p-5 border-b border-slate-700">
+<h3 class="text-xs font-bold text-slate-200 uppercase mb-3 flex items-center gap-2">
+<i class="ph ph-ruler"></i> Größe
+                </h3>
+<div class="grid grid-cols-2 gap-2 mb-3">
+<button class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors" onclick="bannerResizeCanvas(1200, 400)">
+<span class="block font-bold text-white">Hero Groß</span>
+<span class="text-slate-300">1200 x 400</span>
+</button>
+<button class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors" onclick="bannerResizeCanvas(800, 200)">
+<span class="block font-bold text-white">Header Blog</span>
+<span class="text-slate-300">800 x 200</span>
+</button>
+<button class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors" onclick="bannerResizeCanvas(300, 250)">
+<span class="block font-bold text-white">Sidebar Box</span>
+<span class="text-slate-300">300 x 250</span>
+</button>
+<button class="bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition-colors" onclick="bannerResizeCanvas(1080, 1080)">
+<span class="block font-bold text-white">Instagram/Quadrat</span>
+<span class="text-slate-300">1080 x 1080</span>
+</button>
+</div>
+<div class="flex gap-2 items-center text-xs">
+<input class="w-16 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-white" id="banner-custom-w" type="number" value="800"/>
+<span class="text-slate-300">x</span>
+<input class="w-16 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-white" id="banner-custom-h" type="number" value="400"/>
+<button class="ml-auto text-indigo-400 hover:text-indigo-300" onclick="bannerApplyCustomSize()">Setzen</button>
+</div>
+</div>
+<div class="p-5 border-b border-slate-700 space-y-3">
+<h3 class="text-xs font-bold text-slate-200 uppercase mb-1 flex items-center gap-2">
+<i class="ph ph-plus-circle"></i> Hinzufügen
+                </h3>
+<button class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm" onclick="bannerAddText()">
+<i class="ph ph-text-t text-lg text-indigo-400"></i> Text
+                </button>
+<label class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm cursor-pointer">
+<i class="ph ph-image text-lg text-emerald-400"></i> Bild hochladen
+                  <input accept="image/*" class="hidden" id="banner-img-upload" onchange="bannerHandleImageUpload(this)" type="file"/>
+</label>
+<button class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm" onclick="bannerAddRect()">
+<i class="ph ph-square text-lg text-blue-400"></i> Box
+                </button>
+<button class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 py-2 px-3 rounded-lg flex items-center gap-3 transition-colors text-sm" onclick="bannerAddButton()">
+<i class="ph ph-hand-pointing text-lg text-amber-400"></i> Button
+                </button>
+</div>
+<div class="p-5 flex-1" id="banner-properties-panel">
+<h3 class="text-xs font-bold text-slate-200 uppercase mb-4 flex items-center gap-2">
+<i class="ph ph-sliders"></i> Eigenschaften
+                </h3>
+<div class="text-slate-300 text-sm italic text-center py-4" id="banner-no-selection">
+                  Wähle ein Element auf der Leinwand aus.
+                </div>
+<div class="hidden space-y-4" id="banner-selection-controls">
+<div>
+<label class="block text-xs text-slate-200 mb-1">Farbe</label>
+<div class="flex gap-2">
+<input class="h-8 w-full bg-transparent cursor-pointer rounded overflow-hidden" id="banner-color-picker" onchange="bannerUpdateColor(this.value)" type="color"/>
+</div>
+</div>
+<div>
+<label class="block text-xs text-slate-200 mb-1 flex justify-between">
+<span>Deckkraft</span> <span id="banner-opacity-val">100%</span>
+</label>
+<input class="w-full h-1 bg-slate-600 rounded appearance-none" max="1" min="0" oninput="bannerUpdateOpacity(this.value)" step="0.1" type="range" value="1"/>
+</div>
+<div class="hidden space-y-4 pt-4 border-t border-slate-700" id="banner-text-controls">
+<div>
+<label class="block text-xs text-slate-200 mb-1">Schriftart</label>
+<select class="w-full bg-slate-900 border border-slate-600 text-white text-sm rounded p-2" id="banner-font-family" onchange="bannerUpdateFont(this.value)">
+<option value="Inter">Standard (Inter)</option>
+<option value="Oswald">Oswald (Modern)</option>
+<option value="Bebas Neue">Bebas (Plakat)</option>
+<option value="Orbitron">Orbitron (Sci-Fi/Gaming)</option>
+</select>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<button class="bg-slate-700 p-2 rounded hover:bg-slate-600 text-white" onclick="bannerToggleBold()"><i class="ph ph-text-b"></i> Fett</button>
+<button class="bg-slate-700 p-2 rounded hover:bg-slate-600 text-white" onclick="bannerToggleItalic()"><i class="ph ph-text-italic"></i> Kursiv</button>
+</div>
+</div>
+<div class="pt-4 border-t border-slate-700 grid grid-cols-2 gap-2">
+<button class="bg-slate-700 hover:bg-slate-600 text-xs p-2 rounded text-white" onclick="bannerBringForward()">Ebene hoch</button>
+<button class="bg-slate-700 hover:bg-slate-600 text-xs p-2 rounded text-white" onclick="bannerSendBack()">Ebene runter</button>
+</div>
+<button class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/50 py-2 rounded text-sm mt-4 transition-colors" onclick="bannerDeleteObject()">
+<i class="ph ph-trash"></i> Entfernen
+                  </button>
+</div>
+</div>
+</div>
+<div class="flex-1 bg-slate-900 overflow-auto flex items-center justify-center p-8 canvas-container-wrapper relative">
+<div class="shadow-2xl border border-slate-700 relative max-w-full overflow-auto">
+<canvas id="banner-canvas"></canvas>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section aria-label="SafeShare – EXIF/GPS-Checker" class="section ws-section mt-16" id="safeshare-section">
+<div class="container">
+<div class="converter-hero">
+<h2 class="ws-section-title">SafeShare – Versteckte GPS-Daten prüfen</h2>
+<p>Finde heraus, ob deine Fotos geheime Standortdaten enthalten und lösche sie mit einem Klick. Alles läuft lokal in deinem Browser – keine Uploads, keine versteckten Kopien.</p>
+<p>SafeShare zeigt dir Koordinaten auf der Karte an, gibt dir einen Direktlink zu Google Maps und erstellt auf Wunsch eine bereinigte JPG-Version.</p>
+</div>
+<div class="safeshare-root w-full max-w-5xl mx-auto bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700 flex flex-col lg:flex-row mt-10">
+<div class="w-full lg:w-5/12 p-6 border-b lg:border-b-0 lg:border-r border-slate-700 bg-slate-900/50">
+<div class="flex items-center gap-3 mb-6">
+<div class="bg-indigo-500/10 p-2 rounded-lg text-indigo-400">
+<i class="ph ph-map-pin text-2xl"></i>
+</div>
+<div>
+<h3 class="font-bold text-white text-lg">SafeShare Map</h3>
+<p class="text-slate-200 text-xs">Visualisiere versteckte Orte</p>
+</div>
+</div>
+<div class="w-full aspect-square bg-slate-800 rounded-xl border-2 border-dashed border-slate-600 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500 transition-colors relative overflow-hidden group" id="ss-drop-zone">
+<input accept="image/jpeg, image/jpg, image/png" class="absolute inset-0 opacity-0 cursor-pointer z-20" id="ss-file-input" type="file"/>
+<div class="text-center pointer-events-none transition-opacity duration-300" id="ss-placeholder">
+<div class="w-16 h-16 rounded-full bg-indigo-500/20 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+<i class="ph ph-crosshair text-3xl text-indigo-400"></i>
+</div>
+<p class="text-slate-300 font-medium">Foto hier analysieren</p>
+<p class="text-slate-300 text-xs mt-1">S23 Ultra Fotos funktionieren am besten</p>
+</div>
+<img alt="SafeShare Vorschaubild" class="absolute inset-0 w-full h-full object-contain z-10 hidden bg-black/80 backdrop-blur-sm" id="ss-preview-img"/>
+<div class="scan-line z-10" id="ss-scan-line"></div>
+</div>
+<div class="text-center text-xs text-slate-300 mt-2 h-4" id="ss-file-name"></div>
+</div>
+<div class="w-full lg:w-7/12 p-6 flex flex-col bg-slate-800">
+<div class="flex-grow overflow-y-auto pr-2">
+<div class="hidden flex-col gap-4 mb-6" id="ss-map-wrapper">
+<div class="flex justify-between items-center">
+<h3 class="text-red-400 font-bold text-sm uppercase flex items-center gap-2 animate-pulse">
+<i class="ph ph-warning-circle"></i> Standort gefunden!
+                  </h3>
+<a class="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1" id="ss-gmaps-link" target="_blank">
+                    In Google Maps öffnen <i class="ph ph-arrow-square-out"></i>
+</a>
+</div>
+<div class="relative rounded-xl overflow-hidden border border-red-900/40 bg-slate-900">
+<div class="absolute inset-0 bg-gradient-to-b from-red-500/10 to-transparent pointer-events-none"></div>
+<div class="map-container" id="ss-map"></div>
+</div>
+<div class="bg-slate-900 p-3 rounded-lg border border-slate-700 grid grid-cols-2 gap-4 text-xs font-mono text-slate-300">
+<div>
+<span class="text-slate-300 block">Breitengrad (Lat)</span>
+<span id="ss-lat-display">--</span>
+</div>
+<div>
+<span class="text-slate-300 block">Längengrad (Lng)</span>
+<span id="ss-lng-display">--</span>
+</div>
+</div>
+</div>
+<div class="hidden flex flex-col items-center justify-center text-center p-6 border border-emerald-900/30 bg-emerald-900/10 rounded-xl mb-6" id="ss-safe-state">
+<i class="ph ph-shield-check text-6xl text-emerald-500 mb-4"></i>
+<h3 class="text-white font-bold text-xl">Keine GPS Daten</h3>
+<p class="text-slate-200 text-sm mt-2">Dieses Bild enthält keinen Standort.</p>
+</div>
+<div class="hidden bg-slate-900 rounded-xl p-4 border border-slate-700 mb-4" id="ss-metadata-section">
+<h4 class="text-xs font-bold text-slate-200 uppercase mb-3 pb-2 border-b border-slate-800 flex items-center gap-2">
+<i class="ph ph-info"></i> Bild Details
+                </h4>
+<div class="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+<div class="text-slate-300 text-xs">Kamera / Gerät</div>
+<div class="text-slate-200 text-right font-medium truncate" id="ss-meta-model">-</div>
+<div class="text-slate-300 text-xs">Aufnahmedatum</div>
+<div class="text-slate-200 text-right font-medium truncate" id="ss-meta-date">-</div>
+<div class="text-slate-300 text-xs">Software</div>
+<div class="text-slate-200 text-right font-medium truncate" id="ss-meta-soft">-</div>
+<div class="text-slate-300 text-xs">Einstellungen</div>
+<div class="text-slate-200 text-right font-mono text-xs truncate" id="ss-meta-settings">-</div>
+</div>
+</div>
+<div class="h-full flex flex-col items-center justify-center text-center p-6 opacity-50" id="ss-initial-state">
+<i class="ph ph-map-trifold text-6xl text-slate-500 mb-4"></i>
+<p class="text-slate-200 text-sm">Lade ein Bild hoch, um zu sehen,<br/>wo es aufgenommen wurde.</p>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-slate-700 flex gap-3 shrink-0">
+<button class="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2" disabled="" id="ss-clean-btn" onclick="cleanImage()">
+<i class="ph ph-eraser"></i>
+<span>GPS &amp; Daten löschen</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section aria-label="Datenschutz zum Bild-Konverter" class="section ws-section">
+<div class="container">
+<h2 class="ws-section-title">Datenschutz-Hinweis</h2>
+<p>Der Bild-Konverter verarbeitet Dateien ausschließlich lokal in deinem Browser. Es findet kein Upload auf Server der Warenschmiede oder Dritter statt, es werden keine Kopien gespeichert oder ausgewertet. Du kannst die Seite einfach schließen und alle Daten sind verschwunden.</p>
+<p>Damit ist die Nutzung im Sinne meiner <a href="/datenschutz.html">Datenschutzerklärung</a> unkritisch: keine Cookies, kein Tracking, keine Analyse.</p>
+</div>
+</section>
+</main>
+<footer class="footer">
+<div class="container">
+<div class="footer__inner">
+<div class="footer__brand">© <span id="copyright-year">2026</span> Warenschmiede · Alle Rechte vorbehalten.</div>
+<nav aria-label="Rechtliches &amp; Kontakt" class="footer__links">
+<a href="/kontakt/impressum.html">Impressum</a>
+<a href="/datenschutz.html">Datenschutzerklärung</a>
+<a href="/kontakt/kontakt.html">Kontakt</a>
+</nav>
+<div class="footer__notes">
+<p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
+<p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
+</div>
+</div>
+</div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+<script>
+    const ssFileInput = document.getElementById('ss-file-input');
+    const ssPreviewImg = document.getElementById('ss-preview-img');
+    const ssScanLine = document.getElementById('ss-scan-line');
+    const ssMapWrapper = document.getElementById('ss-map-wrapper');
+    const ssSafeState = document.getElementById('ss-safe-state');
+    const ssInitialState = document.getElementById('ss-initial-state');
+    const ssMetadataSection = document.getElementById('ss-metadata-section');
+    const ssCleanBtn = document.getElementById('ss-clean-btn');
+    const ssFileNameDisplay = document.getElementById('ss-file-name');
+    const ssPlaceholder = document.getElementById('ss-placeholder');
+
+    const ssLatDisplay = document.getElementById('ss-lat-display');
+    const ssLngDisplay = document.getElementById('ss-lng-display');
+    const ssGmapsLink = document.getElementById('ss-gmaps-link');
+
+    const ssMetaModel = document.getElementById('ss-meta-model');
+    const ssMetaDate = document.getElementById('ss-meta-date');
+    const ssMetaSoft = document.getElementById('ss-meta-soft');
+    const ssMetaSettings = document.getElementById('ss-meta-settings');
+
+    let ssMap = null;
+    let ssOriginalFile = null;
+
+    ssFileInput?.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      ssOriginalFile = file;
+      ssFileNameDisplay.textContent = file.name;
+
+      resetUI();
+
+      const url = URL.createObjectURL(file);
+      ssPreviewImg.src = url;
+      ssPreviewImg.classList.remove('hidden');
+      ssPlaceholder.classList.add('opacity-0');
+
+      ssScanLine.style.display = 'block';
+
+      setTimeout(() => {
+        analyzeImage(file);
+      }, 800);
+    });
+
+    function analyzeImage(file) {
+      EXIF.getData(file, function () {
+        const lat = EXIF.getTag(this, 'GPSLatitude');
+        const latRef = EXIF.getTag(this, 'GPSLatitudeRef');
+        const lng = EXIF.getTag(this, 'GPSLongitude');
+        const lngRef = EXIF.getTag(this, 'GPSLongitudeRef');
+
+        ssScanLine.style.display = 'none';
+        ssInitialState.classList.add('hidden');
+
+        if (lat && lng) {
+          const decimalLat = convertDMSToDD(lat, latRef);
+          const decimalLng = convertDMSToDD(lng, lngRef);
+          showMap(decimalLat, decimalLng);
+        } else {
+          ssSafeState.classList.remove('hidden');
+        }
+
+        updateMetadataDisplay(this);
+
+        ssCleanBtn.disabled = false;
+      });
+    }
+
+    function updateMetadataDisplay(exifData) {
+      const make = EXIF.getTag(exifData, 'Make') || '';
+      const model = EXIF.getTag(exifData, 'Model') || 'Unbekannt';
+      const date = EXIF.getTag(exifData, 'DateTimeOriginal') || EXIF.getTag(exifData, 'DateTime') || '-';
+      const software = EXIF.getTag(exifData, 'Software') || '-';
+
+      const iso = EXIF.getTag(exifData, 'ISOSpeedRatings');
+      const fnum = EXIF.getTag(exifData, 'FNumber');
+      const exp = EXIF.getTag(exifData, 'ExposureTime');
+
+      const settingsText = [];
+      if (fnum) settingsText.push(`f/${fnum}`);
+      if (exp) {
+        if (exp < 1) settingsText.push(`1/${Math.round(1 / exp)}s`);
+        else settingsText.push(`${exp}s`);
+      }
+      if (iso) settingsText.push(`ISO${iso}`);
+
+      ssMetaModel.textContent = `${make} ${model}`.trim();
+      ssMetaDate.textContent = date;
+      ssMetaSoft.textContent = software;
+      ssMetaSettings.textContent = settingsText.length > 0 ? settingsText.join('  ') : 'Keine Daten';
+
+      ssMetadataSection.classList.remove('hidden');
+    }
+
+    function convertDMSToDD(dms, ref) {
+      let dd = dms[0] + dms[1] / 60 + dms[2] / 3600;
+      if (ref === 'S' || ref === 'W') {
+        dd = dd * -1;
+      }
+      return dd;
+    }
+
+    function showMap(lat, lng) {
+      ssMapWrapper.classList.remove('hidden');
+      ssMapWrapper.classList.add('flex');
+
+      ssLatDisplay.textContent = lat.toFixed(6);
+      ssLngDisplay.textContent = lng.toFixed(6);
+
+      ssGmapsLink.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+
+      if (!ssMap) {
+        ssMap = L.map('ss-map').setView([lat, lng], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: ' OpenStreetMap'
+        }).addTo(ssMap);
+      } else {
+        ssMap.setView([lat, lng], 13);
+        ssMap.eachLayer((layer) => {
+          if (layer instanceof L.Marker) {
+            ssMap.removeLayer(layer);
+          }
+        });
+      }
+
+      L.marker([lat, lng]).addTo(ssMap)
+        .bindPopup('Foto Aufnahmeort')
+        .openPopup();
+
+      setTimeout(() => { ssMap.invalidateSize(); }, 100);
+    }
+
+    function cleanImage() {
+      if (!ssOriginalFile) return;
+
+      ssCleanBtn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Reinige...';
+
+      const reader = new FileReader();
+      reader.readAsDataURL(ssOriginalFile);
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+
+          canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'SAFE_' + ssOriginalFile.name.replace(/\.[^/.]+$/, '') + '.jpg';
+            link.click();
+
+            ssCleanBtn.innerHTML = '<i class="ph ph-check"></i> Erledigt!';
+            setTimeout(() => {
+              ssCleanBtn.innerHTML = '<i class="ph ph-eraser"></i> GPS & Daten löschen';
+            }, 2000);
+
+          }, 'image/jpeg', 0.95);
+        };
+      };
+    }
+
+    function resetUI() {
+      ssMapWrapper.classList.add('hidden');
+      ssMapWrapper.classList.remove('flex');
+      ssSafeState.classList.add('hidden');
+      ssMetadataSection.classList.add('hidden');
+      ssInitialState.classList.remove('hidden');
+      ssCleanBtn.disabled = true;
+      if (ssMap) {
+        ssMap.eachLayer((layer) => {
+          if (layer instanceof L.Marker) {
+            ssMap.removeLayer(layer);
+          }
+        });
+      }
+    }
+  </script>
+<script>
+    // State
+    let files = [];
+    let convertedFiles = [];
+    let settings = {
+      mimeType: 'image/jpeg',
+      extension: 'jpg',
+      quality: 0.9,
+      resize: false,
+      maxWidth: 1920
+    };
+
+    // DOM Elements
+    const dropZone = document.getElementById('converter-drop-zone');
+    const fileInput = document.getElementById('converter-file-input');
+    const fileList = document.getElementById('converter-file-list');
+    const emptyState = document.getElementById('converter-empty-state');
+    const fileCount = document.getElementById('converter-file-count');
+    const convertBtn = document.getElementById('convert-btn');
+    const zipBtn = document.getElementById('zip-btn');
+    const qualitySlider = document.getElementById('quality');
+    const qualityValue = document.getElementById('quality-value');
+    const resizeToggle = document.getElementById('resize-toggle');
+    const resizeOptions = document.getElementById('resize-options');
+    const maxWidthInput = document.getElementById('max-width');
+    const processingOverlay = document.getElementById('processing-overlay');
+    const progressText = document.getElementById('progress-text');
+
+    qualitySlider.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value, 10);
+      settings.quality = val / 100;
+      qualityValue.textContent = val + '%';
+    });
+
+    resizeToggle.addEventListener('change', (e) => {
+      settings.resize = e.target.checked;
+      if (e.target.checked) {
+        resizeOptions.classList.remove('hidden');
+      } else {
+        resizeOptions.classList.add('hidden');
+      }
+    });
+
+    maxWidthInput.addEventListener('input', (e) => {
+      settings.maxWidth = parseInt(e.target.value, 10) || 1920;
+    });
+
+    function setFormat(mime, ext) {
+      settings.mimeType = mime;
+      settings.extension = ext;
+
+      document.querySelectorAll('.format-btn').forEach(btn => {
+        if (btn.dataset.format === ext) {
+          btn.classList.remove('bg-slate-700', 'text-slate-200');
+          btn.classList.add('bg-blue-600', 'text-white');
+        } else {
+          btn.classList.add('bg-slate-700', 'text-slate-200');
+          btn.classList.remove('bg-blue-600', 'text-white');
+        }
+      });
+
+      const qualityContainer = document.getElementById('quality-container');
+      if (ext === 'png') {
+        qualityContainer.classList.add('opacity-50', 'pointer-events-none');
+      } else {
+        qualityContainer.classList.remove('opacity-50', 'pointer-events-none');
+      }
+    }
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      handleFiles(e.target.files);
+      fileInput.value = '';
+    });
+
+    function handleFiles(newFiles) {
+      const validFiles = Array.from(newFiles).filter(file => file.type.startsWith('image/'));
+      if (validFiles.length === 0) return;
+
+      files = [...files, ...validFiles];
+      convertedFiles = [];
+      zipBtn.classList.add('hidden');
+      updateUI();
+    }
+
+    function updateUI() {
+      fileList.innerHTML = '';
+      fileCount.textContent = files.length;
+      convertBtn.disabled = files.length === 0;
+
+      if (files.length === 0) {
+        fileList.appendChild(emptyState);
+        return;
+      }
+
+      files.forEach((file, index) => {
+        const li = document.createElement('div');
+        li.className = 'bg-slate-800 p-3 rounded-xl flex items-center gap-4 animate-[fadeIn_0.3s_ease-out]';
+
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.className = 'w-12 h-12 object-cover rounded-lg bg-slate-700';
+        img.onload = () => URL.revokeObjectURL(img.src);
+
+        const info = document.createElement('div');
+        info.className = 'flex-1 min-w-0';
+        info.innerHTML = `
+                    <p class="text-sm font-medium text-white truncate">${file.name}</p>
+                    <p class="text-xs text-slate-300">${(file.size / 1024).toFixed(1)} KB &bull; ${file.type.split('/')[1].toUpperCase()}</p>
+                `;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'text-slate-300 hover:text-red-300 p-2 transition-colors';
+        removeBtn.innerHTML = '<i class="ph ph-x"></i>';
+        removeBtn.onclick = () => removeFile(index);
+
+        li.appendChild(img);
+        li.appendChild(info);
+        li.appendChild(removeBtn);
+        fileList.appendChild(li);
+      });
+    }
+
+    function removeFile(index) {
+      files.splice(index, 1);
+      updateUI();
+    }
+
+    function clearAll() {
+      files = [];
+      convertedFiles = [];
+      zipBtn.classList.add('hidden');
+      updateUI();
+    }
+
+    async function processAll() {
+      if (files.length === 0) return;
+
+      processingOverlay.classList.remove('hidden');
+      convertedFiles = [];
+
+      for (let i = 0; i < files.length; i++) {
+        progressText.textContent = `${i + 1} / ${files.length} werden verarbeitet...`;
+        try {
+          const blob = await convertSingleFile(files[i]);
+          convertedFiles.push({
+            name: files[i].name.split('.')[0] + '.' + settings.extension,
+            blob: blob
+          });
+        } catch (err) {
+          console.error('Fehler bei Bild:', files[i].name, err);
+        }
+      }
+
+      processingOverlay.classList.add('hidden');
+
+      if (convertedFiles.length > 0) {
+        zipBtn.classList.remove('hidden');
+        alert(`Fertig! ${convertedFiles.length} Bilder konvertiert.`);
+      }
+    }
+
+    function convertSingleFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            if (settings.resize && width > settings.maxWidth) {
+              height = Math.round(height * (settings.maxWidth / width));
+              width = settings.maxWidth;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+
+            if (settings.extension === 'jpg' || settings.extension === 'jpeg') {
+              ctx.fillStyle = '#FFFFFF';
+              ctx.fillRect(0, 0, width, height);
+            }
+
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob((blob) => {
+              if (blob) resolve(blob);
+              else reject(new Error('Canvas conversion failed'));
+            }, settings.mimeType, settings.quality);
+          };
+          img.onerror = reject;
+        };
+        reader.onerror = reject;
+      });
+    }
+
+    function downloadAllZip() {
+      if (convertedFiles.length === 0) return;
+
+      const zip = new JSZip();
+      const folder = zip.folder('konvertierte_bilder');
+
+      convertedFiles.forEach(file => {
+        folder.file(file.name, file.blob);
+      });
+
+      zip.generateAsync({ type: 'blob' })
+        .then(function (content) {
+          saveAs(content, 'bilder_konvertiert.zip');
+        });
+    }
+
+    setFormat('image/jpeg', 'jpg');
+  </script>
+<script>
+    (() => {
+      const dropZone = document.getElementById('drop-zone');
+      const gifFileInput = document.getElementById('gif-file-input');
+      const framesContainer = document.getElementById('frames-container');
+      const emptyState = document.getElementById('empty-state');
+      const frameCount = document.getElementById('frame-count');
+      const delaySlider = document.getElementById('delay-slider');
+      const delayValue = document.getElementById('gif-delay-value');
+      const widthSlider = document.getElementById('width-slider');
+      const widthValue = document.getElementById('gif-width-value');
+      const generateBtn = document.getElementById('generate-btn');
+      const clearBtn = document.getElementById('gif-clear-btn');
+      const loadingBar = document.getElementById('loading-bar');
+      const renderStatus = document.getElementById('render-status');
+      const gifPreviewImg = document.getElementById('gif-preview');
+      const previewPlaceholder = document.getElementById('preview-placeholder');
+      const downloadBtn = document.getElementById('download-btn');
+
+      const MAX_FRAMES = 50;
+      const LARGE_DIMENSION = 4000;
+
+      let workerReady = false;
+      let gifWorkerUrl = '';
+      let workerUrlObject = null;
+      let largeImageWarned = false;
+
+      const gifState = {
+        frames: [],
+        delay: parseInt(delaySlider.value, 10),
+        width: parseInt(widthSlider.value, 10),
+        previewUrl: null
+      };
+
+      async function setupWorker() {
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<i class="ph ph-magic-wand text-xl"></i><span>GIF-Modul lädt…</span>';
+
+        try {
+          const response = await fetch('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js');
+          if (!response.ok) {
+            throw new Error('Worker konnte nicht geladen werden');
+          }
+          const blob = await response.blob();
+          workerUrlObject = URL.createObjectURL(blob);
+          gifWorkerUrl = workerUrlObject;
+          workerReady = true;
+          setIdleButton();
+        } catch (error) {
+          workerReady = false;
+          gifWorkerUrl = '';
+          generateBtn.disabled = true;
+          generateBtn.innerHTML = '<i class="ph ph-warning-circle text-xl"></i><span>GIF-Modul nicht verfügbar</span>';
+          alert('GIF-Modul konnte nicht geladen werden. Bitte Internetverbindung prüfen oder Seite neu laden.');
+        }
+      }
+
+      function updateDelay(value) {
+        gifState.delay = value;
+        delayValue.textContent = `${value} ms`;
+      }
+
+      function updateWidth(value) {
+        gifState.width = value;
+        widthValue.textContent = `${value} px`;
+      }
+
+      function resetPreview() {
+        if (gifState.previewUrl) {
+          URL.revokeObjectURL(gifState.previewUrl);
+          gifState.previewUrl = null;
+        }
+        gifPreviewImg.classList.add('hidden');
+        gifPreviewImg.src = '';
+        previewPlaceholder.classList.remove('hidden');
+        downloadBtn.classList.add('hidden');
+      }
+
+      function updateFrameList() {
+        framesContainer.innerHTML = '';
+
+        if (gifState.frames.length === 0) {
+          framesContainer.appendChild(emptyState);
+          frameCount.textContent = '0';
+          generateBtn.disabled = true;
+          return;
+        }
+
+        frameCount.textContent = gifState.frames.length;
+        generateBtn.disabled = !workerReady;
+
+        gifState.frames.forEach((frame, index) => {
+          const card = document.createElement('div');
+          card.className = 'bg-slate-800 p-3 rounded-xl flex items-center gap-3 border border-slate-700/60';
+
+          const thumb = document.createElement('img');
+          thumb.src = frame.dataUrl;
+          thumb.alt = `Frame ${index + 1}`;
+          thumb.className = 'w-14 h-14 object-cover rounded-lg bg-slate-900 border border-slate-700';
+
+          const info = document.createElement('div');
+          info.className = 'flex-1 min-w-0';
+          info.innerHTML = `
+            <p class="text-sm font-medium text-white truncate">Frame ${index + 1}</p>
+            <p class="text-xs text-slate-300 truncate">${frame.file.name}</p>
+          `;
+
+          const removeBtn = document.createElement('button');
+          removeBtn.className = 'text-slate-300 hover:text-red-300 p-2 transition-colors';
+          removeBtn.innerHTML = '<i class="ph ph-trash"></i>';
+          removeBtn.addEventListener('click', () => removeFrame(index));
+
+          card.appendChild(thumb);
+          card.appendChild(info);
+          card.appendChild(removeBtn);
+          framesContainer.appendChild(card);
+        });
+      }
+
+      function removeFrame(index) {
+        gifState.frames.splice(index, 1);
+        updateFrameList();
+      }
+
+      function clearFrames() {
+        gifState.frames = [];
+        updateFrameList();
+        resetPreview();
+        renderStatus.classList.add('hidden');
+        loadingBar.classList.add('hidden');
+        setIdleButton();
+      }
+
+      function addFiles(fileList) {
+        const validFiles = Array.from(fileList).filter(file => file.type.startsWith('image/'));
+        if (validFiles.length === 0) return;
+
+        const availableSlots = MAX_FRAMES - gifState.frames.length;
+        if (availableSlots <= 0) {
+          alert(`Maximal ${MAX_FRAMES} Frames erlaubt. Bitte entferne erst ein paar Bilder.`);
+          return;
+        }
+
+        const filesToAdd = validFiles.slice(0, availableSlots);
+        if (validFiles.length > availableSlots) {
+          alert(`Es wurden nur die ersten ${availableSlots} Dateien hinzugefügt (Limit: ${MAX_FRAMES} Frames).`);
+        }
+
+        filesToAdd.forEach(file => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+              if (!largeImageWarned && (img.width > LARGE_DIMENSION || img.height > LARGE_DIMENSION)) {
+                largeImageWarned = true;
+                alert('Die ausgewählten Bilder sind sehr groß. Bitte verkleinere sie vorab, damit das Rendern schneller klappt.');
+              }
+              gifState.frames.push({ file, dataUrl: e.target.result, image: img });
+              updateFrameList();
+            };
+            img.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function setIdleButton() {
+        generateBtn.disabled = !workerReady || gifState.frames.length === 0;
+        generateBtn.innerHTML = '<i class="ph ph-magic-wand text-xl"></i><span>GIF Erstellen</span>';
+      }
+
+      function resetRenderState() {
+        loadingBar.classList.add('hidden');
+        renderStatus.classList.add('hidden');
+        setIdleButton();
+      }
+
+      function createGIF() {
+        if (!workerReady || !gifWorkerUrl) {
+          alert('GIF-Modul lädt noch oder konnte nicht geladen werden. Bitte kurz warten oder Seite neu laden.');
+          return;
+        }
+        if (gifState.frames.length < 2) {
+          alert('Bitte mindestens zwei Bilder als Frames hinzufügen.');
+          return;
+        }
+
+        const firstFrame = gifState.frames[0]?.image;
+        if (!firstFrame?.width || !firstFrame?.height) {
+          alert('Die Bilddaten konnten nicht gelesen werden. Bitte versuche es erneut.');
+          return;
+        }
+
+        const targetWidth = gifState.width;
+        const targetHeight = Math.round((firstFrame.height / firstFrame.width) * targetWidth);
+
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<i class="ph ph-hourglass text-xl animate-spin"></i><span>Wird erstellt…</span>';
+        loadingBar.classList.remove('hidden');
+        renderStatus.textContent = 'Wird erstellt… das kann ein paar Sekunden dauern, abhängig von Anzahl und Größe der Bilder.';
+        renderStatus.classList.remove('hidden');
+
+        const gif = new GIF({
+          workers: 2,
+          quality: 10,
+          workerScript: gifWorkerUrl,
+          width: targetWidth,
+          height: targetHeight
+        });
+
+        gifState.frames.forEach(frame => {
+          const canvas = document.createElement('canvas');
+          canvas.width = targetWidth;
+          canvas.height = targetHeight;
+          const ctx = canvas.getContext('2d');
+
+          const scale = Math.min(targetWidth / frame.image.width, targetHeight / frame.image.height);
+          const newWidth = frame.image.width * scale;
+          const newHeight = frame.image.height * scale;
+          const offsetX = (targetWidth - newWidth) / 2;
+          const offsetY = (targetHeight - newHeight) / 2;
+          ctx.drawImage(frame.image, offsetX, offsetY, newWidth, newHeight);
+
+          gif.addFrame(canvas, { delay: gifState.delay });
+        });
+
+        const renderTimeout = setTimeout(() => {
+          if (gif.abort) {
+            gif.abort();
+          }
+          alert('Das Erstellen des GIFs hat zu lange gedauert. Bitte weniger oder kleinere Bilder verwenden.');
+          resetRenderState();
+        }, 60000);
+
+        gif.on('finished', (blob) => {
+          clearTimeout(renderTimeout);
+          const url = URL.createObjectURL(blob);
+          if (gifState.previewUrl) {
+            URL.revokeObjectURL(gifState.previewUrl);
+          }
+          gifState.previewUrl = url;
+          gifPreviewImg.src = url;
+          gifPreviewImg.classList.remove('hidden');
+          previewPlaceholder.classList.add('hidden');
+          downloadBtn.href = url;
+          downloadBtn.classList.remove('hidden');
+
+          renderStatus.textContent = 'GIF ist fertig – Vorschau unten, Download oben rechts.';
+          renderStatus.classList.remove('hidden');
+          loadingBar.classList.add('hidden');
+          setIdleButton();
+        });
+
+        gif.on('abort', () => {
+          clearTimeout(renderTimeout);
+          resetRenderState();
+        });
+
+        gif.on('error', () => {
+          clearTimeout(renderTimeout);
+          alert('Beim Erstellen des GIFs ist ein Fehler aufgetreten. Bitte versuche es erneut.');
+          resetRenderState();
+        });
+
+        try {
+          gif.render();
+        } catch (error) {
+          clearTimeout(renderTimeout);
+          alert('Das GIF konnte nicht gerendert werden. Bitte probiere es noch einmal mit anderen Bildern.');
+          resetRenderState();
+        }
+      }
+
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      });
+
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        addFiles(e.dataTransfer.files);
+      });
+
+      dropZone.addEventListener('click', () => {
+        gifFileInput.click();
+      });
+
+      gifFileInput.addEventListener('change', (e) => {
+        addFiles(e.target.files);
+        gifFileInput.value = '';
+      });
+
+      delaySlider.addEventListener('input', (e) => {
+        updateDelay(parseInt(e.target.value, 10));
+      });
+
+      widthSlider.addEventListener('input', (e) => {
+        updateWidth(parseInt(e.target.value, 10));
+      });
+
+      generateBtn.addEventListener('click', createGIF);
+      clearBtn.addEventListener('click', clearFrames);
+
+      window.addEventListener('beforeunload', () => {
+        if (workerUrlObject) {
+          URL.revokeObjectURL(workerUrlObject);
+        }
+        if (gifState.previewUrl) {
+          URL.revokeObjectURL(gifState.previewUrl);
+        }
+      });
+
+      updateDelay(gifState.delay);
+      updateWidth(gifState.width);
+      updateFrameList();
+      setupWorker();
+    })();
+  </script>
+<script>
+    const bannerCanvas = new fabric.Canvas('banner-canvas', {
+      backgroundColor: '#1e293b',
+      preserveObjectStacking: true
+    });
+
+    const bannerSelectionControls = document.getElementById('banner-selection-controls');
+    const bannerNoSelection = document.getElementById('banner-no-selection');
+    const bannerColorPicker = document.getElementById('banner-color-picker');
+    const bannerTextControls = document.getElementById('banner-text-controls');
+    const bannerOpacityVal = document.getElementById('banner-opacity-val');
+
+    bannerResizeCanvas(800, 400);
+
+    function bannerResizeCanvas(w, h) {
+      bannerCanvas.setWidth(w);
+      bannerCanvas.setHeight(h);
+
+      document.getElementById('banner-custom-w').value = w;
+      document.getElementById('banner-custom-h').value = h;
+    }
+
+    function bannerApplyCustomSize() {
+      const w = parseInt(document.getElementById('banner-custom-w').value, 10);
+      const h = parseInt(document.getElementById('banner-custom-h').value, 10);
+      if (!Number.isNaN(w) && !Number.isNaN(h) && w > 0 && h > 0) {
+        bannerResizeCanvas(w, h);
+      }
+    }
+
+    function bannerAddText() {
+      const text = new fabric.IText('Dein Text', {
+        left: 50,
+        top: 50,
+        fontFamily: 'Inter',
+        fill: '#ffffff',
+        fontSize: 40
+      });
+      bannerCanvas.add(text);
+      bannerCanvas.setActiveObject(text);
+    }
+
+    function bannerAddRect() {
+      const rect = new fabric.Rect({
+        left: 100,
+        top: 100,
+        fill: '#4f46e5',
+        width: 200,
+        height: 100,
+        rx: 10,
+        ry: 10
+      });
+      bannerCanvas.add(rect);
+      bannerCanvas.setActiveObject(rect);
+    }
+
+    function bannerAddButton() {
+      const rect = new fabric.Rect({
+        fill: '#10b981',
+        width: 150,
+        height: 50,
+        rx: 25,
+        ry: 25,
+        originX: 'center',
+        originY: 'center'
+      });
+
+      const text = new fabric.IText('Hier klicken', {
+        fontSize: 18,
+        fontFamily: 'Inter',
+        fill: '#ffffff',
+        originX: 'center',
+        originY: 'center'
+      });
+
+      const group = new fabric.Group([rect, text], {
+        left: 150,
+        top: 150
+      });
+
+      bannerCanvas.add(group);
+      bannerCanvas.setActiveObject(group);
+    }
+
+    function bannerHandleImageUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const imgObj = new Image();
+        imgObj.src = e.target.result;
+        imgObj.onload = function () {
+          const imgInstance = new fabric.Image(imgObj);
+
+          if (imgInstance.width > 500) {
+            imgInstance.scaleToWidth(400);
+          }
+
+          imgInstance.set({
+            left: 100,
+            top: 100
+          });
+
+          bannerCanvas.add(imgInstance);
+          bannerCanvas.setActiveObject(imgInstance);
+          input.value = '';
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+
+    bannerCanvas.on('selection:created', bannerUpdateControls);
+    bannerCanvas.on('selection:updated', bannerUpdateControls);
+    bannerCanvas.on('selection:cleared', () => {
+      bannerSelectionControls.classList.add('hidden');
+      bannerNoSelection.classList.remove('hidden');
+    });
+
+    function bannerUpdateControls() {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (!activeObj) return;
+
+      bannerNoSelection.classList.add('hidden');
+      bannerSelectionControls.classList.remove('hidden');
+
+      const fillColor = activeObj.fill || '#ffffff';
+      const opacityValue = typeof activeObj.opacity === 'number' ? activeObj.opacity : 1;
+      bannerColorPicker.value = fillColor;
+      bannerOpacityVal.textContent = Math.round(opacityValue * 100) + '%';
+
+      if (activeObj.type === 'i-text' || activeObj.type === 'text') {
+        bannerTextControls.classList.remove('hidden');
+        document.getElementById('banner-font-family').value = activeObj.fontFamily || 'Inter';
+      } else {
+        bannerTextControls.classList.add('hidden');
+      }
+    }
+
+    function bannerUpdateColor(color) {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj) {
+        activeObj.set('fill', color);
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerUpdateOpacity(val) {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj) {
+        const parsed = parseFloat(val);
+        activeObj.set('opacity', parsed);
+        bannerOpacityVal.textContent = Math.round(parsed * 100) + '%';
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerUpdateFont(font) {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj && (activeObj.type === 'i-text' || activeObj.type === 'text')) {
+        activeObj.set('fontFamily', font);
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerToggleBold() {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj && (activeObj.type === 'i-text' || activeObj.type === 'text')) {
+        activeObj.set('fontWeight', activeObj.fontWeight === 'bold' ? 'normal' : 'bold');
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerToggleItalic() {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj && (activeObj.type === 'i-text' || activeObj.type === 'text')) {
+        activeObj.set('fontStyle', activeObj.fontStyle === 'italic' ? 'normal' : 'italic');
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerBringForward() {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj) {
+        bannerCanvas.bringForward(activeObj);
+        bannerCanvas.discardActiveObject();
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerSendBack() {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj) {
+        bannerCanvas.sendBackwards(activeObj);
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerDeleteObject() {
+      const activeObj = bannerCanvas.getActiveObject();
+      if (activeObj) {
+        bannerCanvas.remove(activeObj);
+        bannerCanvas.discardActiveObject();
+        bannerCanvas.requestRenderAll();
+      }
+    }
+
+    function bannerDownload() {
+      bannerCanvas.discardActiveObject();
+      bannerCanvas.requestRenderAll();
+
+      const link = document.createElement('a');
+      link.download = 'banner_design.png';
+      link.href = bannerCanvas.toDataURL({
+        format: 'png',
+        quality: 1
+      });
+      link.click();
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        const activeObj = bannerCanvas.getActiveObject();
+        if (activeObj && !activeObj.isEditing) {
+          bannerDeleteObject();
+        }
+      }
+    });
+  </script>
+<script defer="" src="/assets/js/theme.js"></script>
+<script defer="" src="/assets/js/header.js"></script>
+<script defer="" src="/assets/js/whatsapp.js"></script>
+<script>
+  // Auto-Update Copyright Year
+  document.getElementById('copyright-year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
