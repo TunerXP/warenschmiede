@@ -50,7 +50,7 @@
           <a class="ws-tool-link" href="${link('3d_druck/3ddruck-faq.html')}"><strong>3D-Druck Wissen</strong><span>FAQ, Material, Fehlerhilfe und Tipps.</span></a>
         </div>
       </div>
-      <div class="ws-tool-foot">Dieses Menü ist zentral: spätere Tool-Links werden nur hier gepflegt.</div>
+      <div class="ws-tool-foot"><a href="${link('impressum.html')}">Impressum</a> · <a href="${link('datenschutz.html')}">Datenschutz</a></div>
     `;
     panel.querySelector('.ws-tool-close').addEventListener('click', closeMenu);
     document.body.append(scrim, panel);
