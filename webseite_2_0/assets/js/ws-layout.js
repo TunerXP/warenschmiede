@@ -45,7 +45,8 @@
             <a class="mega-link" href="${link('tools/QRCodeMasterPro.html')}"><strong>QR-Werkstatt Plus</strong><span>QR-Codes, Links, WLAN und mehr.</span></a>
           </section>
           <section data-accent="blue"><h3>Arbeitszeit &amp; Alltag</h3>
-            <a class="mega-link" href="${link('tools/Zeiterfassung_Plus.html')}"><strong>Zeiterfassung Plus</strong><span>Arbeitszeiten übersichtlich erfassen.</span></a>
+            <a class="mega-link" href="${link('tools/Zeiterfassung.html')}"><strong>Zeiterfassung</strong><span>Alte Online-Version · endet 2026.</span></a>
+            <a class="mega-link" href="${link('tools/Zeiterfassung_Plus.html')}"><strong>Zeiterfassung Plus</strong><span>Aktuelle Online-Version für Arbeitszeiten.</span></a>
             <a class="mega-link" href="${link('tools/ReceiptWriterPro.html')}"><strong>Quittungs-Werkstatt</strong><span>Quittungen direkt im Browser erstellen.</span></a>
           </section>
         </div>
@@ -123,7 +124,7 @@
   <a href="${link('index.html#top')}">Start</a>
   <a href="${link('downloads.html')}">Downloads</a>
   <button class="mobile-section" type="button">Online Tools<span>▾</span></button>
-  <div class="mobile-sub"><a href="${link('tools/')}">Tool-Übersicht</a><a href="${link('tools/ws_3d_print_kostenrechner.html')}">3D-Druck Kostenrechner Plus</a><a href="${link('tools/QRCodeMasterPro.html')}">QR-Werkstatt Plus</a></div>
+  <div class="mobile-sub"><a href="${link('tools/')}">Tool-Übersicht</a><a href="${link('tools/Zeiterfassung.html')}">Zeiterfassung · endet 2026</a><a href="${link('tools/Zeiterfassung_Plus.html')}">Zeiterfassung Plus</a><a href="${link('tools/ws_3d_print_kostenrechner.html')}">3D-Druck Kostenrechner Plus</a><a href="${link('tools/QRCodeMasterPro.html')}">QR-Werkstatt Plus</a></div>
   <button class="mobile-section" type="button">Leistungen<span>▾</span></button>
   <div class="mobile-sub"><a href="${link('leistungen/3d-druck.html')}">3D-Druckauftrag</a><a href="${link('leistungen/cad-prototyping.html')}">CAD &amp; Prototyping</a><a href="${link('leistungen/pc-hilfe.html')}">PC-Hilfe</a></div>
   <button class="mobile-section" type="button">Über KI<span>▾</span></button>
