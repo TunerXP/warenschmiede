@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Etiketten-Design v79.1</title>
+  <title>Barcode-Werkstatt Plus · Etiketten-Designer v80</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -164,6 +164,46 @@
     .label-cell.frame-dark .label-title-text{display:inline-block;background:#102033;color:#fff!important;border-radius:6px;padding:3px 10px}
     
 
+
+
+    /* v80 · flexibler Etiketten-Designer: saubere, editierbare Rahmen ohne Schatten-Artefakte */
+    .label-cell{
+      --label-bg:#ffffff;
+      --label-radius:16px;
+      --frame-color:#102033;
+      --frame-width:2px;
+      --bar-top-color:#2f8edf;
+      --bar-bottom-color:#f1913e;
+      --bar-left-color:#102033;
+      --bar-right-color:#102033;
+      --bar-top-h:0px;
+      --bar-bottom-h:0px;
+      --bar-side-w:0px;
+      border:var(--frame-width) solid var(--frame-color)!important;
+      border-radius:var(--label-radius)!important;
+      background:var(--label-bg)!important;
+      box-shadow:none!important;
+      padding:0!important;
+      overflow:hidden!important;
+      position:relative!important;
+      min-height:108px;
+    }
+    .label-inner{
+      position:relative;z-index:3;width:100%;height:100%;display:grid;align-content:center;justify-items:center;gap:4px;
+      padding:calc(var(--bar-top-h) + 8px) calc(var(--bar-side-w) + 9px) calc(var(--bar-bottom-h) + 8px) calc(var(--bar-side-w) + 9px);
+      min-height:inherit;
+    }
+    .label-bar{position:absolute;z-index:1;pointer-events:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .label-bar-top{left:0;top:0;right:0;height:var(--bar-top-h);background:var(--bar-top-color)}
+    .label-bar-bottom{left:0;bottom:0;right:0;height:var(--bar-bottom-h);background:var(--bar-bottom-color)}
+    .label-bar-left{left:0;top:0;bottom:0;width:var(--bar-side-w);background:var(--bar-left-color)}
+    .label-bar-right{right:0;top:0;bottom:0;width:var(--bar-side-w);background:var(--bar-right-color)}
+    .label-cell svg{position:relative;z-index:3;background:#fff;border-radius:7px;padding:2px;max-width:100%;height:auto}.label-cell .label-text{position:relative;z-index:3;font:800 10px var(--mono);margin-top:2px;word-break:break-all;color:#102033}
+    .label-title-text{position:relative;z-index:4;display:inline-block;font-weight:950;letter-spacing:.04em;line-height:1.1;word-break:break-word;color:var(--label-accent);padding:0 6px;border-radius:8px}
+    .label-title-pill{background:var(--label-accent);color:#fff!important;padding:3px 11px;border-radius:999px}
+    .label-title-bar{color:#fff!important;background:transparent;padding:0 8px}
+    .label-preview-stage .label-cell{width:min(100%,300px);min-height:170px}.label-preview-stage .label-cell svg{max-width:238px}.label-preview-stage .label-text{font-size:11px}
+    .designer-grid{display:grid;gap:10px}.designer-subhead{margin:4px 0 0;color:var(--accent);font-size:.72rem;font-weight:950;letter-spacing:.1em;text-transform:uppercase}.small-select{min-height:40px;padding:8px 10px}.template-hint.warn{border:1px solid rgba(241,145,62,.24);background:rgba(241,145,62,.07);border-radius:14px;padding:10px 12px}
     dialog{border:0;border-radius:24px;padding:0;max-width:min(900px,calc(100vw - 28px));background:var(--surface);color:var(--text);box-shadow:0 28px 90px -46px rgba(0,0,0,.9)}dialog::backdrop{background:rgba(15,23,42,.58);backdrop-filter:blur(5px)}.modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:center}.modal-body{padding:20px;color:var(--muted);line-height:1.58}.close-x{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font-size:1.1rem}
     .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:#0f172a;color:#fff;border-radius:999px;padding:11px 16px;font-weight:850;box-shadow:0 20px 60px -35px #000;transition:.22s ease;z-index:80}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
     @media(max-width:1280px){.main{grid-template-columns:1fr 1fr}.preview-card{position:static}.center-stage{grid-column:1/-1;order:3}}
@@ -396,23 +436,25 @@
 
           <div class="label-design-card">
             <h3>Etiketten-Design</h3>
-            <p class="template-hint">Gestaltet die Etiketten im Druckbogen. Der Barcode selbst bleibt sauber lesbar.</p>
+            <p class="template-hint warn"><strong>v80:</strong> Die Vorlage ist nur ein Startpunkt. Danach kannst du Rahmen, Radius, Balken und Farben frei anpassen. Der Barcode bleibt in einem weißen Lesebereich und wird nicht von Deko überdeckt.</p>
+
             <div class="field">
               <label for="labelTemplate">Vorlage</label>
               <select id="labelTemplate">
                 <option value="plain" selected>Standard weiß</option>
-                <option value="blue">Blau modern · Balken oben</option>
-                <option value="orange">Orange Warenschmiede · Balken oben</option>
-                <option value="green">Grün Lager / OK · Balken oben</option>
-                <option value="barBottom">Balken unten</option>
-                <option value="barDouble">Balken oben & unten</option>
-                <option value="corner">Ecken-Rahmen</option>
-                <option value="badge">Scan-Me-Badge</option>
-                <option value="sale">Rot Aktion / Hinweis</option>
-                <option value="dark">Dunkel Industrie</option>
-                <option value="bold">Industrie kräftig</option>
+                <option value="blue">Blau · Balken oben</option>
+                <option value="orange">Orange · Warenschmiede</option>
+                <option value="green">Grün · Lager / OK</option>
+                <option value="topBottom">Balken oben & unten</option>
+                <option value="leftRight">Balken links & rechts</option>
+                <option value="fullFrame">Starker Rahmen</option>
+                <option value="softCard">Sanfte Karte</option>
+                <option value="warning">Rot · Achtung / Aktion</option>
+                <option value="dark">Dunkel · Industrie</option>
               </select>
             </div>
+
+            <p class="designer-subhead">Titel</p>
             <div class="row">
               <div class="field">
                 <label for="showLabelTitle">Titel anzeigen</label>
@@ -429,32 +471,56 @@
                 </select>
               </div>
             </div>
-            <div class="field">
-              <label for="labelTitleText">Titeltext</label>
-              <input id="labelTitleText" value="SCAN ME" placeholder="z. B. SCAN ME, Lagerplatz, Artikel">
+            <div class="field"><label for="labelTitleText">Titeltext</label><input id="labelTitleText" value="SCAN ME" placeholder="z. B. SCAN ME, LAGER, BARCODE"></div>
+            <div class="row">
+              <div class="field color-row"><div><label for="labelTitleColor">Titelfarbe</label><input id="labelTitleColorText" value="#102033"></div><input id="labelTitleColor" type="color" value="#102033"></div>
+              <div class="field"><label for="labelTitleSize">Titelgröße</label><select id="labelTitleSize"><option value="10">Klein</option><option value="12" selected>Normal</option><option value="15">Groß</option><option value="18">Sehr groß</option></select></div>
             </div>
             <div class="row">
-              <div class="field color-row">
-                <div><label for="labelTitleColor">Titelfarbe</label><input id="labelTitleColorText" value="#102033"></div>
-                <input id="labelTitleColor" type="color" value="#102033">
-              </div>
-              <div class="field">
-                <label for="labelTitleSize">Titelgröße</label>
-                <select id="labelTitleSize">
-                  <option value="10">Klein</option>
-                  <option value="12" selected>Normal</option>
-                  <option value="15">Groß</option>
-                </select>
-              </div>
+              <div class="field"><label for="labelTitleStyle">Titelstil</label><select id="labelTitleStyle"><option value="plain" selected>Normal</option><option value="pill">Kapsel / Badge</option><option value="bar">Im Balken schlicht</option></select></div>
+              <div class="field"><label for="labelValueText">Zusatz-Zahl unter Barcode</label><select id="labelValueText"><option value="false" selected>Nein</option><option value="true">Ja</option></select></div>
+            </div>
+
+            <p class="designer-subhead">Rahmen & Fläche</p>
+            <div class="row">
+              <div class="field"><label for="labelFrameEnabled">Rahmen anzeigen</label><select id="labelFrameEnabled"><option value="true" selected>Ja</option><option value="false">Nein</option></select></div>
+              <div class="field"><label for="labelFrameRadius">Eckenradius</label><select id="labelFrameRadius"><option value="0">Eckig</option><option value="8">Leicht</option><option value="16" selected>Rund</option><option value="24">Stark rund</option></select></div>
+            </div>
+            <div class="row">
+              <div class="field color-row"><div><label for="labelFrameColor">Rahmenfarbe</label><input id="labelFrameColorText" value="#102033"></div><input id="labelFrameColor" type="color" value="#102033"></div>
+              <div class="field"><label for="labelFrameWidth">Rahmenstärke</label><select id="labelFrameWidth"><option value="0">Kein Rahmen</option><option value="1">Fein</option><option value="2" selected>Normal</option><option value="3">Kräftig</option><option value="4">Sehr kräftig</option></select></div>
+            </div>
+            <div class="row">
+              <div class="field color-row"><div><label for="labelBgColor">Etikettfläche</label><input id="labelBgColorText" value="#ffffff"></div><input id="labelBgColor" type="color" value="#ffffff"></div>
+              <div class="field"><label for="labelBarcodeTextSize">Barcode-Klartext</label><select id="labelBarcodeTextSize"><option value="9">Klein</option><option value="11" selected>Normal</option><option value="13">Groß</option></select></div>
+            </div>
+
+            <p class="designer-subhead">Balken</p>
+            <div class="row">
+              <div class="field"><label for="labelTopBar">Balken oben</label><select id="labelTopBar"><option value="false" selected>Aus</option><option value="true">Ein</option></select></div>
+              <div class="field color-row"><div><label for="labelTopBarColor">Farbe oben</label><input id="labelTopBarColorText" value="#2f8edf"></div><input id="labelTopBarColor" type="color" value="#2f8edf"></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="labelBottomBar">Balken unten</label><select id="labelBottomBar"><option value="false" selected>Aus</option><option value="true">Ein</option></select></div>
+              <div class="field color-row"><div><label for="labelBottomBarColor">Farbe unten</label><input id="labelBottomBarColorText" value="#f1913e"></div><input id="labelBottomBarColor" type="color" value="#f1913e"></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="labelBarHeight">Balkenhöhe oben/unten</label><select id="labelBarHeight"><option value="10">Schmal</option><option value="16" selected>Normal</option><option value="22">Breit</option><option value="28">Sehr breit</option></select></div>
+              <div class="field"><label for="labelSideBarWidth">Balkenbreite links/rechts</label><select id="labelSideBarWidth"><option value="8">Schmal</option><option value="12" selected>Normal</option><option value="18">Breit</option></select></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="labelLeftBar">Balken links</label><select id="labelLeftBar"><option value="false" selected>Aus</option><option value="true">Ein</option></select></div>
+              <div class="field color-row"><div><label for="labelLeftBarColor">Farbe links</label><input id="labelLeftBarColorText" value="#102033"></div><input id="labelLeftBarColor" type="color" value="#102033"></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="labelRightBar">Balken rechts</label><select id="labelRightBar"><option value="false" selected>Aus</option><option value="true">Ein</option></select></div>
+              <div class="field color-row"><div><label for="labelRightBarColor">Farbe rechts</label><input id="labelRightBarColorText" value="#102033"></div><input id="labelRightBarColor" type="color" value="#102033"></div>
             </div>
 
             <div class="label-design-preview">
-              <div class="label-design-preview-head">
-                <strong>Etiketten-Vorschau</strong>
-                <span>zeigt immer nur ein Beispiel</span>
-              </div>
+              <div class="label-design-preview-head"><strong>Etiketten-Vorschau</strong><span>zeigt immer nur ein Beispiel</span></div>
               <div class="label-preview-stage" id="labelDesignPreview"></div>
-              <p class="template-hint">Diese Vorschau ist unabhängig von der Etikettenmenge. Der echte Druckbogen bleibt rechts.</p>
+              <p class="template-hint">Die Zahl wird nicht mehr doppelt angezeigt. Der Barcode-eigene Klartext reicht normalerweise aus.</p>
             </div>
           </div>
         </div>
@@ -906,7 +972,7 @@ WS-B001</textarea>
       JsBarcode(svgEl, value, Object.assign({}, barcodeOptions(), small ? {
         width: Math.max(1, Number($('barWidth').value) - 1),
         height: $('labelScale').value === 'small' ? 44 : $('labelScale').value === 'large' ? 78 : 58,
-        fontSize: $('labelScale').value === 'small' ? 9 : 11,
+        fontSize: Number(getValue('labelBarcodeTextSize') || ($('labelScale').value === 'small' ? 9 : 11)),
         margin: 4
       } : {}));
     }
@@ -1481,52 +1547,75 @@ WS-B001</textarea>
       `).join('') : '<div class="code-row"><span>–</span><code>Keine Codes erzeugt</code><span></span></div>';
     }
     function labelDesign(){
-      const template = getValue('labelTemplate') || 'plain';
-      const showTitle = getValue('showLabelTitle') === 'true';
-      const title = getValue('labelTitleText') || '';
-      const pos = getValue('labelTitlePosition') || 'top';
-      const color = getValue('labelTitleColorText') || '#102033';
-      const size = Number(getValue('labelTitleSize') || 12);
-      return {template, showTitle, title, pos, color, size};
+      const v = id => getValue(id);
+      const template = v('labelTemplate') || 'plain';
+      const showTitle = v('showLabelTitle') === 'true';
+      const title = v('labelTitleText') || '';
+      const pos = v('labelTitlePosition') || 'top';
+      const titleColor = v('labelTitleColorText') || '#102033';
+      const titleSize = Number(v('labelTitleSize') || 12);
+      const titleStyle = v('labelTitleStyle') || 'plain';
+      const valueText = v('labelValueText') === 'true';
+      const frameEnabled = v('labelFrameEnabled') !== 'false';
+      const radius = Number(v('labelFrameRadius') || 16);
+      const frameColor = v('labelFrameColorText') || '#102033';
+      const frameWidth = frameEnabled ? Number(v('labelFrameWidth') || 2) : 0;
+      const bgColor = v('labelBgColorText') || '#ffffff';
+      const barcodeTextSize = Number(v('labelBarcodeTextSize') || 11);
+      const topBar = v('labelTopBar') === 'true';
+      const bottomBar = v('labelBottomBar') === 'true';
+      const leftBar = v('labelLeftBar') === 'true';
+      const rightBar = v('labelRightBar') === 'true';
+      const barHeight = Number(v('labelBarHeight') || 16);
+      const sideBarWidth = Number(v('labelSideBarWidth') || 12);
+      return {
+        template, showTitle, title, pos, titleColor, titleSize, titleStyle, valueText,
+        frameEnabled, radius, frameColor, frameWidth, bgColor, barcodeTextSize,
+        topBar, bottomBar, leftBar, rightBar, barHeight, sideBarWidth,
+        topBarColor: v('labelTopBarColorText') || '#2f8edf',
+        bottomBarColor: v('labelBottomBarColorText') || '#f1913e',
+        leftBarColor: v('labelLeftBarColorText') || '#102033',
+        rightBarColor: v('labelRightBarColorText') || '#102033'
+      };
     }
-    function templateClass(template){
-      return ({
-        plain:'frame-none',
-        blue:'frame-blue',
-        orange:'frame-orange',
-        green:'frame-green',
-        barBottom:'frame-bar-bottom',
-        barDouble:'frame-bar-double',
-        corner:'frame-corner',
-        badge:'frame-badge',
-        sale:'frame-sale',
-        dark:'frame-dark',
-        bold:'frame-bold'
-      })[template] || 'frame-none';
+    function templateClass(){
+      return 'frame-designer-v80';
+    }
+    function setDesignValue(id, value){
+      const el = $(id);
+      if(el) el.value = value ?? '';
     }
     function applyLabelTemplate(){
       const tpl = getValue('labelTemplate') || 'plain';
       const presets = {
-        plain:  {show:'false', title:'', color:'#102033', size:'12', pos:'top'},
-        blue:   {show:'true', title:'SCAN ME', color:'#2f8edf', size:'12', pos:'top'},
-        orange: {show:'true', title:'WARENSCHMIEDE', color:'#f1913e', size:'12', pos:'top'},
-        green:  {show:'true', title:'LAGER', color:'#2baa72', size:'12', pos:'top'},
-        barBottom:{show:'true', title:'ARTIKEL', color:'#102033', size:'12', pos:'bottom'},
-        barDouble:{show:'true', title:'SCAN ME', color:'#102033', size:'12', pos:'top'},
-        corner: {show:'true', title:'SCAN ME', color:'#102033', size:'12', pos:'top'},
-        badge:  {show:'true', title:'SCAN ME', color:'#102033', size:'12', pos:'top'},
-        sale:   {show:'true', title:'AKTION', color:'#c2413a', size:'12', pos:'top'},
-        dark:   {show:'true', title:'BARCODE', color:'#102033', size:'12', pos:'top'},
-        bold:   {show:'true', title:'BARCODE', color:'#102033', size:'15', pos:'top'}
+        plain:     {show:'false', title:'', titleColor:'#102033', titleStyle:'plain', frame:'true', radius:'16', frameColor:'#cbd9e6', frameWidth:'1', bg:'#ffffff', top:'false', bottom:'false', left:'false', right:'false', topColor:'#2f8edf', bottomColor:'#f1913e', leftColor:'#102033', rightColor:'#102033'},
+        blue:      {show:'true', title:'SCAN ME', titleColor:'#2f8edf', titleStyle:'pill', frame:'true', radius:'16', frameColor:'#2f8edf', frameWidth:'2', bg:'#f7fbff', top:'true', bottom:'false', left:'false', right:'false', topColor:'#2f8edf', bottomColor:'#2f8edf', leftColor:'#2f8edf', rightColor:'#2f8edf'},
+        orange:    {show:'true', title:'WARENSCHMIEDE', titleColor:'#f1913e', titleStyle:'pill', frame:'true', radius:'16', frameColor:'#f1913e', frameWidth:'2', bg:'#fffaf4', top:'true', bottom:'false', left:'false', right:'false', topColor:'#f1913e', bottomColor:'#cc6f1e', leftColor:'#f1913e', rightColor:'#f1913e'},
+        green:     {show:'true', title:'LAGER', titleColor:'#2baa72', titleStyle:'pill', frame:'true', radius:'16', frameColor:'#2baa72', frameWidth:'2', bg:'#f8fff9', top:'true', bottom:'false', left:'false', right:'false', topColor:'#2baa72', bottomColor:'#16814f', leftColor:'#2baa72', rightColor:'#2baa72'},
+        topBottom: {show:'true', title:'BARCODE', titleColor:'#102033', titleStyle:'bar', frame:'true', radius:'16', frameColor:'#102033', frameWidth:'2', bg:'#ffffff', top:'true', bottom:'true', left:'false', right:'false', topColor:'#102033', bottomColor:'#102033', leftColor:'#102033', rightColor:'#102033'},
+        leftRight: {show:'false', title:'', titleColor:'#102033', titleStyle:'plain', frame:'true', radius:'10', frameColor:'#102033', frameWidth:'2', bg:'#ffffff', top:'false', bottom:'false', left:'true', right:'true', topColor:'#102033', bottomColor:'#102033', leftColor:'#f1913e', rightColor:'#2f8edf'},
+        fullFrame: {show:'true', title:'ARTIKEL', titleColor:'#102033', titleStyle:'plain', frame:'true', radius:'0', frameColor:'#102033', frameWidth:'4', bg:'#ffffff', top:'false', bottom:'false', left:'false', right:'false', topColor:'#102033', bottomColor:'#102033', leftColor:'#102033', rightColor:'#102033'},
+        softCard:  {show:'true', title:'SCAN ME', titleColor:'#5b6f83', titleStyle:'plain', frame:'true', radius:'24', frameColor:'#9fb2c5', frameWidth:'1', bg:'#f7fbff', top:'false', bottom:'false', left:'false', right:'false', topColor:'#9fb2c5', bottomColor:'#9fb2c5', leftColor:'#9fb2c5', rightColor:'#9fb2c5'},
+        warning:   {show:'true', title:'ACHTUNG', titleColor:'#c2413a', titleStyle:'pill', frame:'true', radius:'12', frameColor:'#c2413a', frameWidth:'2', bg:'#fff7f7', top:'true', bottom:'false', left:'false', right:'false', topColor:'#c2413a', bottomColor:'#8f1f1a', leftColor:'#c2413a', rightColor:'#c2413a'},
+        dark:      {show:'true', title:'BARCODE', titleColor:'#102033', titleStyle:'bar', frame:'true', radius:'16', frameColor:'#102033', frameWidth:'3', bg:'#ffffff', top:'true', bottom:'false', left:'false', right:'false', topColor:'#102033', bottomColor:'#102033', leftColor:'#102033', rightColor:'#102033'}
       };
       const p = presets[tpl];
       if(!p) return;
-      setValue('showLabelTitle', p.show);
-      setValue('labelTitleText', p.title);
-      setValue('labelTitleColorText', p.color);
-      setValue('labelTitleColor', p.color);
-      setValue('labelTitleSize', p.size);
-      setValue('labelTitlePosition', p.pos);
+      setDesignValue('showLabelTitle', p.show);
+      setDesignValue('labelTitleText', p.title);
+      setDesignValue('labelTitleColorText', p.titleColor); setDesignValue('labelTitleColor', p.titleColor);
+      setDesignValue('labelTitleStyle', p.titleStyle);
+      setDesignValue('labelFrameEnabled', p.frame);
+      setDesignValue('labelFrameRadius', p.radius);
+      setDesignValue('labelFrameColorText', p.frameColor); setDesignValue('labelFrameColor', p.frameColor);
+      setDesignValue('labelFrameWidth', p.frameWidth);
+      setDesignValue('labelBgColorText', p.bg); setDesignValue('labelBgColor', p.bg);
+      setDesignValue('labelTopBar', p.top); setDesignValue('labelBottomBar', p.bottom); setDesignValue('labelLeftBar', p.left); setDesignValue('labelRightBar', p.right);
+      setDesignValue('labelTopBarColorText', p.topColor); setDesignValue('labelTopBarColor', p.topColor);
+      setDesignValue('labelBottomBarColorText', p.bottomColor); setDesignValue('labelBottomBarColor', p.bottomColor);
+      setDesignValue('labelLeftBarColorText', p.leftColor); setDesignValue('labelLeftBarColor', p.leftColor);
+      setDesignValue('labelRightBarColorText', p.rightColor); setDesignValue('labelRightBarColor', p.rightColor);
+      setDesignValue('labelValueText', 'false');
       buildList();
       generate();
       updateLoadedVersionLiveSoon();
@@ -1535,27 +1624,52 @@ WS-B001</textarea>
     function createLabelCell(item, design = labelDesign(), preview = false){
       const cell = document.createElement('div');
       cell.className = 'label-cell ' + templateClass(design.template);
-      cell.style.setProperty('--label-accent', design.color);
+      cell.style.setProperty('--label-accent', design.titleColor);
+      cell.style.setProperty('--label-bg', design.bgColor);
+      cell.style.setProperty('--label-radius', design.radius + 'px');
+      cell.style.setProperty('--frame-color', design.frameColor);
+      cell.style.setProperty('--frame-width', design.frameWidth + 'px');
+      cell.style.setProperty('--bar-top-color', design.topBarColor);
+      cell.style.setProperty('--bar-bottom-color', design.bottomBarColor);
+      cell.style.setProperty('--bar-left-color', design.leftBarColor);
+      cell.style.setProperty('--bar-right-color', design.rightBarColor);
+      cell.style.setProperty('--bar-top-h', (design.topBar ? design.barHeight : 0) + 'px');
+      cell.style.setProperty('--bar-bottom-h', (design.bottomBar ? design.barHeight : 0) + 'px');
+      cell.style.setProperty('--bar-side-w', ((design.leftBar || design.rightBar) ? design.sideBarWidth : 0) + 'px');
+
+      if(design.topBar){ const b=document.createElement('span'); b.className='label-bar label-bar-top'; cell.appendChild(b); }
+      if(design.bottomBar){ const b=document.createElement('span'); b.className='label-bar label-bar-bottom'; cell.appendChild(b); }
+      if(design.leftBar){ const b=document.createElement('span'); b.className='label-bar label-bar-left'; cell.appendChild(b); }
+      if(design.rightBar){ const b=document.createElement('span'); b.className='label-bar label-bar-right'; cell.appendChild(b); }
+
+      const inner = document.createElement('div');
+      inner.className = 'label-inner';
+      cell.appendChild(inner);
 
       function makeTitle(extraClass = ''){
         const title = document.createElement('div');
-        title.className = 'label-title-text' + (extraClass ? ' ' + extraClass : '');
-        title.style.fontSize = (preview ? Math.max(design.size + 2, 13) : design.size) + 'px';
+        let cls = 'label-title-text';
+        if(design.titleStyle === 'pill') cls += ' label-title-pill';
+        if(design.titleStyle === 'bar') cls += ' label-title-bar';
+        if(extraClass) cls += ' ' + extraClass;
+        title.className = cls;
+        title.style.fontSize = (preview ? Math.max(design.titleSize + 2, 13) : design.titleSize) + 'px';
+        title.style.color = design.titleColor;
         title.textContent = design.title;
         return title;
       }
 
-      if(design.showTitle && design.title && design.pos === 'top') cell.appendChild(makeTitle());
+      if(design.showTitle && design.title && design.pos === 'top') inner.appendChild(makeTitle());
 
       const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-      cell.appendChild(svg);
+      inner.appendChild(svg);
 
       const label = document.createElement('div');
       label.className = 'label-text';
       label.textContent = item.value;
-      cell.appendChild(label);
+      if(design.valueText) inner.appendChild(label);
 
-      if(design.showTitle && design.title && design.pos === 'bottom') cell.appendChild(makeTitle('label-title-bottom'));
+      if(design.showTitle && design.title && design.pos === 'bottom') inner.appendChild(makeTitle('label-title-bottom'));
 
       return {cell, svg, label};
     }
@@ -1568,7 +1682,7 @@ WS-B001</textarea>
       const item = {value, qty:1, note:''};
       const made = createLabelCell(item, labelDesign(), true);
       box.appendChild(made.cell);
-      try { renderBarcodeToSvg(made.svg, item.value, true); } catch(e) { made.label.textContent = 'Fehler: ' + item.value; }
+      try { renderBarcodeToSvg(made.svg, item.value, true); } catch(e) { made.label.textContent = 'Fehler: ' + item.value; if(!made.label.parentNode) made.cell.appendChild(made.label); }
     }
     function renderSheet(){
       updatePrintLayoutVars();
@@ -1765,15 +1879,31 @@ WS-B001</textarea>
           copiesPerCode: getValue('copiesPerCode'),
           labelScale: getValue('labelScale'),
           printMargin: getValue('printMargin'),
-          labelGap: getValue('labelGap')
-        },
-        labelDesign: {
-          template: getValue('labelTemplate'),
-          showTitle: getValue('showLabelTitle'),
-          titleText: getValue('labelTitleText'),
-          titlePosition: getValue('labelTitlePosition'),
-          titleColor: getValue('labelTitleColorText'),
-          titleSize: getValue('labelTitleSize')
+          labelGap: getValue('labelGap'),
+          labelTemplate: getValue('labelTemplate'),
+          showLabelTitle: getValue('showLabelTitle'),
+          labelTitlePosition: getValue('labelTitlePosition'),
+          labelTitleText: getValue('labelTitleText'),
+          labelTitleColor: getValue('labelTitleColorText'),
+          labelTitleSize: getValue('labelTitleSize'),
+          labelTitleStyle: getValue('labelTitleStyle'),
+          labelValueText: getValue('labelValueText'),
+          labelFrameEnabled: getValue('labelFrameEnabled'),
+          labelFrameRadius: getValue('labelFrameRadius'),
+          labelFrameColor: getValue('labelFrameColorText'),
+          labelFrameWidth: getValue('labelFrameWidth'),
+          labelBgColor: getValue('labelBgColorText'),
+          labelBarcodeTextSize: getValue('labelBarcodeTextSize'),
+          labelTopBar: getValue('labelTopBar'),
+          labelTopBarColor: getValue('labelTopBarColorText'),
+          labelBottomBar: getValue('labelBottomBar'),
+          labelBottomBarColor: getValue('labelBottomBarColorText'),
+          labelBarHeight: getValue('labelBarHeight'),
+          labelLeftBar: getValue('labelLeftBar'),
+          labelLeftBarColor: getValue('labelLeftBarColorText'),
+          labelRightBar: getValue('labelRightBar'),
+          labelRightBarColor: getValue('labelRightBarColorText'),
+          labelSideBarWidth: getValue('labelSideBarWidth')
         },
         generatedCodes: generatedCodes,
         typeDrafts: JSON.parse(JSON.stringify(typeDrafts || {}))
@@ -1843,14 +1973,30 @@ WS-B001</textarea>
       setValue('labelScale', state.layout?.labelScale || 'medium');
       setValue('printMargin', state.layout?.printMargin || '12');
       setValue('labelGap', state.layout?.labelGap || '8');
-
-      setValue('labelTemplate', state.labelDesign?.template || 'plain');
-      setValue('showLabelTitle', state.labelDesign?.showTitle || 'false');
-      setValue('labelTitleText', state.labelDesign?.titleText || 'SCAN ME');
-      setValue('labelTitlePosition', state.labelDesign?.titlePosition || 'top');
-      setValue('labelTitleColorText', state.labelDesign?.titleColor || '#102033');
-      setValue('labelTitleColor', state.labelDesign?.titleColor || '#102033');
-      setValue('labelTitleSize', state.labelDesign?.titleSize || '12');
+      setValue('labelTemplate', state.layout?.labelTemplate || 'plain');
+      setValue('showLabelTitle', state.layout?.showLabelTitle || 'false');
+      setValue('labelTitlePosition', state.layout?.labelTitlePosition || 'top');
+      setValue('labelTitleText', state.layout?.labelTitleText || 'SCAN ME');
+      setValue('labelTitleColorText', state.layout?.labelTitleColor || '#102033'); setValue('labelTitleColor', state.layout?.labelTitleColor || '#102033');
+      setValue('labelTitleSize', state.layout?.labelTitleSize || '12');
+      setValue('labelTitleStyle', state.layout?.labelTitleStyle || 'plain');
+      setValue('labelValueText', state.layout?.labelValueText || 'false');
+      setValue('labelFrameEnabled', state.layout?.labelFrameEnabled || 'true');
+      setValue('labelFrameRadius', state.layout?.labelFrameRadius || '16');
+      setValue('labelFrameColorText', state.layout?.labelFrameColor || '#102033'); setValue('labelFrameColor', state.layout?.labelFrameColor || '#102033');
+      setValue('labelFrameWidth', state.layout?.labelFrameWidth || '2');
+      setValue('labelBgColorText', state.layout?.labelBgColor || '#ffffff'); setValue('labelBgColor', state.layout?.labelBgColor || '#ffffff');
+      setValue('labelBarcodeTextSize', state.layout?.labelBarcodeTextSize || '11');
+      setValue('labelTopBar', state.layout?.labelTopBar || 'false');
+      setValue('labelTopBarColorText', state.layout?.labelTopBarColor || '#2f8edf'); setValue('labelTopBarColor', state.layout?.labelTopBarColor || '#2f8edf');
+      setValue('labelBottomBar', state.layout?.labelBottomBar || 'false');
+      setValue('labelBottomBarColorText', state.layout?.labelBottomBarColor || '#f1913e'); setValue('labelBottomBarColor', state.layout?.labelBottomBarColor || '#f1913e');
+      setValue('labelBarHeight', state.layout?.labelBarHeight || '16');
+      setValue('labelLeftBar', state.layout?.labelLeftBar || 'false');
+      setValue('labelLeftBarColorText', state.layout?.labelLeftBarColor || '#102033'); setValue('labelLeftBarColor', state.layout?.labelLeftBarColor || '#102033');
+      setValue('labelRightBar', state.layout?.labelRightBar || 'false');
+      setValue('labelRightBarColorText', state.layout?.labelRightBarColor || '#102033'); setValue('labelRightBarColor', state.layout?.labelRightBarColor || '#102033');
+      setValue('labelSideBarWidth', state.layout?.labelSideBarWidth || '12');
 
       captureTypeDraft(type);
       setType(type);
@@ -2186,7 +2332,14 @@ WS-B001</textarea>
         el.addEventListener('input',()=>{buildList();generate();updateLoadedVersionLiveSoon();saveLocalDraftSoon();});
         el.addEventListener('change',()=>{buildList();generate();updateLoadedVersionLiveSoon();saveLocalDraftSoon();});
       });
-      syncColor('lineColor','lineColorText'); syncColor('bgColor','bgColorText'); syncColor('labelTitleColor','labelTitleColorText');
+      syncColor('lineColor','lineColorText'); syncColor('bgColor','bgColorText');
+      syncColor('labelTitleColor','labelTitleColorText');
+      syncColor('labelFrameColor','labelFrameColorText');
+      syncColor('labelBgColor','labelBgColorText');
+      syncColor('labelTopBarColor','labelTopBarColorText');
+      syncColor('labelBottomBarColor','labelBottomBarColorText');
+      syncColor('labelLeftBarColor','labelLeftBarColorText');
+      syncColor('labelRightBarColor','labelRightBarColorText'); syncColor('labelTitleColor','labelTitleColorText');
       $('labelTemplate')?.addEventListener('change', applyLabelTemplate);
       $('btnBuildList').addEventListener('click',()=>{buildList();toast('Liste erzeugt')});
       $('btnCsv').addEventListener('click',downloadCsv);
