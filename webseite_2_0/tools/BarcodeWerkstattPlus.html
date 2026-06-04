@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode-Werkstatt Plus · Infoblasen v77</title>
+  <title>Barcode-Werkstatt Plus · Hilfe v78</title>
   <meta name="description" content="Barcode-Werkstatt Plus: Barcodes einzeln, mehrfach oder als Serie erzeugen, CSV exportieren und als Druckbogen ausgeben.">
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -140,6 +140,174 @@
     .help-pop{position:fixed;z-index:9999;max-width:320px;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:var(--surface);box-shadow:0 20px 60px rgba(15,32,51,.18);color:var(--muted);font-size:.86rem;line-height:1.45;display:none}
     .help-pop strong{color:var(--text)}
     
+
+    .help-dialog{
+      width:min(1080px,calc(100vw - 28px));
+      max-height:min(880px,calc(100vh - 28px));
+    }
+    .help-dialog .modal-head{
+      align-items:center;
+    }
+    .help-dialog .modal-body{
+      padding:0;
+      color:var(--text);
+      max-height:calc(100vh - 150px);
+      overflow:hidden;
+    }
+    .help-layout{
+      display:grid;
+      grid-template-columns:270px 1fr;
+      min-height:590px;
+      max-height:calc(100vh - 150px);
+    }
+    .help-nav{
+      border-right:1px solid var(--line);
+      background:color-mix(in srgb,var(--surface) 78%,transparent);
+      padding:16px;
+      overflow:auto;
+    }
+    .help-nav button{
+      width:100%;
+      border:1px solid transparent;
+      background:transparent;
+      color:var(--text);
+      text-align:left;
+      border-radius:14px;
+      padding:10px 11px;
+      cursor:pointer;
+      font:inherit;
+      font-weight:850;
+      display:grid;
+      gap:2px;
+      transition:.16s ease;
+    }
+    .help-nav button span{
+      font-weight:650;
+      color:var(--muted);
+      font-size:.78rem;
+      line-height:1.25;
+    }
+    .help-nav button:hover,
+    .help-nav button.active{
+      border-color:rgba(241,145,62,.45);
+      background:rgba(241,145,62,.08);
+      box-shadow:0 0 0 3px rgba(241,145,62,.08);
+    }
+    .help-content{
+      overflow:auto;
+      padding:clamp(18px,3vw,30px);
+    }
+    .help-page{display:none}
+    .help-page.active{display:block}
+    .help-page h3{
+      font-size:clamp(1.45rem,2vw,2rem);
+      letter-spacing:-.045em;
+      margin:0 0 12px;
+    }
+    .help-page h4{
+      margin:24px 0 8px;
+      font-size:1.05rem;
+    }
+    .help-page p,
+    .help-page li{
+      color:var(--muted);
+      line-height:1.58;
+    }
+    .help-page ul,
+    .help-page ol{
+      padding-left:1.2rem;
+    }
+    .help-card-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin:16px 0;
+    }
+    .help-card{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      background:color-mix(in srgb,var(--surface) 84%,transparent);
+      box-shadow:0 14px 34px -30px rgba(15,23,42,.45);
+    }
+    .help-card strong{
+      display:block;
+      margin-bottom:5px;
+      color:var(--text);
+    }
+    .help-mini{
+      font-size:.88rem;
+      color:var(--muted);
+      line-height:1.45;
+      display:block;
+    }
+    .help-example{
+      border-left:4px solid var(--accent);
+      background:rgba(241,145,62,.08);
+      padding:12px 14px;
+      border-radius:14px;
+      color:var(--muted);
+      margin:12px 0;
+      line-height:1.5;
+    }
+    .help-warning{
+      border:1px solid rgba(194,65,58,.28);
+      background:rgba(194,65,58,.08);
+      padding:13px 14px;
+      border-radius:16px;
+      color:var(--muted);
+      margin:14px 0;
+      line-height:1.5;
+    }
+    .help-good{
+      border:1px solid rgba(43,170,114,.28);
+      background:rgba(43,170,114,.08);
+      padding:13px 14px;
+      border-radius:16px;
+      color:var(--muted);
+      margin:14px 0;
+      line-height:1.5;
+    }
+    .help-table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:16px;
+      margin:14px 0;
+      font-size:.9rem;
+    }
+    .help-table th,
+    .help-table td{
+      padding:10px 12px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+      text-align:left;
+    }
+    .help-table th{
+      color:var(--text);
+      background:rgba(47,142,223,.08);
+    }
+    .help-table tr:last-child td{border-bottom:0}
+    .help-table td{color:var(--muted);line-height:1.45}
+    @media(max-width:760px){
+      .help-layout{
+        grid-template-columns:1fr;
+      }
+      .help-nav{
+        border-right:0;
+        border-bottom:1px solid var(--line);
+        display:grid;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:8px;
+        max-height:240px;
+      }
+      .help-card-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -185,7 +353,7 @@
                 <option value="PZN8" disabled>PZN/PZN8 · später</option>
                 <option value="SSCC18" disabled>SSCC-18 · später</option>
               </select>
-              <p class="select-hint">Damit bleibt die Oberfläche übersichtlich. Neue Typen kommen erst dazu, wenn der Kern sauber sitzt.</p>
+              <p class="select-hint"><strong>Vorgemerkt, noch nicht aktiv:</strong> Diese Barcode-Arten sind bewusst vorbereitet, aber gesperrt. Erst wenn der Kern sauber getestet ist, werden neue Typen Schritt für Schritt freigeschaltet.</p>
             </div>
           </div>
 
@@ -410,36 +578,164 @@ WS-B001</textarea>
     </main>
   </div>
 
-  <dialog id="helpDialog">
-    <div class="modal-head"><h2>Hilfe zur Barcode-Werkstatt Plus</h2><button class="close-x" id="helpClose" type="button">×</button></div>
+  <dialog id="helpDialog" class="help-dialog">
+    <div class="modal-head">
+      <div>
+        <p class="eyebrow" style="margin:0 0 4px;">Hilfe & Anleitung</p>
+        <h2>Barcode-Werkstatt Plus verstehen</h2>
+      </div>
+      <button class="close-x" id="helpClose" type="button" aria-label="Hilfe schließen">×</button>
+    </div>
     <div class="modal-body">
-      <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes lokal im Browser. Dieser Stand ergänzt kurze Hilfeblasen und startet die Eingabeprüfung neu: neutral, grün, orange und rot sind jetzt klar getrennt.</p>
-      <h3>Arbeitsmodi</h3>
-      <ul>
-        <li><strong>Einzelcode:</strong> ein Barcode, Export als PNG/SVG oder Druck.</li>
-        <li><strong>Gleicher Code:</strong> ein Code mehrfach als Etikettenbogen.</li>
-        <li><strong>Serie:</strong> fortlaufende Codes wie WS-0001 bis WS-0100.</li>
-        <li><strong>Manuelle Liste:</strong> Codes aus Excel oder eigener Liste einfügen.</li>
-      </ul>
-      <h3>Welche Barcode-Art nehme ich?</h3>
-      <ul>
-        <li><strong>Code128:</strong> beste Wahl für interne Werkstatt-, Lager-, Auftrags- und Artikelnummern.</li>
-        <li><strong>Code39:</strong> robust und simpel, aber eingeschränkter als Code128.</li>
-        <li><strong>EAN-13 / EAN-8:</strong> für Artikelcodes mit festen Zahlenlängen und Prüfziffer. Für echte Handelsware nur mit gültigen Nummern verwenden.</li>
-        <li><strong>ITF-14:</strong> eher für Verpackungen, Kartons und Logistikeinheiten.</li>
-      </ul>
-      <h3>CSV-Export</h3>
-      <p>Die erzeugten Codes können als CSV exportiert werden. Zusätzlich enthält die CSV eine Excel-sichere Textspalte, damit lange Barcode-Nummern und führende Nullen nicht als 1,234E+13 oder gekürzte Zahl erscheinen.</p>
-      <h3>Projekt-JSON</h3>
-      <p>Die JSON-Projektdatei speichert den aktuellen Stand der Barcode-Werkstatt und zusätzlich den Versionsverlauf. Geladene Versionen werden live bearbeitet; für eine echte Sicherungsdatei lädst du die Projekt-JSON herunter.</p>
-      <h3>Übersicht statt Überladung</h3>
-      <p>Die häufigsten Barcode-Arten bleiben direkt als Buttons sichtbar. Weitere Typen werden vorbereitet und später Schritt für Schritt ergänzt, damit das Tool nicht überladen wird.</p>
-      <h3>Eingabeprüfung</h3>
-      <p>Das Tool zeigt grün/rot, ob die wichtigsten Eingaben passen. Bei EAN/ITF werden Zahlenlänge und Prüfzifferlogik geprüft. Bei Code39 werden ungültige Zeichen gemeldet.</p>
-      <h3>Druckbogen / A4</h3>
-      <p>Der Druckbogen kann mit Rand und Etikettenabstand angepasst werden. Im Browser-Druckdialog sollte A4 und Skalierung 100 % geprüft werden, weil Drucker und Browser Randbereiche unterschiedlich behandeln.</p>
-      <h3>Wichtiger Hinweis</h3>
-      <p>Für offizielle Handels-EANs oder Logistikstandards brauchst du gültige Nummern aus der passenden Vergabestelle. Frei erfundene EANs sind für interne Tests okay, aber nicht automatisch echte Produktcodes.</p>
+      <div class="help-layout">
+        <nav class="help-nav" aria-label="Hilfethemen">
+          <button class="active" type="button" data-help-tab="start">Start <span>Was bringt mir das?</span></button>
+          <button type="button" data-help-tab="workflow">Ablauf <span>Vom Inhalt zum Etikett</span></button>
+          <button type="button" data-help-tab="types">Barcode-Arten <span>Code128, EAN, Code39, ITF</span></button>
+          <button type="button" data-help-tab="modes">Arbeitsmodi <span>Einzeln, Kopien, Serie, Liste</span></button>
+          <button type="button" data-help-tab="checks">Prüfziffern <span>Basisnummer und Kontrolle</span></button>
+          <button type="button" data-help-tab="export">CSV & Projekt <span>Excel, JSON, Versionen</span></button>
+          <button type="button" data-help-tab="print">Druckbogen <span>A4, Etiketten, Rand</span></button>
+          <button type="button" data-help-tab="future">Weitere Typen <span>Was später kommen kann</span></button>
+          <button type="button" data-help-tab="safety">Grenzen <span>Offizielle Nummern & Tests</span></button>
+        </nav>
+
+        <div class="help-content">
+          <section class="help-page active" data-help-page="start">
+            <h3>Was ist die Barcode-Werkstatt Plus?</h3>
+            <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes direkt im Browser. Du kannst einzelne Barcodes erzeugen, denselben Code mehrfach drucken, fortlaufende Serien bauen oder eine manuelle Liste einfügen.</p>
+            <p>Das Tool ist für Werkstatt, Lager, Büro, 3D-Druck, interne Artikelnummern, Projektetiketten und einfache Druckbögen gedacht. Es ersetzt keine offizielle Nummernvergabe, hilft aber beim sauberen Erzeugen, Prüfen, Exportieren und Drucken.</p>
+
+            <div class="help-card-grid">
+              <div class="help-card"><strong>Für interne Kennzeichnung</strong><span class="help-mini">Werkzeugnummern, Lagerfächer, Aufträge, Material, Prüfstände, Kisten, Rollen oder Musterteile.</span></div>
+              <div class="help-card"><strong>Für Serien</strong><span class="help-mini">Fortlaufende Codes mit Startwert, Anzahl, Stellen und Schrittweite erzeugen.</span></div>
+              <div class="help-card"><strong>Für Druckbögen</strong><span class="help-mini">Etiketten pro Reihe, Kopien pro Code, Größe, Rand und Abstand einstellen.</span></div>
+              <div class="help-card"><strong>Lokal im Browser</strong><span class="help-mini">Die Eingaben werden im Browser verarbeitet. Projektstände können als JSON-Datei gesichert werden.</span></div>
+            </div>
+
+            <div class="help-example"><strong>Beispiel:</strong> Du möchtest für 30 Lagerfächer eine EAN-13-Testserie oder für eine Werkzeugkiste interne Code128-Etiketten drucken. Barcode-Art wählen, Modus wählen, Werte eintragen, prüfen und Druckbogen ausgeben.</div>
+          </section>
+
+          <section class="help-page" data-help-page="workflow">
+            <h3>So nutzt du die Barcode-Werkstatt Schritt für Schritt</h3>
+            <ol>
+              <li><strong>Barcode-Art wählen:</strong> Links entscheidest du, ob du z. B. Code128, EAN-13, EAN-8, Code39 oder ITF-14 brauchst.</li>
+              <li><strong>Arbeitsmodus wählen:</strong> Einzelcode, gleicher Code mehrfach, Serie oder manuelle Liste.</li>
+              <li><strong>Daten eintragen:</strong> Je nach Barcode-Art gelten andere Regeln. EAN und ITF arbeiten nur mit Zahlen und Prüfziffern.</li>
+              <li><strong>Prüfung beachten:</strong> Grün bedeutet: Pflichtangaben passen. Rot bedeutet: echter Fehler, erst korrigieren.</li>
+              <li><strong>Vorschau prüfen:</strong> Rechts siehst du den Barcode und den erzeugten Inhalt.</li>
+              <li><strong>Exportieren oder drucken:</strong> PNG/SVG für Einzelcode, CSV für Listen, Druckbogen für Etiketten.</li>
+              <li><strong>Projekt sichern:</strong> Als Projekt-JSON speichern, wenn du Versionen oder den Arbeitsstand behalten willst.</li>
+            </ol>
+            <div class="help-good"><strong>Praxisregel:</strong> Erst einen kleinen Testbogen drucken und scannen. Wenn der sitzt, dann größere Mengen drucken.</div>
+            <div class="help-warning"><strong>Wichtig:</strong> Ein Barcode kann technisch korrekt sein und trotzdem fachlich falsch verwendet werden. Besonders EAN/ITF nur offiziell einsetzen, wenn die Nummern wirklich gültig vergeben sind.</div>
+          </section>
+
+          <section class="help-page" data-help-page="types">
+            <h3>Welche Barcode-Art nehme ich?</h3>
+            <table class="help-table">
+              <thead><tr><th>Typ</th><th>Wofür gut?</th><th>Wichtig</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Code128</strong></td><td>Interne Artikelnummern, Aufträge, Lager, Werkzeug, Kisten, 3D-Druck-Projekte.</td><td>Sehr flexibel. Kann Zahlen, Buchstaben und viele Sonderzeichen abbilden.</td></tr>
+                <tr><td><strong>EAN-13</strong></td><td>Artikelcodes mit 13 Stellen, Handelsumfeld, Testreihen mit Prüfziffer.</td><td>12 Basisziffern + 1 Prüfziffer. Für echte Produkte brauchst du gültige Nummern.</td></tr>
+                <tr><td><strong>EAN-8</strong></td><td>Kürzere Artikelcodes mit 8 Stellen.</td><td>7 Basisziffern + 1 Prüfziffer. Ebenfalls nicht frei für echte Handelsware erfinden.</td></tr>
+                <tr><td><strong>Code39</strong></td><td>Robuste einfache Werkstatt-/Industriecodes.</td><td>Weniger Zeichen als Code128. Gut lesbar, aber nicht so kompakt.</td></tr>
+                <tr><td><strong>ITF-14</strong></td><td>Karton, Verpackung, Logistik- oder Transporteinheiten.</td><td>13 Basisziffern + 1 Prüfziffer. Für echte Logistik nur mit passender Nummernlogik.</td></tr>
+              </tbody>
+            </table>
+            <div class="help-example"><strong>Einfacher Merksatz:</strong> Für eigene Werkstattetiketten meistens Code128. Für echte Produkt-/Handelsnummern nicht raten, sondern offizielle Nummern verwenden.</div>
+          </section>
+
+          <section class="help-page" data-help-page="modes">
+            <h3>Arbeitsmodi: Ein Code, viele Codes oder ganze Serien</h3>
+            <h4>Einzelcode</h4>
+            <p>Erzeugt genau einen Barcode. Gut für schnelle Tests, einzelne Artikel, einen Auftrag oder einen Lagerplatz.</p>
+
+            <h4>Gleicher Code</h4>
+            <p>Erzeugt denselben Barcode mehrfach. Gut, wenn du für einen Artikel mehrere gleiche Etiketten brauchst.</p>
+
+            <h4>Serie</h4>
+            <p>Erzeugt fortlaufende Barcodes. Du gibst Startwert, Anzahl und Schrittweite an. Bei Code128/Code39 sind Prefix und Suffix möglich. Bei EAN/ITF sind Prefix und Suffix gesperrt, weil diese Standards feste Zahlenlängen haben.</p>
+
+            <h4>Manuelle Liste</h4>
+            <p>Jede Zeile wird ein eigener Barcode. Praktisch, wenn du Codes aus Excel, einer Liste oder einem Auftrag kopierst.</p>
+
+            <div class="help-good"><strong>Tipp:</strong> Für Serien erst mit 3 bis 5 Codes testen. So siehst du sofort, ob Nummern, Stellen und Prüfziffern wie erwartet laufen.</div>
+          </section>
+
+          <section class="help-page" data-help-page="checks">
+            <h3>Prüfziffern einfach erklärt</h3>
+            <p>EAN-13, EAN-8 und ITF-14 enthalten am Ende eine Prüfziffer. Diese Ziffer hilft Scannern und Programmen zu erkennen, ob die Nummer wahrscheinlich korrekt gelesen wurde.</p>
+            <table class="help-table">
+              <thead><tr><th>Barcode</th><th>Basisnummer</th><th>Endgültiger Code</th></tr></thead>
+              <tbody>
+                <tr><td><strong>EAN-13</strong></td><td>12 Ziffern</td><td>13 Ziffern mit Prüfziffer</td></tr>
+                <tr><td><strong>EAN-8</strong></td><td>7 Ziffern</td><td>8 Ziffern mit Prüfziffer</td></tr>
+                <tr><td><strong>ITF-14</strong></td><td>13 Ziffern</td><td>14 Ziffern mit Prüfziffer</td></tr>
+              </tbody>
+            </table>
+            <p>Gibst du die Basisnummer ein, ergänzt das Tool die Prüfziffer. Gibst du die volle Länge ein, prüft das Tool, ob die Prüfziffer passt.</p>
+            <div class="help-warning"><strong>Nicht verwechseln:</strong> Eine mathematisch passende Prüfziffer macht aus einer frei erfundenen Nummer noch keine offiziell vergebene Handels- oder Logistiknummer.</div>
+          </section>
+
+          <section class="help-page" data-help-page="export">
+            <h3>CSV, Excel und Projekt-JSON</h3>
+            <h4>CSV</h4>
+            <p>CSV ist eine einfache Tabellen-Datei. Du kannst erzeugte Codes exportieren und z. B. in Excel, LibreOffice oder Etikettenprogrammen weiterverwenden.</p>
+            <p>Damit Excel lange Zahlen und führende Nullen nicht kaputt interpretiert, enthält die CSV zusätzlich eine Excel-sichere Textspalte.</p>
+            <div class="help-example"><strong>Beispiel:</strong> Aus <code>0000000000017</code> wird in der Excel-sicheren Spalte eine Textform, damit Excel daraus nicht eine gekürzte Zahl macht.</div>
+
+            <h4>Projekt-JSON</h4>
+            <p>Die Projekt-JSON speichert Projektname, Beschreibung, aktuellen Arbeitsstand und den Versionsverlauf. Damit kannst du später wieder laden, weiterarbeiten oder alte Versionen vergleichen.</p>
+            <div class="help-good"><strong>Empfehlung:</strong> Wenn ein Stand wichtig ist, Projekt-JSON herunterladen. Der Browser-Autospeicher ist bequem, aber eine Datei ist die sichere Ablage.</div>
+          </section>
+
+          <section class="help-page" data-help-page="print">
+            <h3>Druckbogen und Etiketten sauber testen</h3>
+            <p>Der Druckbogen ist für DIN-A4-Ausdrucke gedacht. Je nach Browser und Drucker können Rand, Skalierung und Seitenumbruch unterschiedlich wirken.</p>
+            <h4>Diese Einstellungen sind wichtig</h4>
+            <ul>
+              <li><strong>Etiketten pro Reihe:</strong> mehr Etiketten pro Reihe bedeutet weniger Platz pro Etikett.</li>
+              <li><strong>Kopien pro Code:</strong> wiederholt jeden erzeugten Code mehrfach.</li>
+              <li><strong>Größe:</strong> kleine Etiketten sparen Platz, große Etiketten sind leichter scannbar.</li>
+              <li><strong>A4-Rand:</strong> hilft, wenn der Drucker nicht randlos drucken kann.</li>
+              <li><strong>Etikettenabstand:</strong> mehr Abstand erleichtert Schneiden und Trennen.</li>
+            </ul>
+            <div class="help-warning"><strong>Druckdialog prüfen:</strong> A4, Skalierung 100 %, Kopf-/Fußzeilen aus, Rand passend. Danach mit Handy oder Scanner testen.</div>
+            <div class="help-example"><strong>Praxis-Tipp:</strong> Erst einen Bogen mit wenigen Codes drucken. Wenn Scanner und Größe passen, dann Serienbögen erzeugen.</div>
+          </section>
+
+          <section class="help-page" data-help-page="future">
+            <h3>Weitere Barcode-Arten im Dropdown</h3>
+            <p>Im Dropdown sind weitere Barcode-Arten vorbereitet, aber bewusst noch gesperrt. Das ist Absicht: Erst soll der aktuelle Kern stabil, verständlich und gut testbar sein.</p>
+            <table class="help-table">
+              <thead><tr><th>Geplant / möglich</th><th>Warum noch nicht aktiv?</th></tr></thead>
+              <tbody>
+                <tr><td><strong>UPC-A / UPC-E</strong></td><td>Ähnlich zu EAN, aber eigene Längen und Regeln.</td></tr>
+                <tr><td><strong>ISBN-13</strong></td><td>Basiert technisch auf EAN-13, braucht aber Buchnummern-Logik und klare Erklärung.</td></tr>
+                <tr><td><strong>GS1-128 / SSCC-18</strong></td><td>Deutlich fachlicher, mit Datenbezeichnern und Logistikregeln.</td></tr>
+                <tr><td><strong>DataMatrix / PDF417</strong></td><td>Andere Codefamilien, nicht nur klassische Strichcodes. Dafür braucht es eigene Erzeuger und eigene Hilfe.</td></tr>
+                <tr><td><strong>PZN/PZN8</strong></td><td>Pharma-Sonderfall, fachlich sensibel und nicht als einfache Bastelnummer behandeln.</td></tr>
+              </tbody>
+            </table>
+            <div class="help-good"><strong>Warum so langsam?</strong> Lieber wenige Typen richtig erklären und prüfen, als viele halbaktive Knöpfe ohne Verlässlichkeit.</div>
+          </section>
+
+          <section class="help-page" data-help-page="safety">
+            <h3>Grenzen, Verantwortung und Scanner-Test</h3>
+            <p>Ein Barcode ist nur ein maschinenlesbarer Träger für eine Nummer oder Zeichenfolge. Ob diese Nummer in einem echten Waren-, Lager- oder Logistiksystem gültig ist, entscheidet nicht der Barcode selbst.</p>
+            <h4>Wichtige Regeln</h4>
+            <ul>
+              <li>Für interne Werkstatt- und Lagercodes ist Code128 meist die sichere Wahl.</li>
+              <li>EAN/ITF nur offiziell einsetzen, wenn die Nummern wirklich gültig vergeben sind.</li>
+              <li>Vor Serien- oder Kundendruck immer mit Scanner oder Smartphone testen.</li>
+              <li>Hoher Kontrast hilft: dunkle Striche auf hellem Hintergrund.</li>
+              <li>Zu kleine oder zu breite Barcodes können schlecht lesbar werden.</li>
+            </ul>
+            <div class="help-warning"><strong>Fachlicher Hinweis:</strong> Das Tool kann Form, Länge und Prüfziffer prüfen. Es kann nicht bestätigen, dass eine Nummer dir offiziell gehört oder in einem fremden System akzeptiert wird.</div>
+          </section>
+        </div>
+      </div>
     </div>
   </dialog>
   <div class="toast" id="toast">Erledigt</div>
@@ -1733,6 +2029,15 @@ WS-B001</textarea>
       $('btnLocalClear')?.addEventListener('click',clearLocalDraft);
       $('btnHelp').addEventListener('click',()=>$('helpDialog').showModal());
       $('helpClose').addEventListener('click',()=>$('helpDialog').close());
+      document.querySelectorAll('[data-help-tab]').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const target = btn.dataset.helpTab;
+          document.querySelectorAll('[data-help-tab]').forEach(b=>b.classList.toggle('active', b === btn));
+          document.querySelectorAll('[data-help-page]').forEach(page=>{
+            page.classList.toggle('active', page.dataset.helpPage === target);
+          });
+        });
+      });
       updateNumericFieldState();
       updateDynamicLabels();
       updateStandardWarning();
