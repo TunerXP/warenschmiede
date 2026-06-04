@@ -241,6 +241,16 @@
     .label-grid.label-sheet-compact{gap:5px}
     .label-grid.label-sheet-comfortable{gap:12px}
     .label-grid.label-sheet-scan{gap:10px}
+
+    .label-cell.label-shape-square{border-radius:0!important}
+    .label-cell.label-shape-rounded{border-radius:var(--label-radius)!important}
+    .label-cell.label-shape-pill{border-radius:999px!important}
+    .label-cell.label-shape-cut{border-radius:8px!important;clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0 calc(100% - 12px),0 12px)}
+    .label-cell.label-shape-file{border-radius:10px!important;clip-path:polygon(0 0,78% 0,88% 13px,100% 13px,100% 100%,0 100%)}
+    .label-cell.label-shape-ticket::before,.label-cell.label-shape-ticket::after{content:"";position:absolute;z-index:4;width:18px;height:18px;border-radius:50%;background:#fff;top:50%;transform:translateY(-50%);pointer-events:none}
+    .label-cell.label-shape-ticket::before{left:-10px}.label-cell.label-shape-ticket::after{right:-10px}
+    .label-cell.label-style-soft-shadow{box-shadow:0 16px 34px -28px rgba(15,23,42,.65)!important}
+    .label-cell.label-style-no-shadow{box-shadow:none!important}
     @media print{
       .label-cell.label-format-compact{min-height:22mm}
       .label-cell.label-format-normal{min-height:28mm}
@@ -497,6 +507,14 @@
                 <option value="softCard">Dezente Karte</option>
                 <option value="warning">Rot Hinweis / Aktion</option>
                 <option value="dark">Dunkel Industrie</option>
+                <option value="factory">Werkstatt Blau/Grau</option>
+                <option value="premium">Premium Gold</option>
+                <option value="quality">Prüfung / Qualität</option>
+                <option value="shipping">Versand / Paket</option>
+                <option value="fileTag">Akten- / Datei-Etikett</option>
+                <option value="serial">Seriennummer kompakt</option>
+                <option value="cornerFlag">Eckfahne</option>
+                <option value="ticket">Ticket / Abschnitt</option>
               </select>
               <p class="field-note">Vorlage wählen, danach Farben, Rahmen, Balken und Titel nach Bedarf anpassen.</p>
             </div>
@@ -532,24 +550,25 @@
             <p class="designer-subhead">Rahmen & Fläche</p>
             <div class="row">
               <div class="field"><label for="labelFrameEnabled">Rahmen anzeigen</label><select id="labelFrameEnabled"><option value="true" selected>Ja</option><option value="false">Nein</option></select></div>
-              <div class="field"><label for="labelFrameRadius">Eckenradius</label><select id="labelFrameRadius"><option value="0">Eckig</option><option value="8">Leicht</option><option value="16" selected>Rund</option><option value="24">Stark rund</option></select></div>
+              <div class="field"><label for="labelShape">Etikettenform</label><select id="labelShape"><option value="rounded" selected>Rund</option><option value="square">Eckig</option><option value="pill">Stark rund / Badge</option><option value="cut">Abgeschnittene Ecken</option><option value="ticket">Ticket</option><option value="file">Registerkarte</option></select></div>
             </div>
             <div class="row">
-              <div class="field color-row"><div><label for="labelFrameColor">Rahmenfarbe</label><input id="labelFrameColorText" value="#102033"></div><input id="labelFrameColor" type="color" value="#102033"></div>
+              <div class="field"><label for="labelFrameRadius">Eckenradius</label><select id="labelFrameRadius"><option value="0">Eckig</option><option value="8">Leicht</option><option value="16" selected>Rund</option><option value="24">Stark rund</option></select></div>
               <div class="field"><label for="labelFrameWidth">Rahmenstärke</label><select id="labelFrameWidth"><option value="0">Kein Rahmen</option><option value="1">Fein</option><option value="2" selected>Normal</option><option value="3">Kräftig</option><option value="4">Sehr kräftig</option></select></div>
             </div>
             <div class="row">
+              <div class="field color-row"><div><label for="labelFrameColor">Rahmenfarbe</label><input id="labelFrameColorText" value="#102033"></div><input id="labelFrameColor" type="color" value="#102033"></div>
               <div class="field color-row"><div><label for="labelBgColor">Etikettfläche</label><input id="labelBgColorText" value="#ffffff"></div><input id="labelBgColor" type="color" value="#ffffff"></div>
+            </div>
+            <div class="row">
               <div class="field"><label for="labelBarcodeSize">Barcode-Größe</label><select id="labelBarcodeSize"><option value="compact">Kompakt</option><option value="balanced" selected>Ausgewogen</option><option value="large">Groß</option><option value="max">Maximal</option></select></div>
-            </div>
-            <div class="row">
               <div class="field"><label for="labelFormat">Etikettenformat</label><select id="labelFormat"><option value="compact">Kompakt</option><option value="normal" selected>Normal</option><option value="wide">Breit</option><option value="tall">Hoch</option><option value="sign">Großes Schild</option></select></div>
-              <div class="field"><label for="labelDensity">A4-Ausnutzung</label><select id="labelDensity"><option value="comfortable">Locker</option><option value="balanced" selected>Ausgewogen</option><option value="many">Viele Etiketten</option><option value="scan">Scanfreundlich</option></select></div>
             </div>
             <div class="row">
+              <div class="field"><label for="labelDensity">A4-Ausnutzung</label><select id="labelDensity"><option value="comfortable">Locker</option><option value="balanced" selected>Ausgewogen</option><option value="many">Viele Etiketten</option><option value="scan">Scanfreundlich</option></select></div>
               <div class="field"><label for="labelManualHeight">Etikettenhöhe</label><select id="labelManualHeight"><option value="auto" selected>Automatisch</option><option value="90">90 px</option><option value="110">110 px</option><option value="130">130 px</option><option value="160">160 px</option><option value="210">210 px</option></select></div>
-              <div class="field"><label for="labelBarcodeTextSize">Barcode-Klartext</label><select id="labelBarcodeTextSize"><option value="9">Klein</option><option value="11" selected>Normal</option><option value="13">Groß</option></select></div>
             </div>
+            <div class="field"><label for="labelBarcodeTextSize">Barcode-Klartext</label><select id="labelBarcodeTextSize"><option value="9">Klein</option><option value="11" selected>Normal</option><option value="13">Groß</option></select></div>
 
             <p class="designer-subhead">Balken</p>
             <div class="row">
@@ -1656,6 +1675,7 @@ WS-B001</textarea>
       const labelFormat = v('labelFormat') || 'normal';
       const labelDensity = v('labelDensity') || 'balanced';
       const manualHeight = v('labelManualHeight') || 'auto';
+      const labelShape = v('labelShape') || 'rounded';
       const topBar = v('labelTopBar') === 'true';
       const bottomBar = v('labelBottomBar') === 'true';
       const leftBar = v('labelLeftBar') === 'true';
@@ -1664,7 +1684,7 @@ WS-B001</textarea>
       const sideBarWidth = Number(v('labelSideBarWidth') || 12);
       return {
         template, showTitle, title, pos, titleColor, titleSize, titleStyle, titleAlign, titleJustify, titleSelf, valueText,
-        frameEnabled, radius, frameColor, frameWidth, bgColor, barcodeTextSize, barcodeSize, labelFormat, labelDensity, manualHeight,
+        frameEnabled, radius, frameColor, frameWidth, bgColor, barcodeTextSize, barcodeSize, labelFormat, labelDensity, manualHeight, labelShape,
         topBar, bottomBar, leftBar, rightBar, barHeight, sideBarWidth,
         topBarColor: v('labelTopBarColorText') || '#2f8edf',
         bottomBarColor: v('labelBottomBarColorText') || '#f1913e',
@@ -1673,7 +1693,7 @@ WS-B001</textarea>
       };
     }
     function templateClass(){
-      return 'frame-designer-v80-4';
+      return 'frame-designer-v83';
     }
     function setDesignValue(id, value){
       const el = $(id);
@@ -1682,18 +1702,25 @@ WS-B001</textarea>
     function applyLabelTemplate(){
       const tpl = getValue('labelTemplate') || 'plain';
       const presets = {
-        plain:     {show:'false', title:'', titleColor:'#102033', titleStyle:'plain', titleAlign:'center', frame:'true', radius:'16', frameColor:'#cbd9e6', frameWidth:'1', bg:'#ffffff', top:'false', bottom:'false', left:'false', right:'false', topColor:'#2f8edf', bottomColor:'#f1913e', leftColor:'#102033', rightColor:'#102033'},
-        blue:      {show:'true', title:'SCAN ME', titleColor:'#2f8edf', titleStyle:'pill', titleAlign:'center', frame:'true', radius:'16', frameColor:'#2f8edf', frameWidth:'2', bg:'#f7fbff', top:'true', bottom:'false', left:'false', right:'false', topColor:'#2f8edf', bottomColor:'#2f8edf', leftColor:'#2f8edf', rightColor:'#2f8edf'},
-        orange:    {show:'true', title:'WARENSCHMIEDE', titleColor:'#f1913e', titleStyle:'pill', titleAlign:'center', frame:'true', radius:'16', frameColor:'#f1913e', frameWidth:'2', bg:'#fffaf4', top:'true', bottom:'false', left:'false', right:'false', topColor:'#f1913e', bottomColor:'#cc6f1e', leftColor:'#f1913e', rightColor:'#f1913e'},
-        green:     {show:'true', title:'LAGER', titleColor:'#2baa72', titleStyle:'pill', titleAlign:'center', frame:'true', radius:'16', frameColor:'#2baa72', frameWidth:'2', bg:'#f8fff9', top:'true', bottom:'false', left:'false', right:'false', topColor:'#2baa72', bottomColor:'#16814f', leftColor:'#2baa72', rightColor:'#2baa72'},
-        topBottom: {show:'true', title:'BARCODE', titleColor:'#ffffff', titleStyle:'bar', titleAlign:'center', frame:'true', radius:'16', frameColor:'#102033', frameWidth:'2', bg:'#ffffff', top:'true', bottom:'true', left:'false', right:'false', topColor:'#102033', bottomColor:'#102033', leftColor:'#102033', rightColor:'#102033'},
-        leftRight: {show:'false', title:'', titleColor:'#102033', titleStyle:'plain', titleAlign:'center', frame:'true', radius:'10', frameColor:'#102033', frameWidth:'2', bg:'#ffffff', top:'false', bottom:'false', left:'true', right:'true', topColor:'#102033', bottomColor:'#102033', leftColor:'#f1913e', rightColor:'#2f8edf'},
-        fullFrame: {show:'true', title:'ARTIKEL', titleColor:'#102033', titleStyle:'plain', titleAlign:'center', frame:'true', radius:'0', frameColor:'#102033', frameWidth:'4', bg:'#ffffff', top:'false', bottom:'false', left:'false', right:'false', topColor:'#102033', bottomColor:'#102033', leftColor:'#102033', rightColor:'#102033'},
-        softCard:  {show:'true', title:'SCAN ME', titleColor:'#5b6f83', titleStyle:'plain', titleAlign:'center', frame:'true', radius:'24', frameColor:'#9fb2c5', frameWidth:'1', bg:'#f7fbff', top:'false', bottom:'false', left:'false', right:'false', topColor:'#9fb2c5', bottomColor:'#9fb2c5', leftColor:'#9fb2c5', rightColor:'#9fb2c5'},
-        warning:   {show:'true', title:'ACHTUNG', titleColor:'#c2413a', titleStyle:'pill', titleAlign:'center', frame:'true', radius:'12', frameColor:'#c2413a', frameWidth:'2', bg:'#fff7f7', top:'true', bottom:'false', left:'false', right:'false', topColor:'#c2413a', bottomColor:'#8f1f1a', leftColor:'#c2413a', rightColor:'#c2413a'},
-        dark:      {show:'true', title:'BARCODE', titleColor:'#ffffff', titleStyle:'bar', titleAlign:'center', frame:'true', radius:'16', frameColor:'#102033', frameWidth:'3', bg:'#ffffff', top:'true', bottom:'false', left:'false', right:'false', topColor:'#102033', bottomColor:'#102033', leftColor:'#102033', rightColor:'#102033'}
-      };
-      const p = presets[tpl];
+        plain:     {show:'false', title:'', titleColor:'#102033', titleStyle:'plain', titleAlign:'center', frame:'true', shape:'rounded', radius:'16', frameColor:'#cbd9e6', frameWidth:'1', bg:'#ffffff', top:'false', bottom:'false', left:'false', right:'false', topColor:'#2f8edf', bottomColor:'#f1913e', leftColor:'#102033', rightColor:'#102033', barcodeSize:'balanced', format:'normal', density:'balanced', barHeight:'16', sideWidth:'12'},
+        blue:      {show:'true', title:'SCAN ME', titleColor:'#2f8edf', titleStyle:'pill', titleAlign:'center', frame:'true', shape:'rounded', radius:'16', frameColor:'#2f8edf', frameWidth:'2', bg:'#f7fbff', top:'true', bottom:'false', left:'false', right:'false', topColor:'#2f8edf', bottomColor:'#2f8edf', leftColor:'#2f8edf', rightColor:'#2f8edf', barcodeSize:'balanced', format:'normal', density:'balanced', barHeight:'22', sideWidth:'12'},
+        orange:    {show:'true', title:'WARENSCHMIEDE', titleColor:'#f1913e', titleStyle:'pill', titleAlign:'center', frame:'true', shape:'rounded', radius:'16', frameColor:'#f1913e', frameWidth:'2', bg:'#fffaf4', top:'true', bottom:'false', left:'false', right:'false', topColor:'#f1913e', bottomColor:'#cc6f1e', leftColor:'#f1913e', rightColor:'#f1913e', barcodeSize:'balanced', format:'normal', density:'balanced', barHeight:'22', sideWidth:'12'},
+        green:     {show:'true', title:'LAGER', titleColor:'#2baa72', titleStyle:'pill', titleAlign:'center', frame:'true', shape:'rounded', radius:'16', frameColor:'#2baa72', frameWidth:'2', bg:'#f8fff9', top:'true', bottom:'false', left:'false', right:'false', topColor:'#2baa72', bottomColor:'#16814f', leftColor:'#2baa72', rightColor:'#2baa72', barcodeSize:'large', format:'normal', density:'scan', barHeight:'22', sideWidth:'12'},
+        topBottom: {show:'true', title:'BARCODE', titleColor:'#ffffff', titleStyle:'bar', titleAlign:'center', frame:'true', shape:'rounded', radius:'16', frameColor:'#102033', frameWidth:'2', bg:'#ffffff', top:'true', bottom:'true', left:'false', right:'false', topColor:'#102033', bottomColor:'#102033', leftColor:'#102033', rightColor:'#102033', barcodeSize:'large', format:'compact', density:'scan', barHeight:'16', sideWidth:'12'},
+        leftRight: {show:'false', title:'', titleColor:'#102033', titleStyle:'plain', titleAlign:'center', frame:'true', shape:'rounded', radius:'10', frameColor:'#102033', frameWidth:'2', bg:'#ffffff', top:'false', bottom:'false', left:'true', right:'true', topColor:'#102033', bottomColor:'#102033', leftColor:'#f1913e', rightColor:'#2f8edf', barcodeSize:'balanced', format:'normal', density:'balanced', barHeight:'16', sideWidth:'12'},
+        fullFrame: {show:'true', title:'ARTIKEL', titleColor:'#102033', titleStyle:'plain', titleAlign:'center', frame:'true', shape:'square', radius:'0', frameColor:'#102033', frameWidth:'4', bg:'#ffffff', top:'false', bottom:'false', left:'false', right:'false', topColor:'#102033', bottomColor:'#102033', leftColor:'#102033', rightColor:'#102033', barcodeSize:'large', format:'normal', density:'scan', barHeight:'16', sideWidth:'12'},
+        softCard:  {show:'true', title:'SCAN ME', titleColor:'#5b6f83', titleStyle:'plain', titleAlign:'center', frame:'true', shape:'pill', radius:'24', frameColor:'#9fb2c5', frameWidth:'1', bg:'#f7fbff', top:'false', bottom:'false', left:'false', right:'false', topColor:'#9fb2c5', bottomColor:'#9fb2c5', leftColor:'#9fb2c5', rightColor:'#9fb2c5', barcodeSize:'balanced', format:'normal', density:'comfortable', barHeight:'16', sideWidth:'12'},
+        warning:   {show:'true', title:'ACHTUNG', titleColor:'#c2413a', titleStyle:'pill', titleAlign:'center', frame:'true', shape:'rounded', radius:'12', frameColor:'#c2413a', frameWidth:'2', bg:'#fff7f7', top:'true', bottom:'false', left:'false', right:'false', topColor:'#c2413a', bottomColor:'#8f1f1a', leftColor:'#c2413a', rightColor:'#c2413a', barcodeSize:'large', format:'normal', density:'scan', barHeight:'22', sideWidth:'12'},
+        dark:      {show:'true', title:'BARCODE', titleColor:'#ffffff', titleStyle:'bar', titleAlign:'center', frame:'true', shape:'rounded', radius:'16', frameColor:'#102033', frameWidth:'3', bg:'#ffffff', top:'true', bottom:'false', left:'false', right:'false', topColor:'#102033', bottomColor:'#102033', leftColor:'#102033', rightColor:'#102033', barcodeSize:'large', format:'normal', density:'scan', barHeight:'22', sideWidth:'12'},
+        factory:   {show:'true', title:'WERKSTATT', titleColor:'#ffffff', titleStyle:'bar', titleAlign:'left', frame:'true', shape:'square', radius:'0', frameColor:'#334155', frameWidth:'3', bg:'#f8fafc', top:'true', bottom:'true', left:'false', right:'false', topColor:'#334155', bottomColor:'#94a3b8', leftColor:'#334155', rightColor:'#334155', barcodeSize:'large', format:'wide', density:'scan', barHeight:'22', sideWidth:'12'},
+        premium:   {show:'true', title:'PREMIUM', titleColor:'#ffffff', titleStyle:'bar', titleAlign:'center', frame:'true', shape:'rounded', radius:'18', frameColor:'#b7791f', frameWidth:'3', bg:'#fffaf0', top:'true', bottom:'true', left:'false', right:'false', topColor:'#b7791f', bottomColor:'#2d3748', leftColor:'#b7791f', rightColor:'#b7791f', barcodeSize:'balanced', format:'normal', density:'balanced', barHeight:'22', sideWidth:'12'},
+        quality:   {show:'true', title:'GEPRÜFT', titleColor:'#ffffff', titleStyle:'bar', titleAlign:'center', frame:'true', shape:'cut', radius:'8', frameColor:'#16814f', frameWidth:'3', bg:'#f0fff4', top:'true', bottom:'false', left:'true', right:'false', topColor:'#16814f', bottomColor:'#16814f', leftColor:'#16814f', rightColor:'#16814f', barcodeSize:'large', format:'compact', density:'scan', barHeight:'20', sideWidth:'10'},
+        shipping:  {show:'true', title:'VERSAND', titleColor:'#ffffff', titleStyle:'bar', titleAlign:'left', frame:'true', shape:'file', radius:'10', frameColor:'#7c3aed', frameWidth:'2', bg:'#fbf8ff', top:'true', bottom:'false', left:'false', right:'true', topColor:'#7c3aed', bottomColor:'#7c3aed', leftColor:'#7c3aed', rightColor:'#f1913e', barcodeSize:'large', format:'wide', density:'scan', barHeight:'22', sideWidth:'14'},
+        fileTag:   {show:'true', title:'DATEI', titleColor:'#102033', titleStyle:'plain', titleAlign:'left', frame:'true', shape:'file', radius:'8', frameColor:'#64748b', frameWidth:'2', bg:'#f8fafc', top:'false', bottom:'false', left:'true', right:'false', topColor:'#64748b', bottomColor:'#64748b', leftColor:'#64748b', rightColor:'#64748b', barcodeSize:'balanced', format:'wide', density:'balanced', barHeight:'16', sideWidth:'14'},
+        serial:    {show:'true', title:'S/N', titleColor:'#102033', titleStyle:'plain', titleAlign:'right', frame:'true', shape:'square', radius:'0', frameColor:'#102033', frameWidth:'2', bg:'#ffffff', top:'false', bottom:'true', left:'false', right:'false', topColor:'#102033', bottomColor:'#102033', leftColor:'#102033', rightColor:'#102033', barcodeSize:'max', format:'compact', density:'many', barHeight:'10', sideWidth:'8'},
+        cornerFlag:{show:'true', title:'INFO', titleColor:'#f1913e', titleStyle:'pill', titleAlign:'right', frame:'true', shape:'rounded', radius:'18', frameColor:'#f1913e', frameWidth:'2', bg:'#fffaf4', top:'false', bottom:'false', left:'true', right:'false', topColor:'#f1913e', bottomColor:'#f1913e', leftColor:'#f1913e', rightColor:'#f1913e', barcodeSize:'balanced', format:'normal', density:'balanced', barHeight:'16', sideWidth:'18'},
+        ticket:    {show:'true', title:'TICKET', titleColor:'#ffffff', titleStyle:'bar', titleAlign:'center', frame:'true', shape:'ticket', radius:'18', frameColor:'#2563eb', frameWidth:'2', bg:'#ffffff', top:'true', bottom:'true', left:'false', right:'false', topColor:'#2563eb', bottomColor:'#f1913e', leftColor:'#2563eb', rightColor:'#2563eb', barcodeSize:'balanced', format:'wide', density:'balanced', barHeight:'20', sideWidth:'12'}
+      };      const p = presets[tpl];
       if(!p) return;
       setDesignValue('showLabelTitle', p.show);
       setDesignValue('labelTitleText', p.title);
@@ -1701,6 +1728,7 @@ WS-B001</textarea>
       setDesignValue('labelTitleStyle', p.titleStyle);
       setDesignValue('labelTitleAlign', p.titleAlign || 'center');
       setDesignValue('labelFrameEnabled', p.frame);
+      setDesignValue('labelShape', p.shape || 'rounded');
       setDesignValue('labelFrameRadius', p.radius);
       setDesignValue('labelFrameColorText', p.frameColor); setDesignValue('labelFrameColor', p.frameColor);
       setDesignValue('labelFrameWidth', p.frameWidth);
@@ -1711,7 +1739,11 @@ WS-B001</textarea>
       setDesignValue('labelLeftBarColorText', p.leftColor); setDesignValue('labelLeftBarColor', p.leftColor);
       setDesignValue('labelRightBarColorText', p.rightColor); setDesignValue('labelRightBarColor', p.rightColor);
       setDesignValue('labelValueText', 'false');
-      setDesignValue('labelBarcodeSize', 'balanced');
+      setDesignValue('labelBarcodeSize', p.barcodeSize || 'balanced');
+      setDesignValue('labelFormat', p.format || 'normal');
+      setDesignValue('labelDensity', p.density || 'balanced');
+      setDesignValue('labelBarHeight', p.barHeight || '16');
+      setDesignValue('labelSideBarWidth', p.sideWidth || '12');
       buildList();
       generate();
       updateLoadedVersionLiveSoon();
@@ -1719,7 +1751,7 @@ WS-B001</textarea>
     }
     function createLabelCell(item, design = labelDesign(), preview = false){
       const cell = document.createElement('div');
-      cell.className = 'label-cell ' + templateClass(design.template) + ' label-barcode-' + (design.barcodeSize || 'balanced') + ' label-format-' + (design.labelFormat || 'normal') + ' label-density-' + (design.labelDensity || 'balanced');
+      cell.className = 'label-cell ' + templateClass(design.template) + ' label-barcode-' + (design.barcodeSize || 'balanced') + ' label-format-' + (design.labelFormat || 'normal') + ' label-density-' + (design.labelDensity || 'balanced') + ' label-shape-' + (design.labelShape || 'rounded');
       cell.style.setProperty('--label-accent', design.titleColor);
       if(design.manualHeight && design.manualHeight !== 'auto') cell.style.minHeight = design.manualHeight + 'px';
       cell.style.setProperty('--label-bg', design.bgColor);
@@ -2004,6 +2036,7 @@ WS-B001</textarea>
           labelTitleAlign: getValue('labelTitleAlign'),
           labelValueText: getValue('labelValueText'),
           labelFrameEnabled: getValue('labelFrameEnabled'),
+          labelShape: getValue('labelShape'),
           labelFrameRadius: getValue('labelFrameRadius'),
           labelFrameColor: getValue('labelFrameColorText'),
           labelFrameWidth: getValue('labelFrameWidth'),
@@ -2102,6 +2135,7 @@ WS-B001</textarea>
       setValue('labelTitleAlign', state.layout?.labelTitleAlign || 'center');
       setValue('labelValueText', state.layout?.labelValueText || 'false');
       setValue('labelFrameEnabled', state.layout?.labelFrameEnabled || 'true');
+      setValue('labelShape', state.layout?.labelShape || 'rounded');
       setValue('labelFrameRadius', state.layout?.labelFrameRadius || '16');
       setValue('labelFrameColorText', state.layout?.labelFrameColor || '#102033'); setValue('labelFrameColor', state.layout?.labelFrameColor || '#102033');
       setValue('labelFrameWidth', state.layout?.labelFrameWidth || '2');
