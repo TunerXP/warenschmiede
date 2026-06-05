@@ -226,6 +226,12 @@
     .help-dot[data-tip]:hover:after,.help-dot[data-tip]:focus:after{content:attr(data-tip);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);z-index:160;width:min(330px,76vw);padding:12px 13px;border-radius:14px;border:1px solid color-mix(in srgb,var(--blue) 24%,var(--line));background:linear-gradient(145deg,var(--paper),var(--paper-soft));box-shadow:0 22px 62px -34px rgba(15,23,42,.9);color:var(--text);font-size:.78rem;font-weight:760;line-height:1.45;text-align:left;letter-spacing:0;text-transform:none;white-space:normal}
     .help-dot[data-tip]:hover:before,.help-dot[data-tip]:focus:before{content:"";position:absolute;left:calc(100% + 3px);top:50%;transform:translateY(-50%) rotate(45deg);width:12px;height:12px;background:var(--paper);border-left:1px solid color-mix(in srgb,var(--blue) 24%,var(--line));border-bottom:1px solid color-mix(in srgb,var(--blue) 24%,var(--line));z-index:161}
     @media(max-width:760px){.help-dot[data-tip]:hover:after,.help-dot[data-tip]:focus:after{left:auto;right:0;top:130%;transform:none}.help-dot[data-tip]:hover:before,.help-dot[data-tip]:focus:before{display:none}}
+
+    .cut-mode-hint{border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));background:color-mix(in srgb,var(--blue) 5%,var(--paper));border-left:4px solid var(--blue);border-radius:16px;padding:11px 12px;color:var(--muted);font-size:.84rem;line-height:1.45}
+    .cut-mode-hint b{color:var(--text)}
+    .is-disabled-field{opacity:.55}
+    input:disabled, select:disabled{cursor:not-allowed;background:color-mix(in srgb,var(--paper-soft) 82%,var(--paper));color:color-mix(in srgb,var(--muted) 74%,transparent)}
+    .metric small.metric-sub{display:block;color:var(--muted);font-size:.72rem;font-weight:750;margin-top:2px}
     .cnc-display{margin-top:14px;border-radius:22px;padding:16px;border:1px solid color-mix(in srgb,var(--blue) 24%,var(--line));background:linear-gradient(145deg,#0c1726,#16273a);color:#dff7ff;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 18px 42px -36px rgba(15,23,42,.9);font-family:var(--mono)}
     [data-theme="dark"] .cnc-display{background:linear-gradient(145deg,#07101c,#101f31)}
     .cnc-screen-head{display:flex;justify-content:space-between;gap:12px;color:#65e7ff;font-size:.72rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
@@ -390,21 +396,22 @@
           <div class="panel-head"><p class="eyebrow">Schnittdaten</p><h3>Drehzahl & Vorschub</h3><p>Material wählen, Richtwerte laden und direkt rechnen.</p></div>
           <div class="panel-body form-grid">
             <div class="row">
-              <div><label>Material</label><select id="cutMat"><option value="steel">Stahl allgemein</option><option value="inox">Edelstahl / VA</option><option value="alu">Aluminium</option><option value="plastic">Kunststoff</option><option value="cast">Guss</option></select></div>
-              <div><label>Bearbeitung</label><select id="cutOp"><option value="drill">Bohren</option><option value="millRough">Fräsen Schruppen</option><option value="millFinish">Fräsen Schlichten</option><option value="turn">Drehen</option></select></div>
+              <div><label>Material <span class="help-dot" tabindex="0" data-tip="Das Material lädt nur typische Startwerte für vc und Vorschub. Die Formel rechnet danach mit den Zahlen, die in den Feldern stehen. Für echte Arbeit sind Werkzeugherstellerdaten genauer.">?</span></label><select id="cutMat"><option value="steel">Stahl allgemein</option><option value="inox">Edelstahl / VA</option><option value="alu">Aluminium</option><option value="plastic">Kunststoff</option><option value="cast">Guss</option></select></div>
+              <div><label>Bearbeitung <span class="help-dot" tabindex="0" data-tip="Bohren, Fräsen und Drehen brauchen unterschiedliche Eingaben. Beim Bohren ist z fest auf 2 und ae wird nicht gebraucht. Beim Fräsen sind z, ap und ae wichtig.">?</span></label><select id="cutOp"><option value="drill">Bohren</option><option value="millRough">Fräsen Schruppen</option><option value="millFinish">Fräsen Schlichten</option><option value="turn">Drehen</option></select></div>
             </div>
             <button class="btn btn-blue" type="button" onclick="loadCutPreset()">⚡ Richtwerte laden</button>
+            <div class="cut-mode-hint" id="cutModeHint"><b>Bohren:</b> Für normale Bohrer rechnet das Tool mit 2 Schneiden, Vorschub in mm/U und ohne Schnittbreite ae.</div>
             <div class="row">
               <div><label>Werkzeug-Ø d [mm] <span class="help-dot" tabindex="0" data-tip="d ist der Werkzeugdurchmesser. Er wirkt direkt auf die Drehzahl: kleiner Durchmesser = höhere Drehzahl bei gleicher Schnittgeschwindigkeit.">?</span></label><input id="cutD" type="number" value="10" step="0.1"></div>
               <div><label>Schnittgeschw. vc [m/min] <span class="help-dot" tabindex="0" data-tip="vc ist die Schnittgeschwindigkeit am Werkzeugumfang. Herstellerdaten sind genauer; Richtwerte im Tool sind nur Startwerte.">?</span></label><input id="cutVc" type="number" value="120" step="1"></div>
             </div>
             <div class="row">
-              <div><label>Zähnezahl z <span class="help-dot" tabindex="0" data-tip="z ist die Anzahl aktiver Schneiden/Zähne. Beim Fräser meist 2, 3, 4 oder mehr. Beim Bohren hier meist 2 als Näherung.">?</span></label><input id="cutZ" type="number" value="4" step="1"></div>
-              <div><label>Vorschub/Zahn fz [mm] <span class="help-dot" tabindex="0" data-tip="fz ist der Vorschub pro Schneide. Zusammen mit Zähnezahl und Drehzahl ergibt sich die Vorschubgeschwindigkeit vf.">?</span></label><input id="cutFz" type="number" value="0.05" step="0.01"></div>
+              <div id="cutZField"><label id="cutZLabel">Zähnezahl z <span class="help-dot" tabindex="0" data-tip="z ist die Anzahl aktiver Schneiden/Zähne. Beim Bohren wird dieser Wert automatisch auf 2 festgesetzt. Beim Fräsen gibst du die echte Schneidenzahl des Fräsers ein.">?</span></label><input id="cutZ" type="number" value="2" step="1"></div>
+              <div><label id="cutFeedLabel">Vorschub f [mm/U] <span class="help-dot" tabindex="0" data-tip="Beim Bohren ist das der Vorschub pro Umdrehung. Beim Fräsen wird daraus Vorschub pro Zahn fz. Der fertige Maschinenwert ist F bzw. vf in mm/min.">?</span></label><input id="cutFz" type="number" value="0.10" step="0.01"></div>
             </div>
             <div class="row">
-              <div><label>Schnitttiefe ap [mm] <span class="help-dot" tabindex="0" data-tip="ap ist die Tiefe des Eingriffs. Zusammen mit ae und vf ergibt sich das Zeitspanvolumen Q. Für reine Drehzahl/Vorschub-Berechnung kann ap leer bleiben.">?</span></label><input id="cutAp" type="number" placeholder="optional" step="0.1"></div>
-              <div><label>Schnittbreite ae [mm] <span class="help-dot" tabindex="0" data-tip="ae ist die Breite des Eingriffs. Nur nötig, wenn du Q/Zeitspanvolumen grob abschätzen willst.">?</span></label><input id="cutAe" type="number" placeholder="optional" step="0.1"></div>
+              <div><label id="cutApLabel">Bohrtiefe / Tiefe [mm] <span class="help-dot" tabindex="0" data-tip="Beim Bohren ist das die Bohrtiefe. Daraus kann das Tool grob die Bohrzeit berechnen. Beim Fräsen ist ap die Schnitttiefe für das Zeitspanvolumen Q.">?</span></label><input id="cutAp" type="number" placeholder="optional" step="0.1"></div>
+              <div id="cutAeField"><label id="cutAeLabel">Schnittbreite ae [mm] <span class="help-dot" tabindex="0" data-tip="ae ist die seitliche Eingriffsbreite beim Fräsen. Beim Bohren wird ae nicht verwendet, weil der Bohrer mit seiner Kreisfläche arbeitet.">?</span></label><input id="cutAe" type="number" placeholder="optional" step="0.1"></div>
             </div>
             <div><label>Notiz / Auftrag optional</label><input id="cutNote" type="text" placeholder="z.B. Fräser Ø10, 1.7131, Nut schruppen"></div>
             <div class="row">
@@ -431,7 +438,8 @@
               </div>
               <div class="result-list">
                 <div class="metric"><span>Vorschubgeschwindigkeit vf</span><strong><span id="cutVf">764</span> mm/min</strong></div>
-                <div class="metric"><span>Zeitspanvolumen Q</span><strong><span id="cutQ">--</span> cm³/min</strong></div>
+                <div class="metric"><span id="cutQLabel">Zeitspanvolumen Q</span><strong><span id="cutQ">--</span> cm³/min</strong></div>
+                <div class="metric" id="cutTimeMetric"><span id="cutTimeLabel">Bohrzeit grob</span><strong><span id="cutTime">--</span></strong></div>
                 <div class="metric"><span>Praxis-Check</span><strong id="cutWarn" class="good">Startwert plausibel</strong></div>
               </div>
               <div class="help-under"><b>Was bedeutet Praxis-Check?</b> Das Tool prüft nur grob auf auffällige Drehzahl oder Vorschubwerte. Grün heißt nicht „freigegeben“, sondern: als Startwert wirkt es nicht sofort auffällig. Herstellerdaten, Werkzeuglänge, Spannung und Materialzustand bleiben entscheidend.</div>
@@ -810,25 +818,68 @@ function openTab(id){
   history.replaceState(null,"","#"+id);
   setTimeout(()=>window.scrollTo({top:0,behavior:"smooth"}),30);
 }
+function updateCutModeUI(){
+  const op=$("cutOp")?.value || "drill";
+  const zField=$("cutZField"), aeField=$("cutAeField"), zInput=$("cutZ"), aeInput=$("cutAe"), apLabel=$("cutApLabel"), feedLabel=$("cutFeedLabel"), hint=$("cutModeHint");
+  if(!zInput || !aeInput) return;
+  if(op==="drill"){
+    zInput.value=2; zInput.disabled=true; zField?.classList.add("is-disabled-field");
+    aeInput.value=""; aeInput.disabled=true; aeField?.classList.add("is-disabled-field");
+    if(feedLabel) feedLabel.innerHTML='Vorschub f [mm/U] <span class="help-dot" tabindex="0" data-tip="Beim Bohren ist f der Vorschub pro Umdrehung. Daraus wird F = n × f. Die Schneidenzahl bleibt fest 2 und wird nicht zur Vorschubformel addiert.">?</span>';
+    if(apLabel) apLabel.innerHTML='Bohrtiefe [mm] <span class="help-dot" tabindex="0" data-tip="Die Bohrtiefe nutzt das Tool nur für eine grobe Bohrzeit. Für reine Drehzahl und Vorschub kann das Feld leer bleiben.">?</span>';
+    if(hint) hint.innerHTML='<b>Bohren:</b> normale Spiralbohrer haben meist 2 Schneiden. Du brauchst Ø d, vc und Vorschub f in mm/U. Schnittbreite ae wird beim Bohren nicht gebraucht.';
+  } else if(op==="turn"){
+    zInput.value=1; zInput.disabled=true; zField?.classList.add("is-disabled-field");
+    aeInput.value=""; aeInput.disabled=true; aeField?.classList.add("is-disabled-field");
+    if(feedLabel) feedLabel.innerHTML='Vorschub f [mm/U] <span class="help-dot" tabindex="0" data-tip="Beim Drehen ist f der Vorschub pro Umdrehung. Daraus wird F = n × f. Die Zähnezahl wird nicht benötigt.">?</span>';
+    if(apLabel) apLabel.innerHTML='Zustellung ap [mm] <span class="help-dot" tabindex="0" data-tip="Beim Drehen ist ap die Zustellung/Schnitttiefe. Das Tool nutzt sie hier nur als Zusatzinfo, nicht für eine vollständige Dreh-Leistungsberechnung.">?</span>';
+    if(hint) hint.innerHTML='<b>Drehen:</b> hier zählt Vorschub f in mm/U. Das Tool zeigt einen schnellen Drehzahl-/Vorschubwert, ersetzt aber keine detaillierte Drehdatenbank.';
+  } else {
+    zInput.disabled=false; zField?.classList.remove("is-disabled-field");
+    aeInput.disabled=false; aeField?.classList.remove("is-disabled-field");
+    if(feedLabel) feedLabel.innerHTML='Vorschub/Zahn fz [mm] <span class="help-dot" tabindex="0" data-tip="Beim Fräsen ist fz der Vorschub pro Schneide/Zahn. Formel: vf = n × z × fz.">?</span>';
+    if(apLabel) apLabel.innerHTML='Schnitttiefe ap [mm] <span class="help-dot" tabindex="0" data-tip="ap ist die Tiefe des Eingriffs. Zusammen mit ae und vf ergibt sich das Zeitspanvolumen Q.">?</span>';
+    if(hint) hint.innerHTML='<b>Fräsen:</b> du brauchst Ø d, vc, Schneidenzahl z und fz. Für Zeitspanvolumen Q zusätzlich ap und ae eintragen.';
+  }
+}
 function calcSchnitt(){
+  updateCutModeUI();
+  const op=$("cutOp")?.value || "drill";
   const d=num("cutD"), vc=num("cutVc"), z=num("cutZ"), fz=num("cutFz"), ap=num("cutAp"), ae=num("cutAe");
-  const n=d>0?(vc*1000)/(Math.PI*d):0, vf=n*z*fz, q=ap>0&&ae>0?(ap*ae*vf)/1000:0;
-  setText("cutN",round(n,0)); setText("cutVf",round(vf,0)); setText("cutQ",q?round(q,1):"--");
+  const n=d>0?(vc*1000)/(Math.PI*d):0;
+  let vf=0, q=0, extra="--";
+  if(op==="drill"){
+    vf=n*fz;
+    q=d>0 ? (Math.PI*Math.pow(d,2)/4*vf)/1000 : 0;
+    extra=(ap>0 && vf>0) ? round((ap/vf)*60,1)+" s" : "--";
+    setText("cutQLabel","Spanvolumen Bohren Q"); setText("cutTimeLabel","Bohrzeit grob");
+  } else if(op==="turn"){
+    vf=n*fz;
+    q=0;
+    extra="--";
+    setText("cutQLabel","Zeitspanvolumen Q"); setText("cutTimeLabel","Zusatzwert");
+  } else {
+    vf=n*z*fz;
+    q=ap>0&&ae>0?(ap*ae*vf)/1000:0;
+    extra="--";
+    setText("cutQLabel","Zeitspanvolumen Q"); setText("cutTimeLabel","Zusatzwert");
+  }
+  setText("cutN",round(n,0)); setText("cutVf",round(vf,0)); setText("cutQ",q?round(q,1):"--"); setText("cutTime",extra);
   setText("cncS",round(n,0)); setText("cncF",round(vf,0)); setText("cncVc",round(vc,0)); setText("cncD",round(d,1).replace(".0", ""));
-  const op=$("cutOp")?.value || ""; setText("cncMode", op==="turn" ? "DREHEN" : (op==="drill" ? "BOHREN" : "FRÄSEN"));
-  const w=$("cutWarn"); w.className=""; 
+  setText("cncMode", op==="turn" ? "DREHEN" : (op==="drill" ? "BOHREN" : "FRÄSEN"));
+  const w=$("cutWarn"); w.className="";
   if(n>20000){w.textContent="Achtung: Drehzahl sehr hoch";w.classList.add("bad")} else if(vf>3000){w.textContent="Achtung: Vorschub hoch";w.classList.add("warn")} else {w.textContent="Startwert plausibel";w.classList.add("good")}
 }
 function loadCutPreset(){
   const data={
-    steel:{drill:[25,.1,2],millRough:[120,.05,4],millFinish:[180,.03,4],turn:[160,.12,1]},
+    steel:{drill:[25,.10,2],millRough:[120,.05,4],millFinish:[180,.03,4],turn:[160,.12,1]},
     inox:{drill:[15,.08,2],millRough:[80,.04,4],millFinish:[120,.03,4],turn:[90,.10,1]},
-    alu:{drill:[80,.2,2],millRough:[400,.1,3],millFinish:[600,.08,3],turn:[450,.18,1]},
-    plastic:{drill:[60,.2,2],millRough:[300,.15,2],millFinish:[400,.10,2],turn:[250,.15,1]},
-    cast:{drill:[22,.1,2],millRough:[110,.06,4],millFinish:[150,.04,4],turn:[130,.14,1]}
+    alu:{drill:[80,.18,2],millRough:[400,.10,3],millFinish:[600,.08,3],turn:[450,.18,1]},
+    plastic:{drill:[60,.18,2],millRough:[300,.15,2],millFinish:[400,.10,2],turn:[250,.15,1]},
+    cast:{drill:[22,.10,2],millRough:[110,.06,4],millFinish:[150,.04,4],turn:[130,.14,1]}
   };
   const p=data[$("cutMat").value][$("cutOp").value];
-  $("cutVc").value=p[0]; $("cutFz").value=p[1]; $("cutZ").value=p[2]; calcSchnitt(); toast("Richtwerte geladen");
+  $("cutVc").value=p[0]; $("cutFz").value=p[1]; $("cutZ").value=p[2]; updateCutModeUI(); calcSchnitt(); toast("Richtwerte geladen");
 }
 function calcTol(){
   const d=num("tolDim"), cls=$("tolClass").value;
