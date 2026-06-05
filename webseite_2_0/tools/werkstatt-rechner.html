@@ -514,8 +514,13 @@
           <div class="info-card-body">
             <div class="row">
               <div><label>Projektname</label><input id="cutProjectName" type="text" placeholder="z.B. Schiene Muster0815"></div>
-              <div><label>Projekt-Nr. / Kunde</label><input id="cutProjectRef" type="text" placeholder="optional"></div>
+              <div><label>Projekt-Nr.</label><input id="cutProjectRef" type="text" placeholder="z.B. 118001"></div>
             </div>
+            <div class="row">
+              <div><label>Auftrags-Nr.</label><input id="cutOrderNo" type="text" placeholder="optional"></div>
+              <div><label>Zeichnungs-Nr.</label><input id="cutDrawingNo" type="text" placeholder="optional"></div>
+            </div>
+            <div><label>Kunde</label><input id="cutCustomer" type="text" placeholder="z.B. Muster Firma GmbH"></div>
             <div><label>Projektbeschreibung</label><textarea id="cutProjectDesc" placeholder="Kurzbeschreibung, Maschine, Material, Hinweise …"></textarea></div>
             <div class="tool-basket-actions">
               <button class="btn btn-green btn-small" type="button" onclick="saveCutProject()">Projekt speichern</button>
@@ -1245,7 +1250,18 @@ function renderToolBasket(showEmpty=true){
   if(empty) empty.style.display=cutTools.length?"none":"block";
 }
 function escapeHtml(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]))}
-function currentProjectPayload(){return {id:activeProjectId||("proj_"+Date.now()),name:($("cutProjectName")?.value||"Unbenanntes Projekt").trim(),ref:($("cutProjectRef")?.value||"").trim(),description:($("cutProjectDesc")?.value||"").trim(),tools:cutTools,updated:new Date().toISOString(),version:"Werkstatt-Rechner Metall Plus v12"}}
+function currentProjectPayload(){return {
+  id:activeProjectId||("proj_"+Date.now()),
+  name:($("cutProjectName")?.value||"Unbenanntes Projekt").trim(),
+  ref:($("cutProjectRef")?.value||"").trim(),
+  orderNo:($("cutOrderNo")?.value||"").trim(),
+  drawingNo:($("cutDrawingNo")?.value||"").trim(),
+  customer:($("cutCustomer")?.value||"").trim(),
+  description:($("cutProjectDesc")?.value||"").trim(),
+  tools:cutTools,
+  updated:new Date().toISOString(),
+  version:"Werkstatt-Rechner Metall Plus v14"
+}}
 function saveCutProject(){
   if(!cutTools.length){toast("Erst Werkzeuge in den Korb legen");return}
   const p=currentProjectPayload(); activeProjectId=p.id;
@@ -1256,7 +1272,7 @@ function saveCutProject(){
 function loadCutProject(id){
   const p=projectFolder().find(x=>x.id===id); if(!p) return;
   activeProjectId=p.id; cutTools=Array.isArray(p.tools)?p.tools:[]; activeToolId=null;
-  if($("cutProjectName")) $("cutProjectName").value=p.name||""; if($("cutProjectRef")) $("cutProjectRef").value=p.ref||""; if($("cutProjectDesc")) $("cutProjectDesc").value=p.description||"";
+  if($("cutProjectName")) $("cutProjectName").value=p.name||""; if($("cutProjectRef")) $("cutProjectRef").value=p.ref||""; if($("cutOrderNo")) $("cutOrderNo").value=p.orderNo||""; if($("cutDrawingNo")) $("cutDrawingNo").value=p.drawingNo||""; if($("cutCustomer")) $("cutCustomer").value=p.customer||""; if($("cutProjectDesc")) $("cutProjectDesc").value=p.description||"";
   renderToolBasket(); projectDialog?.close(); toast("Projekt geladen");
 }
 function deleteCutProject(id){
@@ -1267,7 +1283,7 @@ function deleteCutProject(id){
 let selectedProjectDialogId=null;
 function filteredProjects(){
   const q=($("projectSearch")?.value||"").toLowerCase();
-  return projectFolder().filter(p=>((p.name||"")+" "+(p.ref||"")+" "+(p.description||"")+" "+(p.tools||[]).map(t=>(t.t||"")+" "+(t.name||"")).join(" ")).toLowerCase().includes(q));
+  return projectFolder().filter(p=>((p.name||"")+" "+(p.ref||"")+" "+(p.orderNo||"")+" "+(p.drawingNo||"")+" "+(p.customer||"")+" "+(p.description||"")+" "+(p.tools||[]).map(t=>(t.t||"")+" "+(t.name||"")).join(" ")).toLowerCase().includes(q));
 }
 function openProjectDialog(){
   const arr=filteredProjects();
@@ -1288,7 +1304,10 @@ function renderProjectDialog(){
     <div>
       <h3>${escapeHtml(p.name||'Unbenanntes Projekt')}</h3>
       <div class="project-detail-meta">
-        <span class="project-detail-badge">Nr./Kunde: ${escapeHtml(p.ref||'-')}</span>
+        <span class="project-detail-badge">Projekt-Nr.: ${escapeHtml(p.ref||'-')}</span>
+        ${p.orderNo?`<span class="project-detail-badge">Auftrag: ${escapeHtml(p.orderNo)}</span>`:''}
+        ${p.drawingNo?`<span class="project-detail-badge">Zeichnung: ${escapeHtml(p.drawingNo)}</span>`:''}
+        ${p.customer?`<span class="project-detail-badge">Kunde: ${escapeHtml(p.customer)}</span>`:''}
         <span class="project-detail-badge">${tools.length} Werkzeug(e)</span>
         <span class="project-detail-badge">Geändert: ${new Date(p.updated||Date.now()).toLocaleString('de-DE')}</span>
       </div>
@@ -1315,53 +1334,48 @@ function importProjectFolder(ev){
 function printToolSheet(){
   const p=currentProjectPayload();
   if(!p.tools.length){toast("Keine Werkzeuge im Projekt");return}
+  const cell=(label,value)=>`<div class="cell"><b>${label}</b><span>${escapeHtml(value||'-')}</span></div>`;
   const rows=p.tools.map(t=>{
     const v=t.values||{};
-    const main=[
-      `<span><b>T</b>${escapeHtml(t.t||'-')}</span>`,
-      `<span><b>Werkzeug</b>${escapeHtml(t.name||'-')}</span>`,
-      `<span><b>Ø</b>${escapeHtml(t.diameter||'-')} mm</span>`,
-      `<span><b>L</b>${escapeHtml(t.length||'-')} mm</span>`,
-      `<span><b>Beschichtung</b>${escapeHtml(t.coating||'-')}</span>`,
-      `<span><b>Drehzahl</b>${escapeHtml(v.n||'-')} U/min</span>`,
-      `<span><b>Vorschub</b>${escapeHtml(v.vf||'-')} mm/min</span>`,
-      `<span><b>Zeit</b>${escapeHtml(v.time||'-')}</span>`
+    const row1=[
+      cell('T',t.t||'-'), cell('Werkzeug',t.name||'-'), cell('Ø',`${t.diameter||'-'} mm`), cell('Länge',`${t.length||'-'} mm`), cell('Beschichtung',t.coating||'-')
     ].join('');
-    const details=[
-      `<span><b>Material</b>${escapeHtml(t.material||'-')}</span>`,
-      `<span><b>Bearbeitung</b>${escapeHtml(t.op||'-')}</span>`,
-      `<span><b>vc</b>${escapeHtml(v.vc||'-')} m/min</span>`,
-      `<span><b>f/fz</b>${escapeHtml(v.f||'-')}</span>`,
-      `<span><b>z</b>${escapeHtml(v.z||'-')}</span>`,
-      `<span><b>ap/Tiefe</b>${escapeHtml(v.ap||'-')} mm</span>`,
-      `<span><b>ae</b>${escapeHtml(v.ae||'-')} mm</span>`,
-      `<span><b>Q</b>${escapeHtml(v.q||'-')} cm³/min</span>`
+    const row2=[
+      cell('Drehzahl S',`${v.n||'-'} U/min`), cell('Vorschub F',`${v.vf||'-'} mm/min`), cell('Zeit',v.time||'-'), cell('vc',`${v.vc||'-'} m/min`), cell('f / fz',v.f||'-')
     ].join('');
-    return `<article class="tool-print-row"><div class="tool-print-main">${main}</div><div class="tool-print-detail">${details}</div></article>`;
+    const row3=[
+      cell('Bearbeitung',t.op||'-'), cell('z',v.z||'-'), cell('ap / Tiefe',`${v.ap||'-'} mm`), cell('ae',`${v.ae||'-'} mm`), cell('Q',`${v.q||'-'} cm³/min`)
+    ].join('');
+    return `<article class="tool-print-card"><div class="tool-print-line tool-print-line-main">${row1}</div><div class="tool-print-line">${row2}</div><div class="tool-print-line">${row3}</div></article>`;
   }).join('');
+  const metaBits=[];
+  if(p.ref) metaBits.push(`Projekt-Nr.: ${escapeHtml(p.ref)}`);
+  if(p.orderNo) metaBits.push(`Auftrag: ${escapeHtml(p.orderNo)}`);
+  if(p.drawingNo) metaBits.push(`Zeichnung: ${escapeHtml(p.drawingNo)}`);
+  if(p.customer) metaBits.push(`Kunde: ${escapeHtml(p.customer)}`);
   const w=window.open("","_blank"); if(!w) return;
   w.document.write(`<!doctype html><html lang="de"><head><meta charset="utf-8"><title>${escapeHtml(p.name)} Werkzeugblatt</title><style>
-    @page{size:A4 portrait;margin:9mm 9mm 10mm}
+    @page{size:A4 portrait;margin:8mm 8mm 9mm}
     *{box-sizing:border-box}
-    body{font-family:Arial,"Segoe UI",sans-serif;margin:0;color:#111827;background:#fff;font-size:10.4px;line-height:1.25}
-    .print-actions{position:sticky;top:0;background:#fff;padding:8px 0 10px;border-bottom:1px solid #d8e2ee;margin-bottom:10px;display:flex;gap:8px}
+    body{font-family:Arial,"Segoe UI",sans-serif;margin:0;color:#111827;background:#fff;font-size:10.5px;line-height:1.22}
+    .print-actions{position:sticky;top:0;background:#fff;padding:8px 0 10px;border-bottom:1px solid #d8e2ee;margin-bottom:10px;display:flex;gap:8px;z-index:10}
     button{border:1px solid #b8c8d8;background:#0b74c8;color:#fff;border-radius:8px;padding:7px 11px;font-weight:800;cursor:pointer}
+    button.secondary{background:#fff;color:#102033}
     .sheet{width:100%}
-    header{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;border-bottom:2px solid #102033;padding-bottom:7px;margin-bottom:8px}
-    h1{margin:0 0 3px;font-size:18px;letter-spacing:-.02em}.meta{color:#46596b;font-size:10.5px}.badge{border:1px solid #cbd7e5;border-radius:999px;padding:4px 8px;font-weight:800;color:#102033;background:#f5f8fb;white-space:nowrap}
-    .desc{border:1px solid #d6e0eb;background:#f8fbfe;border-radius:8px;padding:7px 9px;margin:0 0 8px;color:#34495e;min-height:26px}
+    header{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;border-bottom:2px solid #102033;padding-bottom:7px;margin-bottom:7px}
+    h1{margin:0 0 4px;font-size:18px;letter-spacing:-.02em}.meta{display:flex;gap:6px;flex-wrap:wrap;color:#46596b;font-size:10px}.meta span{border:1px solid #d6e0eb;background:#f8fbfe;border-radius:999px;padding:3px 7px}.badge{border:1px solid #cbd7e5;border-radius:999px;padding:4px 8px;font-weight:800;color:#102033;background:#f5f8fb;white-space:nowrap}
+    .desc{border:1px solid #d6e0eb;background:#f8fbfe;border-radius:8px;padding:6px 8px;margin:0 0 7px;color:#34495e;min-height:24px}.desc b{display:inline;margin-right:4px}
     .tool-print-list{display:grid;gap:5px}
-    .tool-print-row{border:1px solid #b9c7d6;border-radius:7px;overflow:hidden;break-inside:avoid;page-break-inside:avoid;background:#fff}
-    .tool-print-main,.tool-print-detail{display:grid;grid-template-columns:.42fr 1.5fr .65fr .65fr .9fr .9fr .9fr .72fr;align-items:stretch}
-    .tool-print-main{background:#eef5fb;font-size:10.8px;font-weight:800;color:#102033}
-    .tool-print-detail{background:#fff;color:#3c4d5f;font-size:9.7px;border-top:1px solid #d7e2ee}
-    .tool-print-main span,.tool-print-detail span{padding:4px 5px;border-right:1px solid #d7e2ee;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .tool-print-main span:last-child,.tool-print-detail span:last-child{border-right:0}
-    b{display:block;font-size:7.4px;letter-spacing:.07em;text-transform:uppercase;color:#607286;margin-bottom:1px;line-height:1.05}.tool-print-main b{color:#35506a}
+    .tool-print-card{border:1px solid #b9c7d6;border-radius:7px;overflow:hidden;break-inside:avoid;page-break-inside:avoid;background:#fff}
+    .tool-print-line{display:grid;grid-template-columns:.45fr 1.45fr .65fr .72fr .86fr;align-items:stretch;border-top:1px solid #d7e2ee}
+    .tool-print-line:first-child{border-top:0}.tool-print-line-main{background:#eef5fb;color:#102033;font-weight:850;font-size:10.8px}
+    .cell{padding:4px 5px;border-right:1px solid #d7e2ee;min-width:0;overflow:visible;white-space:normal;word-break:normal}.cell:last-child{border-right:0}
+    b{display:block;font-size:7.2px;letter-spacing:.07em;text-transform:uppercase;color:#607286;margin-bottom:1px;line-height:1.05}.cell span{display:block;font-weight:800;color:#102033}.tool-print-line:not(.tool-print-line-main) .cell span{font-weight:700;color:#3c4d5f;font-size:9.7px}
     footer{margin-top:8px;border-top:1px solid #d8e2ee;padding-top:5px;color:#607286;font-size:9px;display:flex;justify-content:space-between;gap:10px}
-    @media print{.print-actions{display:none}.sheet{page-break-after:auto}body{font-size:10px}.tool-print-row{box-shadow:none}}
-  </style></head><body><div class="print-actions"><button onclick="print()">Drucken / PDF speichern</button><button onclick="close()">Schließen</button></div><main class="sheet"><header><div><h1>Werkzeug-Schnittdatenblatt</h1><div class="meta"><b>Projekt</b>${escapeHtml(p.name||'Unbenannt')} ${p.ref?` · Nr./Kunde: ${escapeHtml(p.ref)}`:''}</div></div><div class="badge">${p.tools.length} Werkzeug(e)</div></header><div class="desc"><b>Beschreibung</b>${escapeHtml(p.description||'Keine Projektbeschreibung hinterlegt.')}</div><section class="tool-print-list">${rows}</section><footer><span>Richtwerte prüfen: Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</span><span>Warenschmiede Werkstatt-Rechner Metall Plus</span></footer></main></body></html>`); w.document.close();
+    @media print{.print-actions{display:none}.sheet{page-break-after:auto}.tool-print-card{box-shadow:none}}
+  </style></head><body><div class="print-actions"><button onclick="window.print();return false;">Drucken / PDF speichern</button><button class="secondary" onclick="window.close();return false;">Schließen</button></div><main class="sheet"><header><div><h1>Werkzeug-Schnittdatenblatt</h1><div class="meta"><span><b>Projekt</b>${escapeHtml(p.name||'Unbenannt')}</span>${metaBits.map(m=>`<span>${m}</span>`).join('')}</div></div><div class="badge">${p.tools.length} Werkzeug(e)</div></header><div class="desc"><b>Beschreibung:</b>${escapeHtml(p.description||'Keine Projektbeschreibung hinterlegt.')}</div><section class="tool-print-list">${rows}</section><footer><span>Richtwerte prüfen: Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</span><span>Warenschmiede Werkstatt-Rechner Metall Plus</span></footer></main></body></html>`); w.document.close();
 }
+
 function saveHistory(type){ if(type==="schnitt") saveToolToBasket(); }
 function renderHistory(){ renderToolBasket(); }
 function copySummary(type){
