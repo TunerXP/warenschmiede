@@ -424,8 +424,10 @@
     .thread-practice-card b,.thread-note-box b{color:var(--text);}
     .thread-result-main{border:1px solid color-mix(in srgb,var(--blue) 20%,var(--line));border-radius:22px;background:radial-gradient(circle at 100% 0%,rgba(249,115,22,.10),transparent 18rem),linear-gradient(145deg,var(--paper-soft),var(--paper));padding:18px;text-align:center;box-shadow:0 16px 38px -32px rgba(15,23,42,.65);}
     .thread-result-main span{display:block;color:var(--muted);font-size:.74rem;font-weight:950;letter-spacing:.09em;text-transform:uppercase;margin-bottom:6px;}
-    .thread-result-main strong{display:block;font-family:var(--mono);font-size:clamp(2.5rem,4.3vw,4.7rem);line-height:.95;color:var(--red);letter-spacing:-.055em;}
-    .thread-result-main small{display:inline-flex;margin-top:10px;border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));background:color-mix(in srgb,var(--blue) 7%,var(--paper));border-radius:999px;padding:6px 10px;color:var(--text);font-weight:900;}
+    .thread-result-main strong{display:flex;justify-content:center;align-items:baseline;gap:12px;font-family:var(--mono);font-size:clamp(3.3rem,5.6vw,6.4rem);line-height:.92;color:var(--red);letter-spacing:-.055em;}
+    .thread-result-main strong .thread-drill-value{display:inline!important;color:inherit!important;font:inherit!important;line-height:inherit!important;margin:0!important;text-transform:none!important;letter-spacing:inherit!important;}
+    .thread-result-main strong .thread-drill-unit{font-size:clamp(1.55rem,2.3vw,2.3rem);line-height:1;color:var(--red);letter-spacing:-.035em;}
+    .thread-result-main small{display:inline-flex;margin-top:12px;border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));background:color-mix(in srgb,var(--blue) 7%,var(--paper));border-radius:999px;padding:7px 12px;color:var(--text);font-weight:900;font-size:.95rem;}
     .thread-meta-grid{display:grid;grid-template-columns:1fr;gap:9px;margin-top:12px;}
     .thread-meta-grid>div{border:1px solid var(--line);border-radius:15px;background:var(--paper-soft);padding:11px 12px;display:flex;justify-content:space-between;gap:10px;align-items:center;}
     .thread-meta-grid span{color:var(--muted);font-size:.74rem;font-weight:950;text-transform:uppercase;letter-spacing:.06em;}
@@ -801,7 +803,7 @@
           <div class="panel-body">
             <div class="thread-result-main">
               <span>Kernloch</span>
-              <strong><span id="threadDrill">5.0</span> mm</strong>
+              <strong><span id="threadDrill" class="thread-drill-value">5.0</span><span class="thread-drill-unit">mm</span></strong>
               <small id="threadRule">M6 · Steigung 1,00 mm</small>
             </div>
             <div class="thread-meta-grid">
@@ -1062,7 +1064,7 @@
 <script src="../assets/js/ws-tool-menu.js" defer></script>
 <script>
 "use strict";
-const TOOL_VERSION = "Werkstatt-Rechner Metall Plus v31";
+const TOOL_VERSION = "Werkstatt-Rechner Metall Plus v32";
 const $=id=>document.getElementById(id);
 const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
 function num(id){return parseFloat($(id)?.value)||0}
@@ -1397,7 +1399,7 @@ function calcThread(){
   setText("threadName",name);
   setText("threadKind",kind.replace("Metrisch Regel (M)","Metrisch Regel"));
   setText("threadPitch",pitch.label);
-  setText("threadRule",`${name} · Steigung ${pitch.label}`);
+  setText("threadRule", threadFormHint() ? `${name} · Schneidwert, für Formen Herstellerdaten` : `${name} · Steigung ${pitch.label}`);
   const practice=$("threadPractice");
   if(practice){
     if(threadFormHint()){practice.innerHTML="<b>Gewindeformen:</b> Der Kernlochbohrer ist meist größer als beim Schneiden. Exakte Werte hängen stark von Material, Former, Schmierung und Hersteller ab. Deshalb hier bewusst nur Hinweis: Herstellerdaten verwenden.";}
@@ -1846,7 +1848,7 @@ function printToolSheet(){
     .muted-small{font-size:.84rem;color:var(--muted);line-height:1.45;}
     @media(max-width:840px){.formula-grid,.term-grid{grid-template-columns:1fr}.cut-info-dialog{max-width:calc(100vw - 16px)}}
 
-  </style></head><body><div class="print-actions"><button onclick="window.print();return false;">Drucken / PDF speichern</button><button class="secondary" onclick="window.close();return false;">Schließen</button></div><main><div class="head-line"><h1>Werkzeug-Schnittdatenblatt</h1><span class="count">${p.tools.length} Werkzeug(e)</span></div><section class="project-grid"><div><b>Projektname</b><br><span>${escapeHtml(p.name||'')}</span></div><div><b>Projekt-Nr.</b><br><span>${escapeHtml(p.ref||'')}</span></div><div><b>Auftrag-Nr.</b><br><span>${escapeHtml(p.orderNo||'')}</span></div><div><b>Zeichnungs-Nr.</b><br><span>${escapeHtml(p.drawingNo||'')}</span></div><div class="wide"><b>Beschreibung</b><br><span>${escapeHtml(p.description||'')}</span></div>${p.customer?`<div class="customer"><b>Kunde</b><br><span>${escapeHtml(p.customer)}</span></div>`:''}</section><div class="tools">${rows}</div><footer><span>Richtwerte prüfen: Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</span><span>Warenschmiede Werkstatt-Rechner Metall Plus v31</span></footer></main></body></html>`);
+  </style></head><body><div class="print-actions"><button onclick="window.print();return false;">Drucken / PDF speichern</button><button class="secondary" onclick="window.close();return false;">Schließen</button></div><main><div class="head-line"><h1>Werkzeug-Schnittdatenblatt</h1><span class="count">${p.tools.length} Werkzeug(e)</span></div><section class="project-grid"><div><b>Projektname</b><br><span>${escapeHtml(p.name||'')}</span></div><div><b>Projekt-Nr.</b><br><span>${escapeHtml(p.ref||'')}</span></div><div><b>Auftrag-Nr.</b><br><span>${escapeHtml(p.orderNo||'')}</span></div><div><b>Zeichnungs-Nr.</b><br><span>${escapeHtml(p.drawingNo||'')}</span></div><div class="wide"><b>Beschreibung</b><br><span>${escapeHtml(p.description||'')}</span></div>${p.customer?`<div class="customer"><b>Kunde</b><br><span>${escapeHtml(p.customer)}</span></div>`:''}</section><div class="tools">${rows}</div><footer><span>Richtwerte prüfen: Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</span><span>Warenschmiede Werkstatt-Rechner Metall Plus v32</span></footer></main></body></html>`);
   w.document.close();
 }
 
