@@ -314,7 +314,7 @@
     .panel{overflow:visible}
     .grid-schnitt{
       display:grid;
-      grid-template-columns:minmax(265px,1.05fr) minmax(235px,.82fr) minmax(250px,.95fr) minmax(280px,1.02fr) minmax(250px,.88fr);
+      grid-template-columns:minmax(280px,.95fr) minmax(230px,.72fr) minmax(255px,.82fr) minmax(360px,1.2fr);
       gap:14px;
       align-items:start;
     }
@@ -387,12 +387,11 @@
     .tool-editor-actions{grid-template-columns:1fr;gap:10px}
     .tool-editor-actions .btn{width:100%;}
     .grid-schnitt>.info-card[aria-label="Werkzeugkorb Schnittdaten"]{order:4}
-    .grid-schnitt>.info-card[aria-label="Schnittdaten Hilfe"]{order:5}
     .compact-result .help-under{font-size:.8rem;padding:12px}
     .info-card-body .row{grid-template-columns:1fr}
     .tool-basket-actions .btn,.tool-basket-actions a{flex:1 1 120px}
-    @media(max-width:1500px){.grid-schnitt{grid-template-columns:repeat(2,minmax(0,1fr));}.grid-schnitt>.info-card[aria-label="Schnittdaten Hilfe"]{grid-column:1 / -1}}
-    @media(max-width:900px){.grid-schnitt{grid-template-columns:1fr}.grid-schnitt>.info-card[aria-label="Schnittdaten Hilfe"]{grid-column:auto}}
+    @media(max-width:1500px){.grid-schnitt{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media(max-width:900px){.grid-schnitt{grid-template-columns:1fr}}
 
 
   </style>
@@ -450,6 +449,7 @@
               <div><label>Bearbeitung <span class="help-dot" tabindex="0" data-tip="Bohren, Fräsen und Drehen brauchen unterschiedliche Eingaben. Beim Bohren ist z fest auf 2 und ae wird nicht gebraucht. Beim Fräsen sind z, ap und ae wichtig.">?</span></label><select id="cutOp"><option value="drill">Bohren</option><option value="millRough">Fräsen Schruppen</option><option value="millFinish">Fräsen Schlichten</option><option value="turn">Drehen</option></select></div>
             </div>
             <button class="btn btn-blue" type="button" onclick="loadCutPreset()">⚡ Richtwerte laden</button>
+            <button class="btn" type="button" onclick="cutInfoDialog.showModal()">📘 Merker / Formeln öffnen</button>
             <div class="cut-mode-hint" id="cutModeHint"><b>Bohren:</b> Für normale Bohrer rechnet das Tool mit 2 Schneiden, Vorschub in mm/U und ohne Schnittbreite ae.</div>
             <div class="row">
               <div><label>Werkzeug-Ø d [mm] <span class="help-dot" tabindex="0" data-tip="d ist der Werkzeugdurchmesser. Er wirkt direkt auf die Drehzahl: kleiner Durchmesser = höhere Drehzahl bei gleicher Schnittgeschwindigkeit.">?</span></label><input id="cutD" type="number" value="10" step="0.1"></div>
@@ -474,7 +474,6 @@
               <div><label>Werkzeug / Beschreibung *</label><input id="cutNote" type="text" placeholder="z.B. Bohrer, Schruppfräser Langloch"></div>
               <div><label>Werkzeuglänge [mm]</label><input id="toolLen" type="number" placeholder="optional" step="0.1"></div>
               <div><label>Beschichtung</label><select id="toolCoat"><option>unbeschichtet</option><option>HSS</option><option>HSSE</option><option>VHM</option><option>TiN</option><option>TiAlN</option><option>AlTiN</option><option>DLC</option><option>diamantbeschichtet</option><option>sonstige</option></select></div>
-              <div><label id="toolPathLabel">Bearbeitungsweg [mm] <span class="help-dot" tabindex="0" data-tip="Optional für Fräszeit: Wenn du ungefähr weißt, wie lang der reale Fräsweg ist, kann das Tool daraus Zeit = Weg / Vorschub berechnen. Bei Langloch, Tasche oder Kontur ist das nur eine grobe Schätzung.">?</span></label><input id="toolPath" type="number" placeholder="optional" step="0.1"></div>
             </div>
             <div class="row tool-editor-actions">
               <button class="btn btn-green" type="button" onclick="saveToolToBasket()">Werkzeug speichern</button>
@@ -501,8 +500,6 @@
               </div>
               <div class="result-list">
                 <div class="metric"><span>Vorschubgeschwindigkeit vf</span><strong><span id="cutVf">764</span> mm/min</strong></div>
-                <div class="metric"><span id="cutQLabel">Zeitspanvolumen Q</span><strong><span id="cutQ">--</span> cm³/min</strong></div>
-                <div class="metric" id="cutTimeMetric"><span id="cutTimeLabel">Bohrzeit grob</span><strong><span id="cutTime">--</span></strong></div>
                 <div class="metric"><span>Praxis-Check</span><strong id="cutWarn" class="good">Startwert plausibel</strong></div>
               </div>
               <div class="help-under"><b>Was bedeutet Praxis-Check?</b> Das Tool prüft nur grob auf auffällige Drehzahl oder Vorschubwerte. Grün heißt nicht „freigegeben“, sondern: als Startwert wirkt es nicht sofort auffällig. Herstellerdaten, Werkzeuglänge, Spannung und Materialzustand bleiben entscheidend.</div>
@@ -532,29 +529,6 @@
             <input id="projectImportFile" type="file" accept="application/json,.json" hidden onchange="importProjectFolder(event)">
             <div class="tool-list" id="toolBasketList"></div>
             <div class="tool-empty" id="toolBasketEmpty">Noch kein Werkzeug im Projekt. T-Nummer und Werkzeugbeschreibung eingeben, Schnittdaten berechnen und „Werkzeug speichern“ drücken.</div>
-          </div>
-        </aside>
-
-
-        <aside class="info-card" aria-label="Schnittdaten Hilfe">
-          <div class="info-card-head"><p class="eyebrow">Merker</p><h3>Drehzahl, Vorschub & Formeln</h3></div>
-          <div class="info-card-body">
-            <p><b>So liest du den Bereich:</b> Du gibst Werkzeug, Material und Vorschubwerte ein. Daraus entstehen Maschinenwerte: <b>S</b> für Drehzahl und <b>F</b> für Vorschub.</p>
-            <div class="formula-card">
-              <code>n = (vc × 1000) / (π × d)</code>
-              <code>Bohren/Drehen: F = n × f</code>
-              <code>Fräsen: F = n × z × fz</code>
-              <code>Q Fräsen = ap × ae × F / 1000</code>
-            </div>
-            <ul class="info-list">
-              <li><b>n / S</b>: Spindeldrehzahl. Diesen Wert würdest du an der CNC als S-Wert nutzen.</li>
-              <li><b>F / vf</b>: Vorschubgeschwindigkeit in mm/min. Das ist der Maschinenwert.</li>
-              <li><b>vc</b>: Schnittgeschwindigkeit am Umfang. Kommt idealerweise vom Werkzeughersteller.</li>
-              <li><b>f</b>: Vorschub pro Umdrehung bei Bohren/Drehen.</li>
-              <li><b>fz</b>: Vorschub pro Zahn beim Fräsen. Zu hoch = Werkzeug leidet, zu niedrig = Werkzeug reibt.</li>
-              <li><b>ap / ae</b>: Eingriff in Tiefe und Breite. Beim Bohren brauchst du ae nicht.</li>
-            </ul>
-            <p><b>Praxis:</b> Bei kleinen Werkzeugen, langer Auskragung, schlechter Spannung, Edelstahl oder alter Maschine lieber vorsichtig starten und anpassen.</p>
           </div>
         </aside>
 
@@ -850,6 +824,27 @@
     </div>
   </dialog>
 
+
+  <dialog id="cutInfoDialog">
+    <div class="modal-head"><div><p class="eyebrow">Merker</p><h2 style="margin:0">Drehzahl, Vorschub & Formeln</h2></div><button class="x" onclick="cutInfoDialog.close()">×</button></div>
+    <div class="modal-body">
+      <p><b>So liest du den Bereich:</b> Du gibst Werkzeug, Material und Vorschubwerte ein. Daraus entstehen Maschinenwerte: <b>S</b> für Drehzahl und <b>F</b> für Vorschub.</p>
+      <h3>Formeln</h3>
+      <p><code>n = (vc × 1000) / (π × d)</code></p>
+      <p><code>Bohren/Drehen: F = n × f</code></p>
+      <p><code>Fräsen: F = n × z × fz</code></p>
+      <h3>Begriffe</h3>
+      <p><b>n / S:</b> Spindeldrehzahl in U/min. Diesen Wert nutzt du an der CNC als S-Wert.</p>
+      <p><b>F / vf:</b> Vorschubgeschwindigkeit in mm/min. Das ist der Maschinenwert.</p>
+      <p><b>vc:</b> Schnittgeschwindigkeit am Umfang. Kommt idealerweise vom Werkzeughersteller.</p>
+      <p><b>f:</b> Vorschub pro Umdrehung bei Bohren/Drehen.</p>
+      <p><b>fz:</b> Vorschub pro Zahn beim Fräsen. Zu hoch = Werkzeug leidet, zu niedrig = Werkzeug reibt.</p>
+      <p><b>ap / ae:</b> Eingriff in Tiefe und Breite. Beim Bohren brauchst du ae nicht.</p>
+      <h3>Praxis</h3>
+      <p>Bei kleinen Werkzeugen, langer Auskragung, schlechter Spannung, Edelstahl oder alter Maschine lieber vorsichtig starten und anpassen. Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</p>
+    </div>
+  </dialog>
+
   <dialog id="helpDialog">
     <div class="modal-head"><div><p class="eyebrow">Hilfe</p><h2 style="margin:0">Werkstatt-Rechner Metall Plus</h2></div><button class="x" onclick="helpDialog.close()">×</button></div>
     <div class="modal-body">
@@ -934,8 +929,8 @@ function updateCutModeUI(){
   if(op==="drill"){
     zInput.value=2; zInput.disabled=true; zField?.classList.add("is-disabled-field");
     aeInput.value=""; aeInput.disabled=true; aeField?.classList.add("is-disabled-field");
-    if(feedLabel) feedLabel.innerHTML='Vorschub f [mm/U] <span class="help-dot" tabindex="0" data-tip="Beim Bohren ist f der Vorschub pro Umdrehung. Daraus wird F = n × f. Die Schneidenzahl bleibt fest 2 und wird nicht zur Vorschubformel addiert.">?</span>';
-    if(apLabel) apLabel.innerHTML='Bohrtiefe [mm] <span class="help-dot" tabindex="0" data-tip="Die Bohrtiefe nutzt das Tool nur für eine grobe Bohrzeit. Für reine Drehzahl und Vorschub kann das Feld leer bleiben.">?</span>';
+    if(feedLabel) feedLabel.innerHTML='Vorschub f [mm/U] <span class="help-dot" tabindex="0" data-tip="Beim Bohren ist f der Vorschub pro Umdrehung. Daraus wird der Maschinenwert F = n × f. Die Schneidenzahl bleibt fest 2 und wird nicht zur Vorschubformel addiert.">?</span>';
+    if(apLabel) apLabel.innerHTML='Bohrtiefe [mm] <span class="help-dot" tabindex="0" data-tip="Die Tiefe ist als Zusatzinfo für das Werkzeugblatt gedacht. Drehzahl und Vorschub brauchen dieses Feld nicht.">?</span>';
     if(hint) hint.innerHTML='<b>Bohren:</b> normale Spiralbohrer haben meist 2 Schneiden. Du brauchst Ø d, vc und Vorschub f in mm/U. Schnittbreite ae wird beim Bohren nicht gebraucht.';
   } else if(op==="turn"){
     zInput.value=1; zInput.disabled=true; zField?.classList.add("is-disabled-field");
@@ -948,32 +943,21 @@ function updateCutModeUI(){
     aeInput.disabled=false; aeField?.classList.remove("is-disabled-field");
     if(feedLabel) feedLabel.innerHTML='Vorschub/Zahn fz [mm] <span class="help-dot" tabindex="0" data-tip="Beim Fräsen ist fz der Vorschub pro Schneide/Zahn. Formel: vf = n × z × fz.">?</span>';
     if(apLabel) apLabel.innerHTML='Schnitttiefe ap [mm] <span class="help-dot" tabindex="0" data-tip="ap ist die Tiefe des Eingriffs. Zusammen mit ae und vf ergibt sich das Zeitspanvolumen Q.">?</span>';
-    if(hint) hint.innerHTML='<b>Fräsen:</b> du brauchst Ø d, vc, Schneidenzahl z und fz. Für Zeitspanvolumen Q zusätzlich ap und ae eintragen.';
+    if(hint) hint.innerHTML='<b>Fräsen:</b> du brauchst Ø d, vc, Schneidenzahl z und fz. ap und ae sind zusätzliche Werkzeug-/Eingriffswerte für die Übersicht.';
   }
 }
 function calcSchnitt(){
   updateCutModeUI();
   const op=$("cutOp")?.value || "drill";
-  const d=num("cutD"), vc=num("cutVc"), z=num("cutZ"), fz=num("cutFz"), ap=num("cutAp"), ae=num("cutAe"), path=num("toolPath");
+  const d=num("cutD"), vc=num("cutVc"), z=num("cutZ"), fz=num("cutFz"), ap=num("cutAp"), ae=num("cutAe");
   const n=d>0?(vc*1000)/(Math.PI*d):0;
-  let vf=0, q=0, extra="--";
-  if(op==="drill"){
+  let vf=0;
+  if(op==="drill" || op==="turn"){
     vf=n*fz;
-    q=d>0 ? (Math.PI*Math.pow(d,2)/4*vf)/1000 : 0;
-    extra=(ap>0 && vf>0) ? round((ap/vf)*60,1)+" s" : "--";
-    setText("cutQLabel","Spanvolumen Bohren Q"); setText("cutTimeLabel","Bohrzeit grob");
-  } else if(op==="turn"){
-    vf=n*fz;
-    q=0;
-    extra=(path>0 && vf>0) ? round((path/vf)*60,1)+" s" : "--";
-    setText("cutQLabel","Zeitspanvolumen Q"); setText("cutTimeLabel","Zeit grob");
   } else {
     vf=n*z*fz;
-    q=ap>0&&ae>0?(ap*ae*vf)/1000:0;
-    extra=(path>0 && vf>0) ? round((path/vf)*60,1)+" s" : "--";
-    setText("cutQLabel","Zeitspanvolumen Q"); setText("cutTimeLabel","Fräszeit grob");
   }
-  setText("cutN",round(n,0)); setText("cutVf",round(vf,0)); setText("cutQ",q?round(q,1):"--"); setText("cutTime",extra);
+  setText("cutN",round(n,0)); setText("cutVf",round(vf,0));
   setText("cncS",round(n,0)); setText("cncF",round(vf,0)); setText("cncVc",round(vc,0)); setText("cncD",round(d,1).replace(".0", ""));
   setText("cncMode", op==="turn" ? "DREHEN" : (op==="drill" ? "BOHREN" : "FRÄSEN"));
   const w=$("cutWarn"); w.className="";
@@ -1201,8 +1185,8 @@ function toolSummaryFromInputs(){
     id:activeToolId || ("tool_"+Date.now()+"_"+Math.random().toString(16).slice(2)),
     t:toolT(), name:toolName(), diameter:$("cutD")?.value||"", length:$("toolLen")?.value||"", coating:$("toolCoat")?.value||"unbeschichtet", path:$("toolPath")?.value||"",
     material:$("cutMat")?.options[$("cutMat").selectedIndex]?.text || "", op:$("cutOp")?.options[$("cutOp").selectedIndex]?.text || "",
-    values:{d:$("cutD")?.value||"",vc:$("cutVc")?.value||"",z:$("cutZ")?.value||"",f:$("cutFz")?.value||"",ap:$("cutAp")?.value||"",ae:$("cutAe")?.value||"",n:$("cutN")?.textContent||"",vf:$("cutVf")?.textContent||"",q:$("cutQ")?.textContent||"",time:$("cutTime")?.textContent||"",check:$("cutWarn")?.textContent||""},
-    raw:{mat:$("cutMat")?.value||"",op, d:$("cutD")?.value||"",vc:$("cutVc")?.value||"",z:$("cutZ")?.value||"",f:$("cutFz")?.value||"",ap:$("cutAp")?.value||"",ae:$("cutAe")?.value||"",path:$("toolPath")?.value||"",note:toolName(),t:toolT(),len:$("toolLen")?.value||"",coat:$("toolCoat")?.value||""},
+    values:{d:$("cutD")?.value||"",vc:$("cutVc")?.value||"",z:$("cutZ")?.value||"",f:$("cutFz")?.value||"",ap:$("cutAp")?.value||"",ae:$("cutAe")?.value||"",n:$("cutN")?.textContent||"",vf:$("cutVf")?.textContent||"",check:$("cutWarn")?.textContent||""},
+    raw:{mat:$("cutMat")?.value||"",op, d:$("cutD")?.value||"",vc:$("cutVc")?.value||"",z:$("cutZ")?.value||"",f:$("cutFz")?.value||"",ap:$("cutAp")?.value||"",ae:$("cutAe")?.value||"",note:toolName(),t:toolT(),len:$("toolLen")?.value||"",coat:$("toolCoat")?.value||""},
     updated:new Date().toISOString()
   }
 }
@@ -1215,7 +1199,7 @@ function saveToolToBasket(){
 }
 function newToolEntry(showToast=true){
   suppressToolLive=true; activeToolId=null;
-  ["toolT","cutNote","toolLen","toolPath","cutD","cutAp","cutAe"].forEach(id=>{if($(id)) $(id).value=""});
+  ["toolT","cutNote","toolLen","cutD","cutAp","cutAe"].forEach(id=>{if($(id)) $(id).value=""});
   if($("toolCoat")) $("toolCoat").value="unbeschichtet";
   if($("cutD")) $("cutD").value="10";
   updateCutModeUI(); calcSchnitt(); suppressToolLive=false; renderToolBasket(false);
@@ -1234,7 +1218,6 @@ function loadTool(id){
   if($("cutNote")) $("cutNote").value=item.raw?.note||item.name||"";
   if($("toolLen")) $("toolLen").value=item.raw?.len||item.length||"";
   if($("toolCoat")) $("toolCoat").value=item.raw?.coat||item.coating||"unbeschichtet";
-  if($("toolPath")) $("toolPath").value=item.raw?.path||item.path||"";
   if($("cutMat")) $("cutMat").value=item.raw?.mat||"steel";
   if($("cutOp")) $("cutOp").value=item.raw?.op||"drill";
   updateCutModeUI();
@@ -1336,59 +1319,21 @@ function importProjectFolder(ev){
 function printToolSheet(){
   const p=currentProjectPayload();
   if(!p.tools.length){toast("Keine Werkzeuge im Projekt");return}
-  const cell=(label,value,cls='')=>`<div class="cell ${cls}"><b>${label}</b><span>${escapeHtml(value||'-')}</span></div>`;
   const rows=p.tools.map(t=>{
     const v=t.values||{};
-    const row1=[
-      cell('S Drehzahl',`${v.n||'-'} U/min`,'speed'),
-      cell('Werkzeug',t.name||'-','toolname'),
-      cell('Beschichtung',t.coating||'-'),
-      cell('F Vorschub',`${v.vf||'-'} mm/min`),
-      cell('Zeit',v.time||'-')
-    ].join('');
-    const row2=[
-      cell('T',t.t||'-','speed'),
-      cell('Länge',`${t.length||'-'} mm`),
-      cell('Ø',`${t.diameter||'-'} mm`),
-      cell('z (Zähne)',v.z||'-'),
-      cell('vc',`${v.vc||'-'} m/min`)
-    ].join('');
-    const row3=[
-      cell('Bearbeitung',t.op||'-','speed'),
-      cell('f / fz',v.f||'-'),
-      cell('ap / Tiefe',`${v.ap||'-'} mm`),
-      cell('ae',`${v.ae||'-'} mm`),
-      cell('Q',`${v.q||'-'} cm³/min`)
-    ].join('');
-    return `<article class="tool-print-card"><div class="tool-print-line tool-print-line-main">${row1}</div><div class="tool-print-line">${row2}</div><div class="tool-print-line">${row3}</div></article>`;
+    const art=String(t.op||'-').replace('Fräsen Schruppen','Schrupp\nFräser').replace('Fräsen Schlichten','Schlicht\nFräser');
+    return `<table class="tool-block"><thead><tr><th>Tool</th><th>Art</th><th>Drehzahl</th><th>Vorschub</th><th>Länge</th><th>Durchmesser</th><th>z (Zähne)</th><th>F / Zahn</th></tr></thead><tbody><tr><td class="tcol">${escapeHtml(t.t||'-')}</td><td>${escapeHtml(art).replace(/\n/g,'<br>')}</td><td>${escapeHtml(v.n||'-')}<small>U/min</small></td><td>${escapeHtml(v.vf||'-')}<small>mm/min</small></td><td>${escapeHtml(t.length||'-')}<small>mm</small></td><td>${escapeHtml(t.diameter||'-')}<small>mm</small></td><td>${escapeHtml(v.z||'-')}</td><td>${escapeHtml(v.f||'-')}</td></tr><tr class="subrow"><td colspan="2"><b>Werkzeug</b> ${escapeHtml(t.name||'-')}</td><td colspan="2"><b>Beschichtung</b> ${escapeHtml(t.coating||'-')}</td><td><b>vc</b> ${escapeHtml(v.vc||'-')} m/min</td><td><b>ap/Tiefe</b> ${escapeHtml(v.ap||'-')} mm</td><td colspan="2"><b>ae</b> ${escapeHtml(v.ae||'-')} mm</td></tr></tbody></table>`;
   }).join('');
-  const metaBits=[];
-  if(p.ref) metaBits.push(`Projekt-Nr.: ${escapeHtml(p.ref)}`);
-  if(p.orderNo) metaBits.push(`Auftrag: ${escapeHtml(p.orderNo)}`);
-  if(p.drawingNo) metaBits.push(`Zeichnung: ${escapeHtml(p.drawingNo)}`);
-  if(p.customer) metaBits.push(`Kunde: ${escapeHtml(p.customer)}`);
   const w=window.open("","_blank"); if(!w) return;
   w.document.write(`<!doctype html><html lang="de"><head><meta charset="utf-8"><title>${escapeHtml(p.name)} Werkzeugblatt</title><style>
-    @page{size:A4 portrait;margin:8mm 8mm 9mm}
-    *{box-sizing:border-box}
-    body{font-family:Arial,"Segoe UI",sans-serif;margin:0;color:#111827;background:#fff;font-size:10.5px;line-height:1.22}
+    @page{size:A4 portrait;margin:9mm 9mm 10mm}
+    *{box-sizing:border-box} body{font-family:Arial,"Segoe UI",sans-serif;margin:0;color:#000;background:#fff;font-size:10.5px;line-height:1.2}
     .print-actions{position:sticky;top:0;background:#fff;padding:8px 0 10px;border-bottom:1px solid #d8e2ee;margin-bottom:10px;display:flex;gap:8px;z-index:10}
-    button{border:1px solid #b8c8d8;background:#0b74c8;color:#fff;border-radius:8px;padding:7px 11px;font-weight:800;cursor:pointer}
-    button.secondary{background:#fff;color:#102033}
-    .sheet{width:100%}
-    header{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;border-bottom:2px solid #102033;padding-bottom:7px;margin-bottom:7px}
-    h1{margin:0 0 4px;font-size:18px;letter-spacing:-.02em}.meta{display:flex;gap:6px;flex-wrap:wrap;color:#46596b;font-size:10px}.meta span{border:1px solid #d6e0eb;background:#f8fbfe;border-radius:999px;padding:3px 7px}.badge{border:1px solid #cbd7e5;border-radius:999px;padding:4px 8px;font-weight:800;color:#102033;background:#f5f8fb;white-space:nowrap}
-    .desc{border:1px solid #d6e0eb;background:#f8fbfe;border-radius:8px;padding:6px 8px;margin:0 0 7px;color:#34495e;min-height:24px}.desc b{display:inline;margin-right:4px}
-    .tool-print-list{display:grid;gap:5px}
-    .tool-print-card{border:1px solid #b9c7d6;border-radius:7px;overflow:hidden;break-inside:avoid;page-break-inside:avoid;background:#fff}
-    .tool-print-line{display:grid;grid-template-columns:.95fr 1.35fr .78fr .92fr .78fr;align-items:stretch;border-top:1px solid #d7e2ee}
-    .tool-print-line:first-child{border-top:0}.tool-print-line-main{background:#eef5fb;color:#102033;font-weight:850;font-size:10.8px}
-    .cell{padding:4px 6px;border-right:1px solid #d7e2ee;min-width:0;overflow:visible;white-space:normal;word-break:normal}.cell:last-child{border-right:0}
-    .speed{background:rgba(225,238,249,.55)}.toolname span{font-size:12px!important}
-    b{display:block;font-size:7.2px;letter-spacing:.07em;text-transform:uppercase;color:#607286;margin-bottom:1px;line-height:1.05}.cell span{display:block;font-weight:800;color:#102033}.tool-print-line:not(.tool-print-line-main) .cell span{font-weight:700;color:#3c4d5f;font-size:9.7px}
-    footer{margin-top:8px;border-top:1px solid #d8e2ee;padding-top:5px;color:#607286;font-size:9px;display:flex;justify-content:space-between;gap:10px}
-    @media print{.print-actions{display:none}.sheet{page-break-after:auto}.tool-print-card{box-shadow:none}}
-  </style></head><body><div class="print-actions"><button onclick="window.print();return false;">Drucken / PDF speichern</button><button class="secondary" onclick="window.close();return false;">Schließen</button></div><main class="sheet"><header><div><h1>Werkzeug-Schnittdatenblatt</h1><div class="meta"><span><b>Projekt</b>${escapeHtml(p.name||'Unbenannt')}</span>${metaBits.map(m=>`<span>${m}</span>`).join('')}</div></div><div class="badge">${p.tools.length} Werkzeug(e)</div></header><div class="desc"><b>Beschreibung:</b>${escapeHtml(p.description||'Keine Projektbeschreibung hinterlegt.')}</div><section class="tool-print-list">${rows}</section><footer><span>Richtwerte prüfen: Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</span><span>Warenschmiede Werkstatt-Rechner Metall Plus</span></footer></main></body></html>`); w.document.close();
+    button{border:1px solid #b8c8d8;background:#0b74c8;color:#fff;border-radius:8px;padding:7px 11px;font-weight:800;cursor:pointer}button.secondary{background:#fff;color:#102033}
+    h1{text-align:left;font-size:18px;margin:0 0 14px 4mm;font-weight:500}.project-head{width:88%;margin:0 auto 10px;border-collapse:collapse;font-size:10.5px}.project-head td{border:1px solid #000;padding:4px 5px;vertical-align:top}.project-head b{font-size:9px}.project-desc{height:28px}.tool-block{width:88%;margin:0 auto 10px;border-collapse:collapse;break-inside:avoid;page-break-inside:avoid}.tool-block th{background:#eee;border:1px solid #000;padding:4px 4px;font-weight:500;text-align:center}.tool-block td{border:1px solid #000;padding:5px 4px;text-align:center;vertical-align:middle;font-weight:500}.tool-block small{display:block;font-size:8px;font-weight:400}.tool-block .tcol{font-size:19px}.tool-block .subrow td{text-align:left;font-weight:400;padding:4px 6px}.tool-block .subrow b{font-weight:700;margin-right:4px}footer{width:88%;margin:8px auto 0;border-top:1px solid #999;padding-top:4px;color:#555;font-size:8.5px;display:flex;justify-content:space-between;gap:10px}
+    @media print{.print-actions{display:none}}
+  </style></head><body><div class="print-actions"><button onclick="window.print();return false;">Drucken / PDF speichern</button><button class="secondary" onclick="window.close();return false;">Schließen</button></div><main><h1>Werkzeug-Schnittdatenblatt</h1><table class="project-head"><tr><td><b>Projektname:</b><br>${escapeHtml(p.name||'')}</td><td><b>Projekt-Nr.:</b><br>${escapeHtml(p.ref||'')}</td><td><b>Auftrag-Nr.:</b><br>${escapeHtml(p.orderNo||'')}</td><td><b>Zeichnungs-Nr.:</b><br>${escapeHtml(p.drawingNo||'')}</td></tr><tr><td colspan="4" class="project-desc"><b>Beschreibung:</b> ${escapeHtml(p.description||'')}</td></tr>${p.customer?`<tr><td colspan="4"><b>Kunde:</b> ${escapeHtml(p.customer)}</td></tr>`:''}</table>${rows}<footer><span>Richtwerte prüfen: Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</span><span>Warenschmiede Werkstatt-Rechner Metall Plus</span></footer></main></body></html>`);
+  w.document.close();
 }
 
 
