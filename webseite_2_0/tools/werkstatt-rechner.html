@@ -270,6 +270,77 @@
     .angle-result span{display:block;color:var(--muted);font-size:.68rem;font-weight:950;letter-spacing:.07em;text-transform:uppercase}.angle-result strong{font-family:var(--mono);font-size:1.05rem;color:var(--text)}
     .angle-hint{border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));border-left:4px solid var(--blue);background:color-mix(in srgb,var(--blue) 6%,var(--paper));border-radius:16px;padding:12px 13px;color:var(--muted);font-size:.86rem;line-height:1.45}
     @media(max-width:1050px){.angle-tool{grid-template-columns:1fr}.angle-stage{min-height:300px}.angle-stage svg{height:290px}.angle-results{grid-template-columns:1fr}}
+
+    /* v6 Layout: Rechner oben, Ergebnis kompakter, Info rechts */
+    .panel{overflow:visible}
+    .grid-schnitt{
+      display:grid;
+      grid-template-columns:minmax(300px,440px) minmax(280px,460px) minmax(260px,360px);
+      gap:18px;
+      align-items:start;
+    }
+    .grid-passungen{
+      display:grid;
+      grid-template-columns:minmax(280px,400px) minmax(360px,1fr) minmax(280px,400px);
+      gap:18px;
+      align-items:start;
+    }
+    .grid-gewinde{
+      display:grid;
+      grid-template-columns:minmax(280px,400px) minmax(260px,360px) minmax(360px,1fr);
+      gap:18px;
+      align-items:start;
+    }
+    .compact-result .result-main{min-height:150px;padding:18px}
+    .compact-result .result-main .big{font-size:clamp(2.1rem,4.4vw,4rem)}
+    .info-card{
+      border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));
+      border-radius:var(--radius);
+      background:
+        radial-gradient(circle at 100% 0%, color-mix(in srgb,var(--orange) 8%, transparent), transparent 18rem),
+        linear-gradient(180deg,color-mix(in srgb,var(--paper) 96%,transparent),color-mix(in srgb,var(--paper-soft) 78%,var(--paper)));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .info-card-head{padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+    .info-card-head h3{margin:0;font-size:1.05rem;letter-spacing:-.02em}
+    .info-card-body{padding:16px 18px;display:grid;gap:12px;color:var(--muted);font-size:.88rem;line-height:1.52}
+    .formula-card{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:color-mix(in srgb,var(--paper) 90%,transparent);
+      padding:12px;
+      display:grid;
+      gap:8px;
+    }
+    .formula-card code{
+      display:block;
+      font-family:var(--mono);
+      color:var(--text);
+      font-weight:900;
+      white-space:normal;
+    }
+    .info-list{margin:0;padding-left:1.05rem;display:grid;gap:7px}
+    .info-list b{color:var(--text)}
+    .help-dot[data-tip]:hover:after,
+    .help-dot[data-tip]:focus:after{
+      left:auto;
+      right:0;
+      bottom:auto;
+      top:135%;
+      transform:none;
+      width:min(320px,72vw);
+      z-index:5000;
+    }
+    .fit-visual-panel .visual{min-height:360px}
+    .fit-visual-img{width:100%;max-height:330px;object-fit:contain}
+    .thread-table-panel .table-wrap{max-height:460px;overflow:auto}
+    @media(max-width:1280px){
+      .grid-schnitt,.grid-passungen,.grid-gewinde{grid-template-columns:1fr}
+      .fit-visual-panel .visual{min-height:220px}
+      .thread-table-panel .table-wrap{max-height:none}
+    }
+
   </style>
 </head>
 <body>
@@ -310,7 +381,7 @@
 
     <!-- Schnittdaten -->
     <section class="tab active" id="tab-schnitt">
-      <div class="grid">
+      <div class="grid-schnitt">
         <div class="panel">
           <div class="panel-head"><p class="eyebrow">Schnittdaten</p><h3>Drehzahl & Vorschub</h3><p>Material wählen, Richtwerte laden und direkt rechnen.</p></div>
           <div class="panel-body form-grid">
@@ -321,7 +392,7 @@
             <button class="btn btn-blue" type="button" onclick="loadCutPreset()">⚡ Richtwerte laden</button>
             <div class="row">
               <div><label>Werkzeug-Ø d [mm]</label><input id="cutD" type="number" value="10" step="0.1"></div>
-              <div><label>Schnittgeschw. vc [m/min] <span class="help-dot" tabindex="0" data-tip="vc ist die Schnittgeschwindigkeit am Werkzeugumfang. Herstellerdaten sind genauer; Richtwerte im Tool sind Startwerte.">?</span></label><input id="cutVc" type="number" value="120" step="1"></div>
+              <div><label>Schnittgeschw. vc [m/min] <span class="help-dot" tabindex="0" data-tip="vc ist die Schnittgeschwindigkeit am Werkzeugumfang. Herstellerdaten sind genauer; Richtwerte im Tool sind nur Startwerte.">?</span></label><input id="cutVc" type="number" value="120" step="1"></div>
             </div>
             <div class="row">
               <div><label>Zähnezahl z</label><input id="cutZ" type="number" value="4" step="1"></div>
@@ -338,8 +409,9 @@
             </div>
           </div>
         </div>
+
         <div>
-          <div class="panel">
+          <div class="panel compact-result">
             <div class="panel-body">
               <div class="result-main">
                 <div><small>Drehzahl n</small><div class="big" id="cutN">3820</div><div class="unit">U/min</div></div>
@@ -358,11 +430,29 @@
                 <div class="metric"><span>Zeitspanvolumen Q</span><strong><span id="cutQ">--</span> cm³/min</strong></div>
                 <div class="metric"><span>Bewertung</span><strong id="cutWarn" class="good">Richtwert prüfen</strong></div>
               </div>
-              <div class="footer-note">Hinweis: Richtwerte ersetzen keine Herstellerdaten. Bei kleinen Werkzeugen, langen Auskragungen, schlechter Spannung oder alten Maschinen vorsichtig reduzieren.</div>
             </div>
           </div>
           <div class="history" id="historySchnitt"></div>
         </div>
+
+        <aside class="info-card" aria-label="Schnittdaten Hilfe">
+          <div class="info-card-head"><p class="eyebrow">Merker</p><h3>Drehzahl, Vorschub & Formeln</h3></div>
+          <div class="info-card-body">
+            <p><b>Drehzahl</b> und <b>Vorschub</b> sind Startwerte. In der Praxis zählen Werkzeug, Spannung, Material, Auskragung, Kühlung und Maschinenzustand.</p>
+            <div class="formula-card">
+              <code>n = (vc × 1000) / (π × d)</code>
+              <code>vf = n × z × fz</code>
+              <code>Q = ap × ae × vf / 1000</code>
+            </div>
+            <ul class="info-list">
+              <li><b>n / S</b>: Spindeldrehzahl in U/min.</li>
+              <li><b>vf / F</b>: Vorschubgeschwindigkeit in mm/min.</li>
+              <li><b>fz</b>: Vorschub pro Zahn/Schneide.</li>
+              <li><b>ap / ae</b>: Schnitttiefe und Schnittbreite, nur für Q nötig.</li>
+            </ul>
+            <p>Bei kleinen Werkzeugen, langen Auskragungen oder unsicherer Spannung lieber vorsichtig starten und Herstellerdaten prüfen.</p>
+          </div>
+        </aside>
       </div>
     </section>
 
@@ -401,7 +491,7 @@
 
     <!-- Passungen -->
     <section class="tab" id="tab-passungen">
-      <div class="grid">
+      <div class="grid-passungen">
         <div class="panel">
           <div class="panel-head"><p class="eyebrow">ISO-Passungen</p><h3>Bohrung & Welle</h3><p>Typische Passungen als schneller Praxischeck.</p></div>
           <div class="panel-body form-grid">
@@ -411,19 +501,6 @@
               <div><label>Bohrung</label><div class="row"><select id="holeChar"><option>H</option><option>G</option><option>F</option></select><select id="holeNum"><option>6</option><option selected>7</option><option>8</option></select></div></div>
               <div><label>Welle</label><div class="row"><select id="shaftChar"><option selected>h</option><option>g</option><option>f</option><option>k</option><option>p</option></select><select id="shaftNum"><option>5</option><option selected>6</option><option>7</option></select></div></div>
             </div>
-            <div class="footer-note">Die Daten sind als typische Werkstatt-Schnellhilfe hinterlegt. Für kritische Bauteile immer Norm-/Tabellenbuch prüfen.</div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-body">
-            
-<div class="visual"><img class="fit-visual-img" src="../assets/img/passungen01.png" alt="Übersicht Spielpassung, Übergangspassung und Presssitz"></div>
-            <div class="result-list">
-              <div class="metric"><span>Passungsart</span><strong id="fitType" class="good">Spielpassung</strong></div>
-              <div class="metric"><span>Bohrung Bereich</span><strong id="holeRange">20.000 – 20.021</strong></div>
-              <div class="metric"><span>Welle Bereich</span><strong id="shaftRange">19.987 – 20.000</strong></div>
-              <div class="metric"><span>Spiel / Übermaß</span><strong id="fitValues">0 bis 34 µm Spiel (0,000 bis 0,034 mm)</strong></div>
-            </div>
             <div class="practice-card" aria-label="Praxisvorschlag Passung">
               <h4>Praxisvorschlag</h4>
               <div class="practice-grid">
@@ -432,7 +509,27 @@
                 <div class="practice-item"><span>Werkzeug</span><strong id="fitTool">Reibahle prüfen</strong></div>
               </div>
             </div>
-            <div class="help-under"><b>Praxis:</b> Bei H7-Bohrungen wird oft vorgebohrt und danach gerieben. Die Werte sind Richtwerte; bei Passungen immer Zeichnung, Norm und betrieblichen Ablauf prüfen.</div>
+            <div class="footer-note">Die Daten sind als typische Werkstatt-Schnellhilfe hinterlegt. Für kritische Bauteile immer Norm-/Tabellenbuch prüfen.</div>
+          </div>
+        </div>
+
+        <div class="panel fit-visual-panel">
+          <div class="panel-head"><p class="eyebrow">Optik</p><h3>Passungsarten sichtbar</h3><p>Spielpassung, Übergang und Presssitz im Vergleich.</p></div>
+          <div class="panel-body">
+            <div class="visual"><img class="fit-visual-img" src="../assets/img/passungen01.png" alt="Übersicht Spielpassung, Übergangspassung und Presssitz"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><p class="eyebrow">Ergebnis</p><h3>Bereiche & Spiel</h3><p>µm und mm werden gemeinsam angezeigt.</p></div>
+          <div class="panel-body">
+            <div class="result-list">
+              <div class="metric"><span>Passungsart</span><strong id="fitType" class="good">Spielpassung</strong></div>
+              <div class="metric"><span>Bohrung Bereich</span><strong id="holeRange">20.000 – 20.021</strong></div>
+              <div class="metric"><span>Welle Bereich</span><strong id="shaftRange">19.987 – 20.000</strong></div>
+              <div class="metric"><span>Spiel / Übermaß</span><strong id="fitValues">0 bis 34 µm Spiel (0,000 bis 0,034 mm)</strong></div>
+            </div>
+            <div class="help-under"><b>Praxis:</b> Bei H7-Bohrungen wird oft vorgebohrt und danach gerieben. Zeichnung, Norm, Tabellenbuch und betrieblicher Ablauf bleiben maßgebend.</div>
           </div>
         </div>
       </div>
@@ -440,7 +537,7 @@
 
     <!-- Gewinde -->
     <section class="tab" id="tab-gewinde">
-      <div class="grid">
+      <div class="grid-gewinde">
         <div class="panel">
           <div class="panel-head"><p class="eyebrow">Gewinde</p><h3>Kernloch & Steigung</h3><p>Metrisch, Feingewinde und Zollgewinde.</p></div>
           <div class="panel-body form-grid">
@@ -452,10 +549,12 @@
               <button class="btn btn-blue" onclick="copySummary('thread')" type="button">Wert kopieren</button>
               <button class="btn" onclick="openTab('schrauben')" type="button">Zu Schrauben</button>
             </div>
-            <div class="footer-note">Faustformel für metrische Gewinde: Kernloch ≈ Nennmaß − Steigung. Bei besonderen Werkstoffen und Gewindeformern bitte Herstellerangaben nutzen.</div>
+            <div class="footer-note">Faustformel für metrische Gewinde: Kernloch ≈ Nennmaß − Steigung. Bei Gewindeformern, Sacklöchern und besonderen Werkstoffen Herstellerangaben prüfen.</div>
           </div>
         </div>
-        <div class="panel">
+
+        <div class="panel compact-result">
+          <div class="panel-head"><p class="eyebrow">Ergebnis</p><h3>Kernloch</h3><p>Bohrergröße für die ausgewählte Gewindegröße.</p></div>
           <div class="panel-body">
             <div class="result-main"><div><small>Kernlochbohrer</small><div class="big"><span id="threadDrill">5.0</span></div><div class="unit">mm</div></div></div>
             <div class="result-list">
@@ -464,8 +563,12 @@
             </div>
           </div>
         </div>
+
+        <div class="panel thread-table-panel">
+          <div class="panel-head"><p class="eyebrow">Tabelle</p><h3>Gängige Größen</h3><p>Direkte Übersicht ab M1.</p></div>
+          <div class="panel-body"><div class="table-wrap"><table id="threadQuick"></table></div></div>
+        </div>
       </div>
-      <div class="panel" style="margin-top:18px"><div class="panel-head"><h3>Gängige Größen</h3></div><div class="panel-body"><div class="table-wrap"><table id="threadQuick"></table></div></div></div>
     </section>
 
     <!-- Schrauben -->
