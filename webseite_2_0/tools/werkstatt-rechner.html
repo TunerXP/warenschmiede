@@ -206,6 +206,21 @@
     .history{display:grid;gap:8px;margin-top:12px;max-height:210px;overflow:auto}
     .history-item{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:10px;font-size:.8rem;color:var(--muted);cursor:pointer}
     .history-item b{display:block;color:var(--text);margin-bottom:3px}
+
+    .tool-project-fields{border:1px solid color-mix(in srgb,var(--orange) 22%,var(--line));background:color-mix(in srgb,var(--orange) 5%,var(--paper));border-radius:18px;padding:12px;display:grid;gap:12px}
+    .tool-basket-actions{display:flex;flex-wrap:wrap;gap:8px}
+    .tool-list{display:grid;gap:8px;max-height:360px;overflow:auto;padding-right:2px}
+    .tool-mini-card{border:1px solid var(--line);background:var(--paper);border-radius:16px;padding:10px 11px;display:grid;gap:5px;cursor:pointer;transition:.16s ease;position:relative}
+    .tool-mini-card:hover,.tool-mini-card.is-active{transform:translateY(-1px);border-color:color-mix(in srgb,var(--blue) 46%,var(--line));box-shadow:0 0 0 4px color-mix(in srgb,var(--blue) 10%,transparent)}
+    .tool-mini-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;font-weight:950;color:var(--text)}
+    .tool-mini-meta{display:flex;flex-wrap:wrap;gap:6px;color:var(--muted);font-size:.76rem;font-weight:850}
+    .tool-mini-meta span{border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));background:color-mix(in srgb,var(--blue) 5%,var(--paper));border-radius:999px;padding:3px 7px}
+    .tool-mini-actions{display:flex;gap:6px;justify-content:flex-end}.tool-mini-actions button{border:1px solid var(--line);background:var(--paper-soft);border-radius:999px;padding:5px 8px;font-size:.72rem;font-weight:900;cursor:pointer;color:var(--text)}
+    .tool-empty{border:1px dashed var(--line);border-radius:16px;padding:14px;color:var(--muted);font-size:.84rem;line-height:1.45;background:color-mix(in srgb,var(--paper-soft) 75%,transparent)}
+    .modal-large{max-width:min(1120px,calc(100vw - 24px));width:min(1120px,calc(100vw - 24px))}
+    .project-search{margin-bottom:12px}.project-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;max-height:58vh;overflow:auto}.project-card{border:1px solid var(--line);border-radius:18px;background:var(--paper-soft);padding:13px;display:grid;gap:8px}.project-card h3{margin:0;font-size:1rem}.project-card p{margin:0;color:var(--muted);font-size:.84rem;line-height:1.4}.project-card-actions{display:flex;gap:7px;flex-wrap:wrap}
+    .btn-small{min-height:32px;padding:7px 10px;font-size:.76rem}.btn-red{background:linear-gradient(135deg,#dc2626,#ef4444);border-color:transparent;color:#fff}
+
     dialog{border:0;border-radius:24px;max-width:min(760px,calc(100vw - 24px));background:var(--paper);color:var(--text);box-shadow:0 32px 100px -48px rgba(0,0,0,.95);padding:0}
     dialog::backdrop{background:rgba(15,23,42,.55);backdrop-filter:blur(5px)}
     .modal-head{display:flex;justify-content:space-between;gap:14px;align-items:center;border-bottom:1px solid var(--line);padding:18px 20px}
@@ -285,7 +300,7 @@
     .panel{overflow:visible}
     .grid-schnitt{
       display:grid;
-      grid-template-columns:minmax(300px,440px) minmax(280px,460px) minmax(260px,360px);
+      grid-template-columns:minmax(300px,420px) minmax(270px,420px) minmax(250px,340px) minmax(260px,360px);
       gap:18px;
       align-items:start;
     }
@@ -413,9 +428,18 @@
               <div><label id="cutApLabel">Bohrtiefe / Tiefe [mm] <span class="help-dot" tabindex="0" data-tip="Beim Bohren ist das die Bohrtiefe. Daraus kann das Tool grob die Bohrzeit berechnen. Beim Fräsen ist ap die Schnitttiefe für das Zeitspanvolumen Q.">?</span></label><input id="cutAp" type="number" placeholder="optional" step="0.1"></div>
               <div id="cutAeField"><label id="cutAeLabel">Schnittbreite ae [mm] <span class="help-dot" tabindex="0" data-tip="ae ist die seitliche Eingriffsbreite beim Fräsen. Beim Bohren wird ae nicht verwendet, weil der Bohrer mit seiner Kreisfläche arbeitet.">?</span></label><input id="cutAe" type="number" placeholder="optional" step="0.1"></div>
             </div>
-            <div><label>Notiz / Auftrag optional</label><input id="cutNote" type="text" placeholder="z.B. Fräser Ø10, 1.7131, Nut schruppen"></div>
+            <div class="tool-project-fields">
+              <div class="row">
+                <div><label>T-Nummer *</label><input id="toolT" type="text" placeholder="z.B. T2"></div>
+                <div><label>Werkzeug / Beschreibung *</label><input id="cutNote" type="text" placeholder="z.B. Schruppfräser Langloch"></div>
+              </div>
+              <div class="row">
+                <div><label>Werkzeuglänge [mm]</label><input id="toolLen" type="number" placeholder="optional" step="0.1"></div>
+                <div><label>Beschichtung</label><select id="toolCoat"><option>unbeschichtet</option><option>HSS</option><option>HSSE</option><option>VHM</option><option>TiN</option><option>TiAlN</option><option>AlTiN</option><option>DLC</option><option>diamantbeschichtet</option><option>sonstige</option></select></div>
+              </div>
+            </div>
             <div class="row">
-              <button class="btn btn-green" type="button" onclick="saveHistory('schnitt')">Merken</button>
+              <button class="btn btn-green" type="button" onclick="saveToolToBasket()">Werkzeug merken</button>
               <button class="btn" type="button" onclick="copySummary('schnitt')">Zusammenfassung kopieren</button>
             </div>
           </div>
@@ -445,7 +469,6 @@
               <div class="help-under"><b>Was bedeutet Praxis-Check?</b> Das Tool prüft nur grob auf auffällige Drehzahl oder Vorschubwerte. Grün heißt nicht „freigegeben“, sondern: als Startwert wirkt es nicht sofort auffällig. Herstellerdaten, Werkzeuglänge, Spannung und Materialzustand bleiben entscheidend.</div>
             </div>
           </div>
-          <div class="history" id="historySchnitt"></div>
         </div>
 
         <aside class="info-card" aria-label="Schnittdaten Hilfe">
@@ -454,17 +477,41 @@
             <p><b>So liest du den Bereich:</b> Du gibst Werkzeug, Material und Vorschubwerte ein. Daraus entstehen Maschinenwerte: <b>S</b> für Drehzahl und <b>F</b> für Vorschub.</p>
             <div class="formula-card">
               <code>n = (vc × 1000) / (π × d)</code>
-              <code>vf = n × z × fz</code>
-              <code>Q = ap × ae × vf / 1000</code>
+              <code>Bohren/Drehen: F = n × f</code>
+              <code>Fräsen: F = n × z × fz</code>
+              <code>Q Fräsen = ap × ae × F / 1000</code>
             </div>
             <ul class="info-list">
               <li><b>n / S</b>: Spindeldrehzahl. Diesen Wert würdest du an der CNC als S-Wert nutzen.</li>
-              <li><b>vf / F</b>: Vorschubgeschwindigkeit. Diesen Wert würdest du als F-Wert nutzen.</li>
+              <li><b>F / vf</b>: Vorschubgeschwindigkeit in mm/min. Das ist der Maschinenwert.</li>
               <li><b>vc</b>: Schnittgeschwindigkeit am Umfang. Kommt idealerweise vom Werkzeughersteller.</li>
-              <li><b>fz</b>: Vorschub pro Zahn. Zu hoch = Werkzeug leidet, zu niedrig = Werkzeug reibt.</li>
-              <li><b>ap / ae</b>: Eingriff in Tiefe und Breite. Nur für Q nötig.</li>
+              <li><b>f</b>: Vorschub pro Umdrehung bei Bohren/Drehen.</li>
+              <li><b>fz</b>: Vorschub pro Zahn beim Fräsen. Zu hoch = Werkzeug leidet, zu niedrig = Werkzeug reibt.</li>
+              <li><b>ap / ae</b>: Eingriff in Tiefe und Breite. Beim Bohren brauchst du ae nicht.</li>
             </ul>
             <p><b>Praxis:</b> Bei kleinen Werkzeugen, langer Auskragung, schlechter Spannung, Edelstahl oder alter Maschine lieber vorsichtig starten und anpassen.</p>
+          </div>
+        </aside>
+
+        <aside class="info-card" aria-label="Werkzeugkorb Schnittdaten">
+          <div class="info-card-head"><p class="eyebrow">Werkzeugkorb</p><h3>Projekt-Werkzeuge</h3></div>
+          <div class="info-card-body">
+            <div class="row">
+              <div><label>Projektname</label><input id="cutProjectName" type="text" placeholder="z.B. Schiene Muster0815"></div>
+              <div><label>Projekt-Nr. / Kunde</label><input id="cutProjectRef" type="text" placeholder="optional"></div>
+            </div>
+            <div><label>Projektbeschreibung</label><textarea id="cutProjectDesc" placeholder="Kurzbeschreibung, Maschine, Material, Hinweise …"></textarea></div>
+            <div class="tool-basket-actions">
+              <button class="btn btn-green btn-small" type="button" onclick="saveCutProject()">Projekt speichern</button>
+              <button class="btn btn-small" type="button" onclick="openProjectDialog()">Projekte laden</button>
+              <button class="btn btn-small" type="button" onclick="exportProjectFolder()">JSON Aktenordner</button>
+              <button class="btn btn-small" type="button" onclick="document.getElementById('projectImportFile').click()">JSON laden</button>
+              <button class="btn btn-blue btn-small" type="button" onclick="printToolSheet()">Werkzeugblatt drucken</button>
+              <a class="btn btn-small" href="cnc-fraesen-einrichtsblatt-plus/index.html" target="_blank" rel="noopener">CNC-Einrichtblatt</a>
+            </div>
+            <input id="projectImportFile" type="file" accept="application/json,.json" hidden onchange="importProjectFolder(event)">
+            <div class="tool-list" id="toolBasketList"></div>
+            <div class="tool-empty" id="toolBasketEmpty">Noch kein Werkzeug im Projekt. T-Nummer und Werkzeugbeschreibung eingeben, Schnittdaten berechnen und „Werkzeug merken“ drücken.</div>
           </div>
         </aside>
       </div>
@@ -740,6 +787,15 @@
 
 
   </div>
+
+
+  <dialog id="projectDialog" class="modal-large">
+    <div class="modal-head"><div><p class="eyebrow">Projekte laden</p><h2 style="margin:0">Schnittdaten-Aktenordner</h2></div><button class="x" onclick="projectDialog.close()">×</button></div>
+    <div class="modal-body">
+      <input class="project-search" id="projectSearch" type="search" placeholder="Projekt suchen, z.B. Schiene, Kunde, Material …" oninput="renderProjectDialog()">
+      <div class="project-grid" id="projectGrid"></div>
+    </div>
+  </dialog>
 
   <dialog id="helpDialog">
     <div class="modal-head"><div><p class="eyebrow">Hilfe</p><h2 style="margin:0">Werkstatt-Rechner Metall Plus</h2></div><button class="x" onclick="helpDialog.close()">×</button></div>
@@ -1076,12 +1132,106 @@ function solveTaperAngle(){
   setText('taperAngleLabel','α/2 '+round(angle,2)+'°');
 }
 function solveAngle(){ if(angleMode==='taper') solveTaperAngle(); else solveAngleTriangle(); }
-function saveHistory(type){
-  let item={time:new Date().toLocaleString("de-DE")};
-  if(type==="schnitt"){item.title=$("cutNote").value||"Schnittdaten"; item.text=`n ${$("cutN").textContent} U/min · vf ${$("cutVf").textContent} mm/min · Ø ${$("cutD").value} · vc ${$("cutVc").value}`;}
-  const key="ws_metall_history_"+type; const arr=JSON.parse(localStorage.getItem(key)||"[]"); arr.unshift(item); localStorage.setItem(key,JSON.stringify(arr.slice(0,12))); renderHistory(); toast("Gemerkte Notiz gespeichert");
+
+const PROJECT_STORE_KEY="ws_metall_cut_project_folder_v1";
+let cutTools=[];
+let activeToolId=null;
+let activeProjectId=null;
+let suppressToolLive=false;
+function projectFolder(){try{return JSON.parse(localStorage.getItem(PROJECT_STORE_KEY)||"[]")}catch(e){return[]}}
+function setProjectFolder(arr){localStorage.setItem(PROJECT_STORE_KEY,JSON.stringify(arr||[]))}
+function toolName(){return ($("cutNote")?.value||"").trim()}
+function toolT(){return ($("toolT")?.value||"").trim()}
+function toolSummaryFromInputs(){
+  const op=$("cutOp")?.value||"drill";
+  return {
+    id:activeToolId || ("tool_"+Date.now()+"_"+Math.random().toString(16).slice(2)),
+    t:toolT(), name:toolName(), diameter:$("cutD")?.value||"", length:$("toolLen")?.value||"", coating:$("toolCoat")?.value||"unbeschichtet",
+    material:$("cutMat")?.options[$("cutMat").selectedIndex]?.text || "", op:$("cutOp")?.options[$("cutOp").selectedIndex]?.text || "",
+    values:{d:$("cutD")?.value||"",vc:$("cutVc")?.value||"",z:$("cutZ")?.value||"",f:$("cutFz")?.value||"",ap:$("cutAp")?.value||"",ae:$("cutAe")?.value||"",n:$("cutN")?.textContent||"",vf:$("cutVf")?.textContent||"",q:$("cutQ")?.textContent||"",time:$("cutTime")?.textContent||"",check:$("cutWarn")?.textContent||""},
+    raw:{mat:$("cutMat")?.value||"",op, d:$("cutD")?.value||"",vc:$("cutVc")?.value||"",z:$("cutZ")?.value||"",f:$("cutFz")?.value||"",ap:$("cutAp")?.value||"",ae:$("cutAe")?.value||"",note:toolName(),t:toolT(),len:$("toolLen")?.value||"",coat:$("toolCoat")?.value||""},
+    updated:new Date().toISOString()
+  }
 }
-function renderHistory(){const arr=JSON.parse(localStorage.getItem("ws_metall_history_schnitt")||"[]");$("historySchnitt").innerHTML=arr.map(x=>`<div class="history-item"><b>${x.title}</b>${x.text}<br><small>${x.time}</small></div>`).join("")}
+function saveToolToBasket(){
+  if(!toolT() || !toolName()){toast("T-Nummer und Werkzeugbeschreibung sind Pflicht");return}
+  const item=toolSummaryFromInputs();
+  const i=cutTools.findIndex(x=>x.id===item.id || (x.t.toLowerCase()===item.t.toLowerCase() && x.name.toLowerCase()===item.name.toLowerCase()));
+  if(i>=0){item.id=cutTools[i].id;cutTools[i]=item;activeToolId=item.id;toast("Werkzeug aktualisiert")} else {cutTools.push(item);activeToolId=item.id;toast("Werkzeug gespeichert")}
+  renderToolBasket();
+}
+function updateActiveToolLive(){
+  if(suppressToolLive || !activeToolId) return;
+  const i=cutTools.findIndex(x=>x.id===activeToolId);
+  if(i<0 || !toolT() || !toolName()) return;
+  const item=toolSummaryFromInputs(); item.id=activeToolId; cutTools[i]=item; renderToolBasket(false);
+}
+function loadTool(id){
+  const item=cutTools.find(x=>x.id===id); if(!item) return;
+  suppressToolLive=true; activeToolId=id;
+  if($("toolT")) $("toolT").value=item.raw?.t||item.t||"";
+  if($("cutNote")) $("cutNote").value=item.raw?.note||item.name||"";
+  if($("toolLen")) $("toolLen").value=item.raw?.len||item.length||"";
+  if($("toolCoat")) $("toolCoat").value=item.raw?.coat||item.coating||"unbeschichtet";
+  if($("cutMat")) $("cutMat").value=item.raw?.mat||"steel";
+  if($("cutOp")) $("cutOp").value=item.raw?.op||"drill";
+  updateCutModeUI();
+  [["cutD","d"],["cutVc","vc"],["cutZ","z"],["cutFz","f"],["cutAp","ap"],["cutAe","ae"]].forEach(([id,k])=>{if($(id)) $(id).value=item.raw?.[k]||""});
+  suppressToolLive=false; calcSchnitt(); renderToolBasket(false); toast("Werkzeug geladen");
+}
+function deleteTool(id){
+  const item=cutTools.find(x=>x.id===id); if(!item) return;
+  if(!confirm(`Werkzeug ${item.t} – ${item.name} wirklich löschen?`)) return;
+  cutTools=cutTools.filter(x=>x.id!==id); if(activeToolId===id) activeToolId=null; renderToolBasket(); toast("Werkzeug gelöscht");
+}
+function renderToolBasket(showEmpty=true){
+  const list=$("toolBasketList"), empty=$("toolBasketEmpty"); if(!list) return;
+  list.innerHTML=cutTools.map(item=>`<div class="tool-mini-card ${item.id===activeToolId?'is-active':''}" onclick="loadTool('${item.id}')"><div class="tool-mini-top"><span>${escapeHtml(item.t)} · ${escapeHtml(item.name)}</span><span>${escapeHtml(item.op||'')}</span></div><div class="tool-mini-meta"><span>Ø ${escapeHtml(item.diameter||'-')} mm</span><span>L ${escapeHtml(item.length||'-')} mm</span><span>${escapeHtml(item.coating||'-')}</span></div><div class="tool-mini-actions"><button type="button" onclick="event.stopPropagation();loadTool('${item.id}')">Laden</button><button type="button" onclick="event.stopPropagation();deleteTool('${item.id}')">Löschen</button></div></div>`).join("");
+  if(empty) empty.style.display=cutTools.length?"none":"block";
+}
+function escapeHtml(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]))}
+function currentProjectPayload(){return {id:activeProjectId||("proj_"+Date.now()),name:($("cutProjectName")?.value||"Unbenanntes Projekt").trim(),ref:($("cutProjectRef")?.value||"").trim(),description:($("cutProjectDesc")?.value||"").trim(),tools:cutTools,updated:new Date().toISOString(),version:"Werkstatt-Rechner Metall Plus v9"}}
+function saveCutProject(){
+  if(!cutTools.length){toast("Erst Werkzeuge in den Korb legen");return}
+  const p=currentProjectPayload(); activeProjectId=p.id;
+  const arr=projectFolder(); const i=arr.findIndex(x=>x.id===p.id || (x.name||"").toLowerCase()===p.name.toLowerCase());
+  if(i>=0){p.id=arr[i].id;activeProjectId=p.id;arr[i]=p}else arr.unshift(p);
+  setProjectFolder(arr); toast("Projekt gespeichert");
+}
+function loadCutProject(id){
+  const p=projectFolder().find(x=>x.id===id); if(!p) return;
+  activeProjectId=p.id; cutTools=Array.isArray(p.tools)?p.tools:[]; activeToolId=null;
+  if($("cutProjectName")) $("cutProjectName").value=p.name||""; if($("cutProjectRef")) $("cutProjectRef").value=p.ref||""; if($("cutProjectDesc")) $("cutProjectDesc").value=p.description||"";
+  renderToolBasket(); projectDialog?.close(); toast("Projekt geladen");
+}
+function deleteCutProject(id){
+  const arr=projectFolder(); const p=arr.find(x=>x.id===id); if(!p) return;
+  if(!confirm(`Projekt „${p.name}“ wirklich löschen?`)) return;
+  setProjectFolder(arr.filter(x=>x.id!==id)); renderProjectDialog(); toast("Projekt gelöscht");
+}
+function openProjectDialog(){renderProjectDialog(); projectDialog.showModal()}
+function renderProjectDialog(){
+  const grid=$("projectGrid"); if(!grid) return; const q=($("projectSearch")?.value||"").toLowerCase();
+  const arr=projectFolder().filter(p=>((p.name||"")+" "+(p.ref||"")+" "+(p.description||"")).toLowerCase().includes(q));
+  grid.innerHTML=arr.length?arr.map(p=>`<article class="project-card"><h3>${escapeHtml(p.name||'Unbenannt')}</h3><p><b>${escapeHtml(p.ref||'')}</b></p><p>${escapeHtml(p.description||'')}</p><p>${(p.tools||[]).length} Werkzeug(e) · ${new Date(p.updated||Date.now()).toLocaleString('de-DE')}</p><div class="project-card-actions"><button class="btn btn-blue btn-small" onclick="loadCutProject('${p.id}')">Laden</button><button class="btn btn-red btn-small" onclick="deleteCutProject('${p.id}')">Löschen</button></div></article>`).join(""):`<div class="tool-empty">Noch keine gespeicherten Projekte gefunden.</div>`;
+}
+function exportProjectFolder(){
+  const data={type:"warenschmiede-werkstatt-rechner-schnittdaten-aktenordner",exported:new Date().toISOString(),projects:projectFolder()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="warenschmiede_schnittdaten_aktenordner.json"; a.click(); URL.revokeObjectURL(a.href);
+}
+function importProjectFolder(ev){
+  const file=ev.target.files?.[0]; if(!file) return; const r=new FileReader();
+  r.onload=()=>{try{const data=JSON.parse(r.result); const projects=Array.isArray(data.projects)?data.projects:(Array.isArray(data)?data:[]); setProjectFolder(projects); toast("Aktenordner geladen"); renderProjectDialog();}catch(e){alert("JSON konnte nicht gelesen werden.")}};
+  r.readAsText(file); ev.target.value="";
+}
+function printToolSheet(){
+  const p=currentProjectPayload(); if(!p.tools.length){toast("Keine Werkzeuge im Projekt");return}
+  const rows=p.tools.map(t=>`<tr><td>${escapeHtml(t.t)}</td><td>${escapeHtml(t.name)}</td><td>${escapeHtml(t.diameter)}</td><td>${escapeHtml(t.length)}</td><td>${escapeHtml(t.coating)}</td><td>${escapeHtml(t.material)}</td><td>${escapeHtml(t.op)}</td><td>${escapeHtml(t.values.vc)}</td><td>${escapeHtml(t.values.n)}</td><td>${escapeHtml(t.values.f)}</td><td>${escapeHtml(t.values.vf)}</td><td>${escapeHtml(t.values.ap)}</td><td>${escapeHtml(t.values.ae)}</td><td>${escapeHtml(t.values.time)}</td></tr>`).join("");
+  const w=window.open("","_blank"); if(!w) return;
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(p.name)} Werkzeugblatt</title><style>body{font-family:Arial,sans-serif;margin:24px;color:#111827}h1{margin:0 0 6px}p{color:#4b5563}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #cbd5e1;padding:6px;text-align:left}th{background:#eaf2f8}.note{margin:10px 0 18px;padding:10px;border:1px solid #cbd5e1;background:#f8fafc}@media print{button{display:none}}</style></head><body><button onclick="print()">Drucken / PDF speichern</button><h1>Werkzeug-Schnittdatenblatt</h1><p><b>Projekt:</b> ${escapeHtml(p.name)} ${p.ref?`· ${escapeHtml(p.ref)}`:""}</p><div class="note">${escapeHtml(p.description||"")}</div><table><thead><tr><th>T</th><th>Werkzeug</th><th>Ø</th><th>L</th><th>Beschichtung</th><th>Material</th><th>Bearbeitung</th><th>vc</th><th>n/S</th><th>f/fz</th><th>F/vf</th><th>ap/Tiefe</th><th>ae</th><th>Zeit</th></tr></thead><tbody>${rows}</tbody></table><p>Richtwerte prüfen. Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</p></body></html>`); w.document.close();
+}
+function saveHistory(type){ if(type==="schnitt") saveToolToBasket(); }
+function renderHistory(){ renderToolBasket(); }
 function copySummary(type){
   let txt="";
   if(type==="schnitt") txt=`Schnittdaten: Ø ${$("cutD").value} mm, vc ${$("cutVc").value} m/min, z ${$("cutZ").value}, fz ${$("cutFz").value} mm → n ${$("cutN").textContent} U/min, vf ${$("cutVf").textContent} mm/min`;
@@ -1089,7 +1239,7 @@ function copySummary(type){
   if(type==="angle") txt=`Winkel: ${$("angleRes1Label").textContent} ${$("angleRes1").textContent}, ${$("angleRes2Label").textContent} ${$("angleRes2").textContent}, ${$("angleRes3Label").textContent} ${$("angleRes3").textContent}`;
   navigator.clipboard?.writeText(txt).then(()=>toast("Kopiert")).catch(()=>alert(txt));
 }
-function calcAll(){calcSchnitt();calcTol();calcFit();calcThread();calcScrew();calcReverse();calcWeight();solveAngle()}
+function calcAll(){calcSchnitt();calcTol();calcFit();calcThread();calcScrew();calcReverse();calcWeight();solveAngle();updateActiveToolLive()}
 function init(){
   $$(".tab-btn").forEach(b=>b.onclick=()=>openTab(b.dataset.tab));
   $("btnTheme").onclick=()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==="dark"?"light":"dark"};
