@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Warenschmiede 3D-Druck Kostenrechner Plus</title>
-  <meta name="tool-version" content="1.9.3">
+  <meta name="tool-version" content="1.9.4">
   <meta name="description" content="Neutraler 3D-Druck Kostenrechner für Angebote, Rechnungen und Lieferscheine. Mit Presets, Logo, QR-Code, Steuertexten und lokaler Speicherung." />
   <meta name="robots" content="index, follow" />
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
@@ -341,7 +341,7 @@
           <div class="flex gap-4 items-start min-w-0">
             <template x-if="company.logo"><img :src="company.logo" :style="`width:${company.logoWidth}px`" class="object-contain max-h-24"></template>
             <div>
-              <h1 class="text-3xl font-extrabold text-slate-900 leading-none" x-text="company.name || 'Ihre Firma'"></h1>
+              <template x-if="company.showName !== false"><h1 class="text-3xl font-extrabold text-slate-900 leading-none" x-text="company.name || 'Ihre Firma'"></h1></template>
               <p class="text-sm font-bold text-slate-500 mt-2" x-text="company.slogan"></p>
             </div>
           </div>
@@ -356,7 +356,7 @@
 
         <section x-show="page.first" class="flex justify-between gap-8 mb-6">
           <div class="w-[90mm]">
-            <div class="text-[8px] underline text-slate-400 mb-2"><span x-text="company.name || 'Ihre Firma'"></span> · <span x-text="company.street"></span> · <span x-text="company.zip"></span> <span x-text="company.city"></span></div>
+            <div class="text-[8px] underline text-slate-400 mb-2"><span x-text="company.showName !== false ? (company.name || 'Ihre Firma') : (company.owner || '')"></span><template x-if="company.street || company.zip || company.city"><span> · <span x-text="company.street"></span> · <span x-text="company.zip"></span> <span x-text="company.city"></span></span></template></div>
             <div class="font-extrabold text-slate-900" x-text="customer.name || 'Kundenname'"></div>
             <div class="whitespace-pre-line text-slate-600 text-sm" x-text="customer.address"></div>
             <template x-if="customer.contact"><div class="text-xs text-slate-500 mt-2">Ansprechpartner: <span x-text="customer.contact"></span></div></template>
@@ -421,7 +421,7 @@
         </template>
 
         <footer class="mt-auto pt-4 border-t border-slate-200 grid grid-cols-[1fr_1fr_auto] gap-4 text-[8px] text-slate-500 uppercase leading-relaxed">
-          <div><strong class="block text-slate-800" x-text="company.name || 'Ihre Firma'"></strong><span x-text="company.street"></span><br><span x-text="company.zip"></span> <span x-text="company.city"></span></div>
+          <div><strong class="block text-slate-800" x-text="company.showName !== false ? (company.name || 'Ihre Firma') : (company.owner || company.name || '')"></strong><span x-text="company.street"></span><br><span x-text="company.zip"></span> <span x-text="company.city"></span></div>
           <div x-show="showBankOnDocument()"><strong class="block text-slate-800">Bankverbindung</strong>IBAN: <span x-text="payment.iban"></span><br>BIC: <span x-text="payment.bic"></span><br><span x-text="payment.bank"></span></div>
           <div class="text-right flex flex-col items-end gap-1">
             <div x-show="page.last && qr.enabled" class="qrPrint w-[72px] h-[72px]"></div>
@@ -471,7 +471,7 @@
           <section x-show="activeTab==='design'" class="space-y-4">
             <h3 class="font-extrabold text-slate-900">Logo & Design</h3>
             <div class="grid md:grid-cols-2 gap-4">
-              <div class="card p-4 space-y-3"><label class="label">Logo hochladen</label><input type="file" accept="image/*" class="input" @change="loadLogo"><template x-if="company.logo"><img :src="company.logo" class="max-h-28 object-contain bg-slate-50 rounded-xl p-2 border"></template><label class="label">Logo-Breite px</label><input type="range" min="50" max="180" x-model.number="company.logoWidth" class="w-full"></div>
+              <div class="card p-4 space-y-3"><label class="label">Logo hochladen</label><input type="file" accept="image/*" class="input" @change="loadLogo"><template x-if="company.logo"><img :src="company.logo" class="max-h-28 object-contain bg-slate-50 rounded-xl p-2 border"></template><label class="label">Logo-Breite px</label><input type="range" min="50" max="180" x-model.number="company.logoWidth" class="w-full"><label class="flex items-center justify-between gap-3 text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-xl p-3 cursor-pointer" @click="company.showName = company.showName === false ? true : false"><span><strong>Firmenname im Dokument anzeigen</strong><br><span class="text-xs text-slate-500">Ausschalten, wenn das Logo den Namen bereits enthält.</span></span><span class="toggle" :class="company.showName !== false ? 'on' : ''"></span></label></div>
               <div class="card p-4 space-y-3"><label class="label">Akzentfarbe</label><input type="color" class="input h-14" x-model="theme.color"><label class="label">Schriftfarbe auf Akzentflächen</label><input type="color" class="input h-14" x-model="theme.textColor"><p class="text-sm text-slate-500">Die Akzentfarbe wird für Buttons, Linien und Summen genutzt. Die Schriftfarbe hilft bei sehr hellen oder sehr dunklen Akzentfarben.</p></div>
             </div>
           </section>
@@ -725,10 +725,10 @@
 
 <script>
 function app(){ return {
-  appVersion:'1.9.3',
+  appVersion:'1.9.4',
   settingsOpen:false, historyOpen:false, preflightOpen:false, historyNotice:'', historySearch:'', historyDateFilter:'all', historySort:'newest', activeTab:'firma', tabs:[{id:'firma',label:'Firma'},{id:'design',label:'Logo & Design'},{id:'zahlung',label:'Zahlung'},{id:'steuer',label:'Steuer'},{id:'presets',label:'Presets'},{id:'qr',label:'QR-Code'},{id:'ausgabe',label:'Ausgabe'},{id:'daten',label:'Daten'}],
   theme:{color:'#2563eb', textColor:'#ffffff'},
-  company:{name:'',owner:'',slogan:'',street:'',zip:'',city:'',email:'',phone:'',logo:'',logoWidth:90},
+  company:{name:'',owner:'',slogan:'',street:'',zip:'',city:'',email:'',phone:'',logo:'',logoWidth:90,showName:true},
   customer:{name:'',address:'',id:'',contact:''},
   doc:{type:'angebot',number:'ANG-2026-001',date:new Date().toISOString().slice(0,10),project:'',validUntil:'',dueDate:''},
   payment:{bank:'',accountName:'',iban:'',bic:'',days:14,link:'',showOnOffer:false},
