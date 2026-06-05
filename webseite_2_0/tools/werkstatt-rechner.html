@@ -214,6 +214,30 @@
     .x{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--text);cursor:pointer}
     .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(18px);opacity:0;background:#0f172a;color:#fff;border-radius:999px;padding:11px 16px;font-weight:900;pointer-events:none;transition:.22s ease;z-index:80}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    /* v4 Verständlichkeit & Kompaktstart */
+    .shell{max-width:1620px;padding-top:14px}
+    .tabs-wrap{top:82px;margin:14px 0 16px}
+    .tabs{border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(232,241,249,.82));box-shadow:0 18px 44px -38px rgba(31,48,66,.65)}
+    .tab-btn.active{box-shadow:0 0 0 3px rgba(249,115,22,.13),0 13px 28px -22px var(--blue)}
+    .panel{background:linear-gradient(180deg,color-mix(in srgb,var(--paper) 96%,transparent),color-mix(in srgb,var(--paper-soft) 70%,var(--paper)));}
+    .panel-head{background:linear-gradient(135deg,rgba(47,142,223,.10),rgba(249,115,22,.035));}
+    .help-dot{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:999px;border:1px solid color-mix(in srgb,var(--blue) 48%,var(--line));background:var(--paper);color:var(--blue);font-size:.72rem;font-weight:1000;margin-left:5px;cursor:help;position:relative;text-transform:none;letter-spacing:0;vertical-align:middle}
+    .help-dot[data-tip]:hover:after,.help-dot[data-tip]:focus:after{content:attr(data-tip);position:absolute;left:50%;bottom:125%;transform:translateX(-50%);z-index:120;width:min(280px,70vw);padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--paper);box-shadow:0 20px 60px -38px rgba(15,23,42,.85);color:var(--text);font-size:.78rem;font-weight:700;line-height:1.4;text-align:left;letter-spacing:0;text-transform:none}
+    .cnc-display{margin-top:14px;border-radius:22px;padding:16px;border:1px solid color-mix(in srgb,var(--blue) 24%,var(--line));background:linear-gradient(145deg,#0c1726,#16273a);color:#dff7ff;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 18px 42px -36px rgba(15,23,42,.9);font-family:var(--mono)}
+    [data-theme="dark"] .cnc-display{background:linear-gradient(145deg,#07101c,#101f31)}
+    .cnc-screen-head{display:flex;justify-content:space-between;gap:12px;color:#65e7ff;font-size:.72rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+    .cnc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+    .cnc-line{display:flex;justify-content:space-between;gap:10px;border:1px solid rgba(101,231,255,.16);border-radius:12px;padding:9px 10px;background:rgba(255,255,255,.035)}
+    .cnc-line span{color:#7f9eb7;font-size:.78rem;font-weight:900}.cnc-line strong{color:#f8fbff;font-size:1rem}
+    .practice-card{margin-top:14px;border:1px solid color-mix(in srgb,var(--green) 26%,var(--line));border-radius:18px;background:linear-gradient(135deg,color-mix(in srgb,var(--green) 7%,var(--paper)),var(--paper));padding:14px;display:grid;gap:10px}
+    .practice-card h4{margin:0;font-size:.9rem;letter-spacing:.04em;text-transform:uppercase;color:var(--green)}
+    .practice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+    .practice-item{border:1px solid var(--line);background:color-mix(in srgb,var(--paper) 88%,transparent);border-radius:14px;padding:10px}.practice-item span{display:block;color:var(--muted);font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em}.practice-item strong{display:block;margin-top:4px;font-family:var(--mono);font-size:.96rem;color:var(--text)}
+    .help-under{margin-top:18px;border:1px solid color-mix(in srgb,var(--blue) 20%,var(--line));border-radius:18px;background:color-mix(in srgb,var(--blue) 5%,var(--paper));padding:14px;color:var(--muted);line-height:1.55;font-size:.88rem}.help-under b{color:var(--text)}
+    .triangle-visual{border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,var(--paper-soft),var(--paper));padding:14px;margin-bottom:14px}.triangle-visual svg{width:100%;height:260px;display:block}.tri-fill{fill:color-mix(in srgb,var(--blue) 10%,transparent);stroke:var(--blue);stroke-width:3}.tri-line{stroke:var(--orange);stroke-width:4;stroke-linecap:round}.tri-help{stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 6}.tri-label{font:800 15px var(--font);fill:var(--text)}.tri-small{font:700 12px var(--font);fill:var(--muted)}
+    @media(max-width:900px){.practice-grid,.cnc-grid{grid-template-columns:1fr}.tabs-wrap{top:72px}}
+
     @media(max-width:1050px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}.tabs-wrap{top:92px}}
     @media(max-width:720px){
       .topbar-inner{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}
@@ -245,29 +269,7 @@
   </header>
 
   <div class="shell">
-    <section class="hero">
-      <div>
-        <p class="eyebrow">Warenschmiede Werkstatt-Rechner</p>
-        <h2>Rechnen wie in der Werkstatt, nicht wie im Schulbuch.</h2>
-        <p>
-          Schnittdaten, Passungen, Gewinde, Schrauben, Gewicht und kleine Praxishelfer in einem hellen, ruhigen Tool.
-          Gedacht für schnelle Entscheidungen an PC, Tablet oder Smartphone – mit Richtwerten, Lernhinweisen und Export-Notizen.
-        </p>
-        <div class="pillrow">
-          <span class="pill">CNC</span><span class="pill">Werkzeugbau</span><span class="pill">Material</span><span class="pill">Toleranzen</span><span class="pill">lokal im Browser</span>
-        </div>
-      </div>
-      <div class="hero-card">
-        <p class="eyebrow">Auf einen Blick</p>
-        <ul class="hero-list">
-          <li>✓ <span><b>Schnittdaten:</b> Drehzahl, Vorschub und Zeitspanvolumen</span></li>
-          <li>✓ <span><b>Passungen:</b> H7/h6, H7/g6, H7/p6 und mehr</span></li>
-          <li>✓ <span><b>Gewinde:</b> M, MF, UNC und UNF mit Kernloch</span></li>
-          <li>✓ <span><b>Material:</b> Gewicht für Rund, Vierkant, Flach und Rohr</span></li>
-          <li>✓ <span><b>Praxis:</b> Notizen, Verlauf, Warnungen und Beispiele</span></li>
-        </ul>
-      </div>
-    </section>
+    <!-- v4: Großer Introbereich entfernt, damit Tabs und Rechner sofort sichtbar sind. -->
 
     <div class="tabs-wrap">
       <nav class="tabs" aria-label="Werkstatt-Rechner Bereiche">
@@ -295,11 +297,11 @@
             <button class="btn btn-blue" type="button" onclick="loadCutPreset()">⚡ Richtwerte laden</button>
             <div class="row">
               <div><label>Werkzeug-Ø d [mm]</label><input id="cutD" type="number" value="10" step="0.1"></div>
-              <div><label>Schnittgeschw. vc [m/min]</label><input id="cutVc" type="number" value="120" step="1"></div>
+              <div><label>Schnittgeschw. vc [m/min] <span class="help-dot" tabindex="0" data-tip="vc ist die Schnittgeschwindigkeit am Werkzeugumfang. Herstellerdaten sind genauer; Richtwerte im Tool sind Startwerte.">?</span></label><input id="cutVc" type="number" value="120" step="1"></div>
             </div>
             <div class="row">
               <div><label>Zähnezahl z</label><input id="cutZ" type="number" value="4" step="1"></div>
-              <div><label>Vorschub/Zahn fz [mm]</label><input id="cutFz" type="number" value="0.05" step="0.01"></div>
+              <div><label>Vorschub/Zahn fz [mm] <span class="help-dot" tabindex="0" data-tip="fz ist der Vorschub pro Schneide. Zusammen mit Zähnezahl und Drehzahl ergibt sich die Vorschubgeschwindigkeit vf.">?</span></label><input id="cutFz" type="number" value="0.05" step="0.01"></div>
             </div>
             <div class="row">
               <div><label>Schnitttiefe ap [mm]</label><input id="cutAp" type="number" placeholder="optional" step="0.1"></div>
@@ -317,6 +319,15 @@
             <div class="panel-body">
               <div class="result-main">
                 <div><small>Drehzahl n</small><div class="big" id="cutN">3820</div><div class="unit">U/min</div></div>
+              </div>
+              <div class="cnc-display" aria-label="CNC-Anzeige Schnittdaten">
+                <div class="cnc-screen-head"><span>CNC Schnellanzeige</span><span id="cncMode">FRÄSEN</span></div>
+                <div class="cnc-grid">
+                  <div class="cnc-line"><span>S</span><strong><span id="cncS">3820</span> U/min</strong></div>
+                  <div class="cnc-line"><span>F</span><strong><span id="cncF">764</span> mm/min</strong></div>
+                  <div class="cnc-line"><span>vc</span><strong><span id="cncVc">120</span> m/min</strong></div>
+                  <div class="cnc-line"><span>d</span><strong>Ø <span id="cncD">10</span> mm</strong></div>
+                </div>
               </div>
               <div class="result-list">
                 <div class="metric"><span>Vorschubgeschwindigkeit vf</span><strong><span id="cutVf">764</span> mm/min</strong></div>
@@ -371,7 +382,7 @@
           <div class="panel-head"><p class="eyebrow">ISO-Passungen</p><h3>Bohrung & Welle</h3><p>Typische Passungen als schneller Praxischeck.</p></div>
           <div class="panel-body form-grid">
             <div><label>Schnellauswahl</label><select id="fitPreset" onchange="applyFitPreset()"><option value="">Individuell</option><option value="H7-h6">H7 / h6 – leicht beweglich</option><option value="H7-g6">H7 / g6 – kleines Spiel</option><option value="H7-f7">H7 / f7 – enge Spielpassung</option><option value="H7-k6">H7 / k6 – Übergang</option><option value="H7-p6">H7 / p6 – Presssitz</option></select></div>
-            <div><label>Nennmaß [mm]</label><input id="fitDim" type="number" value="20" step="0.01"></div>
+            <div><label>Nennmaß [mm] <span class="help-dot" tabindex="0" data-tip="Das Nennmaß ist das Zeichnungsmaß der Passung, z. B. 20 mm bei H7/h6.">?</span></label><input id="fitDim" type="number" value="20" step="0.01"></div>
             <div class="row">
               <div><label>Bohrung</label><div class="row"><select id="holeChar"><option>H</option><option>G</option><option>F</option></select><select id="holeNum"><option>6</option><option selected>7</option><option>8</option></select></div></div>
               <div><label>Welle</label><div class="row"><select id="shaftChar"><option selected>h</option><option>g</option><option>f</option><option>k</option><option>p</option></select><select id="shaftNum"><option>5</option><option selected>6</option><option>7</option></select></div></div>
@@ -381,13 +392,23 @@
         </div>
         <div class="panel">
           <div class="panel-body">
-            <div class="visual"><img class="fit-visual-img" src="../assets/img/passungen01.png" alt="Übersicht Spielpassung, Übergangspassung und Presssitz"></div>
+            
+<div class="visual"><img class="fit-visual-img" src="../assets/img/passungen01.png" alt="Übersicht Spielpassung, Übergangspassung und Presssitz"></div>
             <div class="result-list">
               <div class="metric"><span>Passungsart</span><strong id="fitType" class="good">Spielpassung</strong></div>
               <div class="metric"><span>Bohrung Bereich</span><strong id="holeRange">20.000 – 20.021</strong></div>
               <div class="metric"><span>Welle Bereich</span><strong id="shaftRange">19.987 – 20.000</strong></div>
-              <div class="metric"><span>Spiel / Übermaß</span><strong id="fitValues">0 bis 34 µm Spiel</strong></div>
+              <div class="metric"><span>Spiel / Übermaß</span><strong id="fitValues">0 bis 34 µm Spiel (0,000 bis 0,034 mm)</strong></div>
             </div>
+            <div class="practice-card" aria-label="Praxisvorschlag Passung">
+              <h4>Praxisvorschlag</h4>
+              <div class="practice-grid">
+                <div class="practice-item"><span>Vorbohren</span><strong id="fitDrill">19.8 mm</strong></div>
+                <div class="practice-item"><span>Fertigmaß</span><strong id="fitFinish">20 H7</strong></div>
+                <div class="practice-item"><span>Werkzeug</span><strong id="fitTool">Reibahle prüfen</strong></div>
+              </div>
+            </div>
+            <div class="help-under"><b>Praxis:</b> Bei H7-Bohrungen wird oft vorgebohrt und danach gerieben. Die Werte sind Richtwerte; bei Passungen immer Zeichnung, Norm und betrieblichen Ablauf prüfen.</div>
           </div>
         </div>
       </div>
@@ -503,12 +524,26 @@
         </div>
         <div class="panel">
           <div class="panel-body">
+            <div class="triangle-visual" aria-label="Live-Winkelgrafik">
+              <svg viewBox="0 0 320 250" role="img">
+                <polygon id="triPoly" class="tri-fill" points="40,205 260,205 260,95"></polygon>
+                <line id="triBase" class="tri-help" x1="40" y1="205" x2="260" y2="205"></line>
+                <line id="triHeight" class="tri-help" x1="260" y1="205" x2="260" y2="95"></line>
+                <line id="triHyp" class="tri-line" x1="40" y1="205" x2="260" y2="95"></line>
+                <path id="triArc" d="M 70 205 A 30 30 0 0 0 66 190" fill="none" stroke="var(--orange)" stroke-width="3"></path>
+                <text id="triLabelA" class="tri-label" x="270" y="154">a 50</text>
+                <text id="triLabelB" class="tri-label" x="135" y="228">b 100</text>
+                <text id="triLabelC" class="tri-label" x="142" y="134">c 111.8</text>
+                <text id="triLabelAngle" class="tri-small" x="72" y="197">26.57°</text>
+              </svg>
+            </div>
             <div class="result-main"><div><small>Winkel α</small><div class="big"><span id="triAngle">26.57</span></div><div class="unit">Grad</div></div></div>
             <div class="result-list">
               <div class="metric"><span>Hypotenuse c</span><strong><span id="triC">111.80</span> mm</strong></div>
               <div class="metric"><span>Steigung</span><strong><span id="triSlope">50.0</span> %</strong></div>
               <div class="metric"><span>Verhältnis</span><strong id="triRatio">1 : 2.00</strong></div>
             </div>
+            <div class="help-under"><b>Live-Grafik:</b> Die Skizze passt sich an die eingegebenen Katheten an. So sieht man sofort, ob der Winkel flacher oder steiler wird.</div>
           </div>
         </div>
       </div>
@@ -588,6 +623,8 @@ function calcSchnitt(){
   const d=num("cutD"), vc=num("cutVc"), z=num("cutZ"), fz=num("cutFz"), ap=num("cutAp"), ae=num("cutAe");
   const n=d>0?(vc*1000)/(Math.PI*d):0, vf=n*z*fz, q=ap>0&&ae>0?(ap*ae*vf)/1000:0;
   setText("cutN",round(n,0)); setText("cutVf",round(vf,0)); setText("cutQ",q?round(q,1):"--");
+  setText("cncS",round(n,0)); setText("cncF",round(vf,0)); setText("cncVc",round(vc,0)); setText("cncD",round(d,1).replace(".0", ""));
+  const op=$("cutOp")?.value || ""; setText("cncMode", op==="turn" ? "DREHEN" : (op==="drill" ? "BOHREN" : "FRÄSEN"));
   const w=$("cutWarn"); w.className=""; 
   if(n>20000){w.textContent="sehr hoch";w.classList.add("bad")} else if(vf>3000){w.textContent="Vorschub hoch";w.classList.add("warn")} else {w.textContent="Richtwert prüfen";w.classList.add("good")}
 }
@@ -615,6 +652,14 @@ function renderTolTable(){
 }
 function applyFitPreset(){const v=$("fitPreset").value;if(!v)return;const [h,s]=v.split("-");$("holeChar").value=h[0];$("holeNum").value=h[1];$("shaftChar").value=s[0];$("shaftNum").value=s[1];calcFit()}
 function fitVals(dim,code){const e=fitData.find(x=>dim<=x.max);return e?e[code]:null}
+function updateFitPractice(d, holeCode, hmin, hmax){
+  const isH7 = /^H7$/.test(holeCode);
+  let allowance = d <= 10 ? 0.15 : d <= 30 ? 0.20 : d <= 80 ? 0.30 : 0.50;
+  const pre = Math.max(0, d - allowance);
+  setText("fitDrill", round(pre,2).replace(/\.00$/,"" ) + " mm");
+  setText("fitFinish", isH7 ? (round(d,3).replace(/\.000$/,"" ) + " H7") : (holeCode + " / " + round(hmin,3) + "–" + round(hmax,3)));
+  setText("fitTool", isH7 ? "Reibahle " + round(d,3).replace(/\.000$/,"" ) + " H7" : "nach Tabelle prüfen");
+}
 function calcFit(){
   const d=num("fitDim"), hc=$("holeChar").value+$("holeNum").value, sc=$("shaftChar").value+$("shaftNum").value;
   let hv=fitVals(d,hc), sv=fitVals(d,sc);
@@ -622,10 +667,20 @@ function calcFit(){
   const hmax=d+hv[0]/1000,hmin=d+hv[1]/1000,smax=d+sv[0]/1000,smin=d+sv[1]/1000;
   const maxClear=hmax-smin,minClear=hmin-smax;
   setText("holeRange",`${round(hmin,3)} – ${round(hmax,3)}`); setText("shaftRange",`${round(smin,3)} – ${round(smax,3)}`);
+  updateFitPractice(d,hc,hmin,hmax);
   const ft=$("fitType"); ft.className="";
-  if(minClear>=0){ft.textContent="Spielpassung";ft.classList.add("good");setText("fitValues",`${round(minClear*1000,0)} bis ${round(maxClear*1000,0)} µm Spiel`)}
-  else if(maxClear<=0){ft.textContent="Übermaßpassung";ft.classList.add("bad");setText("fitValues",`${round(Math.abs(maxClear)*1000,0)} bis ${round(Math.abs(minClear)*1000,0)} µm Übermaß`)}
-  else{ft.textContent="Übergangspassung";ft.classList.add("warn");setText("fitValues",`${round(Math.abs(minClear)*1000,0)} µm Übermaß bis ${round(maxClear*1000,0)} µm Spiel`)}
+  if(minClear>=0){
+    ft.textContent="Spielpassung";ft.classList.add("good");
+    setText("fitValues",`${round(minClear*1000,0)} bis ${round(maxClear*1000,0)} µm Spiel (${round(minClear,3)} bis ${round(maxClear,3)} mm)`)
+  }
+  else if(maxClear<=0){
+    ft.textContent="Übermaßpassung";ft.classList.add("bad");
+    setText("fitValues",`${round(Math.abs(maxClear)*1000,0)} bis ${round(Math.abs(minClear)*1000,0)} µm Übermaß (${round(Math.abs(maxClear),3)} bis ${round(Math.abs(minClear),3)} mm)`)
+  }
+  else{
+    ft.textContent="Übergangspassung";ft.classList.add("warn");
+    setText("fitValues",`${round(Math.abs(minClear)*1000,0)} µm Übermaß bis ${round(maxClear*1000,0)} µm Spiel (${round(Math.abs(minClear),3)} mm Übermaß bis ${round(maxClear,3)} mm Spiel)`)
+  }
 }
 function initThreads(){
   const tt=$("threadType"); tt.innerHTML=Object.keys(threads).map(k=>`<option>${k}</option>`).join("");
@@ -655,7 +710,19 @@ function calcWeight(){
   const lift=$("matLift"); lift.className="";
   if(kg>=25){lift.textContent="Hebehilfe/Kran einplanen";lift.classList.add("bad")} else if(kg>=15){lift.textContent="vorsichtig heben";lift.classList.add("warn")} else {lift.textContent="von Hand meist unkritisch";lift.classList.add("good")}
 }
-function calcTriangle(){const a=num("triA"),b=num("triB"), c=Math.hypot(a,b), ang=Math.atan2(a,b)*180/Math.PI;setText("triAngle",round(ang,2));setText("triC",round(c,2));setText("triSlope",b?round(a/b*100,1):"--");setText("triRatio",b?`1 : ${round(b/a,2)}`:"--")}
+function setAttr(id,attrs){const e=$(id); if(!e)return; Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));}
+function calcTriangle(){
+  const a=num("triA"),b=num("triB"), c=Math.hypot(a,b), ang=Math.atan2(a,b)*180/Math.PI;
+  setText("triAngle",round(ang,2));setText("triC",round(c,2));setText("triSlope",b?round(a/b*100,1):"--");setText("triRatio",b?`1 : ${round(b/a,2)}`:"--");
+  const maxSide=Math.max(a,b,1), base=210*(b/maxSide), height=150*(a/maxSide);
+  const x0=45,y0=205,x1=x0+Math.max(40,base),y1=y0-Math.max(30,height);
+  setAttr("triPoly",{points:`${x0},${y0} ${x1},${y0} ${x1},${y1}`});
+  setAttr("triBase",{x1:x0,y1:y0,x2:x1,y2:y0}); setAttr("triHeight",{x1:x1,y1:y0,x2:x1,y2:y1}); setAttr("triHyp",{x1:x0,y1:y0,x2:x1,y2:y1});
+  setText("triLabelA",`a ${round(a,1)} mm`); setText("triLabelB",`b ${round(b,1)} mm`); setText("triLabelC",`c ${round(c,1)} mm`); setText("triLabelAngle",`${round(ang,2)}°`);
+  setAttr("triLabelA",{x:x1+8,y:(y0+y1)/2}); setAttr("triLabelB",{x:(x0+x1)/2-25,y:y0+22}); setAttr("triLabelC",{x:(x0+x1)/2-18,y:(y0+y1)/2-12});
+  const r=30, theta=ang*Math.PI/180, ax=x0+r, ay=y0, ex=x0+r*Math.cos(theta), ey=y0-r*Math.sin(theta), large=ang>180?1:0;
+  setAttr("triArc",{d:`M ${ax} ${ay} A ${r} ${r} 0 ${large} 0 ${ex} ${ey}`}); setAttr("triLabelAngle",{x:x0+34,y:y0-10});
+}
 function saveHistory(type){
   let item={time:new Date().toLocaleString("de-DE")};
   if(type==="schnitt"){item.title=$("cutNote").value||"Schnittdaten"; item.text=`n ${$("cutN").textContent} U/min · vf ${$("cutVf").textContent} mm/min · Ø ${$("cutD").value} · vc ${$("cutVc").value}`;}
