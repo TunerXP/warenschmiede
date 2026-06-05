@@ -252,9 +252,12 @@
     .panel{background:linear-gradient(180deg,color-mix(in srgb,var(--paper) 96%,transparent),color-mix(in srgb,var(--paper-soft) 70%,var(--paper)));}
     .panel-head{background:linear-gradient(135deg,rgba(47,142,223,.10),rgba(249,115,22,.035));}
     .help-dot{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:999px;border:1px solid color-mix(in srgb,var(--blue) 48%,var(--line));background:var(--paper);color:var(--blue);font-size:.72rem;font-weight:1000;margin-left:5px;cursor:help;position:relative;text-transform:none;letter-spacing:0;vertical-align:middle;z-index:20}
-    .help-dot[data-tip]:hover:after,.help-dot[data-tip]:focus:after{content:attr(data-tip);position:absolute;right:0;left:auto;top:calc(100% + 10px);transform:none;z-index:260;width:min(310px,72vw);padding:12px 13px;border-radius:14px;border:1px solid color-mix(in srgb,var(--blue) 28%,var(--line));background:#fff;box-shadow:0 18px 44px -26px rgba(15,23,42,.85);color:#102033;font-size:.78rem;font-weight:760;line-height:1.45;text-align:left;letter-spacing:0;text-transform:none;white-space:normal;filter:none;opacity:1}
-    .help-dot[data-tip]:hover:before,.help-dot[data-tip]:focus:before{content:"";position:absolute;right:4px;left:auto;top:calc(100% + 4px);transform:rotate(45deg);width:12px;height:12px;background:#fff;border-left:1px solid color-mix(in srgb,var(--blue) 28%,var(--line));border-top:1px solid color-mix(in srgb,var(--blue) 28%,var(--line));z-index:261}
-    @media(max-width:760px){.help-dot[data-tip]:hover:after,.help-dot[data-tip]:focus:after{right:auto;left:0;top:130%;transform:none}.help-dot[data-tip]:hover:before,.help-dot[data-tip]:focus:before{display:none}}
+    .ws-help-pop{position:fixed;z-index:12000;max-width:min(340px,calc(100vw - 24px));padding:12px 13px;border-radius:14px;border:1px solid color-mix(in srgb,var(--blue) 34%,var(--line));background:#fff;color:#102033;box-shadow:0 18px 44px -24px rgba(15,23,42,.88);font-size:.78rem;font-weight:760;line-height:1.45;text-align:left;letter-spacing:0;text-transform:none;white-space:normal;pointer-events:none;filter:none;text-shadow:none;opacity:0;transform:translateY(4px);transition:opacity .10s ease, transform .10s ease}
+    .ws-help-pop.show{opacity:1;transform:translateY(0)}
+    .ws-help-pop:before{content:"";position:absolute;left:var(--arrow-left,22px);top:-7px;width:12px;height:12px;background:#fff;border-left:1px solid color-mix(in srgb,var(--blue) 34%,var(--line));border-top:1px solid color-mix(in srgb,var(--blue) 34%,var(--line));transform:rotate(45deg)}
+    .ws-help-pop.above:before{top:auto;bottom:-7px;border-left:0;border-top:0;border-right:1px solid color-mix(in srgb,var(--blue) 34%,var(--line));border-bottom:1px solid color-mix(in srgb,var(--blue) 34%,var(--line))}
+    html[data-theme="dark"] .ws-help-pop{background:#111827;color:#e6edf7;border-color:#365476;box-shadow:0 18px 44px -20px rgba(0,0,0,.95)}
+    html[data-theme="dark"] .ws-help-pop:before{background:#111827;border-color:#365476}
 
     .cut-mode-hint{border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));background:color-mix(in srgb,var(--blue) 5%,var(--paper));border-left:4px solid var(--blue);border-radius:16px;padding:11px 12px;color:var(--muted);font-size:.84rem;line-height:1.45}
     .cut-mode-hint b{color:var(--text)}
@@ -291,8 +294,6 @@
     #tab-schnitt .compact-result .result-main{display:none}
     #tab-schnitt .cnc-screen-head span:first-child{font-size:.82rem;letter-spacing:.1em}
     #tab-schnitt .result-list .metric.vf-duplicate{display:none}
-    #tab-schnitt .help-dot[data-tip]:hover:after,#tab-schnitt .help-dot[data-tip]:focus:after{position:fixed;left:50%;right:auto;top:96px;transform:translateX(-50%);width:min(560px,calc(100vw - 42px));background:#102033;color:#f7fbff;border-color:#315b82;box-shadow:0 22px 60px -22px rgba(15,23,42,.9);z-index:10050;text-shadow:none;filter:none;opacity:1}
-    #tab-schnitt .help-dot[data-tip]:hover:before,#tab-schnitt .help-dot[data-tip]:focus:before{display:none}
 
     @media print{.topbar,.tabs-wrap,.hero,.btn,.history,.footer-note{display:none!important}body{background:#fff}.shell{padding:0}.panel{box-shadow:none;border:0}.tab{display:block!important}}
 
@@ -1356,7 +1357,56 @@ function copySummary(type){
   navigator.clipboard?.writeText(txt).then(()=>toast("Kopiert")).catch(()=>alert(txt));
 }
 function calcAll(){calcSchnitt();calcTol();calcFit();calcThread();calcScrew();calcReverse();calcWeight();solveAngle();updateActiveToolLive()}
+function initHelpTips(){
+  let pop = document.querySelector('.ws-help-pop');
+  if(!pop){
+    pop = document.createElement('div');
+    pop.className = 'ws-help-pop';
+    document.body.appendChild(pop);
+  }
+  let active = null;
+  function place(el){
+    const text = el.getAttribute('data-tip') || '';
+    if(!text) return;
+    active = el;
+    pop.textContent = text;
+    pop.classList.add('show');
+    pop.style.left = '0px';
+    pop.style.top = '0px';
+    pop.style.setProperty('--arrow-left','22px');
+    const r = el.getBoundingClientRect();
+    const pw = pop.offsetWidth || 320;
+    const ph = pop.offsetHeight || 80;
+    const margin = 12;
+    let left = r.left + r.width / 2 - pw / 2;
+    left = Math.max(margin, Math.min(left, window.innerWidth - pw - margin));
+    let top = r.bottom + 10;
+    if(top + ph > window.innerHeight - margin){
+      top = Math.max(margin, r.top - ph - 10);
+      pop.classList.add('above');
+    } else {
+      pop.classList.remove('above');
+    }
+    const arrow = Math.max(14, Math.min(pw - 22, r.left + r.width/2 - left - 6));
+    pop.style.left = left + 'px';
+    pop.style.top = top + 'px';
+    pop.style.setProperty('--arrow-left', arrow + 'px');
+  }
+  function hide(el){
+    if(el && active && el !== active) return;
+    active = null;
+    pop.classList.remove('show');
+  }
+  document.addEventListener('mouseover', e => { const el = e.target.closest?.('.help-dot[data-tip]'); if(el) place(el); });
+  document.addEventListener('focusin', e => { const el = e.target.closest?.('.help-dot[data-tip]'); if(el) place(el); });
+  document.addEventListener('mouseout', e => { const el = e.target.closest?.('.help-dot[data-tip]'); if(el && !el.contains(e.relatedTarget)) hide(el); });
+  document.addEventListener('focusout', e => { const el = e.target.closest?.('.help-dot[data-tip]'); if(el) hide(el); });
+  window.addEventListener('scroll', () => { if(active) place(active); }, true);
+  window.addEventListener('resize', () => { if(active) place(active); });
+}
+
 function init(){
+  initHelpTips();
   $$(".tab-btn").forEach(b=>b.onclick=()=>openTab(b.dataset.tab));
   $("btnTheme").onclick=()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==="dark"?"light":"dark"};
   $("btnHelp").onclick=()=>helpDialog.showModal();
