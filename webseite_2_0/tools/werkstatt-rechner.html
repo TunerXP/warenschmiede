@@ -246,6 +246,30 @@
       .hide-mobile{display:none}
     }
     @media print{.topbar,.tabs-wrap,.hero,.btn,.history,.footer-note{display:none!important}body{background:#fff}.shell{padding:0}.panel{box-shadow:none;border:0}.tab{display:block!important}}
+
+    /* v5 Winkel-Profi: kompakte Live-Geometrie im Werkstatt-Rechner */
+    .angle-tool{display:grid;grid-template-columns:minmax(320px,.95fr) minmax(340px,1.05fr);gap:18px;align-items:stretch}
+    .angle-visual-card{border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,var(--paper-soft),var(--paper));overflow:hidden;box-shadow:var(--shadow)}
+    .angle-visual-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--paper) 88%,transparent)}
+    .angle-visual-head b{font-size:.95rem}.angle-visual-head span{font-size:.78rem;color:var(--muted);font-weight:850}
+    .angle-stage{min-height:360px;display:grid;place-items:center;padding:18px;background:radial-gradient(circle at 50% 15%,color-mix(in srgb,var(--blue) 9%,transparent),transparent 28rem)}
+    .angle-stage svg{width:100%;max-width:520px;height:330px;display:block;overflow:visible}
+    .angle-shape{fill:color-mix(in srgb,var(--blue) 10%,transparent);stroke:var(--blue);stroke-width:2.6;stroke-linejoin:round;filter:drop-shadow(0 12px 18px rgba(15,23,42,.10))}
+    .angle-help-line{stroke:color-mix(in srgb,var(--muted) 56%,transparent);stroke-dasharray:5 4;stroke-width:1.3}
+    .angle-dim{stroke:var(--orange);stroke-width:2.2;fill:none;marker-start:url(#angleArrow);marker-end:url(#angleArrow)}
+    .angle-label{font-family:var(--mono);font-size:12px;font-weight:900;fill:var(--text)}
+    .angle-small{font-family:var(--mono);font-size:11px;font-weight:900;fill:var(--orange)}
+    .angle-modebar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
+    .angle-mode-btn{border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:15px;padding:11px 10px;font-weight:950;cursor:pointer;transition:.16s ease}
+    .angle-mode-btn.active{background:linear-gradient(135deg,var(--blue),var(--blue2));border-color:transparent;color:#fff;box-shadow:0 14px 28px -22px var(--blue)}
+    .angle-input.calculated{background:color-mix(in srgb,var(--green) 10%,var(--paper));border-color:color-mix(in srgb,var(--green) 45%,var(--line));color:var(--green);font-weight:900}
+    .angle-input.driver{background:var(--paper);border-color:color-mix(in srgb,var(--blue) 55%,var(--line));box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 12%,transparent)}
+    .angle-hidden{display:none!important}
+    .angle-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:14px 16px;border-top:1px solid var(--line);background:color-mix(in srgb,var(--paper) 88%,transparent)}
+    .angle-result{border:1px solid var(--line);border-radius:14px;background:var(--paper-soft);padding:10px 12px;text-align:center}
+    .angle-result span{display:block;color:var(--muted);font-size:.68rem;font-weight:950;letter-spacing:.07em;text-transform:uppercase}.angle-result strong{font-family:var(--mono);font-size:1.05rem;color:var(--text)}
+    .angle-hint{border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));border-left:4px solid var(--blue);background:color-mix(in srgb,var(--blue) 6%,var(--paper));border-radius:16px;padding:12px 13px;color:var(--muted);font-size:.86rem;line-height:1.45}
+    @media(max-width:1050px){.angle-tool{grid-template-columns:1fr}.angle-stage{min-height:300px}.angle-stage svg{height:290px}.angle-results{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -452,7 +476,7 @@
           <div class="panel-body form-grid">
             <div class="row">
               <div><label>Schraubenart</label><select id="scrType"><option value="912">Zylinderkopf DIN 912</option><option value="7991">Senkkopf DIN 7991</option></select></div>
-              <div><label>Größe</label><select id="scrSize"><option>M3</option><option>M4</option><option>M5</option><option selected>M6</option><option>M8</option><option>M10</option><option>M12</option><option>M16</option></select></div>
+              <div><label>Größe</label><select id="scrSize"><option>M1</option><option>M1.2</option><option>M1.4</option><option>M1.6</option><option>M2</option><option>M2.5</option><option>M3</option><option>M4</option><option>M5</option><option selected>M6</option><option>M8</option><option>M10</option><option>M12</option><option>M14</option><option>M16</option><option>M20</option><option>M24</option></select></div>
             </div>
             <div><label>Spielklasse</label><select id="scrFit"><option value="f">eng</option><option value="m" selected>mittel</option><option value="c">groß</option></select></div>
             <div class="footer-note">Die Werte sind Richtwerte für schnelle Planung. Bei Zeichnungen und Serienfertigung gelten die angegebenen Normen und Firmenstandards.</div>
@@ -511,43 +535,89 @@
 
     <!-- Winkel -->
     <section class="tab" id="tab-winkel">
-      <div class="grid">
-        <div class="panel">
-          <div class="panel-head"><p class="eyebrow">Winkel & Dreieck</p><h3>Rechtwinkliges Dreieck</h3><p>Für Zuschnitt, Vorrichtungen, Anreißen und schnelle Skizzen.</p></div>
-          <div class="panel-body form-grid">
-            <div class="row">
-              <div><label>Gegenkathete a [mm]</label><input id="triA" type="number" value="50"></div>
-              <div><label>Ankathete b [mm]</label><input id="triB" type="number" value="100"></div>
-            </div>
-            <div class="footer-note">Berechnet Winkel α = atan(a/b), Hypotenuse und Steigung. Ideal für schnelle Plausibilitätschecks.</div>
+      <div class="angle-tool">
+        <div class="angle-visual-card">
+          <div class="angle-visual-head"><b>Live-Winkelansicht</b><span id="angleModeLabel">Rechtwinkliges Dreieck</span></div>
+          <div class="angle-stage">
+            <svg id="angleSvg" viewBox="0 0 420 340" role="img" aria-label="Live-Geometrie">
+              <defs>
+                <marker id="angleArrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+                  <path d="M0,0 L7,3.5 L0,7 Z" fill="var(--orange)"></path>
+                </marker>
+              </defs>
+              <g id="angleTriangleGroup">
+                <polygon id="angleTriPoly" class="angle-shape" points="60,270 330,270 330,110"></polygon>
+                <line id="angleBaseHelp" class="angle-help-line" x1="60" y1="270" x2="330" y2="270"></line>
+                <line id="angleHeightHelp" class="angle-help-line" x1="330" y1="270" x2="330" y2="110"></line>
+                <path id="angleArc" d="M92,270 A32,32 0 0 0 88,252" fill="none" stroke="var(--orange)" stroke-width="3"></path>
+                <text id="angleLblA" class="angle-label" x="340" y="190">a</text>
+                <text id="angleLblB" class="angle-label" x="190" y="300">b</text>
+                <text id="angleLblC" class="angle-label" x="200" y="170">c</text>
+                <text id="angleLblAlpha" class="angle-small" x="96" y="258">α</text>
+                <text id="angleLblBeta" class="angle-small" x="310" y="258">β</text>
+                <text id="angleLblGamma" class="angle-small" x="318" y="128">γ</text>
+              </g>
+              <g id="angleTaperGroup" class="angle-hidden">
+                <path id="taperBody" d="M60,90 L360,125 L360,215 L60,250 Z" class="angle-shape"></path>
+                <line x1="40" y1="170" x2="382" y2="170" class="angle-help-line"></line>
+                <line x1="52" y1="90" x2="52" y2="250" class="angle-dim"></line>
+                <line x1="368" y1="125" x2="368" y2="215" class="angle-dim"></line>
+                <line x1="60" y1="282" x2="360" y2="282" class="angle-dim"></line>
+                <text class="angle-label" x="24" y="174">D</text>
+                <text class="angle-label" x="384" y="174">d</text>
+                <text class="angle-label" x="202" y="310">L</text>
+                <text id="taperAngleLabel" class="angle-small" x="225" y="126">α/2</text>
+              </g>
+            </svg>
+          </div>
+          <div class="angle-results">
+            <div class="angle-result"><span id="angleRes1Label">Winkel α</span><strong id="angleRes1">26.57°</strong></div>
+            <div class="angle-result"><span id="angleRes2Label">Seite c</span><strong id="angleRes2">111.80 mm</strong></div>
+            <div class="angle-result"><span id="angleRes3Label">Steigung</span><strong id="angleRes3">50.0%</strong></div>
           </div>
         </div>
+
         <div class="panel">
-          <div class="panel-body">
-            <div class="triangle-visual" aria-label="Live-Winkelgrafik">
-              <svg viewBox="0 0 320 250" role="img">
-                <polygon id="triPoly" class="tri-fill" points="40,205 260,205 260,95"></polygon>
-                <line id="triBase" class="tri-help" x1="40" y1="205" x2="260" y2="205"></line>
-                <line id="triHeight" class="tri-help" x1="260" y1="205" x2="260" y2="95"></line>
-                <line id="triHyp" class="tri-line" x1="40" y1="205" x2="260" y2="95"></line>
-                <path id="triArc" d="M 70 205 A 30 30 0 0 0 66 190" fill="none" stroke="var(--orange)" stroke-width="3"></path>
-                <text id="triLabelA" class="tri-label" x="270" y="154">a 50</text>
-                <text id="triLabelB" class="tri-label" x="135" y="228">b 100</text>
-                <text id="triLabelC" class="tri-label" x="142" y="134">c 111.8</text>
-                <text id="triLabelAngle" class="tri-small" x="72" y="197">26.57°</text>
-              </svg>
+          <div class="panel-head"><p class="eyebrow">Winkel & Geometrie</p><h3>Werkstatt-Geometrie</h3><p>Werte eingeben, Ergebnis und Skizze ändern sich live. Grün markierte Felder wurden berechnet.</p></div>
+          <div class="panel-body form-grid">
+            <div class="angle-modebar" aria-label="Winkelmodus wählen">
+              <button class="angle-mode-btn active" id="angleModeRight" type="button" onclick="setAngleMode('right')">📐 Rechtwinklig</button>
+              <button class="angle-mode-btn" id="angleModeGeneral" type="button" onclick="setAngleMode('general')">△ Allgemein</button>
+              <button class="angle-mode-btn" id="angleModeTaper" type="button" onclick="setAngleMode('taper')">🔩 Kegel</button>
             </div>
-            <div class="result-main"><div><small>Winkel α</small><div class="big"><span id="triAngle">26.57</span></div><div class="unit">Grad</div></div></div>
-            <div class="result-list">
-              <div class="metric"><span>Hypotenuse c</span><strong><span id="triC">111.80</span> mm</strong></div>
-              <div class="metric"><span>Steigung</span><strong><span id="triSlope">50.0</span> %</strong></div>
-              <div class="metric"><span>Verhältnis</span><strong id="triRatio">1 : 2.00</strong></div>
+
+            <div id="angleTriangleInputs" class="form-grid">
+              <div class="angle-hint" id="angleHint">Gib beim rechtwinkligen Dreieck zwei Werte ein. Das Tool ergänzt den Rest automatisch.</div>
+              <div class="row-3">
+                <div><label>Seite a [mm]</label><input class="angle-input" id="angA" type="number" step="0.01" value="50" placeholder="z. B. 50" oninput="angleTyped(this)"></div>
+                <div><label>Seite b [mm]</label><input class="angle-input" id="angB" type="number" step="0.01" value="100" placeholder="z. B. 100" oninput="angleTyped(this)"></div>
+                <div><label id="angCLabel">Seite c / Hypotenuse [mm]</label><input class="angle-input" id="angC" type="number" step="0.01" placeholder="berechnet" oninput="angleTyped(this)"></div>
+              </div>
+              <div class="row-3">
+                <div><label>Winkel α [°]</label><input class="angle-input" id="angAlpha" type="number" step="0.01" placeholder="berechnet" oninput="angleTyped(this)"></div>
+                <div><label>Winkel β [°]</label><input class="angle-input" id="angBeta" type="number" step="0.01" placeholder="berechnet" oninput="angleTyped(this)"></div>
+                <div><label>Winkel γ [°]</label><input class="angle-input" id="angGamma" type="number" step="0.01" value="90" disabled oninput="angleTyped(this)"></div>
+              </div>
             </div>
-            <div class="help-under"><b>Live-Grafik:</b> Die Skizze passt sich an die eingegebenen Katheten an. So sieht man sofort, ob der Winkel flacher oder steiler wird.</div>
+
+            <div id="angleTaperInputs" class="form-grid angle-hidden">
+              <div class="angle-hint">Für Drehbank/Kegel: großen Ø, kleinen Ø und Kegellänge eingeben. Ergebnis ist der Oberschlitten-/Einstellwinkel α/2.</div>
+              <div class="row-3">
+                <div><label>Großer Ø D [mm]</label><input id="tapD" type="number" step="0.01" value="40"></div>
+                <div><label>Kleiner Ø d [mm]</label><input id="tapd" type="number" step="0.01" value="30"></div>
+                <div><label>Kegellänge L [mm]</label><input id="tapL" type="number" step="0.01" value="100"></div>
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn" type="button" onclick="resetAngle()">Winkelwerte löschen</button>
+              <button class="btn btn-blue" type="button" onclick="copySummary('angle')">Winkel kopieren</button>
+            </div>
+            <div class="help-under"><b>Praxis:</b> Rechtwinklig ist ideal für Zuschnitt, Anreißen und Vorrichtungen. Allgemein hilft bei schrägen Dreiecken. Kegel ist für Drehbank-/Oberschlitten-Einstellung gedacht.</div>
           </div>
         </div>
       </div>
     </section>
+
 
   </div>
 
@@ -591,12 +661,18 @@ const fitData=[
   {max:500,H7:[63,0],H8:[97,0],h6:[0,-40],g6:[-20,-60],f7:[-68,-131],k6:[45,5],p6:[108,68]}
 ];
 const threads={
- "Metrisch Regel (M)":{"M3":2.5,"M4":3.3,"M5":4.2,"M6":5.0,"M8":6.8,"M10":8.5,"M12":10.2,"M14":12.0,"M16":14.0,"M18":15.5,"M20":17.5,"M24":21.0,"M30":26.5,"M36":32.0},
- "Metrisch Fein (MF)":{"M6 x 0.75":5.25,"M8 x 1.0":7.0,"M10 x 1.0":9.0,"M10 x 1.25":8.8,"M12 x 1.5":10.5,"M16 x 1.5":14.5,"M20 x 1.5":18.5,"M24 x 2.0":22.0,"M30 x 2.0":28.0},
+ "Metrisch Regel (M)":{"M1":0.75,"M1.2":0.95,"M1.4":1.10,"M1.6":1.25,"M2":1.60,"M2.5":2.05,"M3":2.50,"M4":3.30,"M5":4.20,"M6":5.00,"M8":6.80,"M10":8.50,"M12":10.20,"M14":12.00,"M16":14.00,"M18":15.50,"M20":17.50,"M24":21.00,"M30":26.50,"M36":32.00},
+ "Metrisch Fein (MF)":{"M3 x 0.35":2.65,"M4 x 0.5":3.50,"M5 x 0.5":4.50,"M6 x 0.75":5.25,"M8 x 1.0":7.00,"M10 x 1.0":9.00,"M10 x 1.25":8.80,"M12 x 1.5":10.50,"M16 x 1.5":14.50,"M20 x 1.5":18.50,"M24 x 2.0":22.00,"M30 x 2.0":28.00},
  "UNC":{"1/4-20":5.1,"5/16-18":6.6,"3/8-16":8.0,"7/16-14":9.4,"1/2-13":10.8,"5/8-11":13.5,"3/4-10":16.5},
  "UNF":{"1/4-28":5.5,"5/16-24":6.9,"3/8-24":8.5,"7/16-20":9.9,"1/2-20":11.5,"5/8-18":14.5,"3/4-16":17.5}
 };
 const screw={
+ M1:{holes:{f:1.1,m:1.2,c:1.3},dk:2.0,k:1.0,cb:2.4,cs:2.2},
+ "M1.2":{holes:{f:1.3,m:1.4,c:1.5},dk:2.3,k:1.2,cb:2.7,cs:2.6},
+ "M1.4":{holes:{f:1.5,m:1.6,c:1.7},dk:2.6,k:1.4,cb:3.0,cs:3.0},
+ "M1.6":{holes:{f:1.7,m:1.8,c:2.0},dk:3.0,k:1.6,cb:3.5,cs:3.4},
+ M2:{holes:{f:2.2,m:2.4,c:2.6},dk:3.8,k:2.0,cb:4.4,cs:4.4},
+ "M2.5":{holes:{f:2.7,m:2.9,c:3.1},dk:4.5,k:2.5,cb:5.0,cs:5.5},
  M3:{holes:{f:3.2,m:3.4,c:3.6},dk:5.5,k:3,cb:6.5,cs:6.3},
  M4:{holes:{f:4.3,m:4.5,c:4.8},dk:7,k:4,cb:8,cs:8.4},
  M5:{holes:{f:5.3,m:5.5,c:5.8},dk:8.5,k:5,cb:10,cs:10.4},
@@ -604,7 +680,10 @@ const screw={
  M8:{holes:{f:8.4,m:9.0,c:10.0},dk:13,k:8,cb:15,cs:16.5},
  M10:{holes:{f:10.5,m:11.0,c:12.0},dk:16,k:10,cb:18,cs:20.5},
  M12:{holes:{f:13.0,m:13.5,c:14.5},dk:18,k:12,cb:20,cs:24.8},
- M16:{holes:{f:17.0,m:17.5,c:18.5},dk:24,k:16,cb:26,cs:33.0}
+ M14:{holes:{f:15.0,m:15.5,c:16.5},dk:21,k:14,cb:23,cs:28.0},
+ M16:{holes:{f:17.0,m:17.5,c:18.5},dk:24,k:16,cb:26,cs:33.0},
+ M20:{holes:{f:21.0,m:22.0,c:24.0},dk:30,k:20,cb:33,cs:41.0},
+ M24:{holes:{f:25.0,m:26.0,c:28.0},dk:36,k:24,cb:40,cs:49.0}
 };
 const shapeDefs={
  round:`<div><label>Durchmesser d [mm]</label><input id="matD" type="number" value="20"></div>`,
@@ -685,11 +764,11 @@ function calcFit(){
 function initThreads(){
   const tt=$("threadType"); tt.innerHTML=Object.keys(threads).map(k=>`<option>${k}</option>`).join("");
   tt.onchange=()=>{populateThreads();calcThread()}; $("threadSize").onchange=calcThread; populateThreads();
-  $("threadQuick").innerHTML="<thead><tr><th>Gewinde</th><th>Kernloch</th></tr></thead><tbody>"+Object.entries(threads["Metrisch Regel (M)"]).slice(3,14).map(([k,v])=>`<tr><td>${k}</td><td class="mono">${v} mm</td></tr>`).join("")+"</tbody>";
+  $("threadQuick").innerHTML="<thead><tr><th>Gewinde</th><th>Kernloch</th></tr></thead><tbody>"+Object.entries(threads["Metrisch Regel (M)"]).map(([k,v])=>`<tr><td>${k}</td><td class="mono">${v} mm</td></tr>`).join("")+"</tbody>";
 }
 function populateThreads(){const list=threads[$("threadType").value];$("threadSize").innerHTML=Object.keys(list).map(k=>`<option>${k}</option>`).join("")}
 function calcThread(){const kind=$("threadType").value, name=$("threadSize").value, val=threads[kind][name];setText("threadDrill",round(val,2).replace(".00",""));setText("threadName",name);setText("threadKind",kind)}
-function calcScrew(){const s=screw[$("scrSize").value], fit=$("scrFit").value, type=$("scrType").value;setText("scrHole",s.holes[fit].toFixed(1));setText("scrDk",s.dk.toFixed(1)+" mm");setText("scrCounterDia",(type==="912"?s.cb:s.cs).toFixed(1)+" mm");setText("scrDepth",(type==="912"?s.k+0.4:s.k).toFixed(1)+" mm")}
+function calcScrew(){const s=screw[$("scrSize").value], fit=$("scrFit").value, type=$("scrType").value;if(!s)return;setText("scrHole",s.holes[fit].toFixed(1));setText("scrDk",s.dk.toFixed(1)+" mm");setText("scrCounterDia",(type==="912"?s.cb:s.cs).toFixed(1)+" mm");setText("scrDepth",(type==="912"?s.k+0.4:s.k).toFixed(1)+" mm")}
 function conv(mode){
   if(mode==="mm") $("inchVal").value=round(num("mmVal")/25.4,4);
   if(mode==="inch") $("mmVal").value=round(num("inchVal")*25.4,3);
@@ -711,18 +790,118 @@ function calcWeight(){
   if(kg>=25){lift.textContent="Hebehilfe/Kran einplanen";lift.classList.add("bad")} else if(kg>=15){lift.textContent="vorsichtig heben";lift.classList.add("warn")} else {lift.textContent="von Hand meist unkritisch";lift.classList.add("good")}
 }
 function setAttr(id,attrs){const e=$(id); if(!e)return; Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));}
-function calcTriangle(){
-  const a=num("triA"),b=num("triB"), c=Math.hypot(a,b), ang=Math.atan2(a,b)*180/Math.PI;
-  setText("triAngle",round(ang,2));setText("triC",round(c,2));setText("triSlope",b?round(a/b*100,1):"--");setText("triRatio",b?`1 : ${round(b/a,2)}`:"--");
-  const maxSide=Math.max(a,b,1), base=210*(b/maxSide), height=150*(a/maxSide);
-  const x0=45,y0=205,x1=x0+Math.max(40,base),y1=y0-Math.max(30,height);
-  setAttr("triPoly",{points:`${x0},${y0} ${x1},${y0} ${x1},${y1}`});
-  setAttr("triBase",{x1:x0,y1:y0,x2:x1,y2:y0}); setAttr("triHeight",{x1:x1,y1:y0,x2:x1,y2:y1}); setAttr("triHyp",{x1:x0,y1:y0,x2:x1,y2:y1});
-  setText("triLabelA",`a ${round(a,1)} mm`); setText("triLabelB",`b ${round(b,1)} mm`); setText("triLabelC",`c ${round(c,1)} mm`); setText("triLabelAngle",`${round(ang,2)}°`);
-  setAttr("triLabelA",{x:x1+8,y:(y0+y1)/2}); setAttr("triLabelB",{x:(x0+x1)/2-25,y:y0+22}); setAttr("triLabelC",{x:(x0+x1)/2-18,y:(y0+y1)/2-12});
-  const r=30, theta=ang*Math.PI/180, ax=x0+r, ay=y0, ex=x0+r*Math.cos(theta), ey=y0-r*Math.sin(theta), large=ang>180?1:0;
-  setAttr("triArc",{d:`M ${ax} ${ay} A ${r} ${r} 0 ${large} 0 ${ex} ${ey}`}); setAttr("triLabelAngle",{x:x0+34,y:y0-10});
+const toRad=d=>d*Math.PI/180, toDeg=r=>r*180/Math.PI, sinD=d=>Math.sin(toRad(d)), cosD=d=>Math.cos(toRad(d));
+let angleMode='right';
+function angleTyped(el){ if(el.value!==''){el.dataset.time=Date.now(); el.classList.remove('calculated'); el.classList.add('driver');} else {delete el.dataset.time; el.classList.remove('driver','calculated');} }
+function setAngleMode(mode){
+  angleMode=mode;
+  ['Right','General','Taper'].forEach(n=>{const b=$('angleMode'+n); if(b)b.classList.toggle('active', mode===n.toLowerCase());});
+  const tri=mode!=='taper';
+  $('angleTriangleInputs')?.classList.toggle('angle-hidden', !tri); $('angleTaperInputs')?.classList.toggle('angle-hidden', tri);
+  $('angleTriangleGroup')?.classList.toggle('angle-hidden', !tri); $('angleTaperGroup')?.classList.toggle('angle-hidden', tri);
+  setText('angleModeLabel', mode==='right'?'Rechtwinkliges Dreieck':mode==='general'?'Allgemeines Dreieck':'Kegel / Drehbank');
+  const g=$('angGamma'); const cLbl=$('angCLabel');
+  if(g){ g.disabled = mode==='right'; if(mode==='right' && !g.value) g.value=90; if(mode!=='right' && g.value==='90' && !g.dataset.time) g.value=''; }
+  if(cLbl) cLbl.textContent=mode==='right'?'Seite c / Hypotenuse [mm]':'Seite c [mm]';
+  calcAll();
 }
+function resetAngle(){
+  ['angA','angB','angC','angAlpha','angBeta','angGamma','tapD','tapd','tapL'].forEach(id=>{const e=$(id); if(!e)return; e.classList.remove('driver','calculated'); delete e.dataset.time; e.value='';});
+  if(angleMode==='right') $('angGamma').value=90; calcAll();
+}
+function valAngle(id){const e=$(id); const v=parseFloat(e?.value); return Number.isFinite(v)?v:null}
+function setAngleVal(id,val,drivers){const e=$(id); if(!e || val==null || !Number.isFinite(val)) return; if(drivers.includes(id)) return; e.value=(Math.abs(val)>=100?val.toFixed(2):val.toFixed(3)).replace(/\.000$/,''); e.classList.add('calculated'); e.classList.remove('driver'); delete e.dataset.time;}
+function solveAngleTriangle(){
+  const ids=['angA','angB','angC','angAlpha','angBeta','angGamma'];
+  let inputs=ids.map(id=>({id,val:valAngle(id),time:parseInt($(id)?.dataset.time||0)})).filter(x=>x.val!=null && x.time>0).sort((a,b)=>b.time-a.time);
+  const needed=angleMode==='right'?2:3;
+  let drivers=inputs.slice(0,needed);
+  if(angleMode==='general'){
+    const sides=['angA','angB','angC'];
+    if(!drivers.some(d=>sides.includes(d.id))){ const s=inputs.slice(needed).find(d=>sides.includes(d.id)); if(s){drivers.pop();drivers.push(s);} }
+  }
+  const driverIds=drivers.map(d=>d.id);
+  let a=driverIds.includes('angA')?valAngle('angA'):null, b=driverIds.includes('angB')?valAngle('angB'):null, c=driverIds.includes('angC')?valAngle('angC'):null;
+  let A=driverIds.includes('angAlpha')?valAngle('angAlpha'):null, B=driverIds.includes('angBeta')?valAngle('angBeta'):null, G=driverIds.includes('angGamma')?valAngle('angGamma'):null;
+  if(angleMode==='right') G=90;
+  if(inputs.length<needed){
+    setText('angleHint',`Gib ${needed} Werte ein. Grün markierte Felder werden automatisch berechnet.`);
+    drawAngleTriangle(50,100,111.8,26.57,63.43,90);
+    return;
+  }
+  for(let k=0;k<8;k++){
+    if(A!=null && B!=null && G==null) G=180-A-B;
+    if(A!=null && G!=null && B==null) B=180-A-G;
+    if(B!=null && G!=null && A==null) A=180-B-G;
+    if(angleMode==='right'){
+      if(a!=null && b!=null && c==null) c=Math.hypot(a,b);
+      if(a!=null && c!=null && b==null && c>=a) b=Math.sqrt(c*c-a*a);
+      if(b!=null && c!=null && a==null && c>=b) a=Math.sqrt(c*c-b*b);
+      if(a!=null && c!=null && A==null) A=toDeg(Math.asin(Math.min(1,Math.max(-1,a/c))));
+      if(b!=null && c!=null && B==null) B=toDeg(Math.asin(Math.min(1,Math.max(-1,b/c))));
+      if(A!=null && c!=null && a==null) a=c*sinD(A);
+      if(B!=null && c!=null && b==null) b=c*sinD(B);
+      if(A!=null && b!=null && a==null) a=b*Math.tan(toRad(A));
+      if(A!=null && a!=null && b==null) b=a/Math.tan(toRad(A));
+    } else {
+      if(a!=null && b!=null && c!=null){
+        if(A==null) A=toDeg(Math.acos(Math.min(1,Math.max(-1,(b*b+c*c-a*a)/(2*b*c)))));
+        if(B==null) B=toDeg(Math.acos(Math.min(1,Math.max(-1,(a*a+c*c-b*b)/(2*a*c)))));
+        if(G==null && A!=null && B!=null) G=180-A-B;
+      }
+      if(a!=null && A!=null){
+        if(B!=null && b==null) b=a*sinD(B)/sinD(A);
+        if(G!=null && c==null) c=a*sinD(G)/sinD(A);
+        if(b!=null && B==null) B=toDeg(Math.asin(Math.min(1,Math.max(-1,b*sinD(A)/a))));
+        if(c!=null && G==null) G=toDeg(Math.asin(Math.min(1,Math.max(-1,c*sinD(A)/a))));
+      }
+      if(b!=null && B!=null){
+        if(A!=null && a==null) a=b*sinD(A)/sinD(B);
+        if(G!=null && c==null) c=b*sinD(G)/sinD(B);
+      }
+      if(b!=null && c!=null && A!=null && a==null) a=Math.sqrt(Math.max(0,b*b+c*c-2*b*c*cosD(A)));
+      if(a!=null && c!=null && B!=null && b==null) b=Math.sqrt(Math.max(0,a*a+c*c-2*a*c*cosD(B)));
+      if(a!=null && b!=null && G!=null && c==null) c=Math.sqrt(Math.max(0,a*a+b*b-2*a*b*cosD(G)));
+    }
+  }
+  setAngleVal('angA',a,driverIds); setAngleVal('angB',b,driverIds); setAngleVal('angC',c,driverIds); setAngleVal('angAlpha',A,driverIds); setAngleVal('angBeta',B,driverIds); setAngleVal('angGamma',G,driverIds);
+  if(a&&b&&c){
+    const area=0.5*a*b*sinD(G||90); const per=a+b+c;
+    setText('angleRes1Label','Winkel α'); setText('angleRes1',round(A||0,2)+'°');
+    setText('angleRes2Label','Seite c'); setText('angleRes2',round(c,2)+' mm');
+    setText('angleRes3Label',angleMode==='right'?'Steigung':'Fläche'); setText('angleRes3',angleMode==='right'?(b?round(a/b*100,1)+'%':'--'):(round(area,2)+' mm²'));
+    setText('angleHint','Berechnet. Du kannst jetzt einen beliebigen Wert ändern; die letzten Eingaben werden bevorzugt.');
+    drawAngleTriangle(a,b,c,A||0,B||0,G||90);
+  }
+}
+function drawAngleTriangle(a,b,c,A,B,G){
+  if(!a||!b||!G)return;
+  const C={x:0,y:0}, Bp={x:a,y:0}, Ap={x:b*cosD(G),y:b*sinD(G)};
+  const minX=Math.min(C.x,Bp.x,Ap.x), maxX=Math.max(C.x,Bp.x,Ap.x), minY=Math.min(C.y,Bp.y,Ap.y), maxY=Math.max(C.y,Bp.y,Ap.y);
+  const scale=Math.min(300/Math.max(1,maxX-minX),230/Math.max(1,maxY-minY))*0.86;
+  const tx=x=>55+(x-minX)*scale, ty=y=>280-(y-minY)*scale;
+  const pC={x:tx(C.x),y:ty(C.y)}, pB={x:tx(Bp.x),y:ty(Bp.y)}, pA={x:tx(Ap.x),y:ty(Ap.y)};
+  setAttr('angleTriPoly',{points:`${pC.x},${pC.y} ${pB.x},${pB.y} ${pA.x},${pA.y}`});
+  setAttr('angleBaseHelp',{x1:pC.x,y1:pC.y,x2:pB.x,y2:pB.y}); setAttr('angleHeightHelp',{x1:pB.x,y1:pB.y,x2:pA.x,y2:pA.y});
+  setAttr('angleLblA',{x:(pC.x+pB.x)/2,y:(pC.y+pB.y)/2+23}); setText('angleLblA','a '+round(a,1));
+  setAttr('angleLblB',{x:(pC.x+pA.x)/2-22,y:(pC.y+pA.y)/2}); setText('angleLblB','b '+round(b,1));
+  setAttr('angleLblC',{x:(pA.x+pB.x)/2+18,y:(pA.y+pB.y)/2}); setText('angleLblC','c '+round(c,1));
+  setAttr('angleLblGamma',{x:pC.x+22,y:pC.y-10}); setText('angleLblGamma','γ '+round(G,1)+'°');
+  setAttr('angleLblBeta',{x:pB.x-36,y:pB.y-10}); setText('angleLblBeta','β '+round(B,1)+'°');
+  setAttr('angleLblAlpha',{x:pA.x-8,y:pA.y+24}); setText('angleLblAlpha','α '+round(A,1)+'°');
+  const r=34, theta=G*Math.PI/180, ax=pC.x+r, ay=pC.y, ex=pC.x+r*Math.cos(theta), ey=pC.y-r*Math.sin(theta), large=G>180?1:0;
+  setAttr('angleArc',{d:`M ${ax} ${ay} A ${r} ${r} 0 ${large} 0 ${ex} ${ey}`});
+}
+function solveTaperAngle(){
+  const D=num('tapD'), d=num('tapd'), L=num('tapL');
+  if(!(D&&d&&L)){setText('angleRes1','--');return;}
+  const angle=toDeg(Math.atan(((D-d)/2)/L)); const ratio=(D-d)!==0?L/(D-d):0;
+  setText('angleRes1Label','Einstellwinkel α/2'); setText('angleRes1',round(angle,3)+'°');
+  setText('angleRes2Label','Kegel je Länge'); setText('angleRes2','1 : '+round(ratio,1));
+  setText('angleRes3Label','Ø-Differenz'); setText('angleRes3',round(D-d,2)+' mm');
+  setText('taperAngleLabel','α/2 '+round(angle,2)+'°');
+}
+function solveAngle(){ if(angleMode==='taper') solveTaperAngle(); else solveAngleTriangle(); }
 function saveHistory(type){
   let item={time:new Date().toLocaleString("de-DE")};
   if(type==="schnitt"){item.title=$("cutNote").value||"Schnittdaten"; item.text=`n ${$("cutN").textContent} U/min · vf ${$("cutVf").textContent} mm/min · Ø ${$("cutD").value} · vc ${$("cutVc").value}`;}
@@ -733,9 +912,10 @@ function copySummary(type){
   let txt="";
   if(type==="schnitt") txt=`Schnittdaten: Ø ${$("cutD").value} mm, vc ${$("cutVc").value} m/min, z ${$("cutZ").value}, fz ${$("cutFz").value} mm → n ${$("cutN").textContent} U/min, vf ${$("cutVf").textContent} mm/min`;
   if(type==="thread") txt=`${$("threadName").textContent}: Kernloch ${$("threadDrill").textContent} mm (${$("threadKind").textContent})`;
+  if(type==="angle") txt=`Winkel: ${$("angleRes1Label").textContent} ${$("angleRes1").textContent}, ${$("angleRes2Label").textContent} ${$("angleRes2").textContent}, ${$("angleRes3Label").textContent} ${$("angleRes3").textContent}`;
   navigator.clipboard?.writeText(txt).then(()=>toast("Kopiert")).catch(()=>alert(txt));
 }
-function calcAll(){calcSchnitt();calcTol();calcFit();calcThread();calcScrew();calcReverse();calcWeight();calcTriangle()}
+function calcAll(){calcSchnitt();calcTol();calcFit();calcThread();calcScrew();calcReverse();calcWeight();solveAngle()}
 function init(){
   $$(".tab-btn").forEach(b=>b.onclick=()=>openTab(b.dataset.tab));
   $("btnTheme").onclick=()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==="dark"?"light":"dark"};
@@ -743,7 +923,7 @@ function init(){
   $$("input,select").forEach(e=>e.addEventListener("input",calcAll));
   $$("select").forEach(e=>e.addEventListener("change",calcAll));
   $("shapeType").addEventListener("change",updateShape);
-  initThreads(); updateShape(); renderTolTable(); renderHistory(); calcAll();
+  initThreads(); updateShape(); renderTolTable(); renderHistory(); if($("angA")) angleTyped($("angA")); if($("angB")) angleTyped($("angB")); calcAll();
   const hash=location.hash.replace("#",""); if(hash && $("tab-"+hash)) openTab(hash);
 }
 document.addEventListener("DOMContentLoaded",init);
