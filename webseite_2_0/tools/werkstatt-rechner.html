@@ -270,6 +270,12 @@
     .cnc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
     .cnc-line{display:flex;justify-content:space-between;gap:10px;border:1px solid rgba(101,231,255,.16);border-radius:12px;padding:9px 10px;background:rgba(255,255,255,.035)}
     .cnc-line span{color:#7f9eb7;font-size:.78rem;font-weight:900}.cnc-line strong{color:#f8fbff;font-size:1rem}
+    .cnc-edit{display:grid;gap:4px;border:1px solid rgba(101,231,255,.16);border-radius:12px;padding:7px 8px;background:rgba(255,255,255,.035)}
+    .cnc-edit label{margin:0;color:#7f9eb7;font-family:var(--mono);font-size:.68rem;font-weight:900;text-transform:none;letter-spacing:.02em;display:flex;justify-content:space-between;gap:5px;min-height:auto!important}
+    .cnc-edit input{width:100%;min-height:34px!important;padding:6px 7px!important;border-radius:9px!important;border:1px solid rgba(101,231,255,.18)!important;background:rgba(255,255,255,.075)!important;color:#f8fbff!important;font-family:var(--mono);font-size:.95rem!important;font-weight:950;text-align:right;box-shadow:none!important}
+    .cnc-edit input.is-calc{background:rgba(16,185,129,.16)!important;border-color:rgba(52,211,153,.44)!important;color:#d1fae5!important}
+    .cnc-edit input:disabled{opacity:.54;background:rgba(148,163,184,.10)!important;color:#9fb3c7!important}
+    .cnc-edit .unit-mini{color:#9fb3c7;font-size:.62rem;font-weight:800}
     .practice-card{margin-top:14px;border:1px solid color-mix(in srgb,var(--green) 26%,var(--line));border-radius:18px;background:linear-gradient(135deg,color-mix(in srgb,var(--green) 7%,var(--paper)),var(--paper));padding:14px;display:grid;gap:10px}
     .practice-card h4{margin:0;font-size:.9rem;letter-spacing:.04em;text-transform:uppercase;color:var(--green)}
     .practice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
@@ -491,21 +497,19 @@
             <button class="btn btn-blue" type="button" onclick="loadCutPreset()">⚡ Richtwerte laden</button>
             <button class="btn" type="button" onclick="cutInfoDialog.showModal()">📘 Merker / Formeln öffnen</button>
             <div class="cut-mode-hint" id="cutModeHint"><b>Bohren:</b> Das Tool rechnet mit Ø d, vc und Vorschub f in mm/U. Ergebnis sind die Maschinenwerte S und F.</div>
-            <div class="row">
-              <div><label>Werkzeug-Ø d [mm] <span class="help-dot" tabindex="0" data-tip="d ist der Werkzeugdurchmesser. Kleiner Durchmesser bedeutet höhere Drehzahl bei gleicher Schnittgeschwindigkeit.">?</span></label><input id="cutD" type="number" value="10" step="0.1"></div>
-              <div><label>Schnittgeschw. vc [m/min] <span class="help-dot" tabindex="0" data-tip="vc ist die Schnittgeschwindigkeit am Werkzeugumfang. Nutze Herstellerdaten, wenn vorhanden.">?</span></label><input id="cutVc" type="number" value="120" step="1"></div>
-            </div>
-            <div class="row">
-              <div id="cutZField"><label id="cutZLabel">Zähnezahl z <span class="help-dot" tabindex="0" data-tip="Beim Bohren fest auf 2. Beim Fräsen echte Schneidenzahl des Fräsers eintragen.">?</span></label><input id="cutZ" type="number" value="2" step="1"></div>
-              <div><label id="cutFeedLabel">Vorschub f [mm/U] <span class="help-dot" tabindex="0" data-tip="Bohren: Vorschub pro Umdrehung. Fräsen: Vorschub pro Zahn fz. Ausgabe ist F in mm/min.">?</span></label><input id="cutFz" type="number" value="0.10" step="0.01"></div>
-            </div>
-            <div class="cnc-display" aria-label="Schnittdaten-Anzeige">
-              <div class="cnc-screen-head"><span>Schnittdaten</span><span id="cncMode">FRÄSEN</span></div>
+            <input id="cutD" type="hidden" value="10">
+            <input id="cutVc" type="hidden" value="120">
+            <input id="cutZ" type="hidden" value="2">
+            <input id="cutFz" type="hidden" value="0.10">
+            <div class="cnc-display cut-console" aria-label="Schnittdaten-Konsole">
+              <div class="cnc-screen-head"><span>Schnittdaten-Konsole</span><span id="cncMode">FRÄSEN</span></div>
               <div class="cnc-grid">
-                <div class="cnc-line"><span>S</span><strong><span id="cncS">3820</span> U/min</strong></div>
-                <div class="cnc-line"><span>F</span><strong><span id="cncF">764</span> mm/min</strong></div>
-                <div class="cnc-line"><span>vc</span><strong><span id="cncVc">120</span> m/min</strong></div>
-                <div class="cnc-line"><span>d</span><strong>Ø <span id="cncD">10</span> mm</strong></div>
+                <div class="cnc-edit"><label>Ø d <span class="unit-mini">mm</span></label><input id="cutConsoleD" type="number" value="10" step="0.1" data-cut-field="d"></div>
+                <div class="cnc-edit"><label>vc <span class="unit-mini">m/min</span></label><input id="cutConsoleVc" type="number" value="120" step="1" data-cut-field="vc"></div>
+                <div class="cnc-edit"><label>S <span class="unit-mini">U/min</span></label><input id="cutConsoleS" type="number" value="3820" step="1" data-cut-field="n"></div>
+                <div class="cnc-edit" id="cutZField"><label>z <span class="unit-mini">Zähne</span></label><input id="cutConsoleZ" type="number" value="2" step="1" data-cut-field="z"></div>
+                <div class="cnc-edit"><label id="cutFeedLabel">f <span class="unit-mini">mm/U</span></label><input id="cutConsoleFz" type="number" value="0.10" step="0.01" data-cut-field="f"></div>
+                <div class="cnc-edit"><label>F <span class="unit-mini">mm/min</span></label><input id="cutConsoleF" type="number" value="382" step="1" data-cut-field="vf"></div>
               </div>
             </div>
             <div class="result-list">
@@ -953,39 +957,82 @@ function openTab(id){
   history.replaceState(null,"","#"+id);
   setTimeout(()=>window.scrollTo({top:0,behavior:"smooth"}),30);
 }
+function cutConsoleInputIds(){return ["cutConsoleD","cutConsoleVc","cutConsoleS","cutConsoleZ","cutConsoleFz","cutConsoleF"]}
+function cutVal(id){const e=$(id); if(!e) return 0; const v=String(e.value||"").replace(",","."); return parseFloat(v)||0}
+function fmtCut(v,d=2){if(!Number.isFinite(v)) return ""; let txt=Number(v).toFixed(d); return txt.replace(/\.0+$/,'').replace(/(\.\d*?)0+$/,'$1')}
+function setCutConsole(id,val,dec=2,calculated=true){
+  const e=$(id); if(!e || !Number.isFinite(val)) return;
+  e.value=fmtCut(val,dec);
+  e.classList.toggle("is-calc", !!calculated);
+  if(calculated) delete e.dataset.time;
+}
+function clearCutCalculated(){cutConsoleInputIds().forEach(id=>$(id)?.classList.remove('is-calc'))}
+function setCutManual(el){if(!el) return; el.dataset.time=String(Date.now()); el.classList.remove('is-calc')}
+function syncHiddenCut(d,vc,z,f){
+  if($('cutD')) $('cutD').value=fmtCut(d,2);
+  if($('cutVc')) $('cutVc').value=fmtCut(vc,2);
+  if($('cutZ')) $('cutZ').value=fmtCut(z,0);
+  if($('cutFz')) $('cutFz').value=fmtCut(f,4);
+}
+function syncConsoleFromHidden(force=false){
+  const map=[["cutConsoleD","cutD",2],["cutConsoleVc","cutVc",2],["cutConsoleZ","cutZ",0],["cutConsoleFz","cutFz",4]];
+  map.forEach(([cid,hid])=>{const c=$(cid), h=$(hid); if(c&&h&&(force || !c.value)) c.value=h.value||"";});
+}
 function updateCutModeUI(){
   const op=$("cutOp")?.value || "drill";
-  const zField=$("cutZField"), zInput=$("cutZ"), feedLabel=$("cutFeedLabel"), hint=$("cutModeHint");
-  if(!zInput) return;
+  const zInput=$("cutConsoleZ"), feedLabel=$("cutFeedLabel"), hint=$("cutModeHint");
   if(op==="drill"){
-    zInput.value=2; zInput.disabled=true; zField?.classList.add("is-disabled-field");
-    if(feedLabel) feedLabel.innerHTML='Vorschub f [mm/U] <span class="help-dot" tabindex="0" data-tip="Beim Bohren ist f der Vorschub pro Umdrehung. Daraus wird der Maschinenwert F = S × f. Die Schneidenzahl bleibt fest 2 und wird nicht zur Vorschubformel addiert.">?</span>';
-    if(hint) hint.innerHTML='<b>Bohren:</b> normale Spiralbohrer haben meist 2 Schneiden. Du brauchst Ø d, vc und Vorschub f in mm/U. Ergebnis sind S und F für die Maschine.';
+    if(zInput){zInput.value=2; zInput.disabled=true; zInput.classList.add("is-calc"); delete zInput.dataset.time;}
+    if(feedLabel) feedLabel.innerHTML='f <span class="unit-mini">mm/U</span>';
+    if(hint) hint.innerHTML='<b>Bohren:</b> Gib z. B. Ø und vc ein, dann berechnet das Tool S. Gib S und F ein, dann berechnet es den Vorschub f zurück.';
   } else if(op==="turn"){
-    zInput.value=1; zInput.disabled=true; zField?.classList.add("is-disabled-field");
-    if(feedLabel) feedLabel.innerHTML='Vorschub f [mm/U] <span class="help-dot" tabindex="0" data-tip="Beim Drehen ist f der Vorschub pro Umdrehung. Daraus wird F = S × f. Die Zähnezahl wird nicht benötigt.">?</span>';
-    if(hint) hint.innerHTML='<b>Drehen:</b> Vorschub f in mm/U. Das Tool zeigt schnelle S-/F-Werte, keine vollständige Drehdatenbank.';
+    if(zInput){zInput.value=1; zInput.disabled=true; zInput.classList.add("is-calc"); delete zInput.dataset.time;}
+    if(feedLabel) feedLabel.innerHTML='f <span class="unit-mini">mm/U</span>';
+    if(hint) hint.innerHTML='<b>Drehen:</b> Ø, vc, S, f und F können rückwärts gerechnet werden. z wird nicht benötigt.';
   } else {
-    zInput.disabled=false; zField?.classList.remove("is-disabled-field");
-    if(feedLabel) feedLabel.innerHTML='Vorschub/Zahn fz [mm] <span class="help-dot" tabindex="0" data-tip="Beim Fräsen ist fz der Vorschub pro Schneide/Zahn. Formel: F = S × z × fz.">?</span>';
-    if(hint) hint.innerHTML='<b>Fräsen:</b> du brauchst Ø d, vc, Schneidenzahl z und fz. Daraus entstehen S und F als Startwerte für die Maschine.';
+    if(zInput){zInput.disabled=false;}
+    if(feedLabel) feedLabel.innerHTML='fz <span class="unit-mini">mm/Zahn</span>';
+    if(hint) hint.innerHTML='<b>Fräsen:</b> Die letzten Eingaben führen. Typisch: Ø + vc berechnet S, S + z + fz berechnet F, oder S + z + F berechnet fz.';
   }
 }
 function calcSchnitt(){
   updateCutModeUI();
+  syncConsoleFromHidden(false);
   const op=$("cutOp")?.value || "drill";
-  const d=num("cutD"), vc=num("cutVc"), z=num("cutZ"), fz=num("cutFz");
-  const n=d>0?(vc*1000)/(Math.PI*d):0;
-  let vf=0;
-  if(op==="drill" || op==="turn"){
-    vf=n*fz;
-  } else {
-    vf=n*z*fz;
+  let d=cutVal("cutConsoleD"), vc=cutVal("cutConsoleVc"), n=cutVal("cutConsoleS"), z=cutVal("cutConsoleZ"), f=cutVal("cutConsoleFz"), vf=cutVal("cutConsoleF");
+  if(op==="drill") z=2;
+  if(op==="turn") z=1;
+  const t=id=>parseInt($(id)?.dataset.time||"0",10);
+  const tVc=t("cutConsoleVc"), tN=t("cutConsoleS"), tF=t("cutConsoleF"), tFz=t("cutConsoleFz");
+  // Drehzahl/Schnittgeschwindigkeit: die zuletzt aktiv geänderte Seite gewinnt.
+  if(d>0){
+    if(n>0 && (tN>tVc || !vc)){
+      vc=(Math.PI*d*n)/1000;
+      setCutConsole("cutConsoleVc",vc,1,true);
+    } else if(vc>0){
+      n=(vc*1000)/(Math.PI*d);
+      setCutConsole("cutConsoleS",n,0,true);
+    }
   }
+  // Vorschub: F und f/fz können vorwärts/rückwärts gerechnet werden.
+  const denom=(op==="drill"||op==="turn") ? n : n*z;
+  if(denom>0){
+    if(vf>0 && (tF>tFz || !f)){
+      f=vf/denom;
+      setCutConsole("cutConsoleFz",f, op==="drill"||op==="turn" ? 3 : 4, true);
+    } else if(f>0){
+      vf=denom*f;
+      setCutConsole("cutConsoleF",vf,0,true);
+    }
+  }
+  if(op==="drill") setCutConsole("cutConsoleZ",2,0,true);
+  if(op==="turn") setCutConsole("cutConsoleZ",1,0,true);
+  syncHiddenCut(d,vc,z,f);
   setText("cutN",round(n,0)); setText("cutVf",round(vf,0));
+  // Kompatible alte Anzeige-IDs, falls noch irgendwo genutzt.
   setText("cncS",round(n,0)); setText("cncF",round(vf,0)); setText("cncVc",round(vc,0)); setText("cncD",round(d,1).replace(".0", ""));
   setText("cncMode", op==="turn" ? "DREHEN" : (op==="drill" ? "BOHREN" : "FRÄSEN"));
-  const w=$("cutWarn"); w.className="";
+  const w=$("cutWarn"); if(!w) return; w.className="";
   if(n>20000){w.textContent="Achtung: Drehzahl sehr hoch";w.classList.add("bad")} else if(vf>3000){w.textContent="Achtung: Vorschub hoch";w.classList.add("warn")} else {w.textContent="Startwert plausibel";w.classList.add("good")}
 }
 function loadCutPreset(){
@@ -997,7 +1044,11 @@ function loadCutPreset(){
     cast:{drill:[22,.10,2],millRough:[110,.06,4],millFinish:[150,.04,4],turn:[130,.14,1]}
   };
   const p=data[$("cutMat").value][$("cutOp").value];
-  $("cutVc").value=p[0]; $("cutFz").value=p[1]; $("cutZ").value=p[2]; updateCutModeUI(); calcSchnitt(); toast("Richtwerte geladen");
+  if($('cutConsoleVc')) {$('cutConsoleVc').value=p[0]; setCutManual($('cutConsoleVc'));}
+  if($('cutConsoleFz')) {$('cutConsoleFz').value=p[1]; setCutManual($('cutConsoleFz'));}
+  if($('cutConsoleZ')) {$('cutConsoleZ').value=p[2]; setCutManual($('cutConsoleZ'));}
+  syncHiddenCut(cutVal('cutConsoleD')||10,p[0],p[2],p[1]);
+  calcSchnitt(); toast("Richtwerte geladen");
 }
 function calcTol(){
   const d=num("tolDim"), cls=$("tolClass").value;
@@ -1224,9 +1275,10 @@ function saveToolToBasket(){
 }
 function newToolEntry(showToast=true){
   suppressToolLive=true; activeToolId=null;
-  ["toolT","cutNote","toolLen","cutD"].forEach(id=>{if($(id)) $(id).value=""});
+  ["toolT","cutNote","toolLen"].forEach(id=>{if($(id)) $(id).value=""});
   if($("toolCoat")) $("toolCoat").value="unbeschichtet";
-  if($("cutD")) $("cutD").value="10";
+  [["cutConsoleD","10"],["cutConsoleVc","120"],["cutConsoleS",""] ,["cutConsoleZ","2"],["cutConsoleFz","0.10"],["cutConsoleF",""]].forEach(([id,v])=>{if($(id)){ $(id).value=v; delete $(id).dataset.time; $(id).classList.remove("is-calc"); }});
+  syncHiddenCut(10,120,2,0.10);
   updateCutModeUI(); calcSchnitt(); suppressToolLive=false; renderToolBasket(false);
   if(showToast) toast("Eingabe für neues Werkzeug geleert");
 }
@@ -1247,6 +1299,9 @@ function loadTool(id){
   if($("cutOp")) $("cutOp").value=item.raw?.op||"drill";
   updateCutModeUI();
   [["cutD","d"],["cutVc","vc"],["cutZ","z"],["cutFz","f"]].forEach(([id,k])=>{if($(id)) $(id).value=item.raw?.[k]||""});
+  [["cutConsoleD","d"],["cutConsoleVc","vc"],["cutConsoleZ","z"],["cutConsoleFz","f"]].forEach(([id,k])=>{if($(id)){ $(id).value=item.raw?.[k]||""; delete $(id).dataset.time; $(id).classList.remove("is-calc"); }});
+  if($('cutConsoleS')) { $('cutConsoleS').value=item.values?.n||""; delete $('cutConsoleS').dataset.time; $('cutConsoleS').classList.add('is-calc'); }
+  if($('cutConsoleF')) { $('cutConsoleF').value=item.values?.vf||""; delete $('cutConsoleF').dataset.time; $('cutConsoleF').classList.add('is-calc'); }
   suppressToolLive=false; calcSchnitt(); renderToolBasket(false); toast("Werkzeug geladen");
 }
 function deleteTool(id){
@@ -1453,8 +1508,17 @@ function initHelpTips(){
   window.addEventListener('resize', () => { if(active) place(active); });
 }
 
+function setupCutConsole(){
+  cutConsoleInputIds().forEach(id=>{
+    const el=$(id); if(!el) return;
+    el.addEventListener('input',()=>{ setCutManual(el); calcAll(); });
+  });
+  syncConsoleFromHidden(true);
+}
+
 function init(){
   initHelpTips();
+  setupCutConsole();
   $$(".tab-btn").forEach(b=>b.onclick=()=>openTab(b.dataset.tab));
   $("btnTheme").onclick=()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==="dark"?"light":"dark"};
   $("btnHelp").onclick=()=>helpDialog.showModal();
