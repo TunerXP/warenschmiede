@@ -222,8 +222,17 @@
     .tool-mini-meta span{border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));background:color-mix(in srgb,var(--blue) 5%,var(--paper));border-radius:999px;padding:3px 7px}
     .tool-mini-actions{display:flex;gap:6px;justify-content:flex-end}.tool-mini-actions button{border:1px solid var(--line);background:var(--paper-soft);border-radius:999px;padding:5px 8px;font-size:.72rem;font-weight:900;cursor:pointer;color:var(--text)}
     .tool-empty{border:1px dashed var(--line);border-radius:16px;padding:14px;color:var(--muted);font-size:.84rem;line-height:1.45;background:color-mix(in srgb,var(--paper-soft) 75%,transparent)}
-    .modal-large{max-width:min(1120px,calc(100vw - 24px));width:min(1120px,calc(100vw - 24px))}
-    .project-search{margin-bottom:12px}.project-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;max-height:58vh;overflow:auto}.project-card{border:1px solid var(--line);border-radius:18px;background:var(--paper-soft);padding:13px;display:grid;gap:8px}.project-card h3{margin:0;font-size:1rem}.project-card p{margin:0;color:var(--muted);font-size:.84rem;line-height:1.4}.project-card-actions{display:flex;gap:7px;flex-wrap:wrap}
+    .modal-large{max-width:min(1720px,calc(100vw - 28px));width:min(1720px,calc(100vw - 28px));height:min(88vh,920px)}
+    .modal-large .modal-body{height:calc(100% - 84px);display:grid;grid-template-rows:auto 1fr;min-height:0}
+    .project-search{margin-bottom:14px;min-height:48px;font-size:1rem}
+    .project-browser{display:grid;grid-template-columns:minmax(330px,42%) minmax(420px,1fr);gap:14px;min-height:0}
+    .project-list-panel,.project-detail-panel{border:1px solid var(--line);border-radius:18px;background:var(--paper-soft);min-height:0;overflow:hidden;display:flex;flex-direction:column}
+    .project-list-head,.project-detail-head{padding:12px 14px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,color-mix(in srgb,#eaf3ff 76%,transparent),transparent)}
+    .project-list-head h3,.project-detail-head h3{margin:0;font-size:1rem}.project-list-head p,.project-detail-head p{margin:4px 0 0;color:var(--muted);font-size:.82rem}
+    .project-table-wrap{overflow:auto;min-height:0}.project-table{width:100%;border-collapse:collapse;font-size:.88rem}.project-table th{position:sticky;top:0;z-index:1}.project-row{cursor:pointer}.project-row:hover td{background:color-mix(in srgb,var(--blue) 7%,var(--paper-soft))}.project-row.is-active td{background:color-mix(in srgb,var(--blue) 13%,var(--paper-soft));color:var(--text);font-weight:850}.project-row td{vertical-align:top}.project-row small{display:block;color:var(--muted);font-weight:700;margin-top:2px}
+    .project-detail{padding:16px;overflow:auto;min-height:0;display:grid;gap:14px}.project-detail h3{margin:0;font-size:1.25rem}.project-detail-meta{display:flex;flex-wrap:wrap;gap:8px}.project-detail-badge{border:1px solid var(--line);border-radius:999px;background:var(--paper);padding:6px 10px;font-size:.78rem;font-weight:900;color:var(--muted)}.project-detail-desc{border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:12px;color:var(--muted);line-height:1.5}.project-tool-list{display:grid;gap:8px}.project-tool-row{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:10px}.project-tool-row b{font-family:var(--mono)}.project-tool-row span{color:var(--muted);font-size:.82rem}.project-detail-actions{display:flex;gap:10px;flex-wrap:wrap;position:sticky;bottom:0;padding-top:8px;background:linear-gradient(180deg,transparent,var(--paper-soft) 30%)}
+    .project-empty-state{border:1px dashed var(--line);border-radius:18px;padding:24px;text-align:center;color:var(--muted);background:var(--paper)}
+    @media(max-width:980px){.modal-large{height:min(92vh,920px)}.project-browser{grid-template-columns:1fr}.project-detail-panel{min-height:360px}}
     .btn-small{min-height:32px;padding:7px 10px;font-size:.76rem}.btn-red{background:linear-gradient(135deg,#dc2626,#ef4444);border-color:transparent;color:#fff}
 
     dialog{border:0;border-radius:24px;max-width:min(760px,calc(100vw - 24px));background:var(--paper);color:var(--text);box-shadow:0 32px 100px -48px rgba(0,0,0,.95);padding:0}
@@ -821,8 +830,17 @@
   <dialog id="projectDialog" class="modal-large">
     <div class="modal-head"><div><p class="eyebrow">Projekte laden</p><h2 style="margin:0">Schnittdaten-Aktenordner</h2></div><button class="x" onclick="projectDialog.close()">×</button></div>
     <div class="modal-body">
-      <input class="project-search" id="projectSearch" type="search" placeholder="Projekt suchen, z.B. Schiene, Kunde, Material …" oninput="renderProjectDialog()">
-      <div class="project-grid" id="projectGrid"></div>
+      <input class="project-search" id="projectSearch" type="search" placeholder="Projekt suchen, z.B. Schiene, Kunde, Material, Nummer …" oninput="renderProjectDialog()">
+      <div class="project-browser">
+        <section class="project-list-panel" aria-label="Projektliste">
+          <div class="project-list-head"><h3>Projektliste</h3><p>Links auswählen, rechts prüfen und dann laden oder löschen.</p></div>
+          <div class="project-table-wrap"><table class="project-table"><thead><tr><th>Projekt</th><th>Nr./Kunde</th><th>Werkz.</th></tr></thead><tbody id="projectList"></tbody></table></div>
+        </section>
+        <section class="project-detail-panel" aria-label="Projektvorschau">
+          <div class="project-detail-head"><h3>Projektvorschau</h3><p>Werkzeuge und Beschreibung vor dem Laden kontrollieren.</p></div>
+          <div class="project-detail" id="projectDetail"></div>
+        </section>
+      </div>
     </div>
   </dialog>
 
@@ -1227,7 +1245,7 @@ function renderToolBasket(showEmpty=true){
   if(empty) empty.style.display=cutTools.length?"none":"block";
 }
 function escapeHtml(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]))}
-function currentProjectPayload(){return {id:activeProjectId||("proj_"+Date.now()),name:($("cutProjectName")?.value||"Unbenanntes Projekt").trim(),ref:($("cutProjectRef")?.value||"").trim(),description:($("cutProjectDesc")?.value||"").trim(),tools:cutTools,updated:new Date().toISOString(),version:"Werkstatt-Rechner Metall Plus v10"}}
+function currentProjectPayload(){return {id:activeProjectId||("proj_"+Date.now()),name:($("cutProjectName")?.value||"Unbenanntes Projekt").trim(),ref:($("cutProjectRef")?.value||"").trim(),description:($("cutProjectDesc")?.value||"").trim(),tools:cutTools,updated:new Date().toISOString(),version:"Werkstatt-Rechner Metall Plus v12"}}
 function saveCutProject(){
   if(!cutTools.length){toast("Erst Werkzeuge in den Korb legen");return}
   const p=currentProjectPayload(); activeProjectId=p.id;
@@ -1246,11 +1264,44 @@ function deleteCutProject(id){
   if(!confirm(`Projekt „${p.name}“ wirklich löschen?`)) return;
   setProjectFolder(arr.filter(x=>x.id!==id)); renderProjectDialog(); toast("Projekt gelöscht");
 }
-function openProjectDialog(){renderProjectDialog(); projectDialog.showModal()}
+let selectedProjectDialogId=null;
+function filteredProjects(){
+  const q=($("projectSearch")?.value||"").toLowerCase();
+  return projectFolder().filter(p=>((p.name||"")+" "+(p.ref||"")+" "+(p.description||"")+" "+(p.tools||[]).map(t=>(t.t||"")+" "+(t.name||"")).join(" ")).toLowerCase().includes(q));
+}
+function openProjectDialog(){
+  const arr=filteredProjects();
+  selectedProjectDialogId=activeProjectId || selectedProjectDialogId || (arr[0]?.id||null);
+  renderProjectDialog();
+  projectDialog.showModal();
+}
+function selectProjectDialog(id){selectedProjectDialogId=id;renderProjectDialog()}
 function renderProjectDialog(){
-  const grid=$("projectGrid"); if(!grid) return; const q=($("projectSearch")?.value||"").toLowerCase();
-  const arr=projectFolder().filter(p=>((p.name||"")+" "+(p.ref||"")+" "+(p.description||"")).toLowerCase().includes(q));
-  grid.innerHTML=arr.length?arr.map(p=>`<article class="project-card"><h3>${escapeHtml(p.name||'Unbenannt')}</h3><p><b>${escapeHtml(p.ref||'')}</b></p><p>${escapeHtml(p.description||'')}</p><p>${(p.tools||[]).length} Werkzeug(e) · ${new Date(p.updated||Date.now()).toLocaleString('de-DE')}</p><div class="project-card-actions"><button class="btn btn-blue btn-small" onclick="loadCutProject('${p.id}')">Laden</button><button class="btn btn-red btn-small" onclick="deleteCutProject('${p.id}')">Löschen</button></div></article>`).join(""):`<div class="tool-empty">Noch keine gespeicherten Projekte gefunden.</div>`;
+  const list=$("projectList"), detail=$("projectDetail"); if(!list||!detail) return;
+  const arr=filteredProjects();
+  if(!arr.some(p=>p.id===selectedProjectDialogId)) selectedProjectDialogId=arr[0]?.id||null;
+  list.innerHTML=arr.length?arr.map(p=>`<tr class="project-row ${p.id===selectedProjectDialogId?'is-active':''}" onclick="selectProjectDialog('${p.id}')"><td><b>${escapeHtml(p.name||'Unbenannt')}</b><small>${new Date(p.updated||Date.now()).toLocaleString('de-DE')}</small></td><td>${escapeHtml(p.ref||'-')}</td><td>${(p.tools||[]).length}</td></tr>`).join(""):`<tr><td colspan="3"><div class="project-empty-state">Noch keine gespeicherten Projekte gefunden.</div></td></tr>`;
+  const p=arr.find(x=>x.id===selectedProjectDialogId);
+  if(!p){detail.innerHTML=`<div class="project-empty-state">Wähle links ein Projekt aus. Hier erscheinen dann Beschreibung, Werkzeugliste und Aktionen.</div>`;return;}
+  const tools=Array.isArray(p.tools)?p.tools:[];
+  detail.innerHTML=`
+    <div>
+      <h3>${escapeHtml(p.name||'Unbenanntes Projekt')}</h3>
+      <div class="project-detail-meta">
+        <span class="project-detail-badge">Nr./Kunde: ${escapeHtml(p.ref||'-')}</span>
+        <span class="project-detail-badge">${tools.length} Werkzeug(e)</span>
+        <span class="project-detail-badge">Geändert: ${new Date(p.updated||Date.now()).toLocaleString('de-DE')}</span>
+      </div>
+    </div>
+    <div class="project-detail-desc"><b>Beschreibung:</b><br>${escapeHtml(p.description||'Keine Beschreibung hinterlegt.')}</div>
+    <div>
+      <h3>Werkzeuge</h3>
+      <div class="project-tool-list">${tools.length?tools.map(t=>`<div class="project-tool-row"><b>${escapeHtml(t.t||'-')}</b><div><strong>${escapeHtml(t.name||'-')}</strong><br><span>${escapeHtml(t.op||'-')} · Ø ${escapeHtml(t.diameter||'-')} mm · L ${escapeHtml(t.length||'-')} mm · ${escapeHtml(t.coating||'-')}</span></div><span>${escapeHtml(t.values?.n||'-')} U/min</span></div>`).join(''):`<div class="project-empty-state">Keine Werkzeuge im Projekt gespeichert.</div>`}</div>
+    </div>
+    <div class="project-detail-actions">
+      <button class="btn btn-blue" type="button" onclick="loadCutProject('${p.id}')">Projekt laden</button>
+      <button class="btn btn-red" type="button" onclick="deleteCutProject('${p.id}')">Projekt löschen</button>
+    </div>`;
 }
 function exportProjectFolder(){
   const data={type:"warenschmiede-werkstatt-rechner-schnittdaten-aktenordner",exported:new Date().toISOString(),projects:projectFolder()};
