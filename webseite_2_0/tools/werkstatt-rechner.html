@@ -413,6 +413,30 @@
       gap:18px;
       align-items:start;
     }
+
+    /* v31 Gewinde: kompakt, lesbar, 3 Karten */
+    .thread-grid-v31{grid-template-columns:minmax(300px,.92fr) minmax(330px,.9fr) minmax(390px,1.15fr);gap:16px;}
+    .thread-modebar{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .thread-mode-btn{border:1px solid var(--line);border-radius:14px;background:var(--paper);color:var(--muted);padding:10px 9px;font-weight:950;cursor:pointer;transition:.16s ease;font-size:.86rem;}
+    .thread-mode-btn.active{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border-color:transparent;box-shadow:0 14px 28px -22px var(--blue);}
+    .thread-mode-btn.thread-form-hint{background:color-mix(in srgb,var(--orange) 10%,var(--paper));border-color:color-mix(in srgb,var(--orange) 35%,var(--line));color:var(--text);}
+    .thread-practice-card,.thread-note-box{border:1px solid color-mix(in srgb,var(--orange) 22%,var(--line));background:color-mix(in srgb,var(--orange) 7%,var(--paper));border-radius:16px;padding:12px 13px;color:var(--muted);line-height:1.48;font-size:.88rem;}
+    .thread-practice-card b,.thread-note-box b{color:var(--text);}
+    .thread-result-main{border:1px solid color-mix(in srgb,var(--blue) 20%,var(--line));border-radius:22px;background:radial-gradient(circle at 100% 0%,rgba(249,115,22,.10),transparent 18rem),linear-gradient(145deg,var(--paper-soft),var(--paper));padding:18px;text-align:center;box-shadow:0 16px 38px -32px rgba(15,23,42,.65);}
+    .thread-result-main span{display:block;color:var(--muted);font-size:.74rem;font-weight:950;letter-spacing:.09em;text-transform:uppercase;margin-bottom:6px;}
+    .thread-result-main strong{display:block;font-family:var(--mono);font-size:clamp(2.5rem,4.3vw,4.7rem);line-height:.95;color:var(--red);letter-spacing:-.055em;}
+    .thread-result-main small{display:inline-flex;margin-top:10px;border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));background:color-mix(in srgb,var(--blue) 7%,var(--paper));border-radius:999px;padding:6px 10px;color:var(--text);font-weight:900;}
+    .thread-meta-grid{display:grid;grid-template-columns:1fr;gap:9px;margin-top:12px;}
+    .thread-meta-grid>div{border:1px solid var(--line);border-radius:15px;background:var(--paper-soft);padding:11px 12px;display:flex;justify-content:space-between;gap:10px;align-items:center;}
+    .thread-meta-grid span{color:var(--muted);font-size:.74rem;font-weight:950;text-transform:uppercase;letter-spacing:.06em;}
+    .thread-meta-grid strong{font-family:var(--mono);font-size:1rem;color:var(--text);text-align:right;}
+    .thread-quick-wrap{max-height:none;overflow:visible;}
+    .thread-quick-wrap table{font-size:.88rem;}
+    .thread-quick-wrap th,.thread-quick-wrap td{padding:8px 10px;}
+    .thread-quick-wrap td{font-weight:850;}
+    @media(max-width:1250px){.thread-grid-v31{grid-template-columns:1fr 1fr}.thread-info-panel{grid-column:1 / -1}}
+    @media(max-width:760px){.thread-grid-v31,.thread-select-panel .row{grid-template-columns:1fr}}
+
     .compact-result .result-main{min-height:150px;padding:18px}
     .compact-result .result-main .big{font-size:clamp(2.1rem,4.4vw,4rem)}
     .info-card{
@@ -750,10 +774,14 @@
 
     <!-- Gewinde -->
     <section class="tab" id="tab-gewinde">
-      <div class="grid-gewinde">
-        <div class="panel">
-          <div class="panel-head"><p class="eyebrow">Gewinde</p><h3>Kernloch & Steigung</h3><p>Metrisch, Feingewinde und Zollgewinde.</p></div>
+      <div class="grid-gewinde thread-grid-v31">
+        <div class="panel thread-select-panel">
+          <div class="panel-head"><p class="eyebrow">Gewinde</p><h3>Kernloch & Steigung</h3><p>Schnellhilfe zum Vorbohren vor dem Gewindeschneiden.</p></div>
           <div class="panel-body form-grid">
+            <div class="thread-modebar" aria-label="Gewinde-Verfahren">
+              <button class="thread-mode-btn active" id="threadCutBtn" type="button">Schneiden</button>
+              <button class="thread-mode-btn" id="threadFormBtn" type="button">Formen: Hinweis</button>
+            </div>
             <div class="row">
               <div><label>Gewindeart</label><select id="threadType"></select></div>
               <div><label>Größe</label><select id="threadSize"></select></div>
@@ -762,24 +790,39 @@
               <button class="btn btn-blue" onclick="copySummary('thread')" type="button">Wert kopieren</button>
               <button class="btn" onclick="openTab('schrauben')" type="button">Zu Schrauben</button>
             </div>
-            <div class="footer-note">Faustformel für metrische Gewinde: Kernloch ≈ Nennmaß − Steigung. Bei Gewindeformern, Sacklöchern und besonderen Werkstoffen Herstellerangaben prüfen.</div>
-          </div>
-        </div>
-
-        <div class="panel compact-result">
-          <div class="panel-head"><p class="eyebrow">Ergebnis</p><h3>Kernloch</h3><p>Bohrergröße für die ausgewählte Gewindegröße.</p></div>
-          <div class="panel-body">
-            <div class="result-main"><div><small>Kernlochbohrer</small><div class="big"><span id="threadDrill">5.0</span></div><div class="unit">mm</div></div></div>
-            <div class="result-list">
-              <div class="metric"><span>Auswahl</span><strong id="threadName">M6</strong></div>
-              <div class="metric"><span>Typ</span><strong id="threadKind">Metrisch Regel</strong></div>
+            <div class="thread-practice-card" id="threadPractice">
+              <b>Praxis:</b> Erst Kernloch bohren, danach Gewinde schneiden. Bei Gewindeformern, Sacklöchern, Beschichtungen und Sonderwerkstoffen immer Herstellerangaben verwenden.
             </div>
           </div>
         </div>
 
-        <div class="panel thread-table-panel">
-          <div class="panel-head"><p class="eyebrow">Tabelle</p><h3>Gängige Größen</h3><p>Direkte Übersicht ab M1.</p></div>
-          <div class="panel-body"><div class="table-wrap"><table id="threadQuick"></table></div></div>
+        <div class="panel compact-result thread-result-panel">
+          <div class="panel-head"><p class="eyebrow">Ergebnis</p><h3>Kernlochbohrer</h3><p>Groß lesbar für die Werkstatt.</p></div>
+          <div class="panel-body">
+            <div class="thread-result-main">
+              <span>Kernloch</span>
+              <strong><span id="threadDrill">5.0</span> mm</strong>
+              <small id="threadRule">M6 · Steigung 1,00 mm</small>
+            </div>
+            <div class="thread-meta-grid">
+              <div><span>Gewinde</span><strong id="threadName">M6</strong></div>
+              <div><span>Steigung</span><strong id="threadPitch">1,00 mm</strong></div>
+              <div><span>Typ</span><strong id="threadKind">Metrisch Regel</strong></div>
+            </div>
+            <div class="help-under"><b>Merke:</b> Kernloch ist nicht das fertige Gewinde. Das Gewinde entsteht erst durch Gewindebohrer oder Gewindeformer.</div>
+          </div>
+        </div>
+
+        <div class="panel thread-table-panel thread-info-panel">
+          <div class="panel-head"><p class="eyebrow">Merker</p><h3>Tabelle & Hinweise</h3><p>Gängige M-Gewinde ab M1.</p></div>
+          <div class="panel-body form-grid">
+            <div class="thread-note-box">
+              <b>Formel metrisch:</b><br>
+              Kernloch ≈ Nennmaß − Steigung<br>
+              Beispiel: M8 × 1,25 → 8 − 1,25 = 6,75 → meist 6,8 mm
+            </div>
+            <div class="table-wrap thread-quick-wrap"><table id="threadQuick"></table></div>
+          </div>
         </div>
       </div>
     </section>
@@ -1019,7 +1062,7 @@
 <script src="../assets/js/ws-tool-menu.js" defer></script>
 <script>
 "use strict";
-const TOOL_VERSION = "Werkstatt-Rechner Metall Plus v30";
+const TOOL_VERSION = "Werkstatt-Rechner Metall Plus v31";
 const $=id=>document.getElementById(id);
 const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
 function num(id){return parseFloat($(id)?.value)||0}
@@ -1316,13 +1359,51 @@ function calcFit(){
     if($("fitValues")) $("fitValues").innerHTML=`<span class="fit-values-main">${round(Math.abs(minClear)*1000,0)} µm Übermaß bis ${round(maxClear*1000,0)} µm Spiel</span><span class="fit-values-sub">${round(Math.abs(minClear),3)} mm Übermaß bis ${round(maxClear,3)} mm Spiel</span>`;
   }
 }
+const threadPitchRegular={"M1":0.25,"M1.2":0.25,"M1.4":0.30,"M1.6":0.35,"M2":0.40,"M2.5":0.45,"M3":0.50,"M4":0.70,"M5":0.80,"M6":1.00,"M8":1.25,"M10":1.50,"M12":1.75,"M14":2.00,"M16":2.00,"M18":2.50,"M20":2.50,"M24":3.00,"M30":3.50,"M36":4.00};
+function fmtDec(v,d=2){return Number.isFinite(v)?v.toFixed(d).replace('.',','):"--"}
+function threadPitchInfo(kind,name){
+  if(kind.startsWith("Metrisch Regel")){const p=threadPitchRegular[name];return {label:p?fmtDec(p,2)+" mm":"--", raw:p};}
+  const fine=name.match(/x\s*([0-9.]+)/i);
+  if(fine){const p=parseFloat(fine[1]);return {label:fmtDec(p,2)+" mm", raw:p};}
+  const tpi=name.match(/-(\d+)/);
+  if(tpi){const n=parseFloat(tpi[1]);const p=25.4/n;return {label:fmtDec(p,3)+" mm ("+n+" TPI)", raw:p};}
+  return {label:"--", raw:null};
+}
+function threadFormHint(){
+  const formBtn=$("threadFormBtn");
+  return formBtn && formBtn.classList.contains("thread-form-hint");
+}
 function initThreads(){
   const tt=$("threadType"); tt.innerHTML=Object.keys(threads).map(k=>`<option>${k}</option>`).join("");
   tt.onchange=()=>{populateThreads();calcThread()}; $("threadSize").onchange=calcThread; populateThreads();
-  $("threadQuick").innerHTML="<thead><tr><th>Gewinde</th><th>Kernloch</th></tr></thead><tbody>"+Object.entries(threads["Metrisch Regel (M)"]).map(([k,v])=>`<tr><td>${k}</td><td class="mono">${v} mm</td></tr>`).join("")+"</tbody>";
+  const cutBtn=$("threadCutBtn"), formBtn=$("threadFormBtn");
+  if(cutBtn&&formBtn){
+    cutBtn.onclick=()=>{cutBtn.classList.add("active");formBtn.classList.remove("active","thread-form-hint");calcThread();};
+    formBtn.onclick=()=>{formBtn.classList.add("active","thread-form-hint");cutBtn.classList.remove("active");calcThread();};
+  }
+  renderThreadQuick();
+}
+function renderThreadQuick(){
+  const tbl=$("threadQuick"); if(!tbl)return;
+  const show=new Set(["M1","M1.2","M1.4","M1.6","M2","M2.5","M3","M4","M5","M6","M8","M10","M12","M16","M20"]);
+  const rows=Object.entries(threads["Metrisch Regel (M)"]).filter(([k])=>show.has(k));
+  tbl.innerHTML="<thead><tr><th>Gewinde</th><th>Steigung</th><th>Kernloch</th></tr></thead><tbody>"+rows.map(([k,v])=>{const p=threadPitchInfo("Metrisch Regel (M)",k).label;return `<tr><td>${k}</td><td class="mono">${p}</td><td class="mono">${round(v,2).replace('.00','')} mm</td></tr>`}).join("")+"</tbody>";
 }
 function populateThreads(){const list=threads[$("threadType").value];$("threadSize").innerHTML=Object.keys(list).map(k=>`<option>${k}</option>`).join("")}
-function calcThread(){const kind=$("threadType").value, name=$("threadSize").value, val=threads[kind][name];setText("threadDrill",round(val,2).replace(".00",""));setText("threadName",name);setText("threadKind",kind)}
+function calcThread(){
+  const kind=$("threadType").value, name=$("threadSize").value, val=threads[kind][name];
+  const pitch=threadPitchInfo(kind,name);
+  setText("threadDrill",round(val,2).replace(".00",""));
+  setText("threadName",name);
+  setText("threadKind",kind.replace("Metrisch Regel (M)","Metrisch Regel"));
+  setText("threadPitch",pitch.label);
+  setText("threadRule",`${name} · Steigung ${pitch.label}`);
+  const practice=$("threadPractice");
+  if(practice){
+    if(threadFormHint()){practice.innerHTML="<b>Gewindeformen:</b> Der Kernlochbohrer ist meist größer als beim Schneiden. Exakte Werte hängen stark von Material, Former, Schmierung und Hersteller ab. Deshalb hier bewusst nur Hinweis: Herstellerdaten verwenden.";}
+    else{practice.innerHTML="<b>Praxis:</b> Erst Kernloch bohren, danach Gewinde schneiden. Bei Sacklöchern, zähen Werkstoffen, Beschichtungen und Serienfertigung Herstellerangaben und Tabellenbuch prüfen.";}
+  }
+}
 function calcScrew(){const s=screw[$("scrSize").value], fit=$("scrFit").value, type=$("scrType").value;if(!s)return;setText("scrHole",s.holes[fit].toFixed(1));setText("scrDk",s.dk.toFixed(1)+" mm");setText("scrCounterDia",(type==="912"?s.cb:s.cs).toFixed(1)+" mm");setText("scrDepth",(type==="912"?s.k+0.4:s.k).toFixed(1)+" mm")}
 function conv(mode){
   if(mode==="mm") $("inchVal").value=round(num("mmVal")/25.4,4);
@@ -1765,7 +1846,7 @@ function printToolSheet(){
     .muted-small{font-size:.84rem;color:var(--muted);line-height:1.45;}
     @media(max-width:840px){.formula-grid,.term-grid{grid-template-columns:1fr}.cut-info-dialog{max-width:calc(100vw - 16px)}}
 
-  </style></head><body><div class="print-actions"><button onclick="window.print();return false;">Drucken / PDF speichern</button><button class="secondary" onclick="window.close();return false;">Schließen</button></div><main><div class="head-line"><h1>Werkzeug-Schnittdatenblatt</h1><span class="count">${p.tools.length} Werkzeug(e)</span></div><section class="project-grid"><div><b>Projektname</b><br><span>${escapeHtml(p.name||'')}</span></div><div><b>Projekt-Nr.</b><br><span>${escapeHtml(p.ref||'')}</span></div><div><b>Auftrag-Nr.</b><br><span>${escapeHtml(p.orderNo||'')}</span></div><div><b>Zeichnungs-Nr.</b><br><span>${escapeHtml(p.drawingNo||'')}</span></div><div class="wide"><b>Beschreibung</b><br><span>${escapeHtml(p.description||'')}</span></div>${p.customer?`<div class="customer"><b>Kunde</b><br><span>${escapeHtml(p.customer)}</span></div>`:''}</section><div class="tools">${rows}</div><footer><span>Richtwerte prüfen: Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</span><span>Warenschmiede Werkstatt-Rechner Metall Plus v30</span></footer></main></body></html>`);
+  </style></head><body><div class="print-actions"><button onclick="window.print();return false;">Drucken / PDF speichern</button><button class="secondary" onclick="window.close();return false;">Schließen</button></div><main><div class="head-line"><h1>Werkzeug-Schnittdatenblatt</h1><span class="count">${p.tools.length} Werkzeug(e)</span></div><section class="project-grid"><div><b>Projektname</b><br><span>${escapeHtml(p.name||'')}</span></div><div><b>Projekt-Nr.</b><br><span>${escapeHtml(p.ref||'')}</span></div><div><b>Auftrag-Nr.</b><br><span>${escapeHtml(p.orderNo||'')}</span></div><div><b>Zeichnungs-Nr.</b><br><span>${escapeHtml(p.drawingNo||'')}</span></div><div class="wide"><b>Beschreibung</b><br><span>${escapeHtml(p.description||'')}</span></div>${p.customer?`<div class="customer"><b>Kunde</b><br><span>${escapeHtml(p.customer)}</span></div>`:''}</section><div class="tools">${rows}</div><footer><span>Richtwerte prüfen: Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</span><span>Warenschmiede Werkstatt-Rechner Metall Plus v31</span></footer></main></body></html>`);
   w.document.close();
 }
 
