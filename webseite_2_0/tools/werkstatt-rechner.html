@@ -222,8 +222,10 @@
     .tab-btn.active{box-shadow:0 0 0 3px rgba(249,115,22,.13),0 13px 28px -22px var(--blue)}
     .panel{background:linear-gradient(180deg,color-mix(in srgb,var(--paper) 96%,transparent),color-mix(in srgb,var(--paper-soft) 70%,var(--paper)));}
     .panel-head{background:linear-gradient(135deg,rgba(47,142,223,.10),rgba(249,115,22,.035));}
-    .help-dot{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:999px;border:1px solid color-mix(in srgb,var(--blue) 48%,var(--line));background:var(--paper);color:var(--blue);font-size:.72rem;font-weight:1000;margin-left:5px;cursor:help;position:relative;text-transform:none;letter-spacing:0;vertical-align:middle}
-    .help-dot[data-tip]:hover:after,.help-dot[data-tip]:focus:after{content:attr(data-tip);position:absolute;left:50%;bottom:125%;transform:translateX(-50%);z-index:120;width:min(280px,70vw);padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--paper);box-shadow:0 20px 60px -38px rgba(15,23,42,.85);color:var(--text);font-size:.78rem;font-weight:700;line-height:1.4;text-align:left;letter-spacing:0;text-transform:none}
+    .help-dot{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:999px;border:1px solid color-mix(in srgb,var(--blue) 48%,var(--line));background:var(--paper);color:var(--blue);font-size:.72rem;font-weight:1000;margin-left:5px;cursor:help;position:relative;text-transform:none;letter-spacing:0;vertical-align:middle;z-index:20}
+    .help-dot[data-tip]:hover:after,.help-dot[data-tip]:focus:after{content:attr(data-tip);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);z-index:160;width:min(330px,76vw);padding:12px 13px;border-radius:14px;border:1px solid color-mix(in srgb,var(--blue) 24%,var(--line));background:linear-gradient(145deg,var(--paper),var(--paper-soft));box-shadow:0 22px 62px -34px rgba(15,23,42,.9);color:var(--text);font-size:.78rem;font-weight:760;line-height:1.45;text-align:left;letter-spacing:0;text-transform:none;white-space:normal}
+    .help-dot[data-tip]:hover:before,.help-dot[data-tip]:focus:before{content:"";position:absolute;left:calc(100% + 3px);top:50%;transform:translateY(-50%) rotate(45deg);width:12px;height:12px;background:var(--paper);border-left:1px solid color-mix(in srgb,var(--blue) 24%,var(--line));border-bottom:1px solid color-mix(in srgb,var(--blue) 24%,var(--line));z-index:161}
+    @media(max-width:760px){.help-dot[data-tip]:hover:after,.help-dot[data-tip]:focus:after{left:auto;right:0;top:130%;transform:none}.help-dot[data-tip]:hover:before,.help-dot[data-tip]:focus:before{display:none}}
     .cnc-display{margin-top:14px;border-radius:22px;padding:16px;border:1px solid color-mix(in srgb,var(--blue) 24%,var(--line));background:linear-gradient(145deg,#0c1726,#16273a);color:#dff7ff;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 18px 42px -36px rgba(15,23,42,.9);font-family:var(--mono)}
     [data-theme="dark"] .cnc-display{background:linear-gradient(145deg,#07101c,#101f31)}
     .cnc-screen-head{display:flex;justify-content:space-between;gap:12px;color:#65e7ff;font-size:.72rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
@@ -252,13 +254,15 @@
     .angle-visual-card{border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,var(--paper-soft),var(--paper));overflow:hidden;box-shadow:var(--shadow)}
     .angle-visual-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--paper) 88%,transparent)}
     .angle-visual-head b{font-size:.95rem}.angle-visual-head span{font-size:.78rem;color:var(--muted);font-weight:850}
-    .angle-stage{min-height:360px;display:grid;place-items:center;padding:18px;background:radial-gradient(circle at 50% 15%,color-mix(in srgb,var(--blue) 9%,transparent),transparent 28rem)}
-    .angle-stage svg{width:100%;max-width:520px;height:330px;display:block;overflow:visible}
+    .angle-stage{min-height:410px;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 15%,color-mix(in srgb,var(--blue) 9%,transparent),transparent 28rem)}
+    .angle-stage svg{width:100%;max-width:640px;height:390px;display:block;overflow:visible}
     .angle-shape{fill:color-mix(in srgb,var(--blue) 10%,transparent);stroke:var(--blue);stroke-width:2.6;stroke-linejoin:round;filter:drop-shadow(0 12px 18px rgba(15,23,42,.10))}
     .angle-help-line{stroke:color-mix(in srgb,var(--muted) 56%,transparent);stroke-dasharray:5 4;stroke-width:1.3}
     .angle-dim{stroke:var(--orange);stroke-width:2.2;fill:none;marker-start:url(#angleArrow);marker-end:url(#angleArrow)}
-    .angle-label{font-family:var(--mono);font-size:12px;font-weight:900;fill:var(--text)}
-    .angle-small{font-family:var(--mono);font-size:11px;font-weight:900;fill:var(--orange)}
+    .angle-label{font-family:var(--mono);font-size:13px;font-weight:950;fill:var(--text);paint-order:stroke;stroke:var(--paper);stroke-width:5px;stroke-linejoin:round}
+    .angle-small{font-family:var(--mono);font-size:12px;font-weight:950;fill:var(--orange);paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+    .angle-label-line{stroke:color-mix(in srgb,var(--orange) 72%,var(--blue));stroke-width:1.6;stroke-dasharray:4 4;opacity:.82}
+    .angle-angle-guide{fill:none;stroke:var(--orange);stroke-width:3;stroke-linecap:round}
     .angle-modebar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
     .angle-mode-btn{border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:15px;padding:11px 10px;font-weight:950;cursor:pointer;transition:.16s ease}
     .angle-mode-btn.active{background:linear-gradient(135deg,var(--blue),var(--blue2));border-color:transparent;color:#fff;box-shadow:0 14px 28px -22px var(--blue)}
@@ -391,16 +395,16 @@
             </div>
             <button class="btn btn-blue" type="button" onclick="loadCutPreset()">⚡ Richtwerte laden</button>
             <div class="row">
-              <div><label>Werkzeug-Ø d [mm]</label><input id="cutD" type="number" value="10" step="0.1"></div>
+              <div><label>Werkzeug-Ø d [mm] <span class="help-dot" tabindex="0" data-tip="d ist der Werkzeugdurchmesser. Er wirkt direkt auf die Drehzahl: kleiner Durchmesser = höhere Drehzahl bei gleicher Schnittgeschwindigkeit.">?</span></label><input id="cutD" type="number" value="10" step="0.1"></div>
               <div><label>Schnittgeschw. vc [m/min] <span class="help-dot" tabindex="0" data-tip="vc ist die Schnittgeschwindigkeit am Werkzeugumfang. Herstellerdaten sind genauer; Richtwerte im Tool sind nur Startwerte.">?</span></label><input id="cutVc" type="number" value="120" step="1"></div>
             </div>
             <div class="row">
-              <div><label>Zähnezahl z</label><input id="cutZ" type="number" value="4" step="1"></div>
+              <div><label>Zähnezahl z <span class="help-dot" tabindex="0" data-tip="z ist die Anzahl aktiver Schneiden/Zähne. Beim Fräser meist 2, 3, 4 oder mehr. Beim Bohren hier meist 2 als Näherung.">?</span></label><input id="cutZ" type="number" value="4" step="1"></div>
               <div><label>Vorschub/Zahn fz [mm] <span class="help-dot" tabindex="0" data-tip="fz ist der Vorschub pro Schneide. Zusammen mit Zähnezahl und Drehzahl ergibt sich die Vorschubgeschwindigkeit vf.">?</span></label><input id="cutFz" type="number" value="0.05" step="0.01"></div>
             </div>
             <div class="row">
-              <div><label>Schnitttiefe ap [mm]</label><input id="cutAp" type="number" placeholder="optional" step="0.1"></div>
-              <div><label>Schnittbreite ae [mm]</label><input id="cutAe" type="number" placeholder="optional" step="0.1"></div>
+              <div><label>Schnitttiefe ap [mm] <span class="help-dot" tabindex="0" data-tip="ap ist die Tiefe des Eingriffs. Zusammen mit ae und vf ergibt sich das Zeitspanvolumen Q. Für reine Drehzahl/Vorschub-Berechnung kann ap leer bleiben.">?</span></label><input id="cutAp" type="number" placeholder="optional" step="0.1"></div>
+              <div><label>Schnittbreite ae [mm] <span class="help-dot" tabindex="0" data-tip="ae ist die Breite des Eingriffs. Nur nötig, wenn du Q/Zeitspanvolumen grob abschätzen willst.">?</span></label><input id="cutAe" type="number" placeholder="optional" step="0.1"></div>
             </div>
             <div><label>Notiz / Auftrag optional</label><input id="cutNote" type="text" placeholder="z.B. Fräser Ø10, 1.7131, Nut schruppen"></div>
             <div class="row">
@@ -428,8 +432,9 @@
               <div class="result-list">
                 <div class="metric"><span>Vorschubgeschwindigkeit vf</span><strong><span id="cutVf">764</span> mm/min</strong></div>
                 <div class="metric"><span>Zeitspanvolumen Q</span><strong><span id="cutQ">--</span> cm³/min</strong></div>
-                <div class="metric"><span>Bewertung</span><strong id="cutWarn" class="good">Richtwert prüfen</strong></div>
+                <div class="metric"><span>Praxis-Check</span><strong id="cutWarn" class="good">Startwert plausibel</strong></div>
               </div>
+              <div class="help-under"><b>Was bedeutet Praxis-Check?</b> Das Tool prüft nur grob auf auffällige Drehzahl oder Vorschubwerte. Grün heißt nicht „freigegeben“, sondern: als Startwert wirkt es nicht sofort auffällig. Herstellerdaten, Werkzeuglänge, Spannung und Materialzustand bleiben entscheidend.</div>
             </div>
           </div>
           <div class="history" id="historySchnitt"></div>
@@ -438,19 +443,20 @@
         <aside class="info-card" aria-label="Schnittdaten Hilfe">
           <div class="info-card-head"><p class="eyebrow">Merker</p><h3>Drehzahl, Vorschub & Formeln</h3></div>
           <div class="info-card-body">
-            <p><b>Drehzahl</b> und <b>Vorschub</b> sind Startwerte. In der Praxis zählen Werkzeug, Spannung, Material, Auskragung, Kühlung und Maschinenzustand.</p>
+            <p><b>So liest du den Bereich:</b> Du gibst Werkzeug, Material und Vorschubwerte ein. Daraus entstehen Maschinenwerte: <b>S</b> für Drehzahl und <b>F</b> für Vorschub.</p>
             <div class="formula-card">
               <code>n = (vc × 1000) / (π × d)</code>
               <code>vf = n × z × fz</code>
               <code>Q = ap × ae × vf / 1000</code>
             </div>
             <ul class="info-list">
-              <li><b>n / S</b>: Spindeldrehzahl in U/min.</li>
-              <li><b>vf / F</b>: Vorschubgeschwindigkeit in mm/min.</li>
-              <li><b>fz</b>: Vorschub pro Zahn/Schneide.</li>
-              <li><b>ap / ae</b>: Schnitttiefe und Schnittbreite, nur für Q nötig.</li>
+              <li><b>n / S</b>: Spindeldrehzahl. Diesen Wert würdest du an der CNC als S-Wert nutzen.</li>
+              <li><b>vf / F</b>: Vorschubgeschwindigkeit. Diesen Wert würdest du als F-Wert nutzen.</li>
+              <li><b>vc</b>: Schnittgeschwindigkeit am Umfang. Kommt idealerweise vom Werkzeughersteller.</li>
+              <li><b>fz</b>: Vorschub pro Zahn. Zu hoch = Werkzeug leidet, zu niedrig = Werkzeug reibt.</li>
+              <li><b>ap / ae</b>: Eingriff in Tiefe und Breite. Nur für Q nötig.</li>
             </ul>
-            <p>Bei kleinen Werkzeugen, langen Auskragungen oder unsicherer Spannung lieber vorsichtig starten und Herstellerdaten prüfen.</p>
+            <p><b>Praxis:</b> Bei kleinen Werkzeugen, langer Auskragung, schlechter Spannung, Edelstahl oder alter Maschine lieber vorsichtig starten und anpassen.</p>
           </div>
         </aside>
       </div>
@@ -652,7 +658,10 @@
                 <polygon id="angleTriPoly" class="angle-shape" points="60,270 330,270 330,110"></polygon>
                 <line id="angleBaseHelp" class="angle-help-line" x1="60" y1="270" x2="330" y2="270"></line>
                 <line id="angleHeightHelp" class="angle-help-line" x1="330" y1="270" x2="330" y2="110"></line>
-                <path id="angleArc" d="M92,270 A32,32 0 0 0 88,252" fill="none" stroke="var(--orange)" stroke-width="3"></path>
+                <path id="angleArc" class="angle-angle-guide" d="M92,270 A32,32 0 0 0 88,252"></path>
+                <line id="angleLineA" class="angle-label-line" x1="0" y1="0" x2="0" y2="0"></line>
+                <line id="angleLineB" class="angle-label-line" x1="0" y1="0" x2="0" y2="0"></line>
+                <line id="angleLineC" class="angle-label-line" x1="0" y1="0" x2="0" y2="0"></line>
                 <text id="angleLblA" class="angle-label" x="340" y="190">a</text>
                 <text id="angleLblB" class="angle-label" x="190" y="300">b</text>
                 <text id="angleLblC" class="angle-label" x="200" y="170">c</text>
@@ -808,7 +817,7 @@ function calcSchnitt(){
   setText("cncS",round(n,0)); setText("cncF",round(vf,0)); setText("cncVc",round(vc,0)); setText("cncD",round(d,1).replace(".0", ""));
   const op=$("cutOp")?.value || ""; setText("cncMode", op==="turn" ? "DREHEN" : (op==="drill" ? "BOHREN" : "FRÄSEN"));
   const w=$("cutWarn"); w.className=""; 
-  if(n>20000){w.textContent="sehr hoch";w.classList.add("bad")} else if(vf>3000){w.textContent="Vorschub hoch";w.classList.add("warn")} else {w.textContent="Richtwert prüfen";w.classList.add("good")}
+  if(n>20000){w.textContent="Achtung: Drehzahl sehr hoch";w.classList.add("bad")} else if(vf>3000){w.textContent="Achtung: Vorschub hoch";w.classList.add("warn")} else {w.textContent="Startwert plausibel";w.classList.add("good")}
 }
 function loadCutPreset(){
   const data={
@@ -981,18 +990,29 @@ function drawAngleTriangle(a,b,c,A,B,G){
   if(!a||!b||!G)return;
   const C={x:0,y:0}, Bp={x:a,y:0}, Ap={x:b*cosD(G),y:b*sinD(G)};
   const minX=Math.min(C.x,Bp.x,Ap.x), maxX=Math.max(C.x,Bp.x,Ap.x), minY=Math.min(C.y,Bp.y,Ap.y), maxY=Math.max(C.y,Bp.y,Ap.y);
-  const scale=Math.min(300/Math.max(1,maxX-minX),230/Math.max(1,maxY-minY))*0.86;
-  const tx=x=>55+(x-minX)*scale, ty=y=>280-(y-minY)*scale;
+  const scale=Math.min(310/Math.max(1,maxX-minX),250/Math.max(1,maxY-minY))*0.82;
+  const tx=x=>75+(x-minX)*scale, ty=y=>295-(y-minY)*scale;
   const pC={x:tx(C.x),y:ty(C.y)}, pB={x:tx(Bp.x),y:ty(Bp.y)}, pA={x:tx(Ap.x),y:ty(Ap.y)};
   setAttr('angleTriPoly',{points:`${pC.x},${pC.y} ${pB.x},${pB.y} ${pA.x},${pA.y}`});
   setAttr('angleBaseHelp',{x1:pC.x,y1:pC.y,x2:pB.x,y2:pB.y}); setAttr('angleHeightHelp',{x1:pB.x,y1:pB.y,x2:pA.x,y2:pA.y});
-  setAttr('angleLblA',{x:(pC.x+pB.x)/2,y:(pC.y+pB.y)/2+23}); setText('angleLblA','a '+round(a,1));
-  setAttr('angleLblB',{x:(pC.x+pA.x)/2-22,y:(pC.y+pA.y)/2}); setText('angleLblB','b '+round(b,1));
-  setAttr('angleLblC',{x:(pA.x+pB.x)/2+18,y:(pA.y+pB.y)/2}); setText('angleLblC','c '+round(c,1));
-  setAttr('angleLblGamma',{x:pC.x+22,y:pC.y-10}); setText('angleLblGamma','γ '+round(G,1)+'°');
-  setAttr('angleLblBeta',{x:pB.x-36,y:pB.y-10}); setText('angleLblBeta','β '+round(B,1)+'°');
-  setAttr('angleLblAlpha',{x:pA.x-8,y:pA.y+24}); setText('angleLblAlpha','α '+round(A,1)+'°');
-  const r=34, theta=G*Math.PI/180, ax=pC.x+r, ay=pC.y, ex=pC.x+r*Math.cos(theta), ey=pC.y-r*Math.sin(theta), large=G>180?1:0;
+
+  function labelWithLine(labelId,lineId,anchor,label,dx,dy){
+    const lx=anchor.x+dx, ly=anchor.y+dy;
+    setAttr(lineId,{x1:anchor.x,y1:anchor.y,x2:lx,y2:ly});
+    setAttr(labelId,{x:lx,y:ly});
+    setText(labelId,label);
+  }
+  const midAB={x:(pC.x+pB.x)/2,y:(pC.y+pB.y)/2};
+  const midCA={x:(pC.x+pA.x)/2,y:(pC.y+pA.y)/2};
+  const midCB={x:(pA.x+pB.x)/2,y:(pA.y+pB.y)/2};
+  labelWithLine('angleLblA','angleLineA',midAB,'a  '+round(a,1)+' mm',0,34);
+  labelWithLine('angleLblB','angleLineB',midCA,'b  '+round(b,1)+' mm',-48,-10);
+  labelWithLine('angleLblC','angleLineC',midCB,'c  '+round(c,1)+' mm',44,-10);
+
+  setAttr('angleLblGamma',{x:pC.x+35,y:pC.y-18}); setText('angleLblGamma','γ '+round(G,1)+'°');
+  setAttr('angleLblBeta',{x:pB.x-52,y:pB.y-18}); setText('angleLblBeta','β '+round(B,1)+'°');
+  setAttr('angleLblAlpha',{x:pA.x+14,y:pA.y+32}); setText('angleLblAlpha','α '+round(A,1)+'°');
+  const r=38, theta=G*Math.PI/180, ax=pC.x+r, ay=pC.y, ex=pC.x+r*Math.cos(theta), ey=pC.y-r*Math.sin(theta), large=G>180?1:0;
   setAttr('angleArc',{d:`M ${ax} ${ay} A ${r} ${r} 0 ${large} 0 ${ex} ${ey}`});
 }
 function solveTaperAngle(){
