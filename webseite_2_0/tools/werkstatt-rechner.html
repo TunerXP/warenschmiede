@@ -439,6 +439,40 @@
     .tool-basket-actions .btn,.tool-basket-actions a{flex:1 1 120px}
     @media(max-width:900px){.grid-schnitt{grid-template-columns:1fr}}
 
+    /* v26 ISO 2768: kompakt, dreispaltig, live prüfbar */
+    .iso-grid{display:grid;grid-template-columns:minmax(300px,.95fr) minmax(330px,1fr) minmax(360px,1.12fr);gap:16px;align-items:start;}
+    .iso-card .panel-head{padding:16px 18px 12px;}
+    .iso-card .panel-body{padding:16px 18px;}
+    .iso-input-card .row{grid-template-columns:1fr 1fr;}
+    .iso-quick-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
+    .iso-status-line{border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));background:color-mix(in srgb,var(--blue) 6%,var(--paper));border-radius:15px;padding:11px 12px;font-weight:850;color:var(--text);line-height:1.35;}
+    .iso-result-main{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+    .iso-result-main>div,.iso-limit,.iso-check-box{border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,var(--paper-soft),var(--paper));padding:14px 15px;box-shadow:0 14px 34px -30px rgba(15,23,42,.55);}
+    .iso-result-main span,.iso-limit span,.iso-check-box span{display:block;color:var(--muted);font-size:.68rem;font-weight:950;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+    .iso-result-main strong{display:block;font-family:var(--mono);font-size:clamp(1.25rem,2.4vw,2rem);line-height:1;color:var(--red);}
+    .iso-result-main small{display:block;margin-top:6px;color:var(--muted);font-family:var(--mono);font-weight:900;}
+    .iso-limit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+    .iso-limit strong{font-family:var(--mono);font-size:1.18rem;color:var(--text);}
+    .iso-check-box{border-left:5px solid var(--blue);}
+    .iso-check-box strong{display:block;font-size:1.35rem;color:var(--text);letter-spacing:-.02em;}
+    .iso-check-box small{display:block;color:var(--muted);margin-top:5px;line-height:1.35;}
+    .iso-check-box.good{border-left-color:var(--green);background:color-mix(in srgb,var(--green) 8%,var(--paper));}
+    .iso-check-box.good strong{color:var(--green);}
+    .iso-check-box.bad{border-left-color:var(--red);background:color-mix(in srgb,var(--red) 7%,var(--paper));}
+    .iso-check-box.bad strong{color:var(--red);}
+    .iso-check-box.warn{border-left-color:var(--yellow);background:color-mix(in srgb,var(--yellow) 8%,var(--paper));}
+    .iso-legacy-values{display:none;}
+    .iso-note-box{border:1px solid color-mix(in srgb,var(--orange) 22%,var(--line));background:color-mix(in srgb,var(--orange) 7%,var(--paper));border-radius:16px;padding:12px 13px;color:var(--muted);line-height:1.48;}
+    .iso-note-box b{color:var(--text);}
+    .iso-table-wrap{max-height:285px;overflow:auto;}
+    .iso-table-wrap table{font-size:.8rem;}
+    .iso-table-wrap th,.iso-table-wrap td{padding:8px 9px;}
+    .iso-class-pills{display:flex;gap:7px;flex-wrap:wrap;}
+    .iso-class-pills span{border:1px solid var(--line);background:var(--paper-soft);border-radius:999px;padding:7px 10px;font-size:.78rem;color:var(--muted);font-weight:850;}
+    .iso-class-pills b{color:var(--text);}
+    @media(max-width:1250px){.iso-grid{grid-template-columns:1fr 1fr}.iso-info-card{grid-column:1 / -1}}
+    @media(max-width:760px){.iso-grid,.iso-input-card .row,.iso-result-main,.iso-limit-grid{grid-template-columns:1fr}}
+
 
     /* v25 Merker-Dialog: lesbarer, öffentliche Hilfe statt Bauhinweise */
     .cut-info-dialog{max-width:min(980px,calc(100vw - 28px));}
@@ -591,34 +625,56 @@
 
     <!-- ISO2768 -->
     <section class="tab" id="tab-toleranzen">
-      <div class="grid">
-        <div class="panel">
-          <div class="panel-head"><p class="eyebrow">DIN ISO 2768-1</p><h3>Allgemeintoleranzen</h3><p>Für Längenmaße ohne eigene Toleranzangabe.</p></div>
+      <div class="iso-grid">
+        <article class="panel iso-card iso-input-card">
+          <div class="panel-head"><p class="eyebrow">DIN ISO 2768-1</p><h3>Allgemeintoleranzen</h3><p>Schneller Check für Längenmaße ohne eigene Toleranzangabe.</p></div>
           <div class="panel-body form-grid">
             <div class="row">
-              <div><label>Nennmaß [mm]</label><input id="tolDim" type="number" placeholder="z.B. 45" value="45" step="0.01"></div>
-              <div><label>Toleranzklasse</label><select id="tolClass"><option value="f">fein (f)</option><option value="m" selected>mittel (m)</option><option value="c">grob (c)</option></select></div>
+              <div><label>Nennmaß [mm] <span class="help-dot" tabindex="0" data-tip="Das Nennmaß ist das Sollmaß auf der Zeichnung, z. B. 45 mm. Das Tool sucht automatisch den passenden ISO-Maßbereich.">?</span></label><input id="tolDim" type="number" placeholder="z.B. 45" value="45" step="0.01"></div>
+              <div><label>Klasse <span class="help-dot" tabindex="0" data-tip="f = fein, m = mittel, c = grob, v = sehr grob. Die Klasse muss auf der Zeichnung angegeben sein, z. B. ISO 2768-m.">?</span></label><select id="tolClass"><option value="f">f · fein</option><option value="m" selected>m · mittel</option><option value="c">c · grob</option><option value="v">v · sehr grob</option></select></div>
             </div>
-            <div class="quick-grid">
+            <div><label>Ist-Maß optional [mm] <span class="help-dot" tabindex="0" data-tip="Wenn du ein gemessenes Maß einträgst, prüft das Tool direkt i.O. oder n.i.O. gegen die berechneten Grenzen.">?</span></label><input id="tolActual" type="number" placeholder="z.B. 45.12" step="0.01"></div>
+            <div class="quick-grid iso-quick-grid">
               <button class="quick" onclick="setVal('tolDim',6)">6</button><button class="quick" onclick="setVal('tolDim',30)">30</button><button class="quick" onclick="setVal('tolDim',120)">120</button><button class="quick" onclick="setVal('tolDim',400)">400</button>
             </div>
-            <div class="footer-note">Gültigkeitsbereich im Tool: 0,5 bis 2000 mm. Für Winkel, Form/Lage und Oberflächen gelten eigene Angaben.</div>
+            <div class="iso-status-line" id="tolStatusLine">Maß 45 mm · Klasse m · Bereich wird automatisch gewählt.</div>
           </div>
-        </div>
-        <div class="panel">
+        </article>
+
+        <article class="panel iso-card iso-result-card">
+          <div class="panel-head"><p class="eyebrow">Live-Ergebnis</p><h3>Grenzmaße & Prüfung</h3><p>Gut lesbar für Werkstatt und Messplatz.</p></div>
           <div class="panel-body">
-            <div class="result-main"><div><small>Toleranz</small><div class="big">±<span id="tolVal">0.30</span></div><div class="unit">mm</div></div></div>
-            <div class="result-list">
-              <div class="metric"><span>Untermaß</span><strong><span id="tolMin">44.70</span> mm</strong></div>
-              <div class="metric"><span>Obermaß</span><strong><span id="tolMax">45.30</span> mm</strong></div>
+            <div class="iso-result-main">
+              <div><span>Sollmaß</span><strong id="tolNominal">45.00 mm</strong></div>
+              <div><span>Toleranz</span><strong>±<span id="tolVal">0.30</span> mm</strong><small id="tolValUm">300 µm</small></div>
+            </div>
+            <div class="iso-limit-grid">
+              <div class="iso-limit"><span>Untergrenze</span><strong><span id="tolMin">44.70</span> mm</strong></div>
+              <div class="iso-limit"><span>Obergrenze</span><strong><span id="tolMax">45.30</span> mm</strong></div>
+            </div>
+            <div class="iso-check-box" id="tolCheckBox">
+              <span>Ist-Maß</span>
+              <strong id="tolCheckText">optional eintragen</strong>
+              <small id="tolCheckHint">Dann wird direkt gegen Unter- und Obergrenze geprüft.</small>
+            </div>
+            <div class="result-list iso-legacy-values" aria-hidden="true">
               <div class="metric"><span>Bereich</span><strong id="tolRange">44.70 – 45.30</strong></div>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="panel" style="margin-top:18px">
-        <div class="panel-head"><h3>Tabelle Schnellübersicht</h3></div>
-        <div class="panel-body"><div class="table-wrap"><table id="tolTable"></table></div></div>
+        </article>
+
+        <article class="panel iso-card iso-info-card">
+          <div class="panel-head"><p class="eyebrow">Merker</p><h3>Was gilt wirklich?</h3><p>Kurz erklärt, damit es praktisch bleibt.</p></div>
+          <div class="panel-body">
+            <div class="iso-note-box">
+              <b>Wichtig:</b> ISO 2768 gilt nur, wenn sie auf der Zeichnung steht. Gesondert tolerierte Maße, Passungen, Gewinde, Oberflächen sowie Form- und Lagetoleranzen haben Vorrang.
+            </div>
+            <div class="table-wrap iso-table-wrap"><table id="tolTable"></table></div>
+            <div class="iso-class-pills">
+              <span><b>f</b> fein</span><span><b>m</b> mittel</span><span><b>c</b> grob</span><span><b>v</b> sehr grob</span>
+            </div>
+          </div>
+        </article>
       </div>
     </section>
 
@@ -939,7 +995,7 @@
 <script src="../assets/js/ws-tool-menu.js" defer></script>
 <script>
 "use strict";
-const TOOL_VERSION = "Werkstatt-Rechner Metall Plus v25";
+const TOOL_VERSION = "Werkstatt-Rechner Metall Plus v26";
 const $=id=>document.getElementById(id);
 const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
 function num(id){return parseFloat($(id)?.value)||0}
@@ -949,8 +1005,13 @@ function toast(t){$("toast").textContent=t;$("toast").classList.add("show");clea
 function setVal(id,v){$(id).value=v;calcAll()}
 
 const tolRows=[
-  [0.5,3,0.05,0.1,0.2],[3,6,0.05,0.1,0.3],[6,30,0.1,0.2,0.5],
-  [30,120,0.15,0.3,0.8],[120,400,0.2,0.5,1.2],[400,1000,0.3,0.8,2.0],[1000,2000,0.5,1.2,3.0]
+  [0.5,3,0.05,0.10,0.20,null],
+  [3,6,0.05,0.10,0.30,0.50],
+  [6,30,0.10,0.20,0.50,1.00],
+  [30,120,0.15,0.30,0.80,1.50],
+  [120,400,0.20,0.50,1.20,2.50],
+  [400,1000,0.30,0.80,2.00,4.00],
+  [1000,2000,0.50,1.20,3.00,6.00]
 ];
 const fitData=[
   {max:3,H7:[10,0],H8:[14,0],h6:[0,-6],g6:[-2,-8],f7:[-6,-16],k6:[6,0],p6:[12,6]},
@@ -1094,16 +1155,48 @@ function loadCutPreset(){
   syncHiddenCut(cutVal('cutConsoleD')||10,p[0],p[2],p[1]);
   calcSchnitt(); toast("Richtwerte geladen");
 }
+function fmtTol(v){return Number.isFinite(v) ? Number(v).toFixed(2) : "--"}
+function fmtTolCell(v){return v==null ? "—" : "±" + Number(v).toFixed(2)}
 function calcTol(){
-  const d=num("tolDim"), cls=$("tolClass").value;
-  const idx={f:2,m:3,c:4}[cls];
-  const row=tolRows.find(r=>d>=r[0]&&d<=r[1]) || tolRows.find(r=>d<=r[1]);
-  if(!row){setText("tolVal","--");return}
-  const t=row[idx]; setText("tolVal",round(t,2)); setText("tolMin",round(d-t,2)); setText("tolMax",round(d+t,2)); setText("tolRange",`${round(d-t,2)} – ${round(d+t,2)}`);
+  const d=num("tolDim"), cls=$("tolClass")?.value || "m";
+  const idx={f:2,m:3,c:4,v:5}[cls];
+  const row=tolRows.find(r=>d>=r[0]&&d<=r[1]) || tolRows.find(r=>d<=r[1]) || tolRows[tolRows.length-1];
+  const t=row ? row[idx] : null;
+  const status=$("tolStatusLine");
+  const clsText={f:"fein",m:"mittel",c:"grob",v:"sehr grob"}[cls] || cls;
+  if(status) status.textContent = `Maß ${d ? fmtTol(d) : "--"} mm · Klasse ${cls} (${clsText}) · Bereich ${row ? row[0]+" bis "+row[1]+" mm" : "--"}`;
+  setText("tolNominal", d ? fmtTol(d)+" mm" : "--");
+  if(!row || t==null || !d){
+    setText("tolVal","--"); setText("tolValUm","--"); setText("tolMin","--"); setText("tolMax","--"); setText("tolRange","--");
+    const box=$("tolCheckBox"); if(box){box.className="iso-check-box warn";}
+    setText("tolCheckText", t==null ? "für diesen Bereich nicht hinterlegt" : "Maß eingeben");
+    setText("tolCheckHint", "Bitte Maßbereich und Klasse prüfen.");
+    return;
+  }
+  const min=d-t, max=d+t;
+  setText("tolVal",fmtTol(t)); setText("tolValUm",`${Math.round(t*1000)} µm`); setText("tolMin",fmtTol(min)); setText("tolMax",fmtTol(max)); setText("tolRange",`${fmtTol(min)} – ${fmtTol(max)}`);
+  const actualRaw=$("tolActual")?.value;
+  const actual=actualRaw==="" ? NaN : parseFloat(String(actualRaw).replace(",","."));
+  const box=$("tolCheckBox");
+  if(!box) return;
+  if(!Number.isFinite(actual)){
+    box.className="iso-check-box";
+    setText("tolCheckText","optional eintragen");
+    setText("tolCheckHint","Dann wird direkt gegen Unter- und Obergrenze geprüft.");
+  } else if(actual>=min && actual<=max){
+    box.className="iso-check-box good";
+    setText("tolCheckText",`${fmtTol(actual)} mm · i.O.`);
+    setText("tolCheckHint",`liegt innerhalb ${fmtTol(min)} bis ${fmtTol(max)} mm`);
+  } else {
+    box.className="iso-check-box bad";
+    setText("tolCheckText",`${fmtTol(actual)} mm · n.i.O.`);
+    setText("tolCheckHint",`zulässig wäre ${fmtTol(min)} bis ${fmtTol(max)} mm`);
+  }
 }
 function renderTolTable(){
-  $("tolTable").innerHTML=`<thead><tr><th>Nennmaßbereich</th><th>fein f</th><th>mittel m</th><th>grob c</th></tr></thead><tbody>`+
-  tolRows.map(r=>`<tr><td>${r[0]} bis ${r[1]} mm</td><td class="mono">±${r[2]}</td><td class="mono">±${r[3]}</td><td class="mono">±${r[4]}</td></tr>`).join("")+"</tbody>";
+  const table=$("tolTable"); if(!table) return;
+  table.innerHTML=`<thead><tr><th>Nennmaß</th><th>f</th><th>m</th><th>c</th><th>v</th></tr></thead><tbody>`+
+  tolRows.map(r=>`<tr><td>${r[0]} bis ${r[1]} mm</td><td class="mono">${fmtTolCell(r[2])}</td><td class="mono">${fmtTolCell(r[3])}</td><td class="mono">${fmtTolCell(r[4])}</td><td class="mono">${fmtTolCell(r[5])}</td></tr>`).join("")+"</tbody>";
 }
 function applyFitPreset(){const v=$("fitPreset").value;if(!v)return;const [h,s]=v.split("-");$("holeChar").value=h[0];$("holeNum").value=h[1];$("shaftChar").value=s[0];$("shaftNum").value=s[1];calcFit()}
 function fitVals(dim,code){const e=fitData.find(x=>dim<=x.max);return e?e[code]:null}
