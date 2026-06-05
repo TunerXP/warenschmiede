@@ -393,10 +393,20 @@
     }
     .grid-passungen{
       display:grid;
-      grid-template-columns:minmax(280px,400px) minmax(360px,1fr) minmax(280px,400px);
-      gap:18px;
+      grid-template-columns:minmax(280px,390px) minmax(360px,1fr) minmax(280px,390px);
+      gap:16px;
       align-items:start;
     }
+    .fit-modebar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .fit-mode-btn{border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:14px;padding:10px 8px;font-weight:950;cursor:pointer;transition:.16s ease;font-size:.82rem}
+    .fit-mode-btn.active{background:linear-gradient(135deg,var(--blue),var(--blue2));border-color:transparent;color:#fff;box-shadow:0 14px 28px -22px var(--blue)}
+    .fit-hidden{display:none!important}
+    .fit-visual-panel .panel-body{padding:14px}
+    .fit-visual-panel .visual{min-height:0;padding:12px}
+    .fit-visual-panel .fit-visual-img{max-width:780px}
+    .fit-status-good{color:var(--green)!important}.fit-status-warn{color:var(--yellow)!important}.fit-status-bad{color:var(--red)!important}.fit-status-blue{color:var(--blue)!important}
+    .fit-values-main{display:block;font-size:1.05rem;line-height:1.25}
+    .fit-values-sub{display:block;margin-top:3px;font-size:.86rem;color:var(--muted);font-family:var(--mono)}
     .grid-gewinde{
       display:grid;
       grid-template-columns:minmax(280px,400px) minmax(260px,360px) minmax(360px,1fr);
@@ -690,11 +700,19 @@
         <div class="panel">
           <div class="panel-head"><p class="eyebrow">ISO-Passungen</p><h3>Bohrung & Welle</h3><p>Typische Passungen als schneller Praxischeck.</p></div>
           <div class="panel-body form-grid">
-            <div><label>Schnellauswahl</label><select id="fitPreset" onchange="applyFitPreset()"><option value="">Individuell</option><option value="H7-h6">H7 / h6 – leicht beweglich</option><option value="H7-g6">H7 / g6 – kleines Spiel</option><option value="H7-f7">H7 / f7 – enge Spielpassung</option><option value="H7-k6">H7 / k6 – Übergang</option><option value="H7-p6">H7 / p6 – Presssitz</option></select></div>
+            <div>
+              <label>Rechenmodus <span class="help-dot" tabindex="0" data-tip="Wähle, ob du eine komplette Passung, nur eine Bohrung oder nur eine Welle prüfen willst. So bleibt die Anzeige auf das Wesentliche reduziert.">?</span></label>
+              <div class="fit-modebar" role="group" aria-label="Passungsmodus">
+                <button class="fit-mode-btn active" type="button" data-fit-mode="pair">Bohrung + Welle</button>
+                <button class="fit-mode-btn" type="button" data-fit-mode="hole">Nur Bohrung</button>
+                <button class="fit-mode-btn" type="button" data-fit-mode="shaft">Nur Welle</button>
+              </div>
+            </div>
+            <div id="fitPresetWrap"><label>Schnellauswahl</label><select id="fitPreset" onchange="applyFitPreset()"><option value="">Individuell</option><option value="H7-h6">H7 / h6 – leicht beweglich</option><option value="H7-g6">H7 / g6 – kleines Spiel</option><option value="H7-f7">H7 / f7 – enge Spielpassung</option><option value="H7-k6">H7 / k6 – Übergang</option><option value="H7-p6">H7 / p6 – Presssitz</option></select></div>
             <div><label>Nennmaß [mm] <span class="help-dot" tabindex="0" data-tip="Das Nennmaß ist das Zeichnungsmaß der Passung, z. B. 20 mm bei H7/h6.">?</span></label><input id="fitDim" type="number" value="20" step="0.01"></div>
             <div class="row">
-              <div><label>Bohrung</label><div class="row"><select id="holeChar"><option>H</option><option>G</option><option>F</option></select><select id="holeNum"><option>6</option><option selected>7</option><option>8</option></select></div></div>
-              <div><label>Welle</label><div class="row"><select id="shaftChar"><option selected>h</option><option>g</option><option>f</option><option>k</option><option>p</option></select><select id="shaftNum"><option>5</option><option selected>6</option><option>7</option></select></div></div>
+              <div id="fitHoleBox"><label>Bohrung <span class="help-dot" tabindex="0" data-tip="Großbuchstaben stehen für Bohrungen, z. B. H7. H7 ist häufig eine geriebene Bohrung.">?</span></label><div class="row"><select id="holeChar"><option>H</option><option>G</option><option>F</option></select><select id="holeNum"><option>6</option><option selected>7</option><option>8</option></select></div></div>
+              <div id="fitShaftBox"><label>Welle <span class="help-dot" tabindex="0" data-tip="Kleinbuchstaben stehen für Wellen, z. B. h6. Die Zahl beschreibt den Toleranzgrad.">?</span></label><div class="row"><select id="shaftChar"><option selected>h</option><option>g</option><option>f</option><option>k</option><option>p</option></select><select id="shaftNum"><option>5</option><option selected>6</option><option>7</option></select></div></div>
             </div>
             <div class="practice-card" aria-label="Praxisvorschlag Passung">
               <h4>Praxisvorschlag</h4>
@@ -719,10 +737,10 @@
           <div class="panel-head"><p class="eyebrow">Ergebnis</p><h3>Bereiche & Spiel</h3><p>µm und mm werden gemeinsam angezeigt.</p></div>
           <div class="panel-body">
             <div class="result-list">
-              <div class="metric"><span>Passungsart</span><strong id="fitType" class="good">Spielpassung</strong></div>
-              <div class="metric"><span>Bohrung Bereich</span><strong id="holeRange">20.000 – 20.021</strong></div>
-              <div class="metric"><span>Welle Bereich</span><strong id="shaftRange">19.987 – 20.000</strong></div>
-              <div class="metric"><span>Spiel / Übermaß</span><strong id="fitValues">0 bis 34 µm Spiel (0,000 bis 0,034 mm)</strong></div>
+              <div class="metric"><span id="fitTypeLabel">Auswertung</span><strong id="fitType" class="good">Spielpassung</strong></div>
+              <div class="metric" id="holeRangeRow"><span>Bohrung Bereich</span><strong id="holeRange">20.000 – 20.021</strong></div>
+              <div class="metric" id="shaftRangeRow"><span>Welle Bereich</span><strong id="shaftRange">19.987 – 20.000</strong></div>
+              <div class="metric" id="fitValuesRow"><span id="fitValuesLabel">Spiel / Übermaß</span><strong id="fitValues">0 bis 34 µm Spiel (0,000 bis 0,034 mm)</strong></div>
             </div>
             <div class="help-under"><b>Praxis:</b> Bei H7-Bohrungen wird oft vorgebohrt und danach gerieben. Zeichnung, Norm, Tabellenbuch und betrieblicher Ablauf bleiben maßgebend.</div>
           </div>
@@ -1001,7 +1019,7 @@
 <script src="../assets/js/ws-tool-menu.js" defer></script>
 <script>
 "use strict";
-const TOOL_VERSION = "Werkstatt-Rechner Metall Plus v28";
+const TOOL_VERSION = "Werkstatt-Rechner Metall Plus v29";
 const $=id=>document.getElementById(id);
 const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
 function num(id){return parseFloat($(id)?.value)||0}
@@ -1204,36 +1222,73 @@ function renderTolTable(){
   table.innerHTML=`<thead><tr><th>Nennmaß</th><th>f</th><th>m</th><th>c</th><th>v</th></tr></thead><tbody>`+
   tolRows.map(r=>`<tr><td>${r[0]} bis ${r[1]} mm</td><td class="mono">${fmtTolCell(r[2])}</td><td class="mono">${fmtTolCell(r[3])}</td><td class="mono">${fmtTolCell(r[4])}</td><td class="mono">${fmtTolCell(r[5])}</td></tr>`).join("")+"</tbody>";
 }
-function applyFitPreset(){const v=$("fitPreset").value;if(!v)return;const [h,s]=v.split("-");$("holeChar").value=h[0];$("holeNum").value=h[1];$("shaftChar").value=s[0];$("shaftNum").value=s[1];calcFit()}
+let currentFitMode="pair";
+function setFitMode(mode){
+  currentFitMode=mode || "pair";
+  $$(".fit-mode-btn").forEach(b=>b.classList.toggle("active", b.dataset.fitMode===currentFitMode));
+  $("fitPresetWrap")?.classList.toggle("fit-hidden", currentFitMode!=="pair");
+  $("fitHoleBox")?.classList.toggle("fit-hidden", currentFitMode==="shaft");
+  $("fitShaftBox")?.classList.toggle("fit-hidden", currentFitMode==="hole");
+  calcFit();
+}
+function applyFitPreset(){const v=$("fitPreset").value;if(!v)return;const [h,s]=v.split("-");$("holeChar").value=h[0];$("holeNum").value=h[1];$("shaftChar").value=s[0];$("shaftNum").value=s[1];setFitMode("pair")}
 function fitVals(dim,code){const e=fitData.find(x=>dim<=x.max);return e?e[code]:null}
-function updateFitPractice(d, holeCode, hmin, hmax){
+function fmtFitRange(min,max){return `${round(min,3)} – ${round(max,3)} mm`}
+function fmtFitTol(min,max){const spread=Math.abs(max-min);return `<span class="fit-values-main">${round(spread*1000,0)} µm Toleranz</span><span class="fit-values-sub">${round(spread,3)} mm</span>`}
+function updateFitPractice(d, mode, holeCode, shaftCode, hmin, hmax, smin, smax){
   const isH7 = /^H7$/.test(holeCode);
   let allowance = d <= 10 ? 0.15 : d <= 30 ? 0.20 : d <= 80 ? 0.30 : 0.50;
   const pre = Math.max(0, d - allowance);
-  setText("fitDrill", round(pre,2).replace(/\.00$/,"" ) + " mm");
+  if(mode==="shaft"){
+    setText("fitDrill", "Rohmaß prüfen");
+    setText("fitFinish", round(d,3).replace(/\.000$/,"" ) + " " + shaftCode);
+    setText("fitTool", "Drehen/Schleifen Ø" + round(d,3).replace(/\.000$/,"" ) + " " + shaftCode);
+    return;
+  }
+  setText("fitDrill", "ca. " + round(pre,2).replace(/\.00$/,"" ) + " mm");
   setText("fitFinish", isH7 ? (round(d,3).replace(/\.000$/,"" ) + " H7") : (holeCode + " / " + round(hmin,3) + "–" + round(hmax,3)));
-  setText("fitTool", isH7 ? "Reibahle " + round(d,3).replace(/\.000$/,"" ) + " H7" : "nach Tabelle prüfen");
+  setText("fitTool", isH7 ? "Reibahle Ø" + round(d,3).replace(/\.000$/,"" ) + " H7" : "nach Tabelle prüfen");
 }
 function calcFit(){
-  const d=num("fitDim"), hc=$("holeChar").value+$("holeNum").value, sc=$("shaftChar").value+$("shaftNum").value;
-  let hv=fitVals(d,hc), sv=fitVals(d,sc);
-  if(!hv||!sv){setText("fitType","nicht hinterlegt");return}
-  const hmax=d+hv[0]/1000,hmin=d+hv[1]/1000,smax=d+sv[0]/1000,smin=d+sv[1]/1000;
+  const d=num("fitDim"), mode=currentFitMode || "pair", hc=$("holeChar").value+$("holeNum").value, sc=$("shaftChar").value+$("shaftNum").value;
+  const ft=$("fitType"); if(!ft) return; ft.className="";
+  const holeRow=$("holeRangeRow"), shaftRow=$("shaftRangeRow"), valuesRow=$("fitValuesRow"), valuesLabel=$("fitValuesLabel");
+  if(!d){setText("fitType","Nennmaß eingeben");return}
+  const hv=fitVals(d,hc), sv=fitVals(d,sc);
+  holeRow?.classList.toggle("fit-hidden", mode==="shaft");
+  shaftRow?.classList.toggle("fit-hidden", mode==="hole");
+  valuesRow?.classList.remove("fit-hidden");
+  if(mode!=="shaft" && !hv){setText("fitType","Bohrung nicht hinterlegt");return}
+  if(mode!=="hole" && !sv){setText("fitType","Welle nicht hinterlegt");return}
+  let hmax=null,hmin=null,smax=null,smin=null;
+  if(hv){hmax=d+hv[0]/1000; hmin=d+hv[1]/1000; setText("holeRange",fmtFitRange(hmin,hmax));}
+  if(sv){smax=d+sv[0]/1000; smin=d+sv[1]/1000; setText("shaftRange",fmtFitRange(smin,smax));}
+  updateFitPractice(d, mode, hc, sc, hmin, hmax, smin, smax);
+  if(mode==="hole"){
+    ft.textContent="Bohrung " + hc; ft.classList.add("fit-status-blue");
+    if(valuesLabel) valuesLabel.textContent="Bohrungs-Toleranz";
+    if($("fitValues")) $("fitValues").innerHTML=fmtFitTol(hmin,hmax);
+    return;
+  }
+  if(mode==="shaft"){
+    ft.textContent="Welle " + sc; ft.classList.add("fit-status-blue");
+    if(valuesLabel) valuesLabel.textContent="Wellen-Toleranz";
+    if($("fitValues")) $("fitValues").innerHTML=fmtFitTol(smin,smax);
+    return;
+  }
+  if(valuesLabel) valuesLabel.textContent="Spiel / Übermaß";
   const maxClear=hmax-smin,minClear=hmin-smax;
-  setText("holeRange",`${round(hmin,3)} – ${round(hmax,3)}`); setText("shaftRange",`${round(smin,3)} – ${round(smax,3)}`);
-  updateFitPractice(d,hc,hmin,hmax);
-  const ft=$("fitType"); ft.className="";
   if(minClear>=0){
     ft.textContent="Spielpassung";ft.classList.add("good");
-    setText("fitValues",`${round(minClear*1000,0)} bis ${round(maxClear*1000,0)} µm Spiel (${round(minClear,3)} bis ${round(maxClear,3)} mm)`)
+    if($("fitValues")) $("fitValues").innerHTML=`<span class="fit-values-main">${round(minClear*1000,0)} bis ${round(maxClear*1000,0)} µm Spiel</span><span class="fit-values-sub">${round(minClear,3)} bis ${round(maxClear,3)} mm</span>`;
   }
   else if(maxClear<=0){
     ft.textContent="Übermaßpassung";ft.classList.add("bad");
-    setText("fitValues",`${round(Math.abs(maxClear)*1000,0)} bis ${round(Math.abs(minClear)*1000,0)} µm Übermaß (${round(Math.abs(maxClear),3)} bis ${round(Math.abs(minClear),3)} mm)`)
+    if($("fitValues")) $("fitValues").innerHTML=`<span class="fit-values-main">${round(Math.abs(maxClear)*1000,0)} bis ${round(Math.abs(minClear)*1000,0)} µm Übermaß</span><span class="fit-values-sub">${round(Math.abs(maxClear),3)} bis ${round(Math.abs(minClear),3)} mm</span>`;
   }
   else{
     ft.textContent="Übergangspassung";ft.classList.add("warn");
-    setText("fitValues",`${round(Math.abs(minClear)*1000,0)} µm Übermaß bis ${round(maxClear*1000,0)} µm Spiel (${round(Math.abs(minClear),3)} mm Übermaß bis ${round(maxClear,3)} mm Spiel)`)
+    if($("fitValues")) $("fitValues").innerHTML=`<span class="fit-values-main">${round(Math.abs(minClear)*1000,0)} µm Übermaß bis ${round(maxClear*1000,0)} µm Spiel</span><span class="fit-values-sub">${round(Math.abs(minClear),3)} mm Übermaß bis ${round(maxClear,3)} mm Spiel</span>`;
   }
 }
 function initThreads(){
@@ -1685,7 +1740,7 @@ function printToolSheet(){
     .muted-small{font-size:.84rem;color:var(--muted);line-height:1.45;}
     @media(max-width:840px){.formula-grid,.term-grid{grid-template-columns:1fr}.cut-info-dialog{max-width:calc(100vw - 16px)}}
 
-  </style></head><body><div class="print-actions"><button onclick="window.print();return false;">Drucken / PDF speichern</button><button class="secondary" onclick="window.close();return false;">Schließen</button></div><main><div class="head-line"><h1>Werkzeug-Schnittdatenblatt</h1><span class="count">${p.tools.length} Werkzeug(e)</span></div><section class="project-grid"><div><b>Projektname</b><br><span>${escapeHtml(p.name||'')}</span></div><div><b>Projekt-Nr.</b><br><span>${escapeHtml(p.ref||'')}</span></div><div><b>Auftrag-Nr.</b><br><span>${escapeHtml(p.orderNo||'')}</span></div><div><b>Zeichnungs-Nr.</b><br><span>${escapeHtml(p.drawingNo||'')}</span></div><div class="wide"><b>Beschreibung</b><br><span>${escapeHtml(p.description||'')}</span></div>${p.customer?`<div class="customer"><b>Kunde</b><br><span>${escapeHtml(p.customer)}</span></div>`:''}</section><div class="tools">${rows}</div><footer><span>Richtwerte prüfen: Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</span><span>Warenschmiede Werkstatt-Rechner Metall Plus v28</span></footer></main></body></html>`);
+  </style></head><body><div class="print-actions"><button onclick="window.print();return false;">Drucken / PDF speichern</button><button class="secondary" onclick="window.close();return false;">Schließen</button></div><main><div class="head-line"><h1>Werkzeug-Schnittdatenblatt</h1><span class="count">${p.tools.length} Werkzeug(e)</span></div><section class="project-grid"><div><b>Projektname</b><br><span>${escapeHtml(p.name||'')}</span></div><div><b>Projekt-Nr.</b><br><span>${escapeHtml(p.ref||'')}</span></div><div><b>Auftrag-Nr.</b><br><span>${escapeHtml(p.orderNo||'')}</span></div><div><b>Zeichnungs-Nr.</b><br><span>${escapeHtml(p.drawingNo||'')}</span></div><div class="wide"><b>Beschreibung</b><br><span>${escapeHtml(p.description||'')}</span></div>${p.customer?`<div class="customer"><b>Kunde</b><br><span>${escapeHtml(p.customer)}</span></div>`:''}</section><div class="tools">${rows}</div><footer><span>Richtwerte prüfen: Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</span><span>Warenschmiede Werkstatt-Rechner Metall Plus v29</span></footer></main></body></html>`);
   w.document.close();
 }
 
@@ -1758,6 +1813,7 @@ function setupCutConsole(){
 function init(){
   initHelpTips();
   setupCutConsole();
+  $$(".fit-mode-btn").forEach(b=>b.onclick=()=>setFitMode(b.dataset.fitMode));
   $$(".tab-btn").forEach(b=>b.onclick=()=>openTab(b.dataset.tab));
   $("btnTheme").onclick=()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==="dark"?"light":"dark"};
   $("btnHelp").onclick=()=>helpDialog.showModal();
