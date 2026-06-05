@@ -242,13 +242,15 @@
     .label-grid.label-sheet-comfortable{gap:12px}
     .label-grid.label-sheet-scan{gap:10px}
 
-    .label-cell.label-shape-square{border-radius:0!important}
-    .label-cell.label-shape-rounded{border-radius:var(--label-radius)!important}
-    .label-cell.label-shape-pill{border-radius:999px!important}
+    .label-cell.label-shape-square{border-radius:0!important;clip-path:none!important}
+    .label-cell.label-shape-rounded{border-radius:var(--label-radius)!important;clip-path:none!important}
+    .label-cell.label-shape-pill{border-radius:999px!important;clip-path:none!important}
     .label-cell.label-shape-cut{border-radius:8px!important;clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0 calc(100% - 12px),0 12px)}
     .label-cell.label-shape-file{border-radius:10px!important;clip-path:polygon(0 0,78% 0,88% 13px,100% 13px,100% 100%,0 100%)}
+    .label-cell:not(.label-shape-ticket)::before,.label-cell:not(.label-shape-ticket)::after{content:none!important;display:none!important}
     .label-cell.label-shape-ticket::before,.label-cell.label-shape-ticket::after{content:"";position:absolute;z-index:4;width:18px;height:18px;border-radius:50%;background:#fff;top:50%;transform:translateY(-50%);pointer-events:none}
     .label-cell.label-shape-ticket::before{left:-10px}.label-cell.label-shape-ticket::after{right:-10px}
+    .label-cell.label-shape-square .label-bar{border-radius:0!important}
     .label-cell.label-style-soft-shadow{box-shadow:0 16px 34px -28px rgba(15,23,42,.65)!important}
     .label-cell.label-style-no-shadow{box-shadow:none!important}
     @media print{
@@ -260,6 +262,9 @@
       .label-grid.label-sheet-compact{gap:3mm}
       .label-grid.label-sheet-comfortable{gap:5mm}
       .label-grid.label-sheet-scan{gap:4mm}
+      .label-cell.label-shape-square{border-radius:0!important;clip-path:none!important}
+      .label-cell.label-shape-square .label-bar{border-radius:0!important}
+      .label-cell:not(.label-shape-ticket)::before,.label-cell:not(.label-shape-ticket)::after{content:none!important;display:none!important}
     }
 
     dialog{border:0;border-radius:24px;padding:0;max-width:min(900px,calc(100vw - 28px));background:var(--surface);color:var(--text);box-shadow:0 28px 90px -46px rgba(0,0,0,.9)}dialog::backdrop{background:rgba(15,23,42,.58);backdrop-filter:blur(5px)}.modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:center}.modal-body{padding:20px;color:var(--muted);line-height:1.58}.close-x{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font-size:1.1rem}
@@ -1753,6 +1758,10 @@ WS-B001</textarea>
     function createLabelCell(item, design = labelDesign(), preview = false){
       const cell = document.createElement('div');
       cell.className = 'label-cell ' + templateClass(design.template) + ' label-barcode-' + (design.barcodeSize || 'balanced') + ' label-format-' + (design.labelFormat || 'normal') + ' label-density-' + (design.labelDensity || 'balanced') + ' label-shape-' + (design.labelShape || 'rounded');
+      if((design.labelShape || 'rounded') === 'square'){
+        cell.style.setProperty('border-radius','0px','important');
+        cell.style.setProperty('clip-path','none','important');
+      }
       cell.style.setProperty('--label-accent', design.titleColor);
       if(design.manualHeight && design.manualHeight !== 'auto') cell.style.minHeight = design.manualHeight + 'px';
       cell.style.setProperty('--label-bg', design.bgColor);
