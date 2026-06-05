@@ -63,7 +63,7 @@
       border-bottom:1px solid var(--line);
     }
     .topbar-inner{
-      max-width:1500px;margin:auto;padding:12px clamp(14px,2vw,28px);
+      max-width:1840px;margin:auto;padding:12px clamp(14px,2vw,28px);
       display:flex;justify-content:space-between;align-items:center;gap:14px;
     }
     .brand{display:flex;align-items:center;gap:12px;min-width:0}
@@ -91,7 +91,7 @@
     .btn-primary{background:linear-gradient(135deg,var(--red),#ef4444);border-color:transparent;color:#fff}
     .btn-blue{background:linear-gradient(135deg,var(--blue),var(--blue2));border-color:transparent;color:#fff}
     .btn-green{background:linear-gradient(135deg,#047857,#10b981);border-color:transparent;color:#fff}
-    .shell{max-width:1500px;margin:auto;padding:clamp(14px,2vw,28px)}
+    .shell{width:100%;max-width:1840px;margin:auto;padding:clamp(10px,1.2vw,22px)}
     .hero{
       border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);overflow:hidden;
       background:
@@ -236,7 +236,7 @@
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
     /* v4 Verständlichkeit & Kompaktstart */
-    .shell{max-width:1620px;padding-top:14px}
+    .shell{max-width:1840px;padding-top:14px}
     .tabs-wrap{top:82px;margin:14px 0 16px}
     .tabs{border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(232,241,249,.82));box-shadow:0 18px 44px -38px rgba(31,48,66,.65)}
     .tab-btn.active{box-shadow:0 0 0 3px rgba(249,115,22,.13),0 13px 28px -22px var(--blue)}
@@ -305,8 +305,8 @@
     .panel{overflow:visible}
     .grid-schnitt{
       display:grid;
-      grid-template-columns:minmax(300px,420px) minmax(270px,420px) minmax(250px,340px) minmax(260px,360px);
-      gap:18px;
+      grid-template-columns:minmax(265px,1.05fr) minmax(235px,.82fr) minmax(250px,.95fr) minmax(280px,1.02fr) minmax(250px,.88fr);
+      gap:14px;
       align-items:start;
     }
     .grid-passungen{
@@ -370,6 +370,21 @@
       .fit-visual-panel .visual{min-height:220px}
       .thread-table-panel .table-wrap{max-height:none}
     }
+
+    /* v11: volle Breite und getrennte Werkzeugdefinition */
+    .tabs-wrap{max-width:1840px;margin-left:auto;margin-right:auto}
+    .tool-editor-panel .panel-head{background:linear-gradient(135deg,rgba(249,115,22,.10),rgba(47,142,223,.035));}
+    .tool-editor-panel .tool-project-fields{padding:0;border:0;background:transparent;grid-template-columns:1fr;gap:10px}
+    .tool-editor-actions{grid-template-columns:1fr;gap:10px}
+    .tool-editor-actions .btn{width:100%;}
+    .grid-schnitt>.info-card[aria-label="Werkzeugkorb Schnittdaten"]{order:4}
+    .grid-schnitt>.info-card[aria-label="Schnittdaten Hilfe"]{order:5}
+    .compact-result .help-under{font-size:.8rem;padding:12px}
+    .info-card-body .row{grid-template-columns:1fr}
+    .tool-basket-actions .btn,.tool-basket-actions a{flex:1 1 120px}
+    @media(max-width:1500px){.grid-schnitt{grid-template-columns:repeat(2,minmax(0,1fr));}.grid-schnitt>.info-card[aria-label="Schnittdaten Hilfe"]{grid-column:1 / -1}}
+    @media(max-width:900px){.grid-schnitt{grid-template-columns:1fr}.grid-schnitt>.info-card[aria-label="Schnittdaten Hilfe"]{grid-column:auto}}
+
 
   </style>
 </head>
@@ -439,21 +454,23 @@
               <div><label id="cutApLabel">Bohrtiefe / Tiefe [mm] <span class="help-dot" tabindex="0" data-tip="Beim Bohren ist das die Bohrtiefe. Daraus kann das Tool grob die Bohrzeit berechnen. Beim Fräsen ist ap die Schnitttiefe für das Zeitspanvolumen Q.">?</span></label><input id="cutAp" type="number" placeholder="optional" step="0.1"></div>
               <div id="cutAeField"><label id="cutAeLabel">Schnittbreite ae [mm] <span class="help-dot" tabindex="0" data-tip="ae ist die seitliche Eingriffsbreite beim Fräsen. Beim Bohren wird ae nicht verwendet, weil der Bohrer mit seiner Kreisfläche arbeitet.">?</span></label><input id="cutAe" type="number" placeholder="optional" step="0.1"></div>
             </div>
+          </div>
+        </div>
+
+        <div class="panel tool-editor-panel">
+          <div class="panel-head"><p class="eyebrow">Werkzeug definieren</p><h3>T-Nummer & Beschreibung</h3><p>Pflicht für den Werkzeugkorb. Speichern legt das Werkzeug im aktuellen Projekt ab.</p></div>
+          <div class="panel-body form-grid">
             <div class="tool-project-fields">
-              <div class="row">
-                <div><label>T-Nummer *</label><input id="toolT" type="text" placeholder="z.B. T2"></div>
-                <div><label>Werkzeug / Beschreibung *</label><input id="cutNote" type="text" placeholder="z.B. Schruppfräser Langloch"></div>
-              </div>
-              <div class="row">
-                <div><label>Werkzeuglänge [mm]</label><input id="toolLen" type="number" placeholder="optional" step="0.1"></div>
-                <div><label>Beschichtung</label><select id="toolCoat"><option>unbeschichtet</option><option>HSS</option><option>HSSE</option><option>VHM</option><option>TiN</option><option>TiAlN</option><option>AlTiN</option><option>DLC</option><option>diamantbeschichtet</option><option>sonstige</option></select></div>
-              </div>
+              <div><label>T-Nummer *</label><input id="toolT" type="text" placeholder="z.B. T2"></div>
+              <div><label>Werkzeug / Beschreibung *</label><input id="cutNote" type="text" placeholder="z.B. Bohrer, Schruppfräser Langloch"></div>
+              <div><label>Werkzeuglänge [mm]</label><input id="toolLen" type="number" placeholder="optional" step="0.1"></div>
+              <div><label>Beschichtung</label><select id="toolCoat"><option>unbeschichtet</option><option>HSS</option><option>HSSE</option><option>VHM</option><option>TiN</option><option>TiAlN</option><option>AlTiN</option><option>DLC</option><option>diamantbeschichtet</option><option>sonstige</option></select></div>
             </div>
-            <div class="row">
+            <div class="row tool-editor-actions">
               <button class="btn btn-green" type="button" onclick="saveToolToBasket()">Werkzeug speichern</button>
               <button class="btn" type="button" onclick="newToolEntry()">Neu +</button>
             </div>
-            <p class="tool-save-note">Werkzeug speichern fügt die aktuellen Schnittdaten in das Projekt ein und leert danach die Eingabe für das nächste Werkzeug. Geladene Werkzeuge werden beim Ändern live aktualisiert.</p>
+            <p class="tool-save-note"><b>Werkzeug speichern:</b> fügt die aktuellen Schnittdaten ins Projekt ein und leert danach die Eingabe für das nächste Werkzeug. Klickst du rechts ein Werkzeug an, wird es hier geladen und Änderungen werden live übernommen.</p>
           </div>
         </div>
 
@@ -483,6 +500,27 @@
           </div>
         </div>
 
+        <aside class="info-card" aria-label="Werkzeugkorb Schnittdaten">
+          <div class="info-card-head"><p class="eyebrow">Werkzeugkorb</p><h3>Projekt-Werkzeuge</h3></div>
+          <div class="info-card-body">
+            <div class="row">
+              <div><label>Projektname</label><input id="cutProjectName" type="text" placeholder="z.B. Schiene Muster0815"></div>
+              <div><label>Projekt-Nr. / Kunde</label><input id="cutProjectRef" type="text" placeholder="optional"></div>
+            </div>
+            <div><label>Projektbeschreibung</label><textarea id="cutProjectDesc" placeholder="Kurzbeschreibung, Maschine, Material, Hinweise …"></textarea></div>
+            <div class="tool-basket-actions">
+              <button class="btn btn-green btn-small" type="button" onclick="saveCutProject()">Projekt speichern</button>
+              <button class="btn btn-small" type="button" onclick="openProjectDialog()">Projekt laden</button>
+              <button class="btn btn-blue btn-small" type="button" onclick="printToolSheet()">Werkzeugblatt drucken</button>
+              <a class="btn btn-small" href="cnc-fraesen-einrichtsblatt-plus/index.html" target="_blank" rel="noopener">CNC-Einrichtblatt</a>
+            </div>
+            <input id="projectImportFile" type="file" accept="application/json,.json" hidden onchange="importProjectFolder(event)">
+            <div class="tool-list" id="toolBasketList"></div>
+            <div class="tool-empty" id="toolBasketEmpty">Noch kein Werkzeug im Projekt. T-Nummer und Werkzeugbeschreibung eingeben, Schnittdaten berechnen und „Werkzeug speichern“ drücken.</div>
+          </div>
+        </aside>
+
+
         <aside class="info-card" aria-label="Schnittdaten Hilfe">
           <div class="info-card-head"><p class="eyebrow">Merker</p><h3>Drehzahl, Vorschub & Formeln</h3></div>
           <div class="info-card-body">
@@ -505,25 +543,6 @@
           </div>
         </aside>
 
-        <aside class="info-card" aria-label="Werkzeugkorb Schnittdaten">
-          <div class="info-card-head"><p class="eyebrow">Werkzeugkorb</p><h3>Projekt-Werkzeuge</h3></div>
-          <div class="info-card-body">
-            <div class="row">
-              <div><label>Projektname</label><input id="cutProjectName" type="text" placeholder="z.B. Schiene Muster0815"></div>
-              <div><label>Projekt-Nr. / Kunde</label><input id="cutProjectRef" type="text" placeholder="optional"></div>
-            </div>
-            <div><label>Projektbeschreibung</label><textarea id="cutProjectDesc" placeholder="Kurzbeschreibung, Maschine, Material, Hinweise …"></textarea></div>
-            <div class="tool-basket-actions">
-              <button class="btn btn-green btn-small" type="button" onclick="saveCutProject()">Projekt speichern</button>
-              <button class="btn btn-small" type="button" onclick="openProjectDialog()">Projekt laden</button>
-              <button class="btn btn-blue btn-small" type="button" onclick="printToolSheet()">Werkzeugblatt drucken</button>
-              <a class="btn btn-small" href="cnc-fraesen-einrichtsblatt-plus/index.html" target="_blank" rel="noopener">CNC-Einrichtblatt</a>
-            </div>
-            <input id="projectImportFile" type="file" accept="application/json,.json" hidden onchange="importProjectFolder(event)">
-            <div class="tool-list" id="toolBasketList"></div>
-            <div class="tool-empty" id="toolBasketEmpty">Noch kein Werkzeug im Projekt. T-Nummer und Werkzeugbeschreibung eingeben, Schnittdaten berechnen und „Werkzeug speichern“ drücken.</div>
-          </div>
-        </aside>
       </div>
     </section>
 
