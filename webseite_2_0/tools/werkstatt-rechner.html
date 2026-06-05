@@ -1019,7 +1019,7 @@
 <script src="../assets/js/ws-tool-menu.js" defer></script>
 <script>
 "use strict";
-const TOOL_VERSION = "Werkstatt-Rechner Metall Plus v29";
+const TOOL_VERSION = "Werkstatt-Rechner Metall Plus v30";
 const $=id=>document.getElementById(id);
 const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
 function num(id){return parseFloat($(id)?.value)||0}
@@ -1037,17 +1037,42 @@ const tolRows=[
   [400,1000,0.30,0.80,2.00,4.00],
   [1000,2000,0.50,1.20,3.00,6.00]
 ];
-const fitData=[
-  {max:3,H7:[10,0],H8:[14,0],h6:[0,-6],g6:[-2,-8],f7:[-6,-16],k6:[6,0],p6:[12,6]},
-  {max:6,H7:[12,0],H8:[18,0],h6:[0,-8],g6:[-4,-12],f7:[-10,-22],k6:[9,1],p6:[20,12]},
-  {max:10,H7:[15,0],H8:[22,0],h6:[0,-9],g6:[-5,-14],f7:[-13,-28],k6:[10,1],p6:[24,15]},
-  {max:18,H7:[18,0],H8:[27,0],h6:[0,-11],g6:[-6,-17],f7:[-16,-34],k6:[12,1],p6:[29,18]},
-  {max:30,H7:[21,0],H8:[33,0],h6:[0,-13],g6:[-7,-20],f7:[-20,-41],k6:[15,2],p6:[35,22]},
-  {max:50,H7:[25,0],H8:[39,0],h6:[0,-16],g6:[-9,-25],f7:[-25,-50],k6:[18,2],p6:[42,26]},
-  {max:80,H7:[30,0],H8:[46,0],h6:[0,-19],g6:[-10,-29],f7:[-30,-60],k6:[21,2],p6:[51,32]},
-  {max:120,H7:[35,0],H8:[54,0],h6:[0,-22],g6:[-12,-34],f7:[-36,-71],k6:[25,3],p6:[59,37]},
-  {max:500,H7:[63,0],H8:[97,0],h6:[0,-40],g6:[-20,-60],f7:[-68,-131],k6:[45,5],p6:[108,68]}
-];
+const fitData = (() => {
+  // Praxisnahe Schnellhilfe für gängige ISO-Passungen.
+  // Aufbau je Code: [oberes Abmaß µm, unteres Abmaß µm]
+  // H/h liegen an der Nulllinie. F/G-Bohrungen und f/g-Wellen werden aus den gleichen Grundabmaßen gespiegelt.
+  // Für kritische Bauteile immer Norm-/Tabellenbuch prüfen.
+  const base = [
+    {max:3,   it5:4,  it6:6,  it7:10, it8:14, g:2,  f:6,  kBase:0, pBase:6},
+    {max:6,   it5:5,  it6:8,  it7:12, it8:18, g:4,  f:10, kBase:1, pBase:12},
+    {max:10,  it5:6,  it6:9,  it7:15, it8:22, g:5,  f:13, kBase:1, pBase:15},
+    {max:18,  it5:8,  it6:11, it7:18, it8:27, g:6,  f:16, kBase:1, pBase:18},
+    {max:30,  it5:9,  it6:13, it7:21, it8:33, g:7,  f:20, kBase:2, pBase:22},
+    {max:50,  it5:11, it6:16, it7:25, it8:39, g:9,  f:25, kBase:2, pBase:26},
+    {max:80,  it5:13, it6:19, it7:30, it8:46, g:10, f:30, kBase:2, pBase:32},
+    {max:120, it5:15, it6:22, it7:35, it8:54, g:12, f:36, kBase:3, pBase:37},
+    {max:500, it5:25, it6:40, it7:63, it8:97, g:20, f:68, kBase:5, pBase:68}
+  ];
+  const width = (r, grade) => r['it' + grade] ?? r.it7;
+  return base.map(r => {
+    const row = { max: r.max };
+    [6,7,8].forEach(g => {
+      const it = width(r, g);
+      row['H' + g] = [it, 0];
+      row['G' + g] = [r.g + it, r.g];
+      row['F' + g] = [r.f + it, r.f];
+    });
+    [5,6,7].forEach(g => {
+      const it = width(r, g);
+      row['h' + g] = [0, -it];
+      row['g' + g] = [-r.g, -(r.g + it)];
+      row['f' + g] = [-r.f, -(r.f + it)];
+      row['k' + g] = [r.kBase + it, r.kBase];
+      row['p' + g] = [r.pBase + it, r.pBase];
+    });
+    return row;
+  });
+})();
 const threads={
  "Metrisch Regel (M)":{"M1":0.75,"M1.2":0.95,"M1.4":1.10,"M1.6":1.25,"M2":1.60,"M2.5":2.05,"M3":2.50,"M4":3.30,"M5":4.20,"M6":5.00,"M8":6.80,"M10":8.50,"M12":10.20,"M14":12.00,"M16":14.00,"M18":15.50,"M20":17.50,"M24":21.00,"M30":26.50,"M36":32.00},
  "Metrisch Fein (MF)":{"M3 x 0.35":2.65,"M4 x 0.5":3.50,"M5 x 0.5":4.50,"M6 x 0.75":5.25,"M8 x 1.0":7.00,"M10 x 1.0":9.00,"M10 x 1.25":8.80,"M12 x 1.5":10.50,"M16 x 1.5":14.50,"M20 x 1.5":18.50,"M24 x 2.0":22.00,"M30 x 2.0":28.00},
@@ -1740,7 +1765,7 @@ function printToolSheet(){
     .muted-small{font-size:.84rem;color:var(--muted);line-height:1.45;}
     @media(max-width:840px){.formula-grid,.term-grid{grid-template-columns:1fr}.cut-info-dialog{max-width:calc(100vw - 16px)}}
 
-  </style></head><body><div class="print-actions"><button onclick="window.print();return false;">Drucken / PDF speichern</button><button class="secondary" onclick="window.close();return false;">Schließen</button></div><main><div class="head-line"><h1>Werkzeug-Schnittdatenblatt</h1><span class="count">${p.tools.length} Werkzeug(e)</span></div><section class="project-grid"><div><b>Projektname</b><br><span>${escapeHtml(p.name||'')}</span></div><div><b>Projekt-Nr.</b><br><span>${escapeHtml(p.ref||'')}</span></div><div><b>Auftrag-Nr.</b><br><span>${escapeHtml(p.orderNo||'')}</span></div><div><b>Zeichnungs-Nr.</b><br><span>${escapeHtml(p.drawingNo||'')}</span></div><div class="wide"><b>Beschreibung</b><br><span>${escapeHtml(p.description||'')}</span></div>${p.customer?`<div class="customer"><b>Kunde</b><br><span>${escapeHtml(p.customer)}</span></div>`:''}</section><div class="tools">${rows}</div><footer><span>Richtwerte prüfen: Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</span><span>Warenschmiede Werkstatt-Rechner Metall Plus v29</span></footer></main></body></html>`);
+  </style></head><body><div class="print-actions"><button onclick="window.print();return false;">Drucken / PDF speichern</button><button class="secondary" onclick="window.close();return false;">Schließen</button></div><main><div class="head-line"><h1>Werkzeug-Schnittdatenblatt</h1><span class="count">${p.tools.length} Werkzeug(e)</span></div><section class="project-grid"><div><b>Projektname</b><br><span>${escapeHtml(p.name||'')}</span></div><div><b>Projekt-Nr.</b><br><span>${escapeHtml(p.ref||'')}</span></div><div><b>Auftrag-Nr.</b><br><span>${escapeHtml(p.orderNo||'')}</span></div><div><b>Zeichnungs-Nr.</b><br><span>${escapeHtml(p.drawingNo||'')}</span></div><div class="wide"><b>Beschreibung</b><br><span>${escapeHtml(p.description||'')}</span></div>${p.customer?`<div class="customer"><b>Kunde</b><br><span>${escapeHtml(p.customer)}</span></div>`:''}</section><div class="tools">${rows}</div><footer><span>Richtwerte prüfen: Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</span><span>Warenschmiede Werkstatt-Rechner Metall Plus v30</span></footer></main></body></html>`);
   w.document.close();
 }
 
