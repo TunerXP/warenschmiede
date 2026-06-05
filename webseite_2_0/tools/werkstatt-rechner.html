@@ -6,6 +6,7 @@
   <title>Werkstatt-Rechner Metall Plus – Werkstatt-Rechner</title>
   <meta name="description" content="Moderner heller Werkstatt-Rechner für Schnittdaten, Toleranzen, ISO-Passungen, Gewinde, Schrauben, Einheiten, Winkel und Materialgewicht.">
   <link rel="canonical" href="https://www.warenschmiede.com/tools/werkstatt-rechner.html">
+  <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <meta property="og:url" content="https://www.warenschmiede.com/tools/werkstatt-rechner.html">
   <meta name="twitter:url" content="https://www.warenschmiede.com/tools/werkstatt-rechner.html">
   <style>
@@ -75,7 +76,8 @@
     }
     .brand h1{margin:0;font-size:clamp(1.05rem,2vw,1.38rem);line-height:1.08;letter-spacing:-.02em}
     .brand small{display:block;color:var(--muted);font-size:.76rem;margin-top:3px}
-    .top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+    .top-actions .ws-tool-menu-btn{width:52px;height:52px;border-radius:16px;flex:0 0 auto}
     .btn{
       border:1px solid var(--line);background:var(--paper);color:var(--text);
       border-radius:999px;padding:10px 14px;font-weight:800;font-size:.88rem;cursor:pointer;
@@ -222,8 +224,9 @@
         </div>
       </a>
       <div class="top-actions">
-        <a class="btn" href="/tools/">🗂️ <span class="hide-mobile">Tools</span></a>
-        <a class="btn" href="/">🏠 <span class="hide-mobile">Start</span></a>
+        <button class="ws-tool-menu-btn" type="button" aria-label="Warenschmiede Tools öffnen" title="Warenschmiede Tools" onclick="window.WSToolMenu?.open()">
+          <img src="../assets/img/w-tools-menu.png" alt="" aria-hidden="true">
+        </button>
         <button class="btn" id="btnTheme" type="button">🌓 Design</button>
         <button class="btn btn-blue" id="btnHelp" type="button">Hilfe</button>
       </div>
@@ -515,6 +518,7 @@
 
   <div class="toast" id="toast">Erledigt</div>
 
+<script src="../assets/js/ws-tool-menu.js" defer></script>
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
