@@ -1313,10 +1313,54 @@ function importProjectFolder(ev){
   r.readAsText(file); ev.target.value="";
 }
 function printToolSheet(){
-  const p=currentProjectPayload(); if(!p.tools.length){toast("Keine Werkzeuge im Projekt");return}
-  const rows=p.tools.map(t=>`<tr><td>${escapeHtml(t.t)}</td><td>${escapeHtml(t.name)}</td><td>${escapeHtml(t.diameter)}</td><td>${escapeHtml(t.length)}</td><td>${escapeHtml(t.coating)}</td><td>${escapeHtml(t.material)}</td><td>${escapeHtml(t.op)}</td><td>${escapeHtml(t.values.vc)}</td><td>${escapeHtml(t.values.n)}</td><td>${escapeHtml(t.values.f)}</td><td>${escapeHtml(t.values.vf)}</td><td>${escapeHtml(t.values.ap)}</td><td>${escapeHtml(t.values.ae)}</td><td>${escapeHtml(t.values.time)}</td></tr>`).join("");
+  const p=currentProjectPayload();
+  if(!p.tools.length){toast("Keine Werkzeuge im Projekt");return}
+  const rows=p.tools.map(t=>{
+    const v=t.values||{};
+    const main=[
+      `<span><b>T</b>${escapeHtml(t.t||'-')}</span>`,
+      `<span><b>Werkzeug</b>${escapeHtml(t.name||'-')}</span>`,
+      `<span><b>Ø</b>${escapeHtml(t.diameter||'-')} mm</span>`,
+      `<span><b>L</b>${escapeHtml(t.length||'-')} mm</span>`,
+      `<span><b>Beschichtung</b>${escapeHtml(t.coating||'-')}</span>`,
+      `<span><b>Drehzahl</b>${escapeHtml(v.n||'-')} U/min</span>`,
+      `<span><b>Vorschub</b>${escapeHtml(v.vf||'-')} mm/min</span>`,
+      `<span><b>Zeit</b>${escapeHtml(v.time||'-')}</span>`
+    ].join('');
+    const details=[
+      `<span><b>Material</b>${escapeHtml(t.material||'-')}</span>`,
+      `<span><b>Bearbeitung</b>${escapeHtml(t.op||'-')}</span>`,
+      `<span><b>vc</b>${escapeHtml(v.vc||'-')} m/min</span>`,
+      `<span><b>f/fz</b>${escapeHtml(v.f||'-')}</span>`,
+      `<span><b>z</b>${escapeHtml(v.z||'-')}</span>`,
+      `<span><b>ap/Tiefe</b>${escapeHtml(v.ap||'-')} mm</span>`,
+      `<span><b>ae</b>${escapeHtml(v.ae||'-')} mm</span>`,
+      `<span><b>Q</b>${escapeHtml(v.q||'-')} cm³/min</span>`
+    ].join('');
+    return `<article class="tool-print-row"><div class="tool-print-main">${main}</div><div class="tool-print-detail">${details}</div></article>`;
+  }).join('');
   const w=window.open("","_blank"); if(!w) return;
-  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(p.name)} Werkzeugblatt</title><style>body{font-family:Arial,sans-serif;margin:24px;color:#111827}h1{margin:0 0 6px}p{color:#4b5563}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #cbd5e1;padding:6px;text-align:left}th{background:#eaf2f8}.note{margin:10px 0 18px;padding:10px;border:1px solid #cbd5e1;background:#f8fafc}@media print{button{display:none}}</style></head><body><button onclick="print()">Drucken / PDF speichern</button><h1>Werkzeug-Schnittdatenblatt</h1><p><b>Projekt:</b> ${escapeHtml(p.name)} ${p.ref?`· ${escapeHtml(p.ref)}`:""}</p><div class="note">${escapeHtml(p.description||"")}</div><table><thead><tr><th>T</th><th>Werkzeug</th><th>Ø</th><th>L</th><th>Beschichtung</th><th>Material</th><th>Bearbeitung</th><th>vc</th><th>n/S</th><th>f/fz</th><th>F/vf</th><th>ap/Tiefe</th><th>ae</th><th>Zeit</th></tr></thead><tbody>${rows}</tbody></table><p>Richtwerte prüfen. Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</p></body></html>`); w.document.close();
+  w.document.write(`<!doctype html><html lang="de"><head><meta charset="utf-8"><title>${escapeHtml(p.name)} Werkzeugblatt</title><style>
+    @page{size:A4 portrait;margin:9mm 9mm 10mm}
+    *{box-sizing:border-box}
+    body{font-family:Arial,"Segoe UI",sans-serif;margin:0;color:#111827;background:#fff;font-size:10.4px;line-height:1.25}
+    .print-actions{position:sticky;top:0;background:#fff;padding:8px 0 10px;border-bottom:1px solid #d8e2ee;margin-bottom:10px;display:flex;gap:8px}
+    button{border:1px solid #b8c8d8;background:#0b74c8;color:#fff;border-radius:8px;padding:7px 11px;font-weight:800;cursor:pointer}
+    .sheet{width:100%}
+    header{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;border-bottom:2px solid #102033;padding-bottom:7px;margin-bottom:8px}
+    h1{margin:0 0 3px;font-size:18px;letter-spacing:-.02em}.meta{color:#46596b;font-size:10.5px}.badge{border:1px solid #cbd7e5;border-radius:999px;padding:4px 8px;font-weight:800;color:#102033;background:#f5f8fb;white-space:nowrap}
+    .desc{border:1px solid #d6e0eb;background:#f8fbfe;border-radius:8px;padding:7px 9px;margin:0 0 8px;color:#34495e;min-height:26px}
+    .tool-print-list{display:grid;gap:5px}
+    .tool-print-row{border:1px solid #b9c7d6;border-radius:7px;overflow:hidden;break-inside:avoid;page-break-inside:avoid;background:#fff}
+    .tool-print-main,.tool-print-detail{display:grid;grid-template-columns:.42fr 1.5fr .65fr .65fr .9fr .9fr .9fr .72fr;align-items:stretch}
+    .tool-print-main{background:#eef5fb;font-size:10.8px;font-weight:800;color:#102033}
+    .tool-print-detail{background:#fff;color:#3c4d5f;font-size:9.7px;border-top:1px solid #d7e2ee}
+    .tool-print-main span,.tool-print-detail span{padding:4px 5px;border-right:1px solid #d7e2ee;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .tool-print-main span:last-child,.tool-print-detail span:last-child{border-right:0}
+    b{display:block;font-size:7.4px;letter-spacing:.07em;text-transform:uppercase;color:#607286;margin-bottom:1px;line-height:1.05}.tool-print-main b{color:#35506a}
+    footer{margin-top:8px;border-top:1px solid #d8e2ee;padding-top:5px;color:#607286;font-size:9px;display:flex;justify-content:space-between;gap:10px}
+    @media print{.print-actions{display:none}.sheet{page-break-after:auto}body{font-size:10px}.tool-print-row{box-shadow:none}}
+  </style></head><body><div class="print-actions"><button onclick="print()">Drucken / PDF speichern</button><button onclick="close()">Schließen</button></div><main class="sheet"><header><div><h1>Werkzeug-Schnittdatenblatt</h1><div class="meta"><b>Projekt</b>${escapeHtml(p.name||'Unbenannt')} ${p.ref?` · Nr./Kunde: ${escapeHtml(p.ref)}`:''}</div></div><div class="badge">${p.tools.length} Werkzeug(e)</div></header><div class="desc"><b>Beschreibung</b>${escapeHtml(p.description||'Keine Projektbeschreibung hinterlegt.')}</div><section class="tool-print-list">${rows}</section><footer><span>Richtwerte prüfen: Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</span><span>Warenschmiede Werkstatt-Rechner Metall Plus</span></footer></main></body></html>`); w.document.close();
 }
 function saveHistory(type){ if(type==="schnitt") saveToolToBasket(); }
 function renderHistory(){ renderToolBasket(); }
