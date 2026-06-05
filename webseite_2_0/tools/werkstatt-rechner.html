@@ -209,6 +209,11 @@
 
     .tool-project-fields{border:1px solid color-mix(in srgb,var(--orange) 22%,var(--line));background:color-mix(in srgb,var(--orange) 5%,var(--paper));border-radius:18px;padding:12px;display:grid;gap:12px}
     .tool-basket-actions{display:flex;flex-wrap:wrap;gap:8px}
+    .tabs-row{display:flex;align-items:center;gap:10px}
+    .tabs-row .tabs{flex:1;min-width:0}
+    .tabs-db-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .tool-save-note{margin-top:-4px;color:var(--muted);font-size:.78rem;line-height:1.35}
+    @media(max-width:980px){.tabs-row{display:block}.tabs-db-actions{margin-top:8px}}
     .tool-list{display:grid;gap:8px;max-height:360px;overflow:auto;padding-right:2px}
     .tool-mini-card{border:1px solid var(--line);background:var(--paper);border-radius:16px;padding:10px 11px;display:grid;gap:5px;cursor:pointer;transition:.16s ease;position:relative}
     .tool-mini-card:hover,.tool-mini-card.is-active{transform:translateY(-1px);border-color:color-mix(in srgb,var(--blue) 46%,var(--line));box-shadow:0 0 0 4px color-mix(in srgb,var(--blue) 10%,transparent)}
@@ -392,16 +397,22 @@
     <!-- v4: Großer Introbereich entfernt, damit Tabs und Rechner sofort sichtbar sind. -->
 
     <div class="tabs-wrap">
-      <nav class="tabs" aria-label="Werkstatt-Rechner Bereiche">
-        <button class="tab-btn active" data-tab="schnitt">🌀 Schnittdaten</button>
-        <button class="tab-btn" data-tab="toleranzen">📏 ISO 2768</button>
-        <button class="tab-btn" data-tab="passungen">🎯 Passungen</button>
-        <button class="tab-btn" data-tab="gewinde">🔩 Gewinde</button>
-        <button class="tab-btn" data-tab="schrauben">🧰 Schrauben</button>
-        <button class="tab-btn" data-tab="einheiten">↔️ Einheiten</button>
-        <button class="tab-btn" data-tab="gewicht">⚖️ Gewicht</button>
-        <button class="tab-btn" data-tab="winkel">📐 Winkel</button>
-      </nav>
+      <div class="tabs-row">
+        <nav class="tabs" aria-label="Werkstatt-Rechner Bereiche">
+          <button class="tab-btn active" data-tab="schnitt">🌀 Schnittdaten</button>
+          <button class="tab-btn" data-tab="toleranzen">📏 ISO 2768</button>
+          <button class="tab-btn" data-tab="passungen">🎯 Passungen</button>
+          <button class="tab-btn" data-tab="gewinde">🔩 Gewinde</button>
+          <button class="tab-btn" data-tab="schrauben">🧰 Schrauben</button>
+          <button class="tab-btn" data-tab="einheiten">↔️ Einheiten</button>
+          <button class="tab-btn" data-tab="gewicht">⚖️ Gewicht</button>
+          <button class="tab-btn" data-tab="winkel">📐 Winkel</button>
+        </nav>
+        <div class="tabs-db-actions" aria-label="Datenbank Aktionen">
+          <button class="btn btn-small" type="button" onclick="exportProjectFolder()">JSON Datenbank speichern</button>
+          <button class="btn btn-small" type="button" onclick="document.getElementById('projectImportFile').click()">JSON Datenbank laden</button>
+        </div>
+      </div>
     </div>
 
     <!-- Schnittdaten -->
@@ -439,9 +450,10 @@
               </div>
             </div>
             <div class="row">
-              <button class="btn btn-green" type="button" onclick="saveToolToBasket()">Werkzeug merken</button>
-              <button class="btn" type="button" onclick="copySummary('schnitt')">Zusammenfassung kopieren</button>
+              <button class="btn btn-green" type="button" onclick="saveToolToBasket()">Werkzeug speichern</button>
+              <button class="btn" type="button" onclick="newToolEntry()">Neu +</button>
             </div>
+            <p class="tool-save-note">Werkzeug speichern fügt die aktuellen Schnittdaten in das Projekt ein und leert danach die Eingabe für das nächste Werkzeug. Geladene Werkzeuge werden beim Ändern live aktualisiert.</p>
           </div>
         </div>
 
@@ -503,15 +515,13 @@
             <div><label>Projektbeschreibung</label><textarea id="cutProjectDesc" placeholder="Kurzbeschreibung, Maschine, Material, Hinweise …"></textarea></div>
             <div class="tool-basket-actions">
               <button class="btn btn-green btn-small" type="button" onclick="saveCutProject()">Projekt speichern</button>
-              <button class="btn btn-small" type="button" onclick="openProjectDialog()">Projekte laden</button>
-              <button class="btn btn-small" type="button" onclick="exportProjectFolder()">JSON Aktenordner</button>
-              <button class="btn btn-small" type="button" onclick="document.getElementById('projectImportFile').click()">JSON laden</button>
+              <button class="btn btn-small" type="button" onclick="openProjectDialog()">Projekt laden</button>
               <button class="btn btn-blue btn-small" type="button" onclick="printToolSheet()">Werkzeugblatt drucken</button>
               <a class="btn btn-small" href="cnc-fraesen-einrichtsblatt-plus/index.html" target="_blank" rel="noopener">CNC-Einrichtblatt</a>
             </div>
             <input id="projectImportFile" type="file" accept="application/json,.json" hidden onchange="importProjectFolder(event)">
             <div class="tool-list" id="toolBasketList"></div>
-            <div class="tool-empty" id="toolBasketEmpty">Noch kein Werkzeug im Projekt. T-Nummer und Werkzeugbeschreibung eingeben, Schnittdaten berechnen und „Werkzeug merken“ drücken.</div>
+            <div class="tool-empty" id="toolBasketEmpty">Noch kein Werkzeug im Projekt. T-Nummer und Werkzeugbeschreibung eingeben, Schnittdaten berechnen und „Werkzeug speichern“ drücken.</div>
           </div>
         </aside>
       </div>
@@ -1157,8 +1167,16 @@ function saveToolToBasket(){
   if(!toolT() || !toolName()){toast("T-Nummer und Werkzeugbeschreibung sind Pflicht");return}
   const item=toolSummaryFromInputs();
   const i=cutTools.findIndex(x=>x.id===item.id || (x.t.toLowerCase()===item.t.toLowerCase() && x.name.toLowerCase()===item.name.toLowerCase()));
-  if(i>=0){item.id=cutTools[i].id;cutTools[i]=item;activeToolId=item.id;toast("Werkzeug aktualisiert")} else {cutTools.push(item);activeToolId=item.id;toast("Werkzeug gespeichert")}
-  renderToolBasket();
+  if(i>=0){item.id=cutTools[i].id;cutTools[i]=item;activeToolId=item.id;toast("Werkzeug aktualisiert");renderToolBasket();}
+  else {cutTools.push(item);activeToolId=null;toast("Werkzeug gespeichert – Eingabe geleert");renderToolBasket();newToolEntry(false);}
+}
+function newToolEntry(showToast=true){
+  suppressToolLive=true; activeToolId=null;
+  ["toolT","cutNote","toolLen","cutD","cutAp","cutAe"].forEach(id=>{if($(id)) $(id).value=""});
+  if($("toolCoat")) $("toolCoat").value="unbeschichtet";
+  if($("cutD")) $("cutD").value="10";
+  updateCutModeUI(); calcSchnitt(); suppressToolLive=false; renderToolBasket(false);
+  if(showToast) toast("Eingabe für neues Werkzeug geleert");
 }
 function updateActiveToolLive(){
   if(suppressToolLive || !activeToolId) return;
@@ -1190,7 +1208,7 @@ function renderToolBasket(showEmpty=true){
   if(empty) empty.style.display=cutTools.length?"none":"block";
 }
 function escapeHtml(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]))}
-function currentProjectPayload(){return {id:activeProjectId||("proj_"+Date.now()),name:($("cutProjectName")?.value||"Unbenanntes Projekt").trim(),ref:($("cutProjectRef")?.value||"").trim(),description:($("cutProjectDesc")?.value||"").trim(),tools:cutTools,updated:new Date().toISOString(),version:"Werkstatt-Rechner Metall Plus v9"}}
+function currentProjectPayload(){return {id:activeProjectId||("proj_"+Date.now()),name:($("cutProjectName")?.value||"Unbenanntes Projekt").trim(),ref:($("cutProjectRef")?.value||"").trim(),description:($("cutProjectDesc")?.value||"").trim(),tools:cutTools,updated:new Date().toISOString(),version:"Werkstatt-Rechner Metall Plus v10"}}
 function saveCutProject(){
   if(!cutTools.length){toast("Erst Werkzeuge in den Korb legen");return}
   const p=currentProjectPayload(); activeProjectId=p.id;
