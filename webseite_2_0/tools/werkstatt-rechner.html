@@ -474,6 +474,7 @@
               <div><label>Werkzeug / Beschreibung *</label><input id="cutNote" type="text" placeholder="z.B. Bohrer, Schruppfräser Langloch"></div>
               <div><label>Werkzeuglänge [mm]</label><input id="toolLen" type="number" placeholder="optional" step="0.1"></div>
               <div><label>Beschichtung</label><select id="toolCoat"><option>unbeschichtet</option><option>HSS</option><option>HSSE</option><option>VHM</option><option>TiN</option><option>TiAlN</option><option>AlTiN</option><option>DLC</option><option>diamantbeschichtet</option><option>sonstige</option></select></div>
+              <div><label id="toolPathLabel">Bearbeitungsweg [mm] <span class="help-dot" tabindex="0" data-tip="Optional für Fräszeit: Wenn du ungefähr weißt, wie lang der reale Fräsweg ist, kann das Tool daraus Zeit = Weg / Vorschub berechnen. Bei Langloch, Tasche oder Kontur ist das nur eine grobe Schätzung.">?</span></label><input id="toolPath" type="number" placeholder="optional" step="0.1"></div>
             </div>
             <div class="row tool-editor-actions">
               <button class="btn btn-green" type="button" onclick="saveToolToBasket()">Werkzeug speichern</button>
@@ -953,7 +954,7 @@ function updateCutModeUI(){
 function calcSchnitt(){
   updateCutModeUI();
   const op=$("cutOp")?.value || "drill";
-  const d=num("cutD"), vc=num("cutVc"), z=num("cutZ"), fz=num("cutFz"), ap=num("cutAp"), ae=num("cutAe");
+  const d=num("cutD"), vc=num("cutVc"), z=num("cutZ"), fz=num("cutFz"), ap=num("cutAp"), ae=num("cutAe"), path=num("toolPath");
   const n=d>0?(vc*1000)/(Math.PI*d):0;
   let vf=0, q=0, extra="--";
   if(op==="drill"){
@@ -964,13 +965,13 @@ function calcSchnitt(){
   } else if(op==="turn"){
     vf=n*fz;
     q=0;
-    extra="--";
-    setText("cutQLabel","Zeitspanvolumen Q"); setText("cutTimeLabel","Zusatzwert");
+    extra=(path>0 && vf>0) ? round((path/vf)*60,1)+" s" : "--";
+    setText("cutQLabel","Zeitspanvolumen Q"); setText("cutTimeLabel","Zeit grob");
   } else {
     vf=n*z*fz;
     q=ap>0&&ae>0?(ap*ae*vf)/1000:0;
-    extra="--";
-    setText("cutQLabel","Zeitspanvolumen Q"); setText("cutTimeLabel","Zusatzwert");
+    extra=(path>0 && vf>0) ? round((path/vf)*60,1)+" s" : "--";
+    setText("cutQLabel","Zeitspanvolumen Q"); setText("cutTimeLabel","Fräszeit grob");
   }
   setText("cutN",round(n,0)); setText("cutVf",round(vf,0)); setText("cutQ",q?round(q,1):"--"); setText("cutTime",extra);
   setText("cncS",round(n,0)); setText("cncF",round(vf,0)); setText("cncVc",round(vc,0)); setText("cncD",round(d,1).replace(".0", ""));
@@ -1198,10 +1199,10 @@ function toolSummaryFromInputs(){
   const op=$("cutOp")?.value||"drill";
   return {
     id:activeToolId || ("tool_"+Date.now()+"_"+Math.random().toString(16).slice(2)),
-    t:toolT(), name:toolName(), diameter:$("cutD")?.value||"", length:$("toolLen")?.value||"", coating:$("toolCoat")?.value||"unbeschichtet",
+    t:toolT(), name:toolName(), diameter:$("cutD")?.value||"", length:$("toolLen")?.value||"", coating:$("toolCoat")?.value||"unbeschichtet", path:$("toolPath")?.value||"",
     material:$("cutMat")?.options[$("cutMat").selectedIndex]?.text || "", op:$("cutOp")?.options[$("cutOp").selectedIndex]?.text || "",
     values:{d:$("cutD")?.value||"",vc:$("cutVc")?.value||"",z:$("cutZ")?.value||"",f:$("cutFz")?.value||"",ap:$("cutAp")?.value||"",ae:$("cutAe")?.value||"",n:$("cutN")?.textContent||"",vf:$("cutVf")?.textContent||"",q:$("cutQ")?.textContent||"",time:$("cutTime")?.textContent||"",check:$("cutWarn")?.textContent||""},
-    raw:{mat:$("cutMat")?.value||"",op, d:$("cutD")?.value||"",vc:$("cutVc")?.value||"",z:$("cutZ")?.value||"",f:$("cutFz")?.value||"",ap:$("cutAp")?.value||"",ae:$("cutAe")?.value||"",note:toolName(),t:toolT(),len:$("toolLen")?.value||"",coat:$("toolCoat")?.value||""},
+    raw:{mat:$("cutMat")?.value||"",op, d:$("cutD")?.value||"",vc:$("cutVc")?.value||"",z:$("cutZ")?.value||"",f:$("cutFz")?.value||"",ap:$("cutAp")?.value||"",ae:$("cutAe")?.value||"",path:$("toolPath")?.value||"",note:toolName(),t:toolT(),len:$("toolLen")?.value||"",coat:$("toolCoat")?.value||""},
     updated:new Date().toISOString()
   }
 }
@@ -1214,7 +1215,7 @@ function saveToolToBasket(){
 }
 function newToolEntry(showToast=true){
   suppressToolLive=true; activeToolId=null;
-  ["toolT","cutNote","toolLen","cutD","cutAp","cutAe"].forEach(id=>{if($(id)) $(id).value=""});
+  ["toolT","cutNote","toolLen","toolPath","cutD","cutAp","cutAe"].forEach(id=>{if($(id)) $(id).value=""});
   if($("toolCoat")) $("toolCoat").value="unbeschichtet";
   if($("cutD")) $("cutD").value="10";
   updateCutModeUI(); calcSchnitt(); suppressToolLive=false; renderToolBasket(false);
@@ -1233,6 +1234,7 @@ function loadTool(id){
   if($("cutNote")) $("cutNote").value=item.raw?.note||item.name||"";
   if($("toolLen")) $("toolLen").value=item.raw?.len||item.length||"";
   if($("toolCoat")) $("toolCoat").value=item.raw?.coat||item.coating||"unbeschichtet";
+  if($("toolPath")) $("toolPath").value=item.raw?.path||item.path||"";
   if($("cutMat")) $("cutMat").value=item.raw?.mat||"steel";
   if($("cutOp")) $("cutOp").value=item.raw?.op||"drill";
   updateCutModeUI();
@@ -1260,7 +1262,7 @@ function currentProjectPayload(){return {
   description:($("cutProjectDesc")?.value||"").trim(),
   tools:cutTools,
   updated:new Date().toISOString(),
-  version:"Werkstatt-Rechner Metall Plus v14"
+  version:"Werkstatt-Rechner Metall Plus v15"
 }}
 function saveCutProject(){
   if(!cutTools.length){toast("Erst Werkzeuge in den Korb legen");return}
@@ -1334,17 +1336,29 @@ function importProjectFolder(ev){
 function printToolSheet(){
   const p=currentProjectPayload();
   if(!p.tools.length){toast("Keine Werkzeuge im Projekt");return}
-  const cell=(label,value)=>`<div class="cell"><b>${label}</b><span>${escapeHtml(value||'-')}</span></div>`;
+  const cell=(label,value,cls='')=>`<div class="cell ${cls}"><b>${label}</b><span>${escapeHtml(value||'-')}</span></div>`;
   const rows=p.tools.map(t=>{
     const v=t.values||{};
     const row1=[
-      cell('T',t.t||'-'), cell('Werkzeug',t.name||'-'), cell('Ø',`${t.diameter||'-'} mm`), cell('Länge',`${t.length||'-'} mm`), cell('Beschichtung',t.coating||'-')
+      cell('S Drehzahl',`${v.n||'-'} U/min`,'speed'),
+      cell('Werkzeug',t.name||'-','toolname'),
+      cell('Beschichtung',t.coating||'-'),
+      cell('F Vorschub',`${v.vf||'-'} mm/min`),
+      cell('Zeit',v.time||'-')
     ].join('');
     const row2=[
-      cell('Drehzahl S',`${v.n||'-'} U/min`), cell('Vorschub F',`${v.vf||'-'} mm/min`), cell('Zeit',v.time||'-'), cell('vc',`${v.vc||'-'} m/min`), cell('f / fz',v.f||'-')
+      cell('T',t.t||'-','speed'),
+      cell('Länge',`${t.length||'-'} mm`),
+      cell('Ø',`${t.diameter||'-'} mm`),
+      cell('z (Zähne)',v.z||'-'),
+      cell('vc',`${v.vc||'-'} m/min`)
     ].join('');
     const row3=[
-      cell('Bearbeitung',t.op||'-'), cell('z',v.z||'-'), cell('ap / Tiefe',`${v.ap||'-'} mm`), cell('ae',`${v.ae||'-'} mm`), cell('Q',`${v.q||'-'} cm³/min`)
+      cell('Bearbeitung',t.op||'-','speed'),
+      cell('f / fz',v.f||'-'),
+      cell('ap / Tiefe',`${v.ap||'-'} mm`),
+      cell('ae',`${v.ae||'-'} mm`),
+      cell('Q',`${v.q||'-'} cm³/min`)
     ].join('');
     return `<article class="tool-print-card"><div class="tool-print-line tool-print-line-main">${row1}</div><div class="tool-print-line">${row2}</div><div class="tool-print-line">${row3}</div></article>`;
   }).join('');
@@ -1367,14 +1381,16 @@ function printToolSheet(){
     .desc{border:1px solid #d6e0eb;background:#f8fbfe;border-radius:8px;padding:6px 8px;margin:0 0 7px;color:#34495e;min-height:24px}.desc b{display:inline;margin-right:4px}
     .tool-print-list{display:grid;gap:5px}
     .tool-print-card{border:1px solid #b9c7d6;border-radius:7px;overflow:hidden;break-inside:avoid;page-break-inside:avoid;background:#fff}
-    .tool-print-line{display:grid;grid-template-columns:.45fr 1.45fr .65fr .72fr .86fr;align-items:stretch;border-top:1px solid #d7e2ee}
+    .tool-print-line{display:grid;grid-template-columns:.95fr 1.35fr .78fr .92fr .78fr;align-items:stretch;border-top:1px solid #d7e2ee}
     .tool-print-line:first-child{border-top:0}.tool-print-line-main{background:#eef5fb;color:#102033;font-weight:850;font-size:10.8px}
-    .cell{padding:4px 5px;border-right:1px solid #d7e2ee;min-width:0;overflow:visible;white-space:normal;word-break:normal}.cell:last-child{border-right:0}
+    .cell{padding:4px 6px;border-right:1px solid #d7e2ee;min-width:0;overflow:visible;white-space:normal;word-break:normal}.cell:last-child{border-right:0}
+    .speed{background:rgba(225,238,249,.55)}.toolname span{font-size:12px!important}
     b{display:block;font-size:7.2px;letter-spacing:.07em;text-transform:uppercase;color:#607286;margin-bottom:1px;line-height:1.05}.cell span{display:block;font-weight:800;color:#102033}.tool-print-line:not(.tool-print-line-main) .cell span{font-weight:700;color:#3c4d5f;font-size:9.7px}
     footer{margin-top:8px;border-top:1px solid #d8e2ee;padding-top:5px;color:#607286;font-size:9px;display:flex;justify-content:space-between;gap:10px}
     @media print{.print-actions{display:none}.sheet{page-break-after:auto}.tool-print-card{box-shadow:none}}
   </style></head><body><div class="print-actions"><button onclick="window.print();return false;">Drucken / PDF speichern</button><button class="secondary" onclick="window.close();return false;">Schließen</button></div><main class="sheet"><header><div><h1>Werkzeug-Schnittdatenblatt</h1><div class="meta"><span><b>Projekt</b>${escapeHtml(p.name||'Unbenannt')}</span>${metaBits.map(m=>`<span>${m}</span>`).join('')}</div></div><div class="badge">${p.tools.length} Werkzeug(e)</div></header><div class="desc"><b>Beschreibung:</b>${escapeHtml(p.description||'Keine Projektbeschreibung hinterlegt.')}</div><section class="tool-print-list">${rows}</section><footer><span>Richtwerte prüfen: Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</span><span>Warenschmiede Werkstatt-Rechner Metall Plus</span></footer></main></body></html>`); w.document.close();
 }
+
 
 function saveHistory(type){ if(type==="schnitt") saveToolToBasket(); }
 function renderHistory(){ renderToolBasket(); }
