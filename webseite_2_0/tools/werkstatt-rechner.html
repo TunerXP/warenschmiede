@@ -295,6 +295,60 @@
     #tab-schnitt .cnc-screen-head span:first-child{font-size:.82rem;letter-spacing:.1em}
     #tab-schnitt .result-list .metric.vf-duplicate{display:none}
 
+
+
+    /* v21: Schnittdaten kompakter und logisch sortiert */
+    .shell{max-width:calc(100vw - 18px);padding-left:10px;padding-right:10px}
+    #tab-schnitt .grid-schnitt{
+      grid-template-columns:minmax(300px,380px) minmax(250px,310px) minmax(300px,360px) minmax(360px,1fr);
+      gap:10px;
+      align-items:start;
+    }
+    #tab-schnitt .panel-head,
+    #tab-schnitt .info-card-head{padding:12px 14px 10px}
+    #tab-schnitt .panel-head h3,
+    #tab-schnitt .info-card-head h3{font-size:1rem}
+    #tab-schnitt .panel-head p:not(.eyebrow){font-size:.82rem;margin-top:4px;line-height:1.28}
+    #tab-schnitt .panel-body,
+    #tab-schnitt .info-card-body{padding:12px 14px;gap:9px}
+    #tab-schnitt .form-grid{gap:9px}
+    #tab-schnitt .form-grid .row{gap:8px;align-items:end}
+    #tab-schnitt .form-grid .row > div > label{min-height:21px;font-size:.68rem;line-height:1.05;margin-bottom:5px;align-items:flex-end}
+    #tab-schnitt .form-grid input,
+    #tab-schnitt .form-grid select{min-height:38px;padding:8px 10px;border-radius:12px;font-size:.9rem}
+    #tab-schnitt .btn{min-height:38px;padding:8px 11px;font-size:.82rem}
+    #tab-schnitt .cut-mode-hint{padding:9px 10px;border-radius:13px;font-size:.76rem;line-height:1.32}
+    #tab-schnitt .cnc-display{margin-top:8px;padding:11px;border-radius:17px}
+    #tab-schnitt .cnc-screen-head{margin-bottom:7px;font-size:.66rem}
+    #tab-schnitt .cnc-grid{gap:7px}
+    #tab-schnitt .cnc-line{padding:7px 8px;border-radius:10px}
+    #tab-schnitt .cnc-line span{font-size:.7rem}
+    #tab-schnitt .cnc-line strong{font-size:.88rem}
+    #tab-schnitt .metric{padding:9px 10px;border-radius:13px}
+    #tab-schnitt .help-under{padding:10px 11px;border-radius:14px;font-size:.76rem;line-height:1.32;margin-top:9px}
+    #tab-schnitt .tool-project-fields{padding:10px;gap:9px;border-radius:15px}
+    #tab-schnitt .tool-editor-actions{display:grid;grid-template-columns:1fr 92px;gap:8px}
+    #tab-schnitt .tool-save-note{font-size:.72rem;line-height:1.28;margin:0}
+    #tab-schnitt .tool-list{max-height:545px;gap:7px}
+    #tab-schnitt .tool-mini-card{padding:9px 10px;border-radius:14px}
+    #tab-schnitt .tool-mini-meta{font-size:.72rem;gap:5px}
+    #tab-schnitt .tool-mini-meta span{padding:2px 6px}
+    #tab-schnitt .project-panel .row{grid-template-columns:1fr 1fr;gap:8px}
+    #tab-schnitt .project-panel textarea{min-height:68px}
+    #tab-schnitt .project-panel .tool-basket-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    #tab-schnitt .project-panel .tool-basket-actions .btn,
+    #tab-schnitt .project-panel .tool-basket-actions a{flex:none;min-height:36px}
+    .tool-store-panel .info-card-body{gap:10px}
+    .tool-store-note{border:1px dashed var(--line);border-radius:14px;background:color-mix(in srgb,var(--blue) 4%,var(--paper));padding:10px;color:var(--muted);font-size:.76rem;line-height:1.32}
+    .cut-hidden-values{display:none!important}
+    @media(max-width:1500px){
+      #tab-schnitt .grid-schnitt{grid-template-columns:repeat(2,minmax(0,1fr));}
+    }
+    @media(max-width:900px){
+      #tab-schnitt .grid-schnitt{grid-template-columns:1fr;}
+    }
+
+
     @media print{.topbar,.tabs-wrap,.hero,.btn,.history,.footer-note{display:none!important}body{background:#fff}.shell{padding:0}.panel{box-shadow:none;border:0}.tab{display:block!important}}
 
     /* v5 Winkel-Profi: kompakte Live-Geometrie im Werkstatt-Rechner */
@@ -377,7 +431,6 @@
     .compact-result .help-under{font-size:.8rem;padding:12px}
     .info-card-body .row{grid-template-columns:1fr}
     .tool-basket-actions .btn,.tool-basket-actions a{flex:1 1 120px}
-    @media(max-width:1500px){.grid-schnitt{grid-template-columns:repeat(2,minmax(0,1fr));}}
     @media(max-width:900px){.grid-schnitt{grid-template-columns:1fr}}
 
 
@@ -428,33 +481,46 @@
     <!-- Schnittdaten -->
     <section class="tab active" id="tab-schnitt">
       <div class="grid-schnitt">
-        <div class="panel">
-          <div class="panel-head"><p class="eyebrow">Schnittdaten</p><h3>Drehzahl & Vorschub</h3><p>Material wählen, Richtwerte laden und direkt rechnen.</p></div>
+        <div class="panel cut-input-panel">
+          <div class="panel-head"><p class="eyebrow">Schnittdaten</p><h3>Drehzahl & Vorschub</h3><p>Material wählen, Richtwerte laden, S und F direkt ablesen.</p></div>
           <div class="panel-body form-grid">
             <div class="row">
-              <div><label>Material <span class="help-dot" tabindex="0" data-tip="Das Material lädt nur typische Startwerte für vc und Vorschub. Die Formel rechnet danach mit den Zahlen, die in den Feldern stehen. Für echte Arbeit sind Werkzeugherstellerdaten genauer.">?</span></label><select id="cutMat"><option value="steel">Stahl allgemein</option><option value="inox">Edelstahl / VA</option><option value="alu">Aluminium</option><option value="plastic">Kunststoff</option><option value="cast">Guss</option></select></div>
-              <div><label>Bearbeitung <span class="help-dot" tabindex="0" data-tip="Bohren, Fräsen und Drehen brauchen unterschiedliche Eingaben. Beim Bohren ist z fest auf 2. Beim Fräsen gibst du die echte Schneidenzahl ein. Das Tool bleibt bewusst bei den Maschinenwerten S und F.">?</span></label><select id="cutOp"><option value="drill">Bohren</option><option value="millRough">Fräsen Schruppen</option><option value="millFinish">Fräsen Schlichten</option><option value="turn">Drehen</option></select></div>
+              <div><label>Material <span class="help-dot" tabindex="0" data-tip="Das Material lädt typische Startwerte für vc und Vorschub. Die Rechnung nutzt danach die Zahlen in den Feldern. Herstellerdaten sind genauer.">?</span></label><select id="cutMat"><option value="steel">Stahl allgemein</option><option value="inox">Edelstahl / VA</option><option value="alu">Aluminium</option><option value="plastic">Kunststoff</option><option value="cast">Guss</option></select></div>
+              <div><label>Bearbeitung <span class="help-dot" tabindex="0" data-tip="Bohren nutzt f in mm/U. Fräsen nutzt z und fz. Ergebnis sind die Maschinenwerte S und F.">?</span></label><select id="cutOp"><option value="drill">Bohren</option><option value="millRough">Fräsen Schruppen</option><option value="millFinish">Fräsen Schlichten</option><option value="turn">Drehen</option></select></div>
             </div>
             <button class="btn btn-blue" type="button" onclick="loadCutPreset()">⚡ Richtwerte laden</button>
             <button class="btn" type="button" onclick="cutInfoDialog.showModal()">📘 Merker / Formeln öffnen</button>
             <div class="cut-mode-hint" id="cutModeHint"><b>Bohren:</b> Das Tool rechnet mit Ø d, vc und Vorschub f in mm/U. Ergebnis sind die Maschinenwerte S und F.</div>
             <div class="row">
-              <div><label>Werkzeug-Ø d [mm] <span class="help-dot" tabindex="0" data-tip="d ist der Werkzeugdurchmesser. Er wirkt direkt auf die Drehzahl: kleiner Durchmesser = höhere Drehzahl bei gleicher Schnittgeschwindigkeit.">?</span></label><input id="cutD" type="number" value="10" step="0.1"></div>
-              <div><label>Schnittgeschw. vc [m/min] <span class="help-dot" tabindex="0" data-tip="vc ist die Schnittgeschwindigkeit am Werkzeugumfang. Herstellerdaten sind genauer; Richtwerte im Tool sind nur Startwerte.">?</span></label><input id="cutVc" type="number" value="120" step="1"></div>
+              <div><label>Werkzeug-Ø d [mm] <span class="help-dot" tabindex="0" data-tip="d ist der Werkzeugdurchmesser. Kleiner Durchmesser bedeutet höhere Drehzahl bei gleicher Schnittgeschwindigkeit.">?</span></label><input id="cutD" type="number" value="10" step="0.1"></div>
+              <div><label>Schnittgeschw. vc [m/min] <span class="help-dot" tabindex="0" data-tip="vc ist die Schnittgeschwindigkeit am Werkzeugumfang. Nutze Herstellerdaten, wenn vorhanden.">?</span></label><input id="cutVc" type="number" value="120" step="1"></div>
             </div>
             <div class="row">
-              <div id="cutZField"><label id="cutZLabel">Zähnezahl z <span class="help-dot" tabindex="0" data-tip="z ist die Anzahl aktiver Schneiden/Zähne. Beim Bohren wird dieser Wert automatisch auf 2 festgesetzt. Beim Fräsen gibst du die echte Schneidenzahl des Fräsers ein.">?</span></label><input id="cutZ" type="number" value="2" step="1"></div>
-              <div><label id="cutFeedLabel">Vorschub f [mm/U] <span class="help-dot" tabindex="0" data-tip="Beim Bohren ist das der Vorschub pro Umdrehung. Beim Fräsen wird daraus Vorschub pro Zahn fz. Der fertige Maschinenwert ist F bzw. vf in mm/min.">?</span></label><input id="cutFz" type="number" value="0.10" step="0.01"></div>
+              <div id="cutZField"><label id="cutZLabel">Zähnezahl z <span class="help-dot" tabindex="0" data-tip="Beim Bohren fest auf 2. Beim Fräsen echte Schneidenzahl des Fräsers eintragen.">?</span></label><input id="cutZ" type="number" value="2" step="1"></div>
+              <div><label id="cutFeedLabel">Vorschub f [mm/U] <span class="help-dot" tabindex="0" data-tip="Bohren: Vorschub pro Umdrehung. Fräsen: Vorschub pro Zahn fz. Ausgabe ist F in mm/min.">?</span></label><input id="cutFz" type="number" value="0.10" step="0.01"></div>
             </div>
+            <div class="cnc-display" aria-label="Schnittdaten-Anzeige">
+              <div class="cnc-screen-head"><span>Schnittdaten</span><span id="cncMode">FRÄSEN</span></div>
+              <div class="cnc-grid">
+                <div class="cnc-line"><span>S</span><strong><span id="cncS">3820</span> U/min</strong></div>
+                <div class="cnc-line"><span>F</span><strong><span id="cncF">764</span> mm/min</strong></div>
+                <div class="cnc-line"><span>vc</span><strong><span id="cncVc">120</span> m/min</strong></div>
+                <div class="cnc-line"><span>d</span><strong>Ø <span id="cncD">10</span> mm</strong></div>
+              </div>
+            </div>
+            <div class="result-list">
+              <div class="metric"><span>Praxis-Check</span><strong id="cutWarn" class="good">Startwert plausibel</strong></div>
+            </div>
+            <div class="cut-hidden-values"><span id="cutN">3820</span><span id="cutVf">764</span></div>
           </div>
         </div>
 
         <div class="panel tool-editor-panel">
-          <div class="panel-head"><p class="eyebrow">Werkzeug definieren</p><h3>T-Nummer & Beschreibung</h3><p>Pflicht für den Werkzeugkorb. Speichern legt das Werkzeug im aktuellen Projekt ab.</p></div>
+          <div class="panel-head"><p class="eyebrow">Werkzeug definieren</p><h3>T-Nummer & Beschreibung</h3><p>Pflicht für den Werkzeugkorb.</p></div>
           <div class="panel-body form-grid">
             <div class="tool-project-fields">
               <div><label>T-Nummer *</label><input id="toolT" type="text" placeholder="z.B. T2"></div>
-              <div><label>Werkzeug / Beschreibung *</label><input id="cutNote" type="text" placeholder="z.B. Bohrer, Schruppfräser Langloch"></div>
+              <div><label>Werkzeug / Beschreibung *</label><input id="cutNote" type="text" placeholder="z.B. Bohrer, Schruppfräser"></div>
               <div><label>Werkzeuglänge [mm]</label><input id="toolLen" type="number" placeholder="optional" step="0.1"></div>
               <div><label>Beschichtung</label><select id="toolCoat"><option>unbeschichtet</option><option>HSS</option><option>HSSE</option><option>VHM</option><option>TiN</option><option>TiAlN</option><option>AlTiN</option><option>DLC</option><option>diamantbeschichtet</option><option>sonstige</option></select></div>
             </div>
@@ -462,36 +528,21 @@
               <button class="btn btn-green" type="button" onclick="saveToolToBasket()">Werkzeug speichern</button>
               <button class="btn" type="button" onclick="newToolEntry()">Neu +</button>
             </div>
-            <p class="tool-save-note"><b>Werkzeug speichern:</b> fügt die aktuellen Schnittdaten ins Projekt ein und leert danach die Eingabe für das nächste Werkzeug. Klickst du rechts ein Werkzeug an, wird es hier geladen und Änderungen werden live übernommen.</p>
+            <p class="tool-save-note">Speichern legt das Werkzeug im aktuellen Projekt ab und leert die Eingabe. Geladene Werkzeuge werden bei Änderungen live aktualisiert.</p>
           </div>
         </div>
 
-        <div>
-          <div class="panel compact-result">
-            <div class="panel-body">
-              <div class="result-main">
-                <div><small>Drehzahl n</small><div class="big" id="cutN">3820</div><div class="unit">U/min</div></div>
-              </div>
-              <div class="cnc-display" aria-label="CNC-Anzeige Schnittdaten">
-                <div class="cnc-screen-head"><span>Schnittdaten</span><span id="cncMode">FRÄSEN</span></div>
-                <div class="cnc-grid">
-                  <div class="cnc-line"><span>S</span><strong><span id="cncS">3820</span> U/min</strong></div>
-                  <div class="cnc-line"><span>F</span><strong><span id="cncF">764</span> mm/min</strong></div>
-                  <div class="cnc-line"><span>vc</span><strong><span id="cncVc">120</span> m/min</strong></div>
-                  <div class="cnc-line"><span>d</span><strong>Ø <span id="cncD">10</span> mm</strong></div>
-                </div>
-              </div>
-              <div class="result-list">
-                <div class="metric vf-duplicate"><span>Vorschubgeschwindigkeit vf</span><strong><span id="cutVf">764</span> mm/min</strong></div>
-                <div class="metric"><span>Praxis-Check</span><strong id="cutWarn" class="good">Startwert plausibel</strong></div>
-              </div>
-              <div class="help-under"><b>Was bedeutet Praxis-Check?</b> Das Tool prüft nur grob auf auffällige Drehzahl oder Vorschubwerte. Grün heißt nicht „freigegeben“, sondern: als Startwert wirkt es nicht sofort auffällig. Herstellerdaten, Werkzeuglänge, Spannung und Materialzustand bleiben entscheidend.</div>
-            </div>
+        <aside class="info-card tool-store-panel" aria-label="Gespeicherte Werkzeuge">
+          <div class="info-card-head"><p class="eyebrow">Gespeicherte Werkzeuge</p><h3>Werkzeugliste</h3></div>
+          <div class="info-card-body">
+            <div class="tool-store-note">Karte anklicken = Werkzeug links laden. Änderungen werden live übernommen. Löschen fragt vorher nach.</div>
+            <div class="tool-list" id="toolBasketList"></div>
+            <div class="tool-empty" id="toolBasketEmpty">Noch kein Werkzeug gespeichert.</div>
           </div>
-        </div>
+        </aside>
 
-        <aside class="info-card" aria-label="Werkzeugkorb Schnittdaten">
-          <div class="info-card-head"><p class="eyebrow">Werkzeugkorb</p><h3>Projekt-Werkzeuge</h3></div>
+        <aside class="info-card project-panel" aria-label="Projekt Schnittdaten">
+          <div class="info-card-head"><p class="eyebrow">Projekt</p><h3>Werkzeugkorb / Aktenordner</h3></div>
           <div class="info-card-body">
             <div class="row">
               <div><label>Projektname</label><input id="cutProjectName" type="text" placeholder="z.B. Schiene Muster0815"></div>
@@ -510,13 +561,10 @@
               <a class="btn btn-small" href="cnc-fraesen-einrichtsblatt-plus/index.html" target="_blank" rel="noopener">CNC-Einrichtblatt</a>
             </div>
             <input id="projectImportFile" type="file" accept="application/json,.json" hidden onchange="importProjectFolder(event)">
-            <div class="tool-list" id="toolBasketList"></div>
-            <div class="tool-empty" id="toolBasketEmpty">Noch kein Werkzeug im Projekt. T-Nummer und Werkzeugbeschreibung eingeben, Schnittdaten berechnen und „Werkzeug speichern“ drücken.</div>
           </div>
         </aside>
 
-      </div>
-    </section>
+      </div>    </section>
 
     <!-- ISO2768 -->
     <section class="tab" id="tab-toleranzen">
@@ -1211,7 +1259,7 @@ function renderToolBasket(showEmpty=true){
   list.innerHTML=cutTools.map(item=>`<div class="tool-mini-card ${item.id===activeToolId?'is-active':''}" onclick="loadTool('${item.id}')"><div class="tool-mini-top"><span>${escapeHtml(item.t)} · ${escapeHtml(item.name)}</span><span>${escapeHtml(item.op||'')}</span></div><div class="tool-mini-meta"><span>Ø ${escapeHtml(item.diameter||'-')} mm</span><span>L ${escapeHtml(item.length||'-')} mm</span><span>${escapeHtml(item.coating||'-')}</span></div><div class="tool-mini-actions"><button type="button" onclick="event.stopPropagation();loadTool('${item.id}')">Laden</button><button type="button" onclick="event.stopPropagation();deleteTool('${item.id}')">Löschen</button></div></div>`).join("");
   if(empty) empty.style.display=cutTools.length?"none":"block";
 }
-function escapeHtml(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]))}
+function escapeHtml(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",""":"&quot;"}[m]))}
 function currentProjectPayload(){return {
   id:activeProjectId||("proj_"+Date.now()),
   name:($("cutProjectName")?.value||"Unbenanntes Projekt").trim(),
