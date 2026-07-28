@@ -6,31 +6,9 @@
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <link href="/ws.png" rel="icon" sizes="32x32" type="image/png"/>
 <link href="/ws.png" rel="apple-touch-icon" sizes="180x180"/>
-<meta content="#000000" name="theme-color"/>
+<meta content="#eef4fa" name="theme-color"/>
 <title>KI-Tools Übersicht: Chat, Bild, Video &amp; Büro | Warenschmiede</title>
 <meta content="Interaktives Dashboard wichtiger KI-Tools für Chat, Bild, Video, Audio und Büroarbeit." name="description"/>
-<script>
-    (function () {
-      var storageKey = 'theme-preference';
-      var preference = 'system';
-      try {
-        var stored = localStorage.getItem(storageKey);
-        if (stored === 'light' || stored === 'dark' || stored === 'system') {
-          preference = stored;
-        }
-      } catch (error) {}
-      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-      var resolved = preference === 'dark'
-        ? 'dark'
-        : preference === 'light'
-          ? 'light'
-          : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
-      var root = document.documentElement;
-      root.dataset.theme = resolved;
-      root.dataset.themePreference = preference;
-    })();
-  </script>
-<link href="../styles.css" rel="stylesheet"/>
 <!-- Page Specific Styles for Dashboard Layout -->
 <style>
     /* Filter Navigation - Sticky & Clean */
@@ -46,11 +24,6 @@
       background-color: rgba(255, 255, 255, 0.9);
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
       transition: background-color 0.3s ease;
-    }
-    
-    [data-theme="dark"] .tool-filter-nav {
-      background-color: rgba(18, 18, 18, 0.95);
-      border-bottom-color: #333;
     }
 
     .filter-list {
@@ -77,12 +50,6 @@
       align-items: center;
       gap: 0.5rem;
       white-space: nowrap;
-    }
-    
-    [data-theme="dark"] .filter-btn {
-      background: #2a2a2a;
-      border-color: #444;
-      color: #eee;
     }
 
     .filter-btn:hover {
@@ -133,11 +100,6 @@
       overflow: hidden;
       background: var(--bg-surface, #fff);
     }
-    
-    [data-theme="dark"] .ki-tool-card {
-      background: #1e1e1e;
-      border-color: #333;
-    }
 
     .ki-tool-card:hover {
       transform: translateY(-4px);
@@ -151,11 +113,6 @@
       display: flex;
       align-items: flex-start;
       gap: 1rem;
-    }
-    
-    [data-theme="dark"] .ki-tool-card__head {
-      background: #252525;
-      border-bottom-color: #333;
     }
 
     .ki-tool-card__body {
@@ -188,9 +145,19 @@
     }
   </style>
 <link href="/assets/css/styles.css" rel="stylesheet"/>
+<link href="/assets/css/ki-content.css" rel="stylesheet"/>
 </head>
-<body class="ki-page">
+<body class="ki-page theme-light">
 <div id="ws-header"></div>
+<nav aria-label="Brotkrumen" class="breadcrumbs">
+<div class="container breadcrumbs__container">
+<ol class="breadcrumbs__list">
+<li class="breadcrumbs__item"><a href="/index.html">Start</a></li>
+<li class="breadcrumbs__item"><a href="/ki/index.html">Über KI</a></li>
+<li aria-current="page" class="breadcrumbs__item">KI-Werkzeuge</li>
+</ol>
+</div>
+</nav>
 <main class="site-main ki-tools-main" id="ki-tools" tabindex="-1">
 <section aria-labelledby="ki-tools-heading" class="section ki-tools-hero" style="padding-bottom: 1rem;">
 <div class="container ki-wide ki-tools-hero__inner">

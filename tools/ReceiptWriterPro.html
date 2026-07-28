@@ -6,11 +6,11 @@
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <link href="/ws.png" rel="icon" sizes="32x32" type="image/png"/>
 <link href="/ws.png" rel="apple-touch-icon" sizes="180x180"/>
-<meta content="#000000" name="theme-color"/>
+<meta content="#f8fafc" name="theme-color"/>
 <title>Quittungs-Werkstatt | Warenschmiede</title>
 <meta content="Quittungen mit oder ohne MwSt im Browser erstellen, ausfüllen und als PDF drucken." name="description"/>
 <meta content="index, follow" name="robots"/>
-<meta content="light dark" name="color-scheme"/>
+<meta content="light" name="color-scheme"/>
 <link href="https://www.warenschmiede.com/tools/ReceiptWriterPro.html" rel="canonical"/>
 <meta content="Quittungs-Werkstatt | Warenschmiede" property="og:title"/>
 <meta content="Digitale Quittungen mit MwSt-Option erstellen und als PDF sichern – alles lokal im Browser." property="og:description"/>
@@ -24,28 +24,8 @@
 <meta content="Digitale Quittungen mit MwSt-Option erstellen und als PDF sichern – alles lokal im Browser." name="twitter:description"/>
 <meta content="https://www.warenschmiede.com/tools/ReceiptWriterPro.html" name="twitter:url"/>
 <meta content="/assets/img/warenschmiede-logo-main.png" name="twitter:image"/>
-<script>
-    (function () {
-      var storageKey = 'theme-preference';
-      var preference = 'system';
-      try {
-        var stored = localStorage.getItem(storageKey);
-        if (stored === 'light' || stored === 'dark' || stored === 'system') {
-          preference = stored;
-        }
-      } catch (error) { }
-      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-      var resolved = preference === 'dark'
-        ? 'dark'
-        : preference === 'light'
-          ? 'light'
-          : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
-      var root = document.documentElement;
-      root.dataset.theme = resolved;
-      root.dataset.themePreference = preference;
-    })();
-  </script>
-<link href="/styles.css" rel="stylesheet"/>
+<link href="/assets/css/ws-tool-menu.css" rel="stylesheet"/>
+<script defer src="/assets/js/ws-tool-menu.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Oswald:wght@500;700&amp;family=Orbitron:wght@500;700&amp;family=Bebas+Neue&amp;family=Kalam:wght@300;400;700&amp;family=Nothing+You+Could+Do&amp;display=swap" rel="stylesheet"/>
 <script>
     window.tailwind = window.tailwind || {};
@@ -55,6 +35,10 @@
 <script defer="" src="https://unpkg.com/@phosphor-icons/web"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
+    body { margin: 0; background: #f8fafc; color: #0f172a; font-family: Inter, sans-serif; }
+    .site-main { padding: 24px 16px 40px; }
+    .section { max-width: 1320px; margin: 0 auto 20px; }
+    .container { max-width: 1320px; margin: 0 auto; }
     .converter-hero {
       text-align: center;
       max-width: 840px;
@@ -62,9 +46,7 @@
     }
 
     @media (max-width: 960px) {
-      .converter-hero {
-        text-align: left;
-      }
+      .converter-hero { text-align: left; }
     }
 
     .receipt-root {
@@ -137,10 +119,8 @@
       }
     }
   </style>
-<link href="/assets/css/styles.css" rel="stylesheet"/>
 </head>
 <body>
-<div id="ws-header"></div>
 <main class="site-main" id="inhalt" tabindex="-1">
 <section class="section section-hero">
 <div class="container converter-hero">
@@ -162,6 +142,7 @@
 <h2 class="font-bold text-white text-sm md:text-lg">Receipt Writer <span class="text-amber-400 font-normal text-xs align-top">PRO</span></h2>
 </div>
 <div class="flex items-center gap-2">
+<button class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg transition-colors text-xs md:text-sm" type="button" onclick="window.WSToolMenu?.open()" aria-label="Warenschmiede Tools öffnen">☰ Warenschmiede Tools</button>
 <button class="bg-slate-700 hover:bg-slate-600 text-white p-2 rounded-lg transition-colors" onclick="newReceipt()" title="Neue Quittung (+1)">
 <i class="ph ph-plus-circle text-xl text-emerald-400"></i>
 </button>
@@ -293,7 +274,6 @@
 </div>
 </section>
 </main>
-<div id="ws-footer"></div>
 <script>
     const CHAR = {
       euro: String.fromCharCode(8364)
@@ -492,6 +472,5 @@
       }
     }
   </script>
-<script defer src="/assets/js/ws-layout.js"></script>
 </body>
 </html>
