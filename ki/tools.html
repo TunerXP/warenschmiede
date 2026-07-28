@@ -863,6 +863,31 @@
 </section>
 </main>
 <div id="ws-footer"></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('.filter-btn');
+    const sections = document.querySelectorAll('.ki-tools-category');
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        buttons.forEach((item) => {
+          item.classList.remove('active');
+          item.setAttribute('aria-selected', 'false');
+        });
+
+        button.classList.add('active');
+        button.setAttribute('aria-selected', 'true');
+        sections.forEach((section) => section.classList.remove('active-category'));
+
+        const targetId = button.getAttribute('data-target');
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) {
+          targetSection.classList.add('active-category');
+        }
+      });
+    });
+  });
+</script>
 <script defer src="/assets/js/ws-layout.js"></script>
 </body>
 </html>
