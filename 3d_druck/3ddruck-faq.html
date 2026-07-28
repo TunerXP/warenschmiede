@@ -3,434 +3,101 @@
 <html lang="de">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1" name="viewport"/>
-<link href="/ws.png" rel="icon" sizes="32x32" type="image/png"/>
-<link href="/ws.png" rel="apple-touch-icon" sizes="180x180"/>
-<meta content="#000000" name="theme-color"/>
-<title>3D-Druck FAQ &amp; Schnellstart für Einsteiger</title>
-<meta content="Antworten auf häufige Fragen und erster Überblick zum 3D-Druck." name="description"/>
-<meta content="3D Druck FAQ, Schnellstart Einsteiger, Material Grundlagen, Kosten Überblick, 3D Druck Einstieg" name="keywords"/>
-<meta content="DE-BW" name="geo.region"/>
-<meta content="Donaueschingen" name="geo.placename"/>
-<meta content="47.953;8.499" name="geo.position"/>
-<meta content="47.953,8.499" name="ICBM"/>
-<link as="image" href="/assets/logo.svg" rel="preload"/>
-<script>
-    (function () {
-      var storageKey = 'theme-preference';
-      var preference = 'system';
-      try {
-        var stored = localStorage.getItem(storageKey);
-        if (stored === 'light' || stored === 'dark' || stored === 'system') {
-          preference = stored;
-        }
-      } catch (error) {}
-      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-      var resolved = preference === 'dark'
-        ? 'dark'
-        : preference === 'light'
-          ? 'light'
-          : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
-      var root = document.documentElement;
-      root.dataset.theme = resolved;
-      root.dataset.themePreference = preference;
-    })();
-  </script>
-<link href="/styles.css" rel="stylesheet"/>
-<link href="/assets/print.css?v=1.0.7" media="print" rel="stylesheet"/>
-<meta content="index,follow" name="robots"/>
-<meta content="light dark" name="color-scheme"/>
-<link href="https://www.warenschmiede.com/3d_druck/3ddruck-faq.html" rel="canonical"/>
-<meta content="3D-Druck FAQ &amp; Schnellstart für Einsteiger" property="og:title"/>
-<meta content="Antworten auf häufige Fragen und erster Überblick zum 3D-Druck." property="og:description"/>
-<meta content="3D-Druck FAQ &amp; Schnellstart für Einsteiger" name="twitter:title"/>
-<meta content="Antworten auf häufige Fragen und erster Überblick zum 3D-Druck." name="twitter:description"/>
-<meta content="https://www.warenschmiede.com/3d_druck/3ddruck-faq.html" name="twitter:url"/>
-<meta content="/assets/og/og-default.jpg" name="twitter:image"/>
-<meta content="website" property="og:type"/>
-<meta content="https://www.warenschmiede.com/3d_druck/3ddruck-faq.html" property="og:url"/>
-<meta content="/assets/og/og-default.jpg" property="og:image"/>
-<meta content="Warenschmiede" property="og:site_name"/>
-<meta content="de_DE" property="og:locale"/>
-<meta content="summary_large_image" name="twitter:card"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>3D-Druck FAQ &amp; Schnellstart · Warenschmiede Webseite 2.0 Test v29</title>
+<meta content="3D-Druck FAQ und Schnellstart für Einsteiger: Drucker, Material, Slicer, erste Schicht, Kosten und typische Begriffe verständlich erklärt." name="description"/>
+<link href="../assets/css/styles.css" rel="stylesheet"/>
+
+<style>
+.faq-hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.75fr);gap:32px;align-items:stretch;padding:34px;border-radius:28px;background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(236,243,250,.84));box-shadow:0 18px 50px rgba(40,68,95,.13), inset 0 0 0 1px rgba(255,255,255,.78);}
+.faq-hero h1{margin:.2rem 0 1rem;font-size:clamp(2.1rem,4vw,4.2rem);letter-spacing:-.045em;}
+.faq-hero__side{border-radius:22px;padding:24px;background:rgba(255,255,255,.72);box-shadow:inset 0 0 0 1px rgba(140,165,190,.18),0 0 32px rgba(255,151,45,.13);}
+.faq-hero__side ul{margin:0;padding-left:1.1rem;}
+.faq-pill-row{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 0;}
+.faq-pill{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.78);box-shadow:inset 0 0 0 1px rgba(130,150,170,.18);font-weight:700;font-size:.9rem;color:#324252;}
+.faq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;}
+.faq-card{padding:24px;border-radius:22px;background:rgba(255,255,255,.78);box-shadow:0 16px 36px rgba(35,60,85,.10), inset 0 0 0 1px rgba(130,150,170,.18);}
+.faq-card[data-accent=amber]{box-shadow:0 16px 36px rgba(35,60,85,.10),0 0 24px rgba(255,151,45,.16), inset 0 0 0 1px rgba(255,151,45,.24);}
+.faq-card[data-accent=blue]{box-shadow:0 16px 36px rgba(35,60,85,.10),0 0 24px rgba(45,126,255,.13), inset 0 0 0 1px rgba(45,126,255,.21);}
+.faq-card[data-accent=green]{box-shadow:0 16px 36px rgba(35,60,85,.10),0 0 24px rgba(38,165,98,.13), inset 0 0 0 1px rgba(38,165,98,.22);}
+.faq-card h3,.faq-card h4{margin-top:0;}
+.faq-details{display:grid;gap:14px;}
+.faq-details details{border-radius:18px;background:rgba(255,255,255,.75);box-shadow:inset 0 0 0 1px rgba(130,150,170,.16);padding:0;overflow:hidden;}
+.faq-details summary{cursor:pointer;list-style:none;font-weight:800;padding:18px 20px;color:#253647;}
+.faq-details summary::-webkit-details-marker{display:none;}
+.faq-details details[open] summary{box-shadow:0 8px 22px rgba(255,151,45,.08);}
+.faq-details .answer{padding:0 20px 20px;color:#44566a;}
+.faq-table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:20px;background:rgba(255,255,255,.76);box-shadow:inset 0 0 0 1px rgba(130,150,170,.18);}
+.faq-table th,.faq-table td{text-align:left;padding:14px 16px;border-bottom:1px solid rgba(130,150,170,.18);vertical-align:top;}
+.faq-table th{background:rgba(241,246,251,.9);}
+.next-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+@media(max-width:820px){.faq-hero,.next-grid{grid-template-columns:1fr}.faq-hero{padding:24px}}
+</style>
 </head>
-<body>
-<header class="site-header" data-header="">
-<div class="ws-nav-container header-grid">
-<div class="brand">
-<a class="brand-link" href="/index.html#start">
-<img alt="Warenschmiede Logo" class="brand-logo" fetchpriority="high" height="276" src="/assets/images/warenschmiede_logo.png" width="453"/>
-<div class="brand-text">
-<span class="brand-name">Warenschmiede</span>
-<span class="brand-tagline">3D-Druck · Made in Germany</span>
-</div>
-</a>
-</div>
-<nav aria-label="Hauptnavigation" class="main-nav">
-<div class="nav-menu" data-nav-menu="" id="primary-navigation">
-<ul class="nav-list" id="navList">
-<li class="nav-item nav-fixed">
-<a aria-current="page" class="nav-link active" data-nav-link="" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html" data-section="start" href="/index.html#start"><span aria-hidden="true" class="nav-ico">🏠</span>Start</a>
-</li>
-<li class="nav-item nav-fixed">
-<a class="nav-link" data-nav-link="" data-path="/downloads , /downloads.html" href="/downloads.html"><span aria-hidden="true" class="nav-ico">📥</span>Downloads</a>
-</li>
-<!-- Neuer Dropdown: Online Tools -->
-<li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button">
-<span aria-hidden="true" class="nav-ico">🧮</span>Online Tools ▾
-              </button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools , /tools/ , /tools/index.html" href="/tools">
-<span aria-hidden="true" class="nav-ico">🗂️</span>Tool-Übersicht (Dashboard)
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/werkstatt-rechner , /tools/werkstatt-rechner.html" href="/tools/werkstatt-rechner.html">
-<span aria-hidden="true" class="nav-ico">🛠️</span>Werkstatt-Rechner Metall Plus
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/3D_Druck_kostenrechner , /tools/3D_Druck_kostenrechner.html" href="/tools/3D_Druck_kostenrechner.html">
-<span aria-hidden="true" class="nav-ico">🧮</span>Warenschmiede 3D-Druck Suite
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/ws_3d_print_kostenrechner , /tools/ws_3d_print_kostenrechner.html" href="/tools/ws_3d_print_kostenrechner.html">
-<span aria-hidden="true" class="nav-ico">✨</span>Warenschmiede 3D-Druck Suite Plus (NEU)
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/QRCodeMasterPro , /tools/QRCodeMasterPro.html" href="/tools/QRCodeMasterPro.html">
-<span aria-hidden="true" class="nav-ico">🔳</span>Warenschmiede QR-Master ULTRA
-                  </a>
-</li>
-<li>
-<a class="nav-link" href="/tools/Zeiterfassung_Plus.html"><span aria-hidden="true" class="nav-ico">⏱️</span>Zeiterfassung Plus</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/Zeiterfassung.html"><span aria-hidden="true" class="nav-ico">⏱️</span>Zeiterfassung</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/quittungs_generator.html"><span aria-hidden="true" class="nav-ico">🧾</span>Quittungs-Werkstatt Plus</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/ReceiptWriterPro.html"><span aria-hidden="true" class="nav-ico">🧾</span>Quittungs-Werkstatt</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/bild-konverter.html"><span aria-hidden="true" class="nav-ico">🖼️</span>Bilder Konverter / Editor</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🧰</span>Leistungen ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/leistungen/3d-druck , /leistungen/3d-druck.html" href="/leistungen/3d-druck.html"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druckauftrag</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html" href="/leistungen/cad-prototyping.html"><span aria-hidden="true" class="nav-ico">📐</span>CAD &amp; Prototyping</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html" href="/leistungen/pc-hilfe.html"><span aria-hidden="true" class="nav-ico">💻</span>PC-Hilfe</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🤖</span>Über KI ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li><a class="nav-link" href="/ki/chat.html"><span aria-hidden="true" class="nav-ico">💬</span>Interaktiver KI Versteher (NEU)</a></li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki , /ki/ , /ki/index.html" href="/ki/index.html"><span aria-hidden="true" class="nav-ico">📖</span>Einführung &amp; Grundlagen</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/prompts , /ki/prompts.html" href="/ki/prompts.html"><span aria-hidden="true" class="nav-ico">✍️</span>Prompts für den Alltag</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/tools , /ki/tools.html" href="/ki/tools.html"><span aria-hidden="true" class="nav-ico">🛠️</span>KI-Werkzeuge</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html" href="/ki/so-arbeitest-du-mit-ki.html"><span aria-hidden="true" class="nav-ico">🧭</span>So arbeitest du mit KI</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html" href="/ki/chancen-und-risiken.html"><span aria-hidden="true" class="nav-ico">⚖️</span>KI: Chancen &amp; Risiken</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/faq , /ki/faq.html" href="/ki/faq.html"><span aria-hidden="true" class="nav-ico">🔒</span>KI-FAQ &amp; Sicherheit</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/lexikon , /ki/lexikon.html" href="/ki/lexikon.html"><span aria-hidden="true" class="nav-ico">🔤</span>KI-Lexikon</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">✉️</span>Kontakt ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/kontakt , /kontakt/kontakt.html , /warenschmiede/kontakt/kontakt , /warenschmiede/kontakt/kontakt.html" href="/kontakt/kontakt.html"><span aria-hidden="true" class="nav-ico">📧</span>Kontakt aufnehmen</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/ablauf-anfrage , /kontakt/ablauf-anfrage.html , /warenschmiede/kontakt/ablauf-anfrage , /warenschmiede/kontakt/ablauf-anfrage.html" href="/kontakt/ablauf-anfrage.html"><span aria-hidden="true" class="nav-ico">📝</span>Ablauf &amp; Anfrage</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/impressum , /kontakt/impressum.html , /warenschmiede/kontakt/impressum , /warenschmiede/kontakt/impressum.html" href="/kontakt/impressum.html"><span aria-hidden="true" class="nav-ico">⚖️</span>Impressum</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/ueber-mich , /kontakt/ueber-mich.html , /warenschmiede/kontakt/ueber-mich , /warenschmiede/kontakt/ueber-mich.html , /about , /about.html , /warenschmiede/about.html" href="/kontakt/ueber-mich.html"><span aria-hidden="true" class="nav-ico">👤</span>Über mich</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druck ▾</button>
-<ul class="nav-more-menu" hidden="">
-<!-- 1. HIGHLIGHT -->
-<!-- 2. EINSTIEG -->
-<li>
-<a class="nav-link" href="/3d_druck/3ddruck-faq.html"><span aria-hidden="true" class="nav-ico">❓</span>Neu beim 3D-Druck?</a>
-</li>
-<!-- 3. GRUNDLAGEN -->
-<li>
-<a class="nav-link" href="/3d_druck/technologien.html"><span aria-hidden="true" class="nav-ico">🧪</span>FDM / SLA / SLS – Technologien</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/material.html"><span aria-hidden="true" class="nav-ico">📚</span>Materialwissen &amp; Vergleiche</a>
-</li>
-<!-- 4. PRAXIS -->
-<li>
-<a class="nav-link" href="/3d_druck/slicer-einstellungen.html"><span aria-hidden="true" class="nav-ico">⚙️</span>Slicer &amp; Einstellungen</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/druck-tipps.html"><span aria-hidden="true" class="nav-ico">💡</span>Tipps &amp; Abläufe / Kosten</a>
-</li>
-<!-- 5. TOOLS & HILFE -->
-<li>
-<a class="nav-link" href="/3d_druck/fehlerdatenbank.html"><span aria-hidden="true" class="nav-ico">🛠️</span>Fehler &amp; Troubleshooting</a>
-</li>
-<!-- 6. SPEZIAL -->
-<li>
-<a class="nav-link" href="/3d_druck/tpu-wissen.html"><span aria-hidden="true" class="nav-ico">💧</span>TPU Spezial-Wissen</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/ideenquellen.html"><span aria-hidden="true" class="nav-ico">💡</span>Ideenquellen &amp; Portale</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/wartung-reinigung.html"><span aria-hidden="true" class="nav-ico">🧼</span>Wartung &amp; Reinigung</a>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</nav>
-<div class="header-actions">
-<button aria-label="Design umschalten: Hell/Dunkel" aria-pressed="false" class="theme-toggle" id="themeToggleBtn" title="Design umschalten: Hell/Dunkel" type="button">
-<span aria-hidden="true" id="themeIcon">🖥️</span>
-<span aria-live="polite" class="theme-toggle__text" id="themeToggleText">Helles Design</span>
-</button>
-<button aria-controls="primary-navigation" aria-expanded="false" class="nav-toggle" data-nav-toggle="" type="button">
-<span class="sr-only">Menü öffnen</span>
-<span aria-hidden="true" class="nav-toggle-bar"></span>
-<span aria-hidden="true" class="nav-toggle-bar"></span>
-<span aria-hidden="true" class="nav-toggle-bar"></span>
-</button>
-</div>
-</div>
-</header>
-<nav aria-label="Brotkrumen" class="breadcrumbs">
-<div class="container breadcrumbs__container">
-<ol class="breadcrumbs__list">
-<li class="breadcrumbs__item"><a href="/index.html">Start</a></li>
-<li class="breadcrumbs__item"><a href="/leistungen/3d-druck.html">3D-Druck</a></li>
-<li aria-current="page" class="breadcrumbs__item">FAQ &amp; Schnellstart</li>
-</ol>
-</div>
-</nav>
-<main class="site-main faq-page" id="faq-page" tabindex="-1">
-<section class="section">
-<div class="container ki-wide">
-<div class="page-header" style="margin-bottom: 4rem; max-width: 900px;">
-<h1 style="margin-top: 0;">3D-Druck – Dein Einstieg &amp; Häufige Fragen</h1>
-<p class="lead">
-          Du überlegst, mit dem 3D-Druck anzufangen, oder hast gerade deinen ersten Drucker ausgepackt? Hier findest du ehrliche Antworten, ohne Fachchinesisch.
-          Ich erkläre dir die Grundlagen, helfe dir bei der Druckerwahl und zeige dir, wie du typische Anfängerfehler vermeidest.
-        </p>
-</div>
-<div class="section-heading">
-<h2>Schnellstart – Was brauchst du wirklich?</h2>
-<p>Bevor du Geld ausgibst: Das ist die absolute Basisausstattung.</p>
-</div>
-<div class="card-grid">
-<article class="card info-card" style="border-left: 4px solid var(--accent);">
-<h3>Die Hardware &amp; Software</h3>
-<ul style="padding-left: 1.2rem; margin-bottom: 0;">
-<li><strong>Der Drucker:</strong> Für den Start empfehle ich einen FDM-Drucker (Filament) mit automatischem Bed-Leveling. Das spart dir viel Frust.</li>
-<li><strong>Der Slicer:</strong> Das ist die Software auf deinem PC (z.B. Bambu Studio, OrcaSlicer), die dein 3D-Modell in Schichten zerlegt.</li>
-<li><strong>Das Material:</strong> Kaufe dir eine Rolle PLA. Es ist ungiftig, riecht kaum und lässt sich kinderleicht drucken.</li>
-<li><strong>Werkzeug:</strong> Ein Seitenschneider (fürs Filament) und eine Pinzette (für Reste an der Düse) reichen völlig aus.</li>
-</ul>
-</article>
-<article class="card info-card">
-<h3>Checkliste: Dein erster Druck</h3>
-<ol style="padding-left: 1.2rem; margin-bottom: 0;">
-<li>Stelle den Drucker auf einen stabilen, wackelfreien Tisch.</li>
-<li>Lass die automatische Kalibrierung (Leveling) einmal komplett durchlaufen.</li>
-<li>Reinige die Druckplatte gründlich mit Spüli-Wasser – Fettfinger verhindern, dass der Druck hält!</li>
-<li>Lade dein Modell in den Slicer, wähle das "Standard"-Profil und sende es an den Drucker.</li>
-<li><strong>Bleib dabei!</strong> Schau dir die erste Schicht an. Wenn die sauber liegt, kannst du weggehen.</li>
-</ol>
-</article>
-</div>
-<div class="section-heading" style="margin-top: 5rem;">
-<h2>FAQ – Häufige Fragen für Einsteiger</h2>
-<p>Ehrliche Antworten auf die Fragen, die mir am häufigsten gestellt werden.</p>
-</div>
-<div class="card info-card">
-<details open="" style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--surface-border); padding-bottom: 1.5rem;">
-<summary style="font-weight: bold; cursor: pointer; font-size: 1.2rem; color: var(--accent);">Welcher 3D-Drucker passt zu mir?</summary>
-<div class="details-content" style="margin-top: 1rem;">
-<p>Einen „perfekten“ Drucker für alle gibt es nicht – es hängt davon ab, was du drucken willst, wie komfortabel es sein soll und welches Budget du hast. Ich bekomme diese Frage sehr oft, deshalb hier mein persönlicher Leitfaden.</p>
-<h4 style="margin-top: 1.5rem;">1. Willst du mehrfarbig drucken oder reicht dir eine Farbe?</h4>
-<p>Wenn du Logos, Schriftzüge, bunte Teile oder Stützmaterial aus einem zweiten Filament drucken willst, kommst du an einem Multi-Material-System kaum vorbei. Bei Bambu Lab sind das die AMS-Module (z. B. AMS lite). Sie ermöglichen mehrere Farben/Materialien in einem Druck, erzeugen aber durch das ständige Spülen auch mehr Abfall (Purge-Türme, weggeworfenes Filament).</p>
-<p>Wenn du vor allem funktionale Teile, Halter und Ersatzteile druckst, reicht ein einfarbiger Drucker vollkommen. Du sparst dir Komplexität, Geld und Materialabfall.</p>
-<h4 style="margin-top: 1.5rem;">2. Komfort oder Bastel-Laune?</h4>
-<p>Wenn du möglichst wenig schrauben willst und dein Drucker „einfach funktionieren“ soll, ist Bambu Lab aktuell mein Favorit. Die Geräte sind schnell eingerichtet, haben gute Profile und mit Bambu Studio bekommst du eine sehr runde Software.</p>
-<p>Wenn du gerne bastelst, an Profilen spielst und eine sehr offene Plattform mit großer Community willst, ist Prusa eine spannende Alternative (z. B. MINI+ oder MK4). Du kannst mehr selbst einstellen und umbauen, brauchst aber auch etwas mehr Lust auf Feintuning.</p>
-<h4 style="margin-top: 1.5rem;">3. Budget grob einschätzen</h4>
-<p>Ohne auf tagesgenaue Preise einzugehen:</p>
-<ul style="padding-left: 1.2rem;">
-<li>Im Einsteigerbereich bewegen sich kompakte Geräte wie Bambu A1 mini oder Prusa MINI+.</li>
-<li>In der Mittelklasse liegen Modelle wie Bambu A1, P1S oder Prusa MK4 mit mehr Komfort und Ausstattung.</li>
-</ul>
-<p>Rechne grob mit einem niedrigen bis mittleren vierstelligen Betrag für Drucker + etwas Zubehör, je nachdem, wie komfortabel dein Setup werden soll.</p>
-<h4 style="margin-top: 1.5rem;">4. Multi-Material: Abfall und neue Systeme (z. B. H2D)</h4>
-<p>Klassische Multi-Material-Lösungen arbeiten meist mit Purge-Türmen oder Spülvorgängen – dabei geht zwangsläufig Filament als Abfall verloren. Das solltest du bei Kosten und Nachhaltigkeit im Hinterkopf behalten und den Müll möglichst sammeln und recyceln.</p>
-<p>Gleichzeitig kommen immer mehr abfallärmere Systeme auf den Markt (z. B. Ansätze wie H2D oder ähnliche Lösungen). Diese Technik entwickelt sich schnell weiter – wenn du so etwas ins Auge fasst, achte auf Zuverlässigkeit, Profilunterstützung und Ersatzteilversorgung.</p>
-<p style="margin-top: 1.5rem; font-style: italic; border-left: 3px solid var(--text-2); padding-left: 1rem;">
-<strong>Wichtig:</strong> Ich verdiene nichts daran, wenn du dich für Bambu, Prusa oder ein anderes System entscheidest – das hier ist nur meine persönliche Erfahrung. Am liebsten helfe ich dir, wenn du mir 2-3 Drucker schickst, die du im Blick hast; ich sage dir dann ehrlich, welcher besser zu deinen Ideen passt und worauf du achten solltest.
-            </p>
-</div>
-</details>
-<details style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--surface-border); padding-bottom: 1.5rem;">
-<summary style="font-weight: bold; cursor: pointer; font-size: 1.1rem;">Welches Material nehme ich am Anfang?</summary>
-<div class="details-content" style="margin-top: 1rem;">
-<p>Lass dich nicht von den hunderten Sorten verwirren. Für 90% deiner ersten Projekte ist <strong>PLA</strong> perfekt. Es ist einfach zu drucken, verzieht sich kaum und ist biologisch basierend.</p>
-<p>Wenn du später Teile für das Auto oder den Garten brauchst (die in der Sonne heiß werden), wechselst du zu <strong>PETG</strong>. Das ist robuster, aber etwas zickiger beim Drucken (zieht Fäden). <br/>
-            Lass die Finger erst mal von ABS oder ASA – die brauchen spezielle Bedingungen und stinken.</p>
-<p><a href="/3d_druck/material.html">Hier findest du meinen großen Material-Vergleich →</a></p>
-</div>
-</details>
-<details style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--surface-border); padding-bottom: 1.5rem;">
-<summary style="font-weight: bold; cursor: pointer; font-size: 1.1rem;">Welche Software brauche ich?</summary>
-<div class="details-content" style="margin-top: 1rem;">
-<p>Du brauchst zwingend einen sogenannten <strong>Slicer</strong>. Das ist das Programm, das dein 3D-Modell in Scheiben schneidet und in den Code für den Drucker übersetzt.</p>
-<p>Die gute Nachricht: Die Software ist meistens kostenlos und beim Drucker dabei. <br/>
-            Beliebt sind <strong>Bambu Studio</strong>, <strong>OrcaSlicer</strong> (sehr mächtig) oder der Klassiker <strong>Cura</strong>. Ich empfehle dir, mit dem Slicer zu starten, den der Hersteller deines Druckers empfiehlt.</p>
-</div>
-</details>
-<details style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--surface-border); padding-bottom: 1.5rem;">
-<summary style="font-weight: bold; cursor: pointer; font-size: 1.1rem;">Wie verhindere ich Fehldrucke?</summary>
-<div class="details-content" style="margin-top: 1rem;">
-<p>Die meisten Fehler passieren auf der <strong>ersten Schicht</strong>. Wenn die Düse zu hoch ist, haftet das Material nicht. Ist sie zu tief, verstopft sie.</p>
-<p>Zweiter Hauptgrund: Eine fettige Druckplatte. Ein einziger Fingerabdruck kann dazu führen, dass sich dein Bauteil löst. Reinige die Platte regelmäßig mit warmem Wasser und Spülmittel.</p>
-<p><a href="/3d_druck/fehlerdatenbank.html">Schau in meine Fehlerdatenbank für Bilder und Lösungen →</a></p>
-</div>
-</details>
-<details>
-<summary style="font-weight: bold; cursor: pointer; font-size: 1.1rem;">Was kostet ein selbst gedrucktes Teil?</summary>
-<div class="details-content" style="margin-top: 1rem;">
-<p>Das reine Material ist oft spottbillig. Ein kleiner Haken oder ein Ersatzteil wiegt oft nur 10-20 Gramm – das sind nur wenige Cent Materialkosten.</p>
-<p>Die "versteckten" Kosten sind der Strom (vernachlässigbar bei modernen Druckern), der Verschleiß (ab und zu eine neue Düse) und vor allem: Deine Zeit, wenn mal etwas nicht klappt.</p>
-<p><a href="/tools/3D_Druck_kostenrechner.html">Rechne es hier selbst aus mit meinem Kostenrechner →</a></p>
-</div>
-</details>
-</div>
-<div class="section-heading" style="margin-top: 5rem;">
-<h2>Vorbereitung &amp; Nachbearbeitung</h2>
-<p>Der Druck ist nur die halbe Miete. Darauf solltest du achten.</p>
-</div>
-<div class="card-grid">
-<article class="card info-card">
-<h4>Vor dem Druck (Prep)</h4>
-<ul style="padding-left: 1.2rem; margin-bottom: 0;">
-<li><strong>Platte reinigen:</strong> Fett und Staub entfernen (Isopropanol oder Spüli).</li>
-<li><strong>Filament checken:</strong> Ist genug auf der Rolle? Ist es trocken?</li>
-<li><strong>Slicer-Check:</strong> Hast du das richtige Material und den richtigen Drucker ausgewählt?</li>
-</ul>
-</article>
-<article class="card info-card">
-<h4>Nach dem Druck (Post)</h4>
-<ul style="padding-left: 1.2rem; margin-bottom: 0;">
-<li><strong>Geduld:</strong> Lass die Platte abkühlen. Das Teil löst sich oft von ganz alleine (knackt leise).</li>
-<li><strong>Entgraten:</strong> Entferne scharfe Kanten oder "Elefantenfüße" (breite erste Schicht) mit einem Entgrater.</li>
-<li><strong>Supports:</strong> Brich Stützstrukturen vorsichtig mit der Zange weg.</li>
-</ul>
-</article>
-</div>
-<div class="section-heading" style="margin-top: 5rem;">
-<h2>Glossar – Die wichtigsten Begriffe</h2>
-</div>
-<div class="table-wrapper">
-<table class="data-table">
-<thead><tr><th>Begriff</th><th>Bedeutung</th></tr></thead>
-<tbody>
-<tr><td><strong>STL / 3MF</strong></td><td>Das Dateiformat für 3D-Modelle. (Vergleichbar mit .MP3 für Musik).</td></tr>
-<tr><td><strong>G-Code</strong></td><td>Die fertige "Wegbeschreibung" für den Drucker, die der Slicer erstellt hat.</td></tr>
-<tr><td><strong>Infill</strong></td><td>Die Füllung im Inneren. 3D-Drucke sind selten massiv, sondern haben ein Gitter innen.</td></tr>
-<tr><td><strong>Brim</strong></td><td>Ein dünner Rand um das Objekt, der hilft, dass es besser auf der Platte klebt.</td></tr>
-<tr><td><strong>Nozzle</strong></td><td>Die Düse (meist aus Messing), aus der das heiße Plastik kommt.</td></tr>
-</tbody>
-</table>
-</div>
-<div class="section-heading" style="margin-top: 5rem;">
-<h2>Wie geht es jetzt weiter?</h2>
-</div>
-<div style="display: grid; gap: 2rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+<body class="theme-light homepage-v18 faq-page-v29"><div id="ws-header"></div><main class="site-main ws-live-content faq-page" id="inhalt" tabindex="-1">
+<section class="section container">
+<div class="faq-hero ws-panel-glow">
 <div>
-<h3 style="font-size: 1.3rem;">Ich will mehr lernen</h3>
-<p>Hier kannst du tiefer eintauchen:</p>
-<ul style="list-style: none; padding: 0;">
-<li style="margin-bottom: 0.5rem;"><a class="btn btn-secondary btn-sm" href="/3d_druck/material.html" style="width:100%; text-align:left;">📚 Materialwissen &amp; Vergleiche</a></li>
-<li style="margin-bottom: 0.5rem;"><a class="btn btn-secondary btn-sm" href="/3d_druck/slicer-einstellungen.html" style="width:100%; text-align:left;">⚙️ Slicer Einstellungen verstehen</a></li>
-<li style="margin-bottom: 0.5rem;"><a class="btn btn-secondary btn-sm" href="/3d_druck/fehlerdatenbank.html" style="width:100%; text-align:left;">🛠️ Fehlerdatenbank &amp; Lösungen</a></li>
-<li><a class="btn btn-secondary btn-sm" href="/3d_druck/ideenquellen.html" style="width:100%; text-align:left;">💡 Wo finde ich Druckvorlagen?</a></li>
+<p class="section-eyebrow">3D-Druck Wissen</p>
+<h1>3D-Druck – Einstieg &amp; häufige Fragen</h1>
+<p class="lead">Du überlegst, mit dem 3D-Druck anzufangen, oder hast gerade deinen ersten Drucker ausgepackt? Hier findest du ehrliche Antworten ohne Fachchinesisch: Drucker, Slicer, Material, erste Schicht und typische Anfängerfehler.</p>
+<div class="faq-pill-row">
+<span class="faq-pill">FDM Einstieg</span>
+<span class="faq-pill">PLA zuerst</span>
+<span class="faq-pill">Slicer verstehen</span>
+<span class="faq-pill">Fehldrucke vermeiden</span>
+</div>
+</div>
+<aside class="faq-hero__side">
+<h2>Schnellstart</h2>
+<ul>
+<li>stabiler Tisch</li>
+<li>automatisches Leveling durchlaufen lassen</li>
+<li>Druckplatte sauber halten</li>
+<li>mit Standardprofil und PLA starten</li>
+<li>die erste Schicht beobachten</li>
 </ul>
-</div>
-<div class="info-card" style="background: var(--surface-2); border: 1px solid var(--surface-border);">
-<h3 style="margin-top: 0;">Keine Lust auf Basteln?</h3>
-<p>Wenn dir das alles zu technisch ist oder du einfach nur ein fertiges Teil brauchst – ich übernehme das gerne für dich.</p>
-<p>Ich kümmere mich um Slicing, Materialwahl und den perfekten Druck.</p>
-<div style="margin-top: 1.5rem;">
-<a class="btn btn-primary" href="/leistungen/3d-druck.html">Zum 3D-Druck Service</a>
-<br/><br/>
-<a href="/kontakt/kontakt.html" style="font-size: 0.9rem;">Oder schreib mir direkt →</a>
-</div>
-</div>
-</div>
+</aside>
 </div>
 </section>
-</main>
-<footer class="footer">
-<div class="container">
-<div class="footer__inner">
-<div class="footer__brand">© <span id="copyright-year">2026</span> Warenschmiede · Alle Rechte vorbehalten.</div>
-<nav aria-label="Rechtliches &amp; Kontakt" class="footer__links">
-<a href="/kontakt/impressum.html">Impressum</a>
-<a href="/datenschutz.html">Datenschutzerklärung</a>
-<a href="/kontakt/kontakt.html">Kontakt</a>
-</nav>
-<div class="footer__notes">
-<p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
-<p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
+<section class="section container">
+<div class="section-heading compact-heading">
+<p class="section-eyebrow">Basis</p>
+<h2>Was brauchst du wirklich?</h2>
+<p>Für den Anfang reicht weniger, als viele denken. Entscheidend ist ein sauberer Start, nicht ein riesiger Zubehörberg.</p>
 </div>
+<div class="faq-grid">
+<article class="faq-card" data-accent="amber"><h3>Hardware &amp; Software</h3><ul><li><strong>Drucker:</strong> FDM-Drucker mit automatischem Bed-Leveling.</li><li><strong>Slicer:</strong> Bambu Studio, OrcaSlicer, Cura oder Hersteller-Software.</li><li><strong>Material:</strong> Eine Rolle PLA als einfacher Start.</li><li><strong>Werkzeug:</strong> Seitenschneider und Pinzette reichen erstmal.</li></ul></article>
+<article class="faq-card" data-accent="blue"><h3>Erster Druck</h3><ol><li>Drucker stabil aufstellen.</li><li>Kalibrierung/Leveling komplett durchführen.</li><li>Druckplatte mit Spüli-Wasser entfetten.</li><li>Modell in den Slicer laden.</li><li>Erste Schicht prüfen, bevor du weggehst.</li></ol></article>
+<article class="faq-card" data-accent="green"><h3>Mein ehrlicher Tipp</h3><p>Starte einfach. Nicht gleich fünf Spezialfilamente kaufen, nicht direkt an jedem Profil drehen. Erst lernen, wie PLA, Haftung und erste Schicht zusammenhängen.</p><a class="edge-button accent-green" href="../3d_druck/fehlerdatenbank.html">Fehlerhilfe ansehen</a></article>
 </div>
+</section>
+<section class="section container">
+<div class="section-heading compact-heading"><p class="section-eyebrow">FAQ</p><h2>Häufige Fragen für Einsteiger</h2><p>Die wichtigsten Antworten kompakt und ehrlich sortiert.</p></div>
+<div class="faq-details">
+<details open=""><summary>Welcher 3D-Drucker passt zu mir?</summary><div class="answer"><p>Den perfekten Drucker für alle gibt es nicht. Es hängt davon ab, was du drucken willst, wie komfortabel es sein soll und wie viel Lust du auf Basteln hast.</p><p>Wenn du möglichst wenig schrauben willst, sind komfortable Systeme wie Bambu Lab spannend. Wenn du gern bastelst und eine offene Plattform willst, sind Systeme wie Prusa interessant. Für funktionale Teile reicht oft ein einfarbiger Drucker völlig.</p></div></details>
+<details><summary>Welches Material nehme ich am Anfang?</summary><div class="answer"><p>Für die meisten ersten Projekte ist <strong>PLA</strong> die beste Wahl. Es lässt sich einfach drucken, verzieht sich kaum und ist für Einsteiger gut beherrschbar.</p><p>Für robustere Teile, Garten oder wärmere Umgebung kommt später PETG ins Spiel. ABS/ASA würde ich am Anfang nicht empfehlen.</p><p><a href="../3d_druck/material.html">Zum Materialwissen →</a></p></div></details>
+<details><summary>Welche Software brauche ich?</summary><div class="answer"><p>Du brauchst einen <strong>Slicer</strong>. Der Slicer schneidet dein 3D-Modell in Schichten und erzeugt daraus die Druckdaten. Starte am besten mit der Software, die dein Druckerhersteller empfiehlt.</p></div></details>
+<details><summary>Wie verhindere ich Fehldrucke?</summary><div class="answer"><p>Die meisten Probleme entstehen durch eine schlechte erste Schicht oder eine fettige Druckplatte. Reinige die Platte regelmäßig und beobachte den Druckstart. Wenn die erste Schicht sauber liegt, ist schon viel gewonnen.</p></div></details>
+<details><summary>Was kostet ein selbst gedrucktes Teil?</summary><div class="answer"><p>Das Material ist bei kleinen Teilen oft nur ein kleiner Kostenblock. Dazu kommen Strom, Verschleiß, Fehldrucke und vor allem Zeit. Für eine grobe Einschätzung kannst du meinen Kostenrechner nutzen.</p><p><a href="../tools/3D_Druck_kostenrechner.html">Kostenrechner öffnen →</a></p></div></details>
 </div>
-</footer>
-<script defer="" src="/assets/js/theme.js"></script>
-<script defer="" src="/assets/js/header.js"></script>
-<script defer="" src="/assets/js/whatsapp.js"></script>
-<script>
-  // Auto-Update Copyright Year
-  document.getElementById('copyright-year').textContent = new Date().getFullYear();
-</script>
-</body>
+</section>
+<section class="section container">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Praxis</p><h2>Vorbereitung &amp; Nachbearbeitung</h2><p>Der Druck selbst ist nur ein Teil vom Ergebnis.</p></div>
+<div class="faq-grid">
+<article class="faq-card" data-accent="amber"><h4>Vor dem Druck</h4><ul><li>Platte reinigen</li><li>Filamentmenge prüfen</li><li>Materialprofil im Slicer kontrollieren</li><li>Bauteilausrichtung prüfen</li></ul></article>
+<article class="faq-card" data-accent="blue"><h4>Nach dem Druck</h4><ul><li>Platte abkühlen lassen</li><li>Scharfe Kanten entgraten</li><li>Stützstrukturen vorsichtig entfernen</li><li>Passung prüfen und bei Bedarf nacharbeiten</li></ul></article>
+</div>
+</section>
+<section class="section container">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Glossar</p><h2>Wichtige Begriffe</h2></div>
+<table class="faq-table"><thead><tr><th>Begriff</th><th>Bedeutung</th></tr></thead><tbody><tr><td><strong>STL / 3MF</strong></td><td>Dateiformate für 3D-Modelle.</td></tr><tr><td><strong>G-Code</strong></td><td>Die fertige Wegbeschreibung für den Drucker.</td></tr><tr><td><strong>Infill</strong></td><td>Füllung im Inneren des Bauteils.</td></tr><tr><td><strong>Brim</strong></td><td>Dünner Rand zur besseren Haftung auf der Druckplatte.</td></tr><tr><td><strong>Nozzle</strong></td><td>Düse, aus der das heiße Filament kommt.</td></tr></tbody></table>
+</section>
+<section class="section container">
+<div class="next-grid">
+<div class="ws-card contact-info-card"><p class="section-eyebrow">Weiterlernen</p><h2>Mehr 3D-Druck-Wissen</h2><div class="contact-actions stacked"><a class="edge-button accent-blue" href="../3d_druck/material.html">Materialwissen</a><a class="edge-button accent-amber" href="../3d_druck/slicer-einstellungen.html">Slicer &amp; Einstellungen</a><a class="edge-button accent-red" href="../3d_druck/fehlerdatenbank.html">Fehlerdatenbank</a></div></div>
+<div class="ws-card contact-info-card privacy-card"><p class="section-eyebrow">Keine Lust auf Basteln?</p><h2>Ich drucke dein Teil für dich</h2><p>Wenn dir das alles zu technisch ist oder du einfach ein fertiges Teil brauchst, übernehme ich Druck, Materialwahl und Vorbereitung gern für dich.</p><a class="edge-button accent-green" href="../leistungen/3d-druck.html">Zum 3D-Druck-Service</a></div>
+</div>
+</section>
+</main><div id="ws-footer"></div><script defer="True" src="../assets/js/ws-layout.js"></script></body>
 </html>

@@ -3,477 +3,79 @@
 <html lang="de">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1" name="viewport"/>
-<link href="/ws.png" rel="icon" sizes="32x32" type="image/png"/>
-<link href="/ws.png" rel="apple-touch-icon" sizes="180x180"/>
-<meta content="#000000" name="theme-color"/>
-<title>FDM, SLA oder SLS? 3D-Druck-Technologien kompakt</title>
-<meta content="Vergleich der 3D-Druck-Verfahren mit Vorteilen, Grenzen, Materialien und Empfehlungen für dein Projekt." name="description"/>
-<meta content="3D Druck Technologie Vergleich, FDM SLA SLS, 3D Druck Verfahren, Warenschmiede, 3D Druck Made in Germany" name="keywords"/>
-<meta content="DE-BW" name="geo.region"/>
-<meta content="Donaueschingen" name="geo.placename"/>
-<meta content="47.953;8.499" name="geo.position"/>
-<meta content="47.953,8.499" name="ICBM"/>
-<link as="image" href="/assets/logo.svg" rel="preload"/>
-<script>
-    (function () {
-      var storageKey = 'theme-preference';
-      var preference = 'system';
-      try {
-        var stored = localStorage.getItem(storageKey);
-        if (stored === 'light' || stored === 'dark' || stored === 'system') {
-          preference = stored;
-        }
-      } catch (error) {}
-      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-      var resolved = preference === 'dark'
-        ? 'dark'
-        : preference === 'light'
-          ? 'light'
-          : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
-      var root = document.documentElement;
-      root.dataset.theme = resolved;
-      root.dataset.themePreference = preference;
-    })();
-  </script>
-<link href="/styles.css" rel="stylesheet"/>
-<link href="/assets/print.css?v=1.0.7" media="print" rel="stylesheet"/>
-<meta content="index,follow" name="robots"/>
-<meta content="light dark" name="color-scheme"/>
-<link href="https://www.warenschmiede.com/3d_druck/technologien.html" rel="canonical"/>
-<meta content="FDM, SLA oder SLS? 3D-Druck-Technologien kompakt" property="og:title"/>
-<meta content="Vergleich der 3D-Druck-Verfahren mit Vorteilen, Grenzen, Materialien und Empfehlungen für dein Projekt." property="og:description"/>
-<meta content="FDM, SLA oder SLS? 3D-Druck-Technologien kompakt" name="twitter:title"/>
-<meta content="Vergleich der 3D-Druck-Verfahren mit Vorteilen, Grenzen, Materialien und Empfehlungen für dein Projekt." name="twitter:description"/>
-<meta content="https://www.warenschmiede.com/3d_druck/technologien.html" name="twitter:url"/>
-<meta content="/assets/og/og-default.jpg" name="twitter:image"/>
-<meta content="website" property="og:type"/>
-<meta content="https://www.warenschmiede.com/3d_druck/technologien.html" property="og:url"/>
-<meta content="/assets/og/og-default.jpg" property="og:image"/>
-<meta content="Warenschmiede" property="og:site_name"/>
-<meta content="de_DE" property="og:locale"/>
-<meta content="summary_large_image" name="twitter:card"/>
-<script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Warenschmiede",
-    "url": "https://www.warenschmiede.com",
-    "logo": "https://www.warenschmiede.com/assets/logo.png",
-    "sameAs": [
-      "https://github.com/Warenschmiede",
-      "https://www.instagram.com/warenschmiede"
-    ]
-  }
-  </script>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>FDM, SLA oder SLS? 3D-Druck-Technologien · Warenschmiede Webseite 2.0 Test v30</title>
+<meta content="Vergleich der 3D-Druck-Verfahren FDM, SLA und SLS: Vorteile, Grenzen, Materialien und klare Empfehlung für dein Projekt." name="description"/>
+<link href="../assets/css/styles.css" rel="stylesheet"/>
+
+<style>
+.tech-hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(280px,.8fr);gap:32px;align-items:stretch;padding:34px;border-radius:28px;background:linear-gradient(135deg,rgba(255,255,255,.94),rgba(235,242,249,.86));box-shadow:0 18px 50px rgba(40,68,95,.13), inset 0 0 0 1px rgba(255,255,255,.82);}
+.tech-hero h1{margin:.2rem 0 1rem;font-size:clamp(2.1rem,4vw,4.1rem);letter-spacing:-.045em;}
+.tech-hero__side{border-radius:22px;padding:24px;background:rgba(255,255,255,.74);box-shadow:inset 0 0 0 1px rgba(140,165,190,.18),0 0 32px rgba(45,126,255,.12);}
+.tech-pill-row{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 0;}
+.tech-pill{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.78);box-shadow:inset 0 0 0 1px rgba(130,150,170,.18);font-weight:800;font-size:.9rem;color:#324252;}
+.tech-toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:22px;}
+.tech-toc a{display:block;padding:16px 18px;border-radius:18px;background:rgba(255,255,255,.78);text-decoration:none;color:#27384a;font-weight:800;box-shadow:0 12px 30px rgba(35,60,85,.09), inset 0 0 0 1px rgba(130,150,170,.18);}
+.tech-toc a:hover{box-shadow:0 0 0 2px rgba(255,151,45,.28),0 0 24px rgba(255,151,45,.13),0 12px 30px rgba(35,60,85,.10);}
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:22px;}
+.tech-card{padding:26px;border-radius:24px;background:rgba(255,255,255,.80);box-shadow:0 16px 36px rgba(35,60,85,.10), inset 0 0 0 1px rgba(130,150,170,.18);}
+.tech-card[data-accent=green]{box-shadow:0 16px 36px rgba(35,60,85,.10),0 0 24px rgba(38,165,98,.14), inset 0 0 0 1px rgba(38,165,98,.24);}
+.tech-card[data-accent=violet]{box-shadow:0 16px 36px rgba(35,60,85,.10),0 0 24px rgba(128,82,255,.13), inset 0 0 0 1px rgba(128,82,255,.22);}
+.tech-card[data-accent=blue]{box-shadow:0 16px 36px rgba(35,60,85,.10),0 0 24px rgba(45,126,255,.13), inset 0 0 0 1px rgba(45,126,255,.22);}
+.tech-card h3{margin-top:0;font-size:1.55rem;}
+.tech-label{display:inline-flex;align-items:center;gap:8px;margin-bottom:12px;padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.78);font-weight:850;font-size:.84rem;color:#42566a;box-shadow:inset 0 0 0 1px rgba(130,150,170,.18);}
+.badge-row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px;}
+.tech-badge{display:inline-flex;padding:7px 10px;border-radius:999px;font-weight:800;font-size:.83rem;background:rgba(246,249,252,.9);box-shadow:inset 0 0 0 1px rgba(130,150,170,.18);}
+.tech-badge.ok{color:#147a45;background:rgba(226,247,235,.86)}.tech-badge.warn{color:#a06200;background:rgba(255,244,218,.9)}.tech-badge.stop{color:#a93232;background:rgba(255,232,232,.9)}
+.compare-table{width:100%;border-collapse:collapse;border-radius:20px;overflow:hidden;background:rgba(255,255,255,.80);box-shadow:inset 0 0 0 1px rgba(130,150,170,.18);}
+.compare-table th,.compare-table td{text-align:left;padding:14px 16px;border-bottom:1px solid rgba(130,150,170,.18);vertical-align:top;}
+.compare-table th{background:rgba(241,246,251,.94);font-weight:850;}.compare-table .winner{font-weight:850;color:#12754a;}
+.recommend-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;}
+.reco-card{padding:22px;border-radius:22px;background:rgba(255,255,255,.78);box-shadow:0 14px 32px rgba(35,60,85,.10), inset 0 0 0 1px rgba(130,150,170,.18);}
+.note-box{padding:24px;border-radius:22px;background:rgba(255,255,255,.78);box-shadow:0 14px 32px rgba(35,60,85,.10),0 0 28px rgba(255,151,45,.12), inset 0 0 0 1px rgba(255,151,45,.22);}
+@media(max-width:820px){.tech-hero{grid-template-columns:1fr;padding:24px}.compare-table{font-size:.92rem}.compare-scroll{overflow-x:auto}}
+</style>
 </head>
-<body>
-<header class="site-header" data-header="">
-<div class="ws-nav-container header-grid">
-<div class="brand">
-<a class="brand-link" href="/index.html#start">
-<img alt="Warenschmiede Logo" class="brand-logo" fetchpriority="high" height="276" src="/assets/images/warenschmiede_logo.png" width="453"/>
-<div class="brand-text">
-<span class="brand-name">Warenschmiede</span>
-<span class="brand-tagline">3D-Druck · Made in Germany</span>
-</div>
-</a>
-</div>
-<nav aria-label="Hauptnavigation" class="main-nav">
-<div class="nav-menu" data-nav-menu="" id="primary-navigation">
-<ul class="nav-list" id="navList">
-<li class="nav-item nav-fixed">
-<a aria-current="page" class="nav-link active" data-nav-link="" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html" data-section="start" href="/index.html#start"><span aria-hidden="true" class="nav-ico">🏠</span>Start</a>
-</li>
-<li class="nav-item nav-fixed">
-<a class="nav-link" data-nav-link="" data-path="/downloads , /downloads.html" href="/downloads.html"><span aria-hidden="true" class="nav-ico">📥</span>Downloads</a>
-</li>
-<!-- Neuer Dropdown: Online Tools -->
-<li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button">
-<span aria-hidden="true" class="nav-ico">🧮</span>Online Tools ▾
-              </button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools , /tools/ , /tools/index.html" href="/tools">
-<span aria-hidden="true" class="nav-ico">🗂️</span>Tool-Übersicht (Dashboard)
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/werkstatt-rechner , /tools/werkstatt-rechner.html" href="/tools/werkstatt-rechner.html">
-<span aria-hidden="true" class="nav-ico">🛠️</span>Werkstatt-Rechner Metall Plus
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/3D_Druck_kostenrechner , /tools/3D_Druck_kostenrechner.html" href="/tools/3D_Druck_kostenrechner.html">
-<span aria-hidden="true" class="nav-ico">🧮</span>Warenschmiede 3D-Druck Suite
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/ws_3d_print_kostenrechner , /tools/ws_3d_print_kostenrechner.html" href="/tools/ws_3d_print_kostenrechner.html">
-<span aria-hidden="true" class="nav-ico">✨</span>Warenschmiede 3D-Druck Suite Plus (NEU)
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/QRCodeMasterPro , /tools/QRCodeMasterPro.html" href="/tools/QRCodeMasterPro.html">
-<span aria-hidden="true" class="nav-ico">🔳</span>Warenschmiede QR-Master ULTRA
-                  </a>
-</li>
-<li>
-<a class="nav-link" href="/tools/Zeiterfassung_Plus.html"><span aria-hidden="true" class="nav-ico">⏱️</span>Zeiterfassung Plus</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/Zeiterfassung.html"><span aria-hidden="true" class="nav-ico">⏱️</span>Zeiterfassung</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/quittungs_generator.html"><span aria-hidden="true" class="nav-ico">🧾</span>Quittungs-Werkstatt Plus</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/ReceiptWriterPro.html"><span aria-hidden="true" class="nav-ico">🧾</span>Quittungs-Werkstatt</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/bild-konverter.html"><span aria-hidden="true" class="nav-ico">🖼️</span>Bilder Konverter / Editor</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🧰</span>Leistungen ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/leistungen/3d-druck , /leistungen/3d-druck.html" href="/leistungen/3d-druck.html"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druckauftrag</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html" href="/leistungen/cad-prototyping.html"><span aria-hidden="true" class="nav-ico">📐</span>CAD &amp; Prototyping</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html" href="/leistungen/pc-hilfe.html"><span aria-hidden="true" class="nav-ico">💻</span>PC-Hilfe</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🤖</span>Über KI ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li><a class="nav-link" href="/ki/chat.html"><span aria-hidden="true" class="nav-ico">💬</span>Interaktiver KI Versteher (NEU)</a></li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki , /ki/ , /ki/index.html" href="/ki/index.html"><span aria-hidden="true" class="nav-ico">📖</span>Einführung &amp; Grundlagen</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/prompts , /ki/prompts.html" href="/ki/prompts.html"><span aria-hidden="true" class="nav-ico">✍️</span>Prompts für den Alltag</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/tools , /ki/tools.html" href="/ki/tools.html"><span aria-hidden="true" class="nav-ico">🛠️</span>KI-Werkzeuge</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html" href="/ki/so-arbeitest-du-mit-ki.html"><span aria-hidden="true" class="nav-ico">🧭</span>So arbeitest du mit KI</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html" href="/ki/chancen-und-risiken.html"><span aria-hidden="true" class="nav-ico">⚖️</span>KI: Chancen &amp; Risiken</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/faq , /ki/faq.html" href="/ki/faq.html"><span aria-hidden="true" class="nav-ico">🔒</span>KI-FAQ &amp; Sicherheit</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/lexikon , /ki/lexikon.html" href="/ki/lexikon.html"><span aria-hidden="true" class="nav-ico">🔤</span>KI-Lexikon</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">✉️</span>Kontakt ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/kontakt , /kontakt/kontakt.html , /warenschmiede/kontakt/kontakt , /warenschmiede/kontakt/kontakt.html" href="/kontakt/kontakt.html"><span aria-hidden="true" class="nav-ico">📧</span>Kontakt aufnehmen</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/ablauf-anfrage , /kontakt/ablauf-anfrage.html , /warenschmiede/kontakt/ablauf-anfrage , /warenschmiede/kontakt/ablauf-anfrage.html" href="/kontakt/ablauf-anfrage.html"><span aria-hidden="true" class="nav-ico">📝</span>Ablauf &amp; Anfrage</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/impressum , /kontakt/impressum.html , /warenschmiede/kontakt/impressum , /warenschmiede/kontakt/impressum.html" href="/kontakt/impressum.html"><span aria-hidden="true" class="nav-ico">⚖️</span>Impressum</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/ueber-mich , /kontakt/ueber-mich.html , /warenschmiede/kontakt/ueber-mich , /warenschmiede/kontakt/ueber-mich.html , /about , /about.html , /warenschmiede/about.html" href="/kontakt/ueber-mich.html"><span aria-hidden="true" class="nav-ico">👤</span>Über mich</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druck ▾</button>
-<ul class="nav-more-menu" hidden="">
-<!-- 1. HIGHLIGHT -->
-<!-- 2. EINSTIEG -->
-<li>
-<a class="nav-link" href="/3d_druck/3ddruck-faq.html"><span aria-hidden="true" class="nav-ico">❓</span>Neu beim 3D-Druck?</a>
-</li>
-<!-- 3. GRUNDLAGEN -->
-<li>
-<a class="nav-link" href="/3d_druck/technologien.html"><span aria-hidden="true" class="nav-ico">🧪</span>FDM / SLA / SLS – Technologien</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/material.html"><span aria-hidden="true" class="nav-ico">📚</span>Materialwissen &amp; Vergleiche</a>
-</li>
-<!-- 4. PRAXIS -->
-<li>
-<a class="nav-link" href="/3d_druck/slicer-einstellungen.html"><span aria-hidden="true" class="nav-ico">⚙️</span>Slicer &amp; Einstellungen</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/druck-tipps.html"><span aria-hidden="true" class="nav-ico">💡</span>Tipps &amp; Abläufe / Kosten</a>
-</li>
-<!-- 5. TOOLS & HILFE -->
-<li>
-<a class="nav-link" href="/3d_druck/fehlerdatenbank.html"><span aria-hidden="true" class="nav-ico">🛠️</span>Fehler &amp; Troubleshooting</a>
-</li>
-<!-- 6. SPEZIAL -->
-<li>
-<a class="nav-link" href="/3d_druck/tpu-wissen.html"><span aria-hidden="true" class="nav-ico">💧</span>TPU Spezial-Wissen</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/ideenquellen.html"><span aria-hidden="true" class="nav-ico">💡</span>Ideenquellen &amp; Portale</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/wartung-reinigung.html"><span aria-hidden="true" class="nav-ico">🧼</span>Wartung &amp; Reinigung</a>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</nav>
-<div class="header-actions">
-<button aria-label="Design umschalten: Hell/Dunkel" aria-pressed="false" class="theme-toggle" id="themeToggleBtn" title="Design umschalten: Hell/Dunkel" type="button">
-<span aria-hidden="true" id="themeIcon">🖥️</span>
-<span aria-live="polite" class="theme-toggle__text" id="themeToggleText">Helles Design</span>
-</button>
-<button aria-controls="primary-navigation" aria-expanded="false" class="nav-toggle" data-nav-toggle="" type="button">
-<span class="sr-only">Menü öffnen</span>
-<span aria-hidden="true" class="nav-toggle-bar"></span>
-<span aria-hidden="true" class="nav-toggle-bar"></span>
-<span aria-hidden="true" class="nav-toggle-bar"></span>
-</button>
-</div>
-</div>
-</header>
-<nav aria-label="Brotkrumen" class="breadcrumbs">
-<div class="container breadcrumbs__container">
-<ol class="breadcrumbs__list">
-<li class="breadcrumbs__item"><a href="/index.html">Start</a></li>
-<li class="breadcrumbs__item"><a href="/leistungen/3d-druck.html">3D-Druck</a></li>
-<li aria-current="page" class="breadcrumbs__item">Technologie-Vergleich</li>
-</ol>
-</div>
-</nav>
-<main class="site-main" id="3d-technologien" tabindex="-1">
-<section aria-labelledby="tech-hero-heading" class="section tech-hero">
-<div class="container tech-hero__inner">
-<p class="section-eyebrow">Technologie-Übersicht</p>
-<h1 id="tech-hero-heading">3D-Druck Technologien: FDM, SLA &amp; SLS – was passt zu deinem Projekt?</h1>
-<p class="tech-hero__intro">Viele Einsteiger wissen nicht, welche 3D-Drucktechnologie sich am besten eignet.<br/>Hier bekommst du einen einfachen, klaren Überblick über die wichtigsten Verfahren – inkl. Vorteilen, Nachteilen und typischen Einsatzbereichen.</p>
-</div>
-</section>
-<!-- FDM Section: Image Left, Text Right -->
-<section class="tech-section" id="fdm">
-<div class="container tech-section__inner">
-<div class="tech-section__visual">
-<div style="background-color: #e2e8f0; width: 100%; height: 100%; min-height: 300px; display: flex; align-items: center; justify-content: center; color: #64748b; font-weight: 600;">
-<img alt="FDM Druckverfahren" class="tech-image" onerror="this.style.display='none'; this.parentNode.innerText='Bild: FDM Verfahren'" src="/assets/images/tech_fdm.jpg"/>
-</div>
-<div class="tech-magnifier">Typisch: Feine Rillen sichtbar</div>
-</div>
-<div class="tech-section__content">
+<body class="theme-light homepage-v18 tech-page-v30"><div id="ws-header"></div><main class="site-main ws-live-content tech-page" id="inhalt" tabindex="-1">
+<section class="section container">
+<div class="tech-hero ws-panel-glow">
 <div>
-<span class="tech-label">Warenschmiede nutzt FDM</span>
-<h2>FDM – Der Klassiker für funktionale Teile</h2>
-<p>Beim FDM-Verfahren wird geschmolzenes Filament Schicht für Schicht aufgetragen. Das ist das Verfahren, das ich für Kundenprojekte nutze: zuverlässig, kalkulierbar und schnell.</p>
-<h3>Vorteile</h3>
-<div class="tech-badges-group">
-<span class="tech-badge badge-green">✔ Sehr günstig</span>
-<span class="tech-badge badge-green">✔ Große Materialauswahl</span>
-<span class="tech-badge badge-green">✔ Robust</span>
-<span class="tech-badge badge-green">✔ Schnell &amp; Sauber</span>
+<p class="section-eyebrow">3D-Druck Wissen</p>
+<h1>FDM, SLA oder SLS – welches Verfahren passt?</h1>
+<p class="lead">Nicht jedes 3D-Druckverfahren ist für jedes Projekt sinnvoll. Hier bekommst du einen einfachen Vergleich: Was ist günstig, was ist fein, was ist robust — und warum die Warenschmiede Kundenprojekte aktuell im FDM-Verfahren fertigt.</p>
+<div class="tech-pill-row"><span class="tech-pill">FDM = funktional</span><span class="tech-pill">SLA = fein</span><span class="tech-pill">SLS = industriell</span><span class="tech-pill">klare Empfehlung</span></div>
 </div>
-<h3>Nachteile</h3>
-<div class="tech-badges-group">
-<span class="tech-badge badge-yellow">⚠ Sichtbare Schichten</span>
-<span class="tech-badge badge-yellow">⚠ Details weniger fein</span>
+<aside class="tech-hero__side">
+<h2>Kurz gesagt</h2>
+<p><strong>FDM</strong> ist der praktische Allrounder für Halter, Gehäuse, Ersatzteile und Prototypen.</p>
+<p><strong>SLA</strong> ist stark bei kleinen Details und glatten Oberflächen.</p>
+<p><strong>SLS</strong> ist robust und professionell, aber deutlich teurer.</p>
+</aside>
 </div>
-<h3>Typische Materialien</h3>
-<p>PLA, PETG, ABS, ASA, TPU</p>
-<h3>Perfekt geeignet für</h3>
-<p>Gehäuse, Halterungen, Prototypen, funktionale Bauteile</p>
-</div>
-</div>
+<div class="tech-toc"><a href="#fdm">FDM ansehen</a><a href="#sla">SLA ansehen</a><a href="#sls">SLS ansehen</a><a href="#vergleich">Vergleichstabelle</a></div>
+</section>
+<section class="section container">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Überblick</p><h2>Die drei wichtigsten Verfahren</h2><p>Für Besucher reicht zuerst ein klares Gefühl: Wofür ist welches Verfahren gut?</p></div>
+<div class="tech-grid">
+<article class="tech-card" data-accent="green" id="fdm"><span class="tech-label">Warenschmiede nutzt FDM</span><h3>FDM – der Klassiker für funktionale Teile</h3><p>Beim FDM-Verfahren wird geschmolzenes Filament Schicht für Schicht aufgetragen. Das ist zuverlässig, kalkulierbar und ideal für viele praktische Bauteile.</p><h4>Vorteile</h4><div class="badge-row"><span class="tech-badge ok">günstig</span><span class="tech-badge ok">robust</span><span class="tech-badge ok">viele Materialien</span><span class="tech-badge ok">schnell verfügbar</span></div><h4>Grenzen</h4><div class="badge-row"><span class="tech-badge warn">sichtbare Schichten</span><span class="tech-badge warn">feine Details begrenzt</span></div><p><strong>Typisch für:</strong> Halterungen, Gehäuse, Prototypen, Ersatzteile, Vorrichtungen und funktionale Bauteile.</p></article>
+<article class="tech-card" data-accent="violet" id="sla"><span class="tech-label">Feine Details</span><h3>SLA – Harzdruck für glatte Oberflächen</h3><p>SLA arbeitet mit flüssigem Harz, das mit Licht ausgehärtet wird. Die Teile werden sehr fein und glatt, brauchen aber mehr Nacharbeit und sicheren Umgang mit Harz.</p><h4>Vorteile</h4><div class="badge-row"><span class="tech-badge ok">sehr hohe Details</span><span class="tech-badge ok">glatte Oberfläche</span></div><h4>Grenzen</h4><div class="badge-row"><span class="tech-badge stop">Harz/Handling</span><span class="tech-badge warn">Nacharbeit nötig</span><span class="tech-badge warn">teurer</span></div><p><strong>Typisch für:</strong> Miniaturen, Modelle, Schmuck, Dental, sehr feine Bauteile.</p></article>
+<article class="tech-card" data-accent="blue" id="sls"><span class="tech-label">Industriequalität</span><h3>SLS – Pulververfahren für Profis</h3><p>Beim SLS-Verfahren wird Pulver schichtweise verschmolzen. Das Ergebnis kann sehr belastbar sein, ist aber eher ein industrieller Prozess mit höheren Kosten.</p><h4>Vorteile</h4><div class="badge-row"><span class="tech-badge ok">sehr robust</span><span class="tech-badge ok">keine Stützstrukturen</span><span class="tech-badge ok">professionelle Bauteile</span></div><h4>Grenzen</h4><div class="badge-row"><span class="tech-badge stop">teuer</span><span class="tech-badge stop">Spezialmaschinen</span><span class="tech-badge warn">nicht mal eben zuhause</span></div><p><strong>Typisch für:</strong> technische Komponenten, Serien, Industriebauteile und komplexe Geometrien.</p></article>
 </div>
 </section>
-<!-- SLA Section: Text Left, Image Right -->
-<section class="tech-section" id="sla">
-<div class="container tech-section__inner">
-<div class="tech-section__visual">
-<div style="background-color: #e2e8f0; width: 100%; height: 100%; min-height: 300px; display: flex; align-items: center; justify-content: center; color: #64748b; font-weight: 600;">
-<img alt="SLA Druckverfahren" class="tech-image" onerror="this.style.display='none'; this.parentNode.innerText='Bild: SLA Verfahren'" src="/assets/images/tech_sla.jpg"/>
-</div>
-<div class="tech-magnifier">Typisch: Glatt wie Spritzguss</div>
-</div>
-<div class="tech-section__content">
-<div>
-<span class="tech-label">Höchste Details</span>
-<h2>SLA – Harzdruck für extrem feine Details</h2>
-<p>SLA benutzt flüssiges Harz, das mit Licht ausgehärtet wird. Die Ergebnisse sind extrem detailreich und glatt – ideal, wenn jede Kante perfekt sein muss.</p>
-<h3>Vorteile</h3>
-<div class="tech-badges-group">
-<span class="tech-badge badge-green">✔ Extrem hohe Details</span>
-<span class="tech-badge badge-green">✔ Glatte Oberflächen</span>
-</div>
-<h3>Nachteile</h3>
-<div class="tech-badges-group">
-<span class="tech-badge badge-red">⚠ Harz giftig/riecht</span>
-<span class="tech-badge badge-yellow">⚠ Aufwendige Nacharbeit</span>
-<span class="tech-badge badge-yellow">⚠ Höhere Kosten</span>
-</div>
-<h3>Perfekt geeignet für</h3>
-<p>Modelle, Figuren, Dental, Schmuck, feine Bauteile</p>
-</div>
-</div>
+<section class="section container" id="vergleich">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Vergleich</p><h2>Auf einen Blick</h2><p>Keine Wissenschaftstabelle, sondern eine praktische Orientierung für die Entscheidung.</p></div>
+<div class="compare-scroll"><table class="compare-table"><thead><tr><th>Verfahren</th><th>Kosten</th><th>Details</th><th>Stabilität</th><th>Materialien</th><th>Typische Anwendung</th></tr></thead><tbody><tr><th class="winner">FDM</th><td class="winner">günstig</td><td>mittel</td><td class="winner">hoch</td><td>PLA, PETG, TPU, ASA</td><td>funktionale Teile, Halter, Prototypen</td></tr><tr><th>SLA</th><td>mittel</td><td class="winner">sehr hoch</td><td>mittel</td><td>Harze</td><td>Modelle, Miniaturen, feine Details</td></tr><tr><th>SLS</th><td>hoch</td><td>hoch</td><td class="winner">sehr hoch</td><td>Nylon / PA12</td><td>Industrie, Serien, robuste Technik</td></tr></tbody></table></div>
+</section>
+<section class="section container">
+<div class="section-heading compact-heading"><p class="section-eyebrow">Empfehlung</p><h2>Was passt zu deinem Projekt?</h2></div>
+<div class="recommend-grid">
+<article class="reco-card"><h3>Günstig &amp; funktional</h3><p>Für Halter, Ersatzteile, einfache Gehäuse und Prototypen ist FDM meistens der beste Einstieg.</p><a class="edge-button accent-green" href="../leistungen/3d-druck.html">3D-Druck-Service ansehen</a></article>
+<article class="reco-card"><h3>Feinste Details</h3><p>Für kleine Figuren, glatte Miniaturen oder Schmuck ist SLA oft besser — auch wenn ich das nicht als Standard-Service anbiete.</p><a class="edge-button accent-violet" href="../3d_druck/material.html">Materialwissen ansehen</a></article>
+<article class="reco-card"><h3>Technisch &amp; industriell</h3><p>Wenn ein Teil sehr professionell, komplex und belastbar sein muss, kann SLS sinnvoll sein — meist über spezialisierte Dienstleister.</p><a class="edge-button accent-blue" href="../kontakt/ablauf-anfrage.html">Projekt einschätzen lassen</a></article>
 </div>
 </section>
-<!-- SLS Section: Image Left, Text Right -->
-<section class="tech-section" id="sls">
-<div class="container tech-section__inner">
-<div class="tech-section__visual">
-<div style="background-color: #e2e8f0; width: 100%; height: 100%; min-height: 300px; display: flex; align-items: center; justify-content: center; color: #64748b; font-weight: 600;">
-<img alt="SLS Druckverfahren" class="tech-image" onerror="this.style.display='none'; this.parentNode.innerText='Bild: SLS Verfahren'" src="/assets/images/tech_sls.jpg"/>
-</div>
-<div class="tech-magnifier">Typisch: Raue, sandige Oberfläche</div>
-</div>
-<div class="tech-section__content">
-<div>
-<span class="tech-label">Industriequalität</span>
-<h2>SLS – Pulververfahren für Profis</h2>
-<p>Pulver wird schichtweise verschmolzen, sehr fest &amp; präzise. So entstehen Bauteile, die nahe an Spritzgussqualität herankommen.</p>
-<h3>Vorteile</h3>
-<div class="tech-badges-group">
-<span class="tech-badge badge-green">✔ Keine Stützstrukturen</span>
-<span class="tech-badge badge-green">✔ Sehr robust</span>
-<span class="tech-badge badge-green">✔ Industrielle Qualität</span>
-</div>
-<h3>Nachteile</h3>
-<div class="tech-badges-group">
-<span class="tech-badge badge-red">⚠ Sehr teuer</span>
-<span class="tech-badge badge-red">⚠ Aufwendige Maschinen</span>
-<span class="tech-badge badge-yellow">⚠ Zeitintensiv</span>
-</div>
-<h3>Perfekt geeignet für</h3>
-<p>Funktionsbauteile, Serienfertigung, technische Komponenten</p>
-</div>
-</div>
-</div>
+<section class="section container">
+<div class="note-box"><p class="section-eyebrow">Transparenz</p><h2>Was die Warenschmiede anbietet</h2><p><strong>Ich fertige Kundenprojekte aktuell im FDM-Verfahren.</strong> SLA und SLS erkläre ich hier als Vergleich, damit Besucher die Unterschiede verstehen und realistisch einschätzen können.</p><p>Wenn dein Projekt besser zu SLA oder SLS passt, sage ich das offen, statt dir etwas Unpassendes zu verkaufen.</p></div>
 </section>
-<section aria-labelledby="tech-table-heading" class="section tech-table">
-<div class="container">
-<h2 class="ws-section-title" id="tech-table-heading">Vergleich auf einen Blick</h2>
-<div class="table-scroll">
-<table>
-<caption class="sr-only">Vergleich der 3D-Druck Technologien FDM, SLA und SLS</caption>
-<thead>
-<tr>
-<th scope="col">Technologie</th>
-<th scope="col">Kosten</th>
-<th scope="col">Details</th>
-<th scope="col">Stabilität</th>
-<th scope="col">Geschwindigkeit</th>
-<th scope="col">Materialien</th>
-<th scope="col">Typische Anwendungen</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<th class="winner" scope="row">FDM</th>
-<td class="winner">⭐ günstig</td>
-<td>⭐ mittel</td>
-<td class="winner">⭐⭐⭐ hoch</td>
-<td>⭐⭐ mittel</td>
-<td>PLA, PETG, ABS, ASA</td>
-<td>Prototypen, funktionale Teile</td>
-</tr>
-<tr>
-<th scope="row">SLA</th>
-<td>⭐⭐ mittel</td>
-<td class="winner">⭐⭐⭐ sehr hoch</td>
-<td>⭐⭐ mittel</td>
-<td>⭐ langsam</td>
-<td>Harze</td>
-<td>Figuren, Miniaturen, Dental</td>
-</tr>
-<tr>
-<th scope="row">SLS</th>
-<td>⭐⭐⭐ teuer</td>
-<td>⭐⭐ hoch</td>
-<td class="winner">⭐⭐⭐ sehr hoch</td>
-<td>⭐⭐ mittel</td>
-<td>Nylon, PA12</td>
-<td>Industrie, Serienfertigung</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</section>
-<section aria-labelledby="tech-reco-heading" class="section tech-recommendations">
-<div class="container tech-recommendations__inner">
-<div style="text-align: center;">
-<h2 id="tech-reco-heading">Was passt zu deinem Projekt?</h2>
-<p class="tech-summary">Wähle deinen Fokus:</p>
-</div>
-<div class="tech-recommendations__grid">
-<a class="action-card" href="#sls">
-<div class="action-card__icon">💪</div>
-<p class="action-card__title">Ich brauche maximale<br/>Stabilität</p>
-<div class="action-card__result">→ Wähle SLS</div>
-</a>
-<a class="action-card" href="#sla">
-<div class="action-card__icon">💎</div>
-<p class="action-card__title">Ich brauche feinste<br/>Details</p>
-<div class="action-card__result">→ Wähle SLA</div>
-</a>
-<a class="action-card" href="#fdm">
-<div class="action-card__icon">💰</div>
-<p class="action-card__title">Ich brauche es günstig<br/>&amp; funktional</p>
-<div class="action-card__result">→ Wähle FDM</div>
-</a>
-</div>
-</div>
-</section>
-<section aria-labelledby="tech-note-heading" class="section tech-note">
-<div class="container">
-<div class="note-box ws-alert ws-alert-info">
-<h3 id="tech-note-heading" style="margin-top:0;">Hinweis zu Verfahren &amp; Bildern</h3>
-<p>
-<strong>Ich fertige Kundenprojekte ausschließlich im FDM-Verfahren.</strong><br/>
-Die Informationen zu SLA und SLS sind hier nur zum Vergleich aufgeführt, damit du die technischen Unterschiede verstehst.
-</p>
-<p style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">
-<em>* Transparenz: Die Detail-Makroaufnahmen auf dieser Seite sind KI-generierte Visualisierungen. Sie dienen dazu, die typischen Oberflächen-Unterschiede der Verfahren bildlich zu erklären.</em>
-</p>
-</div>
-</div>
-</section>
-</main>
-<footer class="footer">
-<div class="container">
-<div class="footer__inner">
-<div class="footer__brand">© <span id="copyright-year">2026</span> Warenschmiede · Alle Rechte vorbehalten.</div>
-<nav aria-label="Rechtliches &amp; Kontakt" class="footer__links">
-<a href="/kontakt/impressum.html">Impressum</a>
-<a href="/datenschutz.html">Datenschutzerklärung</a>
-<a href="/kontakt/kontakt.html">Kontakt</a>
-</nav>
-<div class="footer__notes">
-<p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
-<p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
-</div>
-</div>
-</div>
-</footer>
-<script defer="" src="/assets/js/theme.js"></script>
-<script defer="" src="/assets/js/header.js"></script>
-<script>
-  // Auto-Update Copyright Year
-  document.getElementById('copyright-year').textContent = new Date().getFullYear();
-</script>
-</body>
+</main><div id="ws-footer"></div><script defer="True" src="../assets/js/ws-layout.js"></script></body>
 </html>

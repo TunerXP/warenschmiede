@@ -1,757 +1,352 @@
 <!DOCTYPE html>
 <html lang="de" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QR-Master ULTRA v4 – Warenschmiede Tools</title>
-  <meta name="description" content="Moderner QR-Code Generator für Links, WLAN, vCard, WhatsApp, Telefon, E-Mail, SEPA, PayPal, Bewertung, Kalender und Standort. Lokal im Browser nutzbar." />
-  <link rel="canonical" href="https://www.warenschmiede.com/tools/QRCodeMasterPro.html" />
-  <link rel="icon" href="/ws.png" type="image/png" />
-
-  <!-- QR-Code Engine -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR-Werkstatt Plus · Warenschmiede Tools</title>
+  <meta name="description" content="QR-Werkstatt Plus: QR-Codes für Links, Text, WLAN, vCard, E-Mail, Telefon und WhatsApp lokal im Browser erstellen.">
+  <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <script src="https://unpkg.com/qr-code-styling@1.9.2/lib/qr-code-styling.js"></script>
-
   <style>
-    :root {
-      --bg: #f5f7fb;
-      --surface: #ffffff;
-      --surface-soft: #f8fafc;
-      --surface-card: rgba(255,255,255,.88);
-      --text: #0f172a;
-      --muted: #64748b;
-      --line: #dbe3ef;
-      --accent: #0b5aa8;
-      --accent-2: #e11d2e;
-      --accent-soft: #eaf3ff;
-      --good: #047857;
-      --warn: #b45309;
-      --bad: #b91c1c;
-      --shadow: 0 22px 60px -40px rgba(15,23,42,.45);
-      --radius: 22px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-      --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    :root{
+      --bg:#eef6fc; --surface:#ffffff; --card:rgba(255,255,255,.82); --text:#102033; --muted:#5b6f83;
+      --line:#cbd9e6; --accent:#f1913e; --blue:#4ea3f1; --good:#2baa72; --bad:#c2413a;
+      --shadow:0 22px 60px -42px rgba(28,53,75,.55); --radius:22px;
+      --font:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
     }
-
-    [data-theme="dark"] {
-      --bg: #0b1120;
-      --surface: #111827;
-      --surface-soft: #172033;
-      --surface-card: rgba(15,23,42,.88);
-      --text: #e5eefb;
-      --muted: #9aa9bd;
-      --line: #26364d;
-      --accent: #60a5fa;
-      --accent-2: #fb7185;
-      --accent-soft: rgba(96,165,250,.14);
-      --shadow: 0 22px 60px -40px rgba(0,0,0,.9);
+    html[data-theme="dark"]{
+      --bg:#0b1120; --surface:#111827; --card:rgba(15,23,42,.88); --text:#e5eefb; --muted:#9aa9bd;
+      --line:#26364d; --accent:#f1913e; --blue:#60a5fa; --shadow:0 22px 60px -40px rgba(0,0,0,.9);
     }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: var(--font);
-      color: var(--text);
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:var(--font); color:var(--text);
       background:
-        radial-gradient(circle at top left, rgba(11,90,168,.12), transparent 35rem),
-        radial-gradient(circle at top right, rgba(225,29,46,.08), transparent 32rem),
+        radial-gradient(circle at 0% 0%, rgba(241,145,62,.15), transparent 28rem),
+        radial-gradient(circle at 100% 0%, rgba(78,163,241,.16), transparent 30rem),
+        linear-gradient(135deg, #f7fbff, var(--bg));
+      min-height:100vh;
+    }
+    html[data-theme="dark"] body{
+      background:
+        radial-gradient(circle at 0% 0%, rgba(241,145,62,.13), transparent 28rem),
+        radial-gradient(circle at 100% 0%, rgba(78,163,241,.13), transparent 30rem),
         var(--bg);
-      min-height: 100vh;
     }
-
-    a { color: inherit; }
-
-    .app-shell {
-      min-height: 100vh;
-      display: grid;
-      grid-template-rows: auto 1fr;
+    a{color:inherit}
+    .app-shell{min-height:100vh; display:grid; grid-template-rows:auto 1fr}
+    .topbar{
+      position:sticky; top:0; z-index:40; backdrop-filter:blur(18px);
+      background:color-mix(in srgb,var(--surface) 82%,transparent); border-bottom:1px solid var(--line);
     }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      backdrop-filter: blur(18px);
-      background: color-mix(in srgb, var(--surface) 88%, transparent);
-      border-bottom: 1px solid var(--line);
+    .topbar-inner{
+      max-width:1540px; margin:0 auto; padding:10px clamp(12px,2vw,28px);
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
     }
-
-    .topbar-inner {
-      max-width: 1480px;
-      margin: 0 auto;
-      padding: 12px clamp(14px, 2vw, 28px);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .brand-mark{
+      width:46px;height:46px;border-radius:16px;display:grid;place-items:center;color:#fff;flex:0 0 auto;
+      background:linear-gradient(135deg,#172033,#35465a);
+      border:1px solid rgba(241,145,62,.42);
+      box-shadow:0 0 0 4px rgba(241,145,62,.08),0 18px 36px -26px rgba(241,145,62,.8);
+      font-weight:950;font-size:1.2rem;letter-spacing:-.06em;
     }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
+    .tool-logo{
+      width:54px;height:54px;border-radius:16px;object-fit:cover;flex:0 0 auto;
+      border:1px solid rgba(241,145,62,.38);
+      box-shadow:0 0 0 4px rgba(241,145,62,.08),0 18px 36px -26px rgba(15,23,42,.55);
+      background:var(--surface);
     }
-
-    .brand-mark {
-      width: 46px;
-      height: 46px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, var(--accent), #0ea5e9 55%, var(--accent-2));
-      display: grid;
-      place-items: center;
-      color: #fff;
-      box-shadow: 0 14px 28px -18px var(--accent);
-      flex: 0 0 auto;
+    .brand h1{margin:0;font-size:clamp(1.15rem,2vw,1.55rem);letter-spacing:-.04em;white-space:nowrap}
+    .top-actions{display:flex;align-items:center;gap:9px;justify-content:flex-end}
+    .btn{
+      border:1px solid var(--line); background:var(--surface); color:var(--text); border-radius:14px;
+      padding:10px 14px; min-height:42px; font-weight:850; cursor:pointer; display:inline-flex;align-items:center;gap:8px;
+      box-shadow:0 12px 28px -25px rgba(15,23,42,.75); transition:.18s ease; text-decoration:none;
     }
-
-    .brand-mark svg { width: 28px; height: 28px; }
-
-    .brand h1 {
-      margin: 0;
-      font-size: clamp(1.05rem, 2vw, 1.35rem);
-      letter-spacing: -.02em;
-      line-height: 1.1;
-      white-space: nowrap;
+    .btn:hover,.btn:focus-visible{transform:translateY(-1px);border-color:rgba(241,145,62,.7);box-shadow:0 0 0 4px rgba(241,145,62,.12),0 16px 32px -24px rgba(15,23,42,.75);outline:none}
+    .btn-blue{background:linear-gradient(135deg,var(--blue),#1d78c8);color:white;border-color:transparent}
+    .main{
+      max-width:1540px; margin:0 auto; width:100%; padding:clamp(14px,2vw,28px);
+      display:grid; grid-template-columns:minmax(300px,420px) minmax(320px,1fr) minmax(300px,420px); gap:18px; align-items:start;
     }
-
-    .brand small {
-      display: block;
-      color: var(--muted);
-      font-size: .76rem;
-      margin-top: 2px;
-      white-space: nowrap;
+    .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .panel-head{padding:18px 18px 14px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,rgba(78,163,241,.12),transparent)}
+    .eyebrow{color:var(--accent);font-size:.78rem;font-weight:900;letter-spacing:.11em;text-transform:uppercase;margin:0 0 8px}
+    h2,h3{margin:0;line-height:1.15}
+    .panel h2{font-size:1.18rem;letter-spacing:-.02em}.panel h3{font-size:1rem}
+    .panel-body{padding:18px}.grid{display:grid;gap:12px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    label{font-size:.78rem;font-weight:850;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+    input,textarea,select{
+      width:100%;border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:var(--surface);color:var(--text);
+      font:inherit;font-size:.92rem;outline:none;transition:.18s ease;
     }
-
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
+    textarea{min-height:92px;resize:vertical;line-height:1.45}
+    input:focus,textarea:focus,select:focus{border-color:rgba(241,145,62,.78);box-shadow:0 0 0 4px rgba(241,145,62,.13)}
+    .mode-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:16px}
+    .mode-category-title{
+      grid-column:1/-1;
+      margin:10px 0 0;
+      color:var(--accent);
+      font-size:.72rem;
+      font-weight:950;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      gap:8px;
     }
+    .mode-category-title:first-child{margin-top:0}
+    .mode-category-title::after{
+      content:"";
+      height:1px;
+      flex:1;
+      background:linear-gradient(90deg,rgba(241,145,62,.35),transparent);
+    }
+    .mode-btn{
+      border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:14px;padding:10px 8px;min-height:66px;
+      cursor:pointer;display:grid;place-items:center;gap:4px;text-align:center;font-weight:850;font-size:.78rem;transition:.18s ease;
+    }
+    .mode-btn span:first-child{font-size:1.28rem}.mode-btn:hover{transform:translateY(-1px);border-color:rgba(241,145,62,.65)}
+    .mode-btn.active{background:linear-gradient(135deg,var(--blue),#1d78c8);color:#fff;border-color:transparent}
+    .hint{padding:12px 14px;border-radius:16px;background:color-mix(in srgb,var(--blue) 10%,transparent);border:1px solid color-mix(in srgb,var(--blue) 22%,var(--line));color:var(--muted);font-size:.88rem;line-height:1.45;margin-bottom:16px}
+    .form-section{display:none}.form-section.active{display:grid;gap:12px}.field{display:grid;gap:6px}.field-note{color:var(--muted);font-size:.78rem;margin:0;line-height:1.35}
+    .center-stage{display:grid;gap:18px}
+    .hero-card{padding:clamp(20px,3vw,34px);background:linear-gradient(135deg,var(--surface),color-mix(in srgb,var(--surface) 82%,rgba(78,163,241,.2)));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .hero-card h2{font-size:clamp(1.8rem,3vw,2.65rem);letter-spacing:-.055em;line-height:1.02;margin:0 0 12px}
+    .hero-card p{margin:0;color:var(--muted);line-height:1.6;max-width:780px}
+    .trust-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+    .trust-badge{border:1px solid rgba(43,170,114,.28);background:rgba(43,170,114,.08);color:var(--text);border-radius:999px;padding:7px 11px;font-size:.8rem;font-weight:850}
+    .tool-trust-strip-compact{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+    .tool-trust-strip-compact span{border:1px solid rgba(43,170,114,.26);background:rgba(43,170,114,.08);border-radius:999px;padding:5px 9px;font-size:.76rem;font-weight:850;color:var(--text)}
+    html[data-theme="dark"] .trust-badge{background:rgba(43,170,114,.13)}
+    .preview-card{text-align:center;padding:clamp(18px,2vw,28px);position:sticky;top:86px}
+    .qr-frame{display:inline-grid;place-items:center;padding:18px;background:#fff;border:1px solid #e2e8f0;border-radius:30px;box-shadow:0 24px 70px -44px rgba(15,23,42,.9);margin:12px auto 16px;max-width:100%}
+    #qr-output{width:min(300px,70vw);height:min(300px,70vw);display:grid;place-items:center}
+    #qr-output svg,#qr-output canvas{max-width:100%;height:auto!important}
+    .pill-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 0 14px}.pill{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:6px 10px;font-size:.76rem;font-weight:850}
+    .preview-buttons{display:grid;gap:10px;max-width:300px;margin:0 auto}
+    .settings-grid{display:grid;gap:14px}.settings-card{padding:14px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--surface) 78%,transparent)}
+    .settings-card h3{margin:0 0 10px}.color-row{display:grid;grid-template-columns:1fr 54px;gap:10px;align-items:end}input[type=color]{padding:0;min-height:43px;cursor:pointer}
+    .switch-line{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}.switch-line:last-child{border-bottom:0}.switch-line span{color:var(--muted);font-size:.86rem;line-height:1.35}
+    .switch{appearance:none;width:48px;height:28px;border-radius:999px;background:#cbd5e1;border:0;position:relative;cursor:pointer;flex:0 0 auto}.switch::after{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.18s ease;box-shadow:0 4px 12px rgba(15,23,42,.2)}.switch:checked{background:var(--accent)}.switch:checked::after{transform:translateX(20px)}
+    .payload-box{font-family:var(--mono);font-size:.78rem;color:var(--muted);background:color-mix(in srgb,var(--surface) 80%,transparent);border:1px solid var(--line);border-radius:16px;padding:12px;max-height:170px;overflow:auto;white-space:pre-wrap;word-break:break-word;text-align:left}
+    dialog{border:0;border-radius:24px;padding:0;max-width:min(720px,calc(100vw - 28px));background:var(--surface);color:var(--text);box-shadow:0 28px 90px -46px rgba(0,0,0,.9)}dialog::backdrop{background:rgba(15,23,42,.58);backdrop-filter:blur(5px)}.modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:center}.modal-body{padding:20px;color:var(--muted);line-height:1.58}.close-x{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;font-size:1.1rem}
 
-    .btn {
-      border: 1px solid var(--line);
-      background: var(--surface);
+    .help-dialog {
+      width: min(1040px, calc(100vw - 28px));
+      max-height: min(860px, calc(100vh - 28px));
+    }
+    .help-dialog .modal-body {
+      padding: 0;
       color: var(--text);
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-weight: 750;
-      font-size: .88rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      text-decoration: none;
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
-      min-height: 40px;
-    }
-
-    .btn:hover,
-    .btn:focus-visible {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 28px -24px rgba(15,23,42,.8);
-      border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
-      outline: none;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent-2), #ef4444);
-      color: #fff;
-      border-color: transparent;
-      box-shadow: 0 14px 30px -20px rgba(225,29,46,.8);
-    }
-
-    .btn-blue {
-      background: linear-gradient(135deg, var(--accent), #0284c7);
-      color: #fff;
-      border-color: transparent;
-      box-shadow: 0 14px 30px -20px rgba(11,90,168,.8);
-    }
-
-    .btn-good {
-      background: linear-gradient(135deg, #047857, #10b981);
-      color: #fff;
-      border-color: transparent;
-      box-shadow: 0 14px 30px -20px rgba(4,120,87,.8);
-    }
-
-    .btn-ghost {
-      background: transparent;
-    }
-
-    .main {
-      max-width: 1480px;
-      margin: 0 auto;
-      width: 100%;
-      padding: clamp(16px, 2vw, 28px);
-      display: grid;
-      grid-template-columns: minmax(300px, 420px) minmax(320px, 1fr) minmax(320px, 420px);
-      gap: 18px;
-      align-items: start;
-    }
-
-    .panel {
-      background: var(--surface-card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      max-height: calc(100vh - 150px);
       overflow: hidden;
     }
-
-    .panel-head {
-      padding: 18px 18px 14px;
-      border-bottom: 1px solid var(--line);
-      background:
-        linear-gradient(135deg, color-mix(in srgb, var(--accent-soft) 70%, transparent), transparent);
-    }
-
-    .eyebrow {
-      color: var(--accent);
-      font-size: .78rem;
-      font-weight: 850;
-      letter-spacing: .09em;
-      text-transform: uppercase;
-      margin: 0 0 8px;
-    }
-
-    .panel h2,
-    .panel h3 {
-      margin: 0;
-      line-height: 1.18;
-    }
-
-    .panel h2 {
-      font-size: 1.2rem;
-      letter-spacing: -.02em;
-    }
-
-    .panel h3 { font-size: 1rem; }
-
-    .panel-body { padding: 18px; }
-
-    .mode-grid {
+    .help-layout {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
-      margin-bottom: 16px;
+      grid-template-columns: 260px 1fr;
+      min-height: 560px;
+      max-height: calc(100vh - 150px);
     }
-
-    .mode-btn {
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      border-radius: 14px;
-      padding: 10px 8px;
-      min-height: 68px;
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      gap: 4px;
-      text-align: center;
-      font-weight: 800;
-      font-size: .78rem;
-      transition: .18s ease;
-    }
-
-    .mode-btn span:first-child {
-      font-size: 1.35rem;
-      line-height: 1;
-    }
-
-    .mode-btn:hover {
-      transform: translateY(-1px);
-      border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
-    }
-
-    .mode-btn.active {
-      background: linear-gradient(135deg, var(--accent), #0284c7);
-      color: #fff;
-      border-color: transparent;
-      box-shadow: 0 12px 26px -18px rgba(11,90,168,.9);
-    }
-
-    .hint {
-      padding: 12px 14px;
-      border-radius: 16px;
-      background: var(--accent-soft);
-      border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--line));
-      color: var(--muted);
-      font-size: .88rem;
-      line-height: 1.45;
-      margin-bottom: 16px;
-    }
-
-    .form-section { display: none; }
-    .form-section.active { display: grid; gap: 12px; }
-
-    .field {
-      display: grid;
-      gap: 6px;
-    }
-
-    label {
-      font-size: .78rem;
-      font-weight: 850;
-      color: var(--muted);
-      letter-spacing: .04em;
-      text-transform: uppercase;
-    }
-
-    input,
-    textarea,
-    select {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 11px 12px;
-      background: var(--surface);
-      color: var(--text);
-      font: inherit;
-      font-size: .92rem;
-      outline: none;
-      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
-    }
-
-    textarea {
-      min-height: 92px;
-      resize: vertical;
-      line-height: 1.45;
-    }
-
-    input:focus,
-    textarea:focus,
-    select:focus {
-      border-color: color-mix(in srgb, var(--accent) 70%, var(--line));
-      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent);
-    }
-
-    .field-note {
-      color: var(--muted);
-      font-size: .78rem;
-      line-height: 1.4;
-      margin: 0;
-    }
-
-    .row {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .row-3 {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .center-stage {
-      display: grid;
-      gap: 18px;
-    }
-
-    .hero-card {
-      padding: clamp(20px, 3vw, 34px);
-      background:
-        radial-gradient(circle at top right, rgba(225,29,46,.10), transparent 28rem),
-        linear-gradient(135deg, var(--surface), color-mix(in srgb, var(--surface) 82%, var(--accent-soft)));
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-
-    .hero-card h2 {
-      font-size: clamp(1.65rem, 3vw, 2.55rem);
-      letter-spacing: -.045em;
-      max-width: 760px;
-      margin: 0 0 12px;
-      line-height: 1.02;
-    }
-
-    .hero-card p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
-      max-width: 780px;
-      font-size: 1rem;
-    }
-
-    .quick-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 18px;
-    }
-
-    .preview-card {
-      text-align: center;
-      padding: clamp(18px, 2vw, 28px);
-      position: sticky;
-      top: 88px;
-    }
-
-    .qr-frame {
-      display: inline-grid;
-      place-items: center;
-      padding: 18px;
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 30px;
-      box-shadow: 0 24px 70px -44px rgba(15,23,42,.9);
-      margin: 12px auto 16px;
-      max-width: 100%;
-    }
-
-    #qr-output {
-      width: min(300px, 70vw);
-      height: min(300px, 70vw);
-      display: grid;
-      place-items: center;
-    }
-
-    #qr-output svg,
-    #qr-output canvas {
-      max-width: 100%;
-      height: auto !important;
-    }
-
-    .qr-meta {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin: 0 0 14px;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--muted);
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: .76rem;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .preview-buttons {
-      display: grid;
-      gap: 10px;
-      max-width: 300px;
-      margin: 0 auto;
-    }
-
-    .settings-grid {
-      display: grid;
-      gap: 14px;
-    }
-
-    .settings-card {
-      padding: 14px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--surface-soft);
-    }
-
-    .settings-card h3 {
-      margin: 0 0 10px;
-      color: var(--text);
-      font-size: .98rem;
-    }
-
-    .color-row {
-      display: grid;
-      grid-template-columns: 1fr 52px;
-      align-items: end;
-      gap: 10px;
-    }
-
-    input[type="color"] {
-      padding: 0;
-      min-height: 43px;
-      cursor: pointer;
-      overflow: hidden;
-    }
-
-    .logo-presets {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0,1fr));
-      gap: 8px;
-    }
-
-    .icon-btn {
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      border-radius: 14px;
-      min-height: 42px;
-      cursor: pointer;
-      font-size: 1.15rem;
-      transition: .18s ease;
-    }
-
-    .icon-btn:hover {
-      transform: translateY(-1px);
-      border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
-    }
-
-    .switch-line {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px dashed var(--line);
-    }
-
-    .switch-line:last-child { border-bottom: 0; }
-
-    .switch-line span {
-      color: var(--muted);
-      font-size: .86rem;
-      line-height: 1.35;
-    }
-
-    .switch {
-      appearance: none;
-      width: 48px;
-      height: 28px;
-      border-radius: 999px;
-      background: #cbd5e1;
-      border: 0;
-      padding: 0;
-      position: relative;
-      cursor: pointer;
-      flex: 0 0 auto;
-    }
-
-    .switch::after {
-      content: "";
-      position: absolute;
-      width: 22px;
-      height: 22px;
-      left: 3px;
-      top: 3px;
-      border-radius: 50%;
-      background: #fff;
-      transition: transform .18s ease;
-      box-shadow: 0 4px 12px rgba(15,23,42,.2);
-    }
-
-    .switch:checked {
-      background: var(--accent);
-    }
-
-    .switch:checked::after {
-      transform: translateX(20px);
-    }
-
-    .payload-box {
-      font-family: var(--mono);
-      font-size: .78rem;
-      color: var(--muted);
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px;
-      max-height: 170px;
+    .help-nav {
+      border-right: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 78%, transparent);
+      padding: 16px;
       overflow: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
-      text-align: left;
     }
-
-    details.info-box {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--surface);
-      padding: 0;
-      overflow: hidden;
-    }
-
-    details.info-box summary {
-      list-style: none;
-      cursor: pointer;
-      padding: 12px 14px;
-      font-weight: 850;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    details.info-box summary::-webkit-details-marker { display: none; }
-    details.info-box div {
-      padding: 0 14px 14px;
-      color: var(--muted);
-      font-size: .88rem;
-      line-height: 1.5;
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 22px;
-      transform: translateX(-50%) translateY(20px);
-      opacity: 0;
-      pointer-events: none;
-      background: #0f172a;
-      color: #fff;
-      border-radius: 999px;
-      padding: 11px 16px;
-      font-weight: 800;
-      box-shadow: 0 20px 60px -35px #000;
-      transition: .22s ease;
-      z-index: 80;
-    }
-
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    dialog {
-      border: 0;
-      border-radius: 24px;
-      padding: 0;
-      max-width: min(720px, calc(100vw - 28px));
-      background: var(--surface);
+    .help-nav button {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
       color: var(--text);
-      box-shadow: 0 28px 90px -46px rgba(0,0,0,.9);
+      text-align: left;
+      border-radius: 14px;
+      padding: 10px 11px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 850;
+      display: grid;
+      gap: 2px;
+      transition: .16s ease;
     }
-
-    dialog::backdrop {
-      background: rgba(15,23,42,.58);
-      backdrop-filter: blur(5px);
+    .help-nav button span {
+      font-weight: 650;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.25;
     }
-
-    .modal-head {
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--line);
-      display: flex;
-      justify-content: space-between;
-      gap: 14px;
-      align-items: center;
+    .help-nav button:hover,
+    .help-nav button.active {
+      border-color: rgba(241,145,62,.45);
+      background: rgba(241,145,62,.08);
+      box-shadow: 0 0 0 3px rgba(241,145,62,.08);
     }
-
-    .modal-body {
-      padding: 20px;
+    .help-content {
+      overflow: auto;
+      padding: clamp(18px, 3vw, 28px);
+    }
+    .help-page { display: none; }
+    .help-page.active { display: block; }
+    .help-page h3 {
+      font-size: clamp(1.45rem, 2vw, 2rem);
+      letter-spacing: -.045em;
+      margin: 0 0 12px;
+    }
+    .help-page h4 {
+      margin: 24px 0 8px;
+      font-size: 1.05rem;
+    }
+    .help-page p,
+    .help-page li {
       color: var(--muted);
       line-height: 1.58;
     }
-
-    .modal-body h3 { color: var(--text); margin: 18px 0 8px; }
-    .modal-body p { margin: 0 0 10px; }
-
-    .close-x {
-      width: 38px;
-      height: 38px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      cursor: pointer;
-      font-size: 1.1rem;
+    .help-page ul {
+      padding-left: 1.2rem;
     }
-
-    .mobile-only { display: none; }
-
-    .invalid {
-      border-color: var(--bad) !important;
-      box-shadow: 0 0 0 4px color-mix(in srgb, var(--bad) 15%, transparent) !important;
-    }
-
-    .scan-score {
+    .help-card-grid {
       display: grid;
-      gap: 8px;
-      text-align: left;
-      margin: 12px 0 16px;
-      color: var(--muted);
-      font-size: .82rem;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 12px;
+      margin: 16px 0;
     }
-
-    .meter {
-      height: 9px;
-      border-radius: 999px;
-      background: var(--line);
-      overflow: hidden;
+    .help-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      background: color-mix(in srgb, var(--surface) 84%, transparent);
+      box-shadow: 0 14px 34px -30px rgba(15,23,42,.45);
     }
-
-    .meter > span {
+    .help-card strong {
       display: block;
-      height: 100%;
-      width: 70%;
-      background: linear-gradient(90deg, #10b981, #0ea5e9);
-      border-radius: inherit;
-      transition: width .18s ease, background .18s ease;
+      margin-bottom: 5px;
     }
-
-    @media (max-width: 1180px) {
-      .main {
-        grid-template-columns: minmax(300px, 1fr) minmax(320px, 1fr);
-      }
-      .settings-panel {
-        grid-column: 1 / -1;
-        order: 3;
-      }
-      .preview-card { position: static; }
+    .help-example {
+      border-left: 4px solid var(--accent);
+      background: rgba(241,145,62,.08);
+      padding: 12px 14px;
+      border-radius: 14px;
+      color: var(--muted);
+      margin: 12px 0;
     }
-
+    .help-warning {
+      border: 1px solid rgba(194,65,58,.28);
+      background: rgba(194,65,58,.08);
+      padding: 13px 14px;
+      border-radius: 16px;
+      color: var(--muted);
+      margin: 14px 0;
+    }
+    .help-mini {
+      font-size: .88rem;
+      color: var(--muted);
+    }
+    .help-kbd {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 1px 7px;
+      background: var(--surface);
+      font-family: var(--mono);
+      font-size: .82em;
+      color: var(--text);
+    }
     @media (max-width: 760px) {
-      .topbar-inner {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-      .top-actions { justify-content: flex-start; }
-      .main {
+      .help-layout {
         grid-template-columns: 1fr;
-        padding: 12px;
       }
-      .mode-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .row, .row-3 { grid-template-columns: 1fr; }
-      .brand h1 { white-space: normal; }
-      .brand small { white-space: normal; }
-      .hide-mobile { display: none; }
-      .mobile-only { display: inline-flex; }
-      .panel-body { padding: 14px; }
+      .help-nav {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: 8px;
+        max-height: 230px;
+      }
+      .help-card-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
-    @media print {
-      .topbar, .editor-panel, .settings-panel, .hero-card, .preview-buttons, .scan-score, .qr-meta, details, .payload-box { display: none !important; }
-      body { background: white; }
-      .main { display: block; padding: 0; }
-      .panel { box-shadow: none; border: 0; }
-      .preview-card { padding: 0; }
-      .qr-frame { box-shadow: none; border: 0; }
+    .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:#0f172a;color:#fff;border-radius:999px;padding:11px 16px;font-weight:850;box-shadow:0 20px 60px -35px #000;transition:.22s ease;z-index:80}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+    .content-picker-note{
+      margin-top:14px;
+      color:var(--muted);
+      font-size:.86rem;
+      line-height:1.45;
+      padding:12px 14px;
+      border-radius:16px;
+      background:color-mix(in srgb,var(--blue) 9%,transparent);
+      border:1px solid color-mix(in srgb,var(--blue) 20%,var(--line));
     }
+    .input-summary{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+    .input-summary span{
+      border:1px solid rgba(78,163,241,.25);
+      background:rgba(78,163,241,.08);
+      color:var(--text);
+      border-radius:999px;
+      padding:5px 9px;
+      font-size:.76rem;
+      font-weight:850;
+    }
+    .form-section{
+      display:none;
+      gap:12px;
+    }
+    .form-section.active{display:grid}
+    .form-section .form-help{
+      color:var(--muted);
+      line-height:1.5;
+      padding:12px 14px;
+      border-radius:16px;
+      background:rgba(241,145,62,.08);
+      border:1px solid rgba(241,145,62,.22);
+      margin:0;
+    }
+    .form-section .form-example{
+      color:var(--muted);
+      line-height:1.45;
+      font-size:.86rem;
+      padding:10px 12px;
+      border-left:4px solid var(--accent);
+      background:color-mix(in srgb,var(--surface) 80%,transparent);
+      border-radius:12px;
+      margin:0;
+    }
+    .settings-panel-main{
+      display:grid;
+      gap:18px;
+    }
+    .input-panel .panel-head{
+      background:linear-gradient(135deg,rgba(241,145,62,.13),transparent);
+    }
+
+    .hide-mobile{}
+    @media(max-width:1180px){.main{grid-template-columns:1fr 1fr}.settings-panel{grid-column:1/-1;order:3}.preview-card{position:static}}
+    @media(max-width:760px){.topbar-inner{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}.main{grid-template-columns:1fr;padding:12px}.mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.row{grid-template-columns:1fr}.hide-mobile{display:none}.panel-body{padding:14px}.brand h1{white-space:normal}}
+    @media print{.topbar,.editor-panel,.settings-panel,.hero-card,.preview-buttons,.pill-row,.payload-box{display:none!important}body{background:white}.main{display:block;padding:0}.panel{box-shadow:none;border:0}.preview-card{padding:0}.qr-frame{box-shadow:none;border:0}}
   </style>
 </head>
-
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div class="topbar-inner">
         <div class="brand">
-          <div class="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M4 4.8A2.8 2.8 0 0 1 6.8 2h10.4A2.8 2.8 0 0 1 20 4.8v10.4a2.8 2.8 0 0 1-2.8 2.8H9.5L5 22v-4.2A2.8 2.8 0 0 1 4 15.2V4.8Z" fill="currentColor" opacity=".9"/>
-              <path d="M8 7h3v3H8V7Zm5 0h3v3h-3V7ZM8 12h3v3H8v-3Zm5 1.5h1.5V12H16v3h-3v-1.5Z" fill="#fff"/>
-            </svg>
-          </div>
-          <div>
-            <h1>QR-Master ULTRA <span style="color:var(--accent)">v4</span></h1>
-            <small>Warenschmiede Tools · hell, schnell und lokal im Browser</small>
-          </div>
+          <img class="tool-logo" src="../assets/img/qrcode_logo.png" alt="QR-Werkstatt Plus Logo">
+          <div><h1>QR-Werkstatt Plus</h1></div>
         </div>
-
         <div class="top-actions">
-          <a class="btn btn-ghost" href="/tools/" title="Zur Tool-Übersicht">🗂️ <span class="hide-mobile">Tools</span></a>
-          <a class="btn btn-ghost" href="/" title="Zur Startseite">🏠 <span class="hide-mobile">Start</span></a>
-          <button class="btn btn-ghost" type="button" id="btnTheme">🌓 <span class="hide-mobile">Design</span></button>
+          <button class="ws-tool-menu-btn" type="button" id="toolMenuBtn" aria-label="W-TOOLS-Menü öffnen"><img src="../assets/img/w-tools-menu.png" alt=""></button>
+          <button class="btn" type="button" id="btnTheme">🌓 <span class="hide-mobile">Hell/Dunkel</span></button>
           <button class="btn btn-blue" type="button" id="btnHelp">Hilfe</button>
         </div>
       </div>
@@ -761,892 +356,634 @@
       <section class="panel editor-panel" aria-labelledby="editor-title">
         <div class="panel-head">
           <p class="eyebrow">1. Inhalt wählen</p>
-          <h2 id="editor-title">QR-Inhalt erstellen</h2>
+          <h2 id="editor-title">QR-Art auswählen</h2>
         </div>
         <div class="panel-body">
           <div class="mode-grid" id="modeGrid">
+            <div class="mode-category-title">Allgemein</div>
             <button class="mode-btn active" data-mode="url"><span>🔗</span><span>Link</span></button>
-            <button class="mode-btn" data-mode="wifi"><span>📶</span><span>WLAN</span></button>
-            <button class="mode-btn" data-mode="vcard"><span>👤</span><span>vCard</span></button>
-            <button class="mode-btn" data-mode="whatsapp"><span>💬</span><span>WhatsApp</span></button>
-            <button class="mode-btn" data-mode="email"><span>✉️</span><span>E-Mail</span></button>
-            <button class="mode-btn" data-mode="phone"><span>☎️</span><span>Telefon</span></button>
-            <button class="mode-btn" data-mode="sms"><span>💌</span><span>SMS</span></button>
-            <button class="mode-btn" data-mode="sepa"><span>🏦</span><span>SEPA</span></button>
-            <button class="mode-btn" data-mode="paypal"><span>💶</span><span>PayPal</span></button>
+            <button class="mode-btn" data-mode="text"><span>📝</span><span>Text</span></button>
             <button class="mode-btn" data-mode="maps"><span>📍</span><span>Standort</span></button>
             <button class="mode-btn" data-mode="review"><span>⭐</span><span>Bewertung</span></button>
-            <button class="mode-btn" data-mode="text"><span>📝</span><span>Text</span></button>
+
+            <div class="mode-category-title">Kontakt</div>
+            <button class="mode-btn" data-mode="vcard"><span>👤</span><span>vCard</span></button>
+            <button class="mode-btn" data-mode="email"><span>✉️</span><span>E-Mail</span></button>
+            <button class="mode-btn" data-mode="phone"><span>☎️</span><span>Telefon</span></button>
+            <button class="mode-btn" data-mode="whatsapp"><span>💬</span><span>WhatsApp</span></button>
+            <button class="mode-btn" data-mode="sms"><span>💌</span><span>SMS</span></button>
+
+            <div class="mode-category-title">Zahlung</div>
+            <button class="mode-btn" data-mode="sepa"><span>🏦</span><span>SEPA</span></button>
+            <button class="mode-btn" data-mode="paypal"><span>💶</span><span>PayPal</span></button>
+            <button class="mode-btn" data-mode="paymentlink"><span>💳</span><span>Zahlungslink</span></button>
+            <button class="mode-btn" data-mode="wero"><span>EU</span><span>Wero</span></button>
+            <button class="mode-btn" data-mode="crypto"><span>₿</span><span>Crypto</span></button>
+
+            <div class="mode-category-title">Alltag & Spezial</div>
+            <button class="mode-btn" data-mode="wifi"><span>📶</span><span>WLAN</span></button>
             <button class="mode-btn" data-mode="event"><span>📅</span><span>Termin</span></button>
             <button class="mode-btn" data-mode="app"><span>📲</span><span>App-Link</span></button>
-            <button class="mode-btn" data-mode="crypto"><span>₿</span><span>Crypto</span></button>
           </div>
-
-          <div class="hint" id="modeHint">Scan öffnet eine Webseite oder Datei-Adresse. Kurze Links ergeben stabilere QR-Codes.</div>
-
-          <div id="forms">
-            <section class="form-section active" data-form="url">
-              <div class="field">
-                <label for="urlValue">Webadresse</label>
-                <input id="urlValue" type="url" placeholder="https://www.warenschmiede.com/" value="https://www.warenschmiede.com/" />
-                <p class="field-note">Tipp: Immer mit https:// eintragen.</p>
-              </div>
-            </section>
-
-            <section class="form-section" data-form="wifi">
-              <div class="field">
-                <label for="wifiSsid">WLAN-Name / SSID</label>
-                <input id="wifiSsid" type="text" placeholder="Mein WLAN" />
-              </div>
-              <div class="field">
-                <label for="wifiPass">Passwort</label>
-                <input id="wifiPass" type="text" placeholder="WLAN-Passwort" />
-              </div>
-              <div class="row">
-                <div class="field">
-                  <label for="wifiType">Verschlüsselung</label>
-                  <select id="wifiType">
-                    <option value="WPA">WPA/WPA2/WPA3</option>
-                    <option value="WEP">WEP</option>
-                    <option value="nopass">Offenes WLAN</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label for="wifiHidden">Versteckt?</label>
-                  <select id="wifiHidden">
-                    <option value="false">Nein</option>
-                    <option value="true">Ja</option>
-                  </select>
-                </div>
-              </div>
-            </section>
-
-            <section class="form-section" data-form="vcard">
-              <div class="row">
-                <div class="field"><label for="vcFirst">Vorname</label><input id="vcFirst" type="text" placeholder="Max" /></div>
-                <div class="field"><label for="vcLast">Nachname</label><input id="vcLast" type="text" placeholder="Mustermann" /></div>
-              </div>
-              <div class="field"><label for="vcOrg">Firma</label><input id="vcOrg" type="text" placeholder="Musterfirma GmbH" /></div>
-              <div class="row">
-                <div class="field"><label for="vcPhone">Telefon</label><input id="vcPhone" type="tel" placeholder="+49 170 1234567" /></div>
-                <div class="field"><label for="vcEmail">E-Mail</label><input id="vcEmail" type="email" placeholder="info@example.de" /></div>
-              </div>
-              <div class="field"><label for="vcUrl">Website</label><input id="vcUrl" type="url" placeholder="https://example.de" /></div>
-              <div class="field"><label for="vcAddress">Adresse</label><input id="vcAddress" type="text" placeholder="Straße, PLZ Ort" /></div>
-            </section>
-
-            <section class="form-section" data-form="whatsapp">
-              <div class="row">
-                <div class="field">
-                  <label for="waCode">Land</label>
-                  <select id="waCode">
-                    <option value="49">🇩🇪 +49</option>
-                    <option value="43">🇦🇹 +43</option>
-                    <option value="41">🇨🇭 +41</option>
-                    <option value="1">🇺🇸 +1</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label for="waPhone">Nummer</label>
-                  <input id="waPhone" type="tel" placeholder="1701234567" />
-                </div>
-              </div>
-              <div class="field"><label for="waText">Nachricht</label><textarea id="waText" placeholder="Hallo, ich habe eine Frage..."></textarea></div>
-            </section>
-
-            <section class="form-section" data-form="email">
-              <div class="field"><label for="mailTo">Empfänger</label><input id="mailTo" type="email" placeholder="info@example.de" /></div>
-              <div class="field"><label for="mailSubject">Betreff</label><input id="mailSubject" type="text" placeholder="Anfrage" /></div>
-              <div class="field"><label for="mailBody">Nachricht</label><textarea id="mailBody" placeholder="Hallo, ..."></textarea></div>
-            </section>
-
-            <section class="form-section" data-form="phone">
-              <div class="field"><label for="phoneNumber">Telefonnummer</label><input id="phoneNumber" type="tel" placeholder="+491701234567" /></div>
-            </section>
-
-            <section class="form-section" data-form="sms">
-              <div class="field"><label for="smsNumber">Telefonnummer</label><input id="smsNumber" type="tel" placeholder="+491701234567" /></div>
-              <div class="field"><label for="smsText">SMS-Text</label><textarea id="smsText" placeholder="Hallo, ..."></textarea></div>
-            </section>
-
-            <section class="form-section" data-form="sepa">
-              <div class="field"><label for="sepaName">Empfänger</label><input id="sepaName" type="text" placeholder="Max Mustermann" /></div>
-              <div class="field"><label for="sepaIban">IBAN</label><input id="sepaIban" type="text" placeholder="DE00123412341234123412" /></div>
-              <div class="row">
-                <div class="field"><label for="sepaAmount">Betrag</label><input id="sepaAmount" type="number" step="0.01" placeholder="25.00" /></div>
-                <div class="field"><label for="sepaRef">Verwendungszweck</label><input id="sepaRef" type="text" placeholder="Rechnung 123" /></div>
-              </div>
-              <p class="field-note">SEPA-QR bitte vor echter Nutzung immer mit Banking-App testen.</p>
-            </section>
-
-            <section class="form-section" data-form="paypal">
-              <div class="field"><label for="ppUser">PayPal.Me Name</label><input id="ppUser" type="text" placeholder="DeinName" /></div>
-              <div class="row">
-                <div class="field"><label for="ppAmount">Betrag optional</label><input id="ppAmount" type="number" step="0.01" placeholder="10.00" /></div>
-                <div class="field"><label for="ppCurrency">Währung</label><select id="ppCurrency"><option>EUR</option><option>USD</option><option>CHF</option></select></div>
-              </div>
-            </section>
-
-            <section class="form-section" data-form="maps">
-              <div class="row">
-                <div class="field"><label for="geoLat">Breitengrad</label><input id="geoLat" type="text" placeholder="47.9511" /></div>
-                <div class="field"><label for="geoLng">Längengrad</label><input id="geoLng" type="text" placeholder="8.5024" /></div>
-              </div>
-              <div class="field"><label for="geoQuery">Oder Adresse/Suchbegriff</label><input id="geoQuery" type="text" placeholder="Donaueschingen, Deutschland" /></div>
-              <button class="btn btn-blue" type="button" id="btnLocation">📍 Meinen Standort eintragen</button>
-              <p class="field-note">Standortabfrage läuft nur, wenn du es im Browser erlaubst.</p>
-            </section>
-
-            <section class="form-section" data-form="review">
-              <div class="field"><label for="reviewUrl">Bewertungs-Link</label><input id="reviewUrl" type="url" placeholder="https://g.page/r/..." /></div>
-              <p class="field-note">Nutze am besten den direkten Bewertungslink aus deinem Google-Unternehmensprofil.</p>
-            </section>
-
-            <section class="form-section" data-form="text">
-              <div class="field"><label for="plainText">Freier Text</label><textarea id="plainText" placeholder="Text, Hinweis, Seriennummer, kurze Anleitung..."></textarea></div>
-            </section>
-
-            <section class="form-section" data-form="event">
-              <div class="field"><label for="eventTitle">Titel</label><input id="eventTitle" type="text" placeholder="Termin" /></div>
-              <div class="row">
-                <div class="field"><label for="eventStart">Start</label><input id="eventStart" type="datetime-local" /></div>
-                <div class="field"><label for="eventEnd">Ende</label><input id="eventEnd" type="datetime-local" /></div>
-              </div>
-              <div class="field"><label for="eventLocation">Ort</label><input id="eventLocation" type="text" placeholder="Werkstatt / Büro" /></div>
-              <div class="field"><label for="eventDesc">Beschreibung</label><textarea id="eventDesc" placeholder="Notizen zum Termin"></textarea></div>
-            </section>
-
-            <section class="form-section" data-form="app">
-              <div class="field"><label for="appUrl">App-/Store-/Deep-Link</label><input id="appUrl" type="url" placeholder="https://..." /></div>
-              <p class="field-note">Für App-Links, Downloadseiten, App Store, Play Store oder interne Deep-Links.</p>
-            </section>
-
-            <section class="form-section" data-form="crypto">
-              <div class="row">
-                <div class="field">
-                  <label for="cryptoType">Typ</label>
-                  <select id="cryptoType">
-                    <option value="bitcoin">Bitcoin</option>
-                    <option value="ethereum">Ethereum</option>
-                    <option value="litecoin">Litecoin</option>
-                  </select>
-                </div>
-                <div class="field"><label for="cryptoAmount">Betrag optional</label><input id="cryptoAmount" type="text" placeholder="0.001" /></div>
-              </div>
-              <div class="field"><label for="cryptoAddress">Adresse</label><input id="cryptoAddress" type="text" placeholder="Wallet-Adresse" /></div>
-              <p class="field-note">Adressen immer prüfen. QR-Codes sind keine Sicherheitsprüfung.</p>
-            </section>
-          </div>
+          <div class="content-picker-note" id="modeHint">Scan öffnet eine Webseite. Kurze Links ergeben stabilere QR-Codes.</div>
         </div>
       </section>
 
       <section class="center-stage">
-        <div class="hero-card">
-          <p class="eyebrow">Warenschmiede QR Studio</p>
-          <h2>QR-Codes bauen, testen und sauber exportieren.</h2>
-          <p>
-            Heller, moderner und übersichtlicher: Erstelle QR-Codes für Alltag, Werkstatt, Büro und Kundenkontakt.
-            Die Eingaben bleiben im Browser. Du kannst PNG, SVG oder eine kleine Druckkarte erzeugen.
-          </p>
-          <div class="quick-actions">
-            <button class="btn btn-primary" type="button" id="btnCopyPayload">Inhalt kopieren</button>
-            <button class="btn" type="button" id="btnPrintCard">Druckkarte öffnen</button>
-            <button class="btn" type="button" id="btnReset">Zurücksetzen</button>
-          </div>
-        </div>
 
-        <section class="panel settings-panel" aria-labelledby="settings-title">
+        <section class="panel input-panel" aria-labelledby="input-title">
           <div class="panel-head">
-            <p class="eyebrow">2. Design & Qualität</p>
-            <h2 id="settings-title">QR-Code gestalten</h2>
+            <p class="eyebrow">2a. Eingaben</p>
+            <h2 id="input-title">Daten für den QR-Code</h2>
+            <div class="input-summary" id="inputSummary"><span>Link</span><span>Webadresse</span></div>
           </div>
-          <div class="panel-body settings-grid">
-            <div class="settings-card">
-              <h3>Basisdesign</h3>
-              <div class="row">
-                <div class="field">
-                  <label for="dotStyle">Punkte/Form</label>
-                  <select id="dotStyle">
-                    <option value="rounded">Rund</option>
-                    <option value="square">Eckig</option>
-                    <option value="dots">Punkte</option>
-                    <option value="classy">Edel</option>
-                    <option value="extra-rounded">Soft</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label for="cornerStyle">Ecken</label>
-                  <select id="cornerStyle">
-                    <option value="extra-rounded">Soft</option>
-                    <option value="square">Eckig</option>
-                    <option value="dot">Punkt</option>
-                  </select>
-                </div>
-              </div>
-              <div class="row">
-                <div class="color-row">
-                  <div class="field"><label for="fgColor">Codefarbe</label><input id="fgColor" type="text" value="#0b5aa8" /></div>
-                  <input id="fgPick" type="color" value="#0b5aa8" aria-label="Codefarbe wählen" />
-                </div>
-                <div class="color-row">
-                  <div class="field"><label for="bgColor">Hintergrund</label><input id="bgColor" type="text" value="#ffffff" /></div>
-                  <input id="bgPick" type="color" value="#ffffff" aria-label="Hintergrundfarbe wählen" />
-                </div>
-              </div>
-            </div>
+          <div class="panel-body">
+            <div id="forms">
+              <section class="form-section active" data-form="url">
+                <p class="form-help">Für Webseiten, Dateien, Formulare, Downloads oder Tool-Links. Der QR-Code öffnet die eingetragene Adresse.</p>
+                <div class="field"><label for="urlValue">Webadresse</label><input id="urlValue" type="url" value="https://www.warenschmiede.com/" placeholder="https://www.warenschmiede.com/"><p class="field-note">Tipp: Immer mit https:// eintragen.</p></div>
+                <p class="form-example"><strong>Beispiel:</strong> Link zu einer Anleitung, einem Download, einem Kontaktformular oder einer Produktseite.</p>
+              </section>
 
-            <div class="settings-card">
-              <h3>Optionen</h3>
-              <div class="switch-line">
-                <span><b>Logo in der Mitte</b><br>Symbol passend zum QR-Typ einsetzen.</span>
-                <input class="switch" type="checkbox" id="useLogo" />
-              </div>
-              <div class="switch-line">
-                <span><b>Farbverlauf</b><br>Schick, aber bitte Scanbarkeit testen.</span>
-                <input class="switch" type="checkbox" id="useGradient" />
-              </div>
-              <div class="switch-line">
-                <span><b>Hohe Fehlerkorrektur</b><br>Besser bei Logo oder Druck.</span>
-                <input class="switch" type="checkbox" id="useHighCorrection" checked />
-              </div>
-            </div>
+              <section class="form-section" data-form="text">
+                <p class="form-help">Speichert Text direkt im QR-Code. Das ist praktisch für kurze Hinweise, Inventarinfos oder Werkstattnotizen.</p>
+                <div class="field"><label for="textValue">Text</label><textarea id="textValue" placeholder="Freier Text für den QR-Code"></textarea></div>
+                <p class="form-example"><strong>Beispiel:</strong> „Düse 0,4 mm · PLA-Profil · geprüft am 03.06.2026“.</p>
+              </section>
 
-            <div class="settings-card" id="gradientBox" hidden>
-              <h3>Verlauf</h3>
-              <div class="row">
-                <div class="color-row">
-                  <div class="field"><label for="fgColor2">Zweitfarbe</label><input id="fgColor2" type="text" value="#e11d2e" /></div>
-                  <input id="fgPick2" type="color" value="#e11d2e" />
-                </div>
-                <div class="field">
-                  <label for="gradientRotation">Richtung</label>
-                  <select id="gradientRotation">
-                    <option value="0">Links → Rechts</option>
-                    <option value="45">Diagonal</option>
-                    <option value="90">Oben → Unten</option>
-                    <option value="135">Diagonal zurück</option>
-                  </select>
-                </div>
-              </div>
-            </div>
+              <section class="form-section" data-form="maps">
+                <p class="form-help">Öffnet eine Adresse oder einen Ort in Google Maps.</p>
+                <div class="field"><label for="mapsQuery">Adresse oder Ort</label><input id="mapsQuery" placeholder="Donaueschingen"></div>
+                <p class="form-example"><strong>Beispiel:</strong> Treffpunkt, Abholort, Werkstattadresse oder Messehalle.</p>
+              </section>
 
-            <div class="settings-card">
-              <h3>Logo & Presets</h3>
-              <div class="field">
-                <label for="logoUpload">Eigenes Logo</label>
-                <input id="logoUpload" type="file" accept="image/*" />
-                <p class="field-note">Einfache, kontrastreiche Logos scannen besser.</p>
-              </div>
-              <div class="logo-presets" aria-label="Logo-Presets">
-                <button class="icon-btn" type="button" data-logo="link" title="Link">🔗</button>
-                <button class="icon-btn" type="button" data-logo="wifi" title="WLAN">📶</button>
-                <button class="icon-btn" type="button" data-logo="mail" title="E-Mail">✉️</button>
-                <button class="icon-btn" type="button" data-logo="phone" title="Telefon">☎️</button>
-                <button class="icon-btn" type="button" data-logo="map" title="Standort">📍</button>
-                <button class="icon-btn" type="button" data-logo="star" title="Bewertung">⭐</button>
-                <button class="icon-btn" type="button" data-logo="card" title="Kontakt">👤</button>
-                <button class="icon-btn" type="button" id="clearLogo" title="Logo entfernen">🚫</button>
-              </div>
+              <section class="form-section" data-form="review">
+                <p class="form-help">Verlinkt auf eine Bewertungsseite oder ein Feedback-Formular.</p>
+                <div class="field"><label for="reviewUrl">Bewertungs- oder Feedback-Link</label><input id="reviewUrl" type="url" placeholder="https://g.page/r/.../review"></div>
+                <p class="form-example"><strong>Beispiel:</strong> „Bewertung abgeben“ auf Flyer, Rechnung oder Lieferschein.</p>
+              </section>
+
+              <section class="form-section" data-form="vcard">
+                <p class="form-help">Erstellt eine digitale Kontaktkarte. Beim Scan kann der Kontakt im Smartphone gespeichert werden.</p>
+                <div class="row"><div class="field"><label for="vcFirst">Vorname</label><input id="vcFirst" placeholder="Max"></div><div class="field"><label for="vcLast">Nachname</label><input id="vcLast" placeholder="Mustermann"></div></div>
+                <div class="field"><label for="vcOrg">Firma</label><input id="vcOrg" placeholder="Musterfirma"></div>
+                <div class="row"><div class="field"><label for="vcPhone">Telefon</label><input id="vcPhone" placeholder="+49 170 1234567"></div><div class="field"><label for="vcEmail">E-Mail</label><input id="vcEmail" placeholder="info@example.de"></div></div>
+                <div class="field"><label for="vcUrl">Website</label><input id="vcUrl" placeholder="https://example.de"></div>
+                <div class="field"><label for="vcAddress">Adresse</label><input id="vcAddress" placeholder="Straße, PLZ Ort"></div>
+              </section>
+
+              <section class="form-section" data-form="email">
+                <p class="form-help">Öffnet eine neue E-Mail mit Empfänger, Betreff und optionalem Nachrichtentext.</p>
+                <div class="field"><label for="emailTo">Empfänger</label><input id="emailTo" type="email" placeholder="info@example.de"></div>
+                <div class="field"><label for="emailSubject">Betreff</label><input id="emailSubject" placeholder="Anfrage"></div>
+                <div class="field"><label for="emailBody">Text</label><textarea id="emailBody" placeholder="Nachricht"></textarea></div>
+                <p class="form-example"><strong>Beispiel:</strong> Vorbereitete Projektanfrage für 3D-Druck, PC-Hilfe oder CAD-Service.</p>
+              </section>
+
+              <section class="form-section" data-form="phone">
+                <p class="form-help">Startet einen Telefonanruf. Der Nutzer muss den Anruf normalerweise noch bestätigen.</p>
+                <div class="field"><label for="phoneValue">Telefonnummer</label><input id="phoneValue" placeholder="+491701234567"></div>
+              </section>
+
+              <section class="form-section" data-form="whatsapp">
+                <p class="form-help">Öffnet einen WhatsApp-Chat mit Nummer und optional vorbereitetem Text.</p>
+                <div class="field"><label for="waPhone">WhatsApp Nummer</label><input id="waPhone" placeholder="491701234567"></div>
+                <div class="field"><label for="waText">Nachricht</label><textarea id="waText" placeholder="Hallo, ich habe eine Frage..."></textarea></div>
+              </section>
+
+              <section class="form-section" data-form="sms">
+                <p class="form-help">Öffnet eine SMS mit Nummer und Text.</p>
+                <div class="field"><label for="smsPhone">SMS Nummer</label><input id="smsPhone" placeholder="+491701234567"></div>
+                <div class="field"><label for="smsText">SMS Text</label><textarea id="smsText" placeholder="Nachricht"></textarea></div>
+              </section>
+
+              <section class="form-section" data-form="sepa">
+                <p class="form-help">Erstellt einen SEPA-/GiroCode für Überweisungen. Viele Banking-Apps können Empfänger, IBAN, Betrag und Zweck übernehmen.</p>
+                <div class="field"><label for="sepaName">Empfänger</label><input id="sepaName" placeholder="Max Mustermann"></div>
+                <div class="field"><label for="sepaIban">IBAN</label><input id="sepaIban" placeholder="DE00 0000 0000 0000 0000 00"></div>
+                <div class="row">
+                  <div class="field"><label for="sepaAmount">Betrag EUR</label><input id="sepaAmount" placeholder="25.00"></div>
+                  <div class="field"><label for="sepaBic">BIC optional</label><input id="sepaBic" placeholder="GENODE..."></div>
+                </div>
+                <div class="field"><label for="sepaPurpose">Verwendungszweck</label><input id="sepaPurpose" placeholder="Rechnung 2026-001"></div>
+                <p class="form-example"><strong>Wichtig:</strong> Zahlungsdaten immer prüfen. Das Tool erleichtert die Eingabe, ersetzt aber keine Kontrolle.</p>
+              </section>
+
+              <section class="form-section" data-form="paypal">
+                <p class="form-help">Erstellt einen QR-Code für einen PayPal.me- oder offiziellen PayPal-Zahlungslink.</p>
+                <div class="field"><label for="paypalUrl">PayPal-Link</label><input id="paypalUrl" type="url" placeholder="https://paypal.me/deinname"></div>
+              </section>
+
+              <section class="form-section" data-form="paymentlink">
+                <p class="form-help">Für allgemeine Zahlungslinks wie Shop, Stripe, SumUp, PayPal-Link, Rechnungsseite oder spätere Zahlungsdienste.</p>
+                <div class="field"><label for="paymentUrl">Zahlungslink</label><input id="paymentUrl" type="url" placeholder="https://..."></div>
+                <div class="row">
+                  <div class="field"><label for="paymentProvider">Anbieter / Zweck</label><input id="paymentProvider" placeholder="z. B. SumUp, Stripe, Shop, Rechnung"></div>
+                  <div class="field"><label for="paymentNote">Hinweis optional</label><input id="paymentNote" placeholder="z. B. Rechnung 2026-001"></div>
+                </div>
+              </section>
+
+              <section class="form-section" data-form="wero">
+                <p class="form-help">Wero ist vorgemerkt, aber noch nicht als fertige QR-Funktion aktiv. Bis ein stabiler Standard klar ist, kannst du hier optional einen normalen Zahlungslink hinterlegen.</p>
+                <div class="field"><label for="weroFallbackUrl">Optionaler Zahlungslink als Übergang</label><input id="weroFallbackUrl" type="url" placeholder="https://..."></div>
+                <p class="form-example"><strong>Ehrlich:</strong> Das erzeugt aktuell keinen echten Wero-Spezialcode, sondern nur einen normalen Link-QR-Code.</p>
+              </section>
+
+              <section class="form-section" data-form="crypto">
+                <p class="form-help">Erstellt einen einfachen Krypto-Zahlungslink. Wallet-Adresse und Betrag müssen sehr genau geprüft werden.</p>
+                <div class="row">
+                  <div class="field"><label for="cryptoType">Coin</label><select id="cryptoType"><option value="bitcoin">Bitcoin</option><option value="ethereum">Ethereum</option><option value="litecoin">Litecoin</option></select></div>
+                  <div class="field"><label for="cryptoAmount">Betrag optional</label><input id="cryptoAmount" placeholder="0.001"></div>
+                </div>
+                <div class="field"><label for="cryptoAddress">Adresse</label><input id="cryptoAddress" placeholder="Wallet-Adresse"></div>
+                <div class="field"><label for="cryptoLabel">Label optional</label><input id="cryptoLabel" placeholder="Warenschmiede"></div>
+              </section>
+
+              <section class="form-section" data-form="wifi">
+                <p class="form-help">Erstellt einen QR-Code für einen WLAN-Zugang. Gut für Gäste-WLAN oder interne Aushänge.</p>
+                <div class="field"><label for="wifiSsid">WLAN-Name / SSID</label><input id="wifiSsid" placeholder="Mein WLAN"></div>
+                <div class="field"><label for="wifiPass">Passwort</label><input id="wifiPass" placeholder="WLAN-Passwort"></div>
+                <div class="row">
+                  <div class="field"><label for="wifiType">Verschlüsselung</label><select id="wifiType"><option value="WPA">WPA/WPA2/WPA3</option><option value="WEP">WEP</option><option value="nopass">Offenes WLAN</option></select></div>
+                  <div class="field"><label for="wifiHidden">Versteckt?</label><select id="wifiHidden"><option value="false">Nein</option><option value="true">Ja</option></select></div>
+                </div>
+                <p class="form-example"><strong>Achtung:</strong> Der QR-Code enthält das WLAN-Passwort. Nur bewusst teilen.</p>
+              </section>
+
+              <section class="form-section" data-form="event">
+                <p class="form-help">Erstellt einen Kalendertermin im iCalendar-Format.</p>
+                <div class="field"><label for="eventTitle">Titel</label><input id="eventTitle" placeholder="Termin"></div>
+                <div class="row">
+                  <div class="field"><label for="eventStart">Start</label><input id="eventStart" type="datetime-local"></div>
+                  <div class="field"><label for="eventEnd">Ende</label><input id="eventEnd" type="datetime-local"></div>
+                </div>
+                <div class="field"><label for="eventLocation">Ort</label><input id="eventLocation" placeholder="Donaueschingen"></div>
+                <div class="field"><label for="eventDesc">Beschreibung</label><textarea id="eventDesc" placeholder="Kurze Beschreibung"></textarea></div>
+              </section>
+
+              <section class="form-section" data-form="app">
+                <p class="form-help">Für App-Store-Links, Downloadseiten oder interne App-Links.</p>
+                <div class="field"><label for="appUrl">App- oder Store-Link</label><input id="appUrl" type="url" placeholder="https://..."></div>
+              </section>
             </div>
           </div>
         </section>
+
+        <section class="panel settings-panel-main">
+          <div class="panel-head">
+            <p class="eyebrow">2b. Einstellungen</p>
+            <h2>Optik & Ausgabe</h2>
+            <div class="tool-trust-strip-compact">
+              <span>100% werbefrei</span><span>kein Tracking</span><span>lokal im Browser</span>
+            </div>
+          </div>
+          <div class="panel-body settings-grid">
+            <div class="settings-card">
+              <h3>Farben</h3>
+              <div class="row">
+                <div class="field color-row"><div><label for="dotColor">QR-Farbe</label><input id="dotColorText" value="#102033"></div><input id="dotColor" type="color" value="#102033"></div>
+                <div class="field color-row"><div><label for="bgColor">Hintergrund</label><input id="bgColorText" value="#ffffff"></div><input id="bgColor" type="color" value="#ffffff"></div>
+              </div>
+            </div>
+            <div class="settings-card">
+              <h3>Form & Größe</h3>
+              <div class="row">
+                <div class="field"><label for="qrSize">Größe</label><select id="qrSize"><option value="240">240 px</option><option value="300" selected>300 px</option><option value="420">420 px</option><option value="600">600 px</option></select></div>
+                <div class="field"><label for="dotType">Punkte</label><select id="dotType"><option value="rounded" selected>Rund</option><option value="square">Eckig</option><option value="dots">Punkte</option><option value="classy">Classy</option></select></div>
+              </div>
+            </div>
+            <div class="settings-card">
+              <h3>Optionen</h3>
+              <div class="switch-line"><span>Transparenter Hintergrund beim PNG/SVG</span><input class="switch" id="transparentBg" type="checkbox"></div>
+              <div class="switch-line"><span>Automatisch bei Eingabe aktualisieren</span><input class="switch" id="autoUpdate" type="checkbox" checked></div>
+            </div>
+          </div>
+        </section>
+
       </section>
 
-      <aside class="panel preview-card" aria-labelledby="preview-title">
-        <div class="panel-head">
-          <p class="eyebrow">3. Vorschau & Export</p>
-          <h2 id="preview-title">Live-QR-Code</h2>
+      <aside class="panel preview-card">
+        <p class="eyebrow">3. Vorschau</p>
+        <h2>QR-Ausgabe</h2>
+        <div class="qr-frame"><div id="qr-output"></div></div>
+        <div class="pill-row"><span class="pill" id="modePill">Link</span><span class="pill" id="lengthPill">0 Zeichen</span></div>
+        <div class="preview-buttons">
+          <button class="btn btn-blue" id="btnGenerate" type="button">QR aktualisieren</button>
+          <button class="btn" id="btnPng" type="button">PNG herunterladen</button>
+          <button class="btn" id="btnSvg" type="button">SVG herunterladen</button>
+          <button class="btn" id="btnCopy" type="button">QR-Inhalt kopieren</button>
+          <button class="btn" onclick="window.print()" type="button">Drucken</button>
         </div>
-        <div class="panel-body">
-          <div class="qr-frame">
-            <div id="qr-output" aria-label="QR-Code Vorschau"></div>
-          </div>
-
-          <div class="qr-meta">
-            <span class="pill" id="modeBadge">🔗 Link</span>
-            <span class="pill" id="lengthBadge">0 Zeichen</span>
-          </div>
-
-          <div class="scan-score">
-            <div style="display:flex;justify-content:space-between;gap:12px;">
-              <b>Scanbarkeit</b>
-              <span id="scoreText">Gut</span>
-            </div>
-            <div class="meter"><span id="scoreBar"></span></div>
-            <small id="scoreHint">Kurzer Inhalt und guter Kontrast.</small>
-          </div>
-
-          <div class="preview-buttons">
-            <button class="btn btn-primary" type="button" id="downloadPng">PNG herunterladen</button>
-            <button class="btn btn-blue" type="button" id="downloadSvg">SVG herunterladen</button>
-            <button class="btn" type="button" id="downloadConfig">Vorlage speichern</button>
-            <label class="btn" for="loadConfig" style="cursor:pointer;">Vorlage laden</label>
-            <input id="loadConfig" type="file" accept="application/json,.json" hidden />
-          </div>
-
-          <details class="info-box" style="margin-top:18px;">
-            <summary>QR-Inhalt anzeigen <span>▾</span></summary>
-            <div>
-              <pre class="payload-box" id="payloadPreview"></pre>
-            </div>
-          </details>
-
-          <details class="info-box" style="margin-top:12px;">
-            <summary>Hinweise zu Datenschutz & Nutzung <span>▾</span></summary>
-            <div>
-              <p><b>Lokal:</b> Deine Eingaben werden nicht an die Warenschmiede gesendet. Die QR-Erzeugung passiert im Browser.</p>
-              <p><b>Externe Links:</b> Eingetragene Links, PayPal-, Maps- oder Bewertungsziele öffnen später natürlich externe Dienste.</p>
-              <p><b>Prüfung:</b> Jeden QR-Code vor Druck oder Veröffentlichung mit dem Smartphone testen.</p>
-            </div>
-          </details>
-        </div>
+        <p class="field-note" style="text-align:left;max-width:300px;margin:10px auto 6px;">Gespeicherter QR-Inhalt:</p><div class="payload-box" id="payloadBox"></div>
       </aside>
     </main>
   </div>
 
-  <dialog id="helpDialog">
+  <dialog id="helpDialog" class="help-dialog">
     <div class="modal-head">
       <div>
-        <p class="eyebrow" style="margin:0 0 4px;">Hilfe</p>
-        <h2 style="margin:0;">QR-Master ULTRA kurz erklärt</h2>
+        <p class="eyebrow" style="margin:0 0 4px;">Hilfe & Anleitung</p>
+        <h2>QR-Werkstatt Plus verstehen</h2>
       </div>
-      <button class="close-x" type="button" data-close-dialog>×</button>
+      <button class="close-x" id="helpClose" type="button" aria-label="Hilfe schließen">×</button>
     </div>
     <div class="modal-body">
-      <p>Links wählst du den Inhalt, in der Mitte stellst du Design und Qualität ein, rechts exportierst du den QR-Code.</p>
-      <h3>Empfohlener Ablauf</h3>
-      <p>1. Inhalt wählen und sauber eintragen.<br>2. QR-Code mit dem Smartphone testen.<br>3. Design erst danach verfeinern.<br>4. Für Druck bevorzugt SVG nutzen.</p>
-      <h3>Wichtige Faustregel</h3>
-      <p>Je länger der Inhalt und je stärker das Design verändert wird, desto genauer solltest du die Scanbarkeit prüfen. Für wichtige Anwendungen lieber schlicht, dunkel auf hell und nicht zu klein drucken.</p>
-      <h3>Lizenz / Nutzung</h3>
-      <p>Die erzeugten QR-Codes kannst du privat und geschäftlich nutzen. Für die Richtigkeit der eingegebenen Daten und die Prüfung vor Einsatz bist du selbst verantwortlich.</p>
+      <div class="help-layout">
+        <nav class="help-nav" aria-label="Hilfethemen">
+          <button class="active" type="button" data-help-tab="start">Start <span>Was bringt mir das?</span></button>
+          <button type="button" data-help-tab="workflow">Ablauf <span>So erstellst du einen Code</span></button>
+          <button type="button" data-help-tab="types1">QR-Arten 1 <span>Link, Text, WLAN, vCard</span></button>
+          <button type="button" data-help-tab="types2">QR-Arten 2 <span>E-Mail, Telefon, WhatsApp, SMS</span></button>
+          <button type="button" data-help-tab="types3">QR-Arten 3 <span>Standort, Bewertung, SEPA, PayPal</span></button>
+          <button type="button" data-help-tab="payment">Zahlungen <span>SEPA, PayPal, Link, Wero</span></button>
+          <button type="button" data-help-tab="types4">QR-Arten 4 <span>Termin, App-Link, Crypto</span></button>
+          <button type="button" data-help-tab="design">Design & Druck <span>Scanbarkeit und Export</span></button>
+          <button type="button" data-help-tab="safety">Sicherheit <span>Datenschutz und Grenzen</span></button>
+        </nav>
+
+        <div class="help-content">
+          <section class="help-page active" data-help-page="start">
+            <h3>Was ist ein QR-Code und wofür ist das Tool gut?</h3>
+            <p>Ein QR-Code ist ein scannbarer Code, der Informationen enthält. Das kann ein Link sein, ein WLAN-Zugang, eine Telefonnummer, ein Kontakt, ein Termin oder auch ein Zahlungshinweis.</p>
+            <p>Die <strong>QR-Werkstatt Plus</strong> hilft dir, solche Codes schnell und sauber zu erstellen — direkt im Browser. Du gibst links den Inhalt ein, passt in der Mitte die Optik an und exportierst rechts den fertigen QR-Code als PNG oder SVG.</p>
+
+            <div class="help-card-grid">
+              <div class="help-card"><strong>Für Alltag und Büro</strong><span class="help-mini">WLAN-Gastzugang, Kontaktkarten, Telefonnummern, E-Mail-Anfragen, Termine oder Bewertungslinks.</span></div>
+              <div class="help-card"><strong>Für Werkstatt und 3D-Druck</strong><span class="help-mini">Links zu Anleitungen, Ersatzteillisten, Auftragsseiten, Materialinfos oder Kundenformularen.</span></div>
+              <div class="help-card"><strong>Für Drucksachen</strong><span class="help-mini">Flyer, Etiketten, Visitenkarten, Verpackungen, Aushänge oder Bedienhinweise.</span></div>
+              <div class="help-card"><strong>Lokal im Browser</strong><span class="help-mini">Die Eingaben werden im Tool verarbeitet. Trotzdem solltest du sensible Daten bewusst einsetzen.</span></div>
+            </div>
+
+            <div class="help-example"><strong>Beispiel:</strong> Du möchtest auf einem Flyer nicht deine ganze Webadresse abdrucken. Du erzeugst einen Link-QR-Code, lädst ihn als PNG herunter und setzt ihn in dein Dokument ein.</div>
+          </section>
+
+          <section class="help-page" data-help-page="workflow">
+            <h3>So nutzt du die QR-Werkstatt Schritt für Schritt</h3>
+            <ol>
+              <li><strong>QR-Art auswählen:</strong> Links wählst du, was der Code machen soll, zum Beispiel Link, WLAN oder vCard.</li>
+              <li><strong>Daten eintragen:</strong> Danach füllst du die passenden Felder aus. Das Tool baut daraus automatisch den richtigen QR-Inhalt.</li>
+              <li><strong>Optik einstellen:</strong> In der Mitte kannst du Farbe, Hintergrund, Größe und Form anpassen.</li>
+              <li><strong>Vorschau prüfen:</strong> Rechts siehst du den QR-Code live. Scanne ihn testweise mit deinem Handy.</li>
+              <li><strong>Exportieren:</strong> Für Bilder und Webseiten reicht oft PNG. Für scharfen Druck oder spätere Bearbeitung ist SVG besser.</li>
+            </ol>
+            <div class="help-warning"><strong>Wichtig:</strong> Vor dem Drucken immer mit mindestens einem Smartphone testen. Besonders bei kleinen Etiketten, farbigen QR-Codes oder transparentem Hintergrund.</div>
+            <h4>Wann PNG, wann SVG?</h4>
+            <ul>
+              <li><strong>PNG:</strong> gut für schnelle Nutzung, Word, E-Mail, einfache Drucke, Webseitenbilder.</li>
+              <li><strong>SVG:</strong> besser für sehr scharfen Druck, größere Schilder, Vektorgrafik, Weiterbearbeitung.</li>
+            </ul>
+          </section>
+
+          <section class="help-page" data-help-page="types1">
+            <h3>QR-Arten: Link, Text, WLAN und vCard</h3>
+            <h4>Link</h4>
+            <p>Öffnet eine Webseite oder Datei-Adresse. Ideal für Homepage, Produktseite, Anleitung, Download, Formular oder Projektseite.</p>
+            <div class="help-example"><strong>Beispiel:</strong> Auf einem 3D-Druck-Auftrag klebt ein QR-Code zur passenden Materialinfo oder zur Angebotsseite.</div>
+
+            <h4>Text</h4>
+            <p>Speichert normalen Text direkt im QR-Code. Das funktioniert auch ohne Internet, solange der Scanner den Text anzeigen kann.</p>
+            <div class="help-example"><strong>Beispiel:</strong> Kurzer Hinweis auf einem Lagerfach: „Düse 0,4 mm, PLA-Profil, geprüft am 03.06.2026“.</div>
+
+            <h4>WLAN</h4>
+            <p>Erstellt einen QR-Code für WLAN-Zugangsdaten. Beim Scan kann ein Smartphone dem Netzwerk beitreten.</p>
+            <div class="help-warning"><strong>Achtung:</strong> Ein WLAN-QR-Code enthält das Passwort. Nur dort verwenden, wo das bewusst gewollt ist, zum Beispiel Gäste-WLAN.</div>
+
+            <h4>vCard</h4>
+            <p>Erstellt eine digitale Kontaktkarte. Beim Scan kann der Kontakt ins Smartphone übernommen werden.</p>
+            <div class="help-example"><strong>Beispiel:</strong> Visitenkarte mit Name, Firma, Telefon, E-Mail und Webseite.</div>
+          </section>
+
+          <section class="help-page" data-help-page="types2">
+            <h3>QR-Arten: E-Mail, Telefon, WhatsApp und SMS</h3>
+            <h4>E-Mail</h4>
+            <p>Öffnet eine neue E-Mail mit Empfänger, Betreff und optionalem Text. Gut für standardisierte Anfragen.</p>
+            <div class="help-example"><strong>Beispiel:</strong> „Projekt anfragen“ mit vorbereiteter Betreffzeile wie „Anfrage 3D-Druckteil“.</div>
+
+            <h4>Telefon</h4>
+            <p>Startet nach dem Scan einen Telefonanruf. Der Nutzer muss den Anruf normalerweise noch bestätigen.</p>
+            <div class="help-example"><strong>Beispiel:</strong> QR-Code auf einem Aushang: „PC-Hilfe anrufen“.</div>
+
+            <h4>WhatsApp</h4>
+            <p>Öffnet einen WhatsApp-Chat mit Nummer und optional vorbereitetem Text.</p>
+            <div class="help-example"><strong>Beispiel:</strong> „Hallo, ich habe eine Frage zu einem 3D-Druckauftrag.“</div>
+
+            <h4>SMS</h4>
+            <p>Öffnet eine SMS mit Nummer und Text. Nützlich, wenn WhatsApp nicht gewünscht ist.</p>
+          </section>
+
+          <section class="help-page" data-help-page="types3">
+            <h3>QR-Arten: Standort, Bewertung, SEPA und PayPal</h3>
+            <h4>Standort</h4>
+            <p>Öffnet einen Ort oder eine Adresse in Google Maps. Gut für Wegbeschreibung, Abholort oder Treffpunkt.</p>
+
+            <h4>Bewertung</h4>
+            <p>Verlinkt auf eine Bewertungsseite, zum Beispiel Google-Bewertung, Shop-Bewertung oder Feedback-Formular.</p>
+            <div class="help-example"><strong>Beispiel:</strong> Nach einem Auftrag erhält der Kunde einen QR-Code: „Bewertung abgeben“.</div>
+
+            <h4>SEPA</h4>
+            <p>Erzeugt einen Zahlungs-QR für Überweisungen. Banking-Apps können die Daten übernehmen, je nach App und Bank.</p>
+            <div class="help-warning"><strong>Wichtig:</strong> IBAN, Empfänger, Betrag und Verwendungszweck genau prüfen. Das Tool ersetzt keine Zahlungsprüfung.</div>
+
+            <h4>PayPal</h4>
+            <p>Öffnet einen PayPal.me- oder Zahlungslink. Am besten nur offizielle PayPal-Links verwenden.</p>
+          </section>
+
+
+          <section class="help-page" data-help-page="payment">
+            <h3>Zahlungsbereich: sauber, ehrlich und zukunftsfähig</h3>
+            <p>Der Zahlungsbereich ist bewusst getrennt aufgebaut. Nicht jede Zahlungsart funktioniert gleich, und nicht jeder Dienst hat einen offenen QR-Standard. Deshalb unterscheidet die QR-Werkstatt zwischen echten Standards, Links und vorbereiteten Zukunftsfunktionen.</p>
+
+            <h4>SEPA / GiroCode</h4>
+            <p>Für klassische Überweisungen. Der Code enthält Empfänger, IBAN, optional Betrag und Verwendungszweck. Viele Banking-Apps können solche Daten übernehmen.</p>
+            <div class="help-warning"><strong>Wichtig:</strong> SEPA-Daten immer genau prüfen. Ein QR-Code macht die Eingabe bequemer, ersetzt aber keine Kontrolle.</div>
+
+            <h4>PayPal</h4>
+            <p>Für PayPal.me-Links oder offizielle PayPal-Zahlungslinks. Der QR-Code öffnet den Link im Browser oder in der App, je nach Gerät.</p>
+
+            <h4>Zahlungslink allgemein</h4>
+            <p>Für Anbieter wie Shop-Seiten, Stripe, SumUp, Rechnungsportale oder andere Zahlungsseiten. Das ist flexibel und aktuell der sauberste Weg, wenn kein spezieller QR-Standard nötig ist.</p>
+            <div class="help-example"><strong>Beispiel:</strong> Du erstellst eine Rechnungsseite oder einen Zahlungslink und machst daraus einen QR-Code für Rechnung, Lieferschein oder Ausdruck.</div>
+
+            <h4>Wero</h4>
+            <p>Wero ist vorgemerkt, aber noch nicht als fertige QR-Funktion aktiv. Sobald ein stabiler, praktisch nutzbarer QR- oder Link-Standard klar ist, kann die QR-Werkstatt diese Funktion sauber ergänzen.</p>
+            <div class="help-warning"><strong>Ehrlich bleiben:</strong> Die QR-Werkstatt verkauft Wero nicht als fertige Funktion, solange die technische Nutzung nicht sauber geklärt ist. Bis dahin: Zahlungslink allgemein, SEPA oder PayPal verwenden.</div>
+          </section>
+
+          <section class="help-page" data-help-page="types4">
+            <h3>QR-Arten: Termin, App-Link und Crypto</h3>
+            <h4>Termin</h4>
+            <p>Erstellt einen Kalendertermin im iCalendar-Format. Beim Scan kann ein Smartphone den Termin übernehmen.</p>
+            <div class="help-example"><strong>Beispiel:</strong> Messetermin, Abholtermin, Wartungstermin oder Besprechung.</div>
+
+            <h4>App-Link</h4>
+            <p>Öffnet eine App-Seite, einen App-Store-Link oder eine interne App-Adresse.</p>
+            <div class="help-example"><strong>Beispiel:</strong> QR-Code auf einem Infoblatt, der direkt zur passenden App oder Downloadseite führt.</div>
+
+            <h4>Crypto</h4>
+            <p>Erstellt einen einfachen Krypto-Zahlungslink, zum Beispiel für Bitcoin oder Ethereum.</p>
+            <div class="help-warning"><strong>Achtung:</strong> Wallet-Adressen und Beträge sehr genau prüfen. Krypto-Zahlungen sind oft nicht rückholbar.</div>
+          </section>
+
+          <section class="help-page" data-help-page="design">
+            <h3>Design, Lesbarkeit und Druck</h3>
+            <p>Ein QR-Code darf schön aussehen, aber die Scanbarkeit ist wichtiger als Optik. Besonders bei Druck, kleinen Etiketten oder farbigen Hintergründen solltest du vorsichtig sein.</p>
+            <h4>Gute Regeln</h4>
+            <ul>
+              <li>Hoher Kontrast: dunkler Code auf hellem Hintergrund ist am sichersten.</li>
+              <li>Genügend Rand lassen. QR-Codes brauchen freie Fläche um den Code herum.</li>
+              <li>Nicht zu klein drucken. Für Flyer und Etiketten lieber etwas größer planen.</li>
+              <li>Farbige Codes immer testen. Manche Scanner mögen zu schwache Kontraste nicht.</li>
+              <li>SVG nutzen, wenn der Code groß oder sehr scharf gedruckt werden soll.</li>
+            </ul>
+            <div class="help-example"><strong>Praxis-Tipp:</strong> Für Werkstattetiketten lieber klar und robust: dunkle QR-Farbe, weißer Hintergrund, nicht zu klein, vor dem Seriendruck testen.</div>
+          </section>
+
+          <section class="help-page" data-help-page="safety">
+            <h3>Sicherheit, Datenschutz und Grenzen</h3>
+            <p>Ein QR-Code ist nur ein Träger für Informationen. Wer ihn scannt, sieht oder öffnet genau das, was du hineinschreibst.</p>
+            <ul>
+              <li>Keine privaten Passwörter öffentlich als QR-Code drucken.</li>
+              <li>WLAN-QR-Codes nur für Gästezugänge oder bewusst freigegebene Netzwerke verwenden.</li>
+              <li>Bei Zahlungsdaten immer prüfen, ob Empfänger, IBAN, Betrag und Zweck stimmen.</li>
+              <li>Bei Links keine verdächtigen Weiterleitungen verwenden.</li>
+              <li>Vor Veröffentlichung auf Handy, Tablet und am besten mit mehreren Scanner-Apps testen.</li>
+            </ul>
+            <div class="help-warning"><strong>Grenze des Tools:</strong> Die QR-Werkstatt kann den Code erstellen, aber nicht garantieren, dass jede App jeden Spezialtyp gleich verarbeitet. Deshalb: testen, testen, testen.</div>
+          </section>
+        </div>
+      </div>
     </div>
   </dialog>
-
   <div class="toast" id="toast">Erledigt</div>
 
+  <script defer src="../assets/js/ws-tool-menu.js"></script>
   <script>
-    "use strict";
-
     const $ = (id) => document.getElementById(id);
-    const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-
-    const state = {
-      mode: "url",
-      logoUrl: "",
-      presetLogo: "",
-      qr: null,
-      lastPayload: ""
-    };
-
-    const modeLabels = {
-      url: "🔗 Link",
-      wifi: "📶 WLAN",
-      vcard: "👤 vCard",
-      whatsapp: "💬 WhatsApp",
-      email: "✉️ E-Mail",
-      phone: "☎️ Telefon",
-      sms: "💌 SMS",
-      sepa: "🏦 SEPA",
-      paypal: "💶 PayPal",
-      maps: "📍 Standort",
-      review: "⭐ Bewertung",
-      text: "📝 Text",
-      event: "📅 Termin",
-      app: "📲 App-Link",
-      crypto: "₿ Crypto"
-    };
+    let currentMode = 'url';
+    let currentPayload = '';
+    let qr;
 
     const hints = {
-      url: "Scan öffnet eine Webseite oder Datei-Adresse. Kurze Links ergeben stabilere QR-Codes.",
-      wifi: "Scan verbindet Smartphones direkt mit deinem WLAN. Passwort vor Weitergabe prüfen.",
-      vcard: "Scan speichert einen Kontakt. Ideal für Visitenkarten, Flyer oder Firmenkontakte.",
-      whatsapp: "Scan öffnet einen WhatsApp-Chat mit vorbereiteter Nachricht.",
-      email: "Scan öffnet eine vorbereitete E-Mail mit Empfänger, Betreff und Text.",
-      phone: "Scan öffnet direkt die Telefon-App mit der Nummer.",
-      sms: "Scan öffnet eine vorbereitete SMS.",
-      sepa: "Scan erzeugt eine SEPA-Überweisung. Vor echter Nutzung immer mit Banking-App testen.",
-      paypal: "Scan öffnet einen PayPal.Me-Link mit optionalem Betrag.",
-      maps: "Scan öffnet eine Adresse, einen Suchbegriff oder Koordinaten in Google Maps.",
-      review: "Scan führt direkt zu deiner Bewertungsseite.",
-      text: "Scan zeigt einen freien Text. Für lange Texte wird der QR-Code dichter.",
-      event: "Scan erzeugt einen Kalendertermin im iCalendar-Format.",
-      app: "Scan öffnet einen App-, Store- oder Deep-Link.",
-      crypto: "Scan öffnet eine Wallet-Adresse. Adressen sehr sorgfältig prüfen."
+      url:'Scan öffnet eine Webseite. Kurze Links ergeben stabilere QR-Codes.',
+      text:'Freier Text wird direkt im QR-Code gespeichert.',
+      wifi:'Erstellt einen WLAN-Zugangscode. Passwort nur verwenden, wenn du es wirklich teilen willst.',
+      vcard:'Erstellt einen Kontakt als vCard.',
+      email:'Öffnet eine neue E-Mail mit Empfänger, Betreff und Text.',
+      phone:'Startet einen Telefonanruf.',
+      whatsapp:'Öffnet einen WhatsApp-Chat mit Nummer und optionaler Nachricht.',
+      sms:'Öffnet eine SMS an die Nummer.',
+      maps:'Öffnet eine Suche/Route in Google Maps.',
+      review:'Öffnet einen Bewertungs- oder Feedback-Link.',
+      sepa:'Erstellt einen SEPA-Überweisungs-QR. Daten vor Nutzung genau prüfen.',
+      paypal:'Öffnet einen PayPal-Link.',
+      paymentlink:'Öffnet einen allgemeinen Zahlungslink, z. B. Shop, SumUp, Stripe oder Rechnung.',
+      wero:'Wero ist vorbereitet, aber noch nicht als echte QR-Funktion aktiv.',
+      event:'Erstellt einen Kalendertermin im iCalendar-Format.',
+      app:'Öffnet einen App- oder Store-Link.',
+      crypto:'Erstellt einen einfachen Crypto-Payment-Link.'
     };
+    const labels = {url:'Link',text:'Text',wifi:'WLAN',vcard:'vCard',email:'E-Mail',phone:'Telefon',whatsapp:'WhatsApp',sms:'SMS',maps:'Standort',review:'Bewertung',sepa:'SEPA',paypal:'PayPal',paymentlink:'Zahlungslink',wero:'Wero',event:'Termin',app:'App-Link',crypto:'Crypto'};
 
-    const presetSvg = {
-      link: iconData("🔗"),
-      wifi: iconData("📶"),
-      mail: iconData("✉️"),
-      phone: iconData("☎️"),
-      map: iconData("📍"),
-      star: iconData("⭐"),
-      card: iconData("👤")
-    };
+    function escWifi(value){ return String(value || '').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/:/g,'\\:'); }
+    function val(id){ return ($(id)?.value || '').trim(); }
 
-    function iconData(char) {
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
-        <rect width="256" height="256" rx="64" fill="#ffffff"/>
-        <text x="50%" y="57%" dominant-baseline="middle" text-anchor="middle" font-size="126" font-family="Arial, sans-serif">${char}</text>
-      </svg>`;
-      return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+    function dateToIcs(value){
+      if(!value) return '';
+      const d = new Date(value);
+      if(Number.isNaN(d.getTime())) return '';
+      return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
     }
-
-    function safe(v) {
-      return String(v || "").trim();
-    }
-
-    function escWifi(v) {
-      return String(v || "").replace(/([\\;,":])/g, "\\$1");
-    }
-
-    function compactPhone(v) {
-      return safe(v).replace(/[^\d+]/g, "");
-    }
-
-    function toIsoDateForIcs(v) {
-      if (!v) return "";
-      const d = new Date(v);
-      if (Number.isNaN(d.getTime())) return "";
-      const pad = (n) => String(n).padStart(2, "0");
-      return d.getUTCFullYear() +
-        pad(d.getUTCMonth() + 1) +
-        pad(d.getUTCDate()) + "T" +
-        pad(d.getUTCHours()) +
-        pad(d.getUTCMinutes()) +
-        "00Z";
-    }
-
-    function generatePayload() {
-      switch (state.mode) {
-        case "url": {
-          const value = safe($("urlValue").value);
-          return value || "https://www.warenschmiede.com/";
+    function buildPayload(){
+      switch(currentMode){
+        case 'url': return val('urlValue') || 'https://www.warenschmiede.com/';
+        case 'text': return val('textValue') || 'Warenschmiede';
+        case 'wifi': {
+          const ssid = escWifi(val('wifiSsid'));
+          const pass = escWifi(val('wifiPass'));
+          const type = val('wifiType');
+          const hidden = val('wifiHidden') === 'true';
+          return `WIFI:T:${type};S:${ssid};P:${pass};H:${hidden};`;
         }
-        case "wifi": {
-          const ssid = escWifi($("wifiSsid").value);
-          const pass = escWifi($("wifiPass").value);
-          const type = $("wifiType").value;
-          const hidden = $("wifiHidden").value;
-          return `WIFI:T:${type};S:${ssid};P:${pass};H:${hidden};;`;
-        }
-        case "vcard": {
-          const first = safe($("vcFirst").value);
-          const last = safe($("vcLast").value);
-          const fn = safe(`${first} ${last}`) || "Kontakt";
-          const org = safe($("vcOrg").value);
-          const tel = safe($("vcPhone").value);
-          const email = safe($("vcEmail").value);
-          const url = safe($("vcUrl").value);
-          const adr = safe($("vcAddress").value);
+        case 'vcard':
           return [
-            "BEGIN:VCARD",
-            "VERSION:3.0",
-            `N:${last};${first};;;`,
-            `FN:${fn}`,
-            org ? `ORG:${org}` : "",
-            tel ? `TEL;TYPE=CELL:${tel}` : "",
-            email ? `EMAIL:${email}` : "",
-            url ? `URL:${url}` : "",
-            adr ? `ADR;TYPE=WORK:;;${adr};;;;` : "",
-            "END:VCARD"
-          ].filter(Boolean).join("\n");
-        }
-        case "whatsapp": {
-          const code = safe($("waCode").value);
-          const num = compactPhone($("waPhone").value).replace(/^0/, "");
-          const msg = encodeURIComponent($("waText").value || "");
-          return `https://wa.me/${code}${num}${msg ? "?text=" + msg : ""}`;
-        }
-        case "email": {
-          const to = encodeURIComponent(safe($("mailTo").value));
-          const subject = encodeURIComponent($("mailSubject").value || "");
-          const body = encodeURIComponent($("mailBody").value || "");
-          const params = [];
-          if (subject) params.push("subject=" + subject);
-          if (body) params.push("body=" + body);
-          return `mailto:${to}${params.length ? "?" + params.join("&") : ""}`;
-        }
-        case "phone": {
-          return `tel:${compactPhone($("phoneNumber").value)}`;
-        }
-        case "sms": {
-          const n = compactPhone($("smsNumber").value);
-          const t = encodeURIComponent($("smsText").value || "");
-          return `SMSTO:${n}:${t}`;
-        }
-        case "sepa": {
-          const name = safe($("sepaName").value);
-          const iban = safe($("sepaIban").value).replace(/\s/g, "").toUpperCase();
-          const amount = safe($("sepaAmount").value);
-          const ref = safe($("sepaRef").value);
-          return ["BCD", "002", "1", "SCT", "", name, iban, amount ? `EUR${Number(amount).toFixed(2)}` : "", "", "", ref, ""].join("\n");
-        }
-        case "paypal": {
-          const user = safe($("ppUser").value);
-          const amount = safe($("ppAmount").value);
-          const currency = safe($("ppCurrency").value);
-          return `https://www.paypal.com/paypalme/${user}${amount ? "/" + amount + currency : ""}`;
-        }
-        case "maps": {
-          const lat = safe($("geoLat").value);
-          const lng = safe($("geoLng").value);
-          const q = safe($("geoQuery").value);
-          if (lat && lng) return `https://www.google.com/maps?q=${encodeURIComponent(lat + "," + lng)}`;
-          return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q || "Donaueschingen")}`;
-        }
-        case "review": {
-          return safe($("reviewUrl").value) || "https://www.google.com/search?q=Warenschmiede";
-        }
-        case "text": {
-          return $("plainText").value || "Warenschmiede QR-Master ULTRA";
-        }
-        case "event": {
-          const title = safe($("eventTitle").value) || "Termin";
-          const start = toIsoDateForIcs($("eventStart").value);
-          const end = toIsoDateForIcs($("eventEnd").value);
-          const loc = safe($("eventLocation").value);
-          const desc = safe($("eventDesc").value);
+            'BEGIN:VCARD','VERSION:3.0',
+            `N:${val('vcLast')};${val('vcFirst')};;;`,
+            `FN:${[val('vcFirst'),val('vcLast')].filter(Boolean).join(' ')}`,
+            val('vcOrg') ? `ORG:${val('vcOrg')}` : '',
+            val('vcPhone') ? `TEL:${val('vcPhone')}` : '',
+            val('vcEmail') ? `EMAIL:${val('vcEmail')}` : '',
+            val('vcUrl') ? `URL:${val('vcUrl')}` : '',
+            val('vcAddress') ? `ADR:;;${val('vcAddress')};;;;` : '',
+            'END:VCARD'
+          ].filter(Boolean).join('\\n');
+        case 'email': return `mailto:${val('emailTo')}?subject=${encodeURIComponent(val('emailSubject'))}&body=${encodeURIComponent(val('emailBody'))}`;
+        case 'phone': return `tel:${val('phoneValue')}`;
+        case 'whatsapp': return `https://wa.me/${val('waPhone').replace(/\\D/g,'')}?text=${encodeURIComponent(val('waText'))}`;
+        case 'sms': return `SMSTO:${val('smsPhone')}:${val('smsText')}`;
+        case 'maps': return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(val('mapsQuery'))}`;
+        case 'review': return val('reviewUrl') || 'https://www.warenschmiede.com/kontakt/kontakt.html';
+        case 'sepa': {
+          const name = val('sepaName');
+          const iban = val('sepaIban').replace(/\s+/g,'');
+          const bic = val('sepaBic');
+          const amount = val('sepaAmount').replace(',', '.');
+          const purpose = val('sepaPurpose');
           return [
-            "BEGIN:VCALENDAR",
-            "VERSION:2.0",
-            "BEGIN:VEVENT",
-            `SUMMARY:${title}`,
-            start ? `DTSTART:${start}` : "",
-            end ? `DTEND:${end}` : "",
-            loc ? `LOCATION:${loc}` : "",
-            desc ? `DESCRIPTION:${desc}` : "",
-            "END:VEVENT",
-            "END:VCALENDAR"
-          ].filter(Boolean).join("\n");
+            'BCD','002','1','SCT',
+            bic,
+            name,
+            iban,
+            amount ? `EUR${amount}` : '',
+            '',
+            '',
+            purpose
+          ].join('\n');
         }
-        case "app": {
-          return safe($("appUrl").value) || "https://www.warenschmiede.com/tools/";
+        case 'paypal': return val('paypalUrl') || 'https://paypal.me/';
+        case 'paymentlink': return val('paymentUrl') || 'https://www.warenschmiede.com/kontakt/kontakt.html';
+        case 'wero': return val('weroFallbackUrl') || 'https://www.warenschmiede.com/kontakt/kontakt.html';
+        case 'event': {
+          const start = dateToIcs(val('eventStart'));
+          const end = dateToIcs(val('eventEnd')) || start;
+          return [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'BEGIN:VEVENT',
+            `SUMMARY:${val('eventTitle') || 'Termin'}`,
+            start ? `DTSTART:${start}` : '',
+            end ? `DTEND:${end}` : '',
+            val('eventLocation') ? `LOCATION:${val('eventLocation')}` : '',
+            val('eventDesc') ? `DESCRIPTION:${val('eventDesc')}` : '',
+            'END:VEVENT',
+            'END:VCALENDAR'
+          ].filter(Boolean).join('\n');
         }
-        case "crypto": {
-          const type = safe($("cryptoType").value);
-          const adr = safe($("cryptoAddress").value);
-          const amount = safe($("cryptoAmount").value);
-          return `${type}:${adr}${amount ? "?amount=" + encodeURIComponent(amount) : ""}`;
+        case 'app': return val('appUrl') || 'https://www.warenschmiede.com/';
+        case 'crypto': {
+          const type = val('cryptoType') || 'bitcoin';
+          const address = val('cryptoAddress');
+          const params = new URLSearchParams();
+          if(val('cryptoAmount')) params.set('amount', val('cryptoAmount'));
+          if(val('cryptoLabel')) params.set('label', val('cryptoLabel'));
+          const qs = params.toString();
+          return `${type}:${address}${qs ? '?' + qs : ''}`;
         }
-        default:
-          return "https://www.warenschmiede.com/";
+        default: return 'Warenschmiede';
       }
     }
 
-    function getLogo() {
-      if (!$("useLogo").checked) return "";
-      return state.logoUrl || state.presetLogo || presetSvg[state.mode === "wifi" ? "wifi" : state.mode === "email" ? "mail" : state.mode === "phone" ? "phone" : state.mode === "maps" ? "map" : state.mode === "review" ? "star" : state.mode === "vcard" ? "card" : "link"] || "";
-    }
-
-    function updateQR() {
-      const payload = generatePayload();
-      state.lastPayload = payload;
-
-      const fg = safe($("fgColor").value) || "#0b5aa8";
-      const fg2 = safe($("fgColor2").value) || "#e11d2e";
-      const bg = safe($("bgColor").value) || "#ffffff";
-      const dotStyle = $("dotStyle").value;
-      const cornerStyle = $("cornerStyle").value;
-      const useGradient = $("useGradient").checked;
-
-      const dotsOptions = { type: dotStyle, color: fg };
-      if (useGradient) {
-        dotsOptions.gradient = {
-          type: "linear",
-          rotation: Number($("gradientRotation").value || 45) * Math.PI / 180,
-          colorStops: [
-            { offset: 0, color: fg },
-            { offset: 1, color: fg2 }
-          ]
-        };
-      }
-
-      const qrOptions = {
-        width: 300,
-        height: 300,
-        type: "svg",
-        data: payload || " ",
-        margin: 10,
-        qrOptions: {
-          errorCorrectionLevel: $("useHighCorrection").checked ? "H" : "M"
-        },
-        dotsOptions,
-        cornersSquareOptions: { type: cornerStyle, color: fg },
-        cornersDotOptions: { type: cornerStyle === "dot" ? "dot" : "square", color: fg },
-        backgroundOptions: { color: bg },
-        image: getLogo(),
-        imageOptions: { crossOrigin: "anonymous", margin: 8, imageSize: 0.34, hideBackgroundDots: true }
+    function makeOptions(payload){
+      const size = Number(val('qrSize') || 300);
+      const transparent = $('transparentBg').checked;
+      return {
+        width:size, height:size, type:'svg', data:payload,
+        dotsOptions:{ color:val('dotColorText') || '#102033', type:val('dotType') || 'rounded' },
+        cornersSquareOptions:{ color:val('dotColorText') || '#102033', type:'extra-rounded' },
+        cornersDotOptions:{ color:val('dotColorText') || '#102033', type:'dot' },
+        backgroundOptions:{ color: transparent ? 'transparent' : (val('bgColorText') || '#ffffff') },
+        qrOptions:{ errorCorrectionLevel:'M' }
       };
-
-      if (!state.qr) {
-        state.qr = new QRCodeStyling(qrOptions);
-        $("qr-output").innerHTML = "";
-        state.qr.append($("qr-output"));
-      } else {
-        state.qr.update(qrOptions);
-      }
-
-      $("payloadPreview").textContent = payload;
-      $("modeBadge").textContent = modeLabels[state.mode] || "QR";
-      $("lengthBadge").textContent = `${payload.length} Zeichen`;
-      updateScore(payload);
     }
 
-    function updateScore(payload) {
-      const len = payload.length;
-      const hasLogo = $("useLogo").checked;
-      const gradient = $("useGradient").checked;
-      let score = 100;
-      if (len > 80) score -= 10;
-      if (len > 180) score -= 18;
-      if (len > 320) score -= 20;
-      if (hasLogo) score -= 10;
-      if (gradient) score -= 8;
-      if (safe($("bgColor").value).toLowerCase() !== "#ffffff") score -= 5;
-      score = Math.max(15, Math.min(100, score));
-      $("scoreBar").style.width = score + "%";
-
-      if (score >= 76) {
-        $("scoreText").textContent = "Sehr gut";
-        $("scoreHint").textContent = "Gut geeignet. Trotzdem vor Druck mit dem Smartphone testen.";
-        $("scoreBar").style.background = "linear-gradient(90deg, #10b981, #0ea5e9)";
-      } else if (score >= 52) {
-        $("scoreText").textContent = "Okay";
-        $("scoreHint").textContent = "Vor Veröffentlichung unbedingt testen. Schlichtes Design scannt besser.";
-        $("scoreBar").style.background = "linear-gradient(90deg, #f59e0b, #0ea5e9)";
-      } else {
-        $("scoreText").textContent = "Kritisch";
-        $("scoreHint").textContent = "Inhalt kürzen, Logo/Verlauf reduzieren oder größer drucken.";
-        $("scoreBar").style.background = "linear-gradient(90deg, #ef4444, #f59e0b)";
-      }
+    function generate(){
+      currentPayload = buildPayload();
+      $('payloadBox').textContent = currentPayload;
+      $('modePill').textContent = labels[currentMode] || currentMode;
+      $('lengthPill').textContent = `${currentPayload.length} Zeichen`;
+      const out = $('qr-output');
+      out.innerHTML = '';
+      qr = new QRCodeStyling(makeOptions(currentPayload));
+      qr.append(out);
     }
 
-    function setMode(mode) {
-      state.mode = mode;
-      $$(".mode-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.mode === mode));
-      $$(".form-section").forEach(section => section.classList.toggle("active", section.dataset.form === mode));
-      $("modeHint").textContent = hints[mode] || "";
-      updateQR();
+    function syncColors(source, target){
+      $(source).addEventListener('input', () => { $(target).value = $(source).value; if($('autoUpdate').checked) generate(); });
+      $(target).addEventListener('input', () => { if(/^#[0-9a-fA-F]{6}$/.test($(target).value)){ $(source).value = $(target).value; if($('autoUpdate').checked) generate(); } });
     }
 
-    function toast(text) {
-      const el = $("toast");
-      el.textContent = text;
-      el.classList.add("show");
-      clearTimeout(toast._t);
-      toast._t = setTimeout(() => el.classList.remove("show"), 1800);
+    function toast(text){
+      const t = $('toast'); t.textContent = text; t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'), 1700);
     }
 
-    function syncColor(textId, pickId) {
-      const text = $(textId);
-      const pick = $(pickId);
-      text.addEventListener("input", () => {
-        if (/^#[0-9A-Fa-f]{6}$/.test(text.value)) {
-          pick.value = text.value;
-          updateQR();
-        }
-      });
-      pick.addEventListener("input", () => {
-        text.value = pick.value;
-        updateQR();
-      });
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+      $('toolMenuBtn').addEventListener('click', () => window.WSToolMenu?.open());
 
-    function download(ext) {
-      state.qr.download({ name: `QR_Master_ULTRA_${state.mode}`, extension: ext });
-    }
 
-    function saveConfig() {
-      const ids = $$("input, textarea, select").filter(el => el.id && el.type !== "file");
-      const data = {
-        version: "4.0",
-        mode: state.mode,
-        logoUrl: state.logoUrl,
-        presetLogo: state.presetLogo,
-        values: Object.fromEntries(ids.map(el => [el.id, el.type === "checkbox" ? el.checked : el.value]))
+      const summaries = {
+        url:['Link','Webadresse'],
+        text:['Text','Freitext'],
+        maps:['Standort','Adresse / Ort'],
+        review:['Bewertung','Feedback-Link'],
+        vcard:['Kontakt','Name, Firma, Telefon, E-Mail'],
+        email:['E-Mail','Empfänger, Betreff, Text'],
+        phone:['Telefon','Nummer'],
+        whatsapp:['WhatsApp','Nummer + Nachricht'],
+        sms:['SMS','Nummer + Text'],
+        sepa:['SEPA','Empfänger, IBAN, Betrag, Zweck'],
+        paypal:['PayPal','PayPal-Link'],
+        paymentlink:['Zahlungslink','URL + Hinweis'],
+        wero:['Wero','Platzhalter / Link'],
+        crypto:['Crypto','Coin, Adresse, Betrag'],
+        wifi:['WLAN','SSID, Passwort, Typ'],
+        event:['Termin','Start, Ende, Ort'],
+        app:['App-Link','Store- oder App-Adresse']
       };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "QR_Master_ULTRA_Vorlage.json";
-      a.click();
-      URL.revokeObjectURL(a.href);
-      toast("Vorlage gespeichert");
-    }
-
-    function loadConfig(file) {
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const data = JSON.parse(reader.result);
-          Object.entries(data.values || {}).forEach(([id, value]) => {
-            const el = $(id);
-            if (!el) return;
-            if (el.type === "checkbox") el.checked = Boolean(value);
-            else el.value = value;
-          });
-          state.logoUrl = data.logoUrl || "";
-          state.presetLogo = data.presetLogo || "";
-          setMode(data.mode || "url");
-          $("gradientBox").hidden = !$("useGradient").checked;
-          toast("Vorlage geladen");
-        } catch (e) {
-          alert("Vorlage konnte nicht gelesen werden.");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function copyPayload() {
-      navigator.clipboard?.writeText(state.lastPayload).then(() => toast("Inhalt kopiert")).catch(() => {
-        const temp = document.createElement("textarea");
-        temp.value = state.lastPayload;
-        document.body.appendChild(temp);
-        temp.select();
-        document.execCommand("copy");
-        temp.remove();
-        toast("Inhalt kopiert");
-      });
-    }
-
-    function openPrintCard() {
-      const svg = $("qr-output").innerHTML;
-      const mode = modeLabels[state.mode] || "QR-Code";
-      const payload = state.lastPayload.replace(/[<>&]/g, s => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[s]));
-      const doc = `<!doctype html><html lang="de"><head><meta charset="utf-8"><title>QR Druckkarte</title>
-      <style>
-        body{font-family:Arial,sans-serif;margin:0;padding:28px;background:#f5f7fb;color:#111827}
-        .card{max-width:720px;margin:auto;background:#fff;border:1px solid #ddd;border-radius:22px;padding:28px;box-shadow:0 20px 60px -40px #000}
-        h1{margin:0 0 8px;font-size:28px} p{color:#64748b}.qr{display:grid;place-items:center;margin:24px}.qr svg{width:320px;height:320px}.payload{font-family:monospace;white-space:pre-wrap;word-break:break-word;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;font-size:12px}
-        @media print{body{background:#fff}.card{box-shadow:none;border:0}}
-      </style></head><body><main class="card"><h1>${mode}</h1><p>Erstellt mit QR-Master ULTRA · Warenschmiede Tools</p><div class="qr">${svg}</div><div class="payload">${payload}</div><script>setTimeout(()=>window.print(),350)<\/script></main></body></html>`;
-      const w = window.open("", "_blank");
-      if (!w) return alert("Popup wurde blockiert.");
-      w.document.write(doc);
-      w.document.close();
-    }
-
-    function resetAll() {
-      if (!confirm("Alle Eingaben und Designwerte zurücksetzen?")) return;
-      $$("input, textarea").forEach(el => {
-        if (el.type === "checkbox") return;
-        if (el.type === "color") return;
-        if (el.type === "file") { el.value = ""; return; }
-        el.value = "";
-      });
-      $("urlValue").value = "https://www.warenschmiede.com/";
-      $("fgColor").value = "#0b5aa8";
-      $("fgPick").value = "#0b5aa8";
-      $("fgColor2").value = "#e11d2e";
-      $("fgPick2").value = "#e11d2e";
-      $("bgColor").value = "#ffffff";
-      $("bgPick").value = "#ffffff";
-      $("dotStyle").value = "rounded";
-      $("cornerStyle").value = "extra-rounded";
-      $("useLogo").checked = false;
-      $("useGradient").checked = false;
-      $("useHighCorrection").checked = true;
-      $("gradientBox").hidden = true;
-      state.logoUrl = "";
-      state.presetLogo = "";
-      setMode("url");
-      toast("Zurückgesetzt");
-    }
-
-    function locate() {
-      if (!navigator.geolocation) {
-        alert("Dein Browser unterstützt keine Standortabfrage.");
-        return;
+      function updateInputSummary(){
+        const box = $('inputSummary');
+        if(!box) return;
+        box.innerHTML = (summaries[currentMode] || [labels[currentMode] || currentMode]).map(x => `<span>${x}</span>`).join('');
       }
-      navigator.geolocation.getCurrentPosition(pos => {
-        $("geoLat").value = pos.coords.latitude.toFixed(6);
-        $("geoLng").value = pos.coords.longitude.toFixed(6);
-        $("geoQuery").value = "";
-        updateQR();
-        toast("Standort eingetragen");
-      }, () => alert("Standort konnte nicht abgerufen werden."));
-    }
 
-    function init() {
-      $("modeGrid").addEventListener("click", (e) => {
-        const btn = e.target.closest(".mode-btn");
-        if (btn) setMode(btn.dataset.mode);
-      });
-
-      $$("input, textarea, select").forEach(el => {
-        if (el.type === "file") return;
-        el.addEventListener("input", updateQR);
-        el.addEventListener("change", updateQR);
-      });
-
-      syncColor("fgColor", "fgPick");
-      syncColor("bgColor", "bgPick");
-      syncColor("fgColor2", "fgPick2");
-
-      $("useGradient").addEventListener("change", () => {
-        $("gradientBox").hidden = !$("useGradient").checked;
-        updateQR();
-      });
-
-      $("btnTheme").addEventListener("click", () => {
-        const root = document.documentElement;
-        root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
-      });
-
-      $("btnHelp").addEventListener("click", () => $("helpDialog").showModal());
-      $$("[data-close-dialog]").forEach(btn => btn.addEventListener("click", () => btn.closest("dialog").close()));
-
-      $("downloadPng").addEventListener("click", () => download("png"));
-      $("downloadSvg").addEventListener("click", () => download("svg"));
-      $("downloadConfig").addEventListener("click", saveConfig);
-      $("loadConfig").addEventListener("change", (e) => loadConfig(e.target.files[0]));
-      $("btnCopyPayload").addEventListener("click", copyPayload);
-      $("btnPrintCard").addEventListener("click", openPrintCard);
-      $("btnReset").addEventListener("click", resetAll);
-      $("btnLocation").addEventListener("click", locate);
-
-      $("logoUpload").addEventListener("change", e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-          state.logoUrl = reader.result;
-          $("useLogo").checked = true;
-          updateQR();
-          toast("Logo geladen");
-        };
-        reader.readAsDataURL(file);
-      });
-
-      $$("[data-logo]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          state.logoUrl = "";
-          state.presetLogo = presetSvg[btn.dataset.logo] || "";
-          $("useLogo").checked = true;
-          updateQR();
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentMode = btn.dataset.mode;
+          document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          document.querySelectorAll('.form-section').forEach(s=>s.classList.toggle('active', s.dataset.form === currentMode));
+          $('modeHint').textContent = hints[currentMode] || '';
+          updateInputSummary();
+          generate();
         });
       });
 
-      $("clearLogo").addEventListener("click", () => {
-        state.logoUrl = "";
-        state.presetLogo = "";
-        $("useLogo").checked = false;
-        $("logoUpload").value = "";
-        updateQR();
-        toast("Logo entfernt");
+      document.querySelectorAll('input,textarea,select').forEach(el => {
+        el.addEventListener('input', () => { if($('autoUpdate').checked) generate(); });
+        el.addEventListener('change', () => { if($('autoUpdate').checked) generate(); });
       });
 
-      if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        // Start bewusst hell lassen, aber Nutzer kann wechseln. Kein Auto-Dark.
-      }
+      syncColors('dotColor','dotColorText');
+      syncColors('bgColor','bgColorText');
 
-      updateQR();
-    }
+      $('btnGenerate').addEventListener('click', generate);
+      $('btnPng').addEventListener('click', () => qr?.download({name:'qr-werkstatt-plus', extension:'png'}));
+      $('btnSvg').addEventListener('click', () => qr?.download({name:'qr-werkstatt-plus', extension:'svg'}));
+      $('btnCopy').addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(currentPayload); toast('QR-Inhalt kopiert'); }
+        catch { toast('Kopieren nicht möglich'); }
+      });
 
-    document.addEventListener("DOMContentLoaded", init);
+      $('btnTheme').addEventListener('click', () => {
+        const html = document.documentElement;
+        html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+      });
+
+      $('btnHelp').addEventListener('click', () => $('helpDialog').showModal());
+      $('helpClose').addEventListener('click', () => $('helpDialog').close());
+
+      document.querySelectorAll('[data-help-tab]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.helpTab;
+          document.querySelectorAll('[data-help-tab]').forEach(b => b.classList.toggle('active', b === btn));
+          document.querySelectorAll('[data-help-page]').forEach(page => {
+            page.classList.toggle('active', page.dataset.helpPage === target);
+          });
+        });
+      });
+
+      updateInputSummary();
+      generate();
+    });
   </script>
 </body>
 </html>

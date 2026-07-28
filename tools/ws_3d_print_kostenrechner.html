@@ -4,9 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Warenschmiede 3D-Druck Kostenrechner Plus</title>
-  <meta name="tool-version" content="1.9.2">
+  <meta name="tool-version" content="1.9.4">
   <meta name="description" content="Neutraler 3D-Druck Kostenrechner für Angebote, Rechnungen und Lieferscheine. Mit Presets, Logo, QR-Code, Steuertexten und lokaler Speicherung." />
   <meta name="robots" content="index, follow" />
+  <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
+  <script defer src="../assets/js/ws-tool-menu.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -17,13 +19,24 @@
     :root { --accent: #2563eb; --accent-soft: #dbeafe; --ink: #0f172a; }
     * { box-sizing: border-box; }
     body { font-family: Inter, sans-serif; background: #0f172a; color: #1e293b; }
+    .sidebar-head { background: linear-gradient(135deg,#e8f1fb,#f8fbff); border-bottom: 1px solid #cbd5e1; }
+    .sidebar-work { background: linear-gradient(180deg,#f8fbff,#edf5fc); }
+    .sidebar-foot { background: linear-gradient(135deg,#dceaf7,#f5f9fd); border-top: 1px solid #c1d0df; }
+    .extra-card { background: #fff7df; border-color: #f3d48a; }
+    .extra-card .input { background:#fffdf4; }
+    .tiny-help { width: 1.35rem; height: 1.35rem; border-radius: 999px; display:inline-flex; align-items:center; justify-content:center; border:1px solid #cbd5e1; background:#fff; color:#475569; font-size:.78rem; font-weight:900; cursor:help; }
+    .tiny-help:hover { border-color: var(--accent); color: var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+    .help-pop { position:absolute; z-index:70; max-width:330px; display:none; border:1px solid #cbd5e1; background:white; color:#334155; border-radius:1rem; box-shadow:0 24px 60px -34px rgba(15,23,42,.55); padding:.8rem .9rem; font-size:.78rem; line-height:1.45; }
+    .help-pop strong { display:block; color:#0f172a; margin-bottom:.25rem; }
+    .btn-primary { color: var(--accent-text, #fff); }
+
     .mono { font-family: 'JetBrains Mono', monospace; }
     .input { width: 100%; border: 1px solid #cbd5e1; background: #e2e8f0; border-radius: .7rem; padding: .62rem .75rem; font-weight: 650; outline: none; min-height: 42px; }
     .input:focus { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
     .label { display: flex; justify-content: space-between; align-items: center; font-size: .68rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: .05em; margin: 0 0 .25rem .1rem; }
     .card { background: white; border: 1px solid #e2e8f0; border-radius: 1rem; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
     .btn { border-radius: .75rem; padding: .65rem .9rem; font-size: .82rem; font-weight: 800; transition: .18s ease; display: inline-flex; align-items: center; justify-content: center; gap: .45rem; }
-    .btn-primary { background: var(--accent); color: white; box-shadow: 0 8px 18px rgba(37,99,235,.22); }
+    .btn-primary { background: var(--accent); color: var(--accent-text, #fff); box-shadow: 0 8px 18px rgba(37,99,235,.22); }
     .btn-primary:hover { filter: brightness(.96); transform: translateY(-1px); }
     .btn-soft { background: var(--accent-soft); color: var(--accent); }
     .btn-muted { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
@@ -51,6 +64,69 @@
     details summary { list-style: none; }
     details summary::-webkit-details-marker { display: none; }
     [x-cloak] { display: none !important; }
+
+
+    /* Warenschmiede Webseite 2.0 – optischer Feinschliff für die Tool-Fläche.
+       Nur Oberfläche: Kalkulation, PDF, JSON und Dokumentlogik bleiben unverändert. */
+    body {
+      background:
+        radial-gradient(circle at 0% 0%, rgba(235,152,36,.10), transparent 26rem),
+        radial-gradient(circle at 100% 0%, rgba(37,99,235,.13), transparent 30rem),
+        linear-gradient(135deg, #f7fbff, #eef6fc) !important;
+    }
+    .shell {
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255,255,255,.70), transparent 28rem),
+        linear-gradient(135deg, #f7fbff, #e8f2fa) !important;
+    }
+    aside.no-print {
+      background: #f4f8fc !important;
+      border-right: 1px solid #cbd9e6 !important;
+      box-shadow: 18px 0 48px -36px rgba(28,53,75,.55) !important;
+    }
+    aside.no-print > header {
+      background:
+        radial-gradient(circle at 0% 0%, rgba(235,152,36,.12), transparent 16rem),
+        linear-gradient(180deg, #ffffff 0%, #f2f8fd 100%) !important;
+      border-bottom: 1px solid #cbd9e6 !important;
+      box-shadow: 0 14px 32px -30px rgba(15,23,42,.45);
+    }
+    aside.no-print > section {
+      background:
+        linear-gradient(180deg, #f8fbff 0%, #eef6fc 42%, #f8fbff 100%) !important;
+    }
+    aside.no-print > footer {
+      background:
+        linear-gradient(180deg, #edf6fc 0%, #ffffff 100%) !important;
+      border-top: 1px solid #cbd9e6 !important;
+      box-shadow: 0 -16px 34px -34px rgba(15,23,42,.45);
+    }
+    main.flex-1 {
+      background:
+        radial-gradient(circle at 35% 0%, rgba(255,255,255,.70), transparent 28rem),
+        radial-gradient(circle at 100% 0%, rgba(37,99,235,.10), transparent 34rem),
+        linear-gradient(135deg, #dfeaf3, #edf4fa 55%, #dbe8f2) !important;
+    }
+    .card {
+      border-color: #cbd9e6 !important;
+      box-shadow: 0 18px 48px -42px rgba(28,53,75,.55) !important;
+    }
+    .input {
+      background: #edf3f8;
+      border-color: #c7d6e5;
+    }
+    .input:focus {
+      background: #ffffff;
+    }
+    .btn-muted {
+      background: rgba(255,255,255,.82);
+      border-color: #cbd9e6;
+      color: #334155;
+    }
+    aside.no-print h1 {
+      letter-spacing: -.035em;
+    }
+
     @media (max-width: 1100px) {
       body { overflow: auto !important; }
       .shell { height: auto !important; display: block !important; }
@@ -68,14 +144,14 @@
     }
   </style>
 </head>
-<body x-data="app()" x-init="init()" :style="`--accent:${theme.color};--accent-soft:${softColor(theme.color)}`" class="h-screen overflow-hidden">
+<body x-data="app()" x-init="init()" :style="`--accent:${theme.color};--accent-soft:${softColor(theme.color)};--accent-text:${theme.textColor || '#ffffff'}`" class="h-screen overflow-hidden">
   <div class="shell h-screen flex">
     <aside class="no-print w-[520px] h-full bg-slate-50 border-r border-slate-300 shadow-2xl flex flex-col z-20">
-      <header class="bg-white border-b border-slate-200 p-4 space-y-3">
+      <header class="sidebar-head p-4 space-y-3">
         <div class="flex items-start justify-between gap-3">
           <div>
-            <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs font-bold">
-              <a href="https://www.warenschmiede.com/" class="text-slate-500 hover:text-[var(--accent)]">← Zurück zur Homepage</a>
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-bold">
+              <button type="button" class="text-slate-500 hover:text-[var(--accent)] font-extrabold" onclick="window.WSToolMenu?.open()">☰ Warenschmiede Tools</button>
               <a href="ws_3d_print_kostenrechner_anleitung.html" class="text-slate-500 hover:text-[var(--accent)]">Anleitung öffnen</a>
             </div>
             <h1 class="text-xl font-extrabold text-slate-900 mt-2 leading-tight">Warenschmiede <br><span class="text-[var(--accent)]">3D-Druck Kostenrechner Plus</span></h1>
@@ -90,7 +166,7 @@
         </div>
       </header>
 
-      <section class="flex-1 overflow-y-auto p-4 space-y-4">
+      <section class="sidebar-work flex-1 overflow-y-auto p-4 space-y-4">
         <div class="card p-4">
           <div class="flex items-center justify-between mb-3">
             <h2 class="font-extrabold text-slate-800">Dokument</h2>
@@ -194,7 +270,7 @@
                       <div><label class="label">Lohn €/h</label><input type="number" class="input text-right" x-model.number="job.hourlyRate"></div>
                       <div><label class="label">Ausschuss %</label><input type="number" class="input text-right" x-model.number="job.failRate"></div>
                       <div><label class="label">Fixkosten €</label><input type="number" step="0.01" class="input text-right" x-model.number="job.fixedCost"></div>
-                      <div><label class="label">Marge %</label><input type="number" class="input text-right" x-model.number="job.marginPercent"></div>
+                      <div><label class="label">Aufschlag % <button type="button" class="tiny-help" data-help-title="Aufschlag" data-help-text="Der Aufschlag wird auf die Selbstkosten dieser Druckposition gerechnet. Selbstkosten sind Material, Strom, Maschine, Arbeit, Fixkosten und Ausschuss. Beispiel: 10 € Selbstkosten + 35 % Aufschlag = 13,50 € Netto-Stückpreis. Einmalige CAD-, Rüst- oder Versandkosten kannst du weiterhin frei als Zusatzposition eintragen.">?</button></label><input type="number" class="input text-right" x-model.number="job.marginPercent"></div>
                     </div>
                     <div class="bg-white rounded-xl border border-slate-200 p-3 text-xs space-y-1">
                       <template x-for="row in breakdown(job)" :key="row.label"><div class="flex justify-between"><span x-text="row.label"></span><strong class="mono" x-text="money(row.value)"></strong></div></template>
@@ -212,7 +288,7 @@
           </div>
         </div>
 
-        <div class="card p-4">
+        <div class="card extra-card p-4">
           <div class="flex items-center justify-between mb-3"><h2 class="font-extrabold text-slate-800">Zusatzpositionen</h2><button class="btn btn-soft !py-2" @click="extras.push({desc:'',qty:1,price:0,show:true})">+ Position</button></div>
           <div class="hidden md:grid grid-cols-[1fr_64px_94px_32px] gap-2 mb-2"><div class="minihead">Beschreibung</div><div class="minihead text-center">Menge</div><div class="minihead text-right">€/Stk</div><div></div></div>
           <div class="space-y-2">
@@ -228,7 +304,7 @@
         </div>
       </section>
 
-      <footer class="bg-white border-t border-slate-200 p-4 space-y-3">
+      <footer class="sidebar-foot p-4 space-y-3">
         <div class="grid grid-cols-3 gap-2 text-center">
           <div class="bg-slate-50 rounded-xl p-2"><div class="text-[10px] font-bold text-slate-400 uppercase">Netto</div><div class="mono font-extrabold" x-text="money(subtotal())"></div></div>
           <div class="bg-slate-50 rounded-xl p-2"><div class="text-[10px] font-bold text-slate-400 uppercase">Steuer</div><div class="mono font-extrabold" x-text="money(vat())"></div></div>
@@ -265,7 +341,7 @@
           <div class="flex gap-4 items-start min-w-0">
             <template x-if="company.logo"><img :src="company.logo" :style="`width:${company.logoWidth}px`" class="object-contain max-h-24"></template>
             <div>
-              <h1 class="text-3xl font-extrabold text-slate-900 leading-none" x-text="company.name || 'Ihre Firma'"></h1>
+              <template x-if="company.showName !== false"><h1 class="text-3xl font-extrabold text-slate-900 leading-none" x-text="company.name || 'Ihre Firma'"></h1></template>
               <p class="text-sm font-bold text-slate-500 mt-2" x-text="company.slogan"></p>
             </div>
           </div>
@@ -280,7 +356,7 @@
 
         <section x-show="page.first" class="flex justify-between gap-8 mb-6">
           <div class="w-[90mm]">
-            <div class="text-[8px] underline text-slate-400 mb-2"><span x-text="company.name || 'Ihre Firma'"></span> · <span x-text="company.street"></span> · <span x-text="company.zip"></span> <span x-text="company.city"></span></div>
+            <div class="text-[8px] underline text-slate-400 mb-2"><span x-text="company.showName !== false ? (company.name || 'Ihre Firma') : (company.owner || '')"></span><template x-if="company.street || company.zip || company.city"><span> · <span x-text="company.street"></span> · <span x-text="company.zip"></span> <span x-text="company.city"></span></span></template></div>
             <div class="font-extrabold text-slate-900" x-text="customer.name || 'Kundenname'"></div>
             <div class="whitespace-pre-line text-slate-600 text-sm" x-text="customer.address"></div>
             <template x-if="customer.contact"><div class="text-xs text-slate-500 mt-2">Ansprechpartner: <span x-text="customer.contact"></span></div></template>
@@ -345,7 +421,7 @@
         </template>
 
         <footer class="mt-auto pt-4 border-t border-slate-200 grid grid-cols-[1fr_1fr_auto] gap-4 text-[8px] text-slate-500 uppercase leading-relaxed">
-          <div><strong class="block text-slate-800" x-text="company.name || 'Ihre Firma'"></strong><span x-text="company.street"></span><br><span x-text="company.zip"></span> <span x-text="company.city"></span></div>
+          <div><strong class="block text-slate-800" x-text="company.showName !== false ? (company.name || 'Ihre Firma') : (company.owner || company.name || '')"></strong><span x-text="company.street"></span><br><span x-text="company.zip"></span> <span x-text="company.city"></span></div>
           <div x-show="showBankOnDocument()"><strong class="block text-slate-800">Bankverbindung</strong>IBAN: <span x-text="payment.iban"></span><br>BIC: <span x-text="payment.bic"></span><br><span x-text="payment.bank"></span></div>
           <div class="text-right flex flex-col items-end gap-1">
             <div x-show="page.last && qr.enabled" class="qrPrint w-[72px] h-[72px]"></div>
@@ -395,8 +471,8 @@
           <section x-show="activeTab==='design'" class="space-y-4">
             <h3 class="font-extrabold text-slate-900">Logo & Design</h3>
             <div class="grid md:grid-cols-2 gap-4">
-              <div class="card p-4 space-y-3"><label class="label">Logo hochladen</label><input type="file" accept="image/*" class="input" @change="loadLogo"><template x-if="company.logo"><img :src="company.logo" class="max-h-28 object-contain bg-slate-50 rounded-xl p-2 border"></template><label class="label">Logo-Breite px</label><input type="range" min="50" max="180" x-model.number="company.logoWidth" class="w-full"></div>
-              <div class="card p-4 space-y-3"><label class="label">Akzentfarbe</label><input type="color" class="input h-14" x-model="theme.color"><p class="text-sm text-slate-500">Die Farbe wird für Buttons, Linien und Summen genutzt.</p></div>
+              <div class="card p-4 space-y-3"><label class="label">Logo hochladen</label><input type="file" accept="image/*" class="input" @change="loadLogo"><template x-if="company.logo"><img :src="company.logo" class="max-h-28 object-contain bg-slate-50 rounded-xl p-2 border"></template><label class="label">Logo-Breite px</label><input type="range" min="50" max="180" x-model.number="company.logoWidth" class="w-full"><label class="flex items-center justify-between gap-3 text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-xl p-3 cursor-pointer" @click="company.showName = company.showName === false ? true : false"><span><strong>Firmenname im Dokument anzeigen</strong><br><span class="text-xs text-slate-500">Ausschalten, wenn das Logo den Namen bereits enthält.</span></span><span class="toggle" :class="company.showName !== false ? 'on' : ''"></span></label></div>
+              <div class="card p-4 space-y-3"><label class="label">Akzentfarbe</label><input type="color" class="input h-14" x-model="theme.color"><label class="label">Schriftfarbe auf Akzentflächen</label><input type="color" class="input h-14" x-model="theme.textColor"><p class="text-sm text-slate-500">Die Akzentfarbe wird für Buttons, Linien und Summen genutzt. Die Schriftfarbe hilft bei sehr hellen oder sehr dunklen Akzentfarben.</p></div>
             </div>
           </section>
 
@@ -424,7 +500,7 @@
           </section>
 
           <section x-show="activeTab==='presets'" class="space-y-5">
-            <h3 class="font-extrabold text-slate-900">Presets</h3><p class="hint">Die grauen Felder sind bewusst direkt editierbar. Die Spaltenüberschriften zeigen klar, ob dort Preis, Verbrauch, Last oder Marge eingetragen wird.</p>
+            <h3 class="font-extrabold text-slate-900">Presets</h3><p class="hint">Die grauen Felder sind bewusst direkt editierbar. Die Spaltenüberschriften zeigen klar, ob dort Preis, Verbrauch, Last oder Aufschlag eingetragen wird.</p>
             <div class="card p-4 space-y-3">
               <div class="flex justify-between items-start gap-3"><div><h4 class="font-extrabold">Materialien</h4><p class="hint">Name · Einkaufspreis pro kg · optionaler CO₂-Wert. Diese Werte werden in neue Druckpositionen übernommen.</p></div><button class="btn btn-soft" @click="addMaterial()">+ Material</button></div>
               <div class="hidden md:grid md:grid-cols-[1fr_110px_80px_32px] gap-2"><div class="minihead">Materialname</div><div class="minihead text-right">€/kg</div><div class="minihead text-right">CO₂ kg/kg</div><div></div></div>
@@ -436,9 +512,9 @@
               <template x-for="(p, idx) in presets.printers" :key="p.id"><div class="grid md:grid-cols-[1fr_100px_110px_100px_32px] gap-2"><input class="input" x-model="p.name" title="Druckername oder Druckergruppe" placeholder="Druckername"><input type="number" class="input text-right" x-model.number="p.watts" title="Durchschnittlicher Verbrauch in Watt" placeholder="Watt"><input type="number" step="0.01" class="input text-right" x-model.number="p.machineHourly" title="Maschinenkosten/Verschleiß pro Druckstunde" placeholder="€/h"><input type="number" class="input text-right" x-model.number="p.loadFactor" title="Durchschnittliche Last in Prozent" placeholder="Last %"><button class="btn btn-muted !p-2" @click="presets.printers.splice(idx,1)" title="Drucker löschen">×</button></div></template>
             </div>
             <div class="card p-4 space-y-3">
-              <div class="flex justify-between items-start gap-3"><div><h4 class="font-extrabold">Kalkulationsprofile</h4><p class="hint">Profile setzen Marge, Nacharbeit, Stundenlohn und Ausschuss automatisch. Ideal für Hobby, Verkauf, Express oder Prototypen.</p></div><button class="btn btn-soft" @click="addProfile()">+ Profil</button></div>
-              <div class="hidden md:grid md:grid-cols-[1fr_90px_90px_90px_90px_32px] gap-2"><div class="minihead">Profilname</div><div class="minihead text-right">Marge %</div><div class="minihead text-right">Arbeit min</div><div class="minihead text-right">Lohn €/h</div><div class="minihead text-right">Ausschuss %</div><div></div></div>
-              <template x-for="(p, idx) in presets.profiles" :key="p.id"><div class="grid md:grid-cols-[1fr_90px_90px_90px_90px_32px] gap-2"><input class="input" x-model="p.name" title="Profilname, z. B. Standard Verkauf" placeholder="Profilname"><input type="number" class="input text-right" x-model.number="p.marginPercent" title="Gewinnmarge in Prozent" placeholder="Marge %"><input type="number" class="input text-right" x-model.number="p.laborMinutes" title="Nachbearbeitung/Arbeitszeit in Minuten pro Stück" placeholder="Min"><input type="number" class="input text-right" x-model.number="p.hourlyRate" title="Interner Stundenlohn in Euro pro Stunde" placeholder="€/h"><input type="number" class="input text-right" x-model.number="p.failRate" title="Ausschuss-/Fehlerrate in Prozent" placeholder="%"><button class="btn btn-muted !p-2" @click="presets.profiles.splice(idx,1)" title="Profil löschen">×</button></div></template>
+              <div class="flex justify-between items-start gap-3"><div><h4 class="font-extrabold">Kalkulationsprofile</h4><p class="hint">Profile setzen Aufschlag, Nacharbeit, Stundenlohn und Ausschuss automatisch. Ideal für Hobby, Verkauf, Express oder Prototypen.</p></div><button class="btn btn-soft" @click="addProfile()">+ Profil</button></div>
+              <div class="hidden md:grid md:grid-cols-[1fr_90px_90px_90px_90px_32px] gap-2"><div class="minihead">Profilname</div><div class="minihead text-right">Aufschlag %</div><div class="minihead text-right">Arbeit min</div><div class="minihead text-right">Lohn €/h</div><div class="minihead text-right">Ausschuss %</div><div></div></div>
+              <template x-for="(p, idx) in presets.profiles" :key="p.id"><div class="grid md:grid-cols-[1fr_90px_90px_90px_90px_32px] gap-2"><input class="input" x-model="p.name" title="Profilname, z. B. Standard Verkauf" placeholder="Profilname"><input type="number" class="input text-right" x-model.number="p.marginPercent" title="Aufschlag in Prozent auf die Selbstkosten" placeholder="Aufschlag %"><input type="number" class="input text-right" x-model.number="p.laborMinutes" title="Nachbearbeitung/Arbeitszeit in Minuten pro Stück" placeholder="Min"><input type="number" class="input text-right" x-model.number="p.hourlyRate" title="Interner Stundenlohn in Euro pro Stunde" placeholder="€/h"><input type="number" class="input text-right" x-model.number="p.failRate" title="Ausschuss-/Fehlerrate in Prozent" placeholder="%"><button class="btn btn-muted !p-2" @click="presets.profiles.splice(idx,1)" title="Profil löschen">×</button></div></template>
             </div>
           </section>
 
@@ -644,14 +720,15 @@
       </div>
     </div>
   </div>
+  <div id="calcHelpPop" class="help-pop"></div>
 
 
 <script>
 function app(){ return {
-  appVersion:'1.9.2',
+  appVersion:'1.9.4',
   settingsOpen:false, historyOpen:false, preflightOpen:false, historyNotice:'', historySearch:'', historyDateFilter:'all', historySort:'newest', activeTab:'firma', tabs:[{id:'firma',label:'Firma'},{id:'design',label:'Logo & Design'},{id:'zahlung',label:'Zahlung'},{id:'steuer',label:'Steuer'},{id:'presets',label:'Presets'},{id:'qr',label:'QR-Code'},{id:'ausgabe',label:'Ausgabe'},{id:'daten',label:'Daten'}],
-  theme:{color:'#2563eb'},
-  company:{name:'',owner:'',slogan:'',street:'',zip:'',city:'',email:'',phone:'',logo:'',logoWidth:90},
+  theme:{color:'#2563eb', textColor:'#ffffff'},
+  company:{name:'',owner:'',slogan:'',street:'',zip:'',city:'',email:'',phone:'',logo:'',logoWidth:90,showName:true},
   customer:{name:'',address:'',id:'',contact:''},
   doc:{type:'angebot',number:'ANG-2026-001',date:new Date().toISOString().slice(0,10),project:'',validUntil:'',dueDate:''},
   payment:{bank:'',accountName:'',iban:'',bic:'',days:14,link:'',showOnOffer:false},
@@ -659,7 +736,31 @@ function app(){ return {
   qr:{enabled:false,type:'url',value:'https://www.warenschmiede.com/',label:'Zur Website'},
   output:{compactPdf:false, compactForceArticle:false, showStorageInfo:true},
   presets:{materials:[],printers:[],profiles:[]}, jobs:[], extras:[{desc:'Versandpauschale',qty:1,price:4.90}], history:[],
-  init(){ const hist=localStorage.getItem('ws3d-plus-history'); if(hist){ try{ this.history=JSON.parse(hist)||[]; }catch(e){ this.history=[]; } } const saved=localStorage.getItem('ws3d-plus'); if(saved){ try{ this.applySnapshot(JSON.parse(saved)); }catch(e){} } else { this.seed(); this.addJob(); } this.$watch('$data',()=>{ localStorage.setItem('ws3d-plus', JSON.stringify(this.snapshot())); this.$nextTick(()=>this.renderQr()); },{deep:true}); this.$nextTick(()=>this.renderQr()); },
+
+  setupMiniHelp(){
+    const pop=document.getElementById('calcHelpPop');
+    if(!pop) return;
+    const hide=()=>{ pop.style.display='none'; };
+    document.addEventListener('click', e=>{
+      const btn=e.target.closest('[data-help-title][data-help-text]');
+      if(!btn){ if(!e.target.closest('.help-pop')) hide(); return; }
+      e.preventDefault(); e.stopPropagation();
+      pop.innerHTML='<strong>'+this.escapeHtml(btn.dataset.helpTitle||'Hinweis')+'</strong>'+this.escapeHtml(btn.dataset.helpText||'');
+      pop.style.display='block';
+      const r=btn.getBoundingClientRect();
+      let left=r.left, top=r.bottom+10;
+      pop.style.left=left+'px'; pop.style.top=top+'px';
+      const pr=pop.getBoundingClientRect();
+      if(pr.right>window.innerWidth-12) left=window.innerWidth-pr.width-12;
+      if(pr.bottom>window.innerHeight-12) top=r.top-pr.height-10;
+      pop.style.left=Math.max(12,left)+'px'; pop.style.top=Math.max(12,top)+'px';
+    });
+    window.addEventListener('scroll', hide, true);
+    window.addEventListener('resize', hide);
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape') hide(); });
+  },
+  escapeHtml(s){ return String(s??'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m] || m)); },
+  init(){ this.setupMiniHelp(); const hist=localStorage.getItem('ws3d-plus-history'); if(hist){ try{ this.history=JSON.parse(hist)||[]; }catch(e){ this.history=[]; } } const saved=localStorage.getItem('ws3d-plus'); if(saved){ try{ this.applySnapshot(JSON.parse(saved)); }catch(e){} } else { this.seed(); this.addJob(); } if(!this.theme) this.theme={color:'#2563eb',textColor:'#ffffff'}; if(!this.theme.textColor) this.theme.textColor='#ffffff'; this.$watch('$data',()=>{ localStorage.setItem('ws3d-plus', JSON.stringify(this.snapshot())); this.$nextTick(()=>this.renderQr()); },{deep:true}); this.$nextTick(()=>this.renderQr()); },
   applySnapshot(data){ if(!data) return; const keepHistory=this.history; const keepOpen=this.historyOpen; const keepNotice=this.historyNotice; Object.assign(this, data); if(!this.output) this.output={compactPdf:false,compactForceArticle:false,showStorageInfo:true}; if(this.output.compactForceArticle===undefined) this.output.compactForceArticle=false; this.history=keepHistory; this.historyOpen=keepOpen; this.historyNotice=keepNotice; },
   seed(){ this.presets.materials=[{id:'pla',name:'PLA Standard',priceKg:20,co2:2.5},{id:'pla_plus',name:'PLA+',priceKg:25,co2:2.6},{id:'petg',name:'PETG',priceKg:25,co2:3.5},{id:'asa',name:'ASA',priceKg:35,co2:4.2},{id:'tpu',name:'TPU',priceKg:38,co2:3.2},{id:'custom',name:'Eigenes Material',priceKg:25,co2:0}]; this.presets.printers=[{id:'a1',name:'Bambu Lab A1 / ähnlich',watts:180,machineHourly:1.5,loadFactor:70},{id:'x1c',name:'Bambu Lab X1C / ähnlich',watts:250,machineHourly:2.5,loadFactor:75},{id:'custom',name:'Eigener Drucker',watts:200,machineHourly:2,loadFactor:70}]; this.presets.profiles=[{id:'standard',name:'Standard Verkauf',marginPercent:35,laborMinutes:10,hourlyRate:50,failRate:5},{id:'hobby',name:'Selbstkosten / Hobby',marginPercent:10,laborMinutes:5,hourlyRate:25,failRate:3},{id:'business',name:'Gewerblich sauber',marginPercent:60,laborMinutes:15,hourlyRate:60,failRate:8},{id:'express',name:'Express / Einzelstück',marginPercent:85,laborMinutes:20,hourlyRate:70,failRate:10}]; },
   softColor(hex){ const h=hex.replace('#',''); const r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16); return `rgba(${r},${g},${b},.13)`; },
@@ -671,8 +772,8 @@ function app(){ return {
   toggleManual(j){ j.manual=!j.manual; if(j.manual) j.manualPrice=Number(this.calculatedUnit(j).toFixed(2)); },
   calcParts(j){ const mat=(Number(j.weight)||0)/1000*(Number(j.priceKg)||0); const kwh=(Number(j.watts)||0)*(Number(j.loadFactor)||0)/100/1000*(Number(j.time)||0); const energy=kwh*(Number(j.energyPrice)||0); const machine=(Number(j.time)||0)*(Number(j.machineHourly)||0); const labor=(Number(j.laborMinutes)||0)/60*(Number(j.hourlyRate)||0); const base=mat+energy+machine+labor+(Number(j.fixedCost)||0); const fail=base*(Number(j.failRate)||0)/100; const self=base+fail; const margin=self*(Number(j.marginPercent)||0)/100; return {mat,energy,machine,labor,fix:Number(j.fixedCost)||0,fail,self,margin,total:self+margin}; },
   calculatedUnit(j){ return this.calcParts(j).total; }, unitPrice(j){ return j.manual ? (Number(j.manualPrice)||0) : this.calculatedUnit(j); }, positionTotal(j){ return this.unitPrice(j)*(Number(j.quantity)||0); },
-  breakdown(j){ const p=this.calcParts(j); return [{label:'Material',value:p.mat},{label:'Strom',value:p.energy},{label:'Maschine',value:p.machine},{label:'Arbeit',value:p.labor},{label:'Fixkosten',value:p.fix},{label:'Ausschuss',value:p.fail},{label:'Selbstkosten',value:p.self},{label:'Marge',value:p.margin},{label:'Verkaufspreis netto',value:p.total}]; },
-  documentLines(){ const lines=this.jobs.map((j,i)=>{ const m=this.presets.materials.find(x=>x.id===j.materialId); const mode=(this.output?.compactPdf && this.output?.compactForceArticle) ? 'compact' : j.publicMode; let details=''; if(mode==='normal') details=`Material: ${m?.name||''} · ${j.weight||0} g · ${j.time||0} h Druckzeit`; let transparent=''; if(mode==='transparent'){ const p=this.calcParts(j); transparent=`Kalkulation sichtbar:\nMaterial ${this.money(p.mat)}, Strom ${this.money(p.energy)}, Maschine ${this.money(p.machine)}, Arbeit ${this.money(p.labor)}, Ausschuss/Fix ${this.money(p.fail+p.fix)}, Marge ${this.money(p.margin)}`; } return {key:j.id,desc:j.name||'3D-Druck Bauteil',qty:j.quantity,price:this.unitPrice(j),total:this.positionTotal(j),details,transparent,units: transparent ? (this.output?.compactPdf?3:4) : (details ? 2 : 1)}; }); this.extras.forEach((e,i)=>lines.push({key:'e'+i,desc:e.desc||'Zusatzposition',qty:e.qty||1,price:e.price||0,total:(e.qty||1)*(e.price||0),units:1})); return lines.map((l,i)=>({...l,pos:String(i+1).padStart(2,'0')})); },
+  breakdown(j){ const p=this.calcParts(j); return [{label:'Material',value:p.mat},{label:'Strom',value:p.energy},{label:'Maschine',value:p.machine},{label:'Arbeit',value:p.labor},{label:'Fixkosten',value:p.fix},{label:'Ausschuss',value:p.fail},{label:'Selbstkosten',value:p.self},{label:'Aufschlag',value:p.margin},{label:'Verkaufspreis netto',value:p.total}]; },
+  documentLines(){ const lines=this.jobs.map((j,i)=>{ const m=this.presets.materials.find(x=>x.id===j.materialId); const mode=(this.output?.compactPdf && this.output?.compactForceArticle) ? 'compact' : j.publicMode; let details=''; if(mode==='normal') details=`Material: ${m?.name||''} · ${j.weight||0} g · ${j.time||0} h Druckzeit`; let transparent=''; if(mode==='transparent'){ const p=this.calcParts(j); transparent=`Kalkulation sichtbar:\nMaterial ${this.money(p.mat)}, Strom ${this.money(p.energy)}, Maschine ${this.money(p.machine)}, Arbeit ${this.money(p.labor)}, Ausschuss/Fix ${this.money(p.fail+p.fix)}, Aufschlag ${this.money(p.margin)}`; } return {key:j.id,desc:j.name||'3D-Druck Bauteil',qty:j.quantity,price:this.unitPrice(j),total:this.positionTotal(j),details,transparent,units: transparent ? (this.output?.compactPdf?3:4) : (details ? 2 : 1)}; }); this.extras.forEach((e,i)=>lines.push({key:'e'+i,desc:e.desc||'Zusatzposition',qty:e.qty||1,price:e.price||0,total:(e.qty||1)*(e.price||0),units:1})); return lines.map((l,i)=>({...l,pos:String(i+1).padStart(2,'0')})); },
   getPages(){ const all=this.documentLines(); const pages=[]; let cur=[]; let used=0; let limit=this.output?.compactPdf?16:10; const nextLimit=this.output?.compactPdf?24:16; const push=()=>{ pages.push({number:pages.length+1,first:pages.length===0,lines:cur}); cur=[]; used=0; limit=nextLimit; }; all.forEach(line=>{ const u=Math.max(1,line.units||1); if(cur.length && used+u>limit) push(); cur.push(line); used+=u; }); if(cur.length || !pages.length) push(); pages.forEach((p,i)=>{ p.totalPages=pages.length; p.last=i===pages.length-1; }); return pages; },
   subtotal(){ return this.documentLines().reduce((s,l)=>s+(Number(l.total)||0),0); }, vat(){ return this.tax.enabled ? this.subtotal()*(Number(this.tax.rate)||0)/100 : 0; }, total(){ return this.subtotal()+this.vat(); }, money(v){ return new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(Number(v)||0); }, date(d){ return d?new Date(d+'T00:00:00').toLocaleDateString('de-DE'):''; },
   titleForDoc(){ return this.doc.type==='rechnung'?'Rechnung':this.doc.type==='lieferschein'?'Lieferschein':'Angebot'; }, setDocType(t){ this.doc.type=t; const core=(this.doc.number||'001').replace(/^(ANG|RE|LS)-/,''); this.doc.number=(t==='rechnung'?'RE-':t==='lieferschein'?'LS-':'ANG-')+core; },

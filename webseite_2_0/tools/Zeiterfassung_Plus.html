@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <title>Zeiterfassung Plus v1 | Warenschmiede</title>
+  <title>Zeiterfassung Plus v1.2 | Warenschmiede</title>
   <meta name="description" content="Lokale Zeiterfassung für Handy und PC mit Monatsübersicht, Backup, CSV und sauberem PDF-/Druckexport." />
   <style>
     :root {
@@ -583,7 +583,7 @@
   <header class="app-header no-print">
     <div class="header-inner">
       <div class="brand">
-        <h1>⏱️ Zeiterfassung Plus <span style="font-size:.78rem;opacity:.7;font-weight:700;">v1</span></h1>
+        <h1>⏱️ Zeiterfassung Plus <span style="font-size:.78rem;opacity:.7;font-weight:700;">v1.2</span></h1>
         <small>lokal · ohne Konto · PDF/CSV/Backup</small>
       </div>
       <div class="top-actions">
@@ -633,8 +633,8 @@
           <div class="field default-field"><label>Standard Start</label><input id="setStart" type="time" value="07:00" /></div>
           <div class="field default-field"><label>Standard Ende</label><input id="setEnd" type="time" value="16:00" /></div>
           <div class="field default-field"><label>Standard Pause Minuten</label><input id="setPause" type="number" min="0" step="5" value="30" /></div>
-          <label class="check-row full"><input id="setUseNote" type="checkbox" onchange="syncOptionVisibility()" /> Notizfeld verwenden</label>
-          <div class="field full note-field"><label>Notiz Standard</label><input id="setNote" placeholder="optional" /></div>
+          <label class="check-row full"><input id="setUseNote" type="checkbox" onchange="syncOptionVisibility()" /> Standardnotiz verwenden</label>
+          <div class="field full note-field"><label>Standardnotiz für neue Einträge</label><input id="setNote" placeholder="z. B. Projekt, Baustelle, Schicht ..." /></div>
         </div>
         <div class="form-actions">
           <button class="btn btn-green" onclick="saveSettings()">Standardwerte speichern</button>
@@ -707,7 +707,7 @@
         <div class="field"><label>Start</label><input id="entryStart" type="time" /></div>
         <div class="field"><label>Ende</label><input id="entryEnd" type="time" /></div>
         <div class="field"><label>Pause Minuten</label><input id="entryPause" type="number" min="0" step="5" /></div>
-        <div class="field"><label>Dauer</label><input id="entryDurationPreview" readonly /></div>
+        <div class="field"><label>Dauer (automatisch)</label><input id="entryDurationPreview" readonly /></div>
         <div class="field full"><label>Notiz</label><input id="entryNote" placeholder="z. B. Inventur, Samstag, Projekt..." /></div>
       </div>
       <div class="form-actions">
@@ -724,7 +724,7 @@
         <p id="printMonth">Monat</p>
       </div>
       <div style="text-align:right;">
-        <strong>Zeiterfassung Plus v1</strong><br />
+        <strong>Zeiterfassung Plus v1.2</strong><br />
         <span>Erstellt: <span id="printCreated"></span></span>
       </div>
     </div>
@@ -959,7 +959,6 @@
       $('entryEnd').value = preset.end || (settings.useDefaults ? settings.end : '');
       $('entryPause').value = preset.pause ?? (settings.useDefaults ? settings.pause : 0);
       $('entryNote').value = preset.note ?? (settings.useNote ? settings.note : '');
-      $('entryNote').closest('.field').classList.toggle('hidden', !settings.useNote);
       updateDurationPreview();
       $('entryModal').classList.remove('hidden');
       setTimeout(() => $('entryDate').focus(), 60);
@@ -1004,7 +1003,7 @@
       const start = $('entryStart').value;
       const end = $('entryEnd').value;
       const pause = Number($('entryPause').value) || 0;
-      const note = settings.useNote ? $('entryNote').value.trim() : '';
+      const note = $('entryNote').value.trim();
       if (!date || !start || !end) { alert('Bitte Datum, Start und Ende ausfüllen.'); return; }
       const duration = calcDuration(start, end, pause);
       if (duration <= 0) { alert('Die berechnete Arbeitszeit ist 0 oder negativ. Bitte Zeiten und Pause prüfen.'); return; }
@@ -1041,7 +1040,15 @@
       const [sh, sm] = String(start).split(':').map(Number);
       const [eh, em] = String(end).split(':').map(Number);
       if (![sh, sm, eh, em].every(Number.isFinite)) return 0;
-      return (eh * 60 + em) - (sh * 60 + sm) - (Number(pause) || 0);
+
+      const startMinutes = sh * 60 + sm;
+      let endMinutes = eh * 60 + em;
+
+      // Liegt die Endzeit vor der Startzeit, endet die Schicht am Folgetag.
+      // Beispiel: 23:00 bis 12:00 = 13:00 Stunden vor Abzug der Pause.
+      if (endMinutes < startMinutes) endMinutes += 24 * 60;
+
+      return endMinutes - startMinutes - (Number(pause) || 0);
     }
 
     function formatMinutes(min) {
@@ -1179,7 +1186,7 @@
       if (name) parts.push(name);
       if (company) parts.push(company);
       parts.push(useDefaults ? 'Standardzeiten aktiv' : 'Zeiten manuell');
-      parts.push(useNote ? 'Notizen aktiv' : 'ohne Notizen');
+      parts.push(useNote ? 'Standardnotiz aktiv' : 'Notizen je Tag möglich');
       if ($('settingsSummary')) $('settingsSummary').textContent = parts.join(' · ');
     }
 

@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Werkstatt-Rechner Metall Plus – Werkstatt-Rechner</title>
   <meta name="description" content="Moderner heller Werkstatt-Rechner für Schnittdaten, Toleranzen, ISO-Passungen, Gewinde, Schrauben, Einheiten, Winkel und Materialgewicht.">
-  <link rel="canonical" href="https://www.warenschmiede.com/tools/werkstatt-rechner.html">
-  <meta property="og:url" content="https://www.warenschmiede.com/tools/werkstatt-rechner.html">
-  <meta name="twitter:url" content="https://www.warenschmiede.com/tools/werkstatt-rechner.html">
+  <link rel="canonical" href="https://www.warenschmiede.com/webseite_2_0/tools/werkstatt-rechner.html">
+  <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
+  <meta property="og:url" content="https://www.warenschmiede.com/webseite_2_0/tools/werkstatt-rechner.html">
+  <meta name="twitter:url" content="https://www.warenschmiede.com/webseite_2_0/tools/werkstatt-rechner.html">
   <style>
     :root {
       --bg:#f4f7fb;
@@ -62,20 +63,24 @@
       border-bottom:1px solid var(--line);
     }
     .topbar-inner{
-      max-width:1500px;margin:auto;padding:12px clamp(14px,2vw,28px);
+      max-width:1840px;margin:auto;padding:12px clamp(14px,2vw,28px);
       display:flex;justify-content:space-between;align-items:center;gap:14px;
     }
     .brand{display:flex;align-items:center;gap:12px;min-width:0}
     .mark{
-      width:48px;height:48px;border-radius:16px;display:grid;place-items:center;color:#fff;
-      background:linear-gradient(135deg,var(--blue),#0ea5e9 55%,var(--orange));
-      box-shadow:0 16px 32px -22px var(--blue);
+      width:56px;height:56px;border-radius:18px;display:grid;place-items:center;
+      background:rgba(255,255,255,.62);
+      border:1px solid color-mix(in srgb,var(--orange) 36%,var(--line));
+      box-shadow:0 16px 34px -24px rgba(15,23,42,.62),0 0 0 4px rgba(249,115,22,.06);
       flex:0 0 auto;
-      font-size:1.35rem;
+      padding:4px;
+      overflow:hidden;
     }
+    .mark img{width:100%;height:100%;object-fit:contain;display:block;border-radius:14px}
     .brand h1{margin:0;font-size:clamp(1.05rem,2vw,1.38rem);line-height:1.08;letter-spacing:-.02em}
     .brand small{display:block;color:var(--muted);font-size:.76rem;margin-top:3px}
-    .top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+    .top-actions .ws-tool-menu-btn{width:52px;height:52px;border-radius:16px;flex:0 0 auto}
     .btn{
       border:1px solid var(--line);background:var(--paper);color:var(--text);
       border-radius:999px;padding:10px 14px;font-weight:800;font-size:.88rem;cursor:pointer;
@@ -86,7 +91,7 @@
     .btn-primary{background:linear-gradient(135deg,var(--red),#ef4444);border-color:transparent;color:#fff}
     .btn-blue{background:linear-gradient(135deg,var(--blue),var(--blue2));border-color:transparent;color:#fff}
     .btn-green{background:linear-gradient(135deg,#047857,#10b981);border-color:transparent;color:#fff}
-    .shell{max-width:1500px;margin:auto;padding:clamp(14px,2vw,28px)}
+    .shell{width:100%;max-width:1840px;margin:auto;padding:clamp(10px,1.2vw,22px)}
     .hero{
       border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);overflow:hidden;
       background:
@@ -182,6 +187,14 @@
       border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,var(--paper-soft),var(--paper));
       padding:16px;min-height:180px;display:grid;place-items:center;color:var(--muted)
     }
+    .fit-visual-img{
+      width:100%;
+      max-width:920px;
+      height:auto;
+      display:block;
+      border-radius:18px;
+      box-shadow:0 18px 44px -36px rgba(15,23,42,.55);
+    }
     .shaft-visual{width:min(420px,100%);height:180px;position:relative}
     .hole{position:absolute;left:8%;right:8%;top:42%;height:28px;border-radius:999px;background:color-mix(in srgb,var(--green) 25%,transparent);border:2px solid var(--green)}
     .shaft{position:absolute;left:14%;right:14%;top:51%;height:22px;border-radius:999px;background:color-mix(in srgb,var(--blue) 25%,transparent);border:2px solid var(--blue)}
@@ -193,6 +206,35 @@
     .history{display:grid;gap:8px;margin-top:12px;max-height:210px;overflow:auto}
     .history-item{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:10px;font-size:.8rem;color:var(--muted);cursor:pointer}
     .history-item b{display:block;color:var(--text);margin-bottom:3px}
+
+    .tool-project-fields{border:1px solid color-mix(in srgb,var(--orange) 22%,var(--line));background:color-mix(in srgb,var(--orange) 5%,var(--paper));border-radius:18px;padding:12px;display:grid;gap:12px}
+    .tool-basket-actions{display:flex;flex-wrap:wrap;gap:8px}
+    .tabs-row{display:flex;align-items:center;gap:10px}
+    .tabs-row .tabs{flex:1;min-width:0}
+    .tabs-db-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .tool-save-note{margin-top:-4px;color:var(--muted);font-size:.78rem;line-height:1.35}
+    @media(max-width:980px){.tabs-row{display:block}.tabs-db-actions{margin-top:8px}}
+    .tool-list{display:grid;gap:8px;max-height:360px;overflow:auto;padding-right:2px}
+    .tool-mini-card{border:1px solid var(--line);background:var(--paper);border-radius:16px;padding:10px 11px;display:grid;gap:5px;cursor:pointer;transition:.16s ease;position:relative}
+    .tool-mini-card:hover,.tool-mini-card.is-active{transform:translateY(-1px);border-color:color-mix(in srgb,var(--blue) 46%,var(--line));box-shadow:0 0 0 4px color-mix(in srgb,var(--blue) 10%,transparent)}
+    .tool-mini-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;font-weight:950;color:var(--text)}
+    .tool-mini-meta{display:flex;flex-wrap:wrap;gap:6px;color:var(--muted);font-size:.76rem;font-weight:850}
+    .tool-mini-meta span{border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));background:color-mix(in srgb,var(--blue) 5%,var(--paper));border-radius:999px;padding:3px 7px}
+    .tool-mini-actions{display:flex;gap:6px;justify-content:flex-end}.tool-mini-actions button{border:1px solid var(--line);background:var(--paper-soft);border-radius:999px;padding:5px 8px;font-size:.72rem;font-weight:900;cursor:pointer;color:var(--text)}
+    .tool-empty{border:1px dashed var(--line);border-radius:16px;padding:14px;color:var(--muted);font-size:.84rem;line-height:1.45;background:color-mix(in srgb,var(--paper-soft) 75%,transparent)}
+    .modal-large{max-width:min(1720px,calc(100vw - 28px));width:min(1720px,calc(100vw - 28px));height:min(88vh,920px)}
+    .modal-large .modal-body{height:calc(100% - 84px);display:grid;grid-template-rows:auto 1fr;min-height:0}
+    .project-search{margin-bottom:14px;min-height:48px;font-size:1rem}
+    .project-browser{display:grid;grid-template-columns:minmax(330px,42%) minmax(420px,1fr);gap:14px;min-height:0}
+    .project-list-panel,.project-detail-panel{border:1px solid var(--line);border-radius:18px;background:var(--paper-soft);min-height:0;overflow:hidden;display:flex;flex-direction:column}
+    .project-list-head,.project-detail-head{padding:12px 14px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,color-mix(in srgb,#eaf3ff 76%,transparent),transparent)}
+    .project-list-head h3,.project-detail-head h3{margin:0;font-size:1rem}.project-list-head p,.project-detail-head p{margin:4px 0 0;color:var(--muted);font-size:.82rem}
+    .project-table-wrap{overflow:auto;min-height:0}.project-table{width:100%;border-collapse:collapse;font-size:.88rem}.project-table th{position:sticky;top:0;z-index:1}.project-row{cursor:pointer}.project-row:hover td{background:color-mix(in srgb,var(--blue) 7%,var(--paper-soft))}.project-row.is-active td{background:color-mix(in srgb,var(--blue) 13%,var(--paper-soft));color:var(--text);font-weight:850}.project-row td{vertical-align:top}.project-row small{display:block;color:var(--muted);font-weight:700;margin-top:2px}
+    .project-detail{padding:16px;overflow:auto;min-height:0;display:grid;gap:14px}.project-detail h3{margin:0;font-size:1.25rem}.project-detail-meta{display:flex;flex-wrap:wrap;gap:8px}.project-detail-badge{border:1px solid var(--line);border-radius:999px;background:var(--paper);padding:6px 10px;font-size:.78rem;font-weight:900;color:var(--muted)}.project-detail-desc{border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:12px;color:var(--muted);line-height:1.5}.project-tool-list{display:grid;gap:8px}.project-tool-row{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:10px}.project-tool-row b{font-family:var(--mono)}.project-tool-row span{color:var(--muted);font-size:.82rem}.project-detail-actions{display:flex;gap:10px;flex-wrap:wrap;position:sticky;bottom:0;padding-top:8px;background:linear-gradient(180deg,transparent,var(--paper-soft) 30%)}
+    .project-empty-state{border:1px dashed var(--line);border-radius:18px;padding:24px;text-align:center;color:var(--muted);background:var(--paper)}
+    @media(max-width:980px){.modal-large{height:min(92vh,920px)}.project-browser{grid-template-columns:1fr}.project-detail-panel{min-height:360px}}
+    .btn-small{min-height:32px;padding:7px 10px;font-size:.76rem}.btn-red{background:linear-gradient(135deg,#dc2626,#ef4444);border-color:transparent;color:#fff}
+
     dialog{border:0;border-radius:24px;max-width:min(760px,calc(100vw - 24px));background:var(--paper);color:var(--text);box-shadow:0 32px 100px -48px rgba(0,0,0,.95);padding:0}
     dialog::backdrop{background:rgba(15,23,42,.55);backdrop-filter:blur(5px)}
     .modal-head{display:flex;justify-content:space-between;gap:14px;align-items:center;border-bottom:1px solid var(--line);padding:18px 20px}
@@ -201,6 +243,47 @@
     .x{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--text);cursor:pointer}
     .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(18px);opacity:0;background:#0f172a;color:#fff;border-radius:999px;padding:11px 16px;font-weight:900;pointer-events:none;transition:.22s ease;z-index:80}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    /* v4 Verständlichkeit & Kompaktstart */
+    .shell{max-width:1840px;padding-top:14px}
+    .tabs-wrap{top:82px;margin:14px 0 16px}
+    .tabs{border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(232,241,249,.82));box-shadow:0 18px 44px -38px rgba(31,48,66,.65)}
+    .tab-btn.active{box-shadow:0 0 0 3px rgba(249,115,22,.13),0 13px 28px -22px var(--blue)}
+    .panel{background:linear-gradient(180deg,color-mix(in srgb,var(--paper) 96%,transparent),color-mix(in srgb,var(--paper-soft) 70%,var(--paper)));}
+    .panel-head{background:linear-gradient(135deg,rgba(47,142,223,.10),rgba(249,115,22,.035));}
+    .help-dot{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:999px;border:1px solid color-mix(in srgb,var(--blue) 48%,var(--line));background:var(--paper);color:var(--blue);font-size:.72rem;font-weight:1000;margin-left:5px;cursor:help;position:relative;text-transform:none;letter-spacing:0;vertical-align:middle;z-index:20}
+    .ws-help-pop{position:fixed;z-index:12000;max-width:min(340px,calc(100vw - 24px));padding:12px 13px;border-radius:14px;border:1px solid color-mix(in srgb,var(--blue) 34%,var(--line));background:#fff;color:#102033;box-shadow:0 18px 44px -24px rgba(15,23,42,.88);font-size:.78rem;font-weight:760;line-height:1.45;text-align:left;letter-spacing:0;text-transform:none;white-space:normal;pointer-events:none;filter:none;text-shadow:none;opacity:0;transform:translateY(4px);transition:opacity .10s ease, transform .10s ease}
+    .ws-help-pop.show{opacity:1;transform:translateY(0)}
+    .ws-help-pop:before{content:"";position:absolute;left:var(--arrow-left,22px);top:-7px;width:12px;height:12px;background:#fff;border-left:1px solid color-mix(in srgb,var(--blue) 34%,var(--line));border-top:1px solid color-mix(in srgb,var(--blue) 34%,var(--line));transform:rotate(45deg)}
+    .ws-help-pop.above:before{top:auto;bottom:-7px;border-left:0;border-top:0;border-right:1px solid color-mix(in srgb,var(--blue) 34%,var(--line));border-bottom:1px solid color-mix(in srgb,var(--blue) 34%,var(--line))}
+    html[data-theme="dark"] .ws-help-pop{background:#111827;color:#e6edf7;border-color:#365476;box-shadow:0 18px 44px -20px rgba(0,0,0,.95)}
+    html[data-theme="dark"] .ws-help-pop:before{background:#111827;border-color:#365476}
+
+    .cut-mode-hint{border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));background:color-mix(in srgb,var(--blue) 5%,var(--paper));border-left:4px solid var(--blue);border-radius:16px;padding:11px 12px;color:var(--muted);font-size:.84rem;line-height:1.45}
+    .cut-mode-hint b{color:var(--text)}
+    .is-disabled-field{opacity:.55}
+    input:disabled, select:disabled{cursor:not-allowed;background:color-mix(in srgb,var(--paper-soft) 82%,var(--paper));color:color-mix(in srgb,var(--muted) 74%,transparent)}
+    .metric small.metric-sub{display:block;color:var(--muted);font-size:.72rem;font-weight:750;margin-top:2px}
+    .cnc-display{margin-top:14px;border-radius:22px;padding:16px;border:1px solid color-mix(in srgb,var(--blue) 24%,var(--line));background:linear-gradient(145deg,#0c1726,#16273a);color:#dff7ff;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 18px 42px -36px rgba(15,23,42,.9);font-family:var(--mono)}
+    [data-theme="dark"] .cnc-display{background:linear-gradient(145deg,#07101c,#101f31)}
+    .cnc-screen-head{display:flex;justify-content:space-between;gap:12px;color:#65e7ff;font-size:.72rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+    .cnc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+    .cnc-line{display:flex;justify-content:space-between;gap:10px;border:1px solid rgba(101,231,255,.16);border-radius:12px;padding:9px 10px;background:rgba(255,255,255,.035)}
+    .cnc-line span{color:#7f9eb7;font-size:.78rem;font-weight:900}.cnc-line strong{color:#f8fbff;font-size:1rem}
+    .cnc-edit{display:grid;gap:4px;border:1px solid rgba(101,231,255,.16);border-radius:12px;padding:7px 8px;background:rgba(255,255,255,.035)}
+    .cnc-edit label{margin:0;color:#7f9eb7;font-family:var(--mono);font-size:.68rem;font-weight:900;text-transform:none;letter-spacing:.02em;display:flex;justify-content:space-between;gap:5px;min-height:auto!important}
+    .cnc-edit input{width:100%;min-height:34px!important;padding:6px 7px!important;border-radius:9px!important;border:1px solid rgba(101,231,255,.18)!important;background:rgba(255,255,255,.075)!important;color:#f8fbff!important;font-family:var(--mono);font-size:.95rem!important;font-weight:950;text-align:right;box-shadow:none!important}
+    .cnc-edit input.is-calc{background:rgba(16,185,129,.16)!important;border-color:rgba(52,211,153,.44)!important;color:#d1fae5!important}
+    .cnc-edit input:disabled{opacity:.54;background:rgba(148,163,184,.10)!important;color:#9fb3c7!important}
+    .cnc-edit .unit-mini{color:#9fb3c7;font-size:.62rem;font-weight:800}
+    .practice-card{margin-top:14px;border:1px solid color-mix(in srgb,var(--green) 26%,var(--line));border-radius:18px;background:linear-gradient(135deg,color-mix(in srgb,var(--green) 7%,var(--paper)),var(--paper));padding:14px;display:grid;gap:10px}
+    .practice-card h4{margin:0;font-size:.9rem;letter-spacing:.04em;text-transform:uppercase;color:var(--green)}
+    .practice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+    .practice-item{border:1px solid var(--line);background:color-mix(in srgb,var(--paper) 88%,transparent);border-radius:14px;padding:10px}.practice-item span{display:block;color:var(--muted);font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em}.practice-item strong{display:block;margin-top:4px;font-family:var(--mono);font-size:.96rem;color:var(--text)}
+    .help-under{margin-top:18px;border:1px solid color-mix(in srgb,var(--blue) 20%,var(--line));border-radius:18px;background:color-mix(in srgb,var(--blue) 5%,var(--paper));padding:14px;color:var(--muted);line-height:1.55;font-size:.88rem}.help-under b{color:var(--text)}
+    .triangle-visual{border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,var(--paper-soft),var(--paper));padding:14px;margin-bottom:14px}.triangle-visual svg{width:100%;height:260px;display:block}.tri-fill{fill:color-mix(in srgb,var(--blue) 10%,transparent);stroke:var(--blue);stroke-width:3}.tri-line{stroke:var(--orange);stroke-width:4;stroke-linecap:round}.tri-help{stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 6}.tri-label{font:800 15px var(--font);fill:var(--text)}.tri-small{font:700 12px var(--font);fill:var(--muted)}
+    @media(max-width:900px){.practice-grid,.cnc-grid{grid-template-columns:1fr}.tabs-wrap{top:72px}}
+
     @media(max-width:1050px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}.tabs-wrap{top:92px}}
     @media(max-width:720px){
       .topbar-inner{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}
@@ -208,22 +291,291 @@
       .tabs-wrap{position:relative;top:auto}.brand h1{font-size:1.1rem}
       .hide-mobile{display:none}
     }
+
+    /* v18: Schnittdaten aufgeräumt */
+    #tab-schnitt .panel{overflow:visible}
+    #tab-schnitt .form-grid .row{align-items:end}
+    #tab-schnitt .form-grid .row > div > label{min-height:28px;display:flex;align-items:flex-end;flex-wrap:wrap;gap:3px}
+    #tab-schnitt .form-grid input,#tab-schnitt .form-grid select{min-height:48px}
+    #tab-schnitt .compact-result .result-main{display:none}
+    #tab-schnitt .cnc-screen-head span:first-child{font-size:.82rem;letter-spacing:.1em}
+    #tab-schnitt .result-list .metric.vf-duplicate{display:none}
+
+
+
+    /* v21: Schnittdaten kompakter und logisch sortiert */
+    .shell{max-width:calc(100vw - 18px);padding-left:10px;padding-right:10px}
+    #tab-schnitt .grid-schnitt{
+      grid-template-columns:minmax(300px,380px) minmax(250px,310px) minmax(300px,360px) minmax(360px,1fr);
+      gap:10px;
+      align-items:start;
+    }
+    #tab-schnitt .panel-head,
+    #tab-schnitt .info-card-head{padding:12px 14px 10px}
+    #tab-schnitt .panel-head h3,
+    #tab-schnitt .info-card-head h3{font-size:1rem}
+    #tab-schnitt .panel-head p:not(.eyebrow){font-size:.82rem;margin-top:4px;line-height:1.28}
+    #tab-schnitt .panel-body,
+    #tab-schnitt .info-card-body{padding:12px 14px;gap:9px}
+    #tab-schnitt .form-grid{gap:9px}
+    #tab-schnitt .form-grid .row{gap:8px;align-items:end}
+    #tab-schnitt .form-grid .row > div > label{min-height:21px;font-size:.68rem;line-height:1.05;margin-bottom:5px;align-items:flex-end}
+    #tab-schnitt .form-grid input,
+    #tab-schnitt .form-grid select{min-height:38px;padding:8px 10px;border-radius:12px;font-size:.9rem}
+    #tab-schnitt .btn{min-height:38px;padding:8px 11px;font-size:.82rem}
+    #tab-schnitt .cut-mode-hint{padding:9px 10px;border-radius:13px;font-size:.76rem;line-height:1.32}
+    #tab-schnitt .cnc-display{margin-top:8px;padding:11px;border-radius:17px}
+    #tab-schnitt .cnc-screen-head{margin-bottom:7px;font-size:.66rem}
+    #tab-schnitt .cnc-grid{gap:7px}
+    #tab-schnitt .cnc-line{padding:7px 8px;border-radius:10px}
+    #tab-schnitt .cnc-line span{font-size:.7rem}
+    #tab-schnitt .cnc-line strong{font-size:.88rem}
+    #tab-schnitt .metric{padding:9px 10px;border-radius:13px}
+    #tab-schnitt .help-under{padding:10px 11px;border-radius:14px;font-size:.76rem;line-height:1.32;margin-top:9px}
+    #tab-schnitt .tool-project-fields{padding:10px;gap:9px;border-radius:15px}
+    #tab-schnitt .tool-editor-actions{display:grid;grid-template-columns:1fr 92px;gap:8px}
+    #tab-schnitt .tool-save-note{font-size:.72rem;line-height:1.28;margin:0}
+    #tab-schnitt .tool-list{max-height:545px;gap:7px}
+    #tab-schnitt .tool-mini-card{padding:9px 10px;border-radius:14px}
+    #tab-schnitt .tool-mini-meta{font-size:.72rem;gap:5px}
+    #tab-schnitt .tool-mini-meta span{padding:2px 6px}
+    #tab-schnitt .project-panel .row{grid-template-columns:1fr 1fr;gap:8px}
+    #tab-schnitt .project-panel textarea{min-height:68px}
+    #tab-schnitt .project-panel .tool-basket-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    #tab-schnitt .project-panel .tool-basket-actions .btn,
+    #tab-schnitt .project-panel .tool-basket-actions a{flex:none;min-height:36px}
+    .tool-store-panel .info-card-body{gap:10px}
+    .tool-store-note{border:1px dashed var(--line);border-radius:14px;background:color-mix(in srgb,var(--blue) 4%,var(--paper));padding:10px;color:var(--muted);font-size:.76rem;line-height:1.32}
+    .cut-hidden-values{display:none!important}
+    @media(max-width:1500px){
+      #tab-schnitt .grid-schnitt{grid-template-columns:repeat(2,minmax(0,1fr));}
+    }
+    @media(max-width:900px){
+      #tab-schnitt .grid-schnitt{grid-template-columns:1fr;}
+    }
+
+
+
+    .screw-layout{display:grid;grid-template-columns:minmax(300px,360px) minmax(460px,1fr) minmax(420px,560px);gap:16px;align-items:start;}
+    .screw-visual-card .panel-body{padding:14px;}
+    .screw-visual-wrap{border:1px solid var(--line);border-radius:22px;background:linear-gradient(135deg,var(--paper-soft),var(--paper));padding:12px;display:grid;place-items:center;min-height:310px;}
+    .screw-visual-wrap img{width:100%;max-height:520px;object-fit:contain;border-radius:18px;box-shadow:0 18px 44px -34px rgba(15,23,42,.65);}
+    .screw-type-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .screw-type-btn{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:12px 10px;font-weight:950;cursor:pointer;color:var(--muted);transition:.18s ease;}
+    .screw-type-btn.active{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border-color:transparent;box-shadow:0 14px 28px -24px var(--blue);}
+    .screw-result-main{border:1px solid var(--line);border-radius:22px;background:radial-gradient(circle at top right,rgba(249,115,22,.14),transparent 18rem),linear-gradient(135deg,var(--paper-soft),var(--paper));padding:18px;text-align:center;}
+    .screw-result-main > span{display:block;color:var(--muted);font-weight:950;letter-spacing:.08em;text-transform:uppercase;font-size:.76rem;}
+    .screw-result-main strong{display:flex;align-items:baseline;justify-content:center;gap:10px;font-family:var(--mono);font-size:clamp(2.7rem,5vw,4.6rem);color:var(--red);line-height:1.02;margin:6px 0;white-space:nowrap;}
+    .screw-result-main strong .screw-unit{font-size:.48em;color:var(--red);font-weight:1000;letter-spacing:0;text-transform:none;}
+    .screw-result-main small{display:inline-flex;border:1px solid color-mix(in srgb,var(--blue) 28%,var(--line));background:color-mix(in srgb,#eaf3ff 60%,var(--paper));border-radius:999px;padding:5px 10px;color:var(--blue);font-weight:900;}
+    .screw-metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px;}
+    .screw-mini-metric{border:1px solid var(--line);border-radius:16px;background:var(--paper-soft);padding:13px;min-height:78px;}
+    .screw-mini-metric span{display:block;color:var(--muted);font-size:.76rem;text-transform:uppercase;font-weight:950;letter-spacing:.055em;margin-bottom:4px;}
+    .screw-mini-metric strong{font-family:var(--mono);font-size:1.22rem;color:var(--text);}
+    .screw-note{border:1px solid color-mix(in srgb,var(--orange) 30%,var(--line));border-radius:16px;background:color-mix(in srgb,#fff7ed 54%,var(--paper));padding:12px;color:var(--muted);font-size:.86rem;line-height:1.45;}
+    .screw-note b{color:var(--text);}
+    .screw-symbols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+    .screw-symbols div{border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:9px;font-size:.82rem;color:var(--muted);line-height:1.35;}
+    .screw-symbols b{color:var(--blue);font-family:var(--mono);font-size:.98rem;}
+    @media(max-width:1400px){.screw-layout{grid-template-columns:minmax(300px,360px) minmax(420px,1fr)}.screw-visual-card{grid-column:1/-1}.screw-visual-wrap img{max-height:420px}}
+    @media(max-width:900px){.screw-layout{grid-template-columns:1fr}.screw-visual-card{grid-column:auto}.screw-visual-wrap img{max-height:340px}}
+
     @media print{.topbar,.tabs-wrap,.hero,.btn,.history,.footer-note{display:none!important}body{background:#fff}.shell{padding:0}.panel{box-shadow:none;border:0}.tab{display:block!important}}
+
+    /* v5 Winkel-Profi: kompakte Live-Geometrie im Werkstatt-Rechner */
+    .angle-tool{display:grid;grid-template-columns:minmax(320px,.95fr) minmax(340px,1.05fr);gap:18px;align-items:stretch}
+    .angle-visual-card{border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,var(--paper-soft),var(--paper));overflow:hidden;box-shadow:var(--shadow)}
+    .angle-visual-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--paper) 88%,transparent)}
+    .angle-visual-head b{font-size:.95rem}.angle-visual-head span{font-size:.78rem;color:var(--muted);font-weight:850}
+    .angle-stage{min-height:410px;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 15%,color-mix(in srgb,var(--blue) 9%,transparent),transparent 28rem)}
+    .angle-stage svg{width:100%;max-width:640px;height:390px;display:block;overflow:visible}
+    .angle-shape{fill:color-mix(in srgb,var(--blue) 10%,transparent);stroke:var(--blue);stroke-width:2.6;stroke-linejoin:round;filter:drop-shadow(0 12px 18px rgba(15,23,42,.10))}
+    .angle-help-line{stroke:color-mix(in srgb,var(--muted) 56%,transparent);stroke-dasharray:5 4;stroke-width:1.3}
+    .angle-dim{stroke:var(--orange);stroke-width:2.2;fill:none;marker-start:url(#angleArrow);marker-end:url(#angleArrow)}
+    .angle-label{font-family:var(--mono);font-size:13px;font-weight:950;fill:var(--text);paint-order:stroke;stroke:var(--paper);stroke-width:5px;stroke-linejoin:round}
+    .angle-small{font-family:var(--mono);font-size:12px;font-weight:950;fill:var(--orange);paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+    .angle-label-line{stroke:color-mix(in srgb,var(--orange) 72%,var(--blue));stroke-width:1.6;stroke-dasharray:4 4;opacity:.82}
+    .angle-angle-guide{fill:none;stroke:var(--orange);stroke-width:3;stroke-linecap:round}
+    .angle-modebar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
+    .angle-mode-btn{border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:15px;padding:11px 10px;font-weight:950;cursor:pointer;transition:.16s ease}
+    .angle-mode-btn.active{background:linear-gradient(135deg,var(--blue),var(--blue2));border-color:transparent;color:#fff;box-shadow:0 14px 28px -22px var(--blue)}
+    .angle-input.calculated{background:color-mix(in srgb,var(--green) 10%,var(--paper));border-color:color-mix(in srgb,var(--green) 45%,var(--line));color:var(--green);font-weight:900}
+    .angle-input.driver{background:var(--paper);border-color:color-mix(in srgb,var(--blue) 55%,var(--line));box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 12%,transparent)}
+    .angle-hidden{display:none!important}
+    .angle-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:14px 16px;border-top:1px solid var(--line);background:color-mix(in srgb,var(--paper) 88%,transparent)}
+    .angle-result{border:1px solid var(--line);border-radius:14px;background:var(--paper-soft);padding:10px 12px;text-align:center}
+    .angle-result span{display:block;color:var(--muted);font-size:.68rem;font-weight:950;letter-spacing:.07em;text-transform:uppercase}.angle-result strong{font-family:var(--mono);font-size:1.05rem;color:var(--text)}
+    .angle-hint{border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));border-left:4px solid var(--blue);background:color-mix(in srgb,var(--blue) 6%,var(--paper));border-radius:16px;padding:12px 13px;color:var(--muted);font-size:.86rem;line-height:1.45}
+    @media(max-width:1050px){.angle-tool{grid-template-columns:1fr}.angle-stage{min-height:300px}.angle-stage svg{height:290px}.angle-results{grid-template-columns:1fr}}
+
+    /* v6 Layout: Rechner oben, Ergebnis kompakter, Info rechts */
+    .panel{overflow:visible}
+    .grid-schnitt{
+      display:grid;
+      grid-template-columns:minmax(280px,.95fr) minmax(230px,.72fr) minmax(255px,.82fr) minmax(360px,1.2fr);
+      gap:14px;
+      align-items:start;
+    }
+    .grid-passungen{
+      display:grid;
+      grid-template-columns:minmax(280px,390px) minmax(360px,1fr) minmax(280px,390px);
+      gap:16px;
+      align-items:start;
+    }
+    .fit-modebar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .fit-mode-btn{border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:14px;padding:10px 8px;font-weight:950;cursor:pointer;transition:.16s ease;font-size:.82rem}
+    .fit-mode-btn.active{background:linear-gradient(135deg,var(--blue),var(--blue2));border-color:transparent;color:#fff;box-shadow:0 14px 28px -22px var(--blue)}
+    .fit-hidden{display:none!important}
+    .fit-visual-panel .panel-body{padding:14px}
+    .fit-visual-panel .visual{min-height:0;padding:12px}
+    .fit-visual-panel .fit-visual-img{max-width:780px}
+    .fit-status-good{color:var(--green)!important}.fit-status-warn{color:var(--yellow)!important}.fit-status-bad{color:var(--red)!important}.fit-status-blue{color:var(--blue)!important}
+    .fit-values-main{display:block;font-size:1.05rem;line-height:1.25}
+    .fit-values-sub{display:block;margin-top:3px;font-size:.86rem;color:var(--muted);font-family:var(--mono)}
+    .grid-gewinde{
+      display:grid;
+      grid-template-columns:minmax(280px,400px) minmax(260px,360px) minmax(360px,1fr);
+      gap:18px;
+      align-items:start;
+    }
+
+    /* v31 Gewinde: kompakt, lesbar, 3 Karten */
+    .thread-grid-v31{grid-template-columns:minmax(300px,.92fr) minmax(330px,.9fr) minmax(390px,1.15fr);gap:16px;}
+    .thread-modebar{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .thread-mode-btn{border:1px solid var(--line);border-radius:14px;background:var(--paper);color:var(--muted);padding:10px 9px;font-weight:950;cursor:pointer;transition:.16s ease;font-size:.86rem;}
+    .thread-mode-btn.active{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border-color:transparent;box-shadow:0 14px 28px -22px var(--blue);}
+    .thread-mode-btn.thread-form-hint{background:color-mix(in srgb,var(--orange) 10%,var(--paper));border-color:color-mix(in srgb,var(--orange) 35%,var(--line));color:var(--text);}
+    .thread-practice-card,.thread-note-box{border:1px solid color-mix(in srgb,var(--orange) 22%,var(--line));background:color-mix(in srgb,var(--orange) 7%,var(--paper));border-radius:16px;padding:12px 13px;color:var(--muted);line-height:1.48;font-size:.88rem;}
+    .thread-practice-card b,.thread-note-box b{color:var(--text);}
+    .thread-result-main{border:1px solid color-mix(in srgb,var(--blue) 20%,var(--line));border-radius:22px;background:radial-gradient(circle at 100% 0%,rgba(249,115,22,.10),transparent 18rem),linear-gradient(145deg,var(--paper-soft),var(--paper));padding:18px;text-align:center;box-shadow:0 16px 38px -32px rgba(15,23,42,.65);}
+    .thread-result-main span{display:block;color:var(--muted);font-size:.74rem;font-weight:950;letter-spacing:.09em;text-transform:uppercase;margin-bottom:6px;}
+    .thread-result-main strong{display:flex;justify-content:center;align-items:baseline;gap:12px;font-family:var(--mono);font-size:clamp(3.3rem,5.6vw,6.4rem);line-height:.92;color:var(--red);letter-spacing:-.055em;}
+    .thread-result-main strong .thread-drill-value{display:inline!important;color:inherit!important;font:inherit!important;line-height:inherit!important;margin:0!important;text-transform:none!important;letter-spacing:inherit!important;}
+    .thread-result-main strong .thread-drill-unit{font-size:clamp(1.55rem,2.3vw,2.3rem);line-height:1;color:var(--red);letter-spacing:-.035em;}
+    .thread-result-main small{display:inline-flex;margin-top:12px;border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));background:color-mix(in srgb,var(--blue) 7%,var(--paper));border-radius:999px;padding:7px 12px;color:var(--text);font-weight:900;font-size:.95rem;}
+    .thread-meta-grid{display:grid;grid-template-columns:1fr;gap:9px;margin-top:12px;}
+    .thread-meta-grid>div{border:1px solid var(--line);border-radius:15px;background:var(--paper-soft);padding:11px 12px;display:flex;justify-content:space-between;gap:10px;align-items:center;}
+    .thread-meta-grid span{color:var(--muted);font-size:.74rem;font-weight:950;text-transform:uppercase;letter-spacing:.06em;}
+    .thread-meta-grid strong{font-family:var(--mono);font-size:1rem;color:var(--text);text-align:right;}
+    .thread-quick-wrap{max-height:none;overflow:visible;}
+    .thread-quick-wrap table{font-size:.88rem;}
+    .thread-quick-wrap th,.thread-quick-wrap td{padding:8px 10px;}
+    .thread-quick-wrap td{font-weight:850;}
+    @media(max-width:1250px){.thread-grid-v31{grid-template-columns:1fr 1fr}.thread-info-panel{grid-column:1 / -1}}
+    @media(max-width:760px){.thread-grid-v31,.thread-select-panel .row{grid-template-columns:1fr}}
+
+    .compact-result .result-main{min-height:150px;padding:18px}
+    .compact-result .result-main .big{font-size:clamp(2.1rem,4.4vw,4rem)}
+    .info-card{
+      border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));
+      border-radius:var(--radius);
+      background:
+        radial-gradient(circle at 100% 0%, color-mix(in srgb,var(--orange) 8%, transparent), transparent 18rem),
+        linear-gradient(180deg,color-mix(in srgb,var(--paper) 96%,transparent),color-mix(in srgb,var(--paper-soft) 78%,var(--paper)));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .info-card-head{padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+    .info-card-head h3{margin:0;font-size:1.05rem;letter-spacing:-.02em}
+    .info-card-body{padding:16px 18px;display:grid;gap:12px;color:var(--muted);font-size:.88rem;line-height:1.52}
+    .formula-card{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:color-mix(in srgb,var(--paper) 90%,transparent);
+      padding:12px;
+      display:grid;
+      gap:8px;
+    }
+    .formula-card code{
+      display:block;
+      font-family:var(--mono);
+      color:var(--text);
+      font-weight:900;
+      white-space:normal;
+    }
+    .info-list{margin:0;padding-left:1.05rem;display:grid;gap:7px}
+    .info-list b{color:var(--text)}
+    .compact-result .help-under{font-size:.8rem;padding:12px}
+    .info-card-body .row{grid-template-columns:1fr}
+    .tool-basket-actions .btn,.tool-basket-actions a{flex:1 1 120px}
+    @media(max-width:900px){.grid-schnitt{grid-template-columns:1fr}}
+
+    /* v28 ISO 2768: Tabelle ohne unnötigen Scrollbalken */
+    .iso-grid{display:grid;grid-template-columns:minmax(300px,.95fr) minmax(330px,1fr) minmax(360px,1.12fr);gap:16px;align-items:start;}
+    .iso-card .panel-head{padding:16px 18px 12px;}
+    .iso-card .panel-body{padding:16px 18px;}
+    .iso-input-card .row{grid-template-columns:1fr 1fr;}
+    .iso-quick-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
+    .iso-status-line{border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));background:color-mix(in srgb,var(--blue) 6%,var(--paper));border-radius:15px;padding:11px 12px;font-weight:850;color:var(--text);line-height:1.35;}
+    .iso-result-main{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+    .iso-result-main>div,.iso-limit,.iso-check-box{border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,var(--paper-soft),var(--paper));padding:14px 15px;box-shadow:0 14px 34px -30px rgba(15,23,42,.55);}
+    .iso-result-main>div>span,.iso-limit>span,.iso-check-box>span{display:block;color:var(--muted);font-size:.68rem;font-weight:950;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+    .iso-result-main strong{display:block;font-family:var(--mono);font-size:clamp(1.55rem,2.8vw,2.45rem);line-height:1.05;color:var(--red);letter-spacing:-.04em;}
+    .iso-result-main small{display:inline-flex;margin-top:8px;color:var(--text);font-family:var(--mono);font-weight:950;font-size:1.02rem;background:color-mix(in srgb,var(--blue) 8%,var(--paper));border:1px solid color-mix(in srgb,var(--blue) 18%,var(--line));border-radius:999px;padding:5px 9px;}
+    .iso-limit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+    .iso-limit strong{font-family:var(--mono);font-size:1.36rem;color:var(--text);letter-spacing:-.02em;}
+    .iso-check-box{border-left:5px solid var(--blue);}
+    .iso-check-box strong{display:block;font-size:1.35rem;color:var(--text);letter-spacing:-.02em;}
+    .iso-check-box small{display:block;color:var(--muted);margin-top:5px;line-height:1.35;}
+    .iso-check-box.good{border-left-color:var(--green);background:color-mix(in srgb,var(--green) 8%,var(--paper));}
+    .iso-check-box.good strong{color:var(--green);}
+    .iso-check-box.bad{border-left-color:var(--red);background:color-mix(in srgb,var(--red) 7%,var(--paper));}
+    .iso-check-box.bad strong{color:var(--red);}
+    .iso-check-box.warn{border-left-color:var(--yellow);background:color-mix(in srgb,var(--yellow) 8%,var(--paper));}
+    .iso-legacy-values{display:none;}
+    .iso-note-box{border:1px solid color-mix(in srgb,var(--orange) 22%,var(--line));background:color-mix(in srgb,var(--orange) 7%,var(--paper));border-radius:16px;padding:12px 13px;color:var(--muted);line-height:1.48;}
+    .iso-note-box b{color:var(--text);}
+    .iso-table-wrap{max-height:none;overflow:visible;}
+    .iso-table-wrap table{font-size:.92rem;}
+    .iso-table-wrap th,.iso-table-wrap td{padding:10px 12px;}
+    
+    .iso-table-wrap th{color:#40536a;background:linear-gradient(180deg,color-mix(in srgb,var(--paper-soft) 92%,#dce9f6),var(--paper-soft));}
+    .iso-table-wrap td{font-weight:800;}
+    .iso-table-wrap td.mono{font-size:.95rem;color:var(--text);}
+    .iso-table-wrap tr:hover td{background:color-mix(in srgb,var(--blue) 5%,transparent);}
+    .iso-result-main .tol-value{display:inline!important;font-size:inherit!important;font-weight:inherit!important;letter-spacing:inherit!important;color:inherit!important;text-transform:none!important;margin:0!important;}
+    .iso-class-pills{display:flex;gap:7px;flex-wrap:wrap;}
+    .iso-class-pills span{border:1px solid var(--line);background:var(--paper-soft);border-radius:999px;padding:7px 10px;font-size:.78rem;color:var(--muted);font-weight:850;}
+    .iso-class-pills b{color:var(--text);}
+    @media(max-width:1250px){.iso-grid{grid-template-columns:1fr 1fr}.iso-info-card{grid-column:1 / -1}}
+    @media(max-width:760px){.iso-grid,.iso-input-card .row,.iso-result-main,.iso-limit-grid{grid-template-columns:1fr}}
+
+
+    /* v25 Merker-Dialog: lesbarer, öffentliche Hilfe statt Bauhinweise */
+    .cut-info-dialog{max-width:min(980px,calc(100vw - 28px));}
+    .cut-info-rich{display:grid;gap:16px;color:var(--muted);}
+    .cut-info-hero{border:1px solid var(--line);border-radius:18px;padding:16px;background:linear-gradient(145deg,color-mix(in srgb,var(--paper-soft) 92%,transparent),color-mix(in srgb,#eaf3ff 56%,var(--paper)));}
+    .cut-info-hero b{color:var(--text)}
+    .formula-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+    .formula-card{border:1px solid var(--line);border-radius:16px;background:var(--paper-soft);padding:13px;}
+    .formula-card h3{margin:0 0 8px;color:var(--text);font-size:1rem;}
+    .formula-card code{display:block;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:9px 10px;margin:6px 0;font-family:var(--mono);font-weight:900;color:var(--text);white-space:normal;}
+    .term-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+    .term-box{border:1px solid var(--line);border-radius:15px;background:var(--paper);padding:11px;}
+    .term-box strong{display:block;color:var(--blue);font-size:.95rem;margin-bottom:3px;}
+    .term-box span{font-size:.86rem;line-height:1.45;color:var(--muted);}
+    .practice-box{border:1px solid color-mix(in srgb,var(--orange) 32%,var(--line));border-radius:16px;background:color-mix(in srgb,#fff7ed 55%,var(--paper));padding:13px;}
+    .practice-box h3{margin:0 0 8px;color:var(--text)}
+    .practice-box ul{margin:0;padding-left:1.1rem;display:grid;gap:6px;}
+    .muted-small{font-size:.84rem;color:var(--muted);line-height:1.45;}
+    @media(max-width:840px){.formula-grid,.term-grid{grid-template-columns:1fr}.cut-info-dialog{max-width:calc(100vw - 16px)}}
+
   </style>
 </head>
 <body>
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="brand" href="/tools/" title="Zur Tool-Werkstatt">
-        <div class="mark">⚙️</div>
+      <a class="brand" href="index.html" title="Zur Tool-Übersicht">
+        <div class="mark"><img src="../assets/img/werkstatt_rechner01.png" alt="Werkstatt-Rechner Metall Plus Logo"></div>
         <div>
           <h1>Warenschmiede <span class="orange">METALL Plus</span></h1>
-          <small>Werkstatt-Rechner · hell · praxisnah · CNC & Metall</small>
+          <small>Werkstatt-Rechner · praxisnah · CNC & Metall</small>
         </div>
       </a>
       <div class="top-actions">
-        <a class="btn" href="/tools/">🗂️ <span class="hide-mobile">Tools</span></a>
-        <a class="btn" href="/">🏠 <span class="hide-mobile">Start</span></a>
+        <button class="ws-tool-menu-btn" type="button" aria-label="Warenschmiede Tools öffnen" title="Warenschmiede Tools" onclick="window.WSToolMenu?.open()">
+          <img src="../assets/img/w-tools-menu.png" alt="" aria-hidden="true">
+        </button>
         <button class="btn" id="btnTheme" type="button">🌓 Design</button>
         <button class="btn btn-blue" id="btnHelp" type="button">Hilfe</button>
       </div>
@@ -231,149 +583,217 @@
   </header>
 
   <div class="shell">
-    <section class="hero">
-      <div>
-        <p class="eyebrow">Warenschmiede Werkstatt-Rechner</p>
-        <h2>Rechnen wie in der Werkstatt, nicht wie im Schulbuch.</h2>
-        <p>
-          Schnittdaten, Passungen, Gewinde, Schrauben, Gewicht und kleine Praxishelfer in einem hellen, ruhigen Tool.
-          Gedacht für schnelle Entscheidungen an PC, Tablet oder Smartphone – mit Richtwerten, Lernhinweisen und Export-Notizen.
-        </p>
-        <div class="pillrow">
-          <span class="pill">CNC</span><span class="pill">Werkzeugbau</span><span class="pill">Material</span><span class="pill">Toleranzen</span><span class="pill">lokal im Browser</span>
-        </div>
-      </div>
-      <div class="hero-card">
-        <p class="eyebrow">Auf einen Blick</p>
-        <ul class="hero-list">
-          <li>✓ <span><b>Schnittdaten:</b> Drehzahl, Vorschub und Zeitspanvolumen</span></li>
-          <li>✓ <span><b>Passungen:</b> H7/h6, H7/g6, H7/p6 und mehr</span></li>
-          <li>✓ <span><b>Gewinde:</b> M, MF, UNC und UNF mit Kernloch</span></li>
-          <li>✓ <span><b>Material:</b> Gewicht für Rund, Vierkant, Flach und Rohr</span></li>
-          <li>✓ <span><b>Praxis:</b> Notizen, Verlauf, Warnungen und Beispiele</span></li>
-        </ul>
-      </div>
-    </section>
+    <!-- v4: Großer Introbereich entfernt, damit Tabs und Rechner sofort sichtbar sind. -->
 
     <div class="tabs-wrap">
-      <nav class="tabs" aria-label="Werkstatt-Rechner Bereiche">
-        <button class="tab-btn active" data-tab="schnitt">🌀 Schnittdaten</button>
-        <button class="tab-btn" data-tab="toleranzen">📏 ISO 2768</button>
-        <button class="tab-btn" data-tab="passungen">🎯 Passungen</button>
-        <button class="tab-btn" data-tab="gewinde">🔩 Gewinde</button>
-        <button class="tab-btn" data-tab="schrauben">🧰 Schrauben</button>
-        <button class="tab-btn" data-tab="einheiten">↔️ Einheiten</button>
-        <button class="tab-btn" data-tab="gewicht">⚖️ Gewicht</button>
-        <button class="tab-btn" data-tab="winkel">📐 Winkel</button>
-      </nav>
+      <div class="tabs-row">
+        <nav class="tabs" aria-label="Werkstatt-Rechner Bereiche">
+          <button class="tab-btn active" data-tab="schnitt">🌀 Schnittdaten</button>
+          <button class="tab-btn" data-tab="toleranzen">📏 ISO 2768</button>
+          <button class="tab-btn" data-tab="passungen">🎯 Passungen</button>
+          <button class="tab-btn" data-tab="gewinde">🔩 Gewinde</button>
+          <button class="tab-btn" data-tab="schrauben">🧰 Schrauben</button>
+          <button class="tab-btn" data-tab="einheiten">↔️ Einheiten</button>
+          <button class="tab-btn" data-tab="gewicht">⚖️ Gewicht</button>
+          <button class="tab-btn" data-tab="winkel">📐 Winkel</button>
+        </nav>
+        <div class="tabs-db-actions" aria-label="Datenbank Aktionen">
+          <button class="btn btn-small" type="button" onclick="exportProjectFolder()">JSON Datenbank speichern</button>
+          <button class="btn btn-small" type="button" onclick="document.getElementById('projectImportFile').click()">JSON Datenbank laden</button>
+        </div>
+      </div>
     </div>
 
     <!-- Schnittdaten -->
     <section class="tab active" id="tab-schnitt">
-      <div class="grid">
-        <div class="panel">
-          <div class="panel-head"><p class="eyebrow">Schnittdaten</p><h3>Drehzahl & Vorschub</h3><p>Material wählen, Richtwerte laden und direkt rechnen.</p></div>
+      <div class="grid-schnitt">
+        <div class="panel cut-input-panel">
+          <div class="panel-head"><p class="eyebrow">Schnittdaten</p><h3>Drehzahl & Vorschub</h3><p>Material wählen, Richtwerte laden, S und F direkt ablesen.</p></div>
           <div class="panel-body form-grid">
             <div class="row">
-              <div><label>Material</label><select id="cutMat"><option value="steel">Stahl allgemein</option><option value="inox">Edelstahl / VA</option><option value="alu">Aluminium</option><option value="plastic">Kunststoff</option><option value="cast">Guss</option></select></div>
-              <div><label>Bearbeitung</label><select id="cutOp"><option value="drill">Bohren</option><option value="millRough">Fräsen Schruppen</option><option value="millFinish">Fräsen Schlichten</option><option value="turn">Drehen</option></select></div>
+              <div><label>Material <span class="help-dot" tabindex="0" data-tip="Das Material lädt typische Startwerte für vc und Vorschub. Die Rechnung nutzt danach die Zahlen in den Feldern. Herstellerdaten sind genauer.">?</span></label><select id="cutMat"><option value="steel">Stahl allgemein</option><option value="inox">Edelstahl / VA</option><option value="alu">Aluminium</option><option value="plastic">Kunststoff</option><option value="cast">Guss</option></select></div>
+              <div><label>Bearbeitung <span class="help-dot" tabindex="0" data-tip="Bohren nutzt f in mm/U. Fräsen nutzt z und fz. Ergebnis sind die Maschinenwerte S und F.">?</span></label><select id="cutOp"><option value="drill">Bohren</option><option value="millRough">Fräsen Schruppen</option><option value="millFinish">Fräsen Schlichten</option><option value="turn">Drehen</option></select></div>
             </div>
             <button class="btn btn-blue" type="button" onclick="loadCutPreset()">⚡ Richtwerte laden</button>
-            <div class="row">
-              <div><label>Werkzeug-Ø d [mm]</label><input id="cutD" type="number" value="10" step="0.1"></div>
-              <div><label>Schnittgeschw. vc [m/min]</label><input id="cutVc" type="number" value="120" step="1"></div>
+            <button class="btn" type="button" onclick="cutInfoDialog.showModal()">📘 Merker / Formeln öffnen</button>
+            <div class="cut-mode-hint" id="cutModeHint"><b>Bohren:</b> Das Tool rechnet mit Ø d, vc und Vorschub f in mm/U. Ergebnis sind die Maschinenwerte S und F.</div>
+            <input id="cutD" type="hidden" value="10">
+            <input id="cutVc" type="hidden" value="120">
+            <input id="cutZ" type="hidden" value="2">
+            <input id="cutFz" type="hidden" value="0.10">
+            <div class="cnc-display cut-console" aria-label="Schnittdaten-Konsole">
+              <div class="cnc-screen-head"><span>Schnittdaten-Konsole</span><span id="cncMode">FRÄSEN</span></div>
+              <div class="cnc-grid">
+                <div class="cnc-edit"><label>Ø d <span class="unit-mini">mm</span></label><input id="cutConsoleD" type="number" value="10" step="0.1" data-cut-field="d"></div>
+                <div class="cnc-edit"><label>vc <span class="unit-mini">m/min</span></label><input id="cutConsoleVc" type="number" value="120" step="1" data-cut-field="vc"></div>
+                <div class="cnc-edit"><label>S <span class="unit-mini">U/min</span></label><input id="cutConsoleS" type="number" value="3820" step="1" data-cut-field="n"></div>
+                <div class="cnc-edit" id="cutZField"><label>z <span class="unit-mini">Zähne</span></label><input id="cutConsoleZ" type="number" value="2" step="1" data-cut-field="z"></div>
+                <div class="cnc-edit"><label id="cutFeedLabel">f <span class="unit-mini">mm/U</span></label><input id="cutConsoleFz" type="number" value="0.10" step="0.01" data-cut-field="f"></div>
+                <div class="cnc-edit"><label>F <span class="unit-mini">mm/min</span></label><input id="cutConsoleF" type="number" value="382" step="1" data-cut-field="vf"></div>
+              </div>
             </div>
-            <div class="row">
-              <div><label>Zähnezahl z</label><input id="cutZ" type="number" value="4" step="1"></div>
-              <div><label>Vorschub/Zahn fz [mm]</label><input id="cutFz" type="number" value="0.05" step="0.01"></div>
+            <div class="result-list">
+              <div class="metric"><span>Praxis-Check</span><strong id="cutWarn" class="good">Startwert plausibel</strong></div>
             </div>
-            <div class="row">
-              <div><label>Schnitttiefe ap [mm]</label><input id="cutAp" type="number" placeholder="optional" step="0.1"></div>
-              <div><label>Schnittbreite ae [mm]</label><input id="cutAe" type="number" placeholder="optional" step="0.1"></div>
-            </div>
-            <div><label>Notiz / Auftrag optional</label><input id="cutNote" type="text" placeholder="z.B. Fräser Ø10, 1.7131, Nut schruppen"></div>
-            <div class="row">
-              <button class="btn btn-green" type="button" onclick="saveHistory('schnitt')">Merken</button>
-              <button class="btn" type="button" onclick="copySummary('schnitt')">Zusammenfassung kopieren</button>
-            </div>
+            <div class="cut-hidden-values"><span id="cutN">3820</span><span id="cutVf">764</span></div>
           </div>
         </div>
-        <div>
-          <div class="panel">
-            <div class="panel-body">
-              <div class="result-main">
-                <div><small>Drehzahl n</small><div class="big" id="cutN">3820</div><div class="unit">U/min</div></div>
-              </div>
-              <div class="result-list">
-                <div class="metric"><span>Vorschubgeschwindigkeit vf</span><strong><span id="cutVf">764</span> mm/min</strong></div>
-                <div class="metric"><span>Zeitspanvolumen Q</span><strong><span id="cutQ">--</span> cm³/min</strong></div>
-                <div class="metric"><span>Bewertung</span><strong id="cutWarn" class="good">Richtwert prüfen</strong></div>
-              </div>
-              <div class="footer-note">Hinweis: Richtwerte ersetzen keine Herstellerdaten. Bei kleinen Werkzeugen, langen Auskragungen, schlechter Spannung oder alten Maschinen vorsichtig reduzieren.</div>
+
+        <div class="panel tool-editor-panel">
+          <div class="panel-head"><p class="eyebrow">Werkzeug definieren</p><h3>T-Nummer & Beschreibung</h3><p>Pflicht für den Werkzeugkorb.</p></div>
+          <div class="panel-body form-grid">
+            <div class="tool-project-fields">
+              <div><label>T-Nummer *</label><input id="toolT" type="text" placeholder="z.B. T2"></div>
+              <div><label>Werkzeug / Beschreibung *</label><input id="cutNote" type="text" placeholder="z.B. Bohrer, Schruppfräser"></div>
+              <div><label>Werkzeuglänge [mm]</label><input id="toolLen" type="number" placeholder="optional" step="0.1"></div>
+              <div><label>Beschichtung</label><select id="toolCoat"><option>unbeschichtet</option><option>HSS</option><option>HSSE</option><option>VHM</option><option>TiN</option><option>TiAlN</option><option>AlTiN</option><option>DLC</option><option>diamantbeschichtet</option><option>sonstige</option></select></div>
             </div>
+            <div class="row tool-editor-actions">
+              <button class="btn btn-green" type="button" onclick="saveToolToBasket()">Werkzeug speichern</button>
+              <button class="btn" type="button" onclick="newToolEntry()">Neu +</button>
+            </div>
+            <p class="tool-save-note">Speichern legt das Werkzeug im aktuellen Projekt ab und leert die Eingabe. Geladene Werkzeuge werden bei Änderungen live aktualisiert.</p>
           </div>
-          <div class="history" id="historySchnitt"></div>
         </div>
-      </div>
-    </section>
+
+        <aside class="info-card tool-store-panel" aria-label="Gespeicherte Werkzeuge">
+          <div class="info-card-head"><p class="eyebrow">Gespeicherte Werkzeuge</p><h3>Werkzeugliste</h3></div>
+          <div class="info-card-body">
+            <div class="tool-store-note">Karte anklicken = Werkzeug links laden. Änderungen werden live übernommen. Löschen fragt vorher nach.</div>
+            <div class="tool-list" id="toolBasketList"></div>
+            <div class="tool-empty" id="toolBasketEmpty">Noch kein Werkzeug gespeichert.</div>
+          </div>
+        </aside>
+
+        <aside class="info-card project-panel" aria-label="Projekt Schnittdaten">
+          <div class="info-card-head"><p class="eyebrow">Projekt</p><h3>Werkzeugkorb / Aktenordner</h3></div>
+          <div class="info-card-body">
+            <div class="row">
+              <div><label>Projektname</label><input id="cutProjectName" type="text" placeholder="z.B. Schiene Muster0815"></div>
+              <div><label>Projekt-Nr.</label><input id="cutProjectRef" type="text" placeholder="z.B. 118001"></div>
+            </div>
+            <div class="row">
+              <div><label>Auftrags-Nr.</label><input id="cutOrderNo" type="text" placeholder="optional"></div>
+              <div><label>Zeichnungs-Nr.</label><input id="cutDrawingNo" type="text" placeholder="optional"></div>
+            </div>
+            <div><label>Kunde</label><input id="cutCustomer" type="text" placeholder="z.B. Muster Firma GmbH"></div>
+            <div><label>Projektbeschreibung</label><textarea id="cutProjectDesc" placeholder="Kurzbeschreibung, Maschine, Material, Hinweise …"></textarea></div>
+            <div class="tool-basket-actions">
+              <button class="btn btn-green btn-small" type="button" onclick="saveCutProject()">Projekt speichern</button>
+              <button class="btn btn-small" type="button" onclick="openProjectDialog()">Projekt laden</button>
+              <button class="btn btn-blue btn-small" type="button" onclick="printToolSheet()">Werkzeugblatt drucken</button>
+              <a class="btn btn-small" href="cnc-fraesen-einrichtsblatt-plus/index.html" target="_blank" rel="noopener">CNC-Einrichtblatt</a>
+            </div>
+            <input id="projectImportFile" type="file" accept="application/json,.json" hidden onchange="importProjectFolder(event)">
+          </div>
+        </aside>
+
+      </div>    </section>
 
     <!-- ISO2768 -->
     <section class="tab" id="tab-toleranzen">
-      <div class="grid">
-        <div class="panel">
-          <div class="panel-head"><p class="eyebrow">DIN ISO 2768-1</p><h3>Allgemeintoleranzen</h3><p>Für Längenmaße ohne eigene Toleranzangabe.</p></div>
+      <div class="iso-grid">
+        <article class="panel iso-card iso-input-card">
+          <div class="panel-head"><p class="eyebrow">DIN ISO 2768-1</p><h3>Allgemeintoleranzen</h3><p>Schneller Check für Längenmaße ohne eigene Toleranzangabe.</p></div>
           <div class="panel-body form-grid">
             <div class="row">
-              <div><label>Nennmaß [mm]</label><input id="tolDim" type="number" placeholder="z.B. 45" value="45" step="0.01"></div>
-              <div><label>Toleranzklasse</label><select id="tolClass"><option value="f">fein (f)</option><option value="m" selected>mittel (m)</option><option value="c">grob (c)</option></select></div>
+              <div><label>Nennmaß [mm] <span class="help-dot" tabindex="0" data-tip="Das Nennmaß ist das Sollmaß auf der Zeichnung, z. B. 45 mm. Das Tool sucht automatisch den passenden ISO-Maßbereich.">?</span></label><input id="tolDim" type="number" placeholder="z.B. 45" value="45" step="0.01"></div>
+              <div><label>Klasse <span class="help-dot" tabindex="0" data-tip="f = fein, m = mittel, c = grob, v = sehr grob. Die Klasse muss auf der Zeichnung angegeben sein, z. B. ISO 2768-m.">?</span></label><select id="tolClass"><option value="f">f · fein</option><option value="m" selected>m · mittel</option><option value="c">c · grob</option><option value="v">v · sehr grob</option></select></div>
             </div>
-            <div class="quick-grid">
+            <div><label>Ist-Maß optional [mm] <span class="help-dot" tabindex="0" data-tip="Wenn du ein gemessenes Maß einträgst, prüft das Tool direkt i.O. oder n.i.O. gegen die berechneten Grenzen.">?</span></label><input id="tolActual" type="number" placeholder="z.B. 45.12" step="0.01"></div>
+            <div class="quick-grid iso-quick-grid">
               <button class="quick" onclick="setVal('tolDim',6)">6</button><button class="quick" onclick="setVal('tolDim',30)">30</button><button class="quick" onclick="setVal('tolDim',120)">120</button><button class="quick" onclick="setVal('tolDim',400)">400</button>
             </div>
-            <div class="footer-note">Gültigkeitsbereich im Tool: 0,5 bis 2000 mm. Für Winkel, Form/Lage und Oberflächen gelten eigene Angaben.</div>
+            <div class="iso-status-line" id="tolStatusLine">Maß 45 mm · Klasse m · Bereich wird automatisch gewählt.</div>
           </div>
-        </div>
-        <div class="panel">
+        </article>
+
+        <article class="panel iso-card iso-result-card">
+          <div class="panel-head"><p class="eyebrow">Live-Ergebnis</p><h3>Grenzmaße & Prüfung</h3><p>Gut lesbar für Werkstatt und Messplatz.</p></div>
           <div class="panel-body">
-            <div class="result-main"><div><small>Toleranz</small><div class="big">±<span id="tolVal">0.30</span></div><div class="unit">mm</div></div></div>
-            <div class="result-list">
-              <div class="metric"><span>Untermaß</span><strong><span id="tolMin">44.70</span> mm</strong></div>
-              <div class="metric"><span>Obermaß</span><strong><span id="tolMax">45.30</span> mm</strong></div>
+            <div class="iso-result-main">
+              <div><span>Sollmaß</span><strong id="tolNominal">45.00 mm</strong></div>
+              <div><span>Toleranz</span><strong>± <span class="tol-value" id="tolVal">0.30</span> mm</strong><small id="tolValUm">300 µm</small></div>
+            </div>
+            <div class="iso-limit-grid">
+              <div class="iso-limit"><span>Untergrenze</span><strong><span id="tolMin">44.70</span> mm</strong></div>
+              <div class="iso-limit"><span>Obergrenze</span><strong><span id="tolMax">45.30</span> mm</strong></div>
+            </div>
+            <div class="iso-check-box" id="tolCheckBox">
+              <span>Ist-Maß</span>
+              <strong id="tolCheckText">optional eintragen</strong>
+              <small id="tolCheckHint">Dann wird direkt gegen Unter- und Obergrenze geprüft.</small>
+            </div>
+            <div class="result-list iso-legacy-values" aria-hidden="true">
               <div class="metric"><span>Bereich</span><strong id="tolRange">44.70 – 45.30</strong></div>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="panel" style="margin-top:18px">
-        <div class="panel-head"><h3>Tabelle Schnellübersicht</h3></div>
-        <div class="panel-body"><div class="table-wrap"><table id="tolTable"></table></div></div>
+        </article>
+
+        <article class="panel iso-card iso-info-card">
+          <div class="panel-head"><p class="eyebrow">Merker</p><h3>Was gilt wirklich?</h3><p>Kurz erklärt, damit es praktisch bleibt.</p></div>
+          <div class="panel-body">
+            <div class="iso-note-box">
+              <b>Wichtig:</b> ISO 2768 gilt nur, wenn sie auf der Zeichnung steht. Gesondert tolerierte Maße, Passungen, Gewinde, Oberflächen sowie Form- und Lagetoleranzen haben Vorrang.
+            </div>
+            <div class="table-wrap iso-table-wrap"><table id="tolTable"></table></div>
+            <div class="iso-class-pills">
+              <span><b>f</b> fein</span><span><b>m</b> mittel</span><span><b>c</b> grob</span><span><b>v</b> sehr grob</span>
+            </div>
+          </div>
+        </article>
       </div>
     </section>
 
     <!-- Passungen -->
     <section class="tab" id="tab-passungen">
-      <div class="grid">
+      <div class="grid-passungen">
         <div class="panel">
           <div class="panel-head"><p class="eyebrow">ISO-Passungen</p><h3>Bohrung & Welle</h3><p>Typische Passungen als schneller Praxischeck.</p></div>
           <div class="panel-body form-grid">
-            <div><label>Schnellauswahl</label><select id="fitPreset" onchange="applyFitPreset()"><option value="">Individuell</option><option value="H7-h6">H7 / h6 – leicht beweglich</option><option value="H7-g6">H7 / g6 – kleines Spiel</option><option value="H7-f7">H7 / f7 – enge Spielpassung</option><option value="H7-k6">H7 / k6 – Übergang</option><option value="H7-p6">H7 / p6 – Presssitz</option></select></div>
-            <div><label>Nennmaß [mm]</label><input id="fitDim" type="number" value="20" step="0.01"></div>
+            <div>
+              <label>Rechenmodus <span class="help-dot" tabindex="0" data-tip="Wähle, ob du eine komplette Passung, nur eine Bohrung oder nur eine Welle prüfen willst. So bleibt die Anzeige auf das Wesentliche reduziert.">?</span></label>
+              <div class="fit-modebar" role="group" aria-label="Passungsmodus">
+                <button class="fit-mode-btn active" type="button" data-fit-mode="pair">Bohrung + Welle</button>
+                <button class="fit-mode-btn" type="button" data-fit-mode="hole">Nur Bohrung</button>
+                <button class="fit-mode-btn" type="button" data-fit-mode="shaft">Nur Welle</button>
+              </div>
+            </div>
+            <div id="fitPresetWrap"><label>Schnellauswahl</label><select id="fitPreset" onchange="applyFitPreset()"><option value="">Individuell</option><option value="H7-h6">H7 / h6 – leicht beweglich</option><option value="H7-g6">H7 / g6 – kleines Spiel</option><option value="H7-f7">H7 / f7 – enge Spielpassung</option><option value="H7-k6">H7 / k6 – Übergang</option><option value="H7-p6">H7 / p6 – Presssitz</option></select></div>
+            <div><label>Nennmaß [mm] <span class="help-dot" tabindex="0" data-tip="Das Nennmaß ist das Zeichnungsmaß der Passung, z. B. 20 mm bei H7/h6.">?</span></label><input id="fitDim" type="number" value="20" step="0.01"></div>
             <div class="row">
-              <div><label>Bohrung</label><div class="row"><select id="holeChar"><option>H</option><option>G</option><option>F</option></select><select id="holeNum"><option>6</option><option selected>7</option><option>8</option></select></div></div>
-              <div><label>Welle</label><div class="row"><select id="shaftChar"><option selected>h</option><option>g</option><option>f</option><option>k</option><option>p</option></select><select id="shaftNum"><option>5</option><option selected>6</option><option>7</option></select></div></div>
+              <div id="fitHoleBox"><label>Bohrung <span class="help-dot" tabindex="0" data-tip="Großbuchstaben stehen für Bohrungen, z. B. H7. H7 ist häufig eine geriebene Bohrung.">?</span></label><div class="row"><select id="holeChar"><option>H</option><option>G</option><option>F</option></select><select id="holeNum"><option>6</option><option selected>7</option><option>8</option></select></div></div>
+              <div id="fitShaftBox"><label>Welle <span class="help-dot" tabindex="0" data-tip="Kleinbuchstaben stehen für Wellen, z. B. h6. Die Zahl beschreibt den Toleranzgrad.">?</span></label><div class="row"><select id="shaftChar"><option selected>h</option><option>g</option><option>f</option><option>k</option><option>p</option></select><select id="shaftNum"><option>5</option><option selected>6</option><option>7</option></select></div></div>
+            </div>
+            <div class="practice-card" aria-label="Praxisvorschlag Passung">
+              <h4>Praxisvorschlag</h4>
+              <div class="practice-grid">
+                <div class="practice-item"><span>Vorbohren</span><strong id="fitDrill">19.8 mm</strong></div>
+                <div class="practice-item"><span>Fertigmaß</span><strong id="fitFinish">20 H7</strong></div>
+                <div class="practice-item"><span>Werkzeug</span><strong id="fitTool">Reibahle prüfen</strong></div>
+              </div>
             </div>
             <div class="footer-note">Die Daten sind als typische Werkstatt-Schnellhilfe hinterlegt. Für kritische Bauteile immer Norm-/Tabellenbuch prüfen.</div>
           </div>
         </div>
-        <div class="panel">
+
+        <div class="panel fit-visual-panel">
+          <div class="panel-head"><p class="eyebrow">Optik</p><h3>Passungsarten sichtbar</h3><p>Spielpassung, Übergang und Presssitz im Vergleich.</p></div>
           <div class="panel-body">
-            <div class="visual"><div class="shaft-visual"><div class="axis"></div><div class="hole"></div><div class="shaft"></div></div></div>
+            <div class="visual"><img class="fit-visual-img" src="../assets/img/passungen01.png" alt="Übersicht Spielpassung, Übergangspassung und Presssitz"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><p class="eyebrow">Ergebnis</p><h3>Bereiche & Spiel</h3><p>µm und mm werden gemeinsam angezeigt.</p></div>
+          <div class="panel-body">
             <div class="result-list">
-              <div class="metric"><span>Passungsart</span><strong id="fitType" class="good">Spielpassung</strong></div>
-              <div class="metric"><span>Bohrung Bereich</span><strong id="holeRange">20.000 – 20.021</strong></div>
-              <div class="metric"><span>Welle Bereich</span><strong id="shaftRange">19.987 – 20.000</strong></div>
-              <div class="metric"><span>Spiel / Übermaß</span><strong id="fitValues">0 bis 34 µm Spiel</strong></div>
+              <div class="metric"><span id="fitTypeLabel">Auswertung</span><strong id="fitType" class="good">Spielpassung</strong></div>
+              <div class="metric" id="holeRangeRow"><span>Bohrung Bereich</span><strong id="holeRange">20.000 – 20.021</strong></div>
+              <div class="metric" id="shaftRangeRow"><span>Welle Bereich</span><strong id="shaftRange">19.987 – 20.000</strong></div>
+              <div class="metric" id="fitValuesRow"><span id="fitValuesLabel">Spiel / Übermaß</span><strong id="fitValues">0 bis 34 µm Spiel (0,000 bis 0,034 mm)</strong></div>
             </div>
+            <div class="help-under"><b>Praxis:</b> Bei H7-Bohrungen wird oft vorgebohrt und danach gerieben. Zeichnung, Norm, Tabellenbuch und betrieblicher Ablauf bleiben maßgebend.</div>
           </div>
         </div>
       </div>
@@ -381,10 +801,14 @@
 
     <!-- Gewinde -->
     <section class="tab" id="tab-gewinde">
-      <div class="grid">
-        <div class="panel">
-          <div class="panel-head"><p class="eyebrow">Gewinde</p><h3>Kernloch & Steigung</h3><p>Metrisch, Feingewinde und Zollgewinde.</p></div>
+      <div class="grid-gewinde thread-grid-v31">
+        <div class="panel thread-select-panel">
+          <div class="panel-head"><p class="eyebrow">Gewinde</p><h3>Kernloch & Steigung</h3><p>Schnellhilfe zum Vorbohren vor dem Gewindeschneiden.</p></div>
           <div class="panel-body form-grid">
+            <div class="thread-modebar" aria-label="Gewinde-Verfahren">
+              <button class="thread-mode-btn active" id="threadCutBtn" type="button">Schneiden</button>
+              <button class="thread-mode-btn" id="threadFormBtn" type="button">Formen: Hinweis</button>
+            </div>
             <div class="row">
               <div><label>Gewindeart</label><select id="threadType"></select></div>
               <div><label>Größe</label><select id="threadSize"></select></div>
@@ -393,44 +817,93 @@
               <button class="btn btn-blue" onclick="copySummary('thread')" type="button">Wert kopieren</button>
               <button class="btn" onclick="openTab('schrauben')" type="button">Zu Schrauben</button>
             </div>
-            <div class="footer-note">Faustformel für metrische Gewinde: Kernloch ≈ Nennmaß − Steigung. Bei besonderen Werkstoffen und Gewindeformern bitte Herstellerangaben nutzen.</div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-body">
-            <div class="result-main"><div><small>Kernlochbohrer</small><div class="big"><span id="threadDrill">5.0</span></div><div class="unit">mm</div></div></div>
-            <div class="result-list">
-              <div class="metric"><span>Auswahl</span><strong id="threadName">M6</strong></div>
-              <div class="metric"><span>Typ</span><strong id="threadKind">Metrisch Regel</strong></div>
+            <div class="thread-practice-card" id="threadPractice">
+              <b>Praxis:</b> Erst Kernloch bohren, danach Gewinde schneiden. Bei Gewindeformern, Sacklöchern, Beschichtungen und Sonderwerkstoffen immer Herstellerangaben verwenden.
             </div>
           </div>
         </div>
+
+        <div class="panel compact-result thread-result-panel">
+          <div class="panel-head"><p class="eyebrow">Ergebnis</p><h3>Kernlochbohrer</h3><p>Groß lesbar für die Werkstatt.</p></div>
+          <div class="panel-body">
+            <div class="thread-result-main">
+              <span>Kernloch</span>
+              <strong><span id="threadDrill" class="thread-drill-value">5.0</span><span class="thread-drill-unit">mm</span></strong>
+              <small id="threadRule">M6 · Steigung 1,00 mm</small>
+            </div>
+            <div class="thread-meta-grid">
+              <div><span>Gewinde</span><strong id="threadName">M6</strong></div>
+              <div><span>Steigung</span><strong id="threadPitch">1,00 mm</strong></div>
+              <div><span>Typ</span><strong id="threadKind">Metrisch Regel</strong></div>
+            </div>
+            <div class="help-under"><b>Merke:</b> Kernloch ist nicht das fertige Gewinde. Das Gewinde entsteht erst durch Gewindebohrer oder Gewindeformer.</div>
+          </div>
+        </div>
+
+        <div class="panel thread-table-panel thread-info-panel">
+          <div class="panel-head"><p class="eyebrow">Merker</p><h3>Tabelle & Hinweise</h3><p>Gängige M-Gewinde ab M1.</p></div>
+          <div class="panel-body form-grid">
+            <div class="thread-note-box">
+              <b>Formel metrisch:</b><br>
+              Kernloch ≈ Nennmaß − Steigung<br>
+              Beispiel: M8 × 1,25 → 8 − 1,25 = 6,75 → meist 6,8 mm
+            </div>
+            <div class="table-wrap thread-quick-wrap"><table id="threadQuick"></table></div>
+          </div>
+        </div>
       </div>
-      <div class="panel" style="margin-top:18px"><div class="panel-head"><h3>Gängige Größen</h3></div><div class="panel-body"><div class="table-wrap"><table id="threadQuick"></table></div></div></div>
     </section>
 
     <!-- Schrauben -->
     <section class="tab" id="tab-schrauben">
-      <div class="grid">
+      <div class="screw-layout">
         <div class="panel">
-          <div class="panel-head"><p class="eyebrow">Schrauben</p><h3>Durchgangsloch & Senkung</h3><p>Für Zylinderkopf und Senkkopf.</p></div>
+          <div class="panel-head"><p class="eyebrow">Schrauben</p><h3>Durchgangsloch & Senkung</h3><p>Zylinderkopf oder Senkkopf auswählen und Werte direkt ablesen.</p></div>
           <div class="panel-body form-grid">
-            <div class="row">
-              <div><label>Schraubenart</label><select id="scrType"><option value="912">Zylinderkopf DIN 912</option><option value="7991">Senkkopf DIN 7991</option></select></div>
-              <div><label>Größe</label><select id="scrSize"><option>M3</option><option>M4</option><option>M5</option><option selected>M6</option><option>M8</option><option>M10</option><option>M12</option><option>M16</option></select></div>
+            <div>
+              <label>Schraubenart</label>
+              <div class="screw-type-switch">
+                <button class="screw-type-btn active" data-screw-type="912" type="button">Zylinderkopf</button>
+                <button class="screw-type-btn" data-screw-type="7991" type="button">Senkkopf</button>
+              </div>
+              <select id="scrType" style="display:none"><option value="912" selected>Zylinderkopf DIN 912</option><option value="7991">Senkkopf DIN 7991</option></select>
             </div>
-            <div><label>Spielklasse</label><select id="scrFit"><option value="f">eng</option><option value="m" selected>mittel</option><option value="c">groß</option></select></div>
-            <div class="footer-note">Die Werte sind Richtwerte für schnelle Planung. Bei Zeichnungen und Serienfertigung gelten die angegebenen Normen und Firmenstandards.</div>
+            <div class="row">
+              <div><label>Größe</label><select id="scrSize"><option>M1</option><option>M1.2</option><option>M1.4</option><option>M1.6</option><option>M2</option><option>M2.5</option><option>M3</option><option>M4</option><option>M5</option><option selected>M6</option><option>M8</option><option>M10</option><option>M12</option><option>M14</option><option>M16</option><option>M20</option><option>M24</option></select></div>
+              <div><label>Durchgangsloch</label><select id="scrFit"><option value="f">eng</option><option value="m" selected>mittel</option><option value="c">groß</option></select></div>
+            </div>
+            <div class="screw-note"><b>Praxis:</b> Das Durchgangsloch ist d₂. Für Senkungen und Taschen bleiben Zeichnung, Norm, Werkzeug und Firmenstandard maßgebend.</div>
+            <button class="btn btn-blue" type="button" onclick="copyScrewSummary()">Werte kopieren</button>
           </div>
         </div>
+
         <div class="panel">
-          <div class="panel-body">
-            <div class="result-main"><div><small>Durchgangsloch</small><div class="big"><span id="scrHole">6.6</span></div><div class="unit">mm</div></div></div>
-            <div class="result-list">
-              <div class="metric"><span>Kopfdurchmesser dk</span><strong id="scrDk">10.0 mm</strong></div>
-              <div class="metric"><span>Senkdurchmesser</span><strong id="scrCounterDia">11.0 mm</strong></div>
-              <div class="metric"><span>Senktiefe</span><strong id="scrDepth">6.4 mm</strong></div>
+          <div class="panel-head"><p class="eyebrow">Ergebnis</p><h3 id="scrResultTitle">Zylinderkopf</h3><p id="scrResultSub">DIN 912 / ISO 4762 Schnellhilfe.</p></div>
+          <div class="panel-body form-grid">
+            <div class="screw-result-main"><span>Durchgangsloch d₂</span><strong><span id="scrHole">6.6</span><span class="screw-unit">mm</span></strong><small id="scrSizeBadge">M6 · mittel</small></div>
+            <div class="screw-metric-grid">
+              <div class="screw-mini-metric"><span>d · Gewinde</span><strong id="scrThreadD">M6</strong></div>
+              <div class="screw-mini-metric"><span>dₖ · Kopf Ø</span><strong id="scrDk">10.0 mm</strong></div>
+              <div class="screw-mini-metric"><span>d₁ · Senkung</span><strong id="scrCounterDia">11.0 mm</strong></div>
+              <div class="screw-mini-metric"><span>t · Tiefe</span><strong id="scrDepth">6.4 mm</strong></div>
+              <div class="screw-mini-metric"><span>k · Kopfhöhe</span><strong id="scrK">6.0 mm</strong></div>
+              <div class="screw-mini-metric"><span>α · Winkel</span><strong id="scrAlpha">--</strong></div>
             </div>
+            <div class="screw-symbols">
+              <div><b>d</b><br>Gewinde-/Nenndurchmesser</div>
+              <div><b>d₂</b><br>Durchgangsloch</div>
+              <div><b>dₖ</b><br>Kopfdurchmesser</div>
+              <div><b>d₁</b><br>Senk-/Taschendurchmesser</div>
+              <div><b>k</b><br>Kopfhöhe</div>
+              <div><b>t</b><br>Senk-/Taschentiefe</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel screw-visual-card">
+          <div class="panel-head"><p class="eyebrow">Optik</p><h3>Maßbuchstaben sichtbar</h3><p>d, dₖ, k, l, d₁, d₂, t und α passend zum Bild.</p></div>
+          <div class="panel-body">
+            <div class="screw-visual-wrap"><img src="../assets/img/schrauben01.png" alt="Zylinderkopfschraube und Senkkopfschraube mit Maßbuchstaben"></div>
           </div>
         </div>
       </div>
@@ -476,31 +949,157 @@
 
     <!-- Winkel -->
     <section class="tab" id="tab-winkel">
-      <div class="grid">
-        <div class="panel">
-          <div class="panel-head"><p class="eyebrow">Winkel & Dreieck</p><h3>Rechtwinkliges Dreieck</h3><p>Für Zuschnitt, Vorrichtungen, Anreißen und schnelle Skizzen.</p></div>
-          <div class="panel-body form-grid">
-            <div class="row">
-              <div><label>Gegenkathete a [mm]</label><input id="triA" type="number" value="50"></div>
-              <div><label>Ankathete b [mm]</label><input id="triB" type="number" value="100"></div>
-            </div>
-            <div class="footer-note">Berechnet Winkel α = atan(a/b), Hypotenuse und Steigung. Ideal für schnelle Plausibilitätschecks.</div>
+      <div class="angle-tool">
+        <div class="angle-visual-card">
+          <div class="angle-visual-head"><b>Live-Winkelansicht</b><span id="angleModeLabel">Rechtwinkliges Dreieck</span></div>
+          <div class="angle-stage">
+            <svg id="angleSvg" viewBox="0 0 420 340" role="img" aria-label="Live-Geometrie">
+              <defs>
+                <marker id="angleArrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+                  <path d="M0,0 L7,3.5 L0,7 Z" fill="var(--orange)"></path>
+                </marker>
+              </defs>
+              <g id="angleTriangleGroup">
+                <polygon id="angleTriPoly" class="angle-shape" points="60,270 330,270 330,110"></polygon>
+                <line id="angleBaseHelp" class="angle-help-line" x1="60" y1="270" x2="330" y2="270"></line>
+                <line id="angleHeightHelp" class="angle-help-line" x1="330" y1="270" x2="330" y2="110"></line>
+                <path id="angleArc" class="angle-angle-guide" d="M92,270 A32,32 0 0 0 88,252"></path>
+                <line id="angleLineA" class="angle-label-line" x1="0" y1="0" x2="0" y2="0"></line>
+                <line id="angleLineB" class="angle-label-line" x1="0" y1="0" x2="0" y2="0"></line>
+                <line id="angleLineC" class="angle-label-line" x1="0" y1="0" x2="0" y2="0"></line>
+                <text id="angleLblA" class="angle-label" x="340" y="190">a</text>
+                <text id="angleLblB" class="angle-label" x="190" y="300">b</text>
+                <text id="angleLblC" class="angle-label" x="200" y="170">c</text>
+                <text id="angleLblAlpha" class="angle-small" x="96" y="258">α</text>
+                <text id="angleLblBeta" class="angle-small" x="310" y="258">β</text>
+                <text id="angleLblGamma" class="angle-small" x="318" y="128">γ</text>
+              </g>
+              <g id="angleTaperGroup" class="angle-hidden">
+                <path id="taperBody" d="M60,90 L360,125 L360,215 L60,250 Z" class="angle-shape"></path>
+                <line x1="40" y1="170" x2="382" y2="170" class="angle-help-line"></line>
+                <line x1="52" y1="90" x2="52" y2="250" class="angle-dim"></line>
+                <line x1="368" y1="125" x2="368" y2="215" class="angle-dim"></line>
+                <line x1="60" y1="282" x2="360" y2="282" class="angle-dim"></line>
+                <text class="angle-label" x="24" y="174">D</text>
+                <text class="angle-label" x="384" y="174">d</text>
+                <text class="angle-label" x="202" y="310">L</text>
+                <text id="taperAngleLabel" class="angle-small" x="225" y="126">α/2</text>
+              </g>
+            </svg>
+          </div>
+          <div class="angle-results">
+            <div class="angle-result"><span id="angleRes1Label">Winkel α</span><strong id="angleRes1">26.57°</strong></div>
+            <div class="angle-result"><span id="angleRes2Label">Seite c</span><strong id="angleRes2">111.80 mm</strong></div>
+            <div class="angle-result"><span id="angleRes3Label">Steigung</span><strong id="angleRes3">50.0%</strong></div>
           </div>
         </div>
+
         <div class="panel">
-          <div class="panel-body">
-            <div class="result-main"><div><small>Winkel α</small><div class="big"><span id="triAngle">26.57</span></div><div class="unit">Grad</div></div></div>
-            <div class="result-list">
-              <div class="metric"><span>Hypotenuse c</span><strong><span id="triC">111.80</span> mm</strong></div>
-              <div class="metric"><span>Steigung</span><strong><span id="triSlope">50.0</span> %</strong></div>
-              <div class="metric"><span>Verhältnis</span><strong id="triRatio">1 : 2.00</strong></div>
+          <div class="panel-head"><p class="eyebrow">Winkel & Geometrie</p><h3>Werkstatt-Geometrie</h3><p>Werte eingeben, Ergebnis und Skizze ändern sich live. Grün markierte Felder wurden berechnet.</p></div>
+          <div class="panel-body form-grid">
+            <div class="angle-modebar" aria-label="Winkelmodus wählen">
+              <button class="angle-mode-btn active" id="angleModeRight" type="button" onclick="setAngleMode('right')">📐 Rechtwinklig</button>
+              <button class="angle-mode-btn" id="angleModeGeneral" type="button" onclick="setAngleMode('general')">△ Allgemein</button>
+              <button class="angle-mode-btn" id="angleModeTaper" type="button" onclick="setAngleMode('taper')">🔩 Kegel</button>
             </div>
+
+            <div id="angleTriangleInputs" class="form-grid">
+              <div class="angle-hint" id="angleHint">Gib beim rechtwinkligen Dreieck zwei Werte ein. Das Tool ergänzt den Rest automatisch.</div>
+              <div class="row-3">
+                <div><label>Seite a [mm]</label><input class="angle-input" id="angA" type="number" step="0.01" value="50" placeholder="z. B. 50" oninput="angleTyped(this)"></div>
+                <div><label>Seite b [mm]</label><input class="angle-input" id="angB" type="number" step="0.01" value="100" placeholder="z. B. 100" oninput="angleTyped(this)"></div>
+                <div><label id="angCLabel">Seite c / Hypotenuse [mm]</label><input class="angle-input" id="angC" type="number" step="0.01" placeholder="berechnet" oninput="angleTyped(this)"></div>
+              </div>
+              <div class="row-3">
+                <div><label>Winkel α [°]</label><input class="angle-input" id="angAlpha" type="number" step="0.01" placeholder="berechnet" oninput="angleTyped(this)"></div>
+                <div><label>Winkel β [°]</label><input class="angle-input" id="angBeta" type="number" step="0.01" placeholder="berechnet" oninput="angleTyped(this)"></div>
+                <div><label>Winkel γ [°]</label><input class="angle-input" id="angGamma" type="number" step="0.01" value="90" disabled oninput="angleTyped(this)"></div>
+              </div>
+            </div>
+
+            <div id="angleTaperInputs" class="form-grid angle-hidden">
+              <div class="angle-hint">Für Drehbank/Kegel: großen Ø, kleinen Ø und Kegellänge eingeben. Ergebnis ist der Oberschlitten-/Einstellwinkel α/2.</div>
+              <div class="row-3">
+                <div><label>Großer Ø D [mm]</label><input id="tapD" type="number" step="0.01" value="40"></div>
+                <div><label>Kleiner Ø d [mm]</label><input id="tapd" type="number" step="0.01" value="30"></div>
+                <div><label>Kegellänge L [mm]</label><input id="tapL" type="number" step="0.01" value="100"></div>
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn" type="button" onclick="resetAngle()">Winkelwerte löschen</button>
+              <button class="btn btn-blue" type="button" onclick="copySummary('angle')">Winkel kopieren</button>
+            </div>
+            <div class="help-under"><b>Praxis:</b> Rechtwinklig ist ideal für Zuschnitt, Anreißen und Vorrichtungen. Allgemein hilft bei schrägen Dreiecken. Kegel ist für Drehbank-/Oberschlitten-Einstellung gedacht.</div>
           </div>
         </div>
       </div>
     </section>
 
+
   </div>
+
+
+  <dialog id="projectDialog" class="modal-large">
+    <div class="modal-head"><div><p class="eyebrow">Projekte laden</p><h2 style="margin:0">Schnittdaten-Aktenordner</h2></div><button class="x" onclick="projectDialog.close()">×</button></div>
+    <div class="modal-body">
+      <input class="project-search" id="projectSearch" type="search" placeholder="Projekt suchen, z.B. Schiene, Kunde, Material, Nummer …" oninput="renderProjectDialog()">
+      <div class="project-browser">
+        <section class="project-list-panel" aria-label="Projektliste">
+          <div class="project-list-head"><h3>Projektliste</h3><p>Links auswählen, rechts prüfen und dann laden oder löschen.</p></div>
+          <div class="project-table-wrap"><table class="project-table"><thead><tr><th>Projekt</th><th>Nr./Kunde</th><th>Werkz.</th></tr></thead><tbody id="projectList"></tbody></table></div>
+        </section>
+        <section class="project-detail-panel" aria-label="Projektvorschau">
+          <div class="project-detail-head"><h3>Projektvorschau</h3><p>Werkzeuge und Beschreibung vor dem Laden kontrollieren.</p></div>
+          <div class="project-detail" id="projectDetail"></div>
+        </section>
+      </div>
+    </div>
+  </dialog>
+
+
+  <dialog id="cutInfoDialog" class="cut-info-dialog">
+    <div class="modal-head"><div><p class="eyebrow">Merker / Formeln</p><h2 style="margin:0">Schnittdaten verständlich lesen</h2></div><button class="x" onclick="cutInfoDialog.close()">×</button></div>
+    <div class="modal-body cut-info-rich">
+      <section class="cut-info-hero">
+        <b>Wichtigster Gedanke:</b> Das Tool liefert dir Startwerte für die Maschine. In der Schnittdaten-Konsole kannst du direkt die Werte ändern, die du kennst. Die anderen Werte werden live ergänzt. Benutzerwerte bleiben normal, berechnete Werte werden farbig markiert.
+      </section>
+      <section class="formula-grid">
+        <div class="formula-card">
+          <h3>Drehzahl und Schnittgeschwindigkeit</h3>
+          <code>S = (vc × 1000) / (π × d)</code>
+          <code>vc = (π × d × S) / 1000</code>
+          <p class="muted-small">Damit kannst du in beide Richtungen rechnen: aus Schnittgeschwindigkeit die Drehzahl oder aus vorhandener Drehzahl die tatsächliche Schnittgeschwindigkeit.</p>
+        </div>
+        <div class="formula-card">
+          <h3>Vorschub</h3>
+          <code>Bohren/Drehen: F = S × f</code>
+          <code>Fräsen: F = S × z × fz</code>
+          <code>Rückwärts: fz = F / (S × z)</code>
+          <p class="muted-small">Beim Bohren ist <b>f</b> der Vorschub pro Umdrehung. Beim Fräsen ist <b>fz</b> der Vorschub pro Zahn.</p>
+        </div>
+      </section>
+      <section>
+        <h3 style="margin:0 0 10px;color:var(--text)">Begriffe in der Konsole</h3>
+        <div class="term-grid">
+          <div class="term-box"><strong>Ø d</strong><span>Werkzeugdurchmesser in mm. Zusammen mit vc ergibt sich die Drehzahl.</span></div>
+          <div class="term-box"><strong>vc</strong><span>Schnittgeschwindigkeit in m/min. Idealerweise aus Herstellerdaten oder Tabellenbuch.</span></div>
+          <div class="term-box"><strong>S</strong><span>Spindeldrehzahl in U/min. Das ist der typische CNC-S-Wert.</span></div>
+          <div class="term-box"><strong>z</strong><span>Schneidenzahl/Zähne. Beim Bohren meistens fest 2, beim Fräsen frei einstellbar.</span></div>
+          <div class="term-box"><strong>f / fz</strong><span>Vorschub pro Umdrehung beim Bohren oder Vorschub pro Zahn beim Fräsen.</span></div>
+          <div class="term-box"><strong>F</strong><span>Vorschubgeschwindigkeit in mm/min. Das ist der typische CNC-F-Wert.</span></div>
+        </div>
+      </section>
+      <section class="practice-box">
+        <h3>Praxis-Merker</h3>
+        <ul>
+          <li>Richtwerte sind Startwerte, keine Freigabe. Maschine, Spannung, Auskragung und Kühlung entscheiden mit.</li>
+          <li>Bei Edelstahl, langen Werkzeugen oder schlechter Spannung lieber vorsichtig starten.</li>
+          <li>Zu wenig Vorschub kann reiben, zu viel Vorschub kann Werkzeugbruch oder schlechte Oberfläche verursachen.</li>
+          <li>Das Werkzeugblatt ist bewusst auf die Maschinenwerte reduziert: <b>T, S, F, Ø, L, z, vc, f/fz und Beschichtung</b>.</li>
+        </ul>
+      </section>
+    </div>
+  </dialog>
 
   <dialog id="helpDialog">
     <div class="modal-head"><div><p class="eyebrow">Hilfe</p><h2 style="margin:0">Werkstatt-Rechner Metall Plus</h2></div><button class="x" onclick="helpDialog.close()">×</button></div>
@@ -515,8 +1114,10 @@
 
   <div class="toast" id="toast">Erledigt</div>
 
+<script src="../assets/js/ws-tool-menu.js" defer></script>
 <script>
 "use strict";
+const TOOL_VERSION = "Werkstatt-Rechner Metall Plus v34";
 const $=id=>document.getElementById(id);
 const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
 function num(id){return parseFloat($(id)?.value)||0}
@@ -526,27 +1127,63 @@ function toast(t){$("toast").textContent=t;$("toast").classList.add("show");clea
 function setVal(id,v){$(id).value=v;calcAll()}
 
 const tolRows=[
-  [0.5,3,0.05,0.1,0.2],[3,6,0.05,0.1,0.3],[6,30,0.1,0.2,0.5],
-  [30,120,0.15,0.3,0.8],[120,400,0.2,0.5,1.2],[400,1000,0.3,0.8,2.0],[1000,2000,0.5,1.2,3.0]
+  [0.5,3,0.05,0.10,0.20,null],
+  [3,6,0.05,0.10,0.30,0.50],
+  [6,30,0.10,0.20,0.50,1.00],
+  [30,120,0.15,0.30,0.80,1.50],
+  [120,400,0.20,0.50,1.20,2.50],
+  [400,1000,0.30,0.80,2.00,4.00],
+  [1000,2000,0.50,1.20,3.00,6.00]
 ];
-const fitData=[
-  {max:3,H7:[10,0],H8:[14,0],h6:[0,-6],g6:[-2,-8],f7:[-6,-16],k6:[6,0],p6:[12,6]},
-  {max:6,H7:[12,0],H8:[18,0],h6:[0,-8],g6:[-4,-12],f7:[-10,-22],k6:[9,1],p6:[20,12]},
-  {max:10,H7:[15,0],H8:[22,0],h6:[0,-9],g6:[-5,-14],f7:[-13,-28],k6:[10,1],p6:[24,15]},
-  {max:18,H7:[18,0],H8:[27,0],h6:[0,-11],g6:[-6,-17],f7:[-16,-34],k6:[12,1],p6:[29,18]},
-  {max:30,H7:[21,0],H8:[33,0],h6:[0,-13],g6:[-7,-20],f7:[-20,-41],k6:[15,2],p6:[35,22]},
-  {max:50,H7:[25,0],H8:[39,0],h6:[0,-16],g6:[-9,-25],f7:[-25,-50],k6:[18,2],p6:[42,26]},
-  {max:80,H7:[30,0],H8:[46,0],h6:[0,-19],g6:[-10,-29],f7:[-30,-60],k6:[21,2],p6:[51,32]},
-  {max:120,H7:[35,0],H8:[54,0],h6:[0,-22],g6:[-12,-34],f7:[-36,-71],k6:[25,3],p6:[59,37]},
-  {max:500,H7:[63,0],H8:[97,0],h6:[0,-40],g6:[-20,-60],f7:[-68,-131],k6:[45,5],p6:[108,68]}
-];
+const fitData = (() => {
+  // Praxisnahe Schnellhilfe für gängige ISO-Passungen.
+  // Aufbau je Code: [oberes Abmaß µm, unteres Abmaß µm]
+  // H/h liegen an der Nulllinie. F/G-Bohrungen und f/g-Wellen werden aus den gleichen Grundabmaßen gespiegelt.
+  // Für kritische Bauteile immer Norm-/Tabellenbuch prüfen.
+  const base = [
+    {max:3,   it5:4,  it6:6,  it7:10, it8:14, g:2,  f:6,  kBase:0, pBase:6},
+    {max:6,   it5:5,  it6:8,  it7:12, it8:18, g:4,  f:10, kBase:1, pBase:12},
+    {max:10,  it5:6,  it6:9,  it7:15, it8:22, g:5,  f:13, kBase:1, pBase:15},
+    {max:18,  it5:8,  it6:11, it7:18, it8:27, g:6,  f:16, kBase:1, pBase:18},
+    {max:30,  it5:9,  it6:13, it7:21, it8:33, g:7,  f:20, kBase:2, pBase:22},
+    {max:50,  it5:11, it6:16, it7:25, it8:39, g:9,  f:25, kBase:2, pBase:26},
+    {max:80,  it5:13, it6:19, it7:30, it8:46, g:10, f:30, kBase:2, pBase:32},
+    {max:120, it5:15, it6:22, it7:35, it8:54, g:12, f:36, kBase:3, pBase:37},
+    {max:500, it5:25, it6:40, it7:63, it8:97, g:20, f:68, kBase:5, pBase:68}
+  ];
+  const width = (r, grade) => r['it' + grade] ?? r.it7;
+  return base.map(r => {
+    const row = { max: r.max };
+    [6,7,8].forEach(g => {
+      const it = width(r, g);
+      row['H' + g] = [it, 0];
+      row['G' + g] = [r.g + it, r.g];
+      row['F' + g] = [r.f + it, r.f];
+    });
+    [5,6,7].forEach(g => {
+      const it = width(r, g);
+      row['h' + g] = [0, -it];
+      row['g' + g] = [-r.g, -(r.g + it)];
+      row['f' + g] = [-r.f, -(r.f + it)];
+      row['k' + g] = [r.kBase + it, r.kBase];
+      row['p' + g] = [r.pBase + it, r.pBase];
+    });
+    return row;
+  });
+})();
 const threads={
- "Metrisch Regel (M)":{"M3":2.5,"M4":3.3,"M5":4.2,"M6":5.0,"M8":6.8,"M10":8.5,"M12":10.2,"M14":12.0,"M16":14.0,"M18":15.5,"M20":17.5,"M24":21.0,"M30":26.5,"M36":32.0},
- "Metrisch Fein (MF)":{"M6 x 0.75":5.25,"M8 x 1.0":7.0,"M10 x 1.0":9.0,"M10 x 1.25":8.8,"M12 x 1.5":10.5,"M16 x 1.5":14.5,"M20 x 1.5":18.5,"M24 x 2.0":22.0,"M30 x 2.0":28.0},
+ "Metrisch Regel (M)":{"M1":0.75,"M1.2":0.95,"M1.4":1.10,"M1.6":1.25,"M2":1.60,"M2.5":2.05,"M3":2.50,"M4":3.30,"M5":4.20,"M6":5.00,"M8":6.80,"M10":8.50,"M12":10.20,"M14":12.00,"M16":14.00,"M18":15.50,"M20":17.50,"M24":21.00,"M30":26.50,"M36":32.00},
+ "Metrisch Fein (MF)":{"M3 x 0.35":2.65,"M4 x 0.5":3.50,"M5 x 0.5":4.50,"M6 x 0.75":5.25,"M8 x 1.0":7.00,"M10 x 1.0":9.00,"M10 x 1.25":8.80,"M12 x 1.5":10.50,"M16 x 1.5":14.50,"M20 x 1.5":18.50,"M24 x 2.0":22.00,"M30 x 2.0":28.00},
  "UNC":{"1/4-20":5.1,"5/16-18":6.6,"3/8-16":8.0,"7/16-14":9.4,"1/2-13":10.8,"5/8-11":13.5,"3/4-10":16.5},
  "UNF":{"1/4-28":5.5,"5/16-24":6.9,"3/8-24":8.5,"7/16-20":9.9,"1/2-20":11.5,"5/8-18":14.5,"3/4-16":17.5}
 };
 const screw={
+ M1:{holes:{f:1.1,m:1.2,c:1.3},dk:2.0,k:1.0,cb:2.4,cs:2.2},
+ "M1.2":{holes:{f:1.3,m:1.4,c:1.5},dk:2.3,k:1.2,cb:2.7,cs:2.6},
+ "M1.4":{holes:{f:1.5,m:1.6,c:1.7},dk:2.6,k:1.4,cb:3.0,cs:3.0},
+ "M1.6":{holes:{f:1.7,m:1.8,c:2.0},dk:3.0,k:1.6,cb:3.5,cs:3.4},
+ M2:{holes:{f:2.2,m:2.4,c:2.6},dk:3.8,k:2.0,cb:4.4,cs:4.4},
+ "M2.5":{holes:{f:2.7,m:2.9,c:3.1},dk:4.5,k:2.5,cb:5.0,cs:5.5},
  M3:{holes:{f:3.2,m:3.4,c:3.6},dk:5.5,k:3,cb:6.5,cs:6.3},
  M4:{holes:{f:4.3,m:4.5,c:4.8},dk:7,k:4,cb:8,cs:8.4},
  M5:{holes:{f:5.3,m:5.5,c:5.8},dk:8.5,k:5,cb:10,cs:10.4},
@@ -554,7 +1191,10 @@ const screw={
  M8:{holes:{f:8.4,m:9.0,c:10.0},dk:13,k:8,cb:15,cs:16.5},
  M10:{holes:{f:10.5,m:11.0,c:12.0},dk:16,k:10,cb:18,cs:20.5},
  M12:{holes:{f:13.0,m:13.5,c:14.5},dk:18,k:12,cb:20,cs:24.8},
- M16:{holes:{f:17.0,m:17.5,c:18.5},dk:24,k:16,cb:26,cs:33.0}
+ M14:{holes:{f:15.0,m:15.5,c:16.5},dk:21,k:14,cb:23,cs:28.0},
+ M16:{holes:{f:17.0,m:17.5,c:18.5},dk:24,k:16,cb:26,cs:33.0},
+ M20:{holes:{f:21.0,m:22.0,c:24.0},dk:30,k:20,cb:33,cs:41.0},
+ M24:{holes:{f:25.0,m:26.0,c:28.0},dk:36,k:24,cb:40,cs:49.0}
 };
 const shapeDefs={
  round:`<div><label>Durchmesser d [mm]</label><input id="matD" type="number" value="20"></div>`,
@@ -569,57 +1209,279 @@ function openTab(id){
   history.replaceState(null,"","#"+id);
   setTimeout(()=>window.scrollTo({top:0,behavior:"smooth"}),30);
 }
+function cutConsoleInputIds(){return ["cutConsoleD","cutConsoleVc","cutConsoleS","cutConsoleZ","cutConsoleFz","cutConsoleF"]}
+function cutVal(id){const e=$(id); if(!e) return 0; const v=String(e.value||"").replace(",","."); return parseFloat(v)||0}
+function fmtCut(v,d=2){if(!Number.isFinite(v)) return ""; let txt=Number(v).toFixed(d); return txt.replace(/\.0+$/,'').replace(/(\.\d*?)0+$/,'$1')}
+function setCutConsole(id,val,dec=2,calculated=true){
+  const e=$(id); if(!e || !Number.isFinite(val)) return;
+  e.value=fmtCut(val,dec);
+  e.classList.toggle("is-calc", !!calculated);
+  if(calculated) delete e.dataset.time;
+}
+function clearCutCalculated(){cutConsoleInputIds().forEach(id=>$(id)?.classList.remove('is-calc'))}
+function setCutManual(el){if(!el) return; el.dataset.time=String(Date.now()); el.classList.remove('is-calc')}
+function syncHiddenCut(d,vc,z,f){
+  if($('cutD')) $('cutD').value=fmtCut(d,2);
+  if($('cutVc')) $('cutVc').value=fmtCut(vc,2);
+  if($('cutZ')) $('cutZ').value=fmtCut(z,0);
+  if($('cutFz')) $('cutFz').value=fmtCut(f,4);
+}
+function syncConsoleFromHidden(force=false){
+  const map=[["cutConsoleD","cutD",2],["cutConsoleVc","cutVc",2],["cutConsoleZ","cutZ",0],["cutConsoleFz","cutFz",4]];
+  map.forEach(([cid,hid])=>{const c=$(cid), h=$(hid); if(c&&h&&(force || !c.value)) c.value=h.value||"";});
+}
+function updateCutModeUI(){
+  const op=$("cutOp")?.value || "drill";
+  const zInput=$("cutConsoleZ"), feedLabel=$("cutFeedLabel"), hint=$("cutModeHint");
+  if(op==="drill"){
+    if(zInput){zInput.value=2; zInput.disabled=true; zInput.classList.add("is-calc"); delete zInput.dataset.time;}
+    if(feedLabel) feedLabel.innerHTML='f <span class="unit-mini">mm/U</span>';
+    if(hint) hint.innerHTML='<b>Bohren:</b> Gib z. B. Ø und vc ein, dann berechnet das Tool S. Gib S und F ein, dann berechnet es den Vorschub f zurück.';
+  } else if(op==="turn"){
+    if(zInput){zInput.value=1; zInput.disabled=true; zInput.classList.add("is-calc"); delete zInput.dataset.time;}
+    if(feedLabel) feedLabel.innerHTML='f <span class="unit-mini">mm/U</span>';
+    if(hint) hint.innerHTML='<b>Drehen:</b> Ø, vc, S, f und F können rückwärts gerechnet werden. z wird nicht benötigt.';
+  } else {
+    if(zInput){zInput.disabled=false;}
+    if(feedLabel) feedLabel.innerHTML='fz <span class="unit-mini">mm/Zahn</span>';
+    if(hint) hint.innerHTML='<b>Fräsen:</b> Die letzten Eingaben führen. Typisch: Ø + vc berechnet S, S + z + fz berechnet F, oder S + z + F berechnet fz.';
+  }
+}
 function calcSchnitt(){
-  const d=num("cutD"), vc=num("cutVc"), z=num("cutZ"), fz=num("cutFz"), ap=num("cutAp"), ae=num("cutAe");
-  const n=d>0?(vc*1000)/(Math.PI*d):0, vf=n*z*fz, q=ap>0&&ae>0?(ap*ae*vf)/1000:0;
-  setText("cutN",round(n,0)); setText("cutVf",round(vf,0)); setText("cutQ",q?round(q,1):"--");
-  const w=$("cutWarn"); w.className=""; 
-  if(n>20000){w.textContent="sehr hoch";w.classList.add("bad")} else if(vf>3000){w.textContent="Vorschub hoch";w.classList.add("warn")} else {w.textContent="Richtwert prüfen";w.classList.add("good")}
+  updateCutModeUI();
+  syncConsoleFromHidden(false);
+  const op=$("cutOp")?.value || "drill";
+  let d=cutVal("cutConsoleD"), vc=cutVal("cutConsoleVc"), n=cutVal("cutConsoleS"), z=cutVal("cutConsoleZ"), f=cutVal("cutConsoleFz"), vf=cutVal("cutConsoleF");
+  if(op==="drill") z=2;
+  if(op==="turn") z=1;
+  const t=id=>parseInt($(id)?.dataset.time||"0",10);
+  const tVc=t("cutConsoleVc"), tN=t("cutConsoleS"), tF=t("cutConsoleF"), tFz=t("cutConsoleFz");
+  // Drehzahl/Schnittgeschwindigkeit: die zuletzt aktiv geänderte Seite gewinnt.
+  if(d>0){
+    if(n>0 && (tN>tVc || !vc)){
+      vc=(Math.PI*d*n)/1000;
+      setCutConsole("cutConsoleVc",vc,1,true);
+    } else if(vc>0){
+      n=(vc*1000)/(Math.PI*d);
+      setCutConsole("cutConsoleS",n,0,true);
+    }
+  }
+  // Vorschub: F und f/fz können vorwärts/rückwärts gerechnet werden.
+  const denom=(op==="drill"||op==="turn") ? n : n*z;
+  if(denom>0){
+    if(vf>0 && (tF>tFz || !f)){
+      f=vf/denom;
+      setCutConsole("cutConsoleFz",f, op==="drill"||op==="turn" ? 3 : 4, true);
+    } else if(f>0){
+      vf=denom*f;
+      setCutConsole("cutConsoleF",vf,0,true);
+    }
+  }
+  if(op==="drill") setCutConsole("cutConsoleZ",2,0,true);
+  if(op==="turn") setCutConsole("cutConsoleZ",1,0,true);
+  syncHiddenCut(d,vc,z,f);
+  setText("cutN",round(n,0)); setText("cutVf",round(vf,0));
+  // Kompatible alte Anzeige-IDs, falls noch irgendwo genutzt.
+  setText("cncS",round(n,0)); setText("cncF",round(vf,0)); setText("cncVc",round(vc,0)); setText("cncD",round(d,1).replace(".0", ""));
+  setText("cncMode", op==="turn" ? "DREHEN" : (op==="drill" ? "BOHREN" : "FRÄSEN"));
+  const w=$("cutWarn"); if(!w) return; w.className="";
+  if(n>20000){w.textContent="Achtung: Drehzahl sehr hoch";w.classList.add("bad")} else if(vf>3000){w.textContent="Achtung: Vorschub hoch";w.classList.add("warn")} else {w.textContent="Startwert plausibel";w.classList.add("good")}
 }
 function loadCutPreset(){
   const data={
-    steel:{drill:[25,.1,2],millRough:[120,.05,4],millFinish:[180,.03,4],turn:[160,.12,1]},
+    steel:{drill:[25,.10,2],millRough:[120,.05,4],millFinish:[180,.03,4],turn:[160,.12,1]},
     inox:{drill:[15,.08,2],millRough:[80,.04,4],millFinish:[120,.03,4],turn:[90,.10,1]},
-    alu:{drill:[80,.2,2],millRough:[400,.1,3],millFinish:[600,.08,3],turn:[450,.18,1]},
-    plastic:{drill:[60,.2,2],millRough:[300,.15,2],millFinish:[400,.10,2],turn:[250,.15,1]},
-    cast:{drill:[22,.1,2],millRough:[110,.06,4],millFinish:[150,.04,4],turn:[130,.14,1]}
+    alu:{drill:[80,.18,2],millRough:[400,.10,3],millFinish:[600,.08,3],turn:[450,.18,1]},
+    plastic:{drill:[60,.18,2],millRough:[300,.15,2],millFinish:[400,.10,2],turn:[250,.15,1]},
+    cast:{drill:[22,.10,2],millRough:[110,.06,4],millFinish:[150,.04,4],turn:[130,.14,1]}
   };
   const p=data[$("cutMat").value][$("cutOp").value];
-  $("cutVc").value=p[0]; $("cutFz").value=p[1]; $("cutZ").value=p[2]; calcSchnitt(); toast("Richtwerte geladen");
+  if($('cutConsoleVc')) {$('cutConsoleVc').value=p[0]; setCutManual($('cutConsoleVc'));}
+  if($('cutConsoleFz')) {$('cutConsoleFz').value=p[1]; setCutManual($('cutConsoleFz'));}
+  if($('cutConsoleZ')) {$('cutConsoleZ').value=p[2]; setCutManual($('cutConsoleZ'));}
+  syncHiddenCut(cutVal('cutConsoleD')||10,p[0],p[2],p[1]);
+  calcSchnitt(); toast("Richtwerte geladen");
 }
+function fmtTol(v){return Number.isFinite(v) ? Number(v).toFixed(2) : "--"}
+function fmtTolCell(v){return v==null ? "—" : "±" + Number(v).toFixed(2)}
 function calcTol(){
-  const d=num("tolDim"), cls=$("tolClass").value;
-  const idx={f:2,m:3,c:4}[cls];
-  const row=tolRows.find(r=>d>=r[0]&&d<=r[1]) || tolRows.find(r=>d<=r[1]);
-  if(!row){setText("tolVal","--");return}
-  const t=row[idx]; setText("tolVal",round(t,2)); setText("tolMin",round(d-t,2)); setText("tolMax",round(d+t,2)); setText("tolRange",`${round(d-t,2)} – ${round(d+t,2)}`);
+  const d=num("tolDim"), cls=$("tolClass")?.value || "m";
+  const idx={f:2,m:3,c:4,v:5}[cls];
+  const row=tolRows.find(r=>d>=r[0]&&d<=r[1]) || tolRows.find(r=>d<=r[1]) || tolRows[tolRows.length-1];
+  const t=row ? row[idx] : null;
+  const status=$("tolStatusLine");
+  const clsText={f:"fein",m:"mittel",c:"grob",v:"sehr grob"}[cls] || cls;
+  if(status) status.textContent = `Maß ${d ? fmtTol(d) : "--"} mm · Klasse ${cls} (${clsText}) · Bereich ${row ? row[0]+" bis "+row[1]+" mm" : "--"}`;
+  setText("tolNominal", d ? fmtTol(d)+" mm" : "--");
+  if(!row || t==null || !d){
+    setText("tolVal","--"); setText("tolValUm","--"); setText("tolMin","--"); setText("tolMax","--"); setText("tolRange","--");
+    const box=$("tolCheckBox"); if(box){box.className="iso-check-box warn";}
+    setText("tolCheckText", t==null ? "für diesen Bereich nicht hinterlegt" : "Maß eingeben");
+    setText("tolCheckHint", "Bitte Maßbereich und Klasse prüfen.");
+    return;
+  }
+  const min=d-t, max=d+t;
+  setText("tolVal",fmtTol(t)); setText("tolValUm",`${Math.round(t*1000)} µm`); setText("tolMin",fmtTol(min)); setText("tolMax",fmtTol(max)); setText("tolRange",`${fmtTol(min)} – ${fmtTol(max)}`);
+  const actualRaw=$("tolActual")?.value;
+  const actual=actualRaw==="" ? NaN : parseFloat(String(actualRaw).replace(",","."));
+  const box=$("tolCheckBox");
+  if(!box) return;
+  if(!Number.isFinite(actual)){
+    box.className="iso-check-box";
+    setText("tolCheckText","optional eintragen");
+    setText("tolCheckHint","Dann wird direkt gegen Unter- und Obergrenze geprüft.");
+  } else if(actual>=min && actual<=max){
+    box.className="iso-check-box good";
+    setText("tolCheckText",`${fmtTol(actual)} mm · i.O.`);
+    setText("tolCheckHint",`liegt innerhalb ${fmtTol(min)} bis ${fmtTol(max)} mm`);
+  } else {
+    box.className="iso-check-box bad";
+    setText("tolCheckText",`${fmtTol(actual)} mm · n.i.O.`);
+    setText("tolCheckHint",`zulässig wäre ${fmtTol(min)} bis ${fmtTol(max)} mm`);
+  }
 }
 function renderTolTable(){
-  $("tolTable").innerHTML=`<thead><tr><th>Nennmaßbereich</th><th>fein f</th><th>mittel m</th><th>grob c</th></tr></thead><tbody>`+
-  tolRows.map(r=>`<tr><td>${r[0]} bis ${r[1]} mm</td><td class="mono">±${r[2]}</td><td class="mono">±${r[3]}</td><td class="mono">±${r[4]}</td></tr>`).join("")+"</tbody>";
+  const table=$("tolTable"); if(!table) return;
+  table.innerHTML=`<thead><tr><th>Nennmaß</th><th>f</th><th>m</th><th>c</th><th>v</th></tr></thead><tbody>`+
+  tolRows.map(r=>`<tr><td>${r[0]} bis ${r[1]} mm</td><td class="mono">${fmtTolCell(r[2])}</td><td class="mono">${fmtTolCell(r[3])}</td><td class="mono">${fmtTolCell(r[4])}</td><td class="mono">${fmtTolCell(r[5])}</td></tr>`).join("")+"</tbody>";
 }
-function applyFitPreset(){const v=$("fitPreset").value;if(!v)return;const [h,s]=v.split("-");$("holeChar").value=h[0];$("holeNum").value=h[1];$("shaftChar").value=s[0];$("shaftNum").value=s[1];calcFit()}
+let currentFitMode="pair";
+function setFitMode(mode){
+  currentFitMode=mode || "pair";
+  $$(".fit-mode-btn").forEach(b=>b.classList.toggle("active", b.dataset.fitMode===currentFitMode));
+  $("fitPresetWrap")?.classList.toggle("fit-hidden", currentFitMode!=="pair");
+  $("fitHoleBox")?.classList.toggle("fit-hidden", currentFitMode==="shaft");
+  $("fitShaftBox")?.classList.toggle("fit-hidden", currentFitMode==="hole");
+  calcFit();
+}
+function applyFitPreset(){const v=$("fitPreset").value;if(!v)return;const [h,s]=v.split("-");$("holeChar").value=h[0];$("holeNum").value=h[1];$("shaftChar").value=s[0];$("shaftNum").value=s[1];setFitMode("pair")}
 function fitVals(dim,code){const e=fitData.find(x=>dim<=x.max);return e?e[code]:null}
+function fmtFitRange(min,max){return `${round(min,3)} – ${round(max,3)} mm`}
+function fmtFitTol(min,max){const spread=Math.abs(max-min);return `<span class="fit-values-main">${round(spread*1000,0)} µm Toleranz</span><span class="fit-values-sub">${round(spread,3)} mm</span>`}
+function updateFitPractice(d, mode, holeCode, shaftCode, hmin, hmax, smin, smax){
+  const isH7 = /^H7$/.test(holeCode);
+  let allowance = d <= 10 ? 0.15 : d <= 30 ? 0.20 : d <= 80 ? 0.30 : 0.50;
+  const pre = Math.max(0, d - allowance);
+  if(mode==="shaft"){
+    setText("fitDrill", "Rohmaß prüfen");
+    setText("fitFinish", round(d,3).replace(/\.000$/,"" ) + " " + shaftCode);
+    setText("fitTool", "Drehen/Schleifen Ø" + round(d,3).replace(/\.000$/,"" ) + " " + shaftCode);
+    return;
+  }
+  setText("fitDrill", "ca. " + round(pre,2).replace(/\.00$/,"" ) + " mm");
+  setText("fitFinish", isH7 ? (round(d,3).replace(/\.000$/,"" ) + " H7") : (holeCode + " / " + round(hmin,3) + "–" + round(hmax,3)));
+  setText("fitTool", isH7 ? "Reibahle Ø" + round(d,3).replace(/\.000$/,"" ) + " H7" : "nach Tabelle prüfen");
+}
 function calcFit(){
-  const d=num("fitDim"), hc=$("holeChar").value+$("holeNum").value, sc=$("shaftChar").value+$("shaftNum").value;
-  let hv=fitVals(d,hc), sv=fitVals(d,sc);
-  if(!hv||!sv){setText("fitType","nicht hinterlegt");return}
-  const hmax=d+hv[0]/1000,hmin=d+hv[1]/1000,smax=d+sv[0]/1000,smin=d+sv[1]/1000;
+  const d=num("fitDim"), mode=currentFitMode || "pair", hc=$("holeChar").value+$("holeNum").value, sc=$("shaftChar").value+$("shaftNum").value;
+  const ft=$("fitType"); if(!ft) return; ft.className="";
+  const holeRow=$("holeRangeRow"), shaftRow=$("shaftRangeRow"), valuesRow=$("fitValuesRow"), valuesLabel=$("fitValuesLabel");
+  if(!d){setText("fitType","Nennmaß eingeben");return}
+  const hv=fitVals(d,hc), sv=fitVals(d,sc);
+  holeRow?.classList.toggle("fit-hidden", mode==="shaft");
+  shaftRow?.classList.toggle("fit-hidden", mode==="hole");
+  valuesRow?.classList.remove("fit-hidden");
+  if(mode!=="shaft" && !hv){setText("fitType","Bohrung nicht hinterlegt");return}
+  if(mode!=="hole" && !sv){setText("fitType","Welle nicht hinterlegt");return}
+  let hmax=null,hmin=null,smax=null,smin=null;
+  if(hv){hmax=d+hv[0]/1000; hmin=d+hv[1]/1000; setText("holeRange",fmtFitRange(hmin,hmax));}
+  if(sv){smax=d+sv[0]/1000; smin=d+sv[1]/1000; setText("shaftRange",fmtFitRange(smin,smax));}
+  updateFitPractice(d, mode, hc, sc, hmin, hmax, smin, smax);
+  if(mode==="hole"){
+    ft.textContent="Bohrung " + hc; ft.classList.add("fit-status-blue");
+    if(valuesLabel) valuesLabel.textContent="Bohrungs-Toleranz";
+    if($("fitValues")) $("fitValues").innerHTML=fmtFitTol(hmin,hmax);
+    return;
+  }
+  if(mode==="shaft"){
+    ft.textContent="Welle " + sc; ft.classList.add("fit-status-blue");
+    if(valuesLabel) valuesLabel.textContent="Wellen-Toleranz";
+    if($("fitValues")) $("fitValues").innerHTML=fmtFitTol(smin,smax);
+    return;
+  }
+  if(valuesLabel) valuesLabel.textContent="Spiel / Übermaß";
   const maxClear=hmax-smin,minClear=hmin-smax;
-  setText("holeRange",`${round(hmin,3)} – ${round(hmax,3)}`); setText("shaftRange",`${round(smin,3)} – ${round(smax,3)}`);
-  const ft=$("fitType"); ft.className="";
-  if(minClear>=0){ft.textContent="Spielpassung";ft.classList.add("good");setText("fitValues",`${round(minClear*1000,0)} bis ${round(maxClear*1000,0)} µm Spiel`)}
-  else if(maxClear<=0){ft.textContent="Übermaßpassung";ft.classList.add("bad");setText("fitValues",`${round(Math.abs(maxClear)*1000,0)} bis ${round(Math.abs(minClear)*1000,0)} µm Übermaß`)}
-  else{ft.textContent="Übergangspassung";ft.classList.add("warn");setText("fitValues",`${round(Math.abs(minClear)*1000,0)} µm Übermaß bis ${round(maxClear*1000,0)} µm Spiel`)}
+  if(minClear>=0){
+    ft.textContent="Spielpassung";ft.classList.add("good");
+    if($("fitValues")) $("fitValues").innerHTML=`<span class="fit-values-main">${round(minClear*1000,0)} bis ${round(maxClear*1000,0)} µm Spiel</span><span class="fit-values-sub">${round(minClear,3)} bis ${round(maxClear,3)} mm</span>`;
+  }
+  else if(maxClear<=0){
+    ft.textContent="Übermaßpassung";ft.classList.add("bad");
+    if($("fitValues")) $("fitValues").innerHTML=`<span class="fit-values-main">${round(Math.abs(maxClear)*1000,0)} bis ${round(Math.abs(minClear)*1000,0)} µm Übermaß</span><span class="fit-values-sub">${round(Math.abs(maxClear),3)} bis ${round(Math.abs(minClear),3)} mm</span>`;
+  }
+  else{
+    ft.textContent="Übergangspassung";ft.classList.add("warn");
+    if($("fitValues")) $("fitValues").innerHTML=`<span class="fit-values-main">${round(Math.abs(minClear)*1000,0)} µm Übermaß bis ${round(maxClear*1000,0)} µm Spiel</span><span class="fit-values-sub">${round(Math.abs(minClear),3)} mm Übermaß bis ${round(maxClear,3)} mm Spiel</span>`;
+  }
+}
+const threadPitchRegular={"M1":0.25,"M1.2":0.25,"M1.4":0.30,"M1.6":0.35,"M2":0.40,"M2.5":0.45,"M3":0.50,"M4":0.70,"M5":0.80,"M6":1.00,"M8":1.25,"M10":1.50,"M12":1.75,"M14":2.00,"M16":2.00,"M18":2.50,"M20":2.50,"M24":3.00,"M30":3.50,"M36":4.00};
+function fmtDec(v,d=2){return Number.isFinite(v)?v.toFixed(d).replace('.',','):"--"}
+function threadPitchInfo(kind,name){
+  if(kind.startsWith("Metrisch Regel")){const p=threadPitchRegular[name];return {label:p?fmtDec(p,2)+" mm":"--", raw:p};}
+  const fine=name.match(/x\s*([0-9.]+)/i);
+  if(fine){const p=parseFloat(fine[1]);return {label:fmtDec(p,2)+" mm", raw:p};}
+  const tpi=name.match(/-(\d+)/);
+  if(tpi){const n=parseFloat(tpi[1]);const p=25.4/n;return {label:fmtDec(p,3)+" mm ("+n+" TPI)", raw:p};}
+  return {label:"--", raw:null};
+}
+function threadFormHint(){
+  const formBtn=$("threadFormBtn");
+  return formBtn && formBtn.classList.contains("thread-form-hint");
 }
 function initThreads(){
   const tt=$("threadType"); tt.innerHTML=Object.keys(threads).map(k=>`<option>${k}</option>`).join("");
   tt.onchange=()=>{populateThreads();calcThread()}; $("threadSize").onchange=calcThread; populateThreads();
-  $("threadQuick").innerHTML="<thead><tr><th>Gewinde</th><th>Kernloch</th></tr></thead><tbody>"+Object.entries(threads["Metrisch Regel (M)"]).slice(3,14).map(([k,v])=>`<tr><td>${k}</td><td class="mono">${v} mm</td></tr>`).join("")+"</tbody>";
+  const cutBtn=$("threadCutBtn"), formBtn=$("threadFormBtn");
+  if(cutBtn&&formBtn){
+    cutBtn.onclick=()=>{cutBtn.classList.add("active");formBtn.classList.remove("active","thread-form-hint");calcThread();};
+    formBtn.onclick=()=>{formBtn.classList.add("active","thread-form-hint");cutBtn.classList.remove("active");calcThread();};
+  }
+  renderThreadQuick();
+}
+function renderThreadQuick(){
+  const tbl=$("threadQuick"); if(!tbl)return;
+  const show=new Set(["M1","M1.2","M1.4","M1.6","M2","M2.5","M3","M4","M5","M6","M8","M10","M12","M16","M20"]);
+  const rows=Object.entries(threads["Metrisch Regel (M)"]).filter(([k])=>show.has(k));
+  tbl.innerHTML="<thead><tr><th>Gewinde</th><th>Steigung</th><th>Kernloch</th></tr></thead><tbody>"+rows.map(([k,v])=>{const p=threadPitchInfo("Metrisch Regel (M)",k).label;return `<tr><td>${k}</td><td class="mono">${p}</td><td class="mono">${round(v,2).replace('.00','')} mm</td></tr>`}).join("")+"</tbody>";
 }
 function populateThreads(){const list=threads[$("threadType").value];$("threadSize").innerHTML=Object.keys(list).map(k=>`<option>${k}</option>`).join("")}
-function calcThread(){const kind=$("threadType").value, name=$("threadSize").value, val=threads[kind][name];setText("threadDrill",round(val,2).replace(".00",""));setText("threadName",name);setText("threadKind",kind)}
-function calcScrew(){const s=screw[$("scrSize").value], fit=$("scrFit").value, type=$("scrType").value;setText("scrHole",s.holes[fit].toFixed(1));setText("scrDk",s.dk.toFixed(1)+" mm");setText("scrCounterDia",(type==="912"?s.cb:s.cs).toFixed(1)+" mm");setText("scrDepth",(type==="912"?s.k+0.4:s.k).toFixed(1)+" mm")}
+function calcThread(){
+  const kind=$("threadType").value, name=$("threadSize").value, val=threads[kind][name];
+  const pitch=threadPitchInfo(kind,name);
+  setText("threadDrill",round(val,2).replace(".00",""));
+  setText("threadName",name);
+  setText("threadKind",kind.replace("Metrisch Regel (M)","Metrisch Regel"));
+  setText("threadPitch",pitch.label);
+  setText("threadRule", threadFormHint() ? `${name} · Schneidwert, für Formen Herstellerdaten` : `${name} · Steigung ${pitch.label}`);
+  const practice=$("threadPractice");
+  if(practice){
+    if(threadFormHint()){practice.innerHTML="<b>Gewindeformen:</b> Der Kernlochbohrer ist meist größer als beim Schneiden. Exakte Werte hängen stark von Material, Former, Schmierung und Hersteller ab. Deshalb hier bewusst nur Hinweis: Herstellerdaten verwenden.";}
+    else{practice.innerHTML="<b>Praxis:</b> Erst Kernloch bohren, danach Gewinde schneiden. Bei Sacklöchern, zähen Werkstoffen, Beschichtungen und Serienfertigung Herstellerangaben und Tabellenbuch prüfen.";}
+  }
+}
+function screwFitLabel(fit){return fit==="f"?"eng":fit==="c"?"groß":"mittel";}
+function calcScrew(){
+  const size=$("scrSize").value, s=screw[size], fit=$("scrFit").value, type=$("scrType").value;
+  if(!s)return;
+  const isCylinder=type==="912";
+  const hole=s.holes[fit];
+  const d1=isCylinder?s.cb:s.cs;
+  const depth=isCylinder?s.k+0.4:s.k;
+  setText("scrHole",hole.toFixed(1));
+  setText("scrThreadD",size);
+  setText("scrDk",s.dk.toFixed(1)+" mm");
+  setText("scrCounterDia",d1.toFixed(1)+" mm");
+  setText("scrDepth",depth.toFixed(1)+" mm");
+  setText("scrK",s.k.toFixed(1)+" mm");
+  setText("scrAlpha",isCylinder?"--":"90°");
+  setText("scrSizeBadge",`${size} · ${screwFitLabel(fit)}`);
+  setText("scrResultTitle",isCylinder?"Zylinderkopf":"Senkkopf");
+  setText("scrResultSub",isCylinder?"Zylinderkopfschraube: Durchgangsloch und Zylindersenkung.":"Senkkopfschraube: Durchgangsloch und 90°-Senkung.");
+}
+function copyScrewSummary(){
+  const txt=`Schrauben: ${$("scrSize").value}, ${$("scrType").value==="912"?"Zylinderkopf":"Senkkopf"}, Durchgangsloch d2 ${$("scrHole").textContent} mm, d1 ${$("scrCounterDia").textContent}, t ${$("scrDepth").textContent}, dk ${$("scrDk").textContent}`;
+  navigator.clipboard?.writeText(txt).then(()=>toast("Kopiert")).catch(()=>alert(txt));
+}
 function conv(mode){
   if(mode==="mm") $("inchVal").value=round(num("mmVal")/25.4,4);
   if(mode==="inch") $("mmVal").value=round(num("inchVal")*25.4,3);
@@ -640,28 +1502,534 @@ function calcWeight(){
   const lift=$("matLift"); lift.className="";
   if(kg>=25){lift.textContent="Hebehilfe/Kran einplanen";lift.classList.add("bad")} else if(kg>=15){lift.textContent="vorsichtig heben";lift.classList.add("warn")} else {lift.textContent="von Hand meist unkritisch";lift.classList.add("good")}
 }
-function calcTriangle(){const a=num("triA"),b=num("triB"), c=Math.hypot(a,b), ang=Math.atan2(a,b)*180/Math.PI;setText("triAngle",round(ang,2));setText("triC",round(c,2));setText("triSlope",b?round(a/b*100,1):"--");setText("triRatio",b?`1 : ${round(b/a,2)}`:"--")}
-function saveHistory(type){
-  let item={time:new Date().toLocaleString("de-DE")};
-  if(type==="schnitt"){item.title=$("cutNote").value||"Schnittdaten"; item.text=`n ${$("cutN").textContent} U/min · vf ${$("cutVf").textContent} mm/min · Ø ${$("cutD").value} · vc ${$("cutVc").value}`;}
-  const key="ws_metall_history_"+type; const arr=JSON.parse(localStorage.getItem(key)||"[]"); arr.unshift(item); localStorage.setItem(key,JSON.stringify(arr.slice(0,12))); renderHistory(); toast("Gemerkte Notiz gespeichert");
+function setAttr(id,attrs){const e=$(id); if(!e)return; Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));}
+const toRad=d=>d*Math.PI/180, toDeg=r=>r*180/Math.PI, sinD=d=>Math.sin(toRad(d)), cosD=d=>Math.cos(toRad(d));
+let angleMode='right';
+function angleTyped(el){ if(el.value!==''){el.dataset.time=Date.now(); el.classList.remove('calculated'); el.classList.add('driver');} else {delete el.dataset.time; el.classList.remove('driver','calculated');} }
+function setAngleMode(mode){
+  angleMode=mode;
+  ['Right','General','Taper'].forEach(n=>{const b=$('angleMode'+n); if(b)b.classList.toggle('active', mode===n.toLowerCase());});
+  const tri=mode!=='taper';
+  $('angleTriangleInputs')?.classList.toggle('angle-hidden', !tri); $('angleTaperInputs')?.classList.toggle('angle-hidden', tri);
+  $('angleTriangleGroup')?.classList.toggle('angle-hidden', !tri); $('angleTaperGroup')?.classList.toggle('angle-hidden', tri);
+  setText('angleModeLabel', mode==='right'?'Rechtwinkliges Dreieck':mode==='general'?'Allgemeines Dreieck':'Kegel / Drehbank');
+  const g=$('angGamma'); const cLbl=$('angCLabel');
+  if(g){ g.disabled = mode==='right'; if(mode==='right' && !g.value) g.value=90; if(mode!=='right' && g.value==='90' && !g.dataset.time) g.value=''; }
+  if(cLbl) cLbl.textContent=mode==='right'?'Seite c / Hypotenuse [mm]':'Seite c [mm]';
+  calcAll();
 }
-function renderHistory(){const arr=JSON.parse(localStorage.getItem("ws_metall_history_schnitt")||"[]");$("historySchnitt").innerHTML=arr.map(x=>`<div class="history-item"><b>${x.title}</b>${x.text}<br><small>${x.time}</small></div>`).join("")}
+function resetAngle(){
+  ['angA','angB','angC','angAlpha','angBeta','angGamma','tapD','tapd','tapL'].forEach(id=>{const e=$(id); if(!e)return; e.classList.remove('driver','calculated'); delete e.dataset.time; e.value='';});
+  if(angleMode==='right') $('angGamma').value=90; calcAll();
+}
+function valAngle(id){const e=$(id); const v=parseFloat(e?.value); return Number.isFinite(v)?v:null}
+function setAngleVal(id,val,drivers){const e=$(id); if(!e || val==null || !Number.isFinite(val)) return; if(drivers.includes(id)) return; e.value=(Math.abs(val)>=100?val.toFixed(2):val.toFixed(3)).replace(/\.000$/,''); e.classList.add('calculated'); e.classList.remove('driver'); delete e.dataset.time;}
+function solveAngleTriangle(){
+  const ids=['angA','angB','angC','angAlpha','angBeta','angGamma'];
+  let inputs=ids.map(id=>({id,val:valAngle(id),time:parseInt($(id)?.dataset.time||0)})).filter(x=>x.val!=null && x.time>0).sort((a,b)=>b.time-a.time);
+  const needed=angleMode==='right'?2:3;
+  let drivers=inputs.slice(0,needed);
+  if(angleMode==='general'){
+    const sides=['angA','angB','angC'];
+    if(!drivers.some(d=>sides.includes(d.id))){ const s=inputs.slice(needed).find(d=>sides.includes(d.id)); if(s){drivers.pop();drivers.push(s);} }
+  }
+  const driverIds=drivers.map(d=>d.id);
+  let a=driverIds.includes('angA')?valAngle('angA'):null, b=driverIds.includes('angB')?valAngle('angB'):null, c=driverIds.includes('angC')?valAngle('angC'):null;
+  let A=driverIds.includes('angAlpha')?valAngle('angAlpha'):null, B=driverIds.includes('angBeta')?valAngle('angBeta'):null, G=driverIds.includes('angGamma')?valAngle('angGamma'):null;
+  if(angleMode==='right') G=90;
+  if(inputs.length<needed){
+    setText('angleHint',`Gib ${needed} Werte ein. Grün markierte Felder werden automatisch berechnet.`);
+    drawAngleTriangle(50,100,111.8,26.57,63.43,90);
+    return;
+  }
+  for(let k=0;k<8;k++){
+    if(A!=null && B!=null && G==null) G=180-A-B;
+    if(A!=null && G!=null && B==null) B=180-A-G;
+    if(B!=null && G!=null && A==null) A=180-B-G;
+    if(angleMode==='right'){
+      if(a!=null && b!=null && c==null) c=Math.hypot(a,b);
+      if(a!=null && c!=null && b==null && c>=a) b=Math.sqrt(c*c-a*a);
+      if(b!=null && c!=null && a==null && c>=b) a=Math.sqrt(c*c-b*b);
+      if(a!=null && c!=null && A==null) A=toDeg(Math.asin(Math.min(1,Math.max(-1,a/c))));
+      if(b!=null && c!=null && B==null) B=toDeg(Math.asin(Math.min(1,Math.max(-1,b/c))));
+      if(A!=null && c!=null && a==null) a=c*sinD(A);
+      if(B!=null && c!=null && b==null) b=c*sinD(B);
+      if(A!=null && b!=null && a==null) a=b*Math.tan(toRad(A));
+      if(A!=null && a!=null && b==null) b=a/Math.tan(toRad(A));
+    } else {
+      if(a!=null && b!=null && c!=null){
+        if(A==null) A=toDeg(Math.acos(Math.min(1,Math.max(-1,(b*b+c*c-a*a)/(2*b*c)))));
+        if(B==null) B=toDeg(Math.acos(Math.min(1,Math.max(-1,(a*a+c*c-b*b)/(2*a*c)))));
+        if(G==null && A!=null && B!=null) G=180-A-B;
+      }
+      if(a!=null && A!=null){
+        if(B!=null && b==null) b=a*sinD(B)/sinD(A);
+        if(G!=null && c==null) c=a*sinD(G)/sinD(A);
+        if(b!=null && B==null) B=toDeg(Math.asin(Math.min(1,Math.max(-1,b*sinD(A)/a))));
+        if(c!=null && G==null) G=toDeg(Math.asin(Math.min(1,Math.max(-1,c*sinD(A)/a))));
+      }
+      if(b!=null && B!=null){
+        if(A!=null && a==null) a=b*sinD(A)/sinD(B);
+        if(G!=null && c==null) c=b*sinD(G)/sinD(B);
+      }
+      if(b!=null && c!=null && A!=null && a==null) a=Math.sqrt(Math.max(0,b*b+c*c-2*b*c*cosD(A)));
+      if(a!=null && c!=null && B!=null && b==null) b=Math.sqrt(Math.max(0,a*a+c*c-2*a*c*cosD(B)));
+      if(a!=null && b!=null && G!=null && c==null) c=Math.sqrt(Math.max(0,a*a+b*b-2*a*b*cosD(G)));
+    }
+  }
+  setAngleVal('angA',a,driverIds); setAngleVal('angB',b,driverIds); setAngleVal('angC',c,driverIds); setAngleVal('angAlpha',A,driverIds); setAngleVal('angBeta',B,driverIds); setAngleVal('angGamma',G,driverIds);
+  if(a&&b&&c){
+    const area=0.5*a*b*sinD(G||90); const per=a+b+c;
+    setText('angleRes1Label','Winkel α'); setText('angleRes1',round(A||0,2)+'°');
+    setText('angleRes2Label','Seite c'); setText('angleRes2',round(c,2)+' mm');
+    setText('angleRes3Label',angleMode==='right'?'Steigung':'Fläche'); setText('angleRes3',angleMode==='right'?(b?round(a/b*100,1)+'%':'--'):(round(area,2)+' mm²'));
+    setText('angleHint','Berechnet. Du kannst jetzt einen beliebigen Wert ändern; die letzten Eingaben werden bevorzugt.');
+    drawAngleTriangle(a,b,c,A||0,B||0,G||90);
+  }
+}
+function drawAngleTriangle(a,b,c,A,B,G){
+  if(!a||!b||!G)return;
+  const C={x:0,y:0}, Bp={x:a,y:0}, Ap={x:b*cosD(G),y:b*sinD(G)};
+  const minX=Math.min(C.x,Bp.x,Ap.x), maxX=Math.max(C.x,Bp.x,Ap.x), minY=Math.min(C.y,Bp.y,Ap.y), maxY=Math.max(C.y,Bp.y,Ap.y);
+  const scale=Math.min(310/Math.max(1,maxX-minX),250/Math.max(1,maxY-minY))*0.82;
+  const tx=x=>75+(x-minX)*scale, ty=y=>295-(y-minY)*scale;
+  const pC={x:tx(C.x),y:ty(C.y)}, pB={x:tx(Bp.x),y:ty(Bp.y)}, pA={x:tx(Ap.x),y:ty(Ap.y)};
+  setAttr('angleTriPoly',{points:`${pC.x},${pC.y} ${pB.x},${pB.y} ${pA.x},${pA.y}`});
+  setAttr('angleBaseHelp',{x1:pC.x,y1:pC.y,x2:pB.x,y2:pB.y}); setAttr('angleHeightHelp',{x1:pB.x,y1:pB.y,x2:pA.x,y2:pA.y});
+
+  function labelWithLine(labelId,lineId,anchor,label,dx,dy){
+    const lx=anchor.x+dx, ly=anchor.y+dy;
+    setAttr(lineId,{x1:anchor.x,y1:anchor.y,x2:lx,y2:ly});
+    setAttr(labelId,{x:lx,y:ly});
+    setText(labelId,label);
+  }
+  const midAB={x:(pC.x+pB.x)/2,y:(pC.y+pB.y)/2};
+  const midCA={x:(pC.x+pA.x)/2,y:(pC.y+pA.y)/2};
+  const midCB={x:(pA.x+pB.x)/2,y:(pA.y+pB.y)/2};
+  labelWithLine('angleLblA','angleLineA',midAB,'a  '+round(a,1)+' mm',0,34);
+  labelWithLine('angleLblB','angleLineB',midCA,'b  '+round(b,1)+' mm',-48,-10);
+  labelWithLine('angleLblC','angleLineC',midCB,'c  '+round(c,1)+' mm',44,-10);
+
+  setAttr('angleLblGamma',{x:pC.x+35,y:pC.y-18}); setText('angleLblGamma','γ '+round(G,1)+'°');
+  setAttr('angleLblBeta',{x:pB.x-52,y:pB.y-18}); setText('angleLblBeta','β '+round(B,1)+'°');
+  setAttr('angleLblAlpha',{x:pA.x+14,y:pA.y+32}); setText('angleLblAlpha','α '+round(A,1)+'°');
+  const r=38, theta=G*Math.PI/180, ax=pC.x+r, ay=pC.y, ex=pC.x+r*Math.cos(theta), ey=pC.y-r*Math.sin(theta), large=G>180?1:0;
+  setAttr('angleArc',{d:`M ${ax} ${ay} A ${r} ${r} 0 ${large} 0 ${ex} ${ey}`});
+}
+function solveTaperAngle(){
+  const D=num('tapD'), d=num('tapd'), L=num('tapL');
+  if(!(D&&d&&L)){setText('angleRes1','--');return;}
+  const angle=toDeg(Math.atan(((D-d)/2)/L)); const ratio=(D-d)!==0?L/(D-d):0;
+  setText('angleRes1Label','Einstellwinkel α/2'); setText('angleRes1',round(angle,3)+'°');
+  setText('angleRes2Label','Kegel je Länge'); setText('angleRes2','1 : '+round(ratio,1));
+  setText('angleRes3Label','Ø-Differenz'); setText('angleRes3',round(D-d,2)+' mm');
+  setText('taperAngleLabel','α/2 '+round(angle,2)+'°');
+}
+function solveAngle(){ if(angleMode==='taper') solveTaperAngle(); else solveAngleTriangle(); }
+
+const PROJECT_STORE_KEY="ws_metall_cut_project_folder_v1";
+let cutTools=[];
+let activeToolId=null;
+let activeProjectId=null;
+let suppressToolLive=false;
+function projectFolder(){try{return JSON.parse(localStorage.getItem(PROJECT_STORE_KEY)||"[]")}catch(e){return[]}}
+function setProjectFolder(arr){localStorage.setItem(PROJECT_STORE_KEY,JSON.stringify((arr||[]).map(normalizeProject)))}
+function toolName(){return ($("cutNote")?.value||"").trim()}
+function toolT(){return ($("toolT")?.value||"").trim()}
+function toolSummaryFromInputs(){
+  const op=$("cutOp")?.value||"drill";
+  const displayName = toolName();
+  return normalizeTool({
+    id:activeToolId || ("tool_"+Date.now()+"_"+Math.random().toString(16).slice(2)),
+    t:toolT(),
+    name:displayName,
+    diameter:$("cutD")?.value||"",
+    length:$("toolLen")?.value||"",
+    coating:$("toolCoat")?.value||"unbeschichtet",
+    material:$("cutMat")?.options[$("cutMat").selectedIndex]?.text || "",
+    op:$("cutOp")?.options[$("cutOp").selectedIndex]?.text || "",
+    values:{
+      d:$("cutD")?.value||"",
+      vc:$("cutVc")?.value||"",
+      z:$("cutZ")?.value||"",
+      f:$("cutFz")?.value||"",
+      n:$("cutN")?.textContent||"",
+      vf:$("cutVf")?.textContent||"",
+      check:$("cutWarn")?.textContent||""
+    },
+    raw:{
+      mat:$("cutMat")?.value||"",
+      op,
+      d:$("cutD")?.value||"",
+      vc:$("cutVc")?.value||"",
+      z:$("cutZ")?.value||"",
+      f:$("cutFz")?.value||"",
+      note:displayName,
+      t:toolT(),
+      len:$("toolLen")?.value||"",
+      coat:$("toolCoat")?.value||""
+    },
+    updated:new Date().toISOString()
+  });
+}
+function normalizeTool(t){
+  t=t||{};
+  const raw=t.raw||{};
+  const values=t.values||{};
+  return {
+    id:t.id || ("tool_"+Date.now()+"_"+Math.random().toString(16).slice(2)),
+    t:String(t.t ?? raw.t ?? "").trim(),
+    name:String(t.name ?? raw.note ?? "").trim(),
+    diameter:String(t.diameter ?? values.d ?? raw.d ?? "").trim(),
+    length:String(t.length ?? raw.len ?? "").trim(),
+    coating:String(t.coating ?? raw.coat ?? "unbeschichtet").trim(),
+    material:String(t.material ?? "").trim(),
+    op:String(t.op ?? "").trim(),
+    values:{
+      d:String(values.d ?? t.diameter ?? raw.d ?? "").trim(),
+      vc:String(values.vc ?? raw.vc ?? "").trim(),
+      z:String(values.z ?? raw.z ?? "").trim(),
+      f:String(values.f ?? raw.f ?? "").trim(),
+      n:String(values.n ?? "").trim(),
+      vf:String(values.vf ?? "").trim(),
+      check:String(values.check ?? "").trim()
+    },
+    raw:{
+      mat:String(raw.mat ?? "").trim(),
+      op:String(raw.op ?? "").trim(),
+      d:String(raw.d ?? values.d ?? t.diameter ?? "").trim(),
+      vc:String(raw.vc ?? values.vc ?? "").trim(),
+      z:String(raw.z ?? values.z ?? "").trim(),
+      f:String(raw.f ?? values.f ?? "").trim(),
+      note:String(raw.note ?? t.name ?? "").trim(),
+      t:String(raw.t ?? t.t ?? "").trim(),
+      len:String(raw.len ?? t.length ?? "").trim(),
+      coat:String(raw.coat ?? t.coating ?? "unbeschichtet").trim()
+    },
+    updated:t.updated || new Date().toISOString()
+  };
+}
+function normalizeProject(p){
+  p=p||{};
+  return {
+    id:p.id || ("proj_"+Date.now()+"_"+Math.random().toString(16).slice(2)),
+    name:String(p.name || "Unbenanntes Projekt").trim(),
+    ref:String(p.ref || "").trim(),
+    orderNo:String(p.orderNo || "").trim(),
+    drawingNo:String(p.drawingNo || "").trim(),
+    customer:String(p.customer || "").trim(),
+    description:String(p.description || "").trim(),
+    tools:Array.isArray(p.tools)?p.tools.map(normalizeTool):[],
+    updated:p.updated || new Date().toISOString(),
+    version:TOOL_VERSION
+  };
+}
+function saveToolToBasket(){
+  if(!toolT() || !toolName()){toast("T-Nummer und Werkzeugbeschreibung sind Pflicht");return}
+  const item=toolSummaryFromInputs();
+  const i=cutTools.findIndex(x=>x.id===item.id || (x.t.toLowerCase()===item.t.toLowerCase() && x.name.toLowerCase()===item.name.toLowerCase()));
+  if(i>=0){item.id=cutTools[i].id;cutTools[i]=item;activeToolId=item.id;toast("Werkzeug aktualisiert");renderToolBasket();}
+  else {cutTools.push(item);activeToolId=null;toast("Werkzeug gespeichert – Eingabe geleert");renderToolBasket();newToolEntry(false);}
+}
+function newToolEntry(showToast=true){
+  suppressToolLive=true; activeToolId=null;
+  ["toolT","cutNote","toolLen"].forEach(id=>{if($(id)) $(id).value=""});
+  if($("toolCoat")) $("toolCoat").value="unbeschichtet";
+  [["cutConsoleD","10"],["cutConsoleVc","120"],["cutConsoleS",""] ,["cutConsoleZ","2"],["cutConsoleFz","0.10"],["cutConsoleF",""]].forEach(([id,v])=>{if($(id)){ $(id).value=v; delete $(id).dataset.time; $(id).classList.remove("is-calc"); }});
+  syncHiddenCut(10,120,2,0.10);
+  updateCutModeUI(); calcSchnitt(); suppressToolLive=false; renderToolBasket(false);
+  if(showToast) toast("Eingabe für neues Werkzeug geleert");
+}
+function updateActiveToolLive(){
+  if(suppressToolLive || !activeToolId) return;
+  const i=cutTools.findIndex(x=>x.id===activeToolId);
+  if(i<0 || !toolT() || !toolName()) return;
+  const item=toolSummaryFromInputs(); item.id=activeToolId; cutTools[i]=item; renderToolBasket(false);
+}
+function loadTool(id){
+  const item=cutTools.find(x=>x.id===id); if(!item) return;
+  suppressToolLive=true; activeToolId=id;
+  if($("toolT")) $("toolT").value=item.raw?.t||item.t||"";
+  if($("cutNote")) $("cutNote").value=item.raw?.note||item.name||"";
+  if($("toolLen")) $("toolLen").value=item.raw?.len||item.length||"";
+  if($("toolCoat")) $("toolCoat").value=item.raw?.coat||item.coating||"unbeschichtet";
+  if($("cutMat")) $("cutMat").value=item.raw?.mat||"steel";
+  if($("cutOp")) $("cutOp").value=item.raw?.op||"drill";
+  updateCutModeUI();
+  [["cutD","d"],["cutVc","vc"],["cutZ","z"],["cutFz","f"]].forEach(([id,k])=>{if($(id)) $(id).value=item.raw?.[k]||""});
+  [["cutConsoleD","d"],["cutConsoleVc","vc"],["cutConsoleZ","z"],["cutConsoleFz","f"]].forEach(([id,k])=>{if($(id)){ $(id).value=item.raw?.[k]||""; delete $(id).dataset.time; $(id).classList.remove("is-calc"); }});
+  if($('cutConsoleS')) { $('cutConsoleS').value=item.values?.n||""; delete $('cutConsoleS').dataset.time; $('cutConsoleS').classList.add('is-calc'); }
+  if($('cutConsoleF')) { $('cutConsoleF').value=item.values?.vf||""; delete $('cutConsoleF').dataset.time; $('cutConsoleF').classList.add('is-calc'); }
+  suppressToolLive=false; calcSchnitt(); renderToolBasket(false); toast("Werkzeug geladen");
+}
+function deleteTool(id){
+  const item=cutTools.find(x=>x.id===id); if(!item) return;
+  if(!confirm(`Werkzeug ${item.t} – ${item.name} wirklich löschen?`)) return;
+  cutTools=cutTools.filter(x=>x.id!==id); if(activeToolId===id) activeToolId=null; renderToolBasket(); toast("Werkzeug gelöscht");
+}
+function renderToolBasket(showEmpty=true){
+  const list=$("toolBasketList"), empty=$("toolBasketEmpty"); if(!list) return;
+  list.innerHTML=cutTools.map(item=>`<div class="tool-mini-card ${item.id===activeToolId?'is-active':''}" onclick="loadTool('${item.id}')"><div class="tool-mini-top"><span>${escapeHtml(item.t)} · ${escapeHtml(item.name)}</span><span>${escapeHtml(item.op||'')}</span></div><div class="tool-mini-meta"><span>Ø ${escapeHtml(item.diameter||'-')} mm</span><span>L ${escapeHtml(item.length||'-')} mm</span><span>${escapeHtml(item.coating||'-')}</span></div><div class="tool-mini-actions"><button type="button" onclick="event.stopPropagation();loadTool('${item.id}')">Laden</button><button type="button" onclick="event.stopPropagation();deleteTool('${item.id}')">Löschen</button></div></div>`).join("");
+  if(empty) empty.style.display=cutTools.length?"none":"block";
+}
+function escapeHtml(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]))}
+function currentProjectPayload(){return normalizeProject({
+  id:activeProjectId||("proj_"+Date.now()),
+  name:($("cutProjectName")?.value||"Unbenanntes Projekt").trim(),
+  ref:($("cutProjectRef")?.value||"").trim(),
+  orderNo:($("cutOrderNo")?.value||"").trim(),
+  drawingNo:($("cutDrawingNo")?.value||"").trim(),
+  customer:($("cutCustomer")?.value||"").trim(),
+  description:($("cutProjectDesc")?.value||"").trim(),
+  tools:cutTools.map(normalizeTool),
+  updated:new Date().toISOString(),
+  version:TOOL_VERSION
+})}
+function saveCutProject(){
+  if(!cutTools.length){toast("Erst Werkzeuge in den Korb legen");return}
+  const p=currentProjectPayload(); activeProjectId=p.id;
+  const arr=projectFolder(); const i=arr.findIndex(x=>x.id===p.id || (x.name||"").toLowerCase()===p.name.toLowerCase());
+  if(i>=0){p.id=arr[i].id;activeProjectId=p.id;arr[i]=p}else arr.unshift(p);
+  setProjectFolder(arr); toast("Projekt gespeichert");
+}
+function loadCutProject(id){
+  const p=projectFolder().find(x=>x.id===id); if(!p) return;
+  activeProjectId=p.id; cutTools=Array.isArray(p.tools)?p.tools.map(normalizeTool):[]; activeToolId=null;
+  if($("cutProjectName")) $("cutProjectName").value=p.name||""; if($("cutProjectRef")) $("cutProjectRef").value=p.ref||""; if($("cutOrderNo")) $("cutOrderNo").value=p.orderNo||""; if($("cutDrawingNo")) $("cutDrawingNo").value=p.drawingNo||""; if($("cutCustomer")) $("cutCustomer").value=p.customer||""; if($("cutProjectDesc")) $("cutProjectDesc").value=p.description||"";
+  renderToolBasket(); projectDialog?.close(); toast("Projekt geladen");
+}
+function deleteCutProject(id){
+  const arr=projectFolder(); const p=arr.find(x=>x.id===id); if(!p) return;
+  if(!confirm(`Projekt „${p.name}“ wirklich löschen?`)) return;
+  setProjectFolder(arr.filter(x=>x.id!==id)); renderProjectDialog(); toast("Projekt gelöscht");
+}
+let selectedProjectDialogId=null;
+function filteredProjects(){
+  const q=($("projectSearch")?.value||"").toLowerCase();
+  return projectFolder().filter(p=>((p.name||"")+" "+(p.ref||"")+" "+(p.orderNo||"")+" "+(p.drawingNo||"")+" "+(p.customer||"")+" "+(p.description||"")+" "+(p.tools||[]).map(t=>(t.t||"")+" "+(t.name||"")).join(" ")).toLowerCase().includes(q));
+}
+function openProjectDialog(){
+  const arr=filteredProjects();
+  selectedProjectDialogId=activeProjectId || selectedProjectDialogId || (arr[0]?.id||null);
+  renderProjectDialog();
+  projectDialog.showModal();
+}
+function selectProjectDialog(id){selectedProjectDialogId=id;renderProjectDialog()}
+function renderProjectDialog(){
+  const list=$("projectList"), detail=$("projectDetail"); if(!list||!detail) return;
+  const arr=filteredProjects();
+  if(!arr.some(p=>p.id===selectedProjectDialogId)) selectedProjectDialogId=arr[0]?.id||null;
+  list.innerHTML=arr.length?arr.map(p=>`<tr class="project-row ${p.id===selectedProjectDialogId?'is-active':''}" onclick="selectProjectDialog('${p.id}')"><td><b>${escapeHtml(p.name||'Unbenannt')}</b><small>${new Date(p.updated||Date.now()).toLocaleString('de-DE')}</small></td><td>${escapeHtml(p.ref||'-')}</td><td>${(p.tools||[]).length}</td></tr>`).join(""):`<tr><td colspan="3"><div class="project-empty-state">Noch keine gespeicherten Projekte gefunden.</div></td></tr>`;
+  const p=arr.find(x=>x.id===selectedProjectDialogId);
+  if(!p){detail.innerHTML=`<div class="project-empty-state">Wähle links ein Projekt aus. Hier erscheinen dann Beschreibung, Werkzeugliste und Aktionen.</div>`;return;}
+  const tools=Array.isArray(p.tools)?p.tools:[];
+  detail.innerHTML=`
+    <div>
+      <h3>${escapeHtml(p.name||'Unbenanntes Projekt')}</h3>
+      <div class="project-detail-meta">
+        <span class="project-detail-badge">Projekt-Nr.: ${escapeHtml(p.ref||'-')}</span>
+        ${p.orderNo?`<span class="project-detail-badge">Auftrag: ${escapeHtml(p.orderNo)}</span>`:''}
+        ${p.drawingNo?`<span class="project-detail-badge">Zeichnung: ${escapeHtml(p.drawingNo)}</span>`:''}
+        ${p.customer?`<span class="project-detail-badge">Kunde: ${escapeHtml(p.customer)}</span>`:''}
+        <span class="project-detail-badge">${tools.length} Werkzeug(e)</span>
+        <span class="project-detail-badge">Geändert: ${new Date(p.updated||Date.now()).toLocaleString('de-DE')}</span>
+      </div>
+    </div>
+    <div class="project-detail-desc"><b>Beschreibung:</b><br>${escapeHtml(p.description||'Keine Beschreibung hinterlegt.')}</div>
+    <div>
+      <h3>Werkzeuge</h3>
+      <div class="project-tool-list">${tools.length?tools.map(t=>`<div class="project-tool-row"><b>${escapeHtml(t.t||'-')}</b><div><strong>${escapeHtml(t.name||'-')}</strong><br><span>${escapeHtml(t.op||'-')} · Ø ${escapeHtml(t.diameter||'-')} mm · L ${escapeHtml(t.length||'-')} mm · ${escapeHtml(t.coating||'-')}</span></div><span>${escapeHtml(t.values?.n||'-')} U/min</span></div>`).join(''):`<div class="project-empty-state">Keine Werkzeuge im Projekt gespeichert.</div>`}</div>
+    </div>
+    <div class="project-detail-actions">
+      <button class="btn btn-blue" type="button" onclick="loadCutProject('${p.id}')">Projekt laden</button>
+      <button class="btn btn-red" type="button" onclick="deleteCutProject('${p.id}')">Projekt löschen</button>
+    </div>`;
+}
+function exportProjectFolder(){
+  const data={type:"warenschmiede-werkstatt-rechner-schnittdaten-aktenordner",exported:new Date().toISOString(),version:TOOL_VERSION,projects:projectFolder().map(normalizeProject)};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="warenschmiede_schnittdaten_aktenordner.json"; a.click(); URL.revokeObjectURL(a.href);
+}
+function importProjectFolder(ev){
+  const file=ev.target.files?.[0]; if(!file) return; const r=new FileReader();
+  r.onload=()=>{try{const data=JSON.parse(r.result); const projects=Array.isArray(data.projects)?data.projects:(Array.isArray(data)?data:[]); setProjectFolder(projects.map(normalizeProject)); toast("Aktenordner geladen"); renderProjectDialog();}catch(e){alert("JSON konnte nicht gelesen werden.")}};
+  r.readAsText(file); ev.target.value="";
+}
+function printToolSheet(){
+  const p=currentProjectPayload();
+  if(!p.tools.length){toast("Keine Werkzeuge im Projekt");return}
+  const cleanOp = op => String(op||'-').replace('Fräsen Schruppen','Schruppfräser').replace('Fräsen Schlichten','Schlichtfräser');
+  const rows=p.tools.map(t=>{
+    const v=t.values||{};
+    const toolNo=String(t.t||'-').trim();
+    const dia=String(t.diameter||'-').trim();
+    const len=String(t.length||'-').trim();
+    const z=String(v.z||'-').trim();
+    const vc=String(v.vc||'-').trim();
+    const f=String(v.f||'-').trim();
+    const n=String(v.n||'-').trim();
+    const vf=String(v.vf||'-').trim();
+    return `<section class="tool-card-print">
+      <div class="tool-main">
+        <div class="tool-t"><span class="label">Tool</span><strong>T${escapeHtml(toolNo).replace(/^T/i,'')}</strong></div>
+        <div class="tool-s"><span class="label">S</span><b>${escapeHtml(n)}</b><small>U/min</small></div>
+        <div class="tool-f"><span class="label">F</span><b>${escapeHtml(vf)}</b><small>mm/min</small></div>
+      </div>
+      <div class="cell tool-name"><span class="label">Werkzeug</span><b>${escapeHtml(t.name||'-')}</b></div>
+      <div class="cell measure"><span class="label">Maße</span><b>Ø ${escapeHtml(dia)} mm <em>z ${escapeHtml(z)}</em></b><b>L ${escapeHtml(len)} mm</b></div>
+      <div class="cell values"><span class="label">Schnittwerte</span><b>vc ${escapeHtml(vc)} m/min</b><b>${String(t.op||'').includes('Fräsen')?'fz':'f'} ${escapeHtml(f)}</b></div>
+      <div class="cell coat"><span class="label">Beschichtung</span><b>${escapeHtml(t.coating||'-')}</b></div>
+    </section>`;
+  }).join('');
+  const w=window.open("","_blank"); if(!w) return;
+  w.document.write(`<!doctype html><html lang="de"><head><meta charset="utf-8"><title>${escapeHtml(p.name)} Werkzeugblatt</title><style>
+    @page{size:A4 portrait;margin:8mm 8mm 9mm}
+    *{box-sizing:border-box}
+    body{font-family:Arial,"Segoe UI",sans-serif;margin:0;color:#142033;background:#fff;font-size:9.6px;line-height:1.15}
+    .print-actions{position:sticky;top:0;background:#fff;padding:8px 0 10px;border-bottom:1px solid #d8e2ee;margin-bottom:10px;display:flex;gap:8px;z-index:10}
+    button{border:1px solid #b8c8d8;background:#0b74c8;color:#fff;border-radius:9px;padding:7px 11px;font-weight:800;cursor:pointer}button.secondary{background:#fff;color:#102033}
+    main{width:100%;max-width:194mm;margin:0 auto}
+    h1{margin:0 0 7px;font-size:17px;letter-spacing:-.02em;color:#102033}
+    .head-line{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;border-bottom:2px solid #102033;padding-bottom:6px}
+    .count{border:1px solid #cbd8e6;background:#edf4fb;border-radius:999px;padding:4px 8px;font-weight:800;white-space:nowrap;color:#314861}
+    .project-grid{display:grid;grid-template-columns:1.1fr .85fr .85fr 1fr;gap:0;border:1px solid #233243;border-radius:8px;overflow:hidden;margin-bottom:6px}
+    .project-grid div{border-right:1px solid #233243;padding:5px 7px;min-height:25px}.project-grid div:last-child{border-right:0}.project-grid .wide{grid-column:1 / -1;border-top:1px solid #233243;border-right:0;min-height:24px}.project-grid .customer{grid-column:1 / -1;border-top:1px solid #233243;border-right:0}
+    .label{display:block;font-size:7.1px;line-height:1;color:#5c6f82;text-transform:uppercase;letter-spacing:.07em;font-weight:900;margin-bottom:3px}
+    .project-grid b{font-size:9px}.project-grid span{font-size:9.8px;font-weight:700;color:#162536}
+    .tools{display:grid;gap:5px}
+    .tools{display:grid;gap:4.7mm}
+    .tool-card-print{display:grid;grid-template-columns:37mm 1.45fr .86fr .92fr .78fr;border:1.2px solid #90a5b8;border-radius:8px;overflow:hidden;break-inside:avoid;page-break-inside:avoid;background:#fff;min-height:19mm;box-shadow:0 1px 0 rgba(16,32,51,.06)}
+    .tool-main{display:grid;grid-template-columns:14mm 23mm;grid-template-rows:1fr 1fr;border-right:1px solid #a8b8c7;background:#f4f8fc}
+    .tool-t{grid-row:1 / span 2;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #c3d0dc;padding:3px;text-align:center}.tool-t .label{font-size:6.6px;margin-bottom:2px}.tool-t strong{font-size:18px;line-height:.95;letter-spacing:-.04em;color:#0b5aa8}
+    .tool-s,.tool-f{padding:3px 5px;display:flex;flex-direction:column;justify-content:center;text-align:center}.tool-s{border-bottom:1px solid #c3d0dc}.tool-s b,.tool-f b{font-size:12px;line-height:1;color:#102033}.tool-s small,.tool-f small{display:block;font-size:6.7px;color:#5c6f82;margin-top:1px}
+    .cell{border-right:1px solid #c3d0dc;padding:5px 7px;min-width:0;background:#fff;display:flex;flex-direction:column;justify-content:flex-start}.cell:nth-child(odd){background:#fbfdff}.cell:last-child{border-right:0}.cell b{display:block;font-size:12px;line-height:1.22;white-space:normal;overflow:hidden;text-overflow:ellipsis}.cell small{display:block;font-size:9px;color:#506273;font-weight:700;margin-top:2px;white-space:normal;overflow:hidden;text-overflow:ellipsis}.measure b,.values b{font-size:11px}.measure em{font-style:normal;margin-left:8px;color:#0b5aa8}.coat b{font-size:12px;color:#102033}
+    footer{margin:7px 0 0;border-top:1px solid #9aabbc;padding-top:4px;color:#5b6f83;font-size:7.6px;display:flex;justify-content:space-between;gap:10px}
+
+    .screw-layout{display:grid;grid-template-columns:minmax(300px,360px) minmax(460px,1fr) minmax(420px,560px);gap:16px;align-items:start;}
+    .screw-visual-card .panel-body{padding:14px;}
+    .screw-visual-wrap{border:1px solid var(--line);border-radius:22px;background:linear-gradient(135deg,var(--paper-soft),var(--paper));padding:12px;display:grid;place-items:center;min-height:310px;}
+    .screw-visual-wrap img{width:100%;max-height:520px;object-fit:contain;border-radius:18px;box-shadow:0 18px 44px -34px rgba(15,23,42,.65);}
+    .screw-type-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .screw-type-btn{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:12px 10px;font-weight:950;cursor:pointer;color:var(--muted);transition:.18s ease;}
+    .screw-type-btn.active{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border-color:transparent;box-shadow:0 14px 28px -24px var(--blue);}
+    .screw-result-main{border:1px solid var(--line);border-radius:22px;background:radial-gradient(circle at top right,rgba(249,115,22,.14),transparent 18rem),linear-gradient(135deg,var(--paper-soft),var(--paper));padding:18px;text-align:center;}
+    .screw-result-main > span{display:block;color:var(--muted);font-weight:950;letter-spacing:.08em;text-transform:uppercase;font-size:.76rem;}
+    .screw-result-main strong{display:flex;align-items:baseline;justify-content:center;gap:10px;font-family:var(--mono);font-size:clamp(2.7rem,5vw,4.6rem);color:var(--red);line-height:1.02;margin:6px 0;white-space:nowrap;}
+    .screw-result-main strong .screw-unit{font-size:.48em;color:var(--red);font-weight:1000;letter-spacing:0;text-transform:none;}
+    .screw-result-main small{display:inline-flex;border:1px solid color-mix(in srgb,var(--blue) 28%,var(--line));background:color-mix(in srgb,#eaf3ff 60%,var(--paper));border-radius:999px;padding:5px 10px;color:var(--blue);font-weight:900;}
+    .screw-metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px;}
+    .screw-mini-metric{border:1px solid var(--line);border-radius:16px;background:var(--paper-soft);padding:13px;min-height:78px;}
+    .screw-mini-metric span{display:block;color:var(--muted);font-size:.76rem;text-transform:uppercase;font-weight:950;letter-spacing:.055em;margin-bottom:4px;}
+    .screw-mini-metric strong{font-family:var(--mono);font-size:1.22rem;color:var(--text);}
+    .screw-note{border:1px solid color-mix(in srgb,var(--orange) 30%,var(--line));border-radius:16px;background:color-mix(in srgb,#fff7ed 54%,var(--paper));padding:12px;color:var(--muted);font-size:.86rem;line-height:1.45;}
+    .screw-note b{color:var(--text);}
+    .screw-symbols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+    .screw-symbols div{border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:9px;font-size:.82rem;color:var(--muted);line-height:1.35;}
+    .screw-symbols b{color:var(--blue);font-family:var(--mono);font-size:.98rem;}
+    @media(max-width:1400px){.screw-layout{grid-template-columns:minmax(300px,360px) minmax(420px,1fr)}.screw-visual-card{grid-column:1/-1}.screw-visual-wrap img{max-height:420px}}
+    @media(max-width:900px){.screw-layout{grid-template-columns:1fr}.screw-visual-card{grid-column:auto}.screw-visual-wrap img{max-height:340px}}
+
+    @media print{.print-actions{display:none} body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+    /* v25 Merker-Dialog: lesbarer, öffentliche Hilfe statt Bauhinweise */
+    .cut-info-dialog{max-width:min(980px,calc(100vw - 28px));}
+    .cut-info-rich{display:grid;gap:16px;color:var(--muted);}
+    .cut-info-hero{border:1px solid var(--line);border-radius:18px;padding:16px;background:linear-gradient(145deg,color-mix(in srgb,var(--paper-soft) 92%,transparent),color-mix(in srgb,#eaf3ff 56%,var(--paper)));}
+    .cut-info-hero b{color:var(--text)}
+    .formula-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+    .formula-card{border:1px solid var(--line);border-radius:16px;background:var(--paper-soft);padding:13px;}
+    .formula-card h3{margin:0 0 8px;color:var(--text);font-size:1rem;}
+    .formula-card code{display:block;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:9px 10px;margin:6px 0;font-family:var(--mono);font-weight:900;color:var(--text);white-space:normal;}
+    .term-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+    .term-box{border:1px solid var(--line);border-radius:15px;background:var(--paper);padding:11px;}
+    .term-box strong{display:block;color:var(--blue);font-size:.95rem;margin-bottom:3px;}
+    .term-box span{font-size:.86rem;line-height:1.45;color:var(--muted);}
+    .practice-box{border:1px solid color-mix(in srgb,var(--orange) 32%,var(--line));border-radius:16px;background:color-mix(in srgb,#fff7ed 55%,var(--paper));padding:13px;}
+    .practice-box h3{margin:0 0 8px;color:var(--text)}
+    .practice-box ul{margin:0;padding-left:1.1rem;display:grid;gap:6px;}
+    .muted-small{font-size:.84rem;color:var(--muted);line-height:1.45;}
+    @media(max-width:840px){.formula-grid,.term-grid{grid-template-columns:1fr}.cut-info-dialog{max-width:calc(100vw - 16px)}}
+
+  </style></head><body><div class="print-actions"><button onclick="window.print();return false;">Drucken / PDF speichern</button><button class="secondary" onclick="window.close();return false;">Schließen</button></div><main><div class="head-line"><h1>Werkzeug-Schnittdatenblatt</h1><span class="count">${p.tools.length} Werkzeug(e)</span></div><section class="project-grid"><div><b>Projektname</b><br><span>${escapeHtml(p.name||'')}</span></div><div><b>Projekt-Nr.</b><br><span>${escapeHtml(p.ref||'')}</span></div><div><b>Auftrag-Nr.</b><br><span>${escapeHtml(p.orderNo||'')}</span></div><div><b>Zeichnungs-Nr.</b><br><span>${escapeHtml(p.drawingNo||'')}</span></div><div class="wide"><b>Beschreibung</b><br><span>${escapeHtml(p.description||'')}</span></div>${p.customer?`<div class="customer"><b>Kunde</b><br><span>${escapeHtml(p.customer)}</span></div>`:''}</section><div class="tools">${rows}</div><footer><span>Richtwerte prüfen: Herstellerdaten, Maschine, Spannung und Werkzeugzustand bleiben entscheidend.</span><span>Warenschmiede Werkstatt-Rechner Metall Plus v34</span></footer></main></body></html>`);
+  w.document.close();
+}
+
+function saveHistory(type){ if(type==="schnitt") saveToolToBasket(); }
+function renderHistory(){ renderToolBasket(); }
 function copySummary(type){
   let txt="";
   if(type==="schnitt") txt=`Schnittdaten: Ø ${$("cutD").value} mm, vc ${$("cutVc").value} m/min, z ${$("cutZ").value}, fz ${$("cutFz").value} mm → n ${$("cutN").textContent} U/min, vf ${$("cutVf").textContent} mm/min`;
   if(type==="thread") txt=`${$("threadName").textContent}: Kernloch ${$("threadDrill").textContent} mm (${$("threadKind").textContent})`;
+  if(type==="angle") txt=`Winkel: ${$("angleRes1Label").textContent} ${$("angleRes1").textContent}, ${$("angleRes2Label").textContent} ${$("angleRes2").textContent}, ${$("angleRes3Label").textContent} ${$("angleRes3").textContent}`;
   navigator.clipboard?.writeText(txt).then(()=>toast("Kopiert")).catch(()=>alert(txt));
 }
-function calcAll(){calcSchnitt();calcTol();calcFit();calcThread();calcScrew();calcReverse();calcWeight();calcTriangle()}
+function calcAll(){calcSchnitt();calcTol();calcFit();calcThread();calcScrew();calcReverse();calcWeight();solveAngle();updateActiveToolLive()}
+function initHelpTips(){
+  let pop = document.querySelector('.ws-help-pop');
+  if(!pop){
+    pop = document.createElement('div');
+    pop.className = 'ws-help-pop';
+    document.body.appendChild(pop);
+  }
+  let active = null;
+  function place(el){
+    const text = el.getAttribute('data-tip') || '';
+    if(!text) return;
+    active = el;
+    pop.textContent = text;
+    pop.classList.add('show');
+    pop.style.left = '0px';
+    pop.style.top = '0px';
+    pop.style.setProperty('--arrow-left','22px');
+    const r = el.getBoundingClientRect();
+    const pw = pop.offsetWidth || 320;
+    const ph = pop.offsetHeight || 80;
+    const margin = 12;
+    let left = r.left + r.width / 2 - pw / 2;
+    left = Math.max(margin, Math.min(left, window.innerWidth - pw - margin));
+    let top = r.bottom + 10;
+    if(top + ph > window.innerHeight - margin){
+      top = Math.max(margin, r.top - ph - 10);
+      pop.classList.add('above');
+    } else {
+      pop.classList.remove('above');
+    }
+    const arrow = Math.max(14, Math.min(pw - 22, r.left + r.width/2 - left - 6));
+    pop.style.left = left + 'px';
+    pop.style.top = top + 'px';
+    pop.style.setProperty('--arrow-left', arrow + 'px');
+  }
+  function hide(el){
+    if(el && active && el !== active) return;
+    active = null;
+    pop.classList.remove('show');
+  }
+  document.addEventListener('mouseover', e => { const el = e.target.closest?.('.help-dot[data-tip]'); if(el) place(el); });
+  document.addEventListener('focusin', e => { const el = e.target.closest?.('.help-dot[data-tip]'); if(el) place(el); });
+  document.addEventListener('mouseout', e => { const el = e.target.closest?.('.help-dot[data-tip]'); if(el && !el.contains(e.relatedTarget)) hide(el); });
+  document.addEventListener('focusout', e => { const el = e.target.closest?.('.help-dot[data-tip]'); if(el) hide(el); });
+  window.addEventListener('scroll', () => { if(active) place(active); }, true);
+  window.addEventListener('resize', () => { if(active) place(active); });
+}
+
+function setupCutConsole(){
+  cutConsoleInputIds().forEach(id=>{
+    const el=$(id); if(!el) return;
+    el.addEventListener('input',()=>{ setCutManual(el); calcAll(); });
+  });
+  syncConsoleFromHidden(true);
+}
+
 function init(){
+  initHelpTips();
+  setupCutConsole();
+  $$(".fit-mode-btn").forEach(b=>b.onclick=()=>setFitMode(b.dataset.fitMode));
+  $$(".screw-type-btn").forEach(b=>b.onclick=()=>{ $("scrType").value=b.dataset.screwType; $$(".screw-type-btn").forEach(x=>x.classList.toggle("active",x===b)); calcAll(); });
   $$(".tab-btn").forEach(b=>b.onclick=()=>openTab(b.dataset.tab));
   $("btnTheme").onclick=()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==="dark"?"light":"dark"};
   $("btnHelp").onclick=()=>helpDialog.showModal();
   $$("input,select").forEach(e=>e.addEventListener("input",calcAll));
   $$("select").forEach(e=>e.addEventListener("change",calcAll));
   $("shapeType").addEventListener("change",updateShape);
-  initThreads(); updateShape(); renderTolTable(); renderHistory(); calcAll();
+  initThreads(); updateShape(); renderTolTable(); renderHistory(); if($("angA")) angleTyped($("angA")); if($("angB")) angleTyped($("angB")); calcAll();
   const hash=location.hash.replace("#",""); if(hash && $("tab-"+hash)) openTab(hash);
 }
 document.addEventListener("DOMContentLoaded",init);

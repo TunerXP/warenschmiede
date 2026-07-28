@@ -1,616 +1,450 @@
 <!DOCTYPE html>
-
 <html lang="de">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1" name="viewport"/>
-<link href="/ws.png" rel="icon" sizes="32x32" type="image/png"/>
-<link href="/ws.png" rel="apple-touch-icon" sizes="180x180"/>
-<meta content="#000000" name="theme-color"/>
-<title>Tool-Übersicht – Rechner &amp; Helfer der Warenschmiede</title>
-<meta content="Alle Warenschmiede Tools auf einen Blick: 3D-Druck Suite, Werkstatt-Rechner, Büro-Tools und mehr – direkt im Browser nutzbar." name="description"/>
-<meta content="index,follow" name="robots"/>
-<meta content="light dark" name="color-scheme"/>
-<link href="https://www.warenschmiede.com/tools/" rel="canonical"/>
-<meta content="Tool-Übersicht – Rechner &amp; Helfer der Warenschmiede" property="og:title"/>
-<meta content="Alle Warenschmiede Tools auf einen Blick: 3D-Druck Suite, Werkstatt-Rechner, Büro-Tools und mehr – direkt im Browser nutzbar." property="og:description"/>
-<meta content="https://www.warenschmiede.com/tools/" property="og:url"/>
-<meta content="Warenschmiede" property="og:site_name"/>
-<meta content="de_DE" property="og:locale"/>
-<meta content="/assets/og/og-default.jpg" property="og:image"/>
-<meta content="Tool-Übersicht – Rechner &amp; Helfer der Warenschmiede" name="twitter:title"/>
-<meta content="Alle Warenschmiede Tools auf einen Blick: 3D-Druck Suite, Werkstatt-Rechner, Büro-Tools und mehr – direkt im Browser nutzbar." name="twitter:description"/>
-<meta content="https://www.warenschmiede.com/tools/" name="twitter:url"/>
-<meta content="summary_large_image" name="twitter:card"/>
-<script>
-    (function () {
-      var storageKey = 'theme-preference';
-      var preference = 'system';
-      try {
-        var stored = localStorage.getItem(storageKey);
-        if (stored === 'light' || stored === 'dark' || stored === 'system') {
-          preference = stored;
-        }
-      } catch (error) { }
-      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-      var resolved = preference === 'dark'
-        ? 'dark'
-        : preference === 'light'
-          ? 'light'
-          : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
-      var root = document.documentElement;
-      root.dataset.theme = resolved;
-      root.dataset.themePreference = preference;
-    })();
-  </script>
-<link href="/styles.css" rel="stylesheet"/>
-<link href="/assets/print.css?v=1.0.7" media="print" rel="stylesheet"/>
-<style>
-    .tool-dashboard-hero {
-      max-width: 1040px;
-      margin: 0 auto var(--space-6);
-      display: grid;
-      gap: var(--space-4);
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tool-Übersicht · Warenschmiede Tools</title>
+  <meta name="description" content="Zentrale Übersicht der Warenschmiede Browser-Tools: 3D-Druck Kostenrechner, QR-Werkstatt, Barcode-Werkstatt, Zeiterfassung, Quittungen und weitere Helfer.">
+  <meta name="robots" content="index,follow">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <style>
+    :root{
+      --tools-bg:#eef6fc;
+      --tools-surface:rgba(255,255,255,.86);
+      --tools-card:#ffffff;
+      --tools-text:#102033;
+      --tools-muted:#5b6f83;
+      --tools-line:#cbd9e6;
+      --tools-accent:#f1913e;
+      --tools-blue:#2f8edf;
+      --tools-green:#2baa72;
+      --tools-shadow:0 24px 70px -48px rgba(28,53,75,.65);
+      --tools-radius:24px;
     }
 
-    .tool-hero-card {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 244, 244, 0.98) 100%);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: clamp(1rem, 2vw, 1.8rem);
-      box-shadow: 0 28px 60px -48px rgba(185, 28, 28, 0.55);
+    body{
+      background:
+        radial-gradient(circle at 0% 0%, rgba(241,145,62,.14), transparent 28rem),
+        radial-gradient(circle at 100% 0%, rgba(47,142,223,.14), transparent 32rem),
+        linear-gradient(135deg,#f7fbff,var(--tools-bg));
+      color:var(--tools-text);
     }
 
-    .tool-hero-kicker {
-      display: inline-flex;
-      border-radius: 999px;
-      padding: 0.3rem 0.8rem;
-      background: rgba(185, 28, 28, 0.12);
-      color: #991b1b;
-      font-weight: 700;
-      margin-bottom: var(--space-2);
+    .tools-page{
+      max-width:1540px;
+      margin:0 auto;
+      padding:clamp(18px,2.5vw,38px);
+      display:grid;
+      gap:22px;
     }
 
-    .tool-search {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: var(--space-3) var(--space-4);
-      background: var(--surface);
-      color: var(--text);
-      font-size: 1rem;
+    .tools-hero{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) minmax(280px,420px);
+      gap:18px;
+      align-items:stretch;
     }
 
-    .tool-search:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-      border-color: var(--accent);
+    .tools-hero-card,
+    .tools-side-card,
+    .tools-section{
+      background:var(--tools-surface);
+      border:1px solid var(--tools-line);
+      border-radius:var(--tools-radius);
+      box-shadow:var(--tools-shadow);
+      overflow:hidden;
     }
 
-    .tool-dashboard-grid {
-      display: grid;
-      gap: var(--space-4);
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      align-items: stretch;
+    .tools-hero-card{
+      padding:clamp(22px,3vw,42px);
+      background:
+        linear-gradient(135deg,rgba(255,255,255,.92),rgba(239,247,255,.88)),
+        radial-gradient(circle at 100% 0%,rgba(241,145,62,.13),transparent 22rem);
     }
 
-    .tool-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: var(--space-4);
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-3);
-      box-shadow: 0 20px 50px -40px rgba(15, 23, 42, 0.6);
-      min-height: 100%;
-      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    .tools-eyebrow{
+      margin:0 0 10px;
+      color:var(--tools-accent);
+      font-size:.78rem;
+      font-weight:950;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    .tools-hero h1{
+      margin:0;
+      font-size:clamp(2rem,4vw,4.4rem);
+      line-height:.98;
+      letter-spacing:-.06em;
+      max-width:980px;
+    }
+
+    .tools-lead{
+      margin:16px 0 0;
+      color:var(--tools-muted);
+      line-height:1.65;
+      font-size:clamp(1rem,1.3vw,1.18rem);
+      max-width:880px;
+    }
+
+    .tools-badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:18px;
+    }
+
+    .tools-badge{
+      border:1px solid rgba(43,170,114,.26);
+      background:rgba(43,170,114,.08);
+      color:var(--tools-text);
+      border-radius:999px;
+      padding:7px 11px;
+      font-size:.82rem;
+      font-weight:850;
+    }
+
+    .tools-side-card{
+      padding:20px;
+      display:grid;
+      gap:14px;
+      align-content:start;
+    }
+
+    .tools-search{
+      width:100%;
+      min-height:48px;
+      border:1px solid var(--tools-line);
+      border-radius:16px;
+      padding:12px 14px;
+      background:#fff;
+      color:var(--tools-text);
+      font:inherit;
+      outline:none;
+      box-shadow:0 12px 28px -26px rgba(15,23,42,.55);
+    }
+
+    .tools-search:focus{
+      border-color:rgba(241,145,62,.8);
+      box-shadow:0 0 0 4px rgba(241,145,62,.13);
+    }
+
+    .tools-quicklinks{
+      display:grid;
+      gap:9px;
+    }
+
+    .tools-quicklinks a{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:12px 13px;
+      border:1px solid var(--tools-line);
+      border-radius:16px;
+      background:rgba(255,255,255,.72);
+      color:var(--tools-text);
+      text-decoration:none;
+      font-weight:850;
+      transition:.18s ease;
+    }
+
+    .tools-quicklinks a:hover{
+      transform:translateY(-1px);
+      border-color:rgba(241,145,62,.7);
+      box-shadow:0 0 0 4px rgba(241,145,62,.10);
+    }
+
+    .tools-section{
+      padding:0;
+    }
+
+    .tools-section-head{
+      padding:20px 22px 16px;
+      border-bottom:1px solid var(--tools-line);
+      background:linear-gradient(135deg,rgba(47,142,223,.11),transparent);
+    }
+
+    .tools-section-head h2{
+      margin:0;
+      font-size:clamp(1.35rem,2vw,2rem);
+      letter-spacing:-.04em;
+    }
+
+    .tools-section-head p{
+      margin:8px 0 0;
+      color:var(--tools-muted);
+      line-height:1.55;
+    }
+
+    .tools-grid{
+      padding:18px;
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:16px;
+    }
+
+    .tool-card{
+      background:var(--tools-card);
+      border:1px solid var(--tools-line);
+      border-radius:22px;
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      min-height:100%;
+      box-shadow:0 22px 50px -42px rgba(15,23,42,.72);
+      transition:.18s ease;
     }
 
     .tool-card:hover,
-    .tool-card:focus-within {
-      transform: translateY(-3px);
-      border-color: var(--accent);
-      box-shadow: 0 28px 50px -44px rgba(15, 23, 42, 0.9);
+    .tool-card:focus-within{
+      transform:translateY(-2px);
+      border-color:rgba(241,145,62,.65);
+      box-shadow:0 0 0 4px rgba(241,145,62,.10),0 26px 55px -43px rgba(15,23,42,.86);
     }
 
-    .tool-card__header {
-      display: flex;
-      gap: var(--space-3);
-      align-items: flex-start;
-      flex-direction: column;
+    .tool-card-head{
+      display:flex;
+      gap:13px;
+      align-items:flex-start;
     }
 
-    .tool-card__icon {
-      font-size: 1.8rem;
-      line-height: 1;
+    .tool-icon{
+      width:56px;
+      height:56px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+      background:linear-gradient(135deg,#172033,#34485f);
+      color:#fff;
+      font-size:1.55rem;
+      border:1px solid rgba(241,145,62,.38);
+      box-shadow:0 0 0 4px rgba(241,145,62,.08);
     }
 
-    .tool-card__summary {
-      margin: 0;
-      color: var(--text-subtle);
+    .tool-card h3{
+      margin:0;
+      font-size:1.08rem;
+      line-height:1.18;
+      letter-spacing:-.02em;
     }
 
-    .tool-card__media {
-      width: 100%;
-      max-width: 180px;
-      height: 120px;
-      object-fit: contain;
-      border-radius: 14px;
-      background: #f6f8fb;
-      padding: 8px;
-      border: 1px solid rgba(148, 163, 184, 0.35);
+    .tool-card p{
+      margin:0;
+      color:var(--tools-muted);
+      line-height:1.52;
+      font-size:.94rem;
     }
 
-    .tool-card__actions {
-      display: flex;
-      gap: var(--space-3);
-      align-items: center;
-      flex-wrap: wrap;
+    .tool-tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:7px;
+      margin-top:auto;
     }
 
-    .tool-card details {
-      border-top: 1px dashed var(--border);
-      padding-top: var(--space-2);
+    .tool-tag{
+      border:1px solid rgba(47,142,223,.25);
+      background:rgba(47,142,223,.08);
+      color:var(--tools-text);
+      border-radius:999px;
+      padding:5px 9px;
+      font-size:.75rem;
+      font-weight:850;
     }
 
-    .tool-card summary {
-      cursor: pointer;
-      font-weight: 700;
-      color: var(--text);
+    .tool-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:9px;
+      margin-top:2px;
     }
 
-    .tool-group {
-      display: grid;
-      gap: var(--space-4);
+    .tool-btn{
+      border:1px solid var(--tools-line);
+      border-radius:14px;
+      min-height:42px;
+      padding:10px 13px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      text-decoration:none;
+      font-weight:900;
+      color:var(--tools-text);
+      background:#fff;
+      box-shadow:0 14px 28px -25px rgba(15,23,42,.75);
     }
 
-    .tool-group__header {
-      display: flex;
-      align-items: baseline;
-      gap: var(--space-3);
-      flex-wrap: wrap;
+    .tool-btn.primary{
+      border-color:transparent;
+      color:#fff;
+      background:linear-gradient(135deg,var(--tools-blue),#1668b2);
     }
 
-    .tool-group__lede {
-      margin: 0;
-      color: var(--text-subtle);
-      max-width: 72ch;
+    .tool-btn:hover{
+      transform:translateY(-1px);
+      border-color:rgba(241,145,62,.7);
+      box-shadow:0 0 0 4px rgba(241,145,62,.10),0 18px 34px -26px rgba(15,23,42,.8);
+    }
+
+    .tools-note{
+      border:1px solid rgba(47,142,223,.22);
+      background:rgba(47,142,223,.08);
+      border-radius:18px;
+      padding:14px 16px;
+      color:var(--tools-muted);
+      line-height:1.55;
+    }
+
+    .is-hidden{display:none!important}
+
+    @media(max-width:1180px){
+      .tools-hero{grid-template-columns:1fr}
+      .tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+
+    @media(max-width:720px){
+      .tools-page{padding:12px}
+      .tools-grid{grid-template-columns:1fr;padding:12px}
+      .tool-card-head{align-items:center}
+      .tools-hero-card,.tools-side-card{padding:18px}
     }
   </style>
 </head>
-<body>
-<header class="site-header" data-header="">
-<div class="ws-nav-container header-grid">
-<div class="brand">
-<a class="brand-link" href="/index.html#start">
-<img alt="Warenschmiede Logo" class="brand-logo" fetchpriority="high" height="276" src="/assets/images/warenschmiede_logo.png" width="453"/>
-<div class="brand-text">
-<span class="brand-name">Warenschmiede</span>
-<span class="brand-tagline">3D-Druck · Made in Germany</span>
-</div>
-</a>
-</div>
-<nav aria-label="Hauptnavigation" class="main-nav">
-<div class="nav-menu" data-nav-menu="" id="primary-navigation">
-<ul class="nav-list" id="navList">
-<li class="nav-item nav-fixed">
-<a aria-current="page" class="nav-link active" data-nav-link="" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html" data-section="start" href="../index.html#start"><span aria-hidden="true" class="nav-ico">🏠</span>Start</a>
-</li>
-<li class="nav-item nav-fixed">
-<a class="nav-link" data-nav-link="" data-path="/downloads , /downloads.html" href="../downloads.html"><span aria-hidden="true" class="nav-ico">📥</span>Downloads</a>
-</li>
-<!-- Neuer Dropdown: Online Tools -->
-<li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button">
-<span aria-hidden="true" class="nav-ico">🧮</span>Online Tools ▾
-              </button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools , /tools/ , /tools/index.html" href="../tools">
-<span aria-hidden="true" class="nav-ico">🗂️</span>Tool-Übersicht (Dashboard)
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/werkstatt-rechner , /tools/werkstatt-rechner.html" href="/tools/werkstatt-rechner.html">
-<span aria-hidden="true" class="nav-ico">🛠️</span>Werkstatt-Rechner Metall Plus
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/3D_Druck_kostenrechner , /tools/3D_Druck_kostenrechner.html" href="/tools/3D_Druck_kostenrechner.html">
-<span aria-hidden="true" class="nav-ico">🧮</span>Warenschmiede 3D-Druck Suite
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/ws_3d_print_kostenrechner , /tools/ws_3d_print_kostenrechner.html" href="/tools/ws_3d_print_kostenrechner.html">
-<span aria-hidden="true" class="nav-ico">✨</span>Warenschmiede 3D-Druck Suite Plus (NEU)
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/QRCodeMasterPro , /tools/QRCodeMasterPro.html" href="/tools/QRCodeMasterPro.html">
-<span aria-hidden="true" class="nav-ico">🔳</span>Warenschmiede QR-Master ULTRA
-                  </a>
-</li>
-<li>
-<a class="nav-link" href="/tools/Zeiterfassung_Plus.html"><span aria-hidden="true" class="nav-ico">⏱️</span>Zeiterfassung Plus</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/Zeiterfassung.html"><span aria-hidden="true" class="nav-ico">⏱️</span>Zeiterfassung</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/quittungs_generator.html"><span aria-hidden="true" class="nav-ico">🧾</span>Quittungs-Werkstatt Plus</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/ReceiptWriterPro.html"><span aria-hidden="true" class="nav-ico">🧾</span>Quittungs-Werkstatt</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/bild-konverter.html"><span aria-hidden="true" class="nav-ico">🖼️</span>Bilder Konverter / Editor</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🧰</span>Leistungen ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/leistungen/3d-druck , /leistungen/3d-druck.html" href="../leistungen/3d-druck.html"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druckauftrag</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html" href="../leistungen/cad-prototyping.html"><span aria-hidden="true" class="nav-ico">📐</span>CAD &amp; Prototyping</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html" href="../leistungen/pc-hilfe.html"><span aria-hidden="true" class="nav-ico">💻</span>PC-Hilfe</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🤖</span>Über KI ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li><a class="nav-link" href="../ki/chat.html"><span aria-hidden="true" class="nav-ico">💬</span>Interaktiver KI Versteher (NEU)</a></li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki , /ki/ , /ki/index.html" href="../ki/index.html"><span aria-hidden="true" class="nav-ico">📖</span>Einführung &amp; Grundlagen</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/prompts , /ki/prompts.html" href="../ki/prompts.html"><span aria-hidden="true" class="nav-ico">✍️</span>Prompts für den Alltag</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/tools , /ki/tools.html" href="../ki/tools.html"><span aria-hidden="true" class="nav-ico">🛠️</span>KI-Werkzeuge</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html" href="../ki/so-arbeitest-du-mit-ki.html"><span aria-hidden="true" class="nav-ico">🧭</span>So arbeitest du mit KI</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html" href="../ki/chancen-und-risiken.html"><span aria-hidden="true" class="nav-ico">⚖️</span>KI: Chancen &amp; Risiken</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/faq , /ki/faq.html" href="../ki/faq.html"><span aria-hidden="true" class="nav-ico">🔒</span>KI-FAQ &amp; Sicherheit</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/lexikon , /ki/lexikon.html" href="../ki/lexikon.html"><span aria-hidden="true" class="nav-ico">🔤</span>KI-Lexikon</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">✉️</span>Kontakt ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/kontakt , /kontakt/kontakt.html , /warenschmiede/kontakt/kontakt , /warenschmiede/kontakt/kontakt.html" href="/kontakt/kontakt.html"><span aria-hidden="true" class="nav-ico">📧</span>Kontakt aufnehmen</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/ablauf-anfrage , /kontakt/ablauf-anfrage.html , /warenschmiede/kontakt/ablauf-anfrage , /warenschmiede/kontakt/ablauf-anfrage.html" href="/kontakt/ablauf-anfrage.html"><span aria-hidden="true" class="nav-ico">📝</span>Ablauf &amp; Anfrage</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/impressum , /kontakt/impressum.html , /warenschmiede/kontakt/impressum , /warenschmiede/kontakt/impressum.html" href="/kontakt/impressum.html"><span aria-hidden="true" class="nav-ico">⚖️</span>Impressum</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/ueber-mich , /kontakt/ueber-mich.html , /warenschmiede/kontakt/ueber-mich , /warenschmiede/kontakt/ueber-mich.html , /about , /about.html , /warenschmiede/about.html" href="/kontakt/ueber-mich.html"><span aria-hidden="true" class="nav-ico">👤</span>Über mich</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druck ▾</button>
-<ul class="nav-more-menu" hidden="">
-<!-- 1. HIGHLIGHT -->
-<!-- 2. EINSTIEG -->
-<li>
-<a class="nav-link" href="/3d_druck/3ddruck-faq.html"><span aria-hidden="true" class="nav-ico">❓</span>Neu beim 3D-Druck?</a>
-</li>
-<!-- 3. GRUNDLAGEN -->
-<li>
-<a class="nav-link" href="/3d_druck/technologien.html"><span aria-hidden="true" class="nav-ico">🧪</span>FDM / SLA / SLS – Technologien</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/material.html"><span aria-hidden="true" class="nav-ico">📚</span>Materialwissen &amp; Vergleiche</a>
-</li>
-<!-- 4. PRAXIS -->
-<li>
-<a class="nav-link" href="/3d_druck/slicer-einstellungen.html"><span aria-hidden="true" class="nav-ico">⚙️</span>Slicer &amp; Einstellungen</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/druck-tipps.html"><span aria-hidden="true" class="nav-ico">💡</span>Tipps &amp; Abläufe / Kosten</a>
-</li>
-<!-- 5. TOOLS & HILFE -->
-<li>
-<a class="nav-link" href="/3d_druck/fehlerdatenbank.html"><span aria-hidden="true" class="nav-ico">🛠️</span>Fehler &amp; Troubleshooting</a>
-</li>
-<!-- 6. SPEZIAL -->
-<li>
-<a class="nav-link" href="/3d_druck/tpu-wissen.html"><span aria-hidden="true" class="nav-ico">💧</span>TPU Spezial-Wissen</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/ideenquellen.html"><span aria-hidden="true" class="nav-ico">💡</span>Ideenquellen &amp; Portale</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/wartung-reinigung.html"><span aria-hidden="true" class="nav-ico">🧼</span>Wartung &amp; Reinigung</a>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</nav>
-<div class="header-actions">
-<button aria-label="Design umschalten: Hell/Dunkel" aria-pressed="false" class="theme-toggle" id="themeToggleBtn" title="Design umschalten: Hell/Dunkel" type="button">
-<span aria-hidden="true" id="themeIcon">🖥️</span>
-<span aria-live="polite" class="theme-toggle__text" id="themeToggleText">Helles Design</span>
-</button>
-<button aria-controls="primary-navigation" aria-expanded="false" class="nav-toggle" data-nav-toggle="" type="button">
-<span class="sr-only">Menü öffnen</span>
-<span aria-hidden="true" class="nav-toggle-bar"></span>
-<span aria-hidden="true" class="nav-toggle-bar"></span>
-<span aria-hidden="true" class="nav-toggle-bar"></span>
-</button>
-</div>
-</div>
-</header>
-<main class="site-main" tabindex="-1">
-<section aria-labelledby="tools-heading" class="section ws-section">
-<div class="container tool-dashboard-hero">
-<div class="tool-hero-card">
-<span class="tool-hero-kicker">Tool-Werkstatt</span>
-<h1 class="ws-section-title" id="tools-heading">Warenschmiede Tool-Werkstatt</h1>
-<p class="lead">Praktische Online-Tools, Rechner und Helfer aus der Warenschmiede – für 3D-Druck, Werkstatt, Büro und Dokumente.</p>
-</div>
-<label class="sr-only" for="toolSearch">Tools durchsuchen</label>
-<input class="tool-search" id="toolSearch" name="tool-search" placeholder="Tools filtern (z.B. 3D-Druck, QR, CNC)" type="search"/>
-</div>
-</section>
-<section aria-labelledby="highlights-heading" class="section ws-section">
-<div class="container tool-group">
-<div class="tool-group__header">
-<h2 class="ws-section-title" id="highlights-heading">Highlights / Neue Tools</h2>
-<p class="tool-group__lede">Empfohlene Haupttools mit den aktuell wichtigsten Funktionen und Workflows.</p>
-</div>
-<div class="tool-dashboard-grid">
-<article class="tool-card" data-keywords="quicksafe unterweisung unterweisungsnachweis mehrsprachig pdf html portable windows sicherheit arbeitsschutz" data-tool-card="">
-<div class="tool-card__header">
-<img alt="Quicksafe Unterweisungs-Generator" class="tool-card__media" src="/dateien/logo_quicksafe.png"/>
-<div>
-<h3 class="ws-card-title">Quicksafe Unterweisungs-Generator</h3>
-<p class="tool-card__summary">Mehrsprachige Unterweisungsnachweise als HTML/PDF – portable Windows-App mit Sprachverwaltung, Zusatzseiten und Backup-Funktion.</p>
-</div>
-</div>
-<div class="tool-card__actions">
-<a class="btn btn-primary" href="/downloads.html">Download &amp; Anleitung</a>
-<span class="pill pill-secondary">Windows</span>
-<span class="pill pill-secondary">Portable</span>
-<span class="pill pill-secondary">HTML/PDF</span>
-<span class="pill pill-secondary">v2.1.1.0</span>
-</div>
-</article>
-<article class="tool-card" data-keywords="3d druck kostenrechner plus angebot rechnung lieferschein presets logo qr history json projektdateien pdf druck pruefmodus kompaktmodus" data-tool-card="">
-<div class="tool-card__header">
-<img alt="Warenschmiede 3D-Druck Kostenrechner Plus" class="tool-card__media" src="/tools/3D-Druck_KostenrechnerPlus01.png"/>
-<div>
-<h3 class="ws-card-title">Warenschmiede 3D-Druck Kostenrechner Plus</h3>
-<p class="tool-card__summary">Online-Tool zur Kalkulation von 3D-Druckkosten mit Angebots-, Rechnungs- und Lieferschein-Ausgabe. Inklusive Presets, Logo, QR-Code, History, JSON-Projektdateien, PDF/Druckausgabe, Prüfmodus und Kompaktmodus.</p>
-</div>
-</div>
-<div class="tool-card__actions">
-<a class="btn btn-outline" href="/tools/ws_3d_print_kostenrechner.html">Online starten</a>
-<a class="btn btn-secondary" href="/tools/ws_3d_print_kostenrechner_anleitung.html">Anleitung</a>
-<span class="pill pill-secondary">Online</span>
-<span class="pill pill-secondary">3D-Druck</span>
-<span class="pill pill-secondary">PDF/JSON</span>
-<span class="pill pill-secondary">Plus</span>
-</div>
-</article>
-</div>
-</div>
-</section>
-<section aria-labelledby="fabrication-heading" class="section ws-section">
-<div class="container tool-group">
-<div class="tool-group__header">
-<h2 class="ws-section-title" id="fabrication-heading">Werkstatt &amp; Fertigung</h2>
-<p class="tool-group__lede">Rechner und Helfer für 3D-Druck, Metallbearbeitung und CNC – schnell startklar direkt im Browser.</p>
-</div>
-<div class="tool-dashboard-grid">
-<article class="tool-card" data-keywords="werkstatt metall drehbank fraesen tabellen schnittdaten" data-tool-card="">
-<div class="tool-card__header">
-<div aria-hidden="true" class="tool-card__icon">🛠️</div>
-<div>
-<h3 class="ws-card-title">Werkstatt-Rechner Metall Plus</h3>
-<p class="tool-card__summary">Schnittdaten, Passungen und Gewinderechner für Metallbearbeitung direkt griffbereit.</p>
-</div>
-</div>
-<div class="tool-card__actions">
-<a class="btn btn-primary" href="/tools/werkstatt-rechner.html">Öffnen</a>
-<span class="pill pill-secondary">Werkstatt</span>
-</div>
-<details>
-<summary>Details anzeigen</summary>
-<p>Enthält Tabellen für Drehzahl und Vorschub, Passungsrechner, Gewindetabellen und weitere Werkzeugdaten für Metallprojekte.</p>
-</details>
-</article>
+<body class="theme-light homepage-v18">
+  <div id="ws-header"></div>
 
-<article class="tool-card" data-keywords="winkel rechner mathe fertigung cnc" data-tool-card="">
-<div class="tool-card__header">
-<div aria-hidden="true" class="tool-card__icon">📐</div>
-<div>
-<h3 class="ws-card-title">Winkel-Rechner</h3>
-<p class="tool-card__summary">Berechne schnell fehlende Winkel und Seitenlängen für Konstruktionen. Ideal für CNC und Zuschnitt.</p>
-</div>
-</div>
-<div class="tool-card__actions">
-<a class="btn btn-primary" href="winkel-rechner.html">Winkel berechnen</a>
-<span class="pill pill-secondary">Mathe</span>
-<span class="pill pill-secondary">Fertigung</span>
-</div>
-</article>
-</div>
-</div>
-</section>
-<section aria-labelledby="admin-heading" class="section ws-section">
-<div class="container tool-group">
-<div class="tool-group__header">
-<h2 class="ws-section-title" id="admin-heading">Downloads &amp; Portable Tools</h2>
-<p class="tool-group__lede">Downloadbare und portable Helfer für den direkten Einsatz unter Windows.</p>
-</div>
-<div class="tool-dashboard-grid">
-<article class="tool-card" data-keywords="quittung receipt generator beleg pdf büro" data-tool-card="">
-<div class="tool-card__header">
-<div aria-hidden="true" class="tool-card__icon">🧾</div>
-<div>
-<h3 class="ws-card-title">Quittungs-Werkstatt Plus</h3>
-<p class="tool-card__summary">Erstelle professionelle Quittungen mit automatischer MwSt-Berechnung und PDF-Export direkt im Browser.</p>
-</div>
-</div>
-<div class="tool-card__actions">
-<a class="btn btn-primary" href="quittungs_generator.html">Quittung schreiben</a>
-<span class="pill pill-secondary">Büro</span>
-<span class="pill pill-secondary">PDF</span>
-</div>
-</article>
-<article class="tool-card" data-keywords="quittungsblock quittung beleg receiptwriterpro belege barzahlung browser" data-tool-card="">
-<div class="tool-card__header">
-<div aria-hidden="true" class="tool-card__icon">🧾</div>
-<div>
-<h3 class="ws-card-title">Quittungs-Werkstatt</h3>
-<p class="tool-card__summary">Einfacher digitaler Quittungsblock für schnelle Belege direkt im Browser.</p>
-</div>
-</div>
-<div class="tool-card__actions">
-<a class="btn btn-primary" href="/tools/ReceiptWriterPro.html">Quittung öffnen</a>
-<span class="pill pill-secondary">Belege</span>
-<span class="pill pill-secondary">Büro</span>
-<span class="pill pill-secondary">Browser</span>
-</div>
-<details>
-<summary>Details anzeigen</summary>
-<p>Belegdaten eintragen, PDF drucken oder als Vorlage speichern – perfekt für Barzahlungen und Übergaben.</p>
-</details>
-</article>
+  <main class="site-main tools-page" id="start" tabindex="-1">
+    <section class="tools-hero" aria-labelledby="tools-heading">
+      <div class="tools-hero-card">
+        <p class="tools-eyebrow">Warenschmiede Tool-Übersicht</p>
+        <h1 id="tools-heading">Rechner, Generatoren und Werkstatt-Helfer</h1>
+        <p class="tools-lead">Hier findest du die aktuellen Warenschmiede Browser-Tools. Die Werkzeuge laufen direkt im Browser, sind werbefrei und werden Schritt für Schritt im neuen Webseite-2.0-Design zusammengeführt.</p>
+        <div class="tools-badges" aria-label="Eigenschaften">
+          <span class="tools-badge">100% werbefrei</span>
+          <span class="tools-badge">kein Tracking</span>
+          <span class="tools-badge">lokal im Browser</span>
+          <span class="tools-badge">praxisnah gebaut</span>
+        </div>
+      </div>
 
-</div>
-</div>
-</section>
-<section aria-labelledby="office-heading" class="section ws-section">
-<div class="container tool-group">
-<div class="tool-group__header">
-<h2 class="ws-section-title" id="office-heading">Büro &amp; Dokumente</h2>
-<p class="tool-group__lede">Vorlagen, Generatoren und Helfer für saubere Dokumente – ohne Installation.</p>
-</div>
-<div class="tool-dashboard-grid">
-<article class="tool-card" data-keywords="zeiterfassung zeit tracking arbeitszeit stempeluhr offline" data-tool-card="">
-<div class="tool-card__header">
-<div aria-hidden="true" class="tool-card__icon">⏱️</div>
-<div>
-<h3 class="ws-card-title">Zeiterfassung (v5)</h3>
-<p class="tool-card__summary">Einfaches Tool für Arbeitszeiten. Datenschutzfreundlich, Export-Funktion und Offline-fähig.</p>
-</div>
-</div>
-<div class="tool-card__actions">
-<a class="btn btn-primary" href="Zeiterfassung.html">Öffnen</a>
-<span class="pill pill-secondary">Produktivität</span>
-</div>
-<details>
-<summary>Details anzeigen</summary>
-<p>Datenschutzfreundlich (lokale Speicherung), Export-Funktion (CSV/PDF) und Offline-fähig.</p>
-</details>
-</article>
-<article class="tool-card" data-keywords="qr code master wlan vcard link generator" data-tool-card="">
-<div class="tool-card__header">
-<div aria-hidden="true" class="tool-card__icon">🔳</div>
-<div>
-<h3 class="ws-card-title">QR-Master ULTRA</h3>
-<p class="tool-card__summary">QR-Codes für WLAN, Visitenkarten und Links mit individuellen Farben erzeugen.</p>
-</div>
-</div>
-<div class="tool-card__actions">
-<a class="btn btn-primary" href="/tools/QRCodeMasterPro.html">Öffnen</a>
-<span class="pill pill-secondary">QR</span>
-</div>
-<details>
-<summary>Details anzeigen</summary>
-<p>Unterstützt VCards, Wi-Fi und freie URLs, wählbare Farben und Export für Druck oder Web.</p>
-</details>
-</article>
-</div>
-</div>
-</section>
-<section aria-labelledby="creative-heading" class="section ws-section">
-<div class="container tool-group">
-<div class="tool-group__header">
-<h2 class="ws-section-title" id="creative-heading">Kreativ &amp; KI</h2>
-<p class="tool-group__lede">Bild- und KI-Werkzeuge für saubere Workflows und bessere Ergebnisse.</p>
-</div>
-<div class="tool-dashboard-grid">
-<article class="tool-card" data-keywords="bilder konverter png jpg webp resize gif banner" data-tool-card="">
-<div class="tool-card__header">
-<div aria-hidden="true" class="tool-card__icon">🖼️</div>
-<div>
-<h3 class="ws-card-title">Bilder Konverter / Editor</h3>
-<p class="tool-card__summary">Pro Bild-Konverter, GIF-Studio und Banner-Builder in einer Suite.</p>
-</div>
-</div>
-<div class="tool-card__actions">
-<a class="btn btn-primary" href="/tools/bild-konverter.html">Öffnen</a>
-<span class="pill pill-secondary">Bild</span>
-</div>
-<details>
-<summary>Details anzeigen</summary>
-<p>Enthält: Bild-Konverter (WebP/JPG), GIF-Studio (Animationen erstellen) und Banner-Builder für schnelle Grafiken – alles lokal im Browser.</p>
-</details>
-</article>
+      <aside class="tools-side-card" aria-label="Tool Suche und Schnellzugriff">
+        <div>
+          <p class="tools-eyebrow">Suchen</p>
+          <label class="sr-only" for="toolSearch">Tools durchsuchen</label>
+          <input class="tools-search" id="toolSearch" type="search" placeholder="Tools filtern, z. B. 3D-Druck, QR, Barcode, Zeit">
+        </div>
+        <div class="tools-quicklinks">
+          <a href="#haupttools">Haupttools <span>↓</span></a>
+          <a href="#werkstatt">Werkstatt &amp; Fertigung <span>↓</span></a>
+          <a href="#buero">Büro &amp; Alltag <span>↓</span></a>
+          <a href="../downloads.html">Downloads <span>→</span></a>
+        </div>
+        <div class="tools-note">Hinweis: Einige ältere Tools bleiben während der Umbauphase erreichbar. Die Plus-Versionen sind die aktuellen Kandidaten für die neue Webseite.</div>
+      </aside>
+    </section>
 
-</div>
-</div>
-</section>
-</main>
-<footer class="footer">
-<div class="container">
-<div class="footer__inner">
-<div class="footer__brand">© <span id="copyright-year">2026</span> Warenschmiede · Alle Rechte vorbehalten.</div>
-<nav aria-label="Rechtliches &amp; Kontakt" class="footer__links">
-<a href="/kontakt/impressum.html">Impressum</a>
-<a href="/datenschutz.html">Datenschutzerklärung</a>
-<a href="/kontakt/kontakt.html">Kontakt</a>
-</nav>
-<div class="footer__notes">
-<p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
-<p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
-</div>
-</div>
-</div>
-</footer>
-<script defer="" src="/assets/js/theme.js"></script>
-<script defer="" src="/assets/js/header.js"></script>
-<script defer="" src="/assets/js/whatsapp.js"></script>
-<script>
-    (function () {
-      var searchInput = document.getElementById('toolSearch');
-      if (!searchInput) return;
-      var cards = Array.prototype.slice.call(document.querySelectorAll('[data-tool-card]'));
-      searchInput.addEventListener('input', function (event) {
-        var query = (event.target.value || '').toLowerCase();
-        cards.forEach(function (card) {
-          var keywords = (card.dataset.keywords || card.textContent || '').toLowerCase();
-          card.hidden = query && keywords.indexOf(query) === -1;
+    <section class="tools-section" id="haupttools" aria-labelledby="haupttools-heading">
+      <div class="tools-section-head">
+        <p class="tools-eyebrow">Aktuelle Haupttools</p>
+        <h2 id="haupttools-heading">Plus-Werkzeuge im neuen Arbeitsstand</h2>
+        <p>Diese Tools sind aktuell die wichtigsten Browser-Werkzeuge der Warenschmiede und werden zuerst an das neue Design angepasst.</p>
+      </div>
+      <div class="tools-grid">
+        <article class="tool-card" data-tool-card data-keywords="3d druck kostenrechner angebot rechnung lieferschein pdf json kalkulation">
+          <div class="tool-card-head"><div class="tool-icon">🧮</div><div><h3>3D-Druck Kostenrechner Plus</h3><p>Kalkulation für Angebote, Rechnungen und Lieferscheine mit PDF/Druck, JSON, Presets und lokaler Speicherung.</p></div></div>
+          <div class="tool-tags"><span class="tool-tag">3D-Druck</span><span class="tool-tag">PDF/JSON</span><span class="tool-tag">Online</span></div>
+          <div class="tool-actions"><a class="tool-btn primary" href="ws_3d_print_kostenrechner.html">Tool starten</a><a class="tool-btn" href="ws_3d_print_kostenrechner_anleitung.html">Anleitung</a></div>
+        </article>
+
+        <article class="tool-card" data-tool-card data-keywords="qr qr-code werkstatt wlan link vcard text sepa paypal">
+          <div class="tool-card-head"><div class="tool-icon">▦</div><div><h3>QR-Werkstatt Plus</h3><p>QR-Codes für Links, Text, WLAN, Kontakte, E-Mail, Zahlungen und weitere praktische Einsatzzwecke.</p></div></div>
+          <div class="tool-tags"><span class="tool-tag">QR-Code</span><span class="tool-tag">WLAN</span><span class="tool-tag">Export</span></div>
+          <div class="tool-actions"><a class="tool-btn primary" href="QRCodeMasterPro.html">Tool starten</a></div>
+        </article>
+
+        <article class="tool-card" data-tool-card data-keywords="barcode ean code128 code39 itf etiketten label druckbogen csv json">
+          <div class="tool-card-head"><div class="tool-icon">▥</div><div><h3>Barcode-Werkstatt Plus</h3><p>Barcodes erstellen, Serien erzeugen und Etiketten mit Rahmen, Farben, Vorlagen und Druckbogen gestalten.</p></div></div>
+          <div class="tool-tags"><span class="tool-tag">Barcode</span><span class="tool-tag">Etiketten</span><span class="tool-tag">CSV/JSON</span></div>
+          <div class="tool-actions"><a class="tool-btn primary" href="BarcodeWerkstattPlus.html">Tool starten</a></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="tools-section" id="werkstatt" aria-labelledby="werkstatt-heading">
+      <div class="tools-section-head">
+        <p class="tools-eyebrow">Werkstatt &amp; Fertigung</p>
+        <h2 id="werkstatt-heading">Rechner für Praxis, Metall und Vorbereitung</h2>
+        <p>Hilfen für Werkstattalltag, Fertigung, Vorbereitung und technische Dokumentation.</p>
+      </div>
+      <div class="tools-grid">
+        <article class="tool-card" data-tool-card data-keywords="cnc fraesen einrichtblatt maschine nullpunkt werkzeug fräsen">
+          <div class="tool-card-head"><div class="tool-icon">⚙️</div><div><h3>CNC Fräsen-Einrichtsblatt Plus</h3><p>Einrichtblätter, Maschineninfos und Projektvorbereitung für Fräsmaschinen.</p></div></div>
+          <div class="tool-tags"><span class="tool-tag">CNC</span><span class="tool-tag">Fräsen</span></div>
+          <div class="tool-actions"><a class="tool-btn primary" href="cnc-fraesen-einrichtsblatt-plus/index.html">Öffnen</a></div>
+        </article>
+
+        <article class="tool-card" data-tool-card data-keywords="werkstatt rechner metall gewinde passung schnittdaten">
+          <div class="tool-card-head"><div class="tool-icon">🛠️</div><div><h3>Werkstatt-Rechner Metall Plus</h3><p>Geplantes/älteres Werkzeug für Metall, Maße, Gewinde, Passungen und praktische Helfer.</p></div></div>
+          <div class="tool-tags"><span class="tool-tag">Werkstatt</span><span class="tool-tag">Metall</span></div>
+          <div class="tool-actions"><a class="tool-btn primary" href="werkstatt-rechner.html">Öffnen</a></div>
+        </article>
+
+        <article class="tool-card" data-tool-card data-keywords="winkel rechner geometrie cnc zuschnitt konstruktion">
+          <div class="tool-card-head"><div class="tool-icon">📐</div><div><h3>Winkel-Rechner</h3><p>Schnelle Winkel- und Geometriehilfe für Konstruktion, Zuschnitt und technische Skizzen.</p></div></div>
+          <div class="tool-tags"><span class="tool-tag">Geometrie</span><span class="tool-tag">Fertigung</span></div>
+          <div class="tool-actions"><a class="tool-btn primary" href="winkel-rechner.html">Öffnen</a></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="tools-section" id="buero" aria-labelledby="buero-heading">
+      <div class="tools-section-head">
+        <p class="tools-eyebrow">Büro &amp; Alltag</p>
+        <h2 id="buero-heading">Belege, Zeiten und kleine Helfer</h2>
+        <p>Browser-Tools für schnelle Erfassung, Dokumente und kleine Arbeitsabläufe.</p>
+      </div>
+      <div class="tools-grid">
+        <article class="tool-card" data-tool-card data-keywords="zeiterfassung arbeitszeit zeit stempeluhr plus export">
+          <div class="tool-card-head"><div class="tool-icon">⏱️</div><div><h3>Zeiterfassung Plus</h3><p>Aktuelle Online-Version zur Erfassung von Arbeitszeiten.</p></div></div>
+          <div class="tool-tags"><span class="tool-tag">Zeit</span><span class="tool-tag">Online</span></div>
+          <div class="tool-actions"><a class="tool-btn primary" href="Zeiterfassung_Plus.html">Öffnen</a></div>
+        </article>
+
+        <article class="tool-card" data-tool-card data-keywords="quittung quittungswerkstatt beleg receipt zahlung barzahlung">
+          <div class="tool-card-head"><div class="tool-icon">🧾</div><div><h3>Quittungs-Werkstatt</h3><p>Einfacher digitaler Quittungsblock für Belege, Übergaben und Barzahlungen.</p></div></div>
+          <div class="tool-tags"><span class="tool-tag">Belege</span><span class="tool-tag">Büro</span></div>
+          <div class="tool-actions"><a class="tool-btn primary" href="ReceiptWriterPro.html">Öffnen</a></div>
+        </article>
+
+        <article class="tool-card" data-tool-card data-keywords="bilder konverter editor webp jpg png banner bild">
+          <div class="tool-card-head"><div class="tool-icon">🖼️</div><div><h3>Bilder Konverter / Editor</h3><p>Bilder lokal umwandeln und für Webseite, Banner oder Dokumente vorbereiten.</p></div></div>
+          <div class="tool-tags"><span class="tool-tag">Bild</span><span class="tool-tag">Konverter</span></div>
+          <div class="tool-actions"><a class="tool-btn primary" href="bild-konverter.html">Öffnen</a></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div id="ws-footer"></div>
+
+  <script src="../assets/js/ws-layout.js" defer></script>
+  <script>
+    (function(){
+      const input = document.getElementById('toolSearch');
+      const cards = Array.from(document.querySelectorAll('[data-tool-card]'));
+      if(!input) return;
+      input.addEventListener('input', function(){
+        const q = (input.value || '').trim().toLowerCase();
+        cards.forEach(card => {
+          const hay = ((card.dataset.keywords || '') + ' ' + card.textContent).toLowerCase();
+          card.classList.toggle('is-hidden', !!q && !hay.includes(q));
         });
       });
     })();
   </script>
-<script>
-  // Auto-Update Copyright Year
-  document.getElementById('copyright-year').textContent = new Date().getFullYear();
-</script>
 </body>
 </html>

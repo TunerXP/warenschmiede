@@ -3,837 +3,136 @@
 <html lang="de">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1" name="viewport"/>
-<link href="/ws.png" rel="icon" sizes="32x32" type="image/png"/>
-<link href="/ws.png" rel="apple-touch-icon" sizes="180x180"/>
-<meta content="#000000" name="theme-color"/>
-<title>3D-Druck Ablauf &amp; Anfrage – so arbeiten wir zusammen</title>
-<meta content="Schritt für Schritt zum 3D-Druck: Anfrage stellen, Daten prüfen, Kosten einschätzen und fertige Teile erhalten – klarer Ablauf für dein Projekt." name="description"/>
-<meta content="3D Druck Ablauf, 3D Druck Anfrage, Projektanfrage 3D Druck, Daten prüfen 3D Druck, Angebot 3D Druck, Fertigungsschritte 3D Druck" name="keywords"/>
-<meta content="DE-BW" name="geo.region"/>
-<meta content="Donaueschingen" name="geo.placename"/>
-<meta content="47.953;8.499" name="geo.position"/>
-<meta content="47.953,8.499" name="ICBM"/>
-<link as="image" href="/assets/logo.svg" rel="preload"/>
-<script>
-    (function () {
-      var storageKey = 'theme-preference';
-      var preference = 'system';
-      try {
-        var stored = localStorage.getItem(storageKey);
-        if (stored === 'light' || stored === 'dark' || stored === 'system') {
-          preference = stored;
-        }
-      } catch (error) {}
-      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-      var resolved = preference === 'dark'
-        ? 'dark'
-        : preference === 'light'
-          ? 'light'
-          : (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
-      var root = document.documentElement;
-      root.dataset.theme = resolved;
-      root.dataset.themePreference = preference;
-    })();
-  </script>
-<link href="/styles.css" rel="stylesheet"/>
-<link href="/assets/print.css?v=1.0.7" media="print" rel="stylesheet"/>
-<meta content="index,follow" name="robots"/>
-<meta content="light dark" name="color-scheme"/>
-<link href="https://www.warenschmiede.com/kontakt/ablauf-anfrage.html" rel="canonical"/>
-<meta content="3D-Druck Ablauf &amp; Anfrage – so arbeiten wir zusammen" property="og:title"/>
-<meta content="Schritt für Schritt zum 3D-Druck: Anfrage stellen, Daten prüfen, Kosten einschätzen und fertige Teile erhalten – klarer Ablauf für dein Projekt." property="og:description"/>
-<meta content="3D-Druck Ablauf &amp; Anfrage – so arbeiten wir zusammen" name="twitter:title"/>
-<meta content="Schritt für Schritt zum 3D-Druck: Anfrage stellen, Daten prüfen, Kosten einschätzen und fertige Teile erhalten – klarer Ablauf für dein Projekt." name="twitter:description"/>
-<meta content="https://www.warenschmiede.com/kontakt/ablauf-anfrage.html" name="twitter:url"/>
-<meta content="/assets/og/og-default.jpg" name="twitter:image"/>
-<meta content="website" property="og:type"/>
-<meta content="https://www.warenschmiede.com/kontakt/ablauf-anfrage.html" property="og:url"/>
-<meta content="/assets/og/og-default.jpg" property="og:image"/>
-<meta content="Warenschmiede" property="og:site_name"/>
-<meta content="de_DE" property="og:locale"/>
-<meta content="summary_large_image" name="twitter:card"/>
-<style>
-    /* Chat Specific Styles from ki/chat.html */
-    .chat-container {
-        max-width: 600px;
-        width: 100%;
-        margin: 1.5rem 0; /* Adjusted margin */
-        background: #efeae2;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        overflow: hidden;
-        border: 1px solid #ddd;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        height: 500px; /* Fixed height for this page context */
-        position: relative;
-    }
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Ablauf &amp; Anfrage · Warenschmiede Webseite 2.0 Test v26</title>
+<meta content="Ablauf und Anfrage bei der Warenschmiede: So klären wir 3D-Druck, CAD, PC-Hilfe und Projekte Schritt für Schritt." name="description"/>
+<link href="../assets/css/styles.css" rel="stylesheet"/>
 
-    /* WhatsApp Background Pattern simulation */
-    .chat-body {
-        flex: 1;
-        overflow-y: auto;
-        padding: 20px 15px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        background-color: #efeae2;
-        background-image: radial-gradient(#d4d0c8 1px, transparent 1px);
-        background-size: 20px 20px;
-        scroll-behavior: smooth;
-    }
-
-    .chat-header {
-        background: #008069;
-        color: white;
-        padding: 10px 15px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.15);
-    }
-
-    .chat-header-avatar {
-        width: 42px;
-        height: 42px;
-        border-radius: 50%;
-        background: #fff;
-        overflow: hidden;
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-    }
-
-    .chat-header-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .chat-header-info {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .chat-header-name {
-        font-weight: 600;
-        font-size: 1.05rem;
-        line-height: 1.2;
-    }
-
-    .chat-header-status {
-        font-size: 0.8rem;
-        opacity: 0.85;
-        line-height: 1.2;
-    }
-
-    .message {
-        max-width: 85%;
-        padding: 8px 12px;
-        border-radius: 7.5px;
-        position: relative;
-        font-size: 0.95rem;
-        line-height: 1.4;
-        box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
-        opacity: 0;
-        transform: translateY(10px);
-        animation: messageAppear 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        word-wrap: break-word;
-    }
-
-    @keyframes messageAppear {
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .message.host { /* Marco */
-        align-self: flex-start;
-        background: #ffffff;
-        border-top-left-radius: 0;
-        color: #111b21;
-    }
-
-    .message.guest { /* User */
-        align-self: flex-end;
-        background: #d9fdd3;
-        border-top-right-radius: 0;
-        color: #111b21;
-    }
-
-    .message a {
-        color: #027eb5;
-        text-decoration: none;
-        font-weight: 500;
-    }
-    .message a:hover {
-        text-decoration: underline;
-    }
-
-    /* Typing Indicator */
-    .typing-indicator {
-        background: #ffffff;
-        padding: 10px 15px;
-        border-radius: 18px;
-        border-top-left-radius: 0;
-        display: none; /* Hidden by default */
-        align-items: center;
-        gap: 4px;
-        align-self: flex-start;
-        margin-left: 15px;
-        margin-bottom: 10px;
-        box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
-        width: fit-content;
-    }
-
-    .typing-indicator.visible {
-        display: inline-flex;
-    }
-
-    .dot {
-        width: 6px;
-        height: 6px;
-        background: #b0b0b0;
-        border-radius: 50%;
-        animation: typingBounce 1.4s infinite ease-in-out both;
-    }
-    .dot:nth-child(1) { animation-delay: -0.32s; }
-    .dot:nth-child(2) { animation-delay: -0.16s; }
-
-    @keyframes typingBounce {
-        0%, 80%, 100% { transform: scale(0); }
-        40% { transform: scale(1); }
-    }
-
-    /* Controls */
-    .chat-controls {
-        background: #f0f2f5;
-        padding: 10px;
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        border-top: 1px solid #ddd;
-        flex-wrap: wrap;
-    }
-
-    .chat-btn {
-        background: #fff;
-        border: 1px solid #ccc;
-        border-radius: 24px;
-        padding: 8px 16px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        color: #111b21;
-        transition: all 0.2s;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .chat-btn:hover { background: #e9edef; }
-
-    /* Dark Mode Overrides */
-    html[data-theme="dark"] .chat-container {
-        background: #0b141a;
-        border-color: #333;
-    }
-    html[data-theme="dark"] .chat-body {
-        background-color: #0b141a;
-        background-image: radial-gradient(#2a3942 1px, transparent 1px);
-    }
-    html[data-theme="dark"] .chat-header {
-        background: #202c33;
-    }
-    html[data-theme="dark"] .message.host {
-        background: #202c33;
-        color: #e9edef;
-    }
-    html[data-theme="dark"] .message.guest {
-        background: #005c4b;
-        color: #e9edef;
-    }
-    html[data-theme="dark"] .chat-controls {
-        background: #202c33;
-        border-color: #333;
-    }
-    html[data-theme="dark"] .chat-btn {
-        background: #2a3942;
-        border-color: #444;
-        color: #e9edef;
-    }
-    html[data-theme="dark"] .message a { color: #53bdeb; }
-</style>
 </head>
-<body>
-<header class="site-header" data-header="">
-<div class="ws-nav-container header-grid">
-<div class="brand">
-<a class="brand-link" href="/index.html#start">
-<img alt="Warenschmiede Logo" class="brand-logo" fetchpriority="high" height="276" src="/assets/images/warenschmiede_logo.png" width="453"/>
-<div class="brand-text">
-<span class="brand-name">Warenschmiede</span>
-<span class="brand-tagline">3D-Druck · Made in Germany</span>
-</div>
-</a>
-</div>
-<nav aria-label="Hauptnavigation" class="main-nav">
-<div class="nav-menu" data-nav-menu="" id="primary-navigation">
-<ul class="nav-list" id="navList">
-<li class="nav-item nav-fixed">
-<a aria-current="page" class="nav-link active" data-nav-link="" data-path="/ , /index.html , /warenschmiede/ , /warenschmiede/index.html" data-section="start" href="/index.html#start"><span aria-hidden="true" class="nav-ico">🏠</span>Start</a>
-</li>
-<li class="nav-item nav-fixed">
-<a class="nav-link" data-nav-link="" data-path="/downloads , /downloads.html" href="/downloads.html"><span aria-hidden="true" class="nav-ico">📥</span>Downloads</a>
-</li>
-<!-- Neuer Dropdown: Online Tools -->
-<li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button">
-<span aria-hidden="true" class="nav-ico">🧮</span>Online Tools ▾
-              </button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools , /tools/ , /tools/index.html" href="/tools">
-<span aria-hidden="true" class="nav-ico">🗂️</span>Tool-Übersicht (Dashboard)
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/werkstatt-rechner , /tools/werkstatt-rechner.html" href="/tools/werkstatt-rechner.html">
-<span aria-hidden="true" class="nav-ico">🛠️</span>Werkstatt-Rechner Metall Plus
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/3D_Druck_kostenrechner , /tools/3D_Druck_kostenrechner.html" href="/tools/3D_Druck_kostenrechner.html">
-<span aria-hidden="true" class="nav-ico">🧮</span>Warenschmiede 3D-Druck Suite
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/ws_3d_print_kostenrechner , /tools/ws_3d_print_kostenrechner.html" href="/tools/ws_3d_print_kostenrechner.html">
-<span aria-hidden="true" class="nav-ico">✨</span>Warenschmiede 3D-Druck Suite Plus (NEU)
-                  </a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/tools/QRCodeMasterPro , /tools/QRCodeMasterPro.html" href="/tools/QRCodeMasterPro.html">
-<span aria-hidden="true" class="nav-ico">🔳</span>Warenschmiede QR-Master ULTRA
-                  </a>
-</li>
-<li>
-<a class="nav-link" href="/tools/Zeiterfassung_Plus.html"><span aria-hidden="true" class="nav-ico">⏱️</span>Zeiterfassung Plus</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/Zeiterfassung.html"><span aria-hidden="true" class="nav-ico">⏱️</span>Zeiterfassung</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/quittungs_generator.html"><span aria-hidden="true" class="nav-ico">🧾</span>Quittungs-Werkstatt Plus</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/ReceiptWriterPro.html"><span aria-hidden="true" class="nav-ico">🧾</span>Quittungs-Werkstatt</a>
-</li>
-<li>
-<a class="nav-link" href="/tools/bild-konverter.html"><span aria-hidden="true" class="nav-ico">🖼️</span>Bilder Konverter / Editor</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-services" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🧰</span>Leistungen ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/leistungen/3d-druck , /leistungen/3d-druck.html" href="/leistungen/3d-druck.html"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druckauftrag</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/leistungen/cad-prototyping , /leistungen/cad-prototyping.html" href="/leistungen/cad-prototyping.html"><span aria-hidden="true" class="nav-ico">📐</span>CAD &amp; Prototyping</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/leistungen/pc-hilfe , /leistungen/pc-hilfe.html" href="/leistungen/pc-hilfe.html"><span aria-hidden="true" class="nav-ico">💻</span>PC-Hilfe</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">🤖</span>Über KI ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li><a class="nav-link" href="/ki/chat.html"><span aria-hidden="true" class="nav-ico">💬</span>Interaktiver KI Versteher (NEU)</a></li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki , /ki/ , /ki/index.html" href="/ki/index.html"><span aria-hidden="true" class="nav-ico">📖</span>Einführung &amp; Grundlagen</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/prompts , /ki/prompts.html" href="/ki/prompts.html"><span aria-hidden="true" class="nav-ico">✍️</span>Prompts für den Alltag</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/tools , /ki/tools.html" href="/ki/tools.html"><span aria-hidden="true" class="nav-ico">🛠️</span>KI-Werkzeuge</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/so-arbeitest-du-mit-ki , /ki/so-arbeitest-du-mit-ki.html" href="/ki/so-arbeitest-du-mit-ki.html"><span aria-hidden="true" class="nav-ico">🧭</span>So arbeitest du mit KI</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/chancen-und-risiken , /ki/chancen-und-risiken.html" href="/ki/chancen-und-risiken.html"><span aria-hidden="true" class="nav-ico">⚖️</span>KI: Chancen &amp; Risiken</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/faq , /ki/faq.html" href="/ki/faq.html"><span aria-hidden="true" class="nav-ico">🔒</span>KI-FAQ &amp; Sicherheit</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/ki/lexikon , /ki/lexikon.html" href="/ki/lexikon.html"><span aria-hidden="true" class="nav-ico">🔤</span>KI-Lexikon</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-contact" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">✉️</span>Kontakt ▾</button>
-<ul class="nav-more-menu" hidden="">
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/kontakt , /kontakt/kontakt.html , /warenschmiede/kontakt/kontakt , /warenschmiede/kontakt/kontakt.html" href="/kontakt/kontakt.html"><span aria-hidden="true" class="nav-ico">📧</span>Kontakt aufnehmen</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/ablauf-anfrage , /kontakt/ablauf-anfrage.html , /warenschmiede/kontakt/ablauf-anfrage , /warenschmiede/kontakt/ablauf-anfrage.html" href="/kontakt/ablauf-anfrage.html"><span aria-hidden="true" class="nav-ico">📝</span>Ablauf &amp; Anfrage</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/impressum , /kontakt/impressum.html , /warenschmiede/kontakt/impressum , /warenschmiede/kontakt/impressum.html" href="/kontakt/impressum.html"><span aria-hidden="true" class="nav-ico">⚖️</span>Impressum</a>
-</li>
-<li>
-<a class="nav-link" data-nav-link="" data-path="/kontakt/ueber-mich , /kontakt/ueber-mich.html , /warenschmiede/kontakt/ueber-mich , /warenschmiede/kontakt/ueber-mich.html , /about , /about.html , /warenschmiede/about.html" href="/kontakt/ueber-mich.html"><span aria-hidden="true" class="nav-ico">👤</span>Über mich</a>
-</li>
-</ul>
-</li>
-<li class="nav-item nav-fixed nav-more nav-dropdown nav-3d" data-nav-dropdown="">
-<button aria-expanded="false" aria-haspopup="true" class="nav-more-btn" type="button"><span aria-hidden="true" class="nav-ico">📦</span>3D-Druck ▾</button>
-<ul class="nav-more-menu" hidden="">
-<!-- 1. HIGHLIGHT -->
-<!-- 2. EINSTIEG -->
-<li>
-<a class="nav-link" href="/3d_druck/3ddruck-faq.html"><span aria-hidden="true" class="nav-ico">❓</span>Neu beim 3D-Druck?</a>
-</li>
-<!-- 3. GRUNDLAGEN -->
-<li>
-<a class="nav-link" href="/3d_druck/technologien.html"><span aria-hidden="true" class="nav-ico">🧪</span>FDM / SLA / SLS – Technologien</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/material.html"><span aria-hidden="true" class="nav-ico">📚</span>Materialwissen &amp; Vergleiche</a>
-</li>
-<!-- 4. PRAXIS -->
-<li>
-<a class="nav-link" href="/3d_druck/slicer-einstellungen.html"><span aria-hidden="true" class="nav-ico">⚙️</span>Slicer &amp; Einstellungen</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/druck-tipps.html"><span aria-hidden="true" class="nav-ico">💡</span>Tipps &amp; Abläufe / Kosten</a>
-</li>
-<!-- 5. TOOLS & HILFE -->
-<li>
-<a class="nav-link" href="/3d_druck/fehlerdatenbank.html"><span aria-hidden="true" class="nav-ico">🛠️</span>Fehler &amp; Troubleshooting</a>
-</li>
-<!-- 6. SPEZIAL -->
-<li>
-<a class="nav-link" href="/3d_druck/tpu-wissen.html"><span aria-hidden="true" class="nav-ico">💧</span>TPU Spezial-Wissen</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/ideenquellen.html"><span aria-hidden="true" class="nav-ico">💡</span>Ideenquellen &amp; Portale</a>
-</li>
-<li>
-<a class="nav-link" href="/3d_druck/wartung-reinigung.html"><span aria-hidden="true" class="nav-ico">🧼</span>Wartung &amp; Reinigung</a>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</nav>
-<div class="header-actions">
-<button aria-label="Design umschalten: Hell/Dunkel" aria-pressed="false" class="theme-toggle" id="themeToggleBtn" title="Design umschalten: Hell/Dunkel" type="button">
-<span aria-hidden="true" id="themeIcon">🖥️</span>
-<span aria-live="polite" class="theme-toggle__text" id="themeToggleText">Helles Design</span>
-</button>
-<button aria-controls="primary-navigation" aria-expanded="false" class="nav-toggle" data-nav-toggle="" type="button">
-<span class="sr-only">Menü öffnen</span>
-<span aria-hidden="true" class="nav-toggle-bar"></span>
-<span aria-hidden="true" class="nav-toggle-bar"></span>
-<span aria-hidden="true" class="nav-toggle-bar"></span>
-</button>
+<body class="theme-light homepage-v18 ablauf-page-v26"><div id="ws-header"></div><main class="site-main ws-live-content contact-page ablauf-page" id="ablauf" tabindex="-1">
+<section class="section container contact-hero-section">
+<div class="contact-hero ws-panel-glow">
+<div class="contact-hero__content">
+<p class="section-eyebrow">Ablauf &amp; Anfrage</p>
+<h1>So arbeiten wir zusammen</h1>
+<p>Du bekommst keine anonyme Upload-Maschine, sondern eine persönliche Einschätzung. Ich prüfe deine Idee, Datei oder dein Problem und sage dir ehrlich, ob und wie ich helfen kann.</p>
+<div class="contact-actions">
+<a class="edge-button accent-amber" href="mailto:info@warenschmiede.com?subject=Anfrage%20an%20die%20Warenschmiede">Projekt per E-Mail anfragen</a>
+<a class="edge-button accent-green" href="https://wa.me/4915141382732" rel="noopener noreferrer">WhatsApp schreiben</a>
+<a class="edge-button accent-steel" href="#schritte">Ablauf ansehen</a>
 </div>
 </div>
-</header>
-<nav aria-label="Brotkrumen" class="breadcrumbs">
-<div class="container breadcrumbs__container">
-<ol class="breadcrumbs__list">
-<li class="breadcrumbs__item"><a href="/index.html">Start</a></li>
-<li class="breadcrumbs__item"><a href="/leistungen/3d-druck.html">3D-Druck</a></li>
-<li aria-current="page" class="breadcrumbs__item">Ablauf &amp; Anfrage</li>
-</ol>
-</div>
-</nav>
-<main class="site-main" id="ablauf" tabindex="-1">
-<section aria-labelledby="ablauf-heading" class="section about-hero">
-<div class="container about-hero__grid">
-<div class="about-hero__content">
-<p class="section-eyebrow">Projektablauf</p>
-<h1 id="ablauf-heading">Ablauf &amp; Anfrage – so arbeiten wir zusammen</h1>
-<p>Du bekommst schnelle Rückmeldungen statt Warteschleifen: Ich prüfe dein Projekt persönlich und melde mich mit klaren Empfehlungen.</p>
-<!-- Service-Check Chat -->
-<div class="chat-container">
-<div class="chat-header">
-<div class="chat-header-avatar">
-<img alt="Marco" onerror="this.src='/assets/img/avatar-placeholder.svg'" src="/assets/img/marco.jpg"/>
-</div>
-<div class="chat-header-info">
-<div class="chat-header-name">Dein Projekt-Check: Kann Marco helfen?</div>
-<div class="chat-header-status">Online</div>
-</div>
-</div>
-<div class="chat-body" id="service-chat-body">
-</div>
-<div class="typing-indicator" id="typing-indicator">
-<div class="dot"></div><div class="dot"></div><div class="dot"></div>
-</div>
-</div>
-<!-- End Service-Check Chat -->
-<div class="hero-actions">
-<a class="btn btn-primary" href="/kontakt/kontakt.html#kontakt-heading">Projekt anfragen</a>
-<a class="btn btn-outline" href="/3d_druck/druck-tipps.html">Tipps lesen</a>
-<a class="btn btn-outline" href="/tools/3D_Druck_kostenrechner.html">Kosten berechnen</a>
-</div>
-</div>
-</div>
-</section>
-<section aria-labelledby="schritte-heading" class="section">
-<div class="container">
-<div class="section-heading">
-<h2 id="schritte-heading">Vier Schritte zu deinem fertigen Teil</h2>
-<p>Transparent, schnell und ohne versteckte Kosten.</p>
-</div>
-<div class="card">
-<ol>
-<li><strong>Idee oder Datei schicken:</strong> Maße, Fotos oder CAD-Datei per Mail oder WhatsApp senden.</li>
-<li><strong>Machbarkeitscheck:</strong> Ich prüfe Geometrie, Materialwahl und mögliche Schwachstellen.</li>
-<li><strong>Einschätzung &amp; Preis:</strong> Du erhältst eine klare Empfehlung mit Aufwand, Kosten und Timing.</li>
-<li><strong>Druck &amp; Abholung/Versand:</strong> Nach deinem Go starte ich den Druck und übergebe das Teil persönlich oder verschicke es.</li>
-</ol>
-</div>
-</div>
-</section>
-<section aria-labelledby="formate-heading" class="section">
-<div class="container">
-<div class="section-heading">
-<h2 id="formate-heading">Unterstützte Dateiformate</h2>
-<p>Alles, was mir hilft, deine Idee zu verstehen, ist willkommen.</p>
-</div>
-<div class="card">
-<ul>
-<li>3D-Modelle: STL und STEP.</li>
-<li>Bilder &amp; Skizzen: Fotos mit Maßangaben oder handgezeichnete Skizzen.</li>
-<li>Bestehende Teile: Maße oder Musterteile helfen bei passgenauen Nachfertigungen.</li>
-</ul>
-</div>
-</div>
-</section>
-<section aria-labelledby="pruefung-heading" class="section">
-<div class="container">
-<div class="section-heading">
-<h2 id="pruefung-heading">Was ich für dich prüfe</h2>
-</div>
-<div class="card">
-<ul>
-<li>Materialwahl: Welche Kunststoffe halten deine Belastung aus?</li>
-<li>Stabilität: Wandstärken, Infill und Orientierung für langlebige Ergebnisse.</li>
-<li>Maße &amp; Toleranzen: Passt das Teil zu deinem bestehenden Setup?</li>
-</ul>
-</div>
-</div>
-</section>
-<section aria-labelledby="nicht-heading" class="section">
-<div class="container">
-<div class="section-heading">
-<h2 id="nicht-heading">Was ich nicht anbiete</h2>
-<p>Damit du weißt, wann sich eine Anfrage nicht lohnt.</p>
-</div>
-<div class="card">
-<ul>
-<li>Mehrfarbige Figuren im Regenbogen-Look.</li>
-<li>Großserien mit tausenden identischen Teilen.</li>
-<li>Drucke ohne reale Einsatzzwecke oder rechtliche Grundlage.</li>
-<li>Ich verkaufe keine Ersatzteile und biete keinen Drucker-Reparaturservice.</li>
-<li>Alle Hinweise sind ohne Gewähr – du druckst in eigener Verantwortung (<a href="/index.html#haftungsausschluss-3d-druck">Haftungsausschluss 3D-Druck</a>).</li>
-</ul>
-</div>
-</div>
-</section>
-<section aria-labelledby="faq-heading" class="section">
-<div class="container">
-<div class="section-heading">
-<h2 id="faq-heading">FAQ – die häufigsten Fragen</h2>
-</div>
-<div class="card">
-<dl>
-<dt>Wie schnell?</dt>
-<dd>Die meisten Projekte erledige ich innerhalb weniger Tage. Wenn es eilt, sag mir Bescheid – ich finde meist ein Zeitfenster.</dd>
-<dt>Was kostet es?</dt>
-<dd>Du bekommst ein transparentes Angebot nach Aufwand, Material und gewünschter Oberfläche. Keine versteckten Gebühren. Für einen ersten Eindruck kannst du den <a href="/tools/3D_Druck_kostenrechner.html">Kosten- &amp; Kalkulationsrechner</a> nutzen.</dd>
-<dt>Kannst du anpassen?</dt>
-<dd>Ja. Ich passe Maße, Wandstärken oder Aufnahmen an, bis das Teil wirklich passt – mit Feedback-Schleifen, bevor gedruckt wird.</dd>
+<aside class="contact-hero__card">
+<h2>Was du senden kannst</h2>
+<dl class="contact-list">
+<div><dt>3D-Druck</dt><dd>STL, STEP, Foto, Skizze oder Maße</dd></div>
+<div><dt>CAD</dt><dd>Idee, Bruchstück, Handskizze oder Musterteil</dd></div>
+<div><dt>PC-Hilfe</dt><dd>Gerät, Fehlermeldung, Foto oder kurze Beschreibung</dd></div>
 </dl>
+</aside>
+</div>
+</section>
+<section class="section container" id="schritte">
+<div class="section-heading compact-heading">
+<p class="section-eyebrow">Projektablauf</p>
+<h2>Vier Schritte bis zur klaren Entscheidung</h2>
+<p>Erst prüfen, dann entscheiden. So bleibt es transparent und du weißt vorab, woran du bist.</p>
+</div>
+<div class="process-grid">
+<article class="process-card">
+<span class="process-number">1</span>
+<h3>Idee oder Datei schicken</h3>
+<p>Du sendest mir Fotos, Maße, Skizzen, STL-/STEP-Dateien oder eine kurze Problembeschreibung per WhatsApp oder E-Mail.</p>
+</article>
+<article class="process-card">
+<span class="process-number">2</span>
+<h3>Machbarkeitscheck</h3>
+<p>Ich prüfe Geometrie, Material, Stabilität, Aufwand und ob das Projekt sinnvoll machbar ist.</p>
+</article>
+<article class="process-card">
+<span class="process-number">3</span>
+<h3>Einschätzung &amp; Preis</h3>
+<p>Du bekommst eine klare Rückmeldung mit Empfehlung, grobem Aufwand, Kosten und möglichem Zeitrahmen.</p>
+</article>
+<article class="process-card">
+<span class="process-number">4</span>
+<h3>Umsetzung nach deinem Go</h3>
+<p>Erst nach deiner Zustimmung starte ich Konstruktion, Druck, Reparaturhilfe oder den nächsten sinnvollen Schritt.</p>
+</article>
+</div>
+</section>
+<section class="section container contact-grid-section">
+<div class="section-heading compact-heading">
+<p class="section-eyebrow">Hilfreiche Angaben</p>
+<h2>Was deine Anfrage schneller macht</h2>
+<p>Je besser die ersten Infos sind, desto schneller kann ich einschätzen, ob es passt.</p>
+</div>
+<div class="contact-grid">
+<article class="contact-card" data-accent="amber">
+<h3>3D-Druckauftrag</h3>
+<p>Teilezweck, gewünschte Stückzahl, Maße, Belastung, Einsatzort und vorhandene Datei oder Fotos.</p>
+<a class="edge-button accent-amber" href="../leistungen/3d-druck.html">3D-Druck ansehen</a>
+</article>
+<article class="contact-card" data-accent="blue">
+<h3>CAD &amp; Prototyping</h3>
+<p>Skizze, Bruchstück, Musterteil, Maße, gewünschte Änderung und ob du STEP oder STL brauchst.</p>
+<a class="edge-button accent-blue" href="../leistungen/cad-prototyping.html">CAD ansehen</a>
+</article>
+<article class="contact-card" data-accent="green">
+<h3>PC-Hilfe</h3>
+<p>Gerätetyp, Fehlermeldung, was vorher passiert ist und ob Fernwartung, Bring-in oder Vor-Ort sinnvoll wäre.</p>
+<a class="edge-button accent-green" href="../leistungen/pc-hilfe.html">PC-Hilfe ansehen</a>
+</article>
+</div>
+</section>
+<section class="section container contact-info-section">
+<div class="contact-info-layout">
+<div class="ws-card contact-info-card">
+<p class="section-eyebrow">Dateien &amp; Formate</p>
+<h2>Willkommen ist alles, was hilft</h2>
+<ul class="simple-list">
+<li>STL und STEP für 3D-Druck oder CAD.</li>
+<li>Fotos mit Maßstab, z. B. Zollstock oder Messschieber daneben.</li>
+<li>Handskizzen mit groben Maßen reichen oft für die erste Einschätzung.</li>
+<li>Bei PC-Hilfe helfen Screenshots oder Fotos der Fehlermeldung.</li>
+</ul>
+</div>
+<div class="ws-card contact-info-card privacy-card">
+<p class="section-eyebrow">Ehrliche Grenzen</p>
+<h2>Was ich vorher sauber einordne</h2>
+<ul class="simple-list">
+<li>Keine Großserien mit tausenden Teilen.</li>
+<li>Keine sicherheitskritischen oder rechtlich problematischen Teile.</li>
+<li>Keine Apple-Spezialreparaturen und keine Drucker-Hardware-Reparatur als Standardservice.</li>
+<li>Wenn etwas nicht sinnvoll machbar ist, sage ich das offen.</li>
+</ul>
 </div>
 </div>
 </section>
-<section aria-labelledby="cta-buttons-heading" class="section">
-<div class="container">
-<div class="card">
-<h2 id="cta-buttons-heading">Direkt Kontakt aufnehmen</h2>
-<div class="hero-actions">
-<a aria-label="Projekt per E-Mail anfragen" class="btn btn-primary" href="mailto:info@warenschmiede.com?subject=Anfrage%203D-Druck">Projekt anfragen<span class="sr-only"> per E-Mail</span></a>
-<a aria-label="Projekt per WhatsApp anfragen" class="btn btn-outline" href="https://wa.me/4915141382732" rel="noopener">WhatsApp schreiben<span class="sr-only"> an Marco</span></a>
-<a aria-label="Projekt telefonisch anfragen" class="btn btn-outline" href="tel:+4915141382732">Telefonisch anfragen<span class="sr-only"> unter 015141382732</span></a>
-</div>
+<section class="section container contact-info-section">
+<div class="ws-card contact-info-card">
+<p class="section-eyebrow">FAQ</p>
+<h2>Häufige Fragen</h2>
+<div class="faq-list">
+<details open=""><summary>Wie schnell bekomme ich eine Rückmeldung?</summary><p>Meistens am selben Abend oder am nächsten Tag. Bei komplexeren Dateien brauche ich etwas Zeit für eine saubere Einschätzung.</p></details>
+<details><summary>Bekomme ich vorab einen Preis?</summary><p>Ja. Ich gebe dir vor der Umsetzung eine klare Einschätzung zu Aufwand, Material, Kosten und Zeitrahmen.</p></details>
+<details><summary>Kann ich auch ohne 3D-Datei anfragen?</summary><p>Ja. Fotos, Maße, Skizzen oder ein defektes Musterteil reichen oft für den ersten Start.</p></details>
 </div>
 </div>
 </section>
-</main>
-<footer class="footer">
-<div class="container">
-<div class="footer__inner">
-<div class="footer__brand">© <span id="copyright-year">2026</span> Warenschmiede · Alle Rechte vorbehalten.</div>
-<nav aria-label="Rechtliches &amp; Kontakt" class="footer__links">
-<a href="/kontakt/impressum.html">Impressum</a>
-<a href="/datenschutz.html">Datenschutzerklärung</a>
-<a href="/kontakt/kontakt.html">Kontakt</a>
-</nav>
-<div class="footer__notes">
-<p><strong>Haftung / Nutzung:</strong> Alle Angaben ohne Gewähr – Nutzung auf eigene Verantwortung.</p>
-<p><strong>Cookies:</strong> Diese Website verwendet keine Cookies oder Tracking.</p>
+<section class="section container contact-info-section">
+<div class="contact-hero ws-panel-glow">
+<div class="contact-hero__content">
+<p class="section-eyebrow">Startklar?</p>
+<h2>Schick mir deine Anfrage</h2>
+<p>Ein paar Bilder, Maße und ein kurzer Satz zum Ziel reichen oft schon, damit ich dir eine ehrliche erste Richtung geben kann.</p>
+</div>
+<div class="contact-actions stacked-actions">
+<a class="edge-button accent-amber" href="mailto:info@warenschmiede.com?subject=Projektanfrage%20Warenschmiede">E-Mail schreiben</a>
+<a class="edge-button accent-green" href="https://wa.me/4915141382732" rel="noopener noreferrer">WhatsApp schreiben</a>
+<a class="edge-button accent-steel" href="../kontakt/kontakt.html">Kontaktseite öffnen</a>
 </div>
 </div>
-</div>
-</footer>
-<script defer="" src="/assets/js/theme.js"></script>
-<script defer="" src="/assets/js/header.js"></script>
-<script defer="" src="/assets/js/whatsapp.js"></script>
-<script>
-    // --- SERVICE CHAT LOGIC ---
-
-    const CHAT_FLOW = {
-        start: {
-            message: "Moin! 👋 Bevor du tippst: Lass uns kurz checken, ob ich der Richtige für dein Problem bin. Worum geht's?",
-            options: [
-                { label: "PC & Technik Hilfe", value: "pc_tech" },
-                { label: "3D-Druck & Teile", value: "print_3d" },
-                { label: "CAD & Konstruktion", value: "cad_design" }
-            ]
-        },
-        pc_tech: {
-            message: "Alles klar. Welches System macht Ärger?",
-            options: [
-                { label: "Windows PC / Laptop", value: "pc_windows" },
-                { label: "Android Handy", value: "pc_android" },
-                { label: "Apple (Mac/iPhone)", value: "pc_apple" },
-                { label: "Drucker / Sonstiges", value: "pc_other" }
-            ]
-        },
-        pc_apple: {
-            message: "Sorry, da bin ich raus. 🍏🚫 Apple ist ein geschlossenes System, da kann ich nicht tief genug rein. Da brauchst du einen Spezialisten.",
-            options: [
-                { label: "Okay, verstanden", value: "end" }
-            ]
-        },
-        pc_windows: { target: "pc_service_check" },
-        pc_android: { target: "pc_service_check" },
-        pc_other: { target: "pc_service_check" },
-
-        pc_service_check: {
-            sequence: [
-                 "Mein Spezialgebiet! ✅",
-                 "Ich bin allerdings nicht mobil. Kannst du das Gerät vorbeibringen? (Donaueschingen, Im Bohrer 7)"
-            ],
-            options: [
-                { label: "Ja, bringe ich vorbei", value: "contact_success" },
-                { label: "Nein, brauche Hausbesuch", value: "house_visit" }
-            ]
-        },
-
-        house_visit: {
-            sequence: [
-                "Ich habe kein Auto für Service-Fahrten.",
-                "ABER: Wenn du z.B. ein Drucker-Problem hast und mich abholen/fahren kannst, können wir drüber reden! 🚗 Flexibel bin ich."
-            ],
-            options: [
-                 { label: "Okay, ich melde mich", value: "contact_success" },
-                 { label: "Schade, dann nicht", value: "end" }
-            ]
-        },
-
-        print_3d: {
-            message: "Cool. Hast du schon eine fertige Datei (STL) oder nur eine Idee?",
-            options: [
-                { label: "Habe Datei (STL)", value: "print_file" },
-                { label: "Nur Idee/Skizze", value: "print_idea" }
-            ]
-        },
-        cad_design: { target: "print_idea" },
-
-        print_file: {
-            message: "Top. Schick sie mir per Mail/Telegram. Ich prüfe, ob man das gut drucken kann.",
-            next: "contact_success"
-        },
-        print_idea: {
-            message: "Kein Problem. Ich kann einfache Teile konstruieren (Adapter, Halter). Aber keine Industrie-Turbinen! 😉",
-            next: "contact_success"
-        },
-
-        contact_success: {
-            sequence: [
-                "Klingt so, als kommen wir zusammen! Schreib mir einfach.",
-                "Ich nutze WhatsApp, Telegram und E-Mail. Adressen und Karte findest du hier:"
-            ],
-            options: [
-                { label: "Zu den Kontaktdaten (Karte & Tel)", action: "goto_contact" }
-            ]
-        },
-        end: {
-            message: "Alles Gute für dein Projekt! Falls sich was ändert, meld dich gern.",
-             options: [
-                { label: "Neustart", value: "restart" }
-            ]
-        }
-    };
-
-    // --- ENGINE ---
-
-    let messageQueue = [];
-    let isProcessing = false;
-    let currentTimeout = null;
-
-    const chatBody = document.getElementById('service-chat-body');
-    const typingIndicator = document.getElementById('typing-indicator');
-
-    // Init
-    window.addEventListener('DOMContentLoaded', () => {
-        loadStep('start');
-    });
-
-    function loadStep(stepKey) {
-        // Resolve Target Redirection
-        let step = CHAT_FLOW[stepKey];
-        if (step.target) {
-            loadStep(step.target);
-            return;
-        }
-
-        // Build Queue
-        let messages = [];
-        if (step.sequence) {
-             step.sequence.forEach(txt => messages.push({ sender: 'marco', text: txt }));
-        } else if (step.message) {
-             messages.push({ sender: 'marco', text: step.message });
-        }
-
-        if (step.options) {
-             messages.push({ type: 'options', options: step.options });
-        } else if (step.next) {
-             // Auto advance if no options but next step defined
-             messages.push({ type: 'auto_next', next: step.next });
-        }
-
-        messageQueue = [...messageQueue, ...messages];
-        processQueue();
-    }
-
-    function processQueue() {
-        if (isProcessing) return;
-        if (messageQueue.length === 0) return;
-
-        isProcessing = true;
-        const item = messageQueue.shift();
-
-        if (item.type === 'options') {
-            showOptions(item.options);
-            isProcessing = false;
-            return;
-        }
-
-        if (item.type === 'auto_next') {
-            isProcessing = false;
-            loadStep(item.next);
-            return;
-        }
-
-        // Show Typing
-        showTyping();
-
-        let delay = 600 + (item.text.length * 15);
-        if (item.sender === 'gast') delay = 500;
-
-        currentTimeout = setTimeout(() => {
-            hideTyping();
-            addMessageToChat(item);
-
-            isProcessing = false;
-            // Next
-            setTimeout(processQueue, 400);
-        }, delay);
-    }
-
-    function addMessageToChat(msg) {
-        const div = document.createElement('div');
-        div.className = `message ${msg.sender === 'marco' ? 'host' : 'guest'}`;
-        let txt = msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        div.innerHTML = txt;
-        chatBody.appendChild(div);
-        scrollToBottom();
-    }
-
-    function showOptions(options) {
-        const div = document.createElement('div');
-        div.className = 'chat-controls';
-
-        options.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = 'chat-btn';
-            btn.innerText = opt.label;
-            btn.onclick = () => handleOptionClick(opt, div);
-            div.appendChild(btn);
-        });
-
-        chatBody.appendChild(div);
-        scrollToBottom();
-    }
-
-    function handleOptionClick(opt, controlsDiv) {
-        controlsDiv.remove();
-        addMessageToChat({ sender: 'gast', text: opt.label });
-
-        if (opt.action === 'goto_contact') {
-             // Scroll to contact or follow link
-             const contactSection = document.getElementById('cta-buttons-heading');
-             if(contactSection) {
-                 contactSection.scrollIntoView({ behavior: 'smooth' });
-             } else {
-                 window.location.href = '/kontakt/kontakt.html';
-             }
-             return;
-        }
-
-        if (opt.value === 'restart') {
-             chatBody.innerHTML = '';
-             loadStep('start');
-             return;
-        }
-
-        if (opt.value) {
-             loadStep(opt.value);
-        }
-    }
-
-    function showTyping() {
-        typingIndicator.classList.add('visible');
-        scrollToBottom();
-    }
-
-    function hideTyping() {
-        typingIndicator.classList.remove('visible');
-    }
-
-    function scrollToBottom() {
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }
-</script>
-<script>
-  // Auto-Update Copyright Year
-  document.getElementById('copyright-year').textContent = new Date().getFullYear();
-</script>
-</body>
+</section>
+</main><div id="ws-footer"></div><script defer="True" src="../assets/js/ws-layout.js"></script></body>
 </html>
