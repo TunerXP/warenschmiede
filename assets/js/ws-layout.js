@@ -64,7 +64,7 @@
           </section>
 
           <section data-accent="blue"><h3>Arbeitszeit &amp; Alltag</h3>
-            <a class="mega-link" href="${link('tools/Zeiterfassung.html')}"><strong>Zeiterfassung</strong><span>Alte Online-Version. <em class="ws-deprecation-note">Wird Ende 2026 entfernt.</em></span></a>
+            <a class="mega-link" href="${link('tools/Zeiterfassung.html')}"><strong>Zeiterfassung</strong><span>Legacy-Version für bestehende Nutzer.</span></a>
             <a class="mega-link" href="${link('tools/Zeiterfassung_Plus.html')}"><strong>Zeiterfassung Plus</strong><span>Aktuelle Online-Version für Arbeitszeiten.</span></a>
             <a class="mega-link" href="${link('tools/ReceiptWriterPro.html')}"><strong>Quittungs-Werkstatt</strong><span>Quittungen direkt im Browser erstellen.</span></a>
           </section>
@@ -148,7 +148,7 @@
   <button class="mobile-section" type="button">Online Tools<span>▾</span></button>
   <div class="mobile-sub">
     <a href="${link('tools/')}">Tool-Übersicht</a>
-    <a href="${link('tools/Zeiterfassung.html')}">Zeiterfassung <span class="ws-deprecation-note">Ende 2026 entfernt</span></a>
+    <a href="${link('tools/Zeiterfassung.html')}">Zeiterfassung <span class="ws-deprecation-note">Legacy-Version</span></a>
     <a href="${link('tools/Zeiterfassung_Plus.html')}">Zeiterfassung Plus</a>
     <a href="${link('tools/ws_3d_print_kostenrechner.html')}">3D-Druck Kostenrechner Plus</a>
     <a href="${link('tools/QRCodeMasterPro.html')}">QR-Werkstatt Plus</a>
@@ -198,7 +198,7 @@
       <a href="${link('datenschutz.html')}">Datenschutz</a>
       <a href="${link('kontakt/kontakt.html')}">Kontakt</a>
     </nav>
-    <p class="ws-footer-note">Alle Angaben ohne Gewähr. Keine Cookies, kein Tracking in der 2.0-Testbasis.</p>
+    <p class="ws-footer-note">Alle Angaben ohne Gewähr. Keine Cookies, kein Tracking.</p>
   </div>
 </footer>`;
 
