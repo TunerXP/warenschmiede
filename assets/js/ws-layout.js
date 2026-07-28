@@ -12,19 +12,16 @@
     document.head.appendChild(style);
   }
 
-  const script = document.currentScript;
-  const src = script ? (script.getAttribute('src') || '') : '';
-  const base = src.replace(/assets\/js\/ws-layout\.js(?:\?.*)?$/, '');
-
   const link = (path) => {
     if (!path || /^(https?:|mailto:|tel:|#|\/\/)/.test(path)) return path;
-    return base + path;
+    return '/' + path.replace(/^\.\//, '');
   };
 
   const currentPath = (window.location.pathname || '').toLowerCase();
   const activeKey = (() => {
     if (currentPath.includes('/leistungen/')) return 'leistungen';
     if (currentPath.includes('/3d_druck/')) return '3d';
+    if (currentPath.includes('/ki/')) return 'ki';
     if (currentPath.includes('/kontakt/') || currentPath.endsWith('/datenschutz.html')) return 'kontakt';
     if (currentPath.endsWith('/downloads.html')) return 'downloads';
     if (currentPath.includes('/tools/')) return 'tools';
@@ -36,12 +33,12 @@
 
   const header = `
 <header class="topbar" id="top">
-  <a aria-label="Warenschmiede Start" class="brand brand-wide-transparent" href="${link('index.html#start')}">
+  <a aria-label="Warenschmiede Start" class="brand brand-wide-transparent" href="/">
     <img alt="Warenschmiede Logo" class="brand-wide-transparent-logo" src="${link('assets/img/warenschmiede-logo-wide-clean-900.png')}">
   </a>
 
   <nav aria-label="Hauptnavigation" class="desktop-nav">
-    <a class="nav-link nav-start${activeClass('start')}"${ariaCurrent('start')} href="${link('index.html#top')}">Start</a>
+    <a class="nav-link nav-start${activeClass('start')}"${ariaCurrent('start')} href="/">Start</a>
     <a class="nav-link${activeClass('downloads')}"${ariaCurrent('downloads')} href="${link('downloads.html')}">Downloads</a>
 
     <div class="nav-group mega" data-menu>
@@ -82,7 +79,7 @@
     </div>
 
     <div class="nav-group mega" data-menu>
-      <button class="nav-link" type="button">Über KI<span>▾</span></button>
+      <button class="nav-link${activeClass('ki')}"${ariaCurrent('ki')} type="button">Über KI<span>▾</span></button>
       <div class="mega-panel"><div class="mega-inner">
         <div class="mega-head"><h2>Über KI</h2><p>Praxisnah erklären, ohne Hype — kurze Einstiege, klare Wege.</p></div>
         <div class="mega-grid">
@@ -142,7 +139,7 @@
 
 <aside aria-label="Mobile Navigation" class="mobile" id="mobile">
   <div class="mobile-head"><b>Warenschmiede</b><button aria-label="Menü schließen" id="close" type="button">×</button></div>
-  <a href="${link('index.html#top')}">Start</a>
+  <a href="/">Start</a>
   <a href="${link('downloads.html')}">Downloads</a>
 
   <button class="mobile-section" type="button">Online Tools<span>▾</span></button>
