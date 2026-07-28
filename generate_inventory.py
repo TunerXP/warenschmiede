@@ -9,7 +9,9 @@ def generate_inventory(root_dir):
         "downloads": []
     }
 
-    ignore_dirs = {'.git', '.vscode', 'node_modules', '.vs', '__pycache__', 'logs'}
+    # ``webseite_2_0`` is retained as an archive, but is no longer part of the
+    # productive website and must therefore not leak into the site inventory.
+    ignore_dirs = {'.git', '.vscode', 'node_modules', '.vs', '__pycache__', 'logs', 'webseite_2_0'}
     image_extensions = {'.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp'}
     doc_extensions = {'.md', '.txt'}
     download_extensions = {'.zip', '.pdf', '.stl', '.gcode'}

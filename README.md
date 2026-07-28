@@ -196,11 +196,9 @@ Folgende alte Tools bleiben während der Übergangsphase erreichbar:
 /tools/3D_Druck_kostenrechner.html
 /tools/Zeiterfassung.html
 
-Geplante Ablösung:
+Bestandsgarantie:
 
-bis spätestens Ende 2026
-
-Danach sollen alte Versionen entfernt, weitergeleitet oder archiviert werden.
+Die älteren Versionen bleiben erreichbar, solange bestehende Nutzer sie benötigen.
 
 9. SEO-Grundsätze
 
