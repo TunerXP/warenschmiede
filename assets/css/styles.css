@@ -350,23 +350,6 @@ body.theme-light .drop-panel{
   --section-edge:var(--amber);
 }
 
-/* Im dunklen Theme ebenfalls keine harte Vollflächen-Markierung mehr, nur dezenter Rahmen */
-body:not(.theme-light) .mega-link,
-body:not(.theme-light) .drop-panel a{
-  border-radius:8px;
-  transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease;
-}
-
-body:not(.theme-light) .mega-link:hover,
-body:not(.theme-light) .drop-panel a:hover{
-  background:rgba(255,255,255,.018) !important;
-  border-color:color-mix(in srgb,var(--section-edge,var(--amber)),rgba(255,255,255,.12) 42%) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.07),
-    0 0 18px color-mix(in srgb,var(--section-edge,var(--amber)),transparent 78%) !important;
-  transform:translateY(-1px);
-}
-
 /* v11: Favorit ist die helle Testsprache; Innenflächen bleiben klar, Glow bleibt außen */
 body.theme-light .mega-grid section{
   overflow:visible;
@@ -900,3 +883,27 @@ body.theme-light .ws-footer{
 body.theme-light .ws-footer a:hover{
   color:#c86216;
 }
+
+/* Zentrale Website-Navigation: die helle produktive Ausführung ist immer der
+   Standard – unabhängig vom Farbschema des jeweiligen Seiteninhalts. */
+.topbar{
+  background:linear-gradient(180deg,rgba(226,236,246,.985),rgba(207,222,236,.965)) !important;
+  border-bottom:1px solid rgba(47,72,96,.26) !important;
+  box-shadow:0 12px 34px rgba(24,38,54,.13),inset 0 1px 0 rgba(255,255,255,.72) !important;
+}
+.topbar:after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,rgba(82,125,164,.32),rgba(255,138,36,.20),rgba(82,125,164,.32),transparent);pointer-events:none}
+.desktop-nav{gap:7px}
+.nav-link{color:#111c27;height:74px;margin:4px 0;border:1px solid transparent;border-radius:8px}
+.nav-link span{color:#52616f}
+.nav-link:hover,.nav-group.open>.nav-link,.nav-link.is-active{color:#111c27;background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(224,234,244,.55)) !important;border-color:color-mix(in srgb,var(--amber),rgba(40,58,75,.18) 55%);box-shadow:inset 0 1px 0 rgba(255,255,255,.92),0 0 0 1px rgba(255,138,36,.10),0 0 20px rgba(255,138,36,.20),0 9px 23px rgba(31,48,66,.10)}
+.nav-link:before{bottom:9px;left:14px;right:14px}
+.nav-start{background:linear-gradient(145deg,rgba(255,255,255,.76),rgba(225,235,245,.55)) !important;border-color:color-mix(in srgb,var(--amber),rgba(40,58,75,.18) 55%);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 0 20px rgba(255,138,36,.16),0 9px 23px rgba(31,48,66,.08) !important}
+.drop-panel,.mega-panel{background:transparent;border:0;box-shadow:none !important}
+.mega-inner,.drop-panel{background:linear-gradient(180deg,rgba(245,249,252,.98),rgba(224,234,244,.97)) !important;border:1px solid rgba(32,49,66,.20) !important;box-shadow:0 22px 55px rgba(31,48,66,.18),0 0 35px rgba(77,168,255,.08) !important;color:#111c27}
+.drop-panel{--section-edge:var(--amber);border-radius:10px;padding:10px}
+.mega-head p,.mega-link span{color:#5d6b78}.mega-grid h3,.mega-link strong{color:#111c27}.mega-link,.drop-panel a{color:#111c27;position:relative;border:1px solid transparent;border-radius:9px;background:transparent !important;box-shadow:none !important}
+.mega-link:hover,.drop-panel a:hover{color:#111c27 !important;background:linear-gradient(145deg,rgba(255,255,255,.40),rgba(235,243,250,.20)) !important;border-color:color-mix(in srgb,var(--section-edge,var(--amber)),rgba(40,58,75,.16) 42%) !important;box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 0 18px color-mix(in srgb,var(--section-edge,var(--amber)),transparent 72%),0 8px 18px rgba(30,45,60,.08) !important}
+.mega-grid section{background:linear-gradient(145deg,rgba(255,255,255,.82),rgba(224,234,244,.76)) !important;overflow:visible}
+.burger{background:#f7fafc;color:#111c27;border-color:#8496a8}
+.mobile{background:#edf3f8;color:#111c27;border-left-color:rgba(47,72,96,.26);box-shadow:-20px 0 55px rgba(24,38,54,.18)}
+.mobile-head button,.mobile a,.mobile-section{color:#111c27;border-bottom-color:rgba(47,72,96,.18)}

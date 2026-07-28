@@ -1,7 +1,5 @@
 (() => {
-  const path = location.pathname;
-  const root = path.includes('/tools/') ? '../' : '';
-  const link = (p) => /^(https?:|mailto:|tel:|#|\/)/.test(p) ? p : root + p;
+  const link = (p) => /^(https?:|mailto:|tel:|#|\/)/.test(p) ? p : '/' + p.replace(/^\.\//, '');
   const img = link('assets/img/w-tools-menu.png');
 
   function closeMenu() {
@@ -34,7 +32,7 @@
           <h3>Navigation</h3>
           <a class="ws-tool-link" href="${link('tools/')}"><strong>Tool-Übersicht</strong><span>Alle Browser-Tools und Helfer.</span></a>
           <a class="ws-tool-link" href="${link('downloads.html')}"><strong>Downloads</strong><span>Portable Programme und Anleitungen.</span></a>
-          <a class="ws-tool-link" href="${link('index.html')}"><strong>Warenschmiede Startseite</strong><span>Zurück zur Homepage 2.0.</span></a>
+          <a class="ws-tool-link" href="/"><strong>Warenschmiede Startseite</strong><span>Zurück zur Warenschmiede Startseite.</span></a>
         </div>
         <div class="ws-tool-section">
           <h3>Haupttools</h3>
