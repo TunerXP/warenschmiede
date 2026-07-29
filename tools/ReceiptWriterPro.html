@@ -42,11 +42,13 @@
   </header>
 
   <main class="wrap">
+    <div class="workspace">
+      <div class="editor-column">
     <section class="card hero">
       <div class="hero-top">
         <div>
-          <h2>Schnelle Quittung fürs Handy</h2>
-          <p>Posten erfassen, Zahlart wählen und die Quittung als PDF speichern oder direkt teilen. Ohne Konto, ohne Cloud.</p>
+          <h2>Ihr Arbeitsplatz</h2>
+          <p>Erfassen Sie die Angaben – die fertige Quittung entsteht direkt daneben.</p>
         </div>
         <div class="total-box">
           <span class="total-label">Gesamt</span>
@@ -54,9 +56,9 @@
         </div>
       </div>
       <div class="chips">
-        <span class="chip">lokal gespeichert</span>
+        <span class="chip">● lokal</span>
         <span class="chip">PDF</span>
-        <span class="chip">WhatsApp-Teilen</span>
+        <span class="chip">Teilen</span>
         <span class="chip">Backup</span>
       </div>
     </section>
@@ -169,6 +171,20 @@
       <a href="../index.html">Zurück zur Warenschmiede</a> ·
       <a href="/kontakt/impressum.html">Impressum</a> ·
       <a href="../datenschutz.html">Datenschutz</a>
+    </div>
+      </div>
+
+      <aside class="preview-column" aria-label="Live-Vorschau der Quittung">
+        <div class="preview-toolbar">
+          <div><strong>Live-Vorschau</strong><small>wird automatisch aktualisiert</small></div>
+          <button class="btn btn-small btn-ghost preview-toggle" id="previewToggle" type="button" aria-expanded="false" aria-controls="receiptPreview" onclick="togglePreview()">Vorschau anzeigen</button>
+        </div>
+        <div class="preview-stage" id="receiptPreview">
+          <article class="receipt-paper" aria-label="Vorschau der erstellten Quittung">
+            <div id="receiptContent"></div>
+          </article>
+        </div>
+      </aside>
     </div>
   </main>
 
