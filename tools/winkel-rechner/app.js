@@ -191,6 +191,9 @@ function setMode(mode) {
     button.tabIndex = selected ? 0 : -1;
   });
   const showTriangle = mode !== 'taper';
+  if (showTriangle) {
+    document.getElementById('form-triangle').setAttribute('aria-labelledby', `btn-${mode}`);
+  }
   document.getElementById('form-triangle').classList.toggle('is-hidden', !showTriangle);
   document.getElementById('form-taper').classList.toggle('is-hidden', showTriangle);
   document.getElementById('main-svg').classList.toggle('is-hidden', !showTriangle);
