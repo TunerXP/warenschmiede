@@ -4,6 +4,9 @@
   const $ = selector => document.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const text = value => String(value ?? '–');
+  const escapeHtml = value => text(value).replace(/[&<>'"]/g, character => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  })[character]);
   const siteUrl = path => new URL(`../${path.replace(/^\//, '')}`, location.href).href;
   const setNotice = (message, error = false) => { $('#notice').textContent = message; $('#notice').classList.toggle('error', error); };
 
@@ -33,7 +36,7 @@
   function renderStats() {
     const values = summary();
     const labels = { html: 'HTML-Seiten', images: 'Bilder', documents: 'Dokumente / öffentliche Dateien', sitemap: 'Sitemap-URLs', indexable: 'Indexierbare Seiten', noindex: 'Noindex-Seiten', warnings: 'SEO-Warnungen', errors: 'SEO-Fehler' };
-    $('#stats').innerHTML = Object.entries(labels).map(([key, label]) => `<article class="stat"><strong>${values[key]}</strong><span>${label}</span></article>`).join('');
+    $('#stats').innerHTML = Object.entries(labels).map(([key, label]) => `<article class="stat"><strong>${escapeHtml(values[key])}</strong><span>${escapeHtml(label)}</span></article>`).join('');
   }
 
   async function loadInventory() {
@@ -89,13 +92,13 @@
   function renderSeo() {
     const query = $('#seo-search').value.toLowerCase(), filter = $('#seo-filter').value;
     const rows = state.seo.filter(item => item.path.toLowerCase().includes(query) && (filter === 'all' || (filter === 'noindex' ? item.noindex : item.level === filter)));
-    $('#seo-body').innerHTML = rows.length ? rows.map(item => `<tr><td><a href="${siteUrl(item.path)}" target="_blank" rel="noopener">${text(item.path)}</a></td><td class="status-${item.level}">${item.level === 'ok' ? 'OK' : item.issues.map(i => i.message).join(', ')}</td><td>${item.title ? '✓' : '–'}</td><td>${item.description ? '✓' : '–'}</td><td>${item.h1 ? '✓' : '–'}</td><td>${item.noindex ? 'Noindex' : 'Index'}</td><td>${item.og ? '✓' : '–'}</td><td>${item.inSitemap ? '✓' : '–'}</td></tr>`).join('') : '<tr><td colspan="8">Keine passenden Ergebnisse.</td></tr>';
+    $('#seo-body').innerHTML = rows.length ? rows.map(item => `<tr><td><a href="${escapeHtml(siteUrl(item.path))}" target="_blank" rel="noopener">${escapeHtml(item.path)}</a></td><td class="status-${item.level}">${item.level === 'ok' ? 'OK' : escapeHtml(item.issues.map(i => i.message).join(', '))}</td><td>${item.title ? '✓' : '–'}</td><td>${item.description ? '✓' : '–'}</td><td>${item.h1 ? '✓' : '–'}</td><td>${item.noindex ? 'Noindex' : 'Index'}</td><td>${item.og ? '✓' : '–'}</td><td>${item.inSitemap ? '✓' : '–'}</td></tr>`).join('') : '<tr><td colspan="8">Keine passenden Ergebnisse.</td></tr>';
   }
 
   function renderImages() {
     const query = $('#image-search').value.toLowerCase(), filter = $('#image-filter').value;
     const items = inventoryList('images').filter(path => { const ext = path.split('.').pop().toLowerCase(); return path.toLowerCase().includes(query) && (filter === 'all' || (filter === 'jpg' ? ['jpg', 'jpeg'].includes(ext) : ext === filter)); });
-    $('#gallery').innerHTML = items.length ? items.map(path => `<article class="image-card"><div class="preview"><img src="${siteUrl(path)}" alt="" loading="lazy"></div><div class="image-info"><strong>${text(path.split('/').pop())}</strong><code>${text(path)}</code><div class="image-actions"><button data-copy="${encodeURIComponent(path)}">Pfad kopieren</button><a href="${siteUrl(path)}" target="_blank" rel="noopener">Original öffnen</a></div></div></article>`).join('') : '<p>Keine passenden Bilder gefunden.</p>';
+    $('#gallery').innerHTML = items.length ? items.map(path => `<article class="image-card"><div class="preview"><img src="${escapeHtml(siteUrl(path))}" alt="" loading="lazy"></div><div class="image-info"><strong>${escapeHtml(path.split('/').pop())}</strong><code>${escapeHtml(path)}</code><div class="image-actions"><button data-copy="${escapeHtml(encodeURIComponent(path))}">Pfad kopieren</button><a href="${escapeHtml(siteUrl(path))}" target="_blank" rel="noopener">Original öffnen</a></div></div></article>`).join('') : '<p>Keine passenden Bilder gefunden.</p>';
   }
 
   async function loadDownloads() {
@@ -116,13 +119,22 @@
     }
     $('#check-downloads').disabled = false;
   }
-  function renderDownloads() { $('#download-body').innerHTML = state.downloads.length ? state.downloads.map(item => `<tr><td>${text(item.name)}</td><td><a href="${item.path}" target="_blank" rel="noopener">${text(item.path)}</a></td><td class="status-${item.status === 'Erreichbar' ? 'ok' : item.status === 'Nicht erreichbar' ? 'error' : 'warning'}">${item.status}</td></tr>`).join('') : '<tr><td colspan="3">Keine Links unter /dateien/ gefunden.</td></tr>'; }
+  function renderDownloads() { $('#download-body').innerHTML = state.downloads.length ? state.downloads.map(item => `<tr><td>${escapeHtml(item.name)}</td><td><a href="${escapeHtml(item.path)}" target="_blank" rel="noopener">${escapeHtml(item.path)}</a></td><td class="status-${item.status === 'Erreichbar' ? 'ok' : item.status === 'Nicht erreichbar' ? 'error' : 'warning'}">${escapeHtml(item.status)}</td></tr>`).join('') : '<tr><td colspan="3">Keine Links unter /dateien/ gefunden.</td></tr>'; }
+
+  function selectReleaseFields(release) {
+    if (!release || typeof release !== 'object' || Array.isArray(release)) return {};
+    const allowedFields = ['displayVersion', 'version', 'versionCode', 'channel', 'status', 'apk', 'apkFile', 'apkPath', 'publishedAt', 'releaseDate', 'date'];
+    return Object.fromEntries(allowedFields.filter(key => {
+      const value = release[key];
+      return ['string', 'number', 'boolean'].includes(typeof value) && String(value).trim() !== '';
+    }).map(key => [key, release[key]]));
+  }
 
   async function loadRelease() {
     try {
-      state.release = JSON.parse(await fetchText('/dateien/zeiterfassung-plus/release.json'));
-      const safeFields = Object.entries(state.release).filter(([, value]) => ['string', 'number', 'boolean'].includes(typeof value));
-      $('#release-details').innerHTML = '<div><dt>Status</dt><dd class="status-ok">Geladen</dd></div>' + safeFields.map(([key, value]) => `<div><dt>${text(key)}</dt><dd>${text(value)}</dd></div>`).join('');
+      state.release = selectReleaseFields(JSON.parse(await fetchText('/dateien/zeiterfassung-plus/release.json')));
+      const safeFields = Object.entries(state.release);
+      $('#release-details').innerHTML = '<div><dt>Ladestatus</dt><dd class="status-ok">Geladen</dd></div>' + safeFields.map(([key, value]) => `<div><dt>${escapeHtml(key)}</dt><dd>${escapeHtml(value)}</dd></div>`).join('');
     } catch (error) { state.warnings.push(`Release-Metadaten konnten nicht geladen werden: ${error.message}`); $('#release-details').innerHTML = '<div><dt>Status</dt><dd class="status-warning">Nicht verfügbar / nicht geprüft</dd></div>'; }
   }
 

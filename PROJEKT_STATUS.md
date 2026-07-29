@@ -5,7 +5,7 @@
 **Projekt:** Warenschmiede – 3D-Druck, CAD, digitale Werkstatt-Tools und KI-Hilfen  
 **Live-Domain:** https://www.warenschmiede.com  
 **Hosting:** IONOS Webhosting Plus  
-**Repository:** GitHub-Repo `TunerXP/warenschmiede` als private Werkstatt / Master-Bestand  
+**Repository:** GitHub-Repo `TunerXP/warenschmiede` als Entwicklungs-/Masterbestand
 
 ---
 
@@ -117,17 +117,16 @@ Wichtig:
 
 Die Admin Suite kann aktuell:
 
-- Inventory laden
-- Dashboard anzeigen
-- SEO Scan ausführen
-- SEO-Bericht speichern
-- Content- und Dokumentdateien anzeigen
-- Bilder-Galerie anzeigen
-- Download-Dateien anzeigen
-- Quick Links bereitstellen
-- Workflow-Anleitung für Inventory/Sitemap anzeigen
+- das automatisch erzeugte Deploy-Inventar laden und im Dashboard zusammenfassen
+- Seiten und SEO-Daten prüfen sowie nach Pfad und Prüfergebnis suchen und filtern
+- die Bildergalerie nach Dateiname, Pfad und Format durchsuchen und filtern
+- veröffentlichte Downloadlinks auswerten und per HEAD-Anfrage prüfen
+- den öffentlichen Zeiterfassung-Plus-Release-Status anzeigen
+- einen gefilterten technischen Diagnosebericht erstellen und kopieren
+- den aktuellen Wartungs- und Deploy-Ablauf sowie sichere Quick Links anzeigen
 
-Die Admin Suite schreibt keine Dateien auf dem Server. Sie liest nur vorhandene Dateien.
+Die Admin Suite ist vollständig read-only. Sie schreibt keine Dateien auf den Server
+und bietet keine Upload-, Lösch-, Editor- oder Serverzugriffsfunktion.
 
 ---
 
