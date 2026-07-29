@@ -21,7 +21,7 @@
       <div class="topbar-inner">
         <div class="brand">
           <img class="tool-logo" src="../assets/img/barcode_logo.svg" alt="Barcode-Werkstatt Plus Logo">
-          <div><h1>Barcode-Werkstatt Plus</h1></div>
+          <div class="brand-copy"><h1>Barcode-Werkstatt Plus</h1><p>Barcodes erstellen, gestalten, exportieren und als Etiketten drucken.</p></div>
         </div>
         <div class="top-actions">
           <button class="ws-tool-menu-btn" type="button" id="toolMenuBtn" aria-label="W-TOOLS-Menü öffnen"><img src="../assets/img/w-tools-menu.png" alt=""></button>
@@ -29,6 +29,7 @@
           <button class="btn btn-blue" type="button" id="btnHelp">Hilfe</button>
         </div>
       </div>
+      <div class="tool-chips" aria-label="Unterstützte Formate"><span>Code128</span><span>EAN</span><span>ITF</span><span>✓ Lokal im Browser</span></div>
     </header>
 
     <main class="main">
@@ -38,11 +39,11 @@
           <div>
             <h3 style="margin-bottom:10px;">Barcode-Art</h3>
             <div class="type-grid" id="typeGrid">
-              <button class="type-btn active" data-type="CODE128"><span>▥</span><span>Code128</span></button>
-              <button class="type-btn" data-type="EAN13"><span>🛒</span><span>EAN-13</span></button>
-              <button class="type-btn" data-type="EAN8"><span>🏷️</span><span>EAN-8</span></button>
-              <button class="type-btn" data-type="CODE39"><span>▤</span><span>Code39</span></button>
-              <button class="type-btn" data-type="ITF14"><span>📦</span><span>ITF-14</span></button>
+              <button class="type-btn active" data-type="CODE128"><span>Code128</span></button>
+              <button class="type-btn" data-type="EAN13"><span>EAN-13</span></button>
+              <button class="type-btn" data-type="EAN8"><span>EAN-8</span></button>
+              <button class="type-btn" data-type="CODE39"><span>Code39</span></button>
+              <button class="type-btn" data-type="ITF14"><span>ITF-14</span></button>
             </div>
           </div>
 
@@ -206,7 +207,7 @@
                 <div class="field"><label for="seriesPad" id="seriesPadLabel">Stellen <button class="mini-help" type="button" data-help="seriesPad" data-title="Basisstellen / Stellen" data-text="Bei EAN/ITF ist die Länge fest: EAN-13 = 12 Basisziffern, EAN-8 = 7, ITF-14 = 13. Bei Code128/Code39 bestimmt dieser Wert die führenden Nullen.">?</button></label><input id="seriesPad" type="number" min="0" max="12" value="4"></div>
               </div>
               <div class="row">
-                <div class="field"><label for="seriesStep">Schrittweite <button class="mini-help" type="button" data-help="seriesStep" data-title="Schrittweite" data-text="Schrittweite 1 = fortlaufend. Schrittweite 10 = jede zehnte Nummer. Bei EAN/ITF wird für jede neue Basisnummer die Prüfziffer neu berechnet.">?</button></label><input id="seriesStep" type="number" value="1"></div>
+                <div class="field"><label for="seriesStep">Schrittweite <button class="mini-help" type="button" data-help="seriesStep" data-title="Schrittweite" data-text="Schrittweite 1 erzeugt 1001, 1002, 1003. Schrittweite 10 erzeugt 1000, 1010, 1020. Bei EAN/ITF wird die Prüfziffer jeweils neu berechnet.">?</button></label><input id="seriesStep" type="number" value="1"><p class="field-note">1: 1001, 1002, 1003 · 10: 1000, 1010, 1020</p></div>
                 <div class="field"><label for="seriesNote">Beschreibung optional</label><input id="seriesNote" placeholder="z. B. Lageretiketten"></div>
               </div>
               <p class="form-example"><strong>Beispiel:</strong> WS-0001, WS-0002, WS-0003 …<br><span id="numericSeriesNote">Bei EAN/ITF wird aus der Startnummer eine Basisnummer gebildet und die Prüfziffer automatisch angehängt.</span></p>
@@ -341,8 +342,8 @@ WS-B001</textarea>
         <div class="preview-buttons">
           <button class="btn btn-blue" id="btnGenerate" type="button">Barcode aktualisieren</button>
           <button class="btn" id="btnPng" type="button">PNG herunterladen</button>
-          <button class="btn" id="btnSvg" type="button">SVG herunterladen</button>
-          <button class="btn" id="btnCopy" type="button">Barcode-Inhalt kopieren</button>
+          <span class="action-with-help"><button class="btn" id="btnSvg" type="button">SVG herunterladen</button><button class="mini-help" type="button" data-help="svgExport" data-title="SVG oder PNG?" data-text="SVG ist eine Vektordatei und bleibt beim Vergrößern scharf. PNG ist ein Pixelbild und eignet sich besonders für die schnelle Verwendung in Dokumenten und Bildern.">?</button></span>
+          <button class="btn btn-quiet" id="btnCopy" type="button">Inhalt kopieren</button>
           <button class="btn btn-good" id="btnPrintSheet" type="button">Druckbogen drucken</button>
         </div>
         <p class="field-note" style="text-align:left;max-width:320px;margin:10px auto 6px;">Aktueller Barcode-Inhalt:</p>
@@ -426,10 +427,10 @@ WS-B001</textarea>
               <thead><tr><th>Typ</th><th>Wofür gut?</th><th>Wichtig</th></tr></thead>
               <tbody>
                 <tr><td><strong>Code128</strong></td><td>Interne Artikelnummern, Aufträge, Lager, Werkzeug, Kisten, 3D-Druck-Projekte.</td><td>Sehr flexibel. Kann Zahlen, Buchstaben und viele Sonderzeichen abbilden.</td></tr>
-                <tr><td><strong>EAN-13</strong></td><td>Artikelcodes mit 13 Stellen, Handelsumfeld, Testreihen mit Prüfziffer.</td><td>12 Basisziffern + 1 Prüfziffer. Für echte Produkte brauchst du gültige Nummern.</td></tr>
-                <tr><td><strong>EAN-8</strong></td><td>Kürzere Artikelcodes mit 8 Stellen.</td><td>7 Basisziffern + 1 Prüfziffer. Ebenfalls nicht frei für echte Handelsware erfinden.</td></tr>
-                <tr><td><strong>Code39</strong></td><td>Robuste einfache Werkstatt-/Industriecodes.</td><td>Weniger Zeichen als Code128. Gut lesbar, aber nicht so kompakt.</td></tr>
-                <tr><td><strong>ITF-14</strong></td><td>Karton, Verpackung, Logistik- oder Transporteinheiten.</td><td>13 Basisziffern + 1 Prüfziffer. Für echte Logistik nur mit passender Nummernlogik.</td></tr>
+                <tr><td><strong>EAN-13</strong></td><td>Artikelcodes mit 13 Stellen, Handelsumfeld, Testreihen mit Prüfziffer.</td><td>13-stellige GTIN: 12 Basisziffern werden ergänzt; bei 13 Ziffern prüft das Tool die Prüfziffer. Offiziell nur gültig vergebene Nummern verwenden.</td></tr>
+                <tr><td><strong>EAN-8</strong></td><td>Kürzere Artikelcodes mit 8 Stellen.</td><td>8-stellige GTIN: 7 Basisziffern werden ergänzt; bei 8 Ziffern prüft das Tool die Prüfziffer.</td></tr>
+                <tr><td><strong>Code39</strong></td><td>Robuste einfache Werkstatt-/Industriecodes.</td><td>Erlaubt sind Großbuchstaben, Zahlen, Leerzeichen sowie - . $ / + %.</td></tr>
+                <tr><td><strong>ITF-14</strong></td><td>Karton, Verpackung, Logistik- oder Transporteinheiten.</td><td>14-stellige GTIN für Um- bzw. Transportverpackungen, nicht für den klassischen Retail-POS. 13 Basisziffern werden ergänzt; volle Codes werden geprüft.</td></tr>
               </tbody>
             </table>
             <div class="help-example"><strong>Einfacher Merksatz:</strong> Für eigene Werkstattetiketten meistens Code128. Für echte Produkt-/Handelsnummern nicht raten, sondern offizielle Nummern verwenden.</div>
@@ -444,7 +445,7 @@ WS-B001</textarea>
             <p>Erzeugt denselben Barcode mehrfach. Gut, wenn du für einen Artikel mehrere gleiche Etiketten brauchst.</p>
 
             <h4>Serie</h4>
-            <p>Erzeugt fortlaufende Barcodes. Du gibst Startwert, Anzahl und Schrittweite an. Bei Code128/Code39 sind Prefix und Suffix möglich. Bei EAN/ITF sind Prefix und Suffix gesperrt, weil diese Standards feste Zahlenlängen haben.</p>
+            <p>Erzeugt fortlaufende Barcodes. Du gibst Startwert, Anzahl und Schrittweite an. Schrittweite 1 erzeugt z. B. 1001, 1002, 1003; Schrittweite 10 erzeugt 1000, 1010, 1020. Bei Code128/Code39 sind Prefix und Suffix möglich. Bei EAN/ITF sind Prefix und Suffix gesperrt, weil diese Standards feste Zahlenlängen haben.</p>
 
             <h4>Manuelle Liste</h4>
             <p>Jede Zeile wird ein eigener Barcode. Praktisch, wenn du Codes aus Excel, einer Liste oder einem Auftrag kopierst.</p>
@@ -464,6 +465,7 @@ WS-B001</textarea>
               </tbody>
             </table>
             <p>Gibst du die Basisnummer ein, ergänzt das Tool die Prüfziffer. Gibst du die volle Länge ein, prüft das Tool, ob die Prüfziffer passt.</p>
+            <div class="help-good"><strong>Scan-Kontrast:</strong> Dunkle Striche auf hellem Hintergrund sind meist die sicherste Wahl. Farbige Kombinationen können abhängig von Scanner, Kamera, Drucker und Material schlechter funktionieren. Vor größeren Druckserien immer einen Testscan durchführen.</div>
             <div class="help-warning"><strong>Nicht verwechseln:</strong> Eine mathematisch passende Prüfziffer macht aus einer frei erfundenen Nummer noch keine offiziell vergebene Handels- oder Logistiknummer.</div>
           </section>
 
