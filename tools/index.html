@@ -187,14 +187,13 @@
     .tool-card{
       background:var(--tools-card);
       border:1px solid var(--tools-line);
-      border-radius:22px;
-      padding:18px;
+      border-radius:20px;
       display:flex;
       flex-direction:column;
-      gap:14px;
       min-height:100%;
+      overflow:hidden;
       box-shadow:0 22px 50px -42px rgba(15,23,42,.72);
-      transition:.18s ease;
+      transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
     }
 
     .tool-card:hover,
@@ -204,24 +203,36 @@
       box-shadow:0 0 0 4px rgba(241,145,62,.10),0 26px 55px -43px rgba(15,23,42,.86);
     }
 
-    .tool-card-head{
+    .tool-media{
+      height:180px;
+      padding:14px;
+      overflow:hidden;
       display:flex;
-      gap:13px;
-      align-items:flex-start;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(145deg,#f8fbfe,#eef4f9);
+      border-bottom:1px solid #e1eaf2;
     }
 
-    .tool-icon{
-      width:56px;
-      height:56px;
-      border-radius:18px;
-      display:grid;
-      place-items:center;
-      flex:0 0 auto;
-      background:linear-gradient(135deg,#172033,#34485f);
-      color:#fff;
-      font-size:1.55rem;
-      border:1px solid rgba(241,145,62,.38);
-      box-shadow:0 0 0 4px rgba(241,145,62,.08);
+    .tool-media img{
+      display:block;
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      transition:transform .2s ease;
+    }
+
+    .tool-card:hover .tool-media img,
+    .tool-card:focus-within .tool-media img{
+      transform:scale(1.025);
+    }
+
+    .tool-card-body{
+      padding:18px;
+      display:flex;
+      flex:1;
+      flex-direction:column;
+      gap:14px;
     }
 
     .tool-card h3{
@@ -290,6 +301,11 @@
       box-shadow:0 0 0 4px rgba(241,145,62,.10),0 18px 34px -26px rgba(15,23,42,.8);
     }
 
+    .tool-btn:focus-visible{
+      outline:3px solid rgba(47,142,223,.38);
+      outline-offset:3px;
+    }
+
     .tools-note{
       border:1px solid rgba(47,142,223,.22);
       background:rgba(47,142,223,.08);
@@ -309,8 +325,15 @@
     @media(max-width:720px){
       .tools-page{padding:12px}
       .tools-grid{grid-template-columns:1fr;padding:12px}
-      .tool-card-head{align-items:center}
+      .tool-media{height:160px;padding:12px}
+      .tool-card-body{padding:16px}
       .tools-hero-card,.tools-side-card{padding:18px}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      .tool-card,.tool-media img,.tool-btn{transition:none}
+      .tool-card:hover,.tool-card:focus-within,.tool-btn:hover{transform:none}
+      .tool-card:hover .tool-media img,.tool-card:focus-within .tool-media img{transform:none}
     }
   </style>
 </head>
@@ -341,21 +364,39 @@
       </div>
       <div class="tools-grid">
         <article class="tool-card" data-tool-card data-keywords="3d druck kostenrechner angebot rechnung lieferschein pdf json kalkulation">
-          <div class="tool-card-head"><div class="tool-icon">🧮</div><div><h3>3D-Druck Kostenrechner Plus</h3><p>Kalkulation für Angebote, Rechnungen und Lieferscheine mit PDF/Druck, JSON, Presets und lokaler Speicherung.</p></div></div>
-          <div class="tool-tags"><span class="tool-tag">3D-Druck</span><span class="tool-tag">PDF/JSON</span><span class="tool-tag">Online</span></div>
-          <div class="tool-actions"><a class="tool-btn primary" href="ws_3d_print_kostenrechner.html">Tool starten</a><a class="tool-btn" href="ws_3d_print_kostenrechner_anleitung.html">Anleitung</a></div>
+          <div class="tool-media">
+            <img src="../assets/img/tools/3d-druck-kostenrechner-plus.png" alt="3D-Druck Kostenrechner Plus" width="1254" height="1254">
+          </div>
+          <div class="tool-card-body">
+            <h3>3D-Druck Kostenrechner Plus</h3>
+            <p>Kalkulation für Angebote, Rechnungen und Lieferscheine mit PDF/Druck, JSON, Presets und lokaler Speicherung.</p>
+            <div class="tool-tags"><span class="tool-tag">3D-Druck</span><span class="tool-tag">PDF/JSON</span><span class="tool-tag">Online</span></div>
+            <div class="tool-actions"><a class="tool-btn primary" href="ws_3d_print_kostenrechner.html">Tool starten</a><a class="tool-btn" href="ws_3d_print_kostenrechner_anleitung.html">Anleitung</a></div>
+          </div>
         </article>
 
         <article class="tool-card" data-tool-card data-keywords="qr qr-code werkstatt wlan link vcard text sepa paypal">
-          <div class="tool-card-head"><div class="tool-icon">▦</div><div><h3>QR-Werkstatt Plus</h3><p>QR-Codes für Links, Text, WLAN, Kontakte, E-Mail, Zahlungen und weitere praktische Einsatzzwecke.</p></div></div>
-          <div class="tool-tags"><span class="tool-tag">QR-Code</span><span class="tool-tag">WLAN</span><span class="tool-tag">Export</span></div>
-          <div class="tool-actions"><a class="tool-btn primary" href="QRCodeMasterPro.html">Tool starten</a></div>
+          <div class="tool-media">
+            <img src="../assets/img/tools/qr-werkstatt-plus.png" alt="QR-Werkstatt Plus" width="1254" height="1254" loading="lazy">
+          </div>
+          <div class="tool-card-body">
+            <h3>QR-Werkstatt Plus</h3>
+            <p>QR-Codes für Links, Text, WLAN, Kontakte, E-Mail, Zahlungen und weitere praktische Einsatzzwecke.</p>
+            <div class="tool-tags"><span class="tool-tag">QR-Code</span><span class="tool-tag">WLAN</span><span class="tool-tag">Export</span></div>
+            <div class="tool-actions"><a class="tool-btn primary" href="QRCodeMasterPro.html">Tool starten</a></div>
+          </div>
         </article>
 
         <article class="tool-card" data-tool-card data-keywords="barcode ean code128 code39 itf etiketten label druckbogen csv json">
-          <div class="tool-card-head"><div class="tool-icon">▥</div><div><h3>Barcode-Werkstatt Plus</h3><p>Barcodes erstellen, Serien erzeugen und Etiketten mit Rahmen, Farben, Vorlagen und Druckbogen gestalten.</p></div></div>
-          <div class="tool-tags"><span class="tool-tag">Barcode</span><span class="tool-tag">Etiketten</span><span class="tool-tag">CSV/JSON</span></div>
-          <div class="tool-actions"><a class="tool-btn primary" href="BarcodeWerkstattPlus.html">Tool starten</a></div>
+          <div class="tool-media">
+            <img src="../assets/img/tools/barcode-werkstatt-plus.png" alt="Barcode-Werkstatt Plus" width="1254" height="1254" loading="lazy">
+          </div>
+          <div class="tool-card-body">
+            <h3>Barcode-Werkstatt Plus</h3>
+            <p>Barcodes erstellen, Serien erzeugen und Etiketten mit Rahmen, Farben, Vorlagen und Druckbogen gestalten.</p>
+            <div class="tool-tags"><span class="tool-tag">Barcode</span><span class="tool-tag">Etiketten</span><span class="tool-tag">CSV/JSON</span></div>
+            <div class="tool-actions"><a class="tool-btn primary" href="BarcodeWerkstattPlus.html">Tool starten</a></div>
+          </div>
         </article>
       </div>
     </section>
@@ -368,21 +409,39 @@
       </div>
       <div class="tools-grid">
         <article class="tool-card" data-tool-card data-keywords="cnc fraesen einrichtblatt maschine nullpunkt werkzeug fräsen">
-          <div class="tool-card-head"><div class="tool-icon">⚙️</div><div><h3>CNC Fräsen-Einrichtsblatt Plus</h3><p>Einrichtblätter, Maschineninfos und Projektvorbereitung für Fräsmaschinen.</p></div></div>
-          <div class="tool-tags"><span class="tool-tag">CNC</span><span class="tool-tag">Fräsen</span></div>
-          <div class="tool-actions"><a class="tool-btn primary" href="cnc-fraesen-einrichtsblatt-plus/index.html">Öffnen</a></div>
+          <div class="tool-media">
+            <img src="../assets/img/tools/cnc-fraesen-einrichtsblatt-plus.png" alt="CNC Fräsen-Einrichtsblatt Plus" width="1254" height="1254" loading="lazy">
+          </div>
+          <div class="tool-card-body">
+            <h3>CNC Fräsen-Einrichtsblatt Plus</h3>
+            <p>Einrichtblätter, Maschineninfos und Projektvorbereitung für Fräsmaschinen.</p>
+            <div class="tool-tags"><span class="tool-tag">CNC</span><span class="tool-tag">Fräsen</span></div>
+            <div class="tool-actions"><a class="tool-btn primary" href="cnc-fraesen-einrichtsblatt-plus/index.html">Öffnen</a></div>
+          </div>
         </article>
 
         <article class="tool-card" data-tool-card data-keywords="werkstatt rechner metall gewinde passung schnittdaten">
-          <div class="tool-card-head"><div class="tool-icon">🛠️</div><div><h3>Werkstatt-Rechner Metall Plus</h3><p>Geplantes/älteres Werkzeug für Metall, Maße, Gewinde, Passungen und praktische Helfer.</p></div></div>
-          <div class="tool-tags"><span class="tool-tag">Werkstatt</span><span class="tool-tag">Metall</span></div>
-          <div class="tool-actions"><a class="tool-btn primary" href="werkstatt-rechner.html">Öffnen</a></div>
+          <div class="tool-media">
+            <img src="../assets/img/tools/werkstatt-rechner-metall-plus.png" alt="Werkstatt-Rechner Metall Plus" width="1254" height="1254" loading="lazy">
+          </div>
+          <div class="tool-card-body">
+            <h3>Werkstatt-Rechner Metall Plus</h3>
+            <p>Geplantes/älteres Werkzeug für Metall, Maße, Gewinde, Passungen und praktische Helfer.</p>
+            <div class="tool-tags"><span class="tool-tag">Werkstatt</span><span class="tool-tag">Metall</span></div>
+            <div class="tool-actions"><a class="tool-btn primary" href="werkstatt-rechner.html">Öffnen</a></div>
+          </div>
         </article>
 
         <article class="tool-card" data-tool-card data-keywords="winkel rechner geometrie cnc zuschnitt konstruktion">
-          <div class="tool-card-head"><div class="tool-icon">📐</div><div><h3>Winkel-Rechner</h3><p>Schnelle Winkel- und Geometriehilfe für Konstruktion, Zuschnitt und technische Skizzen.</p></div></div>
-          <div class="tool-tags"><span class="tool-tag">Geometrie</span><span class="tool-tag">Fertigung</span></div>
-          <div class="tool-actions"><a class="tool-btn primary" href="winkel-rechner.html">Öffnen</a></div>
+          <div class="tool-media">
+            <img src="../assets/img/tools/winkel-rechner.png" alt="Winkel-Rechner" width="1254" height="1254" loading="lazy">
+          </div>
+          <div class="tool-card-body">
+            <h3>Winkel-Rechner</h3>
+            <p>Schnelle Winkel- und Geometriehilfe für Konstruktion, Zuschnitt und technische Skizzen.</p>
+            <div class="tool-tags"><span class="tool-tag">Geometrie</span><span class="tool-tag">Fertigung</span></div>
+            <div class="tool-actions"><a class="tool-btn primary" href="winkel-rechner.html">Öffnen</a></div>
+          </div>
         </article>
       </div>
     </section>
@@ -395,21 +454,39 @@
       </div>
       <div class="tools-grid">
         <article class="tool-card" data-tool-card data-keywords="zeiterfassung arbeitszeit zeit stempeluhr plus export">
-          <div class="tool-card-head"><div class="tool-icon">⏱️</div><div><h3>Zeiterfassung Plus</h3><p>Aktuelle Online-Version zur Erfassung von Arbeitszeiten.</p></div></div>
-          <div class="tool-tags"><span class="tool-tag">Zeit</span><span class="tool-tag">Online</span></div>
-          <div class="tool-actions"><a class="tool-btn primary" href="Zeiterfassung_Plus.html">Öffnen</a></div>
+          <div class="tool-media">
+            <img src="../assets/img/tools/zeiterfassung-plus.png" alt="Zeiterfassung Plus" width="1254" height="1254" loading="lazy">
+          </div>
+          <div class="tool-card-body">
+            <h3>Zeiterfassung Plus</h3>
+            <p>Aktuelle Online-Version zur Erfassung von Arbeitszeiten.</p>
+            <div class="tool-tags"><span class="tool-tag">Zeit</span><span class="tool-tag">Online</span></div>
+            <div class="tool-actions"><a class="tool-btn primary" href="Zeiterfassung_Plus.html">Öffnen</a></div>
+          </div>
         </article>
 
         <article class="tool-card" data-tool-card data-keywords="quittung quittungswerkstatt beleg receipt zahlung pdf lokal backup verlauf firmendaten">
-          <div class="tool-card-head"><div class="tool-icon">🧾</div><div><h3>Quittungs-Werkstatt</h3><p>Quittungen lokal erstellen, als PDF speichern oder teilen – mit Verlauf, Firmendaten und Backup.</p></div></div>
-          <div class="tool-tags"><span class="tool-tag">Belege</span><span class="tool-tag">PDF</span><span class="tool-tag">Lokal / Backup</span></div>
-          <div class="tool-actions"><a class="tool-btn primary" href="ReceiptWriterPro.html">Öffnen</a></div>
+          <div class="tool-media">
+            <img src="../assets/img/tools/quittungs-werkstatt.png" alt="Quittungs-Werkstatt" width="1254" height="1254" loading="lazy">
+          </div>
+          <div class="tool-card-body">
+            <h3>Quittungs-Werkstatt</h3>
+            <p>Quittungen lokal erstellen, als PDF speichern oder teilen – mit Verlauf, Firmendaten und Backup.</p>
+            <div class="tool-tags"><span class="tool-tag">Belege</span><span class="tool-tag">PDF</span><span class="tool-tag">Lokal / Backup</span></div>
+            <div class="tool-actions"><a class="tool-btn primary" href="ReceiptWriterPro.html">Öffnen</a></div>
+          </div>
         </article>
 
         <article class="tool-card" data-tool-card data-keywords="bilder konverter editor webp jpg png banner bild">
-          <div class="tool-card-head"><div class="tool-icon">🖼️</div><div><h3>Bilder Konverter / Editor</h3><p>Bilder lokal umwandeln und für Webseite, Banner oder Dokumente vorbereiten.</p></div></div>
-          <div class="tool-tags"><span class="tool-tag">Bild</span><span class="tool-tag">Konverter</span></div>
-          <div class="tool-actions"><a class="tool-btn primary" href="bild-konverter.html">Öffnen</a></div>
+          <div class="tool-media">
+            <img src="../assets/img/tools/bilder-konverter-editor.png" alt="Bilder Konverter / Editor" width="1254" height="1254" loading="lazy">
+          </div>
+          <div class="tool-card-body">
+            <h3>Bilder Konverter / Editor</h3>
+            <p>Bilder lokal umwandeln und für Webseite, Banner oder Dokumente vorbereiten.</p>
+            <div class="tool-tags"><span class="tool-tag">Bild</span><span class="tool-tag">Konverter</span></div>
+            <div class="tool-actions"><a class="tool-btn primary" href="bild-konverter.html">Öffnen</a></div>
+          </div>
         </article>
       </div>
     </section>
