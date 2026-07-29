@@ -31,7 +31,7 @@
     }
 
     .tools-page{
-      max-width:1540px;
+      max-width:1880px;
       margin:0 auto;
       padding:clamp(18px,2.5vw,38px);
       display:grid;
@@ -318,8 +318,8 @@
   <div id="ws-header"></div>
 
   <main class="site-main tools-page" id="start" tabindex="-1">
-    <section class="tools-hero" aria-labelledby="tools-heading">
-      <div class="tools-hero-card">
+    <section class="page-hero page-hero--tools" aria-labelledby="tools-heading">
+      <div class="page-hero__content">
         <p class="tools-eyebrow">Warenschmiede Tool-Übersicht</p>
         <h1 id="tools-heading">Rechner, Generatoren und Werkstatt-Helfer</h1>
         <p class="tools-lead">Hier findest du die aktuellen Warenschmiede Browser-Tools. Die Werkzeuge laufen direkt im Browser, sind werbefrei und werden in einem einheitlichen Warenschmiede-Design angeboten.</p>
@@ -331,20 +331,6 @@
         </div>
       </div>
 
-      <aside class="tools-side-card" aria-label="Tool Suche und Schnellzugriff">
-        <div>
-          <p class="tools-eyebrow">Suchen</p>
-          <label class="sr-only" for="toolSearch">Tools durchsuchen</label>
-          <input class="tools-search" id="toolSearch" type="search" placeholder="Tools filtern, z. B. 3D-Druck, QR, Barcode, Zeit">
-        </div>
-        <div class="tools-quicklinks">
-          <a href="#haupttools">Haupttools <span>↓</span></a>
-          <a href="#werkstatt">Werkstatt &amp; Fertigung <span>↓</span></a>
-          <a href="#buero">Büro &amp; Alltag <span>↓</span></a>
-          <a href="../downloads.html">Downloads <span>→</span></a>
-        </div>
-        <div class="tools-note">Hinweis: Einige ältere Tools bleiben während der Umbauphase erreichbar. Die Plus-Versionen sind die aktuellen Kandidaten für die neue Webseite.</div>
-      </aside>
     </section>
 
     <section class="tools-section" id="haupttools" aria-labelledby="haupttools-heading">
@@ -432,19 +418,5 @@
   <div id="ws-footer"></div>
 
   <script src="../assets/js/ws-layout.js" defer></script>
-  <script>
-    (function(){
-      const input = document.getElementById('toolSearch');
-      const cards = Array.from(document.querySelectorAll('[data-tool-card]'));
-      if(!input) return;
-      input.addEventListener('input', function(){
-        const q = (input.value || '').trim().toLowerCase();
-        cards.forEach(card => {
-          const hay = ((card.dataset.keywords || '') + ' ' + card.textContent).toLowerCase();
-          card.classList.toggle('is-hidden', !!q && !hay.includes(q));
-        });
-      });
-    })();
-  </script>
 </body>
 </html>

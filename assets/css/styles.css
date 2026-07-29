@@ -569,6 +569,127 @@ body.homepage-v18 .service-card__icon{display:none;}
 @media(max-width:1050px){.service-hero{grid-template-columns:1fr}.service-hero__media{order:-1;justify-content:start}.service-hero__media img{max-width:360px}.process-grid{grid-template-columns:1fr}.service-cta{display:block}.service-cta__actions{justify-content:flex-start;margin-top:20px}}
 @media(max-width:720px){.service-hero{padding:24px;border-radius:18px}.service-hero h1{font-size:2.7rem}.service-panel{padding:22px;border-radius:18px}.service-hero__actions .edge-button,.service-cta__actions .edge-button{width:100%;}.service-hero__media img{max-width:280px}}
 
+/* Shared responsive introduction card for the six primary landing pages. */
+.page-hero-section{
+  padding-top:clamp(18px,2.6vw,38px);
+  padding-bottom:0;
+}
+.ws-live-content .section.page-hero-section{margin-bottom:clamp(18px,2.2vw,30px)}
+.page-hero{
+  --page-hero-image:none;
+  --page-hero-image-mobile:var(--page-hero-image);
+  position:relative;
+  isolation:isolate;
+  width:min(100%,1420px);
+  min-height:clamp(350px,29vw,455px);
+  margin-inline:auto;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  border:1px solid rgba(255,159,68,.34);
+  border-radius:22px;
+  background:#edf5fb;
+  box-shadow:0 22px 62px rgba(42,65,86,.12),inset 0 1px 0 rgba(255,255,255,.82);
+}
+.page-hero::before{
+  content:"";
+  position:absolute;
+  z-index:-2;
+  inset:0;
+  background-image:var(--page-hero-image);
+  background-position:center right;
+  background-size:cover;
+  background-repeat:no-repeat;
+}
+.page-hero::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(90deg,rgba(250,253,255,.99) 0%,rgba(250,253,255,.97) 43%,rgba(250,253,255,.78) 53%,rgba(250,253,255,.08) 72%);
+}
+.page-hero__content{
+  width:min(56%,780px);
+  padding:clamp(28px,3.4vw,50px);
+}
+.page-hero h1,
+.page-hero .ws-hero__title{
+  margin:.05em 0 .18em;
+  max-width:15ch;
+  color:#101923;
+  font-size:clamp(2.15rem,4.1vw,4.8rem);
+  line-height:.94;
+  letter-spacing:-.06em;
+  text-transform:uppercase;
+  overflow-wrap:anywhere;
+}
+.page-hero .ws-hero__badge{
+  margin:0 0 10px;
+  max-width:46ch;
+  color:#1a2c3d;
+  font-size:clamp(.95rem,1.15vw,1.18rem);
+  line-height:1.3;
+}
+.page-hero p:not(.section-eyebrow):not(.tools-eyebrow){
+  max-width:62ch;
+  margin:0;
+  color:#405366;
+  font-size:clamp(1rem,1.12vw,1.16rem);
+  line-height:1.55;
+}
+.page-hero .download-quicklinks,
+.page-hero .service-hero__actions{margin-top:clamp(18px,2vw,26px)}
+.page-hero--home{--page-hero-image:url("../img/heroes/home-hero.png");--page-hero-image-mobile:url("../img/heroes/home-hero-sp.png")}
+.page-hero--downloads{--page-hero-image:url("../img/heroes/downloads-hero.png");--page-hero-image-mobile:url("../img/heroes/downloads-hero-sp.png")}
+.page-hero--tools{--page-hero-image:url("../img/heroes/tools-hero.png");--page-hero-image-mobile:url("../img/heroes/tools-hero-sp.png")}
+.page-hero--3d-print{--page-hero-image:url("../img/heroes/3d-druck-hero.png");--page-hero-image-mobile:url("../img/heroes/3d-druck-hero-sp.png")}
+.page-hero--cad{--page-hero-image:url("../img/heroes/cad-prototyping-hero.png");--page-hero-image-mobile:url("../img/heroes/cad-prototyping-hero-sp.png")}
+.page-hero--pc-help{--page-hero-image:url("../img/heroes/pc-hilfe-hero.png");--page-hero-image-mobile:url("../img/heroes/pc-hilfe-hero-sp.png")}
+.downloads-section,.service-content-section{padding-top:0}
+.home-tool-showcase{width:min(100%,1420px);margin-inline:auto}
+.tools-page .tools-section{width:min(100%,1420px);margin-inline:auto}
+
+@media(max-width:1024px){
+  .page-hero{min-height:340px}
+  .page-hero__content{width:min(64%,680px);padding:clamp(26px,3.5vw,38px)}
+  .page-hero::before{background-position:58% center}
+  .page-hero::after{background:linear-gradient(90deg,rgba(250,253,255,.99) 0%,rgba(250,253,255,.97) 51%,rgba(250,253,255,.78) 63%,rgba(250,253,255,.08) 82%)}
+  .page-hero h1,.page-hero .ws-hero__title{font-size:clamp(2.05rem,4.8vw,3.35rem)}
+}
+
+@media(max-width:760px){
+  .page-hero-section{padding-top:10px}
+  .ws-live-content .section.page-hero-section{margin-bottom:18px}
+  .page-hero{
+    min-height:0;
+    align-items:flex-start;
+    border-radius:18px;
+  }
+  .page-hero::before{
+    background-image:var(--page-hero-image-mobile);
+    background-position:center bottom;
+    background-size:cover;
+  }
+  .page-hero::after{
+    background:linear-gradient(180deg,rgba(250,253,255,1) 0%,rgba(250,253,255,.99) 48%,rgba(250,253,255,.88) 62%,rgba(250,253,255,.12) 82%);
+  }
+  .page-hero__content{
+    width:100%;
+    min-width:0;
+    padding:22px 20px clamp(190px,62vw,285px);
+  }
+  .page-hero h1,.page-hero .ws-hero__title{
+    max-width:100%;
+    font-size:clamp(1.9rem,8.2vw,2.65rem);
+    line-height:.98;
+  }
+  .page-hero .download-quicklinks,
+  .page-hero .service-hero__actions{gap:10px}
+  .page-hero .download-quicklinks .edge-button,
+  .page-hero .service-hero__actions .edge-button{width:100%;min-width:0}
+}
+
 
 .legal-page .legal-hero{ padding-top: clamp(28px, 5vw, 64px); }
 .legal-hero-card{ max-width: 1160px; margin: 0 auto; padding: clamp(28px, 4vw, 52px); }
