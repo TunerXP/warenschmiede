@@ -4,19 +4,29 @@
   const group = viewport?.querySelector('[data-home-highlights-group]');
   if (!viewport || !track || !group) return;
 
-  const clone = group.cloneNode(true);
-  clone.removeAttribute('data-home-highlights-group');
-  clone.setAttribute('aria-hidden', 'true');
-  clone.querySelectorAll('a').forEach((link) => link.setAttribute('tabindex', '-1'));
-  track.append(clone);
-
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const touchInput = window.matchMedia('(hover: none), (pointer: coarse)');
   const pausedBy = new Set();
+  let clone;
   let frame;
   let previousTime;
 
-  const canRun = () => !document.hidden && !reducedMotion.matches && !touchInput.matches && pausedBy.size === 0;
+  const autoplayEnabled = () => !reducedMotion.matches && !touchInput.matches;
+  const syncClone = () => {
+    if (autoplayEnabled() && !clone) {
+      clone = group.cloneNode(true);
+      clone.removeAttribute('data-home-highlights-group');
+      clone.setAttribute('aria-hidden', 'true');
+      clone.querySelectorAll('a').forEach((link) => link.setAttribute('tabindex', '-1'));
+      track.append(clone);
+    } else if (!autoplayEnabled() && clone) {
+      const loopWidth = group.getBoundingClientRect().width;
+      if (viewport.scrollLeft >= loopWidth) viewport.scrollLeft %= loopWidth;
+      clone.remove();
+      clone = undefined;
+    }
+  };
+  const canRun = () => !document.hidden && autoplayEnabled() && pausedBy.size === 0;
   const stop = () => {
     cancelAnimationFrame(frame);
     frame = undefined;
@@ -33,6 +43,7 @@
     frame = requestAnimationFrame(step);
   };
   const start = () => {
+    syncClone();
     if (canRun() && frame === undefined) frame = requestAnimationFrame(step);
   };
   const pause = (reason) => {
@@ -54,7 +65,12 @@
   window.addEventListener('pointerup', () => resume('interaction'));
   window.addEventListener('pointercancel', () => resume('interaction'));
   document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
-  reducedMotion.addEventListener('change', start);
-  touchInput.addEventListener('change', start);
+  const updateMode = () => {
+    stop();
+    syncClone();
+    start();
+  };
+  reducedMotion.addEventListener('change', updateMode);
+  touchInput.addEventListener('change', updateMode);
   start();
 })();
