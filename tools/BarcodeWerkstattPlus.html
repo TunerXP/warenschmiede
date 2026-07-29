@@ -139,14 +139,14 @@
               <div class="field color-row"><div><label for="labelBgColor">Etikettfläche</label><input id="labelBgColorText" value="#ffffff"></div><input id="labelBgColor" type="color" value="#ffffff"></div>
             </div>
             <div class="row">
-              <div class="field"><label for="labelBarcodeSize">Barcode-Größe</label><select id="labelBarcodeSize"><option value="compact">Kompakt</option><option value="balanced" selected>Ausgewogen</option><option value="large">Groß</option><option value="max">Maximal</option></select></div>
+              <div class="field"><label for="labelBarcodeSize">Barcode-Größe im Etikett</label><select id="labelBarcodeSize"><option value="compact">Kompakt</option><option value="balanced" selected>Ausgewogen</option><option value="large">Groß</option><option value="max">Maximal</option></select></div>
               <div class="field"><label for="labelFormat">Etikettenformat</label><select id="labelFormat"><option value="compact">Kompakt</option><option value="normal" selected>Normal</option><option value="wide">Breit</option><option value="tall">Hoch</option><option value="sign">Großes Schild</option></select></div>
             </div>
             <div class="row">
               <div class="field"><label for="labelDensity">A4-Ausnutzung</label><select id="labelDensity"><option value="comfortable">Locker</option><option value="balanced" selected>Ausgewogen</option><option value="many">Viele Etiketten</option><option value="scan">Scanfreundlich</option></select></div>
               <div class="field"><label for="labelManualHeight">Etikettenhöhe</label><select id="labelManualHeight"><option value="auto" selected>Automatisch</option><option value="90">90 px</option><option value="110">110 px</option><option value="130">130 px</option><option value="160">160 px</option><option value="210">210 px</option></select></div>
             </div>
-            <div class="field"><label for="labelBarcodeTextSize">Barcode-Klartext</label><select id="labelBarcodeTextSize"><option value="9">Klein</option><option value="11" selected>Normal</option><option value="13">Groß</option></select></div>
+            <div class="field"><label for="labelBarcodeTextSize">Klartextgröße im Etikett</label><select id="labelBarcodeTextSize"><option value="9">Klein</option><option value="11" selected>Normal</option><option value="13">Groß</option></select></div>
 
               </div>
             </details>
@@ -263,7 +263,7 @@ WS-B001</textarea>
               </div>
               <div class="row" style="margin-top:10px;">
                 <div class="field"><label for="barWidth">Strichbreite</label><select id="barWidth"><option value="1">Schmal</option><option value="2" selected>Normal</option><option value="3">Breit</option></select></div>
-                <div class="field"><label for="barHeight">Höhe</label><select id="barHeight"><option value="70">70 px</option><option value="100" selected>100 px</option><option value="140">140 px</option></select></div>
+                <div class="field"><label for="barHeight">Barcode-Höhe</label><select id="barHeight"><option value="70">70 px</option><option value="100" selected>100 px</option><option value="140">140 px</option></select></div>
               </div>
             </div>
             <details class="advanced-box" open>
@@ -273,21 +273,22 @@ WS-B001</textarea>
                   <h3>Klartext</h3>
                   <div class="row">
                     <div class="field"><label for="showText">Text anzeigen</label><select id="showText"><option value="true" selected>Ja</option><option value="false">Nein</option></select></div>
-                    <div class="field"><label for="fontSize">Schriftgröße</label><select id="fontSize"><option value="12">12 px</option><option value="16">16 px</option><option value="18" selected>18 px</option><option value="24">24 px</option></select></div>
+                    <div class="field"><label for="fontSize">Klartext-Schriftgröße</label><select id="fontSize"><option value="12">12 px</option><option value="16">16 px</option><option value="18" selected>18 px</option><option value="24">24 px</option></select></div>
                   </div>
                 </div>
                 <div class="settings-card">
                   <h3>Druckbogen</h3>
                   <div class="row3">
-                    <div class="field"><label for="labelsPerRow">Etiketten pro Reihe <button class="mini-help" type="button" data-help="labelsPerRow" data-title="Etiketten pro Reihe" data-text="Steuert die A4-Druckbogen-Aufteilung. Je mehr Etiketten pro Reihe, desto kleiner wird der Platz pro Etikett.">?</button></label><select id="labelsPerRow"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select></div>
+                    <div class="field"><label for="labelsPerRow">Max. pro Reihe <button class="mini-help" type="button" data-help="labelsPerRow" data-title="Maximal pro Reihe" data-text="Automatisch nutzt den verfügbaren A4-Platz. Eine Zahl begrenzt nur die Anzahl pro Reihe; die Etikettengröße bleibt unverändert.">?</button></label><select id="labelsPerRow"><option value="auto" selected>Automatisch</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
                     <div class="field"><label for="copiesPerCode">Kopien pro Code</label><input id="copiesPerCode" type="number" min="1" max="99" value="1"></div>
-                    <div class="field"><label for="labelScale">Größe</label><select id="labelScale"><option value="small">Klein</option><option value="medium" selected>Mittel</option><option value="large">Groß</option></select></div>
+                    <div class="field"><label for="labelScale">Druckgröße</label><select id="labelScale"><option value="small">Klein</option><option value="medium" selected>Mittel</option><option value="large">Groß</option></select></div>
                   </div>
                   <div class="row" style="margin-top:10px;">
                     <div class="field"><label for="printMargin">A4-Rand <button class="mini-help" type="button" data-help="printMargin" data-title="A4-Rand" data-text="Drucker können nicht immer randlos drucken. Wenn etwas abgeschnitten wird, wähle kleinen, normalen oder großen Rand.">?</button></label><select id="printMargin"><option value="0">Ohne Rand</option><option value="6">Klein</option><option value="12" selected>Normal</option><option value="20">Groß</option></select></div>
                     <div class="field"><label for="labelGap">Etikettenabstand <button class="mini-help" type="button" data-help="labelGap" data-title="Etikettenabstand" data-text="Abstand zwischen den Etiketten auf dem Druckbogen. Größerer Abstand hilft beim Ausschneiden.">?</button></label><select id="labelGap"><option value="4">Eng</option><option value="8" selected>Normal</option><option value="14">Groß</option></select></div>
                   </div>
                   <p class="field-note" style="margin-top:8px;">A4-Hinweis: Papierformat A4 und Skalierung 100 % prüfen. Für kleine Etiketten Barcode-Größe „Groß“ oder „Maximal“ testen.</p>
+                  <p class="sheet-layout-status" id="sheetLayoutStatus" aria-live="polite"></p>
                 </div>
               </div>
             </details>
