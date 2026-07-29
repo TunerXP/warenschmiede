@@ -71,5 +71,30 @@ if ($unexpected) {
     throw "Nicht erlaubter Inhalt im Deploy-Ordner gefunden: $($unexpected.FullName -join ', ')"
 }
 
+# Generate this only after the final package has been cleaned and validated.
+# Paths are deploy-relative and cannot expose a local workstation path.
+$imageExtensions = @('.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp')
+$documentExtensions = @('.pdf', '.txt', '.xml')
+$downloadExtensions = @('.zip', '.apk', '.stl', '.gcode')
+$deployFiles = @(Get-ChildItem -LiteralPath $deployRoot -Recurse -File -Force | Where-Object { $_.Name -ne '.htaccess' })
+$relative = { param($file) $file.FullName.Substring($deployRoot.Length).TrimStart('/', '\').Replace('\', '/') }
+$inventory = [ordered]@{
+    generatedAt = (Get-Date).ToUniversalTime().ToString('o')
+    generator = 'build_deploy.ps1'
+    html = @($deployFiles | Where-Object Extension -eq '.html' | ForEach-Object { & $relative $_ } | Sort-Object)
+    images = @($deployFiles | Where-Object { $_.Extension.ToLowerInvariant() -in $imageExtensions } | ForEach-Object { & $relative $_ } | Sort-Object)
+    documents = @($deployFiles | Where-Object { $_.Extension.ToLowerInvariant() -in $documentExtensions } | ForEach-Object { & $relative $_ } | Sort-Object)
+    downloads = @($deployFiles | Where-Object { $_.Extension.ToLowerInvariant() -in $downloadExtensions } | ForEach-Object { & $relative $_ } | Sort-Object)
+    totalFiles = $deployFiles.Count
+}
+$inventoryPath = Join-Path $deployRoot 'admin/site_inventory.json'
+$inventory | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $inventoryPath -Encoding UTF8
+
+if (Get-ChildItem -LiteralPath $deployRoot -Recurse -Force -File | Where-Object Name -eq '.htaccess') {
+    throw 'Sicherheitsfehler: .htaccess darf nicht im Deploy-Paket enthalten sein.'
+}
+
 Write-Host "Deploy-Ordner wurde neu erstellt: $deployRoot"
+Write-Host "Admin-Inventar wurde erstellt: $inventoryPath ($($deployFiles.Count) Dateien)"
 Write-Host 'Hinweis: IONOS /dateien und /logs werden von diesem Skript nicht berührt.'
+Write-Host 'IONOS /admin/.htaccess bleibt serverseitig bestehen - /admin nicht löschen.'
