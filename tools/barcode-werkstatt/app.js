@@ -527,8 +527,30 @@
       }
 
       validateCurrentInputs(rendererError);
+      renderBarcodeOpticsPreview(value, inputValidation.ok);
       renderSingleLabelPreview();
     }
+    function renderBarcodeOpticsPreview(value, isValid){
+      const svg = $('barcodeOpticsPreview');
+      const empty = $('barcodeOpticsPreviewEmpty');
+      if(!svg) return;
+      svg.innerHTML = '';
+      if(!isValid){
+        if(empty) empty.hidden = false;
+        return;
+      }
+      try{
+        renderBarcodeToSvg(svg, value);
+        if(empty) empty.hidden = true;
+      }catch(error){
+        svg.innerHTML = '';
+        if(empty){
+          empty.hidden = false;
+          empty.textContent = friendlyBarcodeError();
+        }
+      }
+    }
+
     function updateNumericFieldState(){
       const numeric = isNumericType();
       ['seriesPrefix','seriesSuffix'].forEach(id => {
@@ -1578,10 +1600,26 @@
       };
 
       advanced.append(makeDetails('Etikett gestalten', labelDesigner, 'label-accordion'));
+      const opticsControls = document.createElement('div');
+      opticsControls.className = 'barcode-optics-controls';
+      const opticsHeading = settingCards[0].querySelector('h3');
+      if(opticsHeading){
+        opticsHeading.innerHTML = 'Barcode-Optik <button class="mini-help" type="button" data-help="barcodeOptics" data-title="Barcode-Optik und Etikett" data-text="Diese Einstellungen betreffen die normale Barcode-Ausgabe. Für Etiketten gibt es unter ‚Etikett gestalten‘ zusätzliche Größen- und Klartext-Einstellungen." aria-label="Info zur Barcode-Optik">?</button>';
+      }
+      opticsControls.append(settingCards[0], settingCards[1]);
+
+      const opticsPreview = document.createElement('div');
+      opticsPreview.className = 'barcode-optics-preview';
+      opticsPreview.innerHTML = '<div class="barcode-optics-preview-head"><strong>Barcode-Live-Vorschau</strong><span>Nur die normale Barcode-Ausgabe</span></div><div class="barcode-optics-stage"><svg id="barcodeOpticsPreview" aria-label="Live-Vorschau der Barcode-Optik"></svg><p id="barcodeOpticsPreviewEmpty" class="field-note" hidden>Vorschau verfügbar, sobald die Eingabe gültig ist.</p></div>';
+
+      const opticsLayout = document.createElement('div');
+      opticsLayout.className = 'barcode-optics-layout';
+      opticsLayout.append(opticsControls, opticsPreview);
+
       const contrast = document.createElement('div');
       contrast.className = 'contrast-note';
-      contrast.innerHTML = '<strong>Scan-Kontrast beachten</strong><span>Für zuverlässiges Scannen sind dunkle Striche auf hellem Hintergrund meist die sicherste Wahl. Farbige Kombinationen können je nach Scanner, Kamera, Drucker und Material schlechter funktionieren. Vor größeren Druckserien bitte einen Testscan durchführen.</span><span id="contrastStatus" role="status"></span>';
-      advanced.append(makeDetails('Barcode-Optik', [settingCards[0], settingCards[1], contrast], 'optics-accordion'));
+      contrast.innerHTML = '<span id="contrastStatus" role="status"></span><button class="mini-help" type="button" data-help="scanContrast" data-title="Scan-Kontrast" data-text="Für zuverlässiges Scannen sind dunkle Striche auf hellem Hintergrund meist die sicherste Wahl. Farbige Kombinationen können je nach Scanner, Kamera, Drucker und Material schlechter funktionieren. Vor größeren Druckserien bitte einen Testscan durchführen." aria-label="Mehr zum Scan-Kontrast">?</button>';
+      advanced.append(makeDetails('Barcode-Optik', [opticsLayout, contrast], 'optics-accordion'));
       advanced.append(makeDetails('Druckbogen & PDF', [settingCards[2], printSheet], 'print-accordion'));
       project.removeAttribute('open');
       project.querySelector('summary').textContent = 'Projekt & Verlauf';
@@ -1604,7 +1642,7 @@
       const ratio = a === null || b === null ? 0 : (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
       const risky = ratio < 4.5 || a > b;
       status.className = risky ? 'contrast-warning' : 'contrast-ok';
-      status.textContent = risky ? '! Diese Farbkombination könnte schlecht scannbar sein.' : '✓ Der Helligkeitskontrast wirkt grundsätzlich günstig. Ein Testscan bleibt empfohlen.';
+      status.textContent = risky ? '! Diese Farbkombination könnte schlecht scannbar sein.' : '✓ Kontrast grundsätzlich günstig – Testscan empfohlen.';
     }
 
     document.addEventListener('DOMContentLoaded',()=>{
