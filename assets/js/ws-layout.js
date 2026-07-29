@@ -3,6 +3,7 @@
 
   const link = (path) => {
     if (!path || /^(https?:|mailto:|tel:|#|\/\/)/.test(path)) return path;
+    if (path.startsWith('/')) return path;
     return '/' + path.replace(/^\.\//, '');
   };
 
