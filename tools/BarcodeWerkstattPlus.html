@@ -64,7 +64,10 @@
             <div class="label-design-settings">
             <h3>Etiketten-Einstellungen</h3>
             <div class="field">
-              <label for="labelTemplate">Vorlage</label>
+              <div class="field-label-row">
+                <label for="labelTemplate">Vorlage</label>
+                <button class="mini-help" type="button" data-help="labelTemplate" data-title="Vorlagen" data-text="Eine Vorlage setzt mehrere Designwerte gleichzeitig. Danach können alle Einstellungen individuell angepasst werden." aria-label="Info zu Vorlagen">?</button>
+              </div>
               <select id="labelTemplate">
                 <option value="plain" selected>Standard weiß</option>
                 <option value="blue">Blau mit Kopfzeile</option>
@@ -85,10 +88,11 @@
                 <option value="cornerFlag">Eckfahne</option>
                 <option value="ticket">Ticket / Abschnitt</option>
               </select>
-              <p class="field-note">Vorlage wählen, danach Farben, Rahmen, Balken und Titel nach Bedarf anpassen.</p>
             </div>
 
-            <p class="designer-subhead">Titel</p>
+            <details class="designer-group" open>
+              <summary>Titel</summary>
+              <div class="designer-group-content">
             <div class="row">
               <div class="field">
                 <label for="showLabelTitle">Titel anzeigen</label>
@@ -116,7 +120,12 @@
             </div>
             <div class="field"><label for="labelValueText">Zusatz-Zahl unter Barcode</label><select id="labelValueText"><option value="false" selected>Nein</option><option value="true">Ja</option></select></div>
 
-            <p class="designer-subhead">Rahmen & Fläche</p>
+              </div>
+            </details>
+
+            <details class="designer-group" open>
+              <summary>Rahmen &amp; Fläche</summary>
+              <div class="designer-group-content">
             <div class="row">
               <div class="field"><label for="labelFrameEnabled">Rahmen anzeigen</label><select id="labelFrameEnabled"><option value="true" selected>Ja</option><option value="false">Nein</option></select></div>
               <div class="field"><label for="labelShape">Etikettenform</label><select id="labelShape"><option value="rounded" selected>Rund</option><option value="square">Eckig</option><option value="pill">Stark rund / Badge</option><option value="cut">Abgeschnittene Ecken</option><option value="ticket">Ticket</option><option value="file">Registerkarte</option></select></div>
@@ -139,7 +148,12 @@
             </div>
             <div class="field"><label for="labelBarcodeTextSize">Barcode-Klartext</label><select id="labelBarcodeTextSize"><option value="9">Klein</option><option value="11" selected>Normal</option><option value="13">Groß</option></select></div>
 
-            <p class="designer-subhead">Balken</p>
+              </div>
+            </details>
+
+            <details class="designer-group">
+              <summary>Balken</summary>
+              <div class="designer-group-content">
             <div class="row">
               <div class="field"><label for="labelTopBar">Balken oben</label><select id="labelTopBar"><option value="false" selected>Aus</option><option value="true">Ein</option></select></div>
               <div class="field color-row"><div><label for="labelTopBarColor">Farbe oben</label><input id="labelTopBarColorText" value="#2f8edf"></div><input id="labelTopBarColor" type="color" value="#2f8edf"></div>
@@ -160,6 +174,8 @@
               <div class="field"><label for="labelRightBar">Balken rechts</label><select id="labelRightBar"><option value="false" selected>Aus</option><option value="true">Ein</option></select></div>
               <div class="field color-row"><div><label for="labelRightBarColor">Farbe rechts</label><input id="labelRightBarColorText" value="#102033"></div><input id="labelRightBarColor" type="color" value="#102033"></div>
             </div>
+              </div>
+            </details>
             </div>
 
             <div class="label-design-preview">

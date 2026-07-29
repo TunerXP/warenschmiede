@@ -508,3 +508,50 @@
       .creator-column,.topbar,.primary-workspace,.advanced-sections>details:not(.print-accordion),.print-accordion>summary,.print-accordion .settings-card{display:none!important}
       .advanced-sections,.print-accordion,.print-accordion>.advanced-content,.sheet-panel{display:block!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important}
     }
+
+    /* Bedienfeinschliff: lokal lesbare, klar gegliederte Designbereiche */
+    .label-design-card .field label,
+    .optics-accordion .field label{font-size:.86rem;font-weight:800;line-height:1.35;color:var(--text)}
+    .label-design-card input,.label-design-card select,
+    .optics-accordion input,.optics-accordion select{font-size:.95rem}
+    .label-design-card .field-note,.label-design-card .help-mini,
+    .optics-accordion .field-note{font-size:.8rem;color:var(--muted);line-height:1.45}
+    .label-design-settings>h3{font-size:1rem}
+    .field-label-row{display:flex;align-items:center;gap:6px;width:max-content;max-width:100%}
+    .field-label-row .mini-help{margin-left:0;flex:0 0 auto}
+    .designer-group{border:0;border-top:1px solid color-mix(in srgb,var(--accent) 48%,var(--line));margin-top:8px;padding-top:2px;min-width:0}
+    .designer-group>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:11px 2px 9px;color:var(--text);font-size:.93rem;font-weight:900;letter-spacing:.065em;text-transform:uppercase}
+    .designer-group>summary::-webkit-details-marker{display:none}
+    .designer-group>summary::before{content:'▾';color:var(--accent);font-size:.82rem;transition:transform .18s ease}
+    .designer-group:not([open])>summary::before{transform:rotate(-90deg)}
+    .designer-group>summary:hover{color:var(--accent)}
+    .designer-group>summary:focus-visible{color:var(--accent);outline:2px solid color-mix(in srgb,var(--accent) 75%,transparent);outline-offset:3px;border-radius:8px}
+    .designer-group-content{display:grid;gap:10px;padding:2px 0 4px}
+    .designer-group-content>.row{gap:10px}
+    .label-title-pill{padding:2px 9px;max-width:min(100%,240px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .label-preview-stage .label-inner{padding-left:calc(var(--bar-side-w) + 12px);padding-right:calc(var(--bar-side-w) + 12px)}
+    .label-preview-stage .label-cell .label-text{font-size:12px}
+
+    .optics-accordion>.advanced-content{grid-template-columns:1fr}
+    .barcode-optics-layout{display:grid;grid-template-columns:minmax(320px,.9fr) minmax(380px,1.1fr);gap:18px;align-items:start;min-width:0}
+    .barcode-optics-controls{display:grid;gap:10px;min-width:0}
+    .barcode-optics-controls .settings-card{padding:12px 14px}
+    .barcode-optics-controls .settings-card h3{font-size:.94rem;margin-bottom:10px}
+    .barcode-optics-preview{display:grid;gap:10px;padding:14px;border:1px solid color-mix(in srgb,var(--blue) 28%,var(--line));border-radius:16px;background:color-mix(in srgb,var(--blue) 7%,transparent);min-width:0}
+    .barcode-optics-preview-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+    .barcode-optics-preview-head strong{font-size:.94rem}.barcode-optics-preview-head span{font-size:.8rem;color:var(--muted)}
+    .barcode-optics-stage{min-height:190px;padding:14px;display:grid;place-items:center;overflow:auto;border:1px dashed rgba(159,178,197,.7);border-radius:14px;background:#fff}
+    #barcodeOpticsPreview{display:block;max-width:100%;height:auto}
+    .contrast-note{display:flex;align-items:center;justify-content:flex-start;gap:8px;padding:8px 12px;font-size:.82rem}
+    .contrast-note .mini-help{flex:0 0 auto;margin:0}
+    .contrast-warning{padding:5px 8px;border-radius:8px;background:rgba(194,65,58,.1);color:#9b2c27}
+
+    @media(max-width:960px){
+      .barcode-optics-layout{grid-template-columns:1fr}
+      .barcode-optics-preview{grid-row:1}
+      .barcode-optics-controls{grid-row:2}
+    }
+    @media(max-width:600px){
+      .barcode-optics-layout{min-width:0}.barcode-optics-stage{min-height:170px;padding:10px}
+      .barcode-optics-preview-head{align-items:flex-start;flex-direction:column;gap:3px}
+    }
