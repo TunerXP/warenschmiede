@@ -7,11 +7,11 @@
     let currentVersionId = null;
 
     const typeInfo = {
-      CODE128:{label:'Code128',numericOnly:false,hint:'Code128 ist flexibel und gut für interne Nummern, Lager, Aufträge und Werkstattetiketten.',help:'Code128 kann Buchstaben, Zahlen und viele Sonderzeichen enthalten. Gut für interne IDs.',ex:'Artikelnummer, Auftragsnummer, Lagerfach, interne Werkzeug-ID.',sample:'WS-2026-001'},
-      EAN13:{label:'EAN-13',numericOnly:true,baseLen:12,fullLen:13,hint:'EAN-13 nutzt 12 Basisziffern plus 1 automatisch berechnete Prüfziffer. Prefix/Suffix werden bei EAN ignoriert.',help:'EAN-13 ist für 13-stellige Artikelcodes. Gib 12 Ziffern ein, dann wird die Prüfziffer automatisch ergänzt. Für offizielle Handelsware brauchst du gültige Nummern.',ex:'Beispiel: 400638133393 → 4006381333931.',sample:'400638133393'},
-      EAN8:{label:'EAN-8',numericOnly:true,baseLen:7,fullLen:8,hint:'EAN-8 nutzt 7 Basisziffern plus 1 automatisch berechnete Prüfziffer. Prefix/Suffix werden bei EAN ignoriert.',help:'EAN-8 ist ein kurzer 8-stelliger Artikelcode. Gib 7 Ziffern ein, dann wird die Prüfziffer automatisch ergänzt.',ex:'Beispiel: 9638507 → 96385074.',sample:'9638507'},
+      CODE128:{label:'Code128',numericOnly:false,hint:'Code128 ist flexibel und eignet sich z. B. für interne Nummern, Lagerplätze, Aufträge und Werkstattetiketten.',help:'Code128 ist flexibel und eignet sich z. B. für interne Nummern, Lagerplätze, Aufträge und Werkstattetiketten.',ex:'Artikelnummer, Auftragsnummer, Lagerfach, interne Werkzeug-ID.',sample:'WS-2026-001'},
+      EAN13:{label:'EAN-13',numericOnly:true,baseLen:12,fullLen:13,hint:'EAN-13 codiert eine 13-stellige GTIN. 12 Basisziffern werden ergänzt; bei 13 Ziffern wird die Prüfziffer geprüft.',help:'EAN-13 codiert eine 13-stellige GTIN. Die letzte Ziffer ist die Prüfziffer. Gib 12 Basisziffern ein, damit sie automatisch ergänzt wird, oder alle 13 Ziffern, um eine vorhandene Prüfziffer prüfen zu lassen. Für den offiziellen Einsatz müssen gültig vergebene Nummern verwendet werden.',ex:'Beispiel: 400638133393 → 4006381333931.',sample:'400638133393'},
+      EAN8:{label:'EAN-8',numericOnly:true,baseLen:7,fullLen:8,hint:'EAN-8 codiert eine 8-stellige GTIN. 7 Basisziffern werden ergänzt; bei 8 Ziffern wird die Prüfziffer geprüft.',help:'EAN-8 codiert eine 8-stellige GTIN. Die letzte Ziffer ist die Prüfziffer. Gib 7 Basisziffern ein, damit sie automatisch ergänzt wird, oder alle 8 Ziffern, um die Prüfziffer prüfen zu lassen.',ex:'Beispiel: 9638507 → 96385074.',sample:'9638507'},
       CODE39:{label:'Code39',numericOnly:false,hint:'Code39 ist einfach und robust für Industrie, Werkstatt und Lager.',help:'Code39 eignet sich für robuste interne Codes. Verwende Großbuchstaben, Zahlen, Leerzeichen und - . $ / + %.',ex:'Beispiel: WERKZEUG-01 oder LAGER A12.',sample:'WERKZEUG-01'},
-      ITF14:{label:'ITF-14',numericOnly:true,baseLen:13,fullLen:14,hint:'ITF-14 nutzt 13 Basisziffern plus 1 automatisch berechnete Prüfziffer. Prefix/Suffix werden bei ITF-14 ignoriert.',help:'ITF-14 ist für 14-stellige Verpackungs-/Logistikeinheiten. Bei 13 Ziffern ergänzt das Tool die Prüfziffer.',ex:'Beispiel: 1234567890123 → 12345678901231.',sample:'1234567890123'}
+      ITF14:{label:'ITF-14',numericOnly:true,baseLen:13,fullLen:14,hint:'ITF-14 codiert GTINs auf Um- bzw. Transportverpackungen. 13 Basisziffern werden um die Prüfziffer ergänzt.',help:'ITF-14 ist ein 14-stelliger Barcode für GTINs auf Um- bzw. Transportverpackungen und wird nicht am klassischen Retail-POS verwendet. Die letzte Ziffer ist die Prüfziffer. Bei 13 Basisziffern ergänzt das Tool sie automatisch. Für den offiziellen Einsatz müssen gültig vergebene Nummern verwendet werden.',ex:'Beispiel: 1234567890123 → 12345678901231.',sample:'1234567890123'}
     };
     const modeInfo = {
       single:{label:'Einzelcode',hint:'Ein einzelner Barcode für Artikelnummer, Auftrag oder Lagerfach.'},
@@ -102,6 +102,10 @@
         fontSize: Number(getValue('labelBarcodeTextSize') || 11),
         margin: cfg.margin
       } : {}));
+    }
+
+    function friendlyBarcodeError(){
+      return 'Der Barcode konnte nicht dargestellt werden. Bitte Inhalt und Barcode-Art prüfen.';
     }
     function explainFinalCode(rawInput){
       const box = $('finalCodeBox');
@@ -314,6 +318,14 @@
           setFieldState(fieldId, 'invalid');
           return false;
         }
+        if(raw.length === fullLen){
+          const expected = gs1Checksum(raw.slice(0, baseLen));
+          if(raw.slice(-1) !== expected){
+            issues.push(`${label}: Die Prüfziffer stimmt nicht${suffix}. Erwartete Prüfziffer: ${expected}.`);
+            setFieldState(fieldId, 'invalid');
+            return false;
+          }
+        }
         setFieldState(fieldId, 'valid');
         return true;
       }
@@ -459,7 +471,7 @@
       setFieldState('seriesSuffix','');
 
       if(rendererError){
-        issues.push('Barcode-Vorschau meldet: ' + rendererError);
+        issues.push(friendlyBarcodeError());
       }
 
       if(issues.length){
@@ -491,13 +503,15 @@
       $('modePill').textContent = modeInfo[currentMode].label;
       $('lengthPill').textContent = `${value.length} Zeichen`;
 
+      const inputValidation = validateCurrentInputs();
       let rendererError = '';
       try{
-        renderBarcodeToSvg('#barcodeSvg', value);
+        if(inputValidation.ok) renderBarcodeToSvg('#barcodeSvg', value);
+        else $('barcodeSvg').innerHTML = '';
       }catch(err){
-        rendererError = err.message || String(err);
+        rendererError = friendlyBarcodeError();
         $('barcodeSvg').innerHTML = '';
-        $('payloadBox').textContent = `Fehler: ${rendererError}`;
+        $('payloadBox').textContent = rendererError;
       }
 
       validateCurrentInputs(rendererError);
@@ -843,12 +857,16 @@
       const box = $('labelDesignPreview');
       if(!box) return;
       box.innerHTML = '';
+      if(!validateCurrentInputs().ok){
+        box.innerHTML = '<p class="field-note">Vorschau verfügbar, sobald die Eingabe gültig ist.</p>';
+        return;
+      }
       const raw = activeInputValue();
       const value = normalizeValue(raw) || typeInfo[currentType].sample;
       const item = {value, qty:1, note:''};
       const made = createLabelCell(item, labelDesign(), true);
       box.appendChild(made.cell);
-      try { renderBarcodeToSvg(made.svg, item.value, true); } catch(e) { made.label.textContent = 'Fehler: ' + item.value; if(!made.label.parentNode) made.cell.appendChild(made.label); }
+      try { renderBarcodeToSvg(made.svg, item.value, true); } catch(e) { made.label.textContent = friendlyBarcodeError(); if(!made.label.parentNode) made.cell.appendChild(made.label); }
     }
     function renderSheet(){
       updatePrintLayoutVars();
@@ -1507,13 +1525,78 @@
       });
     }
 
+    function organizeWorkspace(){
+      const main = document.querySelector('.main');
+      const editor = document.querySelector('.editor-panel');
+      const input = document.querySelector('.input-panel');
+      const preview = document.querySelector('.preview-card');
+      const labelDesigner = document.querySelector('.label-design-card');
+      const settingsPanel = document.querySelector('.settings-grid');
+      const settingCards = settingsPanel ? [...settingsPanel.querySelectorAll(':scope > .settings-card, :scope > details > .advanced-content > .settings-card')] : [];
+      const project = [...document.querySelectorAll('.advanced-box')].find(el=>el.querySelector('#projectName'));
+      const printSheet = $('printSheet');
+      if(!main || !editor || !input || !preview || !labelDesigner || settingCards.length < 3 || !project) return;
+
+      const primary = document.createElement('div');
+      primary.className = 'primary-workspace';
+      const creator = document.createElement('div');
+      creator.className = 'creator-column';
+      creator.append(editor, input);
+      primary.append(creator, preview);
+
+      const advanced = document.createElement('section');
+      advanced.className = 'advanced-sections';
+      advanced.setAttribute('aria-label', 'Erweiterte Einstellungen');
+      const makeDetails = (title, content, className='')=>{
+        const details = document.createElement('details');
+        details.className = `advanced-box workspace-accordion ${className}`.trim();
+        const summary = document.createElement('summary');
+        summary.textContent = title;
+        const body = document.createElement('div');
+        body.className = 'advanced-content';
+        (Array.isArray(content) ? content : [content]).forEach(node=>body.append(node));
+        details.append(summary, body);
+        return details;
+      };
+
+      advanced.append(makeDetails('Etikett gestalten', labelDesigner, 'label-accordion'));
+      const contrast = document.createElement('div');
+      contrast.className = 'contrast-note';
+      contrast.innerHTML = '<strong>Scan-Kontrast beachten</strong><span>Für zuverlässiges Scannen sind dunkle Striche auf hellem Hintergrund meist die sicherste Wahl. Farbige Kombinationen können je nach Scanner, Kamera, Drucker und Material schlechter funktionieren. Vor größeren Druckserien bitte einen Testscan durchführen.</span><span id="contrastStatus" role="status"></span>';
+      advanced.append(makeDetails('Barcode-Optik', [settingCards[0], settingCards[1], contrast], 'optics-accordion'));
+      advanced.append(makeDetails('Druckbogen & PDF', [settingCards[2], printSheet], 'print-accordion'));
+      project.removeAttribute('open');
+      project.querySelector('summary').textContent = 'Projekt & Verlauf';
+      project.classList.add('workspace-accordion', 'project-accordion');
+      advanced.append(project);
+
+      main.replaceChildren(primary, advanced);
+    }
+
+    function updateContrastHint(){
+      const status = $('contrastStatus');
+      if(!status) return;
+      const luminance = hex=>{
+        const rgb = /^#([0-9a-f]{6})$/i.exec(hex || '');
+        if(!rgb) return null;
+        const values = [1,3,5].map(i=>parseInt(rgb[1].slice(i-1,i+1),16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));
+        return .2126*values[0]+.7152*values[1]+.0722*values[2];
+      };
+      const a=luminance(getValue('lineColorText')), b=luminance(getValue('bgColorText'));
+      const ratio = a === null || b === null ? 0 : (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+      const risky = ratio < 4.5 || a > b;
+      status.className = risky ? 'contrast-warning' : 'contrast-ok';
+      status.textContent = risky ? '! Diese Farbkombination könnte schlecht scannbar sein.' : '✓ Der Helligkeitskontrast wirkt grundsätzlich günstig. Ein Testscan bleibt empfohlen.';
+    }
+
     document.addEventListener('DOMContentLoaded',()=>{
+      organizeWorkspace();
       $('toolMenuBtn').addEventListener('click',()=>window.WSToolMenu?.open());
       document.querySelectorAll('.type-btn').forEach(btn=>btn.addEventListener('click',()=>setType(btn.dataset.type)));
       document.querySelectorAll('.mode-btn').forEach(btn=>btn.addEventListener('click',()=>setMode(btn.dataset.mode)));
       document.querySelectorAll('input,textarea,select').forEach(el=>{
-        el.addEventListener('input',()=>{buildList();generate();updateLoadedVersionLiveSoon();saveLocalDraftSoon();});
-        el.addEventListener('change',()=>{buildList();generate();updateLoadedVersionLiveSoon();saveLocalDraftSoon();});
+        el.addEventListener('input',()=>{buildList();generate();updateContrastHint();updateLoadedVersionLiveSoon();saveLocalDraftSoon();});
+        el.addEventListener('change',()=>{buildList();generate();updateContrastHint();updateLoadedVersionLiveSoon();saveLocalDraftSoon();});
       });
       syncColor('lineColor','lineColorText'); syncColor('bgColor','bgColorText');
       syncColor('labelTitleColor','labelTitleColorText');
@@ -1530,15 +1613,20 @@
       $('btnSvg').addEventListener('click',downloadSvg);
       $('btnPng').addEventListener('click',downloadPng);
       $('btnCopy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('payloadBox').textContent);toast('Barcode-Inhalt kopiert')}catch{toast('Kopieren nicht möglich')}});
-      $('btnPrintSheet').addEventListener('click',()=>{buildList();window.print();});
+      $('btnPrintSheet').addEventListener('click',()=>{buildList();document.querySelector('.print-accordion').open=true;window.print();});
+      window.addEventListener('beforeprint',()=>{const section=document.querySelector('.print-accordion');if(section)section.open=true});
       $('btnTheme').addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'});
       $('btnVersionSave')?.addEventListener('click',saveNewProjectVersion);
       $('btnProjectExport')?.addEventListener('click',downloadProjectJson);
       $('btnProjectImport')?.addEventListener('click',openProjectFile);
       $('projectFileInput')?.addEventListener('change',event=>readProjectFile(event.target.files?.[0]));
       $('btnLocalClear')?.addEventListener('click',clearLocalDraft);
-      $('btnHelp').addEventListener('click',()=>$('helpDialog').showModal());
+      const helpDialog = $('helpDialog');
+      const unlockHelpScroll = ()=>document.documentElement.classList.remove('dialog-open');
+      $('btnHelp').addEventListener('click',()=>{document.documentElement.classList.add('dialog-open');helpDialog.showModal()});
       $('helpClose').addEventListener('click',()=>$('helpDialog').close());
+      helpDialog.addEventListener('close', unlockHelpScroll);
+      helpDialog.addEventListener('cancel', unlockHelpScroll);
       document.querySelectorAll('[data-help-tab]').forEach(btn=>{
         btn.addEventListener('click',()=>{
           const target = btn.dataset.helpTab;
@@ -1552,6 +1640,7 @@
       updateDynamicLabels();
       updateStandardWarning();
       setupMiniHelp();
+      updateContrastHint();
       const restored = restoreLocalDraft();
       if(!restored){
         buildList();
