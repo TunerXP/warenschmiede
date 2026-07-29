@@ -1,25 +1,50 @@
 # Deployment auf IONOS
 
-GitHub beziehungsweise die Arbeitskopie enthalten die Website-Quellen. Für ein
-Website-Deployment wird ausschließlich der automatisch erzeugte Ordner
-`_deploy` verwendet.
+GitHub ist der Entwicklungs- und Masterbestand. Hochgeladen wird ausschließlich
+der lokal erzeugte Inhalt von `_deploy`; das Repository selbst ist kein Uploadpaket.
 
-## Ablauf
+## Standardablauf
 
-1. Den Branch `main` lokal aktualisieren.
-2. Im Repository-Root `./build_deploy.ps1` in PowerShell ausführen.
-3. Den frisch erzeugten Inhalt von `_deploy` prüfen.
-4. **Den Inhalt** von `_deploy` mit FileZilla nach IONOS `/` hochladen.
-5. IONOS `/dateien` bei Bedarf separat mit FileZilla verwalten.
+1. Pull Request prüfen und mergen.
+2. Den Zielbranch lokal in VS Code synchronisieren (`git pull`).
+3. `DEPLOY_STARTEN.cmd` ausführen. Das Kommando startet `build_deploy.ps1`.
+4. Den neu erzeugten Ordner `_deploy` kontrollieren.
+5. **Den Inhalt** von `_deploy` mit FileZilla in das IONOS-Root hochladen und
+   vorhandene Website-Dateien ersetzen.
+6. Admin öffnen und Website, SEO, Downloads und Release-Metadaten prüfen.
 
-Das Skript löscht einen lokal vorhandenen `_deploy`-Ordner vor jedem Build und
-legt ihn anhand einer festen Allowlist neu an. Es stellt keine FTP- oder
-SFTP-Verbindung her und enthält keine Zugangsdaten.
+Das Build-Skript arbeitet mit einer festen Allowlist, entfernt Entwicklungs- und
+Reportdateien und validiert verbotene Ordner. Es stellt keine Serververbindung
+her und enthält keine Zugangsdaten.
 
-> **Wichtig:** IONOS `/dateien` und `/logs` beim Website-Deployment niemals
-> löschen oder synchronisieren. Beide Serverordner werden separat verwaltet.
-> Das Deploy-Skript erzeugt, löscht oder verändert diese Ordner nicht.
+## Automatisches Deploy-Inventar
 
-`_deploy` ist ein lokales Build-Artefakt und wird nicht versioniert. Es enthält
-weder Repository- und Wartungsdateien noch Server-Downloads, Server-Logs oder
-Visual-Studio-Daten.
+Nach Kopieren, Bereinigen und Validieren erstellt `build_deploy.ps1` das
+Inventar aus dem **tatsächlichen Uploadpaket** unter:
+
+```text
+_deploy/admin/site_inventory.json
+```
+
+Produktiv ist es damit nur unter `/admin/site_inventory.json` erreichbar. Das
+generierte JSON und `_deploy` werden nicht versioniert. Es ist kein Server-Schritt
+nötig und keine Inventory-Datei wird nach GitHub zurückkopiert.
+`generate_inventory.py` ist lediglich ein optionaler lokaler Entwicklerhelfer.
+
+## Serverordner unbedingt erhalten
+
+> **NIEMALS den kompletten IONOS-Ordner `/admin` löschen und anschließend neu
+> hochladen.** IONOS erzeugt und verwaltet darin serverseitig
+> `/admin/.htaccess` für „Geschützte Verzeichnisse“. Diese Datei existiert
+> ausschließlich auf IONOS, gehört weder ins Repository noch nach `_deploy`
+> und darf nicht ersetzt werden.
+
+Richtig ist: Den Inhalt von `_deploy/admin` in den **bestehenden** Serverordner
+`/admin` hochladen und vorhandene Website-Dateien überschreiben. Die
+serverseitige `.htaccess` bleibt unangetastet. Es wird keine eigene Passwortdatei
+oder Login-Logik bereitgestellt.
+
+Auch `/dateien` (große Download-Dateien) und `/logs` werden separat auf IONOS
+verwaltet. Beide Ordner niemals durch `_deploy` löschen oder synchronisieren.
+Der Ordner `webseite_2_0` ist als Defense-in-Depth vom Build ausgeschlossen und
+kein produktiver Websitepfad.

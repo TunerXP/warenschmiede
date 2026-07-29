@@ -5,7 +5,7 @@
 **Projekt:** Warenschmiede – 3D-Druck, CAD, digitale Werkstatt-Tools und KI-Hilfen  
 **Live-Domain:** https://www.warenschmiede.com  
 **Hosting:** IONOS Webhosting Plus  
-**Repository:** GitHub-Repo `TunerXP/warenschmiede` als private Werkstatt / Master-Bestand  
+**Repository:** GitHub-Repo `TunerXP/warenschmiede` als Entwicklungs-/Masterbestand
 
 ---
 
@@ -42,7 +42,7 @@ Die Webseite läuft produktiv auf:
 
 Hosting läuft über IONOS Webhosting Plus.
 
-Die Live-Dateien liegen auf dem IONOS-Webspace. Hochgeladen wird manuell per FileZilla/SFTP.
+Die Live-Dateien liegen auf dem IONOS-Webspace. Hochgeladen wird ausschließlich der Inhalt des lokal erzeugten `_deploy`-Pakets per FileZilla.
 
 ### GitHub / lokale Werkstatt
 
@@ -54,7 +54,7 @@ Das GitHub-Repository dient als Master-Werkstatt für:
 - Tools
 - Dokumentation
 - Sitemap
-- Inventory
+- automatisch beim Deploy erzeugtes Inventory
 - Python-Hilfsskripte
 
 Änderungen werden normalerweise durch Marco geprüft und anschließend manuell per FileZilla auf IONOS hochgeladen.
@@ -77,16 +77,14 @@ In der Werkstatt wird entwickelt, geprüft und dokumentiert.
 
 ### 2. Schleuse
 
-Marco prüft die Änderungen und lädt gezielt Dateien per FileZilla auf den IONOS-Server.
-
-Nicht blind ganze Ordner überschreiben.
+Nach Prüfung und Merge wird `DEPLOY_STARTEN.cmd` ausgeführt. Der erzeugte Inhalt von `_deploy` wird per FileZilla hochgeladen; `/dateien`, `/logs` und der bestehende Serverordner `/admin` bleiben unangetastet.
 
 Wichtig:
 
 - `.git` nicht hochladen
 - `.vs` nicht hochladen
 - unnötige Arbeitsdateien nicht hochladen
-- `/admin/.htaccess` und `/admin/.htpasswd` nicht überschreiben
+- `/admin` nicht löschen; die ausschließlich serverseitige `/admin/.htaccess` nicht überschreiben
 - keine Passwörter in GitHub oder HTML speichern
 
 ### 3. Schaufenster
@@ -103,10 +101,7 @@ Die Admin Suite liegt live unter:
 
 `/admin/index.html`
 
-Der Admin-Bereich ist serverseitig geschützt über:
-
-- `/admin/.htaccess`
-- `/admin/.htpasswd`
+Der Admin-Bereich ist über IONOS „Geschützte Verzeichnisse“ serverseitig geschützt. Die dabei serverseitig erzeugte `/admin/.htaccess` gehört nicht ins Repository oder Deploy-Paket.
 
 Der alte HTML-/JavaScript-Passwortschutz wurde entfernt.
 
@@ -115,44 +110,26 @@ Wichtig:
 - Admin bleibt `noindex,nofollow`
 - Admin wird nicht öffentlich verlinkt
 - Zugriff erfolgt per direktem Lesezeichen / direkter URL
-- `.htaccess` und `.htpasswd` bleiben nur auf dem IONOS-Server
-- diese Dateien dürfen nicht nach GitHub hochgeladen werden
+- die IONOS-`.htaccess` bleibt ausschließlich auf dem Server
+- der vorhandene Serverordner `/admin` darf beim Upload nicht gelöscht werden
 
 ### Funktionen der Admin Suite
 
 Die Admin Suite kann aktuell:
 
-- Inventory laden
-- Dashboard anzeigen
-- SEO Scan ausführen
-- SEO-Bericht speichern
-- Content- und Dokumentdateien anzeigen
-- Bilder-Galerie anzeigen
-- Download-Dateien anzeigen
-- Quick Links bereitstellen
-- Workflow-Anleitung für Inventory/Sitemap anzeigen
+- das automatisch erzeugte Deploy-Inventar laden und im Dashboard zusammenfassen
+- Seiten und SEO-Daten prüfen sowie nach Pfad und Prüfergebnis suchen und filtern
+- die Bildergalerie nach Dateiname, Pfad und Format durchsuchen und filtern
+- veröffentlichte Downloadlinks auswerten und per HEAD-Anfrage prüfen
+- den öffentlichen Zeiterfassung-Plus-Release-Status anzeigen
+- einen gefilterten technischen Diagnosebericht erstellen und kopieren
+- den aktuellen Wartungs- und Deploy-Ablauf sowie sichere Quick Links anzeigen
 
-Die Admin Suite schreibt keine Dateien auf dem Server. Sie liest nur vorhandene Dateien.
+Die Admin Suite ist vollständig read-only. Sie schreibt keine Dateien auf den Server
+und bietet keine Upload-, Lösch-, Editor- oder Serverzugriffsfunktion.
 
 ---
 
 ## 5. Inventory-Workflow
 
-Das Inventory wird über das Python-Skript erzeugt:
-
-`generate_inventory.py`
-
-Das Skript erzeugt:
-
-`site_inventory.json`
-
-Diese Datei wird vom Admin-Dashboard gelesen.
-
-### Standard-Ablauf nach Dateiänderungen
-
-1. Geänderte Dateien per FileZilla auf IONOS hochladen.
-2. Per PowerShell/SSH auf IONOS einloggen.
-3. Inventory neu erzeugen:
-
-```bash
-python3 generate_inventory.py
+`build_deploy.ps1` erzeugt nach dem Kopieren, Bereinigen und Validieren automatisch `_deploy/admin/site_inventory.json`. Das Admin-Dashboard liest diese geschützte Deploy-Datei. Ein Serverzugriff oder Rückkopieren nach GitHub ist nicht mehr Bestandteil des Ablaufs. `generate_inventory.py` dient nur optional lokalen Entwicklungsprüfungen.

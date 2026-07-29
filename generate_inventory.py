@@ -1,7 +1,8 @@
 import os
 import json
 
-def generate_inventory(root_dir):
+def generate_inventory(root_dir, output_path='site_inventory.json'):
+    """Create a local inspection inventory; production uses build_deploy.ps1."""
     inventory = {
         "html": [],
         "images": [],
@@ -41,7 +42,7 @@ def generate_inventory(root_dir):
     for key in inventory:
         inventory[key].sort()
 
-    with open('site_inventory.json', 'w', encoding='utf-8') as f:
+    with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(inventory, f, indent=2, ensure_ascii=False)
 
     print(f"Inventory generated with {len(inventory['html'])} html files, {len(inventory['images'])} images, {len(inventory['docs'])} docs, {len(inventory['downloads'])} downloads.")
