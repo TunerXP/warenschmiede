@@ -121,18 +121,29 @@
       let digits = String(rawInput || '').replace(/\D/g,'');
       if(!digits) digits = String(info.sample || '').replace(/\D/g,'');
 
-      let base = digits;
-      let final = normalizeValue(rawInput);
-      if(digits.length <= info.baseLen) base = digits.padStart(info.baseLen, '0').slice(-info.baseLen);
-      if(digits.length > info.baseLen) base = digits.slice(0, info.baseLen);
-
-      const checkDigit = final.slice(-1);
       box.classList.add('active');
+      if(digits.length === info.fullLen){
+        const base = digits.slice(0, info.baseLen);
+        const enteredCheckDigit = digits.slice(-1);
+        const expectedCheckDigit = gs1Checksum(base);
+        const matches = enteredCheckDigit === expectedCheckDigit;
+        box.innerHTML = `
+          <strong>${info.label} arbeitet mit Prüfziffer:</strong><br>
+          Basisnummer: <code>${base}</code><br>
+          Eingegebene Prüfziffer: <code>${enteredCheckDigit}</code><br>
+          Erwartete Prüfziffer: <code>${expectedCheckDigit}</code><br>
+          Status: Prüfziffer stimmt${matches ? '' : ' nicht'}
+        `;
+        return;
+      }
+
+      const base = digits.padStart(info.baseLen, '0').slice(-info.baseLen);
+      const calculatedCheckDigit = gs1Checksum(base);
       box.innerHTML = `
         <strong>${info.label} arbeitet mit Prüfziffer:</strong><br>
         Basisnummer: <code>${base}</code><br>
-        Prüfziffer: <code>${checkDigit}</code><br>
-        Endgültiger Barcode-Inhalt: <code>${final}</code>
+        Berechnete Prüfziffer: <code>${calculatedCheckDigit}</code><br>
+        Endgültiger Barcode-Inhalt: <code>${base + calculatedCheckDigit}</code>
       `;
     }
     function updateStandardWarning(){
@@ -385,6 +396,7 @@
             else ok = checkTextBarcode('manualList', line, info.label, i + 1) && ok;
           });
           if(ok) setFieldState('manualList','valid');
+          else setFieldState('manualList','invalid');
         }
       }
 
@@ -638,6 +650,12 @@
     }
     function buildList(){
       let list = [];
+      if(!validateCurrentInputs().ok){
+        generatedCodes = [];
+        renderList();
+        renderSheet();
+        return;
+      }
       if(currentMode === 'single'){
         const v = normalizeValue($('barcodeValue').value) || typeInfo[currentType].sample;
         list = [{value:v, qty:1, note:''}];
