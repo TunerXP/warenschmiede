@@ -1,475 +1,1122 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1" name="viewport"/>
-<link href="/ws.png" rel="icon" sizes="32x32" type="image/png"/>
-<link href="/ws.png" rel="apple-touch-icon" sizes="180x180"/>
-<meta content="#f8fafc" name="theme-color"/>
-<title>Quittungs-Werkstatt | Warenschmiede</title>
-<meta content="Quittungen mit oder ohne MwSt im Browser erstellen, ausfüllen und als PDF drucken." name="description"/>
-<meta content="index, follow" name="robots"/>
-<meta content="light" name="color-scheme"/>
-<link href="https://www.warenschmiede.com/tools/ReceiptWriterPro.html" rel="canonical"/>
-<meta content="Quittungs-Werkstatt | Warenschmiede" property="og:title"/>
-<meta content="Digitale Quittungen mit MwSt-Option erstellen und als PDF sichern – alles lokal im Browser." property="og:description"/>
-<meta content="website" property="og:type"/>
-<meta content="https://www.warenschmiede.com/tools/ReceiptWriterPro.html" property="og:url"/>
-<meta content="/assets/img/warenschmiede-logo-main.png" property="og:image"/>
-<meta content="Warenschmiede" property="og:site_name"/>
-<meta content="de_DE" property="og:locale"/>
-<meta content="summary_large_image" name="twitter:card"/>
-<meta content="Quittungs-Werkstatt | Warenschmiede" name="twitter:title"/>
-<meta content="Digitale Quittungen mit MwSt-Option erstellen und als PDF sichern – alles lokal im Browser." name="twitter:description"/>
-<meta content="https://www.warenschmiede.com/tools/ReceiptWriterPro.html" name="twitter:url"/>
-<meta content="/assets/img/warenschmiede-logo-main.png" name="twitter:image"/>
-<link href="/assets/css/ws-tool-menu.css" rel="stylesheet"/>
-<script defer src="/assets/js/ws-tool-menu.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Oswald:wght@500;700&amp;family=Orbitron:wght@500;700&amp;family=Bebas+Neue&amp;family=Kalam:wght@300;400;700&amp;family=Nothing+You+Could+Do&amp;display=swap" rel="stylesheet"/>
-<script>
-    window.tailwind = window.tailwind || {};
-    window.tailwind.config = { corePlugins: { preflight: false } };
-  </script>
-<script src="https://cdn.tailwindcss.com"></script>
-<script defer="" src="https://unpkg.com/@phosphor-icons/web"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<style>
-    body { margin: 0; background: #f8fafc; color: #0f172a; font-family: Inter, sans-serif; }
-    .site-main { padding: 24px 16px 40px; }
-    .section { max-width: 1320px; margin: 0 auto 20px; }
-    .container { max-width: 1320px; margin: 0 auto; }
-    .converter-hero {
-      text-align: center;
-      max-width: 840px;
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Quittungs-Werkstatt | Warenschmiede</title>
+  <meta name="description" content="Quittungen lokal im Browser erstellen, als PDF speichern oder direkt teilen. Ohne Konto oder Cloud, mit Verlauf und Backup." />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://www.warenschmiede.com/tools/ReceiptWriterPro.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:site_name" content="Warenschmiede" />
+  <meta property="og:title" content="Quittungs-Werkstatt | Warenschmiede" />
+  <meta property="og:description" content="Quittungen lokal im Browser erstellen, als PDF speichern oder direkt teilen. Ohne Konto oder Cloud, mit Verlauf und Backup." />
+  <meta property="og:url" content="https://www.warenschmiede.com/tools/ReceiptWriterPro.html" />
+  <meta property="og:image" content="https://www.warenschmiede.com/ws.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Quittungs-Werkstatt | Warenschmiede" />
+  <meta name="twitter:description" content="Quittungen lokal im Browser erstellen, als PDF speichern oder direkt teilen. Ohne Konto oder Cloud, mit Verlauf und Backup." />
+  <meta name="twitter:image" content="https://www.warenschmiede.com/ws.png" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #eef3f8;
+      --card: #ffffff;
+      --soft: #f8fafc;
+      --text: #111827;
+      --muted: #64748b;
+      --line: #d8e2ef;
+      --primary: #0f172a;
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --green: #16a34a;
+      --red: #dc2626;
+      --amber: #f59e0b;
+      --shadow: 0 10px 28px rgba(15,23,42,.08);
+      --radius: 18px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    body.dark {
+      --bg: #0f172a;
+      --card: #172033;
+      --soft: #0b1220;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --line: #334155;
+      --shadow: 0 14px 36px rgba(0,0,0,.28);
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      padding-bottom: calc(92px + var(--safe-bottom));
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(15,23,42,.97);
+      color: white;
+      box-shadow: 0 4px 18px rgba(15,23,42,.20);
+      backdrop-filter: blur(10px);
+    }
+
+    .header-inner {
+      max-width: 900px;
       margin: 0 auto;
-    }
-
-    @media (max-width: 960px) {
-      .converter-hero { text-align: left; }
-    }
-
-    .receipt-root {
-      font-family: 'Inter', sans-serif;
-      background-color: #0f172a;
-      color: #e2e8f0;
-    }
-
-    .receipt-root .receipt-paper {
-      width: 210mm;
-      height: 148mm;
-      background: #fffdf5;
-      color: #1e293b;
-      margin: 0 auto;
-      padding: 10mm;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      position: relative;
-      background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-      background-size: 20px 20px;
-      font-family: 'Arial', sans-serif;
-      overflow: hidden;
-    }
-
-    .receipt-root .handwritten {
-      font-family: 'Kalam', cursive;
-      color: #1e3a8a;
-      font-size: 1.2rem;
-      border: none;
-      background: transparent;
-      width: 100%;
-      padding: 0 5px;
-      outline: none;
-      transition: all 0.2s;
-    }
-
-    .receipt-root .handwritten:hover,
-    .receipt-root .handwritten:focus {
-      background: rgba(30, 58, 138, 0.05);
-      border-bottom: 1px dashed #93c5fd;
-    }
-
-    .receipt-root .handwritten-static {
-      font-family: 'Kalam', cursive;
-      color: #1e3a8a;
-    }
-
-    .receipt-root .form-line {
-      border-bottom: 1px solid #94a3b8;
-      padding-bottom: 2px;
-      margin-bottom: 4px;
+      padding: 12px 14px;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
     }
 
-    .receipt-root .form-label {
-      font-size: 0.7rem;
-      font-weight: bold;
-      color: #64748b;
-      text-transform: uppercase;
-      margin-right: 8px;
+    .brand h1 {
+      margin: 0;
+      font-size: 1.05rem;
+      letter-spacing: -.02em;
+      display: flex;
+      gap: 8px;
+      align-items: center;
       white-space: nowrap;
     }
 
-    @media (max-width: 800px) {
-      .receipt-root .receipt-wrapper {
-        transform: scale(0.45);
-        transform-origin: top left;
-        width: 210mm;
-        margin-bottom: -80mm;
-      }
+    .brand small {
+      display: block;
+      margin-top: 2px;
+      color: rgba(255,255,255,.7);
+      font-size: .74rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 280px;
+    }
+
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+
+    .back-link, .icon-btn {
+      color: rgba(255,255,255,.86);
+      background: transparent;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      text-decoration: none;
+      padding: 8px 10px;
+      font-size: .8rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 36px;
+    }
+
+    .icon-btn { min-width: 36px; justify-content: center; }
+    .back-link:hover, .icon-btn:hover { background: rgba(255,255,255,.08); }
+
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--card), rgba(37,99,235,.08));
+      border-color: rgba(37,99,235,.22);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero:after {
+      content: "";
+      position: absolute;
+      width: 190px;
+      height: 190px;
+      right: -75px;
+      top: -95px;
+      border-radius: 999px;
+      background: rgba(37,99,235,.12);
+      pointer-events: none;
+    }
+
+    .hero-top {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      letter-spacing: -.03em;
+    }
+
+    .hero p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.38;
+    }
+
+    .total-box {
+      text-align: right;
+      background: rgba(255,255,255,.74);
+      border: 1px solid rgba(37,99,235,.18);
+      border-radius: 16px;
+      padding: 12px 14px;
+      min-width: 150px;
+    }
+
+    body.dark .total-box { background: rgba(15,23,42,.55); }
+
+    .total-label {
+      display: block;
+      color: var(--blue);
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .total-value {
+      display: block;
+      font-size: 1.45rem;
+      font-weight: 950;
+      letter-spacing: -.03em;
+      color: var(--green);
+      white-space: nowrap;
+    }
+
+    .chips {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.7);
+      color: var(--muted);
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: .78rem;
+      font-weight: 800;
+    }
+
+    body.dark .chip { background: rgba(15,23,42,.6); }
+
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      min-height: 44px;
+      padding: 12px 14px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: transform .08s ease, background .18s ease, box-shadow .18s ease;
+      user-select: none;
+    }
+
+    .btn:active { transform: translateY(1px); }
+    .btn-blue { background: var(--blue); color: #fff; box-shadow: 0 8px 18px rgba(37,99,235,.20); }
+    .btn-blue:hover { background: var(--blue-dark); }
+    .btn-dark { background: var(--primary); color: #fff; }
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-amber { background: var(--amber); color: #fff; }
+    .btn-red { background: var(--red); color: #fff; }
+    .btn-light { background: var(--card); color: var(--text); border: 1px solid var(--line); }
+    .btn-soft { background: var(--soft); color: var(--text); border: 1px solid var(--line); }
+    .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+    .btn-small { min-height: 34px; padding: 7px 10px; border-radius: 10px; font-size: .84rem; }
+    .btn-block { width: 100%; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .grid-actions {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .field label, .label {
+      display: block;
+      color: var(--muted);
+      font-weight: 900;
+      font-size: .78rem;
+      letter-spacing: .02em;
+      margin-bottom: 5px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--text);
+      border-radius: 12px;
+      min-height: 44px;
+      padding: 12px;
+      outline: none;
+    }
+
+    textarea { min-height: 74px; resize: vertical; }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.14);
+      background: var(--card);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .section-head h2, .section-head h3 {
+      margin: 0;
+      font-size: 1.03rem;
+      letter-spacing: -.02em;
+    }
+
+    .muted { color: var(--muted); }
+    .tiny { font-size: .82rem; }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 46px;
+    }
+
+    .check-row span { font-weight: 850; }
+    .check-row small { color: var(--muted); display: block; margin-top: 2px; }
+    input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--blue); min-height: auto; }
+
+    .item-form {
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .item-list { display: grid; gap: 8px; }
+
+    .item {
+      border: 1px solid var(--line);
+      background: var(--card);
+      border-left: 4px solid var(--blue);
+      border-radius: 14px;
+      padding: 11px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .item strong { display: block; line-height: 1.2; }
+    .item small { color: var(--muted); }
+    .item-price { color: var(--green); font-weight: 950; white-space: nowrap; }
+    .item-actions { display: flex; gap: 6px; justify-content: flex-end; margin-top: 7px; }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .summary-line {
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 11px;
+    }
+
+    .summary-line small { display: block; color: var(--muted); font-weight: 850; margin-bottom: 3px; }
+    .summary-line strong { font-size: 1.02rem; }
+
+    .pay-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .pay {
+      background: var(--soft);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 12px;
+      min-height: 44px;
+      font-weight: 900;
+    }
+
+    .pay.active { background: var(--blue); border-color: var(--blue); color: white; }
+
+    .history-list { display: grid; gap: 8px; }
+    .history-item {
+      border: 1px solid var(--line);
+      background: var(--soft);
+      border-radius: 14px;
+      padding: 11px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .history-item strong { display: block; }
+    .history-item small { color: var(--muted); }
+    .history-actions { display: flex; gap: 6px; }
+
+    .notice {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: #eef2ff;
+      color: #3730a3;
+      border: 1px solid #c7d2fe;
+      font-size: .88rem;
+      line-height: 1.35;
+    }
+
+    body.dark .notice { background: rgba(37,99,235,.12); color: #bfdbfe; border-color: rgba(147,197,253,.25); }
+
+    .footer-links {
+      text-align: center;
+      margin: 28px 0 6px;
+      color: var(--muted);
+      font-size: .84rem;
+    }
+
+    .footer-links a { color: var(--muted); text-decoration: none; margin: 0 6px; }
+    .footer-links a:hover { text-decoration: underline; }
+
+    .bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 60;
+      background: rgba(255,255,255,.94);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+      padding: 10px 14px calc(10px + var(--safe-bottom));
+    }
+
+    body.dark .bottom-bar { background: rgba(15,23,42,.94); }
+    .bottom-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 10px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (min-width: 760px) {
+      body { padding-bottom: 20px; }
+      .bottom-bar { display: none; }
+      .wrap { padding: 20px; }
+      .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    }
+
+    @media (max-width: 560px) {
+      .brand small { max-width: 190px; }
+      .back-link span { display: none; }
+      .hero-top, .grid-2, .grid-actions, .summary-grid, .pay-row { grid-template-columns: 1fr; }
+      .total-box { text-align: left; }
+      .item { grid-template-columns: 1fr; }
+      .item-price { font-size: 1.06rem; }
+      .history-item { grid-template-columns: 1fr; }
+      .history-actions { justify-content: flex-end; }
     }
   </style>
 </head>
 <body>
-<main class="site-main" id="inhalt" tabindex="-1">
-<section class="section section-hero">
-<div class="container converter-hero">
-<p class="hero-eyebrow">Quittungen &amp; Büro</p>
-<h1>Quittungs-Werkstatt (ReceiptWriter Pro)</h1>
-<p class="hero-lede">Erstelle Quittungen mit oder ohne MwSt, speichere deine Eingaben lokal und drucke direkt als PDF.</p>
-<p class="hero-meta">Die Berechnung und PDF-Erzeugung laufen vollständig in deinem Browser – keine Uploads, kein Tracking.</p>
-</div>
-</section>
-<section aria-label="Quittungs-Werkstatt" class="section ws-section">
-<div class="container">
-<div class="ws-card">
-<div class="receipt-root rounded-2xl shadow-2xl overflow-hidden border border-slate-800">
-<div class="bg-slate-800 border-b border-slate-700 h-16 shrink-0 flex items-center justify-between px-4 z-20">
-<div class="flex items-center gap-3">
-<div class="bg-amber-600 p-2 rounded-lg text-white shadow-lg">
-<i class="ph ph-receipt text-xl"></i>
-</div>
-<h2 class="font-bold text-white text-sm md:text-lg">Receipt Writer <span class="text-amber-400 font-normal text-xs align-top">PRO</span></h2>
-</div>
-<div class="flex items-center gap-2">
-<button class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg transition-colors text-xs md:text-sm" type="button" onclick="window.WSToolMenu?.open()" aria-label="Warenschmiede Tools öffnen">☰ Warenschmiede Tools</button>
-<button class="bg-slate-700 hover:bg-slate-600 text-white p-2 rounded-lg transition-colors" onclick="newReceipt()" title="Neue Quittung (+1)">
-<i class="ph ph-plus-circle text-xl text-emerald-400"></i>
-</button>
-<button class="p-2 text-slate-400 hover:text-white transition-colors" onclick="saveToLocal()" title="Speichern">
-<i class="ph ph-floppy-disk text-xl"></i>
-</button>
-<button class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-3 rounded-lg flex items-center gap-2 transition-all shadow-lg text-xs md:text-sm" onclick="generatePDF()">
-<i class="ph ph-file-pdf text-lg"></i>
-<span class="hidden md:inline">Drucken (A4)</span>
-<span class="md:hidden">PDF</span>
-</button>
-</div>
-</div>
-<div class="flex flex-col lg:flex-row" style="min-height: 640px;">
-<div class="w-full lg:w-80 bg-slate-900 border-b lg:border-b-0 lg:border-r border-slate-700 p-6 overflow-y-auto shrink-0 z-10">
-<h2 class="text-xs font-bold text-amber-500 uppercase mb-4 flex items-center gap-2">
-<i class="ph ph-pen-nib"></i> Eingabe
-                </h2>
-<div class="space-y-6">
-<div class="space-y-3">
-<label class="block text-xs font-bold text-slate-500 uppercase" id="lbl-amount">Betrag (Brutto)</label>
-<input class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-white text-lg font-mono text-right" id="inp-amount" oninput="updateAmountInput(this.value)" placeholder="0.00" step="0.01" type="number"/>
-</div>
-<div class="space-y-3">
-<label class="block text-xs font-bold text-slate-500 uppercase">Von (Empfänger)</label>
-<input class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-white text-sm" id="inp-from" oninput="updateField('rec-from', this.value)" placeholder="Kunde Name" type="text"/>
-</div>
-<div class="space-y-3">
-<label class="block text-xs font-bold text-slate-500 uppercase">Für (Leistung)</label>
-<textarea class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-white text-sm h-20" id="inp-for" oninput="updateField('rec-for', this.value)" placeholder="3D Druck, Reparatur..."></textarea>
-</div>
-<div class="pt-4 border-t border-slate-800 space-y-3">
-<div class="flex items-center justify-between">
-<span class="text-sm text-slate-400">Kleinunternehmer (§19)</span>
-<input checked="" class="accent-amber-500 h-4 w-4" id="toggle-tax" onchange="toggleTaxMode()" type="checkbox"/>
-</div>
-<p class="text-[10px] text-slate-500" id="tax-hint">Wenn an, wird MwSt. gestrichen.</p>
-</div>
-</div>
-</div>
-<div class="flex-1 bg-slate-800 overflow-auto p-4 md:p-8 flex justify-center items-center">
-<div class="receipt-wrapper" id="receipt-wrapper">
-<div class="receipt-paper" id="receipt">
-<div class="flex justify-between items-start mb-6 border-b-2 border-slate-800 pb-2">
-<div>
-<h1 class="text-3xl font-black uppercase tracking-widest text-slate-800">Quittung</h1>
-<p class="text-[10px] text-slate-500 uppercase tracking-wide mt-1">Receipt / Reçu</p>
-</div>
-<div class="text-right">
-<div class="text-sm font-bold text-slate-400">Nr. <span class="text-slate-800 font-mono ml-1" id="rec-no">Q-2025-001</span></div>
-<div class="mt-2 text-right">
-<span class="text-xs font-bold text-slate-400 mr-2">Betrag:</span>
-<div class="inline-block border-2 border-slate-800 px-3 py-1 bg-white min-w-[120px] relative">
-<span class="text-xl font-bold font-mono text-transparent relative z-10" id="rec-amount-box-hidden">0,00</span>
-<span class="absolute top-0 right-1 text-xs font-bold text-slate-400">€</span>
-<div class="absolute inset-0 flex items-center justify-center handwritten-static text-2xl" id="hw-amount-box" style="transform: rotate(-2deg); top: -2px;">0,00</div>
-</div>
-</div>
-</div>
-</div>
-<div class="space-y-4">
-<div class="form-line">
-<span class="form-label">Von (Empfänger):</span>
-<input class="handwritten" id="rec-from" oninput="document.getElementById('inp-from').value = this.value" placeholder="Name des Kunden" type="text"/>
-</div>
-<div class="form-line bg-slate-100/50">
-<span class="form-label">Betrag in Worten:</span>
-<input class="handwritten italic" id="rec-words" placeholder="--- null ---" readonly="" type="text"/>
-</div>
-<div class="form-line">
-<span class="form-label">Für (Leistung):</span>
-<input class="handwritten" id="rec-for" oninput="document.getElementById('inp-for').value = this.value" placeholder="3D Druck Teile..." type="text"/>
-</div>
-</div>
-<div class="mt-8 flex justify-between items-end">
-<div class="w-1/3 text-xs border border-slate-400 p-2 relative">
-<div class="flex justify-between border-b border-slate-300 pb-1 mb-1">
-<span>Netto</span>
-<span class="handwritten-static text-sm" id="tax-net"></span>
-</div>
-<div class="flex justify-between border-b border-slate-300 pb-1 mb-1">
-<span>+ <span id="vat-rate">19</span>% MwSt</span>
-<span class="handwritten-static text-sm" id="tax-val"></span>
-</div>
-<div class="flex justify-between font-bold">
-<span>Gesamt</span>
-<span class="handwritten-static text-sm" id="tax-gross"></span>
-</div>
-<div class="absolute inset-0 flex items-center justify-center pointer-events-none hidden" id="tax-cross">
-<div class="w-full h-0.5 bg-slate-800 rotate-12 absolute"></div>
-<div class="w-full h-0.5 bg-slate-800 -rotate-12 absolute"></div>
-</div>
-</div>
-<div class="w-1/2 flex flex-col gap-4">
-<div class="form-line">
-<span class="form-label">Ort, Datum:</span>
-<input class="handwritten text-center" id="rec-date" type="text" value="Musterstadt, 29.11.2025"/>
-</div>
-<div class="form-line relative h-12">
-<span class="form-label absolute bottom-0 left-0">Unterschrift:</span>
-<input class="handwritten text-center text-2xl" id="rec-sign" style="font-family: 'Nothing You Could Do', cursive;" type="text" value="Max Mustermann"/>
-</div>
-</div>
-</div>
-<div class="absolute bottom-4 left-10mm right-10mm text-[9px] text-slate-400 border-t border-slate-200 pt-1 flex justify-center items-center gap-2">
-<span class="hidden" id="footer-note">Hinweis: Steuerfreie Leistung gemäß § 19 UStG (Kleinunternehmer).</span>
-<span class="text-slate-300">Quittungsvorlage von warenschmiede.com</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="mt-6 bg-slate-900 border border-slate-800 rounded-2xl p-6 text-slate-100">
-<h3 class="text-lg font-bold flex items-center gap-2 text-white"><i class="ph ph-image"></i> Beispiel-Quittungen</h3>
-<p class="text-sm text-slate-300 mt-1">So könnte deine fertige Quittung aussehen – einmal mit ausgewiesener MwSt und einmal als Kleinunternehmer ohne MwSt.</p>
-<div class="grid gap-4 md:grid-cols-2 mt-4">
-<figure class="bg-slate-800 border border-slate-700 rounded-xl p-3 flex flex-col gap-2">
-<img alt="Beispielquittung mit MwSt" class="w-full h-auto rounded-lg border border-slate-700 object-contain" src="/assets/img/quittungmit.png" style="max-height: 360px;"/>
-<figcaption class="text-xs text-slate-300">Beispiel mit MwSt (Regelbesteuerung).</figcaption>
-</figure>
-<figure class="bg-slate-800 border border-slate-700 rounded-xl p-3 flex flex-col gap-2">
-<img alt="Beispielquittung ohne MwSt für Kleinunternehmer" class="w-full h-auto rounded-lg border border-slate-700 object-contain" src="/assets/img/quittungohne.png" style="max-height: 360px;"/>
-<figcaption class="text-xs text-slate-300">Beispiel ohne MwSt – Kleinunternehmerregelung (§19 UStG).</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div>
-</section>
-</main>
-<script>
-    const CHAR = {
-      euro: String.fromCharCode(8364)
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <h1>🧾 Quittungs-Werkstatt</h1>
+        <small>lokal · PDF · Teilen · Backup</small>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="toggleDark()" id="darkBtn" title="Design wechseln">🌙</button>
+        <a class="back-link" href="../index.html">← <span>Warenschmiede</span></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card hero">
+      <div class="hero-top">
+        <div>
+          <h2>Schnelle Quittung fürs Handy</h2>
+          <p>Posten erfassen, Zahlart wählen und die Quittung als PDF speichern oder direkt teilen. Ohne Konto, ohne Cloud.</p>
+        </div>
+        <div class="total-box">
+          <span class="total-label">Gesamt</span>
+          <span class="total-value" id="heroTotal">0,00 €</span>
+        </div>
+      </div>
+      <div class="chips">
+        <span class="chip">lokal gespeichert</span>
+        <span class="chip">PDF</span>
+        <span class="chip">WhatsApp-Teilen</span>
+        <span class="chip">Backup</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <h2>Firmendaten</h2>
+          <div class="muted tiny" id="companySummary">Absender einmal eintragen</div>
+        </div>
+        <button class="btn btn-small btn-ghost" onclick="togglePanel('settingsBody', 'settingsToggle')" id="settingsToggle">Ausklappen</button>
+      </div>
+      <div id="settingsBody" class="hidden">
+        <div class="settings-grid">
+          <div class="field"><label>Firma</label><input id="myCompany" placeholder="z. B. Warenschmiede" /></div>
+          <div class="field"><label>Inhaber / Name</label><input id="myName" placeholder="z. B. Marco Hoffmann" /></div>
+          <div class="field"><label>Straße</label><input id="myStreet" placeholder="Straße & Hausnummer" /></div>
+          <div class="grid-2">
+            <div class="field"><label>PLZ</label><input id="myZip" placeholder="78166" /></div>
+            <div class="field"><label>Ort</label><input id="myCity" placeholder="Donaueschingen" /></div>
+          </div>
+          <div class="field"><label>Steuernummer / USt-ID</label><input id="myTaxId" placeholder="optional" /></div>
+          <div class="field"><label>QR-Code Art</label><select id="qrType"><option value="vcard">vCard / Kontakt</option><option value="paypal">PayPal.me Link</option><option value="none">Kein QR-Code</option></select></div>
+          <div class="field"><label>QR-Daten</label><input id="qrData" placeholder="Telefonnummer oder PayPal.me Name" /></div>
+          <div class="field"><label>Quittungs-Prefix</label><input id="receiptPrefix" value="Q" maxlength="8" /></div>
+          <label class="check-row" style="grid-column:1/-1;">
+            <span>Standard-Rechtstext verwenden<small>Für Kleinunternehmer nach deutschem §19 UStG. Haken entfernen, um den Text anzupassen.</small></span>
+            <input id="useDefaultLegalText" type="checkbox" checked onchange="syncLegalTextField()" />
+          </label>
+          <div class="field" style="grid-column:1/-1;"><label>Rechtstext auf der Quittung</label><input id="legalText" placeholder="Rechtstext" onkeydown="legalTextEnter(event)" /></div>
+        </div>
+        <div class="grid-actions">
+          <button class="btn btn-green" onclick="saveSettings()">Firmendaten speichern</button>
+          <button class="btn btn-light" onclick="resetFormOnly()">Formular leeren</button>
+        </div>
+        <div class="notice"><strong>Hinweis:</strong> Bitte prüfe selbst, welche Pflichtangaben du für deine Quittungen brauchst. Das Tool ersetzt keine Steuerberatung.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head"><h2>Kunde</h2><span class="muted tiny">optional</span></div>
+      <div class="field"><label>Name / Firma</label><input id="custName" placeholder="Laufkunde oder Name/Firma" /></div>
+      <button class="btn btn-small btn-light btn-block" onclick="togglePanel('custDetails', 'custToggle')" id="custToggle">Details anzeigen</button>
+      <div id="custDetails" class="hidden" style="margin-top:10px;">
+        <div class="field"><label>Straße</label><input id="custStreet" placeholder="optional" /></div>
+        <div class="grid-2">
+          <div class="field"><label>PLZ</label><input id="custZip" placeholder="optional" /></div>
+          <div class="field"><label>Ort</label><input id="custCity" placeholder="optional" /></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h2>Posten</h2>
+        <span class="muted tiny" id="itemCount">0 Posten</span>
+      </div>
+      <div class="item-list" id="itemList"></div>
+      <div class="item-form">
+        <div class="field"><label>Artikel / Leistung</label><input id="itemName" placeholder="z. B. Ersatzteil, 3D-Druck, Kleinauftrag" /></div>
+        <div class="grid-2">
+          <div class="field"><label>Preis (€)</label><input id="itemPrice" inputmode="decimal" placeholder="z. B. 12,50" /></div>
+          <div class="field"><label>Menge</label><input id="itemQty" inputmode="decimal" value="1" /></div>
+        </div>
+        <button class="btn btn-blue btn-block" onclick="addItem()">＋ Posten hinzufügen</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head"><h2>Zahlung & Abschluss</h2></div>
+      <label class="check-row">
+        <span>Kleinunternehmer (§19 UStG)<small>Kein Ausweis von Umsatzsteuer</small></span>
+        <input id="smallBiz" type="checkbox" checked onchange="updateAll()" />
+      </label>
+      <div class="field" style="margin-top:10px;"><label>Rabatt (€)</label><input id="discount" inputmode="decimal" value="0" onchange="updateAll()" oninput="updateAll()" /></div>
+      <div class="pay-row">
+        <button class="pay active" id="payBar" onclick="setPay('Bar')">Bar</button>
+        <button class="pay" id="payPaypal" onclick="setPay('PayPal')">PayPal</button>
+        <button class="pay" id="payBank" onclick="setPay('Überweisung')">Überw.</button>
+      </div>
+      <div class="summary-grid">
+        <div class="summary-line"><small>Posten</small><strong id="summaryItems">0</strong></div>
+        <div class="summary-line"><small>Rabatt</small><strong id="summaryDiscount">0,00 €</strong></div>
+        <div class="summary-line"><small>Zahlart</small><strong id="summaryPay">Bar</strong></div>
+        <div class="summary-line"><small>Gesamt</small><strong id="summaryTotal">0,00 €</strong></div>
+      </div>
+      <div class="grid-actions">
+        <button class="btn btn-blue" onclick="generatePDF('download')">📄 PDF erstellen</button>
+        <button class="btn btn-amber" onclick="sharePDF()">📱 Teilen</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div><h2>Verlauf & Backup</h2><div class="muted tiny">lokal in diesem Browser</div></div>
+        <button class="btn btn-small btn-ghost" onclick="togglePanel('historyBody', 'historyToggle')" id="historyToggle">Ausklappen</button>
+      </div>
+      <div id="historyBody" class="hidden">
+        <div class="history-list" id="historyList"></div>
+        <div class="grid-actions">
+          <button class="btn btn-light" onclick="downloadBackup()">Backup sichern</button>
+          <button class="btn btn-light" onclick="document.getElementById('backupFile').click()">Backup laden</button>
+          <input id="backupFile" type="file" accept=".json,application/json" style="display:none" onchange="restoreBackup(this)" />
+        </div>
+        <div class="notice"><strong>Wichtig:</strong> Daten liegen nur auf diesem Gerät. Bei Handywechsel oder Browserlöschung vorher Backup sichern.</div>
+      </div>
+    </section>
+
+    <div class="footer-links">
+      <a href="../index.html">Zurück zur Warenschmiede</a> ·
+      <a href="/kontakt/impressum.html">Impressum</a> ·
+      <a href="../datenschutz.html">Datenschutz</a>
+    </div>
+  </main>
+
+  <div class="bottom-bar">
+    <div class="bottom-inner">
+      <button class="btn btn-blue" onclick="generatePDF('download')">PDF erstellen</button>
+      <button class="btn btn-amber" onclick="sharePDF()">Teilen</button>
+    </div>
+  </div>
+
+  <canvas id="qrCanvas" style="display:none"></canvas>
+
+  <script>
+    const SETTINGS_KEY = 'ws_receipt_plus_settings_v1';
+    const HISTORY_KEY = 'ws_receipt_plus_history_v1';
+    const OLD_SETTINGS_KEY = 'quittung_company';
+    const OLD_HISTORY_KEY = 'quittung_history';
+
+    let items = [];
+    let paymentMethod = 'Bar';
+    let history = [];
+    let companyData = {
+      name: '', owner: '', street: '', zip: '', city: '', taxId: '',
+      qrType: 'vcard', qrData: '', prefix: 'Q',
+      useDefaultLegalText: true,
+      legalText: 'Kein Ausweis von USt. gem. §19 UStG.'
     };
 
-    let receiptData = {
-      no: "Q-2025-001",
-      inputAmount: 0,
-      finalAmount: 0,
-      from: "",
-      for: "",
-      date: new Date().toLocaleDateString('de-DE'),
-      place: "Musterstadt",
-      sign: "Max Mustermann",
-      isSmallBiz: true
-    };
+    const $ = (id) => document.getElementById(id);
 
-    const STORAGE_KEY = 'receipt_writer_v4';
+    window.addEventListener('load', () => {
+      loadState();
+      renderSettings();
+      renderItems();
+      renderHistory();
+      updateAll();
+      updateDarkIcon();
+      ['itemName','itemPrice','itemQty'].forEach(id => $(id).addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); addItem(); }
+      }));
+    });
 
-    loadFromLocal();
-    updateUI();
+    function loadState() {
+      if (localStorage.getItem('receipt_dark') === '1') document.body.classList.add('dark');
 
-    function updateAmountInput(val) {
-      receiptData.inputAmount = parseFloat(val) || 0;
-      recalcAmounts();
+      try {
+        const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null');
+        const old = JSON.parse(localStorage.getItem(OLD_SETTINGS_KEY) || 'null');
+        companyData = { ...companyData, ...(saved || old || {}) };
+        if (companyData.qrType === undefined) companyData.qrType = 'vcard';
+        if (!companyData.prefix) companyData.prefix = 'Q';
+        if (typeof companyData.useDefaultLegalText !== 'boolean') companyData.useDefaultLegalText = true;
+        if (!companyData.legalText) companyData.legalText = 'Kein Ausweis von USt. gem. §19 UStG.';
+      } catch (_) {}
+
+      try {
+        const savedHistory = JSON.parse(localStorage.getItem(HISTORY_KEY) || 'null');
+        const oldHistory = JSON.parse(localStorage.getItem(OLD_HISTORY_KEY) || 'null');
+        history = Array.isArray(savedHistory) ? savedHistory : (Array.isArray(oldHistory) ? oldHistory : []);
+        saveHistory();
+      } catch (_) { history = []; }
     }
 
-    function recalcAmounts() {
-      if (receiptData.isSmallBiz) {
-        receiptData.finalAmount = receiptData.inputAmount;
-      } else {
-        receiptData.finalAmount = receiptData.inputAmount * 1.19;
-      }
-
-      updateDisplay();
+    function renderSettings() {
+      $('myCompany').value = companyData.name || '';
+      $('myName').value = companyData.owner || '';
+      $('myStreet').value = companyData.street || '';
+      $('myZip').value = companyData.zip || '';
+      $('myCity').value = companyData.city || '';
+      $('myTaxId').value = companyData.taxId || '';
+      $('qrType').value = companyData.qrType || 'vcard';
+      $('qrData').value = companyData.qrData || '';
+      $('receiptPrefix').value = companyData.prefix || 'Q';
+      $('useDefaultLegalText').checked = companyData.useDefaultLegalText !== false;
+      $('legalText').value = companyData.legalText || 'Kein Ausweis von USt. gem. §19 UStG.';
+      syncLegalTextField();
+      updateCompanySummary();
     }
 
-    function updateDisplay() {
-      const amountStr = receiptData.finalAmount.toFixed(2).replace('.', ',');
-
-      document.getElementById('hw-amount-box').textContent = amountStr;
-      document.getElementById('rec-words').value = numberToWords(receiptData.finalAmount);
-
-      const netEl = document.getElementById('tax-net');
-      const valEl = document.getElementById('tax-val');
-      const grossEl = document.getElementById('tax-gross');
-      const footerNote = document.getElementById('footer-note');
-      const taxCross = document.getElementById('tax-cross');
-
-      grossEl.textContent = amountStr + ' ' + CHAR.euro;
-
-      if (receiptData.isSmallBiz) {
-        taxCross.classList.remove('hidden');
-        footerNote.style.display = 'inline';
-
-        netEl.textContent = "---";
-        valEl.textContent = "---";
-      } else {
-        taxCross.classList.add('hidden');
-        footerNote.style.display = 'none';
-
-        const net = receiptData.inputAmount;
-        const tax = receiptData.finalAmount - net;
-
-        netEl.textContent = net.toFixed(2).replace('.', ',') + ' ' + CHAR.euro;
-        valEl.textContent = tax.toFixed(2).replace('.', ',') + ' ' + CHAR.euro;
-      }
+    function updateCompanySummary() {
+      const parts = [];
+      if (companyData.name) parts.push(companyData.name);
+      if (companyData.owner) parts.push(companyData.owner);
+      if (companyData.city) parts.push(companyData.city);
+      $('companySummary').textContent = parts.length ? parts.join(' · ') : 'Absender einmal eintragen';
     }
 
-    function updateField(id, val) {
-      document.getElementById(id).value = val;
-      if (id === 'rec-from') receiptData.from = val;
-      if (id === 'rec-for') receiptData.for = val;
-    }
-
-    function toggleTaxMode() {
-      receiptData.isSmallBiz = document.getElementById('toggle-tax').checked;
-
-      const lbl = document.getElementById('lbl-amount');
-      const hint = document.getElementById('tax-hint');
-
-      if (receiptData.isSmallBiz) {
-        lbl.textContent = "Betrag (Brutto)";
-        hint.textContent = "MwSt wird gestrichen.";
-      } else {
-        lbl.textContent = "Betrag (Netto)";
-        hint.textContent = "19% MwSt werden dazu gerechnet.";
-      }
-
-      recalcAmounts();
-    }
-
-    function newReceipt() {
-      const match = receiptData.no.match(/(\d+)$/);
-      if (match) {
-        const num = parseInt(match[1]) + 1;
-        receiptData.no = receiptData.no.replace(/\d+$/, num.toString().padStart(match[1].length, '0'));
-      }
-      receiptData.inputAmount = 0;
-      receiptData.finalAmount = 0;
-      receiptData.from = "";
-      receiptData.for = "";
-
-      document.getElementById('inp-amount').value = "";
-      document.getElementById('inp-from').value = "";
-      document.getElementById('inp-for').value = "";
-
-      updateUI();
-    }
-
-    function updateUI() {
-      document.getElementById('rec-no').textContent = receiptData.no;
-      document.getElementById('rec-date').value = receiptData.place + ", " + receiptData.date;
-      document.getElementById('rec-sign').value = receiptData.sign;
-      document.getElementById('rec-from').value = receiptData.from;
-      document.getElementById('rec-for').value = receiptData.for;
-      document.getElementById('toggle-tax').checked = receiptData.isSmallBiz;
-
-      document.getElementById('inp-from').value = receiptData.from;
-      document.getElementById('inp-for').value = receiptData.for;
-      if (receiptData.inputAmount > 0) {
-        document.getElementById('inp-amount').value = receiptData.inputAmount;
-      }
-
-      toggleTaxMode();
-    }
-
-    function numberToWords(amount) {
-      amount = Math.round(amount * 100) / 100;
-      const euro = Math.floor(amount);
-      const cent = Math.round((amount - euro) * 100);
-
-      const ones = ["", "Eins", "Zwei", "Drei", "Vier", "Fünf", "Sechs", "Sieben", "Acht", "Neun", "Zehn", "Elf", "Zwölf", "Dreizehn", "Vierzehn", "Fünfzehn", "Sechzehn", "Siebzehn", "Achtzehn", "Neunzehn"];
-      const tens = ["", "", "Zwanzig", "Dreißig", "Vierzig", "Fünfzig", "Sechzig", "Siebzig", "Achtzig", "Neunzehn"];
-
-      function convertChunk(n) {
-        if (n === 0) return "";
-        if (n < 20) return ones[n];
-        const t = Math.floor(n / 10);
-        const r = n % 10;
-        if (r === 0) return tens[t];
-        let oneStr = ones[r];
-        if (r === 1) oneStr = "Ein";
-        return oneStr + "und" + tens[t].toLowerCase();
-      }
-
-      let text = "";
-      if (euro === 0) text = "Null";
-      else if (euro < 100) text = convertChunk(euro);
-      else {
-        const h = Math.floor(euro / 100);
-        const rest = euro % 100;
-        text = ones[h] + "hundert" + (rest > 0 ? convertChunk(rest).toLowerCase() : "");
-      }
-
-      if (euro >= 1000) text = euro.toString();
-
-      return `${text} --- ${cent.toString().padStart(2, '0')}/100`;
-    }
-
-    function generatePDF() {
-      const element = document.getElementById('receipt');
-      const inputs = document.querySelectorAll('input');
-      inputs.forEach(input => input.setAttribute('value', input.value));
-
-      const opt = {
-        margin: 0,
-        filename: `Quittung_${receiptData.no}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    function saveSettings(showMessage = true) {
+      companyData = {
+        name: $('myCompany').value.trim(), owner: $('myName').value.trim(), street: $('myStreet').value.trim(),
+        zip: $('myZip').value.trim(), city: $('myCity').value.trim(), taxId: $('myTaxId').value.trim(),
+        qrType: $('qrType').value, qrData: $('qrData').value.trim(), prefix: ($('receiptPrefix').value.trim() || 'Q'),
+        useDefaultLegalText: $('useDefaultLegalText').checked,
+        legalText: $('legalText').value.trim() || 'Kein Ausweis von USt. gem. §19 UStG.'
       };
-
-      html2pdf().set(opt).from(element).save();
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(companyData));
+      updateCompanySummary();
+      syncLegalTextField();
+      if (showMessage) toast('Firmendaten gespeichert.');
     }
 
-    function saveToLocal() {
-      receiptData.from = document.getElementById('rec-from').value;
-      receiptData.for = document.getElementById('rec-for').value;
-      receiptData.sign = document.getElementById('rec-sign').value;
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(receiptData));
-
-      const btn = document.querySelector('button[onclick="saveToLocal()"]');
-      const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="ph ph-check text-emerald-500 text-xl"></i>';
-      setTimeout(() => btn.innerHTML = originalHTML, 2000);
+    function toggleDark() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('receipt_dark', document.body.classList.contains('dark') ? '1' : '0');
+      updateDarkIcon();
     }
 
-    function loadFromLocal() {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const loaded = JSON.parse(stored);
-        loaded.date = new Date().toLocaleDateString('de-DE');
-        receiptData = { ...receiptData, ...loaded };
+    function updateDarkIcon() { $('darkBtn').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙'; }
+
+    function togglePanel(id, btnId) {
+      const el = $(id);
+      const btn = $(btnId);
+      el.classList.toggle('hidden');
+      btn.textContent = el.classList.contains('hidden') ? 'Ausklappen' : 'Einklappen';
+    }
+
+    function parseMoney(value) {
+      const normalized = String(value ?? '').replace(/\s/g,'').replace(',', '.');
+      const num = Number(normalized);
+      return Number.isFinite(num) ? num : NaN;
+    }
+
+    function money(value) {
+      return (Number(value) || 0).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+    }
+
+    function addItem() {
+      const name = $('itemName').value.trim();
+      const price = parseMoney($('itemPrice').value);
+      const qty = parseMoney($('itemQty').value || '1');
+      if (!name) return alert('Bitte Artikelbeschreibung eingeben.');
+      if (!Number.isFinite(price)) return alert('Bitte Preis eingeben. Komma ist erlaubt, z. B. 12,50.');
+      if (!Number.isFinite(qty) || qty <= 0) return alert('Bitte gültige Menge eingeben.');
+      items.push({ name, price, qty });
+      $('itemName').value = '';
+      $('itemPrice').value = '';
+      $('itemQty').value = '1';
+      $('itemName').focus();
+      renderItems();
+    }
+
+    function removeItem(index) {
+      items.splice(index, 1);
+      renderItems();
+    }
+
+    function editItem(index) {
+      const item = items[index];
+      if (!item) return;
+      $('itemName').value = item.name;
+      $('itemPrice').value = String(item.price).replace('.', ',');
+      $('itemQty').value = String(item.qty).replace('.', ',');
+      items.splice(index, 1);
+      renderItems();
+      $('itemName').focus();
+    }
+
+    function renderItems() {
+      const list = $('itemList');
+      list.innerHTML = '';
+      if (!items.length) {
+        list.innerHTML = '<div class="muted tiny" style="padding:12px;text-align:center;border:1px dashed var(--line);border-radius:14px;">Noch keine Posten.</div>';
       }
+      items.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `
+          <div>
+            <strong>${escapeHTML(item.name)}</strong>
+            <small>${escapeHTML(item.qty)} × ${money(item.price)}</small>
+            <div class="item-actions">
+              <button class="btn btn-small btn-light" onclick="editItem(${index})">Bearbeiten</button>
+              <button class="btn btn-small btn-ghost" onclick="removeItem(${index})">Löschen</button>
+            </div>
+          </div>
+          <div class="item-price">${money(item.price * item.qty)}</div>
+        `;
+        list.appendChild(div);
+      });
+      updateAll();
+    }
+
+    function calcTotals() {
+      const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+      const discount = Math.max(0, parseMoney($('discount').value) || 0);
+      const total = Math.max(0, subtotal - discount);
+      return { subtotal, discount, total };
+    }
+
+    function updateAll() {
+      const { discount, total } = calcTotals();
+      $('heroTotal').textContent = money(total);
+      $('summaryItems').textContent = items.length;
+      $('summaryDiscount').textContent = money(discount);
+      $('summaryPay').textContent = paymentMethod;
+      $('summaryTotal').textContent = money(total);
+      $('itemCount').textContent = items.length === 1 ? '1 Posten' : `${items.length} Posten`;
+    }
+
+    function setPay(method) {
+      paymentMethod = method;
+      $('payBar').classList.toggle('active', method === 'Bar');
+      $('payPaypal').classList.toggle('active', method === 'PayPal');
+      $('payBank').classList.toggle('active', method === 'Überweisung');
+      updateAll();
+    }
+
+    function receiptNumber() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const mo = String(now.getMonth()+1).padStart(2,'0');
+      const d = String(now.getDate()).padStart(2,'0');
+      const h = String(now.getHours()).padStart(2,'0');
+      const mi = String(now.getMinutes()).padStart(2,'0');
+      const prefix = companyData.prefix || 'Q';
+      return `${prefix}-${y}${mo}${d}-${h}${mi}`;
+    }
+
+    function createPDFDoc() {
+      if (!window.jspdf || !window.jspdf.jsPDF) throw new Error('PDF-Bibliothek konnte nicht geladen werden.');
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'mm', format: [80, 250] });
+      const isSmallBiz = $('smallBiz').checked;
+      const now = new Date();
+      const docNum = receiptNumber();
+      let y = 10;
+      const lineH = 4;
+      const centerX = 40;
+      const { subtotal, discount, total } = calcTotals();
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.text(companyData.name || 'Firma', centerX, y, { align: 'center' }); y += 5;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      if (companyData.owner) { doc.text(`Inh. ${companyData.owner}`, centerX, y, { align:'center' }); y += lineH; }
+      if (companyData.street) { doc.text(companyData.street, centerX, y, { align:'center' }); y += lineH; }
+      if (companyData.zip || companyData.city) { doc.text(`${companyData.zip || ''} ${companyData.city || ''}`.trim(), centerX, y, { align:'center' }); y += lineH; }
+      if (companyData.taxId) { doc.text(`St-Nr/USt-ID: ${companyData.taxId}`, centerX, y, { align:'center' }); y += lineH + 2; }
+
+      doc.line(5, y, 75, y); y += 5;
+      doc.text(`Datum: ${now.toLocaleDateString('de-DE')} ${now.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'})}`, 5, y); y += lineH;
+      doc.text(`Beleg-Nr: ${docNum}`, 5, y); y += lineH + 2;
+
+      const cName = $('custName').value.trim();
+      if (cName) {
+        doc.setFont('helvetica', 'bold'); doc.text('Kunde:', 5, y); y += lineH;
+        doc.setFont('helvetica', 'normal'); doc.text(cName, 5, y); y += lineH;
+        const street = $('custStreet').value.trim();
+        const cityLine = `${$('custZip').value.trim()} ${$('custCity').value.trim()}`.trim();
+        if (street) { doc.text(street, 5, y); y += lineH; }
+        if (cityLine) { doc.text(cityLine, 5, y); y += lineH; }
+        y += 2;
+      }
+
+      doc.line(5, y, 75, y); y += 5;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Pos', 5, y); doc.text('Preis', 75, y, { align:'right' }); y += lineH;
+      doc.setFont('helvetica', 'normal');
+      items.forEach(item => {
+        const lineTotal = item.price * item.qty;
+        const qtyText = String(item.qty).replace('.', ',');
+        const unitText = money(item.price).replace(' €',' EUR');
+        const text = `${qtyText}x ${item.name} à ${unitText}`;
+        const lines = doc.splitTextToSize(text, 50);
+        doc.text(lines, 5, y);
+        doc.text(money(lineTotal).replace(' €',' EUR'), 75, y, { align:'right' });
+        y += lines.length * lineH + 1;
+      });
+
+      if (discount > 0) {
+        y += 1;
+        doc.text('Zwischensumme:', 5, y); doc.text(money(subtotal).replace(' €',' EUR'), 75, y, { align:'right' }); y += lineH;
+        doc.text('Rabatt:', 5, y); doc.text('-' + money(discount).replace(' €',' EUR'), 75, y, { align:'right' }); y += lineH;
+      }
+
+      doc.line(5, y, 75, y); y += 5;
+      doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+      doc.text('GESAMT', 5, y); doc.text(money(total).replace(' €',' EUR'), 75, y, { align:'right' }); y += 6;
+      doc.setFontSize(7); doc.setFont('helvetica', 'normal');
+      if (isSmallBiz) doc.text(companyData.legalText || 'Kein Ausweis von USt. gem. §19 UStG.', centerX, y, { align:'center' });
+      else {
+        const net = total / 1.19;
+        const tax = total - net;
+        doc.text(`Enthält 19% MwSt: ${money(tax).replace(' €',' EUR')}`, centerX, y, { align:'center' });
+      }
+      y += lineH;
+      doc.setFontSize(8);
+      doc.text(`Bezahlt mit: ${paymentMethod}`, 5, y); y += 8;
+
+      if (companyData.qrType !== 'none' && companyData.qrData) {
+        let qrValue = '';
+        let qrLabel = '';
+        if (companyData.qrType === 'paypal') {
+          qrValue = `https://paypal.me/${companyData.qrData}/${total.toFixed(2)}EUR`;
+          qrLabel = 'PayPal Scan';
+        } else {
+          qrValue = `BEGIN:VCARD\nVERSION:3.0\nFN:${companyData.name || companyData.owner}\nTEL:${companyData.qrData}\nEND:VCARD`;
+          qrLabel = 'Kontakt';
+        }
+        const qr = new QRious({ element: $('qrCanvas'), value: qrValue, size: 180 });
+        doc.addImage(qr.toDataURL(), 'JPEG', 30, y, 20, 20);
+        y += 22;
+        doc.setFontSize(6);
+        doc.text(qrLabel, centerX, y, { align:'center' });
+        y += 5;
+      }
+
+      doc.text('Vielen Dank für Ihren Einkauf!', centerX, y, { align:'center' });
+      return { doc, filename: `Quittung_${docNum}.pdf`, total, docNum };
+    }
+
+    function generatePDF(mode = 'download') {
+      if (!items.length) return alert('Keine Posten auf der Quittung.');
+      try {
+        saveSettings(false);
+        const { doc, filename, total, docNum } = createPDFDoc();
+        doc.save(filename);
+        saveToHistory(total, docNum);
+        askClearAfterReceipt('PDF wurde erstellt.');
+      } catch (err) { alert(err.message); }
+    }
+
+    async function sharePDF() {
+      if (!items.length) return alert('Keine Posten auf der Quittung.');
+      try {
+        saveSettings(false);
+        const { doc, filename, total, docNum } = createPDFDoc();
+        const blob = doc.output('blob');
+        const file = new File([blob], filename, { type: 'application/pdf' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: 'Quittung', text: 'Hier ist Ihre Quittung.' });
+          saveToHistory(total, docNum);
+          askClearAfterReceipt('Quittung geteilt.');
+        } else {
+          doc.save(filename);
+          saveToHistory(total, docNum);
+          alert('Teilen wird auf diesem Gerät nicht unterstützt. PDF wurde gespeichert.');
+          askClearAfterReceipt('PDF wurde erstellt.');
+        }
+      } catch (err) {
+        if (String(err.name) !== 'AbortError') alert('Teilen fehlgeschlagen: ' + err.message);
+      }
+    }
+
+    function saveToHistory(total, docNum) {
+      const entry = {
+        id: Date.now().toString(), receiptNo: docNum, date: new Date().toISOString(),
+        custName: $('custName').value.trim(), custStreet: $('custStreet').value.trim(), custZip: $('custZip').value.trim(), custCity: $('custCity').value.trim(),
+        items: structuredClone(items), discount: $('discount').value, paymentMethod, isSmallBiz: $('smallBiz').checked, total
+      };
+      history.push(entry);
+      saveHistory();
+      renderHistory();
+    }
+
+    function saveHistory() { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); }
+
+    function renderHistory() {
+      const list = $('historyList');
+      list.innerHTML = '';
+      const sorted = [...history].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 30);
+      if (!sorted.length) {
+        list.innerHTML = '<div class="muted tiny" style="padding:12px;text-align:center;border:1px dashed var(--line);border-radius:14px;">Noch kein Verlauf.</div>';
+        return;
+      }
+      sorted.forEach(e => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerHTML = `
+          <div><strong>${escapeHTML(e.custName || 'Laufkunde')}</strong><small>${new Date(e.date).toLocaleString('de-DE')} · ${money(e.total || 0)} · ${escapeHTML(e.receiptNo || '')}</small></div>
+          <div class="history-actions"><button class="btn btn-small btn-light" onclick="loadHistory('${e.id}')">Laden</button><button class="btn btn-small btn-ghost" onclick="deleteHistory('${e.id}')">Löschen</button></div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function loadHistory(id) {
+      const e = history.find(x => String(x.id) === String(id));
+      if (!e) return;
+      if (!confirm('Aktuelles Formular mit Verlaufseintrag überschreiben?')) return;
+      $('custName').value = e.custName || '';
+      $('custStreet').value = e.custStreet || '';
+      $('custZip').value = e.custZip || '';
+      $('custCity').value = e.custCity || '';
+      items = structuredClone(e.items || []);
+      $('discount').value = e.discount || '0';
+      $('smallBiz').checked = e.isSmallBiz !== false;
+      setPay(e.paymentMethod || 'Bar');
+      renderItems();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteHistory(id) {
+      if (!confirm('Verlaufseintrag löschen?')) return;
+      history = history.filter(x => String(x.id) !== String(id));
+      saveHistory();
+      renderHistory();
+    }
+
+    function downloadBackup() {
+      saveSettings();
+      const data = { app: 'Quittungs-Werkstatt', version: 1, created: new Date().toISOString(), settings: companyData, history };
+      const stamp = new Date().toISOString().slice(0,19).replace('T','_').replaceAll(':','-');
+      downloadText(`quittungs_werkstatt_backup_${stamp}.json`, JSON.stringify(data, null, 2), 'application/json;charset=utf-8');
+    }
+
+    function restoreBackup(input) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          if (!confirm('Backup laden? Aktuelle Firmendaten und Verlauf werden ersetzt.')) return;
+          companyData = { ...companyData, ...(data.settings || {}) };
+          history = Array.isArray(data.history) ? data.history : [];
+          localStorage.setItem(SETTINGS_KEY, JSON.stringify(companyData));
+          saveHistory();
+          renderSettings();
+          renderHistory();
+          toast('Backup geladen.');
+        } catch (err) { alert('Backup konnte nicht geladen werden.'); }
+        finally { input.value = ''; }
+      };
+      reader.readAsText(file);
+    }
+
+    function downloadText(filename, text, type) {
+      const blob = new Blob([text], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function resetFormOnly(ask = true) {
+      if (ask && !confirm('Kunde, Posten, Rabatt und Zahlart zurücksetzen?')) return;
+      $('custName').value = ''; $('custStreet').value = ''; $('custZip').value = ''; $('custCity').value = '';
+      items = [];
+      $('discount').value = '0';
+      setPay('Bar');
+      renderItems();
+    }
+
+    function askClearAfterReceipt(message) {
+      const shouldClear = confirm(`${message}
+
+Formular für die nächste Quittung leeren?`);
+      if (shouldClear) resetFormOnly(false);
+      else toast(message);
+    }
+
+    function syncLegalTextField() {
+      const useDefault = $('useDefaultLegalText')?.checked;
+      const input = $('legalText');
+      if (!input) return;
+      input.readOnly = !!useDefault;
+      input.style.opacity = useDefault ? '0.62' : '1';
+      input.style.background = useDefault ? 'var(--soft)' : 'var(--card)';
+      if (useDefault) input.value = 'Kein Ausweis von USt. gem. §19 UStG.';
+    }
+
+    function legalTextEnter(event) {
+      if (event.key !== 'Enter') return;
+      event.preventDefault();
+      $('useDefaultLegalText').checked = true;
+      saveSettings(false);
+      toast('Rechtstext übernommen und gesperrt.');
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    }
+
+    function toast(msg) {
+      const el = document.createElement('div');
+      el.textContent = msg;
+      el.style.position = 'fixed';
+      el.style.left = '50%';
+      el.style.bottom = 'calc(92px + env(safe-area-inset-bottom, 0px))';
+      el.style.transform = 'translateX(-50%)';
+      el.style.background = '#0f172a';
+      el.style.color = '#fff';
+      el.style.padding = '10px 14px';
+      el.style.borderRadius = '999px';
+      el.style.zIndex = '300';
+      el.style.boxShadow = '0 12px 30px rgba(0,0,0,.22)';
+      el.style.fontWeight = '900';
+      el.style.fontSize = '.88rem';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2100);
     }
   </script>
 </body>
