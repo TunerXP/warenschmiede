@@ -55,6 +55,9 @@ foreach ($directory in $websiteDirectories) {
     }
 }
 
+$brandingFavicon = Join-Path $repoRoot 'assets/img/branding/favicon.ico'
+Copy-Item -LiteralPath $brandingFavicon -Destination (Join-Path $deployRoot 'favicon.ico')
+
 # Defense in depth for development helpers that may live below an otherwise
 # public directory. Productive documents such as PDF files remain untouched.
 Get-ChildItem -LiteralPath $deployRoot -Recurse -File | Where-Object {
