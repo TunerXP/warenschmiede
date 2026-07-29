@@ -6,6 +6,20 @@
     let projectVersions = [];
     let currentVersionId = null;
 
+    // Nominale, herstellerunabhängige Druckmaße in Millimetern. Format und
+    // Druckgröße bleiben getrennt; die Werte dienen ausschließlich dem A4-Packing.
+    const PRINT_LAYOUT = Object.freeze({
+      pageWidthMm: 210,
+      scale: Object.freeze({small:.82, medium:1, large:1.22}),
+      format: Object.freeze({
+        compact: Object.freeze({width:50, height:22}),
+        normal: Object.freeze({width:55, height:28}),
+        wide: Object.freeze({width:66, height:25}),
+        tall: Object.freeze({width:45, height:39}),
+        sign: Object.freeze({width:72, height:50})
+      })
+    });
+
     const typeInfo = {
       CODE128:{label:'Code128',numericOnly:false,hint:'Code128 ist flexibel und eignet sich z. B. für interne Nummern, Lagerplätze, Aufträge und Werkstattetiketten.',help:'Code128 ist flexibel und eignet sich z. B. für interne Nummern, Lagerplätze, Aufträge und Werkstattetiketten.',ex:'Artikelnummer, Auftragsnummer, Lagerfach, interne Werkzeug-ID.',sample:'WS-2026-001'},
       EAN13:{label:'EAN-13',numericOnly:true,baseLen:12,fullLen:13,hint:'EAN-13 codiert eine 13-stellige GTIN. 12 Basisziffern werden ergänzt; bei 13 Ziffern wird die Prüfziffer geprüft.',help:'EAN-13 codiert eine 13-stellige GTIN. Die letzte Ziffer ist die Prüfziffer. Gib 12 Basisziffern ein, damit sie automatisch ergänzt wird, oder alle 13 Ziffern, um eine vorhandene Prüfziffer prüfen zu lassen. Für den offiziellen Einsatz müssen gültig vergebene Nummern verwendet werden.',ex:'Beispiel: 400638133393 → 4006381333931.',sample:'400638133393'},
@@ -497,8 +511,24 @@
     function updatePrintLayoutVars(){
       const margin = Number(getValue('printMargin') || 12);
       const gap = Number(getValue('labelGap') || 8);
-      document.documentElement.style.setProperty('--print-padding', margin + 'px');
-      document.documentElement.style.setProperty('--print-gap', gap + 'px');
+      document.documentElement.style.setProperty('--print-padding', margin + 'mm');
+      document.documentElement.style.setProperty('--print-gap', gap + 'mm');
+    }
+
+    function printLabelMetrics(design = labelDesign()){
+      const format = PRINT_LAYOUT.format[design.labelFormat] || PRINT_LAYOUT.format.normal;
+      const scale = PRINT_LAYOUT.scale[getValue('labelScale')] || PRINT_LAYOUT.scale.medium;
+      return {width:format.width * scale, height:format.height * scale};
+    }
+
+    function sheetColumnCount(labelWidth){
+      const margin = Number(getValue('printMargin') || 12);
+      const gap = Number(getValue('labelGap') || 8);
+      const available = Math.max(0, PRINT_LAYOUT.pageWidthMm - (2 * margin));
+      const physical = Math.max(1, Math.floor((available + gap) / (labelWidth + gap)));
+      const requested = getValue('labelsPerRow') || 'auto';
+      const maximum = requested === 'auto' ? physical : Math.max(1, Number(requested) || physical);
+      return {columns:Math.min(physical, maximum), physical, requested};
     }
 
     function generate(){
@@ -881,8 +911,11 @@
         if(design.pos === 'bottom' && bottomBarEl) bottomBarEl.appendChild(titleEl);
       } else if(design.showTitle && design.title && design.pos === 'top') inner.appendChild(makeTitle());
 
+      const barcodeArea = document.createElement('div');
+      barcodeArea.className = 'label-barcode-area';
       const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-      inner.appendChild(svg);
+      barcodeArea.appendChild(svg);
+      inner.appendChild(barcodeArea);
 
       const label = document.createElement('div');
       label.className = 'label-text';
@@ -912,21 +945,32 @@
       updatePrintLayoutVars();
       const codes = expandedCodes();
       $('sheetCount').textContent = `${codes.length} Etiketten`;
-      const cols = Number($('labelsPerRow').value || 3);
       const design = labelDesign();
       const grid = $('labelGrid');
+      const metrics = printLabelMetrics(design);
+      const packing = sheetColumnCount(metrics.width);
       const density = design.labelDensity || 'balanced';
       grid.classList.remove('label-sheet-compact','label-sheet-comfortable','label-sheet-scan');
       if(density === 'many') grid.classList.add('label-sheet-compact');
       if(density === 'comfortable') grid.classList.add('label-sheet-comfortable');
       if(density === 'scan') grid.classList.add('label-sheet-scan');
-      grid.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+      grid.style.setProperty('--label-print-width', metrics.width + 'mm');
+      grid.style.setProperty('--label-print-height', metrics.height + 'mm');
+      grid.style.gridTemplateColumns = `repeat(${packing.columns}, var(--label-print-width))`;
       grid.innerHTML = '';
       codes.forEach((item)=>{
         const made = createLabelCell(item, design, false);
         grid.appendChild(made.cell);
         try { renderBarcodeToSvg(made.svg, item.value, true); } catch(e) { made.label.textContent = 'Fehler: ' + item.value; }
       });
+      const status = $('sheetLayoutStatus');
+      if(status){
+        status.textContent = packing.requested === 'auto'
+          ? `Automatisch: aktuell ${packing.columns} pro Reihe`
+          : packing.columns < Number(packing.requested)
+            ? `Aktuell passen ${packing.columns} pro Reihe`
+            : `Begrenzt auf ${packing.columns} pro Reihe`;
+      }
       renderSingleLabelPreview();
     }
     function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
@@ -1203,7 +1247,7 @@
       setValue('showText', state.style?.showText || 'true');
       setValue('fontSize', state.style?.fontSize || '18');
 
-      setValue('labelsPerRow', state.layout?.labelsPerRow || '3');
+      setValue('labelsPerRow', state.layout?.labelsPerRow || 'auto');
       setValue('copiesPerCode', state.layout?.copiesPerCode || '1');
       setValue('labelScale', state.layout?.labelScale || 'medium');
       setValue('printMargin', state.layout?.printMargin || '12');
