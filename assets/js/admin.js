@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const state = { inventory: null, sitemap: new Set(), seo: [], downloads: [], release: null, warnings: [] };
+  const state = { inventory: null, sitemap: new Set(), seo: [], seoScanned: false, downloads: [], release: null, warnings: [] };
   const $ = selector => document.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const text = value => String(value ?? '–');
@@ -22,21 +22,72 @@
   }
 
   function inventoryList(name, alias) { return state.inventory?.[name] || state.inventory?.[alias] || []; }
+  const PAGE_CATEGORIES = Object.freeze({
+    public: 'Öffentliche Seite', tool: 'Tool', legal: 'Rechtliches', document: 'Dokument',
+    technical: 'Technisch', legacy: 'Legacy', admin: 'Admin'
+  });
+  const EXCLUDED_CATEGORIES = new Set(['document', 'technical', 'admin']);
+  const SEVERITY_ORDER = Object.freeze({ excluded: -1, ok: 0, info: 1, warning: 2, error: 3 });
+
+  function normalizePath(path) { return path.replace(/^\/+/, '').replace(/\\/g, '/'); }
+  function classifyPage(path) {
+    const normalized = normalizePath(path).toLowerCase();
+    if (normalized === 'admin/index.html' || normalized.startsWith('admin/')) return 'admin';
+    if (normalized.startsWith('docs/')) return 'document';
+    if (['datenschutz.html', 'kontakt/impressum.html'].includes(normalized)) return 'legal';
+    if (normalized === 'tools/zeiterfassung.html' || /(^|\/)zeiterfassung[-_](alt|legacy)(\/|\.|$)/.test(normalized)) return 'legacy';
+    if (normalized === '404.html' || /(^|\/)(selftest|ergebnis|rechnung|angebot)([-_][^/]*)?\.html$/.test(normalized)) return 'technical';
+    if (normalized.startsWith('tools/')) return 'tool';
+    return 'public';
+  }
+  function isSeoRelevant(page) { return !EXCLUDED_CATEGORIES.has(page.category); }
+  function issue(severity, message) { return { severity, message }; }
+  function highestSeverity(issues) {
+    return issues.reduce((highest, current) => SEVERITY_ORDER[current.severity] > SEVERITY_ORDER[highest] ? current.severity : highest, 'ok');
+  }
+  function evaluateSeo(page) {
+    if (!isSeoRelevant(page)) {
+      return { ...page, issues: [issue('excluded', `${PAGE_CATEGORIES[page.category]} / SEO nicht relevant`)], severity: 'excluded' };
+    }
+    const primaryCategory = page.category === 'public' || page.category === 'tool';
+    const secondarySeverity = primaryCategory ? 'warning' : 'info';
+    const issues = [];
+    if (!page.title) issues.push(issue(primaryCategory ? 'error' : 'info', 'Title fehlt'));
+    if (!page.noindex) {
+      if (!page.description) issues.push(issue(secondarySeverity, 'Description fehlt'));
+      if (!page.h1) issues.push(issue(secondarySeverity, 'H1 fehlt'));
+      if (!page.og) issues.push(issue(secondarySeverity, 'og:image fehlt'));
+      if (!page.inSitemap) issues.push(issue(secondarySeverity, 'Nicht in Sitemap'));
+    }
+    return { ...page, issues, severity: highestSeverity(issues) };
+  }
+
   function summary() {
     const html = inventoryList('html'), images = inventoryList('images');
     const documents = inventoryList('documents', 'docs'), downloads = inventoryList('downloads');
-    const indexable = state.seo.filter(item => !item.noindex).length;
-    const noindex = state.seo.filter(item => item.noindex).length;
+    const scanValue = value => state.seoScanned ? value : null;
     return { html: html.length, images: images.length, documents: documents.length + downloads.length,
-      sitemap: state.sitemap.size, indexable, noindex,
-      warnings: state.seo.filter(item => item.level === 'warning').length,
-      errors: state.seo.filter(item => item.level === 'error').length };
+      sitemap: state.sitemap.size,
+      indexable: scanValue(state.seo.filter(item => isSeoRelevant(item) && !item.noindex).length),
+      noindex: scanValue(state.seo.filter(item => isSeoRelevant(item) && item.noindex).length),
+      warnings: scanValue(state.seo.filter(item => item.severity === 'warning').length),
+      errors: scanValue(state.seo.filter(item => item.severity === 'error').length),
+      info: scanValue(state.seo.filter(item => item.severity === 'info').length),
+      excluded: scanValue(state.seo.filter(item => item.severity === 'excluded').length) };
   }
 
   function renderStats() {
     const values = summary();
-    const labels = { html: 'HTML-Seiten', images: 'Bilder', documents: 'Dokumente / öffentliche Dateien', sitemap: 'Sitemap-URLs', indexable: 'Indexierbare Seiten', noindex: 'Noindex-Seiten', warnings: 'SEO-Warnungen', errors: 'SEO-Fehler' };
-    $('#stats').innerHTML = Object.entries(labels).map(([key, label]) => `<article class="stat"><strong>${escapeHtml(values[key])}</strong><span>${escapeHtml(label)}</span></article>`).join('');
+    const labels = { html: 'HTML-Seiten', images: 'Bilder', documents: 'Dokumente / öffentliche Dateien', sitemap: 'Sitemap-URLs', indexable: 'Indexierbare Seiten', noindex: 'Noindex-Seiten', errors: 'SEO-Fehler', warnings: 'SEO-Warnungen', info: 'SEO-Hinweise', excluded: 'Vom SEO-Scan ausgenommen' };
+    $('#stats').innerHTML = Object.entries(labels).map(([key, label]) => `<article class="stat"><strong>${values[key] === null ? '–' : escapeHtml(values[key])}</strong><span>${escapeHtml(label)}${values[key] === null ? '<br>Noch nicht geprüft' : ''}</span></article>`).join('');
+  }
+
+  function resetSeoScan() {
+    state.seo = [];
+    state.seoScanned = false;
+    $('#seo-scan-state').textContent = 'SEO-Scan noch nicht durchgeführt.';
+    $('#seo-body').innerHTML = '<tr><td colspan="9">Scan noch nicht gestartet.</td></tr>';
+    renderStats();
   }
 
   async function loadInventory() {
@@ -63,36 +114,43 @@
     renderStats();
   }
 
-  function technicalPage(path) { return path === 'admin/index.html' || /(^|\/)(404|selftest|ergebnis|rechnung|angebot)\.html$/i.test(path); }
   async function scanSeo() {
-    const pages = inventoryList('html').filter(path => !technicalPage(path));
+    const pages = inventoryList('html');
     if (!pages.length) return setNotice('Keine HTML-Seiten im Inventory gefunden.', true);
     $('#scan-seo').disabled = true; setNotice(`SEO-Scan für ${pages.length} Seiten läuft …`);
+    state.seoScanned = false;
     state.seo = await Promise.all(pages.map(async path => {
+      const category = classifyPage(path);
       try {
         const doc = new DOMParser().parseFromString(await fetchText(siteUrl(path)), 'text/html');
-        const title = doc.querySelector('title')?.textContent.trim() || '';
-        const description = doc.querySelector('meta[name="description"]')?.content.trim() || '';
-        const h1 = doc.querySelector('h1')?.textContent.trim() || '';
-        const robots = doc.querySelector('meta[name="robots"]')?.content || '';
-        const og = doc.querySelector('meta[property="og:image"]')?.content || '';
-        const noindex = /noindex/i.test(robots); const inSitemap = state.sitemap.has(path);
-        const issues = [];
-        if (!title) issues.push({ type: 'error', message: 'Title fehlt' });
-        if (!description && !noindex) issues.push({ type: 'warning', message: 'Description fehlt' });
-        if (!h1 && !noindex) issues.push({ type: 'warning', message: 'H1 fehlt' });
-        if (!og && !noindex) issues.push({ type: 'warning', message: 'og:image fehlt' });
-        if (!inSitemap && !noindex) issues.push({ type: 'warning', message: 'Nicht in Sitemap' });
-        return { path, title, description, h1, robots, og, noindex, inSitemap, issues, level: issues.some(i => i.type === 'error') ? 'error' : issues.length ? 'warning' : 'ok' };
-      } catch (error) { return { path, title: '', description: '', h1: '', robots: '', og: '', noindex: false, inSitemap: false, issues: [{ type: 'error', message: `Nicht lesbar: ${error.message}` }], level: 'error' }; }
+        const page = {
+          path, category,
+          title: doc.querySelector('title')?.textContent.trim() || '',
+          description: doc.querySelector('meta[name="description"]')?.content.trim() || '',
+          h1: doc.querySelector('h1')?.textContent.trim() || '',
+          robots: doc.querySelector('meta[name="robots"]')?.content || '',
+          og: doc.querySelector('meta[property="og:image"]')?.content || '',
+          inSitemap: state.sitemap.has(normalizePath(path))
+        };
+        page.noindex = /noindex/i.test(page.robots);
+        return evaluateSeo(page);
+      } catch (error) {
+        const page = { path, category, title: '', description: '', h1: '', robots: '', og: '', noindex: false, inSitemap: false };
+        if (!isSeoRelevant(page)) return { ...page, issues: [issue('excluded', `${PAGE_CATEGORIES[category]} / SEO nicht relevant (nicht lesbar)`)], severity: 'excluded' };
+        return { ...page, issues: [issue('error', `Nicht lesbar: ${error.message}`)], severity: 'error' };
+      }
     }));
-    $('#scan-seo').disabled = false; setNotice('SEO-Scan abgeschlossen. Die Übersicht wurde aktualisiert.'); renderSeo(); renderStats();
+    state.seoScanned = true;
+    $('#scan-seo').disabled = false;
+    $('#seo-scan-state').textContent = `SEO-Scan abgeschlossen: ${pages.length} Seiten geprüft und klassifiziert.`;
+    setNotice('SEO-Scan abgeschlossen. Die Übersicht wurde aktualisiert.'); renderSeo(); renderStats();
   }
 
   function renderSeo() {
+    if (!state.seoScanned) return;
     const query = $('#seo-search').value.toLowerCase(), filter = $('#seo-filter').value;
-    const rows = state.seo.filter(item => item.path.toLowerCase().includes(query) && (filter === 'all' || (filter === 'noindex' ? item.noindex : item.level === filter)));
-    $('#seo-body').innerHTML = rows.length ? rows.map(item => `<tr><td><a href="${escapeHtml(siteUrl(item.path))}" target="_blank" rel="noopener">${escapeHtml(item.path)}</a></td><td class="status-${item.level}">${item.level === 'ok' ? 'OK' : escapeHtml(item.issues.map(i => i.message).join(', '))}</td><td>${item.title ? '✓' : '–'}</td><td>${item.description ? '✓' : '–'}</td><td>${item.h1 ? '✓' : '–'}</td><td>${item.noindex ? 'Noindex' : 'Index'}</td><td>${item.og ? '✓' : '–'}</td><td>${item.inSitemap ? '✓' : '–'}</td></tr>`).join('') : '<tr><td colspan="8">Keine passenden Ergebnisse.</td></tr>';
+    const rows = state.seo.filter(item => item.path.toLowerCase().includes(query) && (filter === 'all' || (filter === 'noindex' ? item.noindex : item.severity === filter)));
+    $('#seo-body').innerHTML = rows.length ? rows.map(item => `<tr><td><a href="${escapeHtml(siteUrl(item.path))}" target="_blank" rel="noopener">${escapeHtml(item.path)}</a></td><td class="category-label">${escapeHtml(PAGE_CATEGORIES[item.category])}</td><td class="status-${item.severity}">${item.severity === 'ok' ? 'OK' : escapeHtml(item.issues.map(i => i.message).join(', '))}</td><td>${item.title ? '✓' : '–'}</td><td>${item.description ? '✓' : '–'}</td><td>${item.h1 ? '✓' : '–'}</td><td>${item.noindex ? 'Noindex' : 'Index'}</td><td>${item.og ? '✓' : '–'}</td><td>${item.inSitemap ? '✓' : '–'}</td></tr>`).join('') : '<tr><td colspan="9">Keine passenden Ergebnisse.</td></tr>';
   }
 
   function renderImages() {
@@ -139,13 +197,27 @@
   }
 
   function diagnostic() {
-    const mismatches = state.seo.filter(item => !item.noindex && !item.inSitemap).map(item => item.path);
-    return { reportType: 'warenschmiede-admin-diagnostic', reportGeneratedAt: new Date().toISOString(), inventoryGeneratedAt: state.inventory?.generatedAt || null, counts: summary(), seoIssues: state.seo.filter(i => i.issues.length).map(i => ({ path: i.path, level: i.level, issues: i.issues.map(x => x.message) })), sitemapInventoryDifferences: mismatches, downloadChecks: state.downloads.map(({ name, path, status }) => ({ name, path, status })), zeiterfassungPlusRelease: state.release, technicalWarnings: [...new Set(state.warnings)] };
+    const sitemapDifferences = state.seo.filter(item => item.issues.some(entry => entry.message === 'Nicht in Sitemap'));
+    const counts = summary();
+    return {
+      reportType: 'warenschmiede-admin-diagnostic',
+      reportGeneratedAt: new Date().toISOString(),
+      inventoryGeneratedAt: state.inventory?.generatedAt || null,
+      seoScanCompleted: state.seoScanned,
+      counts,
+      seoSummary: { errors: counts.errors, warnings: counts.warnings, info: counts.info, excluded: counts.excluded },
+      seoEntries: state.seo.map(item => ({ path: item.path, category: item.category, severity: item.severity, issues: item.issues.map(entry => entry.message) })),
+      actionableSitemapDifferences: sitemapDifferences.filter(item => item.issues.some(entry => entry.message === 'Nicht in Sitemap' && entry.severity === 'warning')).map(item => item.path),
+      informationalSitemapDifferences: sitemapDifferences.filter(item => item.issues.some(entry => entry.message === 'Nicht in Sitemap' && entry.severity === 'info')).map(item => item.path),
+      downloadChecks: state.downloads.map(({ name, path, status }) => ({ name, path, status })),
+      zeiterfassungPlusRelease: state.release,
+      technicalWarnings: [...new Set(state.warnings)]
+    };
   }
   function showDiagnostic() { const value = JSON.stringify(diagnostic(), null, 2); $('#diagnostic-preview').value = value; return value; }
   function downloadDiagnostic() { const value = showDiagnostic(), blob = new Blob([value], { type: 'application/json' }), link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `warenschmiede-admin-diagnose-${new Date().toISOString().slice(0, 10)}.json`; link.click(); URL.revokeObjectURL(link.href); }
 
-  $('#reload').addEventListener('click', () => Promise.all([loadInventory(), loadSitemap(), loadDownloads(), loadRelease()]));
+  $('#reload').addEventListener('click', () => { resetSeoScan(); return Promise.all([loadInventory(), loadSitemap(), loadDownloads(), loadRelease()]); });
   $('#scan-seo').addEventListener('click', scanSeo); $('#seo-search').addEventListener('input', renderSeo); $('#seo-filter').addEventListener('change', renderSeo);
   $('#image-search').addEventListener('input', renderImages); $('#image-filter').addEventListener('change', renderImages);
   $('#gallery').addEventListener('click', event => { const button = event.target.closest('[data-copy]'); if (button) navigator.clipboard.writeText(decodeURIComponent(button.dataset.copy)); });
