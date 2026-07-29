@@ -1,23 +1,90 @@
 (function () {
   document.body.classList.add('ws-fixed-topbar');
 
-  if (!document.getElementById('ws-layout-inline-notes')) {
-    const style = document.createElement('style');
-    style.id = 'ws-layout-inline-notes';
-    style.textContent = [
-      '.ws-deprecation-note{color:#c2413a!important;font-size:.78rem!important;font-weight:600!important;letter-spacing:0!important;text-transform:none!important}',
-      '.mega-link .ws-deprecation-note{display:block;margin-top:2px}',
-      '.mobile .ws-deprecation-note{color:#c2413a!important;font-size:.82rem!important;font-weight:600!important;margin-left:.25rem}'
-    ].join('\n');
-    document.head.appendChild(style);
-  }
-
   const link = (path) => {
     if (!path || /^(https?:|mailto:|tel:|#|\/\/)/.test(path)) return path;
     return '/' + path.replace(/^\.\//, '');
   };
 
-  const currentPath = (window.location.pathname || '').toLowerCase();
+  const NAVIGATION = [
+    { key: 'start', label: 'Start', href: '/', start: true },
+    { key: 'downloads', label: 'Downloads', href: 'downloads.html' },
+    {
+      key: 'tools', label: 'Online Tools', type: 'mega',
+      description: 'Werkstatt, Rechner und Generatoren — schnell erfassbar und praxisnah.',
+      sections: [
+        { label: 'Werkstatt & Rechner', accent: 'amber', links: [
+          { label: 'Tool-Übersicht', href: 'tools/', description: 'Zentrale Übersicht aller Browser-Tools.' },
+          { label: 'Werkstatt-Rechner Metall Plus', href: 'tools/werkstatt-rechner.html', description: 'Metall, Maße und praktische Helfer.' },
+          { label: 'Winkel-Rechner', href: 'tools/winkel-rechner.html', description: 'Schnelle Winkel- und Geometriehilfe.' },
+          { label: 'Bilder Konverter / Editor', href: 'tools/bild-konverter.html', description: 'Bilder lokal umwandeln und vorbereiten.' }
+        ] },
+        { label: '3D-Druck & Büro', accent: 'steel', links: [
+          { label: '3D-Druck Kostenrechner Plus', href: 'tools/ws_3d_print_kostenrechner.html', description: 'Angebot, Rechnung, Lieferschein und lokale Daten.' },
+          { label: 'CNC Fräsen-Einrichtsblatt Plus', href: 'tools/cnc-fraesen-einrichtsblatt-plus/index.html', description: 'Einrichtblätter und Maschineninfos.' },
+          { label: 'QR-Werkstatt Plus', href: 'tools/QRCodeMasterPro.html', description: 'QR-Codes, Links, WLAN und mehr.' },
+          { label: 'Barcode-Werkstatt Plus', href: 'tools/BarcodeWerkstattPlus.html', description: 'EAN, Code128, Code39 und ITF-14.' }
+        ] },
+        { label: 'Arbeitszeit & Alltag', accent: 'blue', links: [
+          { label: 'Zeiterfassung', href: 'tools/Zeiterfassung.html', description: 'Legacy-Version für bestehende Nutzer.', note: 'Legacy-Version' },
+          { label: 'Zeiterfassung Plus', href: 'tools/Zeiterfassung_Plus.html', description: 'Aktuelle Online-Version für Arbeitszeiten.' },
+          { label: 'Quittungs-Werkstatt', href: 'tools/ReceiptWriterPro.html', description: 'Quittungen direkt im Browser erstellen.' }
+        ] }
+      ]
+    },
+    { key: 'leistungen', label: 'Leistungen', type: 'dropdown', sections: [{ links: [
+      { label: '3D-Druckauftrag', href: 'leistungen/3d-druck.html' },
+      { label: 'CAD & Prototyping', href: 'leistungen/cad-prototyping.html' },
+      { label: 'PC-Hilfe', href: 'leistungen/pc-hilfe.html' }
+    ] }] },
+    {
+      key: 'ki', label: 'Über KI', type: 'mega',
+      description: 'Praxisnah erklären, ohne Hype — kurze Einstiege, klare Wege.',
+      sections: [
+        { label: 'Einsteigen', accent: 'violet', links: [
+          { label: 'Interaktiver KI-Versteher', href: 'ki/chat.html', description: 'Fragen stellen und KI-Grundlagen verstehen.' },
+          { label: 'KI-Lexikon', href: 'ki/lexikon.html', description: 'Begriffe einfach erklärt.' }
+        ] },
+        { label: 'Arbeiten mit KI', accent: 'blue', links: [
+          { label: 'Prompts für den Alltag', href: 'ki/prompts.html', description: 'Bessere Eingaben für bessere Ergebnisse.' },
+          { label: 'KI-Werkzeuge', href: 'ki/tools.html', description: 'Chat, Bild, Video, Audio und Büro-Tools.' }
+        ] },
+        { label: 'Sicherheit & Einordnung', accent: 'green', links: [
+          { label: 'KI: Chancen & Risiken', href: 'ki/chancen-und-risiken.html', description: 'Nutzen, Grenzen und Stolperfallen.' },
+          { label: 'KI-FAQ & Sicherheit', href: 'ki/faq.html', description: 'Häufige Fragen und Datenschutz-Gedanken.' }
+        ] }
+      ]
+    },
+    { key: 'kontakt', label: 'Kontakt', type: 'dropdown', sections: [{ links: [
+      { label: 'Kontakt aufnehmen', href: 'kontakt/kontakt.html' },
+      { label: 'Ablauf & Anfrage', href: 'kontakt/ablauf-anfrage.html' },
+      { label: 'Impressum', href: 'kontakt/impressum.html' },
+      { label: 'Über mich', href: 'kontakt/ueber-mich.html' }
+    ] }] },
+    {
+      key: '3d', label: '3D-Druck', type: 'mega',
+      description: 'Wissen, Praxis, Materialien und Fehlerhilfe als klare Arbeitsbereiche.',
+      sections: [
+        { label: 'Grundlagen', accent: 'green', links: [
+          { label: 'Neu beim 3D-Druck?', href: '3d_druck/3ddruck-faq.html', description: 'Startpunkt für Einsteiger.' },
+          { label: 'FDM / SLA / SLS – Technologien', href: '3d_druck/technologien.html', description: 'Verfahren einfach vergleichen.' },
+          { label: 'Materialwissen', href: '3d_druck/material.html', description: 'PLA, PETG, TPU und Einsatzfälle.' }
+        ] },
+        { label: 'Praxis', accent: 'amber', links: [
+          { label: 'Slicer & Einstellungen', href: '3d_druck/slicer-einstellungen.html', description: 'Parameter, Profile und Stellschrauben.' },
+          { label: 'Tipps & Abläufe / Kosten', href: '3d_druck/druck-tipps.html', description: 'Von Idee bis fertigem Teil.' }
+        ] },
+        { label: 'Hilfe & Spezial', accent: 'red', links: [
+          { label: 'Fehler & Troubleshooting', href: '3d_druck/fehlerdatenbank.html', description: 'Probleme erkennen und lösen.' },
+          { label: 'TPU Spezial-Wissen', href: '3d_druck/tpu-wissen.html', description: 'Flexibles Material verstehen.' },
+          { label: 'Wartung & Reinigung', href: '3d_druck/wartung-reinigung.html', description: 'Drucker pflegen und Probleme vermeiden.' },
+          { label: 'Ideenquellen & Portale', href: '3d_druck/ideenquellen.html', description: 'Vorlagen und Inspiration finden.' }
+        ] }
+      ]
+    }
+  ];
+
+  const currentPath = (window.location.pathname || '/').toLowerCase();
   const activeKey = (() => {
     if (currentPath.includes('/leistungen/')) return 'leistungen';
     if (currentPath.includes('/3d_druck/')) return '3d';
@@ -28,200 +95,63 @@
     return 'start';
   })();
 
-  const activeClass = (key) => key === activeKey ? ' is-active' : '';
-  const ariaCurrent = (key) => key === activeKey ? ' aria-current="page"' : '';
+  const isCurrentPage = (href) => new URL(link(href), window.location.origin).pathname.toLowerCase() === currentPath;
+  const currentAttribute = (href) => isCurrentPage(href) ? ' aria-current="page"' : '';
+  const renderDesktopLink = (item) => `<a class="nav-link${item.start ? ' nav-start' : ''}${item.key === activeKey ? ' is-active' : ''}"${currentAttribute(item.href)} href="${link(item.href)}">${item.label}</a>`;
+  const renderMegaLink = (item) => `<a class="mega-link" href="${link(item.href)}"${currentAttribute(item.href)}><strong>${item.label}</strong><span>${item.description}</span></a>`;
 
-  const header = `
-<header class="topbar" id="top">
-  <a aria-label="Warenschmiede Start" class="brand brand-wide-transparent" href="/">
-    <img alt="Warenschmiede Logo" class="brand-wide-transparent-logo" src="${link('assets/img/warenschmiede-logo-wide-clean-900.png')}">
-  </a>
+  const renderDesktopItem = (item) => {
+    if (!item.type) return renderDesktopLink(item);
+    const panelId = `desktop-menu-${item.key}`;
+    const sections = item.sections.map(section => item.type === 'mega'
+      ? `<section data-accent="${section.accent}"><h3>${section.label}</h3>${section.links.map(renderMegaLink).join('')}</section>`
+      : section.links.map(child => `<a href="${link(child.href)}"${currentAttribute(child.href)}>${child.label}</a>`).join('')).join('');
+    const panel = item.type === 'mega'
+      ? `<div class="mega-panel" id="${panelId}"><div class="mega-inner"><div class="mega-head"><h2>${item.label}</h2><p>${item.description}</p></div><div class="mega-grid">${sections}</div></div></div>`
+      : `<div class="drop-panel" id="${panelId}">${sections}</div>`;
+    return `<div class="nav-group${item.type === 'mega' ? ' mega' : ''}" data-menu><button aria-controls="${panelId}" aria-expanded="false" class="nav-link${item.key === activeKey ? ' is-active' : ''}" type="button">${item.label}<span aria-hidden="true">▾</span></button>${panel}</div>`;
+  };
 
-  <nav aria-label="Hauptnavigation" class="desktop-nav">
-    <a class="nav-link nav-start${activeClass('start')}"${ariaCurrent('start')} href="/">Start</a>
-    <a class="nav-link${activeClass('downloads')}"${ariaCurrent('downloads')} href="${link('downloads.html')}">Downloads</a>
+  const renderMobileItem = (item) => {
+    if (!item.type) return `<a class="mobile-main${item.key === activeKey ? ' is-active' : ''}" href="${link(item.href)}"${currentAttribute(item.href)}>${item.label}</a>`;
+    const panelId = `mobile-menu-${item.key}`;
+    const sections = item.sections.map(section => `${section.label ? `<h3>${section.label}</h3>` : ''}${section.links.map(child => `<a href="${link(child.href)}"${currentAttribute(child.href)}>${child.label}${child.note ? ` <span class="ws-deprecation-note">${child.note}</span>` : ''}</a>`).join('')}`).join('');
+    return `<button aria-controls="${panelId}" aria-expanded="false" class="mobile-section${item.key === activeKey ? ' is-active' : ''}" type="button">${item.label}<span aria-hidden="true">▾</span></button><div class="mobile-sub" id="${panelId}">${sections}</div>`;
+  };
 
-    <div class="nav-group mega" data-menu>
-      <button class="nav-link${activeClass('tools')}"${ariaCurrent('tools')} type="button">Online Tools<span>▾</span></button>
-      <div class="mega-panel"><div class="mega-inner">
-        <div class="mega-head"><h2>Online Tools</h2><p>Werkstatt, Rechner und Generatoren — schnell erfassbar und praxisnah.</p></div>
-        <div class="mega-grid">
-          <section data-accent="amber"><h3>Werkstatt &amp; Rechner</h3>
-            <a class="mega-link" href="${link('tools/')}"><strong>Tool-Übersicht</strong><span>Zentrale Übersicht aller Browser-Tools.</span></a>
-            <a class="mega-link" href="${link('tools/werkstatt-rechner.html')}"><strong>Werkstatt-Rechner Metall Plus</strong><span>Metall, Maße und praktische Helfer.</span></a>
-            <a class="mega-link" href="${link('tools/winkel-rechner.html')}"><strong>Winkel-Rechner</strong><span>Schnelle Winkel- und Geometriehilfe.</span></a>
-            <a class="mega-link" href="${link('tools/bild-konverter.html')}"><strong>Bilder Konverter / Editor</strong><span>Bilder lokal umwandeln und vorbereiten.</span></a>
-          </section>
+  const header = `<header class="topbar" id="top">
+    <a aria-label="Warenschmiede Start" class="brand brand-wide-transparent" href="/"><img alt="Warenschmiede Logo" class="brand-wide-transparent-logo" src="${link('assets/img/warenschmiede-logo-wide-clean-900.png')}"></a>
+    <nav aria-label="Hauptnavigation" class="desktop-nav">${NAVIGATION.map(renderDesktopItem).join('')}</nav>
+    <button aria-controls="mobile" aria-expanded="false" aria-label="Menü öffnen" class="burger" id="burger" type="button">☰</button>
+  </header>
+  <aside aria-label="Mobile Navigation" aria-hidden="true" class="mobile" id="mobile"><div class="mobile-head"><b>Warenschmiede</b><button aria-label="Menü schließen" id="close" type="button">×</button></div>${NAVIGATION.map(renderMobileItem).join('')}</aside>
+  <div id="scrim"></div>`;
 
-          <section data-accent="steel"><h3>3D-Druck &amp; Büro</h3>
-            <a class="mega-link" href="${link('tools/ws_3d_print_kostenrechner.html')}"><strong>3D-Druck Kostenrechner Plus</strong><span>Angebot, Rechnung, Lieferschein und lokale Daten.</span></a>
-            <a class="mega-link" href="${link('tools/cnc-fraesen-einrichtsblatt-plus/index.html')}"><strong>CNC Fräsen-Einrichtsblatt Plus</strong><span>Einrichtblätter und Maschineninfos.</span></a>
-            <a class="mega-link" href="${link('tools/QRCodeMasterPro.html')}"><strong>QR-Werkstatt Plus</strong><span>QR-Codes, Links, WLAN und mehr.</span></a>
-            <a class="mega-link" href="${link('tools/BarcodeWerkstattPlus.html')}"><strong>Barcode-Werkstatt Plus</strong><span>EAN, Code128, Code39 und ITF-14.</span></a>
-          </section>
-
-          <section data-accent="blue"><h3>Arbeitszeit &amp; Alltag</h3>
-            <a class="mega-link" href="${link('tools/Zeiterfassung.html')}"><strong>Zeiterfassung</strong><span>Legacy-Version für bestehende Nutzer.</span></a>
-            <a class="mega-link" href="${link('tools/Zeiterfassung_Plus.html')}"><strong>Zeiterfassung Plus</strong><span>Aktuelle Online-Version für Arbeitszeiten.</span></a>
-            <a class="mega-link" href="${link('tools/ReceiptWriterPro.html')}"><strong>Quittungs-Werkstatt</strong><span>Quittungen direkt im Browser erstellen.</span></a>
-          </section>
-        </div>
-      </div></div>
-    </div>
-
-    <div class="nav-group" data-menu>
-      <button class="nav-link${activeClass('leistungen')}"${ariaCurrent('leistungen')} type="button">Leistungen<span>▾</span></button>
-      <div class="drop-panel">
-        <a href="${link('leistungen/3d-druck.html')}">3D-Druckauftrag</a>
-        <a href="${link('leistungen/cad-prototyping.html')}">CAD &amp; Prototyping</a>
-        <a href="${link('leistungen/pc-hilfe.html')}">PC-Hilfe</a>
-      </div>
-    </div>
-
-    <div class="nav-group mega" data-menu>
-      <button class="nav-link${activeClass('ki')}"${ariaCurrent('ki')} type="button">Über KI<span>▾</span></button>
-      <div class="mega-panel"><div class="mega-inner">
-        <div class="mega-head"><h2>Über KI</h2><p>Praxisnah erklären, ohne Hype — kurze Einstiege, klare Wege.</p></div>
-        <div class="mega-grid">
-          <section data-accent="violet"><h3>Einsteigen</h3>
-            <a class="mega-link" href="${link('ki/chat.html')}"><strong>Interaktiver KI-Versteher</strong><span>Fragen stellen und KI-Grundlagen verstehen.</span></a>
-            <a class="mega-link" href="${link('ki/lexikon.html')}"><strong>KI-Lexikon</strong><span>Begriffe einfach erklärt.</span></a>
-          </section>
-          <section data-accent="blue"><h3>Arbeiten mit KI</h3>
-            <a class="mega-link" href="${link('ki/prompts.html')}"><strong>Prompts für den Alltag</strong><span>Bessere Eingaben für bessere Ergebnisse.</span></a>
-            <a class="mega-link" href="${link('ki/tools.html')}"><strong>KI-Werkzeuge</strong><span>Chat, Bild, Video, Audio und Büro-Tools.</span></a>
-          </section>
-          <section data-accent="green"><h3>Sicherheit &amp; Einordnung</h3>
-            <a class="mega-link" href="${link('ki/chancen-und-risiken.html')}"><strong>KI: Chancen &amp; Risiken</strong><span>Nutzen, Grenzen und Stolperfallen.</span></a>
-            <a class="mega-link" href="${link('ki/faq.html')}"><strong>KI-FAQ &amp; Sicherheit</strong><span>Häufige Fragen und Datenschutz-Gedanken.</span></a>
-          </section>
-        </div>
-      </div></div>
-    </div>
-
-    <div class="nav-group" data-menu>
-      <button class="nav-link${activeClass('kontakt')}"${ariaCurrent('kontakt')} type="button">Kontakt<span>▾</span></button>
-      <div class="drop-panel">
-        <a href="${link('kontakt/kontakt.html')}">Kontakt aufnehmen</a>
-        <a href="${link('kontakt/ablauf-anfrage.html')}">Ablauf &amp; Anfrage</a>
-        <a href="${link('kontakt/impressum.html')}">Impressum</a>
-        <a href="${link('kontakt/ueber-mich.html')}">Über mich</a>
-      </div>
-    </div>
-
-    <div class="nav-group mega" data-menu>
-      <button class="nav-link${activeClass('3d')}"${ariaCurrent('3d')} type="button">3D-Druck<span>▾</span></button>
-      <div class="mega-panel"><div class="mega-inner">
-        <div class="mega-head"><h2>3D-Druck</h2><p>Wissen, Praxis, Materialien und Fehlerhilfe als klare Arbeitsbereiche.</p></div>
-        <div class="mega-grid">
-          <section data-accent="green"><h3>Grundlagen</h3>
-            <a class="mega-link" href="${link('3d_druck/3ddruck-faq.html')}"><strong>Neu beim 3D-Druck?</strong><span>Startpunkt für Einsteiger.</span></a>
-            <a class="mega-link" href="${link('3d_druck/technologien.html')}"><strong>FDM / SLA / SLS – Technologien</strong><span>Verfahren einfach vergleichen.</span></a>
-            <a class="mega-link" href="${link('3d_druck/material.html')}"><strong>Materialwissen</strong><span>PLA, PETG, TPU und Einsatzfälle.</span></a>
-          </section>
-          <section data-accent="amber"><h3>Praxis</h3>
-            <a class="mega-link" href="${link('3d_druck/slicer-einstellungen.html')}"><strong>Slicer &amp; Einstellungen</strong><span>Parameter, Profile und Stellschrauben.</span></a>
-            <a class="mega-link" href="${link('3d_druck/druck-tipps.html')}"><strong>Tipps &amp; Abläufe / Kosten</strong><span>Von Idee bis fertigem Teil.</span></a>
-          </section>
-          <section data-accent="red"><h3>Hilfe &amp; Spezial</h3>
-            <a class="mega-link" href="${link('3d_druck/fehlerdatenbank.html')}"><strong>Fehler &amp; Troubleshooting</strong><span>Probleme erkennen und lösen.</span></a>
-            <a class="mega-link" href="${link('3d_druck/tpu-wissen.html')}"><strong>TPU Spezial-Wissen</strong><span>Flexibles Material verstehen.</span></a>
-            <a class="mega-link" href="${link('3d_druck/wartung-reinigung.html')}"><strong>Wartung &amp; Reinigung</strong><span>Drucker pflegen und Probleme vermeiden.</span></a>
-            <a class="mega-link" href="${link('3d_druck/ideenquellen.html')}"><strong>Ideenquellen &amp; Portale</strong><span>Vorlagen und Inspiration finden.</span></a>
-          </section>
-        </div>
-      </div></div>
-    </div>
-  </nav>
-
-  <button aria-label="Menü öffnen" class="burger" id="burger" type="button">☰</button>
-</header>
-
-<aside aria-label="Mobile Navigation" class="mobile" id="mobile">
-  <div class="mobile-head"><b>Warenschmiede</b><button aria-label="Menü schließen" id="close" type="button">×</button></div>
-  <a href="/">Start</a>
-  <a href="${link('downloads.html')}">Downloads</a>
-
-  <button class="mobile-section" type="button">Online Tools<span>▾</span></button>
-  <div class="mobile-sub">
-    <a href="${link('tools/')}">Tool-Übersicht</a>
-    <a href="${link('tools/Zeiterfassung.html')}">Zeiterfassung <span class="ws-deprecation-note">Legacy-Version</span></a>
-    <a href="${link('tools/Zeiterfassung_Plus.html')}">Zeiterfassung Plus</a>
-    <a href="${link('tools/ws_3d_print_kostenrechner.html')}">3D-Druck Kostenrechner Plus</a>
-    <a href="${link('tools/QRCodeMasterPro.html')}">QR-Werkstatt Plus</a>
-    <a href="${link('tools/BarcodeWerkstattPlus.html')}">Barcode-Werkstatt Plus</a>
-  </div>
-
-  <button class="mobile-section" type="button">Leistungen<span>▾</span></button>
-  <div class="mobile-sub">
-    <a href="${link('leistungen/3d-druck.html')}">3D-Druckauftrag</a>
-    <a href="${link('leistungen/cad-prototyping.html')}">CAD &amp; Prototyping</a>
-    <a href="${link('leistungen/pc-hilfe.html')}">PC-Hilfe</a>
-  </div>
-
-  <button class="mobile-section" type="button">Über KI<span>▾</span></button>
-  <div class="mobile-sub">
-    <a href="${link('ki/chat.html')}">Interaktiver KI-Versteher</a>
-    <a href="${link('ki/lexikon.html')}">KI-Lexikon</a>
-  </div>
-
-  <button class="mobile-section" type="button">Kontakt<span>▾</span></button>
-  <div class="mobile-sub">
-    <a href="${link('kontakt/kontakt.html')}">Kontakt aufnehmen</a>
-    <a href="${link('kontakt/ablauf-anfrage.html')}">Ablauf &amp; Anfrage</a>
-    <a href="${link('kontakt/impressum.html')}">Impressum</a>
-    <a href="${link('kontakt/ueber-mich.html')}">Über mich</a>
-  </div>
-
-  <button class="mobile-section" type="button">3D-Druck<span>▾</span></button>
-  <div class="mobile-sub">
-    <a href="${link('3d_druck/3ddruck-faq.html')}">Neu beim 3D-Druck?</a>
-    <a href="${link('3d_druck/technologien.html')}">FDM / SLA / SLS – Technologien</a>
-    <a href="${link('3d_druck/material.html')}">Materialwissen</a>
-    <a href="${link('3d_druck/fehlerdatenbank.html')}">Fehler &amp; Troubleshooting</a>
-    <a href="${link('3d_druck/tpu-wissen.html')}">TPU Spezial-Wissen</a>
-    <a href="${link('3d_druck/wartung-reinigung.html')}">Wartung &amp; Reinigung</a>
-    <a href="${link('3d_druck/ideenquellen.html')}">Ideenquellen &amp; Portale</a>
-  </div>
-</aside>
-<div id="scrim"></div>`;
-
-  const footer = `
-<footer class="ws-footer">
-  <div class="ws-footer-inner">
-    <div class="ws-footer-brand"><strong>Warenschmiede</strong><span>© <span id="copyright-year"></span> · Marco Hoffmann</span></div>
-    <nav aria-label="Fußnavigation" class="ws-footer-links">
-      <a href="${link('kontakt/impressum.html')}">Impressum</a>
-      <a href="${link('datenschutz.html')}">Datenschutz</a>
-      <a href="${link('kontakt/kontakt.html')}">Kontakt</a>
-    </nav>
-    <p class="ws-footer-note">Alle Angaben ohne Gewähr. Keine Cookies, kein Tracking.</p>
-  </div>
-</footer>`;
+  const footer = `<footer class="ws-footer"><div class="ws-footer-inner"><div class="ws-footer-brand"><strong>Warenschmiede</strong><span>© <span id="copyright-year"></span> · Marco Hoffmann</span></div><nav aria-label="Fußnavigation" class="ws-footer-links"><a href="${link('kontakt/impressum.html')}">Impressum</a><a href="${link('datenschutz.html')}">Datenschutz</a><a href="${link('kontakt/kontakt.html')}">Kontakt</a></nav><p class="ws-footer-note">Alle Angaben ohne Gewähr. Keine Cookies, kein Tracking.</p></div></footer>`;
 
   const headerTarget = document.getElementById('ws-header');
   const footerTarget = document.getElementById('ws-footer');
-
   if (headerTarget) headerTarget.innerHTML = header;
   if (footerTarget) footerTarget.innerHTML = footer;
-
   const year = document.getElementById('copyright-year');
   if (year) year.textContent = new Date().getFullYear();
 
   const groups = document.querySelectorAll('[data-menu]');
-  const closeGroups = () => groups.forEach(g => g.classList.remove('open'));
-
+  const closeGroups = () => groups.forEach(group => {
+    group.classList.remove('open');
+    group.querySelector('button.nav-link')?.setAttribute('aria-expanded', 'false');
+  });
   groups.forEach(group => {
     const button = group.querySelector('button.nav-link');
-    if (!button) return;
-
     button.addEventListener('click', event => {
       event.stopPropagation();
       const wasOpen = group.classList.contains('open');
       closeGroups();
-      if (!wasOpen) group.classList.add('open');
+      if (!wasOpen) {
+        group.classList.add('open');
+        button.setAttribute('aria-expanded', 'true');
+      }
     });
-
     group.addEventListener('click', event => event.stopPropagation());
   });
 
@@ -229,27 +159,35 @@
   const mobile = document.getElementById('mobile');
   const closeBtn = document.getElementById('close');
   const scrim = document.getElementById('scrim');
-
   function openMobile() {
-    if (mobile) mobile.classList.add('open');
-    if (scrim) scrim.classList.add('open');
+    mobile?.classList.add('open');
+    scrim?.classList.add('open');
+    mobile?.setAttribute('aria-hidden', 'false');
+    burger?.setAttribute('aria-expanded', 'true');
   }
-
   function closeMobile() {
-    if (mobile) mobile.classList.remove('open');
-    if (scrim) scrim.classList.remove('open');
+    mobile?.classList.remove('open');
+    scrim?.classList.remove('open');
+    mobile?.setAttribute('aria-hidden', 'true');
+    burger?.setAttribute('aria-expanded', 'false');
   }
+  burger?.addEventListener('click', openMobile);
+  closeBtn?.addEventListener('click', closeMobile);
+  scrim?.addEventListener('click', closeMobile);
 
-  if (burger) burger.addEventListener('click', openMobile);
-  if (closeBtn) closeBtn.addEventListener('click', closeMobile);
-  if (scrim) scrim.addEventListener('click', closeMobile);
-
-  document.querySelectorAll('.mobile-section').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const sub = btn.nextElementSibling;
-      if (sub) sub.classList.toggle('open');
+  const mobileSections = document.querySelectorAll('.mobile-section');
+  mobileSections.forEach(button => button.addEventListener('click', () => {
+    const sub = document.getElementById(button.getAttribute('aria-controls'));
+    const wasOpen = sub?.classList.contains('open');
+    mobileSections.forEach(other => {
+      document.getElementById(other.getAttribute('aria-controls'))?.classList.remove('open');
+      other.setAttribute('aria-expanded', 'false');
     });
-  });
+    if (!wasOpen) {
+      sub?.classList.add('open');
+      button.setAttribute('aria-expanded', 'true');
+    }
+  }));
 
   document.addEventListener('click', closeGroups);
   document.addEventListener('keydown', event => {
