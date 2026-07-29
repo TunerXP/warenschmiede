@@ -25,6 +25,12 @@
       ['itemName','itemPrice','itemQty'].forEach(id => $(id).addEventListener('keydown', e => {
         if (e.key === 'Enter') { e.preventDefault(); addItem(); }
       }));
+      const liveFields = ['myCompany','myName','myStreet','myZip','myCity','myTaxId','receiptPrefix',
+        'custName','custStreet','custZip','custCity','discount','smallBiz','legalText','useDefaultLegalText'];
+      liveFields.forEach(id => {
+        $(id)?.addEventListener('input', updateAll);
+        $(id)?.addEventListener('change', updateAll);
+      });
     });
 
     function loadState() {
@@ -182,6 +188,67 @@
       $('summaryPay').textContent = paymentMethod;
       $('summaryTotal').textContent = money(total);
       $('itemCount').textContent = items.length === 1 ? '1 Posten' : `${items.length} Posten`;
+      renderPreview();
+    }
+
+    function currentCompanyData() {
+      return {
+        name: $('myCompany')?.value.trim() || '', owner: $('myName')?.value.trim() || '',
+        street: $('myStreet')?.value.trim() || '', zip: $('myZip')?.value.trim() || '',
+        city: $('myCity')?.value.trim() || '', taxId: $('myTaxId')?.value.trim() || '',
+        prefix: $('receiptPrefix')?.value.trim() || 'Q',
+        legalText: $('legalText')?.value.trim() || 'Kein Ausweis von USt. gem. §19 UStG.'
+      };
+    }
+
+    function getReceiptData() {
+      return {
+        company: currentCompanyData(),
+        customer: {
+          name: $('custName')?.value.trim() || '', street: $('custStreet')?.value.trim() || '',
+          zip: $('custZip')?.value.trim() || '', city: $('custCity')?.value.trim() || ''
+        },
+        items: items.map(item => ({ ...item, lineTotal: item.price * item.qty })),
+        totals: calcTotals(), paymentMethod, isSmallBiz: $('smallBiz')?.checked !== false,
+        receiptNo: receiptNumber(), date: new Date()
+      };
+    }
+
+    function renderPreview() {
+      const target = $('receiptContent');
+      if (!target) return;
+      const data = getReceiptData();
+      const { company, customer, totals } = data;
+      const companyLines = [company.owner && `Inh. ${company.owner}`, company.street,
+        `${company.zip} ${company.city}`.trim(), company.taxId && `St-Nr/USt-ID: ${company.taxId}`].filter(Boolean);
+      const customerLines = [customer.name, customer.street, `${customer.zip} ${customer.city}`.trim()].filter(Boolean);
+      const itemRows = data.items.length ? data.items.map(item => `
+        <div class="receipt-item">
+          <div class="receipt-item-name">${escapeHTML(item.name)}</div>
+          <div class="receipt-item-detail"><span>${escapeHTML(String(item.qty).replace('.', ','))} × ${money(item.price)}</span><strong>${money(item.lineTotal)}</strong></div>
+        </div>`).join('') : '<div class="receipt-empty">Noch keine Posten</div>';
+      const discountRows = totals.discount > 0 ? `
+        <div class="receipt-total-row"><span>Zwischensumme</span><span>${money(totals.subtotal)}</span></div>
+        <div class="receipt-total-row"><span>Rabatt</span><span>− ${money(totals.discount)}</span></div>` : '';
+      const taxNote = data.isSmallBiz ? company.legalText : `Enthält 19 % MwSt.: ${money(totals.total - totals.total / 1.19)}`;
+      target.innerHTML = `
+        <header class="receipt-brand"><h2>${escapeHTML(company.name || 'Firma')}</h2>${companyLines.map(line => `<p>${escapeHTML(line)}</p>`).join('')}</header>
+        <div class="receipt-title">QUITTUNG</div>
+        <div class="receipt-meta"><span><span class="receipt-label">Datum</span><br>${data.date.toLocaleDateString('de-DE')}</span><span><span class="receipt-label">Beleg-Nr.</span><br>${escapeHTML(data.receiptNo)}</span></div>
+        ${customerLines.length ? `<section class="receipt-customer"><span class="receipt-label">Kunde</span>${customerLines.map(line => `<p>${escapeHTML(line)}</p>`).join('')}</section>` : ''}
+        <section class="receipt-items">${itemRows}</section>
+        <section class="receipt-totals">${discountRows}<div class="receipt-total-row receipt-grand"><span>GESAMT</span><span>${money(totals.total)}</span></div></section>
+        <p class="receipt-note">Bezahlt mit: <strong>${escapeHTML(data.paymentMethod)}</strong></p>
+        <p class="receipt-note">${escapeHTML(taxNote)}</p>
+        <footer class="receipt-thanks">Vielen Dank für Ihren Einkauf!</footer>`;
+    }
+
+    function togglePreview() {
+      const stage = $('receiptPreview');
+      const button = $('previewToggle');
+      const open = stage.classList.toggle('open');
+      button.setAttribute('aria-expanded', String(open));
+      button.textContent = open ? 'Vorschau ausblenden' : 'Vorschau anzeigen';
     }
 
     function setPay(method) {
@@ -199,7 +266,7 @@
       const d = String(now.getDate()).padStart(2,'0');
       const h = String(now.getHours()).padStart(2,'0');
       const mi = String(now.getMinutes()).padStart(2,'0');
-      const prefix = companyData.prefix || 'Q';
+      const prefix = $('receiptPrefix')?.value.trim() || companyData.prefix || 'Q';
       return `${prefix}-${y}${mo}${d}-${h}${mi}`;
     }
 
@@ -207,34 +274,33 @@
       if (!window.jspdf || !window.jspdf.jsPDF) throw new Error('PDF-Bibliothek konnte nicht geladen werden.');
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ unit: 'mm', format: [80, 250] });
-      const isSmallBiz = $('smallBiz').checked;
-      const now = new Date();
-      const docNum = receiptNumber();
+      const receiptData = getReceiptData();
+      const { company, customer, totals, isSmallBiz, date: now, receiptNo: docNum } = receiptData;
+      const { subtotal, discount, total } = totals;
       let y = 10;
       const lineH = 4;
       const centerX = 40;
-      const { subtotal, discount, total } = calcTotals();
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
-      doc.text(companyData.name || 'Firma', centerX, y, { align: 'center' }); y += 5;
+      doc.text(company.name || 'Firma', centerX, y, { align: 'center' }); y += 5;
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(8);
-      if (companyData.owner) { doc.text(`Inh. ${companyData.owner}`, centerX, y, { align:'center' }); y += lineH; }
-      if (companyData.street) { doc.text(companyData.street, centerX, y, { align:'center' }); y += lineH; }
-      if (companyData.zip || companyData.city) { doc.text(`${companyData.zip || ''} ${companyData.city || ''}`.trim(), centerX, y, { align:'center' }); y += lineH; }
-      if (companyData.taxId) { doc.text(`St-Nr/USt-ID: ${companyData.taxId}`, centerX, y, { align:'center' }); y += lineH + 2; }
+      if (company.owner) { doc.text(`Inh. ${company.owner}`, centerX, y, { align:'center' }); y += lineH; }
+      if (company.street) { doc.text(company.street, centerX, y, { align:'center' }); y += lineH; }
+      if (company.zip || company.city) { doc.text(`${company.zip || ''} ${company.city || ''}`.trim(), centerX, y, { align:'center' }); y += lineH; }
+      if (company.taxId) { doc.text(`St-Nr/USt-ID: ${company.taxId}`, centerX, y, { align:'center' }); y += lineH + 2; }
 
       doc.line(5, y, 75, y); y += 5;
       doc.text(`Datum: ${now.toLocaleDateString('de-DE')} ${now.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'})}`, 5, y); y += lineH;
       doc.text(`Beleg-Nr: ${docNum}`, 5, y); y += lineH + 2;
 
-      const cName = $('custName').value.trim();
+      const cName = customer.name;
       if (cName) {
         doc.setFont('helvetica', 'bold'); doc.text('Kunde:', 5, y); y += lineH;
         doc.setFont('helvetica', 'normal'); doc.text(cName, 5, y); y += lineH;
-        const street = $('custStreet').value.trim();
-        const cityLine = `${$('custZip').value.trim()} ${$('custCity').value.trim()}`.trim();
+        const street = customer.street;
+        const cityLine = `${customer.zip} ${customer.city}`.trim();
         if (street) { doc.text(street, 5, y); y += lineH; }
         if (cityLine) { doc.text(cityLine, 5, y); y += lineH; }
         y += 2;
@@ -265,7 +331,7 @@
       doc.setFontSize(12); doc.setFont('helvetica', 'bold');
       doc.text('GESAMT', 5, y); doc.text(money(total).replace(' €',' EUR'), 75, y, { align:'right' }); y += 6;
       doc.setFontSize(7); doc.setFont('helvetica', 'normal');
-      if (isSmallBiz) doc.text(companyData.legalText || 'Kein Ausweis von USt. gem. §19 UStG.', centerX, y, { align:'center' });
+      if (isSmallBiz) doc.text(company.legalText, centerX, y, { align:'center' });
       else {
         const net = total / 1.19;
         const tax = total - net;
