@@ -21,6 +21,7 @@
   line-height: 1.2;
   text-align: center;
   text-decoration: none;
+  box-shadow: none;
   cursor: pointer;
   transform: translateY(0);
   transition: color .16s ease, transform .16s ease;
@@ -44,6 +45,11 @@
 .ws-tool-action:focus-visible::before { box-shadow: inset 0 1px 0 #fff, 0 0 0 3px var(--ws-control-accent), 0 0 30px color-mix(in srgb, var(--ws-control-accent), transparent 58%), 0 12px 28px rgba(30,45,60,.14); }
 .ws-tool-action:disabled { cursor: not-allowed; opacity: .48; transform: none; }
 .ws-tool-action--compact { min-height: 34px; padding: 7px 11px; font-size: .78rem; }
+/* Legacy-Buttonklassen duerfen keinen rechteckigen Schatten neben dem
+   schraegen Kontur- und Glow-Layer aus ::before zeichnen. */
+.btn.ws-tool-action,
+.btn.ws-tool-action:hover,
+.btn.ws-tool-action:focus-visible { box-shadow: none; }
 
 .ws-tool-selector {
   --ws-selector-accent: #2f8edf;
