@@ -121,7 +121,7 @@
     .sheet-page-grid{position:absolute;display:grid;align-items:start;justify-content:start;box-sizing:border-box}
     .label-grid{display:grid;gap:var(--print-gap);align-items:start;justify-content:start}
     .label-grid>.label-cell{width:var(--label-print-width);min-width:0;min-height:var(--label-print-height);box-sizing:border-box}
-    .sheet-page-grid>.label-cell{width:100%;height:100%;min-width:0;min-height:0;padding:clamp(1px,.5vw,10px);border-width:clamp(1px,.12vw,2px);border-radius:clamp(2px,.7vw,16px)}
+    .sheet-page-grid>.label-cell{border-width:clamp(1px,.12vw,2px);border-radius:clamp(2px,.7vw,16px)}
     .sheet-page-grid>.label-cell .label-inner{min-width:0;width:100%;overflow:hidden}
     .sheet-page-grid>.label-cell svg{max-height:100%;max-width:100%}
     .sheet-empty{display:grid;place-items:center;width:100%;height:100%;padding:24px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:16px;box-sizing:border-box}
@@ -239,6 +239,20 @@
     .label-preview-stage .label-cell.label-format-sign{width:min(100%,350px);min-height:230px}
     .label-grid.label-sheet-compact,.label-grid.label-sheet-comfortable,.label-grid.label-sheet-scan{gap:var(--print-gap)}
     .label-grid>.label-cell{width:var(--label-print-width);min-height:var(--label-print-height)}
+
+    /* Die A4-Bildschirmseite wird proportional verkleinert. Innerhalb ihres
+       Grids bestimmen deshalb ausschließlich die berechneten Tracks die
+       Außenmaße – nicht die px-Mindesthöhen der Designerformate. */
+    @media screen{
+      .sheet-page-grid>.label-cell{
+        width:100%;
+        height:100%;
+        min-width:0;
+        min-height:0;
+        max-width:100%;
+        max-height:100%;
+      }
+    }
 
     .label-cell.label-shape-square{border-radius:0!important;clip-path:none!important}
     .label-cell.label-shape-rounded{border-radius:var(--label-radius)!important;clip-path:none!important}
