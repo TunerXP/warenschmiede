@@ -1,0 +1,89 @@
+/* Gemeinsame Warenschmiede-Bedienelemente fuer eigenstaendige Tools.
+   Aktionen, Auswahlen und Informationen bleiben bewusst getrennte Rollen. */
+.ws-tool-action {
+  --ws-control-accent: #8fa1b3;
+  --ws-control-glow: color-mix(in srgb, var(--ws-control-accent), transparent 72%);
+  --ws-control-surface: linear-gradient(145deg, #fff, #e7f0f8 72%, #d9e5ef);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 42px;
+  padding: 11px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #102033;
+  font: inherit;
+  font-weight: 900;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: none;
+  cursor: pointer;
+  transform: translateY(0);
+  transition: color .16s ease, transform .16s ease;
+}
+.ws-tool-action::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--ws-control-accent), rgba(40,58,75,.18) 52%);
+  border-radius: 8px;
+  background: var(--ws-control-surface);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 0 0 1px color-mix(in srgb, var(--ws-control-accent), transparent 88%), 0 0 22px var(--ws-control-glow), 0 11px 25px rgba(30,45,60,.11);
+  transform: skewX(-10deg);
+  transition: background .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.ws-tool-action:hover { --ws-control-surface: linear-gradient(145deg, #fff, #edf4fa 72%, #e1ebf4); transform: translateY(-1px); }
+.ws-tool-action:hover::before { border-color: color-mix(in srgb, var(--ws-control-accent), rgba(40,58,75,.16) 35%); box-shadow: inset 0 1px 0 #fff, 0 0 0 1px color-mix(in srgb, var(--ws-control-accent), transparent 76%), 0 0 30px color-mix(in srgb, var(--ws-control-accent), transparent 58%), 0 14px 31px rgba(30,45,60,.15); }
+.ws-tool-action:focus-visible { outline: 2px solid transparent; outline-offset: 4px; }
+.ws-tool-action:focus-visible::before { box-shadow: inset 0 1px 0 #fff, 0 0 0 3px var(--ws-control-accent), 0 0 30px color-mix(in srgb, var(--ws-control-accent), transparent 58%), 0 12px 28px rgba(30,45,60,.14); }
+.ws-tool-action:disabled { cursor: not-allowed; opacity: .48; transform: none; }
+.ws-tool-action--compact { min-height: 34px; padding: 7px 11px; font-size: .78rem; }
+/* Legacy-Buttonklassen duerfen keinen rechteckigen Schatten neben dem
+   schraegen Kontur- und Glow-Layer aus ::before zeichnen. */
+.btn.ws-tool-action,
+.btn.ws-tool-action:hover,
+.btn.ws-tool-action:focus-visible { box-shadow: none; }
+
+.ws-tool-selector {
+  --ws-selector-accent: #2f8edf;
+  position: relative;
+  min-width: 0;
+  min-height: 42px;
+  border: 1px solid #cbd9e6;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #fff, #f2f6fa);
+  color: #102033;
+  font: inherit;
+  font-weight: 850;
+  cursor: pointer;
+  transition: background .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+.ws-tool-selector:hover { border-color: color-mix(in srgb, var(--ws-selector-accent), #cbd9e6 48%); background: #f8fbfe; transform: translateY(-1px); }
+.ws-tool-selector.active,
+.ws-tool-selector--active { border-width: 2px; border-color: var(--ws-selector-accent); background: color-mix(in srgb, var(--ws-selector-accent) 10%, #fff); box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--ws-selector-accent), transparent 40%), 0 0 0 3px color-mix(in srgb, var(--ws-selector-accent), transparent 88%); }
+.ws-tool-selector.active::after,
+.ws-tool-selector--active::after { content: ""; position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--ws-selector-accent); }
+.ws-tool-selector:focus-visible { outline: 3px solid color-mix(in srgb, var(--ws-selector-accent), transparent 45%); outline-offset: 2px; }
+
+.ws-tool-chip { display: inline-flex; align-items: center; width: max-content; max-width: 100%; padding: 5px 9px; border: 1px solid color-mix(in srgb, var(--ws-control-accent, #8fa1b3), transparent 62%); border-radius: 999px; background: color-mix(in srgb, var(--ws-control-accent, #8fa1b3) 6%, #fff); color: #334a60; font-size: .76rem; font-weight: 850; line-height: 1.2; box-shadow: none; }
+.ws-accent-blue { --ws-control-accent: #2f8edf; --ws-selector-accent: #2f8edf; }
+.ws-accent-orange { --ws-control-accent: #f1913e; --ws-selector-accent: #f1913e; }
+.ws-accent-green { --ws-control-accent: #2baa72; --ws-selector-accent: #2baa72; }
+.ws-accent-red { --ws-control-accent: #c2413a; --ws-selector-accent: #c2413a; }
+.ws-accent-steel { --ws-control-accent: #8fa1b3; --ws-selector-accent: #8fa1b3; }
+
+html[data-theme="dark"] .ws-tool-action { --ws-control-surface: linear-gradient(145deg, #18232f, #111820 72%, #0c1118); color: #e5eefb; }
+html[data-theme="dark"] .ws-tool-action:hover { --ws-control-surface: linear-gradient(145deg, #1b2935, #131c25 72%, #0d141b); }
+html[data-theme="dark"] .ws-tool-selector { border-color: #34445a; background: #111827; color: #e5eefb; }
+html[data-theme="dark"] .ws-tool-selector.active,
+html[data-theme="dark"] .ws-tool-selector--active { background: color-mix(in srgb, var(--ws-selector-accent) 16%, #111827); }
+html[data-theme="dark"] .ws-tool-chip { background: color-mix(in srgb, var(--ws-control-accent, #8fa1b3) 10%, #111827); color: #d5e0ec; }
+
+@media (prefers-reduced-motion: reduce) { .ws-tool-action, .ws-tool-action::before, .ws-tool-selector { transition: none; } }
