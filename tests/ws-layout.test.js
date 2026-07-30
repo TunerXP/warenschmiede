@@ -50,16 +50,17 @@ test('desktop and mobile navigation render with an exact root start link', () =>
   assert.match(header, /href="\/downloads\.html"/);
 });
 
-test('global edge buttons use nested polygon layers and keep all accent variants', () => {
+test('global edge buttons use a rounded skewed surface and keep all accent variants', () => {
   const buttonRules = globalStyles.slice(
     globalStyles.indexOf(':is(.ws-edge-button,.edge-button,.mini-edge){'),
     globalStyles.indexOf('.full-section{')
   );
 
-  assert.match(buttonRules, /--btn-shape:polygon\(10px 0,100% 0,calc\(100% - 10px\) 100%,0 100%\)/);
-  assert.match(buttonRules, /background:linear-gradient\(115deg,var\(--btn-edge\)/);
-  assert.match(buttonRules, /::before\{[\s\S]*?inset:2px;[\s\S]*?background:var\(--btn-surface\);[\s\S]*?clip-path:var\(--btn-shape\)/);
-  assert.doesNotMatch(buttonRules, /skewX|mask-composite|border:[^;]*var\(--btn-edge\)/);
+  assert.match(buttonRules, /background:transparent;[\s\S]*?border:0;/);
+  assert.match(buttonRules, /::before\{[\s\S]*?inset:0;[\s\S]*?background:var\(--btn-surface\);[\s\S]*?border-radius:var\(--btn-radius\);[\s\S]*?transform:skewX\(-10deg\)/);
+  assert.match(buttonRules, /0 0 20px var\(--btn-glow\)/);
+  assert.match(buttonRules, /\.mini-edge\{--btn-radius:7px/);
+  assert.doesNotMatch(buttonRules, /clip-path|mask-composite|polygon\(/);
   for (const accent of ['amber', 'orange', 'blue', 'violet', 'green', 'red', 'steel']) {
     assert.match(buttonRules, new RegExp(`accent-${accent}`));
   }
