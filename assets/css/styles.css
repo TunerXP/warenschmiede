@@ -52,7 +52,7 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradi
    deshalb bleiben Text, Icons und Buttons ohne zusaetzliches Markup immer gerade. */
 :is(.ws-edge-button,.edge-button,.mini-edge){
   --btn-edge:var(--card-edge,var(--amber));
-  --btn-glow:color-mix(in srgb,var(--btn-edge),transparent 70%);
+  --btn-glow:color-mix(in srgb,var(--btn-edge),transparent 52%);
   --btn-shape:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
   position:relative;
   isolation:isolate;
@@ -65,8 +65,8 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradi
   border-radius:0;
   clip-path:var(--btn-shape);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 12px 24px rgba(0,0,0,.24);
-  filter:drop-shadow(0 0 6px var(--btn-glow)) drop-shadow(0 7px 8px rgba(0,0,0,.20));
-  overflow:hidden;
+  filter:drop-shadow(0 0 5px var(--btn-glow)) drop-shadow(0 8px 11px color-mix(in srgb,var(--btn-edge),transparent 68%));
+  overflow:visible;
   text-align:center;
   text-decoration:none;
   text-shadow:none;
@@ -90,12 +90,13 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradi
   opacity:.78;
   transition:opacity .16s ease,filter .16s ease;
 }
+:is(.ws-edge-button,.edge-button,.mini-edge)>*{position:relative;z-index:2}
 :is(.ws-edge-button,.edge-button){min-width:178px;padding:14px 27px}
-.mini-edge{margin-top:10px;padding:10px 17px;font-size:.86rem}
+.mini-edge{min-height:42px;margin-top:10px;padding:10px 17px;font-size:.86rem}
 :is(.ws-edge-button,.edge-button,.mini-edge):hover{
   background:linear-gradient(145deg,#1b2935,#131c25 72%,#0d141b);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.11),0 15px 34px rgba(0,0,0,.30);
-  filter:drop-shadow(0 0 9px color-mix(in srgb,var(--btn-edge),transparent 58%)) drop-shadow(0 9px 10px rgba(0,0,0,.24));
+  filter:drop-shadow(0 0 8px color-mix(in srgb,var(--btn-edge),transparent 38%)) drop-shadow(0 10px 13px color-mix(in srgb,var(--btn-edge),transparent 57%));
   transform:translateY(-1px);
 }
 :is(.ws-edge-button,.edge-button,.mini-edge):hover::before{opacity:1;filter:brightness(1.08)}
@@ -208,9 +209,9 @@ body.theme-light :is(.ws-edge-button,.edge-button,.mini-edge){
   background:linear-gradient(145deg,#ffffff,#e7f0f8 72%,#d9e5ef) !important;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.95),
-    0 0 19px color-mix(in srgb,var(--btn-edge),transparent 72%),
+    0 0 19px color-mix(in srgb,var(--btn-edge),transparent 55%),
     0 11px 25px rgba(30,45,60,.11) !important;
-  filter:drop-shadow(0 0 6px color-mix(in srgb,var(--btn-edge),transparent 68%)) drop-shadow(0 7px 8px rgba(30,45,60,.12));
+  filter:drop-shadow(0 0 5px color-mix(in srgb,var(--btn-edge),transparent 42%)) drop-shadow(0 8px 12px color-mix(in srgb,var(--btn-edge),transparent 58%));
 }
 body.theme-light :is(.ws-edge-button,.edge-button,.mini-edge)::before{opacity:.9}
 body.theme-light :is(.ws-edge-button,.edge-button,.mini-edge):hover{
@@ -218,9 +219,9 @@ body.theme-light :is(.ws-edge-button,.edge-button,.mini-edge):hover{
   background:linear-gradient(145deg,#ffffff,#edf4fa 72%,#e1ebf4) !important;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,1),
-    0 0 30px color-mix(in srgb,var(--btn-edge),transparent 58%),
+    0 0 30px color-mix(in srgb,var(--btn-edge),transparent 42%),
     0 14px 31px rgba(30,45,60,.15) !important;
-  filter:drop-shadow(0 0 9px color-mix(in srgb,var(--btn-edge),transparent 54%)) drop-shadow(0 9px 10px rgba(30,45,60,.16));
+  filter:drop-shadow(0 0 8px color-mix(in srgb,var(--btn-edge),transparent 30%)) drop-shadow(0 10px 14px color-mix(in srgb,var(--btn-edge),transparent 50%));
 }
 body.theme-light :is(.ws-edge-button,.edge-button,.mini-edge):focus-visible{
   filter:drop-shadow(0 0 3px var(--btn-edge)) drop-shadow(0 0 8px color-mix(in srgb,var(--btn-edge),transparent 34%));
