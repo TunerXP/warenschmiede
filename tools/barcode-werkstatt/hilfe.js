@@ -13,12 +13,16 @@
   const sections = [...document.querySelectorAll('.help-content section[id]')];
   const selectChapter = id=>links.forEach(link=>link.classList.toggle('active', link.hash === `#${id}`));
   const currentId = ()=>location.hash.slice(1) || 'start';
+  const setCurrentChapter = id=>{
+    selectChapter(id);
+    if(location.hash !== `#${id}`) history.replaceState(null, '', `#${id}`);
+  };
   selectChapter(currentId());
   window.addEventListener('hashchange', ()=>selectChapter(currentId()));
 
   const observer = new IntersectionObserver(entries=>{
     const visible = entries.filter(entry=>entry.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
-    if(visible) selectChapter(visible.target.id);
+    if(visible) setCurrentChapter(visible.target.id);
   }, {rootMargin:'-15% 0px -70%',threshold:[0,.25,.6]});
   sections.forEach(section=>observer.observe(section));
 })();

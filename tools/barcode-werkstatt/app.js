@@ -1881,9 +1881,21 @@
         catch { return 'start'; }
       };
       const openHelpWindow = (topic=currentHelpTopic())=>{
-        const helpWindow = window.open(helpUrl(topic), 'wsBarcodeHelp');
-        helpWindow?.focus();
+        const availableWidth = window.screen.availWidth || window.innerWidth;
+        const availableHeight = window.screen.availHeight || window.innerHeight;
+        const width = Math.min(1200, availableWidth);
+        const height = Math.min(850, availableHeight);
+        const features = `popup=yes,resizable=yes,scrollbars=yes,width=${width},height=${height}`;
+        const helpWindow = window.open(helpUrl(topic), 'wsBarcodeHelp', features);
+        if(helpWindow) helpWindow.focus();
+        else toast('Eigenes Hilfefenster konnte nicht geöffnet werden.');
       };
+      const helpMenuItems = [
+        { label: 'Hilfe & Anleitung', description: 'Lern- und Nachschlagebereich öffnen.', action: ()=>openHelp('start') }
+      ];
+      if(window.matchMedia('(min-width: 761px)').matches){
+        helpMenuItems.push({ label: 'Anleitung in eigenem Fenster', description: 'Hilfe separat öffnen und parallel nutzen.', action: ()=>openHelpWindow('start') });
+      }
       window.WSToolMenu?.configure({
         toolName: 'Barcode-Werkstatt Plus',
         toolDescription: 'Barcodes erstellen, gestalten und drucken.',
@@ -1900,10 +1912,7 @@
           },
           {
             title: 'Hilfe',
-            items: [
-              { label: 'Hilfe & Anleitung', description: 'Lern- und Nachschlagebereich öffnen.', action: ()=>openHelp('start') },
-              { label: 'Anleitung in eigenem Fenster', description: 'Hilfe separat öffnen und parallel nutzen.', action: ()=>openHelpWindow('start') }
-            ]
+            items: helpMenuItems
           },
           {
             title: 'Warenschmiede',
