@@ -54,13 +54,14 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradi
   --btn-edge:var(--card-edge,var(--amber));
   --btn-glow:color-mix(in srgb,var(--btn-edge),transparent 52%);
   --btn-shape:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
+  --btn-surface:linear-gradient(145deg,#18232f,#111820 72%,#0c1118);
   position:relative;
   isolation:isolate;
   display:inline-flex;
   align-items:center;
   justify-content:center;
   color:#f7fbff;
-  background:linear-gradient(145deg,#18232f,#111820 72%,#0c1118);
+  background:linear-gradient(115deg,var(--btn-edge),color-mix(in srgb,var(--btn-edge),white 24%) 48%,var(--btn-edge));
   border:0;
   border-radius:0;
   clip-path:var(--btn-shape);
@@ -77,31 +78,26 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradi
 :is(.ws-edge-button,.edge-button,.mini-edge)::before{
   content:"";
   position:absolute;
-  inset:0;
-  z-index:1;
+  inset:2px;
+  z-index:-1;
   pointer-events:none;
-  background:linear-gradient(115deg,var(--btn-edge),color-mix(in srgb,var(--btn-edge),white 24%) 48%,var(--btn-edge));
+  background:var(--btn-surface);
   clip-path:var(--btn-shape);
-  padding:1px;
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;
-  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  mask-composite:exclude;
-  opacity:.78;
-  transition:opacity .16s ease,filter .16s ease;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09);
+  transition:background .16s ease,filter .16s ease;
 }
 :is(.ws-edge-button,.edge-button,.mini-edge)>*{position:relative;z-index:2}
 :is(.ws-edge-button,.edge-button){min-width:178px;padding:14px 27px}
 .mini-edge{min-height:42px;margin-top:10px;padding:10px 17px;font-size:.86rem}
 :is(.ws-edge-button,.edge-button,.mini-edge):hover{
-  background:linear-gradient(145deg,#1b2935,#131c25 72%,#0d141b);
+  --btn-surface:linear-gradient(145deg,#1b2935,#131c25 72%,#0d141b);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.11),0 15px 34px rgba(0,0,0,.30);
   filter:drop-shadow(0 0 8px color-mix(in srgb,var(--btn-edge),transparent 38%)) drop-shadow(0 10px 13px color-mix(in srgb,var(--btn-edge),transparent 57%));
   transform:translateY(-1px);
 }
-:is(.ws-edge-button,.edge-button,.mini-edge):hover::before{opacity:1;filter:brightness(1.08)}
+:is(.ws-edge-button,.edge-button,.mini-edge):hover::before{filter:brightness(1.08)}
 :is(.ws-edge-button,.edge-button,.mini-edge):focus-visible{outline:0;filter:drop-shadow(0 0 3px var(--btn-edge)) drop-shadow(0 0 8px color-mix(in srgb,var(--btn-edge),transparent 38%))}
-:is(.ws-edge-button,.edge-button,.mini-edge):focus-visible::before{padding:2px;opacity:1}
+:is(.ws-edge-button,.edge-button,.mini-edge):focus-visible::before{filter:brightness(1.08)}
 :is(.ws-edge-button,.edge-button,.mini-edge).primary,
 :is(.ws-edge-button,.edge-button,.mini-edge).accent-amber,
 :is(.ws-edge-button,.edge-button,.mini-edge).accent-orange{--btn-edge:var(--amber)}
@@ -206,17 +202,16 @@ body.theme-light .hero-shell{
 body.theme-light .hero-copy{max-width:1060px}
 body.theme-light :is(.ws-edge-button,.edge-button,.mini-edge){
   color:var(--light-ink);
-  background:linear-gradient(145deg,#ffffff,#e7f0f8 72%,#d9e5ef) !important;
+  --btn-surface:linear-gradient(145deg,#ffffff,#e7f0f8 72%,#d9e5ef);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.95),
     0 0 19px color-mix(in srgb,var(--btn-edge),transparent 55%),
     0 11px 25px rgba(30,45,60,.11) !important;
   filter:drop-shadow(0 0 5px color-mix(in srgb,var(--btn-edge),transparent 42%)) drop-shadow(0 8px 12px color-mix(in srgb,var(--btn-edge),transparent 58%));
 }
-body.theme-light :is(.ws-edge-button,.edge-button,.mini-edge)::before{opacity:.9}
 body.theme-light :is(.ws-edge-button,.edge-button,.mini-edge):hover{
   color:var(--light-ink);
-  background:linear-gradient(145deg,#ffffff,#edf4fa 72%,#e1ebf4) !important;
+  --btn-surface:linear-gradient(145deg,#ffffff,#edf4fa 72%,#e1ebf4);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,1),
     0 0 30px color-mix(in srgb,var(--btn-edge),transparent 42%),
@@ -226,7 +221,6 @@ body.theme-light :is(.ws-edge-button,.edge-button,.mini-edge):hover{
 body.theme-light :is(.ws-edge-button,.edge-button,.mini-edge):focus-visible{
   filter:drop-shadow(0 0 3px var(--btn-edge)) drop-shadow(0 0 8px color-mix(in srgb,var(--btn-edge),transparent 34%));
 }
-body.theme-light :is(.ws-edge-button,.edge-button,.mini-edge):focus-visible::before{opacity:1}
 body.theme-light .dark-panel-section,body.theme-light .section-print{
   background:linear-gradient(180deg,rgba(244,248,252,.78),rgba(226,236,246,.86));
   border-color:rgba(36,55,72,.16);
