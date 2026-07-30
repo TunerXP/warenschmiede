@@ -48,7 +48,7 @@
             </div>
           </div>
 
-          <div class="content-picker-note" id="typeHint">Code128 ist flexibel und gut für interne Nummern, Lager, Aufträge und Werkstattetiketten.</div>
+          <div class="content-picker-note type-guidance"><span id="typeHint">Code128 ist flexibel und gut für interne Nummern, Lager, Aufträge und Werkstattetiketten.</span><button class="context-help-link" id="typeHelpLink" type="button">? Hilfe zu Code128</button></div>
 
           <div>
             <h3 style="margin:4px 0 10px;">Arbeitsmodus</h3>
@@ -404,172 +404,13 @@ WS-B001</textarea>
         <p class="eyebrow" style="margin:0 0 4px;">Hilfe & Anleitung</p>
         <h2>Barcode-Werkstatt Plus verstehen</h2>
       </div>
-      <button class="close-x" id="helpClose" type="button" aria-label="Hilfe schließen">×</button>
+      <div class="help-dialog-actions">
+        <button class="help-window-link" id="helpWindowOpen" type="button">↗ In eigenem Fenster öffnen</button>
+        <button class="close-x" id="helpClose" type="button" aria-label="Hilfe schließen">×</button>
+      </div>
     </div>
     <div class="modal-body">
-      <div class="help-layout">
-        <nav class="help-nav" aria-label="Hilfethemen">
-          <button class="active" type="button" data-help-tab="start">Start <span>Was bringt mir das?</span></button>
-          <button type="button" data-help-tab="workflow">Ablauf <span>Vom Inhalt zum Etikett</span></button>
-          <button type="button" data-help-tab="types">Barcode-Arten <span>Code128, EAN, Code39, ITF</span></button>
-          <button type="button" data-help-tab="modes">Arbeitsmodi <span>Einzeln, Kopien, Serie, Liste</span></button>
-          <button type="button" data-help-tab="checks">Prüfziffern <span>Basisnummer und Kontrolle</span></button>
-          <button type="button" data-help-tab="export">CSV & Projekt <span>Excel, JSON, Versionen</span></button>
-          <button type="button" data-help-tab="formats">Etikettenformate <span>Kompakt, breit, hoch und A4</span></button>
-          <button type="button" data-help-tab="print">Druckbogen <span>A4, Etiketten, Rand</span></button>
-          <button type="button" data-help-tab="safety">Grenzen <span>Offizielle Nummern & Tests</span></button>
-        </nav>
-
-        <div class="help-content">
-          <section class="help-page active" data-help-page="start">
-            <h3>Was ist die Barcode-Werkstatt Plus?</h3>
-            <p>Die Barcode-Werkstatt Plus erstellt klassische Strichcodes direkt im Browser. Du kannst einzelne Barcodes erzeugen, denselben Code mehrfach drucken, fortlaufende Serien bauen oder eine manuelle Liste einfügen.</p>
-            <p>Das Tool ist für Werkstatt, Lager, Büro, 3D-Druck, interne Artikelnummern, Projektetiketten und einfache Druckbögen gedacht. Es ersetzt keine offizielle Nummernvergabe, hilft aber beim sauberen Erzeugen, Prüfen, Exportieren und Drucken.</p>
-
-            <div class="help-card-grid">
-              <div class="help-card"><strong>Für interne Kennzeichnung</strong><span class="help-mini">Werkzeugnummern, Lagerfächer, Aufträge, Material, Prüfstände, Kisten, Rollen oder Musterteile.</span></div>
-              <div class="help-card"><strong>Für Serien</strong><span class="help-mini">Fortlaufende Codes mit Startwert, Anzahl, Stellen und Schrittweite erzeugen.</span></div>
-              <div class="help-card"><strong>Für Druckbögen</strong><span class="help-mini">Etiketten pro Reihe, Kopien pro Code, Größe, Rand und Abstand einstellen.</span></div>
-              <div class="help-card"><strong>Lokal im Browser</strong><span class="help-mini">Die Eingaben werden im Browser verarbeitet. Projektstände können als JSON-Datei gesichert werden.</span></div>
-            </div>
-
-            <div class="help-example"><strong>Beispiel:</strong> Du möchtest für 30 Lagerfächer eine EAN-13-Testserie oder für eine Werkzeugkiste interne Code128-Etiketten drucken. Barcode-Art wählen, Modus wählen, Werte eintragen, prüfen und Druckbogen ausgeben.</div>
-          </section>
-
-          <section class="help-page" data-help-page="workflow">
-            <h3>So nutzt du die Barcode-Werkstatt Schritt für Schritt</h3>
-            <ol>
-              <li><strong>Barcode-Art wählen:</strong> Links entscheidest du, ob du z. B. Code128, EAN-13, EAN-8, Code39 oder ITF-14 brauchst.</li>
-              <li><strong>Arbeitsmodus wählen:</strong> Einzelcode, gleicher Code mehrfach, Serie oder manuelle Liste.</li>
-              <li><strong>Daten eintragen:</strong> Je nach Barcode-Art gelten andere Regeln. EAN und ITF arbeiten nur mit Zahlen und Prüfziffern.</li>
-              <li><strong>Prüfung beachten:</strong> Grün bedeutet: Pflichtangaben passen. Rot bedeutet: echter Fehler, erst korrigieren.</li>
-              <li><strong>Vorschau prüfen:</strong> Rechts siehst du den Barcode und den erzeugten Inhalt.</li>
-              <li><strong>Exportieren oder drucken:</strong> PNG/SVG für Einzelcode, CSV für Listen, Druckbogen für Etiketten.</li>
-              <li><strong>Projekt sichern:</strong> Als Projekt-JSON speichern, wenn du Versionen oder den Arbeitsstand behalten willst.</li>
-            </ol>
-            <div class="help-good"><strong>Praxisregel:</strong> Erst einen kleinen Testbogen drucken und scannen. Wenn der sitzt, dann größere Mengen drucken.</div>
-            <div class="help-warning"><strong>Wichtig:</strong> Ein Barcode kann technisch korrekt sein und trotzdem fachlich falsch verwendet werden. Besonders EAN/ITF nur offiziell einsetzen, wenn die Nummern wirklich gültig vergeben sind.</div>
-          </section>
-
-          <section class="help-page" data-help-page="types">
-            <h3>Welche Barcode-Art nehme ich?</h3>
-            <table class="help-table">
-              <thead><tr><th>Typ</th><th>Wofür gut?</th><th>Wichtig</th></tr></thead>
-              <tbody>
-                <tr><td><strong>Code128</strong></td><td>Interne Artikelnummern, Aufträge, Lager, Werkzeug, Kisten, 3D-Druck-Projekte.</td><td>Sehr flexibel. Kann Zahlen, Buchstaben und viele Sonderzeichen abbilden.</td></tr>
-                <tr><td><strong>EAN-13</strong></td><td>Artikelcodes mit 13 Stellen, Handelsumfeld, Testreihen mit Prüfziffer.</td><td>13-stellige GTIN: 12 Basisziffern werden ergänzt; bei 13 Ziffern prüft das Tool die Prüfziffer. Offiziell nur gültig vergebene Nummern verwenden.</td></tr>
-                <tr><td><strong>EAN-8</strong></td><td>Kürzere Artikelcodes mit 8 Stellen.</td><td>8-stellige GTIN: 7 Basisziffern werden ergänzt; bei 8 Ziffern prüft das Tool die Prüfziffer.</td></tr>
-                <tr><td><strong>Code39</strong></td><td>Robuste einfache Werkstatt-/Industriecodes.</td><td>Erlaubt sind Großbuchstaben, Zahlen, Leerzeichen sowie - . $ / + %.</td></tr>
-                <tr><td><strong>ITF-14</strong></td><td>Karton, Verpackung, Logistik- oder Transporteinheiten.</td><td>14-stellige GTIN für Um- bzw. Transportverpackungen, nicht für den klassischen Retail-POS. 13 Basisziffern werden ergänzt; volle Codes werden geprüft.</td></tr>
-              </tbody>
-            </table>
-            <div class="help-example"><strong>Einfacher Merksatz:</strong> Für eigene Werkstattetiketten meistens Code128. Für echte Produkt-/Handelsnummern nicht raten, sondern offizielle Nummern verwenden.</div>
-          </section>
-
-          <section class="help-page" data-help-page="modes">
-            <h3>Arbeitsmodi: Ein Code, viele Codes oder ganze Serien</h3>
-            <h4>Einzelcode</h4>
-            <p>Erzeugt genau einen Barcode. Gut für schnelle Tests, einzelne Artikel, einen Auftrag oder einen Lagerplatz.</p>
-
-            <h4>Gleicher Code</h4>
-            <p>Erzeugt denselben Barcode mehrfach. Gut, wenn du für einen Artikel mehrere gleiche Etiketten brauchst.</p>
-
-            <h4>Serie</h4>
-            <p>Erzeugt fortlaufende Barcodes. Du gibst Startwert, Anzahl und Schrittweite an. Schrittweite 1 erzeugt z. B. 1001, 1002, 1003; Schrittweite 10 erzeugt 1000, 1010, 1020. Bei Code128/Code39 sind Prefix und Suffix möglich. Bei EAN/ITF sind Prefix und Suffix gesperrt, weil diese Standards feste Zahlenlängen haben.</p>
-
-            <h4>Manuelle Liste</h4>
-            <p>Jede Zeile wird ein eigener Barcode. Praktisch, wenn du Codes aus Excel, einer Liste oder einem Auftrag kopierst.</p>
-
-            <div class="help-good"><strong>Tipp:</strong> Für Serien erst mit 3 bis 5 Codes testen. So siehst du sofort, ob Nummern, Stellen und Prüfziffern wie erwartet laufen.</div>
-          </section>
-
-          <section class="help-page" data-help-page="checks">
-            <h3>Prüfziffern einfach erklärt</h3>
-            <p>EAN-13, EAN-8 und ITF-14 enthalten am Ende eine Prüfziffer. Diese Ziffer hilft Scannern und Programmen zu erkennen, ob die Nummer wahrscheinlich korrekt gelesen wurde.</p>
-            <table class="help-table">
-              <thead><tr><th>Barcode</th><th>Basisnummer</th><th>Endgültiger Code</th></tr></thead>
-              <tbody>
-                <tr><td><strong>EAN-13</strong></td><td>12 Ziffern</td><td>13 Ziffern mit Prüfziffer</td></tr>
-                <tr><td><strong>EAN-8</strong></td><td>7 Ziffern</td><td>8 Ziffern mit Prüfziffer</td></tr>
-                <tr><td><strong>ITF-14</strong></td><td>13 Ziffern</td><td>14 Ziffern mit Prüfziffer</td></tr>
-              </tbody>
-            </table>
-            <p>Gibst du die Basisnummer ein, ergänzt das Tool die Prüfziffer. Gibst du die volle Länge ein, prüft das Tool, ob die Prüfziffer passt.</p>
-            <div class="help-good"><strong>Scan-Kontrast:</strong> Dunkle Striche auf hellem Hintergrund sind meist die sicherste Wahl. Farbige Kombinationen können abhängig von Scanner, Kamera, Drucker und Material schlechter funktionieren. Vor größeren Druckserien immer einen Testscan durchführen.</div>
-            <div class="help-warning"><strong>Nicht verwechseln:</strong> Eine mathematisch passende Prüfziffer macht aus einer frei erfundenen Nummer noch keine offiziell vergebene Handels- oder Logistiknummer.</div>
-          </section>
-
-          <section class="help-page" data-help-page="export">
-            <h3>CSV, Excel und Projekt-JSON</h3>
-            <h4>CSV</h4>
-            <p>CSV ist eine einfache Tabellen-Datei. Du kannst erzeugte Codes exportieren und z. B. in Excel, LibreOffice oder Etikettenprogrammen weiterverwenden.</p>
-            <p>Damit Excel lange Zahlen und führende Nullen nicht kaputt interpretiert, enthält die CSV zusätzlich eine Excel-sichere Textspalte.</p>
-            <div class="help-example"><strong>Beispiel:</strong> Aus <code>0000000000017</code> wird in der Excel-sicheren Spalte eine Textform, damit Excel daraus nicht eine gekürzte Zahl macht.</div>
-
-            <h4>Projekt-JSON</h4>
-            <p>Die Projekt-JSON speichert Projektname, Beschreibung, aktuellen Arbeitsstand und den Versionsverlauf. Damit kannst du später wieder laden, weiterarbeiten oder alte Versionen vergleichen.</p>
-            <div class="help-good"><strong>Empfehlung:</strong> Wenn ein Stand wichtig ist, Projekt-JSON herunterladen. Der Browser-Autospeicher ist bequem, aber eine Datei ist die sichere Ablage.</div>
-          </section>
-
-
-          <section class="help-page" data-help-page="labels">
-            <h3>Etiketten gestalten</h3>
-            <p>Im Bereich Etiketten-Design kannst du dem Druckbogen ein einheitliches Aussehen geben. Vorlagen setzen einen Startpunkt, danach lassen sich Titel, Rahmen, Farben und Balken weiter anpassen.</p>
-            <div class="help-card-grid">
-              <div class="help-card"><strong>Titel</strong><span class="help-mini">Zum Beispiel Artikel, Lager, Scan-Hinweis oder Projektname. Der Titel kann oben oder unten stehen.</span></div>
-              <div class="help-card"><strong>Rahmen</strong><span class="help-mini">Rahmenfarbe, Stärke und Eckenradius helfen, Etiketten besser voneinander zu trennen.</span></div>
-              <div class="help-card"><strong>Balken</strong><span class="help-mini">Kopf-, Fuß- oder Seitenbalken eignen sich für Kategorien, Warnhinweise oder Farbcodierung.</span></div>
-              <div class="help-card"><strong>Lesbarkeit</strong><span class="help-mini">Der Barcode selbst sollte immer klar, kontrastreich und frei bleiben.</span></div>
-            </div>
-            <div class="help-good"><strong>Praxis-Tipp:</strong> Für Serienetiketten zuerst eine Vorlage wählen, dann Farben und Titel anpassen und danach einen Testdruck scannen.</div>
-            <div class="help-warning"><strong>Wichtig:</strong> Dekoration außen herum ist gut. Direkt über dem Barcode oder mit zu wenig Kontrast sollte nicht gearbeitet werden.</div>
-          </section>
-
-          <section class="help-page" data-help-page="formats">
-            <h3>Etikettenformate und A4-Ausnutzung</h3>
-            <p>Mit dem Etikettenformat steuerst du, ob das Label eher kompakt, breit, hoch oder als größeres Schild wirken soll. Die A4-Ausnutzung bestimmt, ob mehr Etiketten auf eine Seite passen oder ob mehr Abstand und Scanfläche bleiben.</p>
-            <h4>Praxis-Empfehlung</h4>
-            <ul>
-              <li><strong>Kompakt:</strong> für kleine Kennzeichnungen mit wenig Text.</li>
-              <li><strong>Normal:</strong> guter Standard für die meisten Etiketten.</li>
-              <li><strong>Breit:</strong> gut für längere Barcodes oder lange Titel.</li>
-              <li><strong>Hoch:</strong> sinnvoll, wenn Titel, Balken oder Zusatzinfos mehr Platz brauchen.</li>
-              <li><strong>Scanfreundlich:</strong> mehr Platz für den Barcode und etwas Luft im Druckbild.</li>
-            </ul>
-            <div class="help-good"><strong>Tipp:</strong> Bei sehr kleinen Etiketten vor dem Seriendruck eine Testseite drucken und mit dem Smartphone oder Scanner prüfen.</div>
-          </section>
-
-          <section class="help-page" data-help-page="print">
-            <h3>Druckbogen und Etiketten sauber testen</h3>
-            <p>Der Druckbogen ist für DIN-A4-Ausdrucke gedacht. Je nach Browser und Drucker können Rand, Skalierung und Seitenumbruch unterschiedlich wirken.</p>
-            <h4>Diese Einstellungen sind wichtig</h4>
-            <ul>
-              <li><strong>Etiketten pro Reihe:</strong> mehr Etiketten pro Reihe bedeutet weniger Platz pro Etikett.</li>
-              <li><strong>Kopien pro Code:</strong> wiederholt jeden erzeugten Code mehrfach.</li>
-              <li><strong>Größe:</strong> kleine Etiketten sparen Platz, große Etiketten sind leichter scannbar.</li>
-              <li><strong>Etiketten-Design:</strong> Vorlagen, Rahmen und Balken vorher in der Etiketten-Vorschau prüfen.</li>
-              <li><strong>A4-Rand:</strong> hilft, wenn der Drucker nicht randlos drucken kann.</li>
-              <li><strong>Etikettenabstand:</strong> mehr Abstand erleichtert Schneiden und Trennen.</li>
-            </ul>
-            <div class="help-warning"><strong>Druckdialog prüfen:</strong> A4, Skalierung 100 %, Kopf-/Fußzeilen aus, Rand passend. Danach mit Handy oder Scanner testen.</div>
-            <div class="help-example"><strong>Praxis-Tipp:</strong> Erst einen Bogen mit wenigen Codes drucken. Wenn Scanner und Größe passen, dann Serienbögen erzeugen.</div>
-          </section>
-
-          <section class="help-page" data-help-page="safety">
-            <h3>Grenzen, Verantwortung und Scanner-Test</h3>
-            <p>Ein Barcode ist nur ein maschinenlesbarer Träger für eine Nummer oder Zeichenfolge. Ob diese Nummer in einem echten Waren-, Lager- oder Logistiksystem gültig ist, entscheidet nicht der Barcode selbst.</p>
-            <h4>Wichtige Regeln</h4>
-            <ul>
-              <li>Für interne Werkstatt- und Lagercodes ist Code128 meist die sichere Wahl.</li>
-              <li>EAN/ITF nur offiziell einsetzen, wenn die Nummern wirklich gültig vergeben sind.</li>
-              <li>Vor Serien- oder Kundendruck immer mit Scanner oder Smartphone testen.</li>
-              <li>Hoher Kontrast hilft: dunkle Striche auf hellem Hintergrund.</li>
-              <li>Zu kleine oder zu breite Barcodes können schlecht lesbar werden.</li>
-            </ul>
-            <div class="help-warning"><strong>Fachlicher Hinweis:</strong> Das Tool kann Form, Länge und Prüfziffer prüfen. Es kann nicht bestätigen, dass eine Nummer dir offiziell gehört oder in einem fremden System akzeptiert wird.</div>
-          </section>
-        </div>
-      </div>
+      <iframe id="helpFrame" src="/tools/barcode-werkstatt/hilfe.html?embed=1#start" title="Hilfe und Anleitung zur Barcode-Werkstatt Plus"></iframe>
     </div>
   </dialog>
   <div class="toast" id="toast">Erledigt</div>
