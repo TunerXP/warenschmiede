@@ -1864,6 +1864,39 @@
     document.addEventListener('DOMContentLoaded',()=>{
       populateLabelSizePresets();
       organizeWorkspace();
+      const helpDialog = $('helpDialog');
+      const openHelp = ()=>{
+        document.documentElement.classList.add('dialog-open');
+        helpDialog.showModal();
+      };
+      window.WSToolMenu?.configure({
+        toolName: 'Barcode-Werkstatt Plus',
+        toolDescription: 'Barcodes erstellen, gestalten und drucken.',
+        toolIcon: '/assets/img/barcode_logo.svg',
+        sections: [
+          {
+            title: 'Projekt & Daten',
+            items: [
+              { label: 'Projekt speichern', description: 'Projekt als JSON-Datei sichern.', action: downloadProjectJson },
+              { label: 'Projekt laden', description: 'Projekt aus einer JSON-Datei öffnen.', action: openProjectFile },
+              { label: 'Version speichern', description: 'Aktuellen Stand im Verlauf sichern.', action: saveNewProjectVersion }
+            ]
+          },
+          {
+            title: 'Hilfe',
+            items: [
+              { label: 'Hilfe & Bedienung', description: 'Anleitung und fachliche Hinweise öffnen.', action: openHelp }
+            ]
+          },
+          {
+            title: 'Warenschmiede',
+            items: [
+              { label: 'Zur Tool-Übersicht', href: '/tools/' },
+              { label: 'Zur Homepage', href: '/' }
+            ]
+          }
+        ]
+      });
       $('toolMenuBtn').addEventListener('click',()=>window.WSToolMenu?.open());
       document.querySelectorAll('.type-btn').forEach(btn=>btn.addEventListener('click',()=>setType(btn.dataset.type)));
       document.querySelectorAll('.mode-btn').forEach(btn=>btn.addEventListener('click',()=>setMode(btn.dataset.mode)));
@@ -1891,15 +1924,12 @@
       $('sheetPrev').addEventListener('click',()=>{ if(currentSheetPage > 0){ currentSheetPage--; updateSheetPageNavigation(); } });
       $('sheetNext').addEventListener('click',()=>{ const count=document.querySelectorAll('#sheetPages .sheet-page').length; if(currentSheetPage < count - 1){ currentSheetPage++; updateSheetPageNavigation(); } });
       window.addEventListener('afterprint', clearPrintRoot);
-      $('btnTheme').addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'});
       $('btnVersionSave')?.addEventListener('click',saveNewProjectVersion);
       $('btnProjectExport')?.addEventListener('click',downloadProjectJson);
       $('btnProjectImport')?.addEventListener('click',openProjectFile);
       $('projectFileInput')?.addEventListener('change',event=>readProjectFile(event.target.files?.[0]));
       $('btnLocalClear')?.addEventListener('click',clearLocalDraft);
-      const helpDialog = $('helpDialog');
       const unlockHelpScroll = ()=>document.documentElement.classList.remove('dialog-open');
-      $('btnHelp').addEventListener('click',()=>{document.documentElement.classList.add('dialog-open');helpDialog.showModal()});
       $('helpClose').addEventListener('click',()=>$('helpDialog').close());
       helpDialog.addEventListener('close', unlockHelpScroll);
       helpDialog.addEventListener('cancel', unlockHelpScroll);
