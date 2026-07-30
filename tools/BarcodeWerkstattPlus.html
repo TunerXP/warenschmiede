@@ -281,8 +281,13 @@ WS-B001</textarea>
                   <div class="row3">
                     <div class="field"><label for="labelsPerRow">Max. pro Reihe <button class="mini-help" type="button" data-help="labelsPerRow" data-title="Maximal pro Reihe" data-text="Automatisch nutzt den verfügbaren A4-Platz. Eine Zahl begrenzt nur die Anzahl pro Reihe; die Etikettengröße bleibt unverändert.">?</button></label><select id="labelsPerRow"><option value="auto" selected>Automatisch</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
                     <div class="field"><label for="copiesPerCode">Kopien pro Code</label><input id="copiesPerCode" type="number" min="1" max="99" value="1"></div>
-                    <div class="field"><label for="labelScale">Druckgröße</label><select id="labelScale"><option value="small">Klein</option><option value="medium" selected>Mittel</option><option value="large">Groß</option></select></div>
+                    <div class="field"><label for="labelScale">Druckgröße</label><select id="labelScale"><option value="small">Klein</option><option value="medium" selected>Mittel</option><option value="large">Groß</option><option value="custom">Eigenes Maß</option></select></div>
                   </div>
+                  <div class="custom-size-fields" id="customLabelSizeFields" hidden>
+                    <div class="field"><label for="customLabelWidthMm">Breite</label><div class="unit-input"><input id="customLabelWidthMm" inputmode="decimal" value="70,0" aria-describedby="customLabelSizeError"><span>mm</span></div></div>
+                    <div class="field"><label for="customLabelHeightMm">Höhe</label><div class="unit-input"><input id="customLabelHeightMm" inputmode="decimal" value="35,0" aria-describedby="customLabelSizeError"><span>mm</span></div></div>
+                  </div>
+                  <p class="custom-size-error" id="customLabelSizeError" role="alert" hidden></p>
                   <div class="row" style="margin-top:10px;">
                     <div class="field"><label for="printMargin">A4-Rand <button class="mini-help" type="button" data-help="printMargin" data-title="A4-Rand" data-text="Drucker können nicht immer randlos drucken. Wenn etwas abgeschnitten wird, wähle kleinen, normalen oder großen Rand.">?</button></label><select id="printMargin"><option value="0">Ohne Rand</option><option value="6">Klein</option><option value="12" selected>Normal</option><option value="20">Groß</option></select></div>
                     <div class="field"><label for="labelGap">Etikettenabstand <button class="mini-help" type="button" data-help="labelGap" data-title="Etikettenabstand" data-text="Abstand zwischen den Etiketten auf dem Druckbogen. Größerer Abstand hilft beim Ausschneiden.">?</button></label><select id="labelGap"><option value="4">Eng</option><option value="8" selected>Normal</option><option value="14">Groß</option></select></div>
@@ -381,7 +386,15 @@ WS-B001</textarea>
             <h3>Druckbogen-Vorschau</h3>
             <span class="pill" id="sheetCount">0 Etiketten</span>
           </div>
-          <div class="sheet-preview"><div class="label-grid" id="labelGrid"></div></div>
+          <p class="sheet-scale-note">A4-Vorschau – proportional skaliert</p>
+          <div class="sheet-preview" id="sheetPreview"><div class="sheet-pages" id="sheetPages"></div><div class="sheet-empty" id="sheetEmpty" hidden>Keine Etiketten für die Druckvorschau.</div></div>
+          <div class="sheet-navigation" id="sheetNavigation" hidden>
+            <button class="btn sheet-nav-button" id="sheetPrev" type="button" aria-label="Vorherige Seite">←</button>
+            <span id="sheetPageInfo" aria-live="polite">Seite 1 von 1</span>
+            <button class="btn sheet-nav-button" id="sheetNext" type="button" aria-label="Nächste Seite">→</button>
+          </div>
+          <p class="sheet-page-items" id="sheetPageItems"></p>
+          <div class="sheet-finish"><button class="btn btn-good" id="btnPrintSheetBottom" type="button">Druckbogen drucken</button><span>Im Druckdialog kann auch als PDF gespeichert werden.</span></div>
         </div>
       </aside>
     </main>
