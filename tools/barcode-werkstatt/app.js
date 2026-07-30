@@ -66,6 +66,9 @@
       CODE39:{label:'Code39',numericOnly:false,hint:'Code39 ist einfach und robust für Industrie, Werkstatt und Lager.',help:'Code39 eignet sich für robuste interne Codes. Verwende Großbuchstaben, Zahlen, Leerzeichen und - . $ / + %.',ex:'Beispiel: WERKZEUG-01 oder LAGER A12.',sample:'WERKZEUG-01'},
       ITF14:{label:'ITF-14',numericOnly:true,baseLen:13,fullLen:14,hint:'ITF-14 codiert GTINs auf Um- bzw. Transportverpackungen. 13 Basisziffern werden um die Prüfziffer ergänzt.',help:'ITF-14 ist ein 14-stelliger Barcode für GTINs auf Um- bzw. Transportverpackungen und wird nicht am klassischen Retail-POS verwendet. Die letzte Ziffer ist die Prüfziffer. Bei 13 Basisziffern ergänzt das Tool sie automatisch. Für den offiziellen Einsatz müssen gültig vergebene Nummern verwendet werden.',ex:'Beispiel: 1234567890123 → 12345678901231.',sample:'1234567890123'}
     };
+    const helpTopicByType = Object.freeze({
+      CODE128:'code128', EAN13:'ean13', EAN8:'ean8', CODE39:'code39', ITF14:'itf14'
+    });
     const modeInfo = {
       single:{label:'Einzelcode',hint:'Ein einzelner Barcode für Artikelnummer, Auftrag oder Lagerfach.'},
       copies:{label:'Gleicher Code',hint:'Ein Barcode wird mehrfach als Etikettenbogen erzeugt.'},
@@ -740,6 +743,7 @@
       currentType = type;
       document.querySelectorAll('.type-btn').forEach(b=>b.classList.toggle('active', b.dataset.type===type));
       $('typeHint').textContent = typeInfo[type].hint;
+      $('typeHelpLink').textContent = `? Hilfe zu ${typeInfo[type].label}`;
       $('inputHelp').textContent = typeInfo[type].help;
       $('inputExample').innerHTML = '<strong>Beispiel:</strong> ' + typeInfo[type].ex;
       $('inputSummary').innerHTML = `<span class="ws-tool-chip ws-accent-blue">${typeInfo[type].label}</span><span class="ws-tool-chip ws-accent-orange">${modeInfo[currentMode].label}</span>`;
@@ -1865,10 +1869,33 @@
       populateLabelSizePresets();
       organizeWorkspace();
       const helpDialog = $('helpDialog');
-      const openHelp = ()=>{
+      const helpFrame = $('helpFrame');
+      const helpUrl = topic=>`/tools/barcode-werkstatt/hilfe.html#${topic || 'start'}`;
+      const openHelp = (topic='start')=>{
+        helpFrame.src = `/tools/barcode-werkstatt/hilfe.html?embed=1#${topic}`;
         document.documentElement.classList.add('dialog-open');
-        helpDialog.showModal();
+        if(!helpDialog.open) helpDialog.showModal();
       };
+      const currentHelpTopic = ()=>{
+        try { return helpFrame.contentWindow.location.hash.slice(1) || 'start'; }
+        catch { return 'start'; }
+      };
+      const openHelpWindow = (topic=currentHelpTopic())=>{
+        const availableWidth = window.screen.availWidth || window.innerWidth;
+        const availableHeight = window.screen.availHeight || window.innerHeight;
+        const width = Math.min(1200, availableWidth);
+        const height = Math.min(850, availableHeight);
+        const features = `popup=yes,resizable=yes,scrollbars=yes,width=${width},height=${height}`;
+        const helpWindow = window.open(helpUrl(topic), 'wsBarcodeHelp', features);
+        if(helpWindow) helpWindow.focus();
+        else toast('Eigenes Hilfefenster konnte nicht geöffnet werden.');
+      };
+      const helpMenuItems = [
+        { label: 'Hilfe & Anleitung', description: 'Lern- und Nachschlagebereich öffnen.', action: ()=>openHelp('start') }
+      ];
+      if(window.matchMedia('(min-width: 761px)').matches){
+        helpMenuItems.push({ label: 'Anleitung in eigenem Fenster', description: 'Hilfe separat öffnen und parallel nutzen.', action: ()=>openHelpWindow('start') });
+      }
       window.WSToolMenu?.configure({
         toolName: 'Barcode-Werkstatt Plus',
         toolDescription: 'Barcodes erstellen, gestalten und drucken.',
@@ -1885,9 +1912,7 @@
           },
           {
             title: 'Hilfe',
-            items: [
-              { label: 'Hilfe & Bedienung', description: 'Anleitung und fachliche Hinweise öffnen.', action: openHelp }
-            ]
+            items: helpMenuItems
           },
           {
             title: 'Warenschmiede',
@@ -1899,6 +1924,8 @@
         ]
       });
       $('toolMenuBtn').addEventListener('click',()=>window.WSToolMenu?.open());
+      $('typeHelpLink').addEventListener('click',()=>openHelp(helpTopicByType[currentType]));
+      $('helpWindowOpen').addEventListener('click',()=>openHelpWindow());
       document.querySelectorAll('.type-btn').forEach(btn=>btn.addEventListener('click',()=>setType(btn.dataset.type)));
       document.querySelectorAll('.mode-btn').forEach(btn=>btn.addEventListener('click',()=>setMode(btn.dataset.mode)));
       document.querySelectorAll('input,textarea,select').forEach(el=>{
@@ -1930,15 +1957,6 @@
       $('helpClose').addEventListener('click',()=>$('helpDialog').close());
       helpDialog.addEventListener('close', unlockHelpScroll);
       helpDialog.addEventListener('cancel', unlockHelpScroll);
-      document.querySelectorAll('[data-help-tab]').forEach(btn=>{
-        btn.addEventListener('click',()=>{
-          const target = btn.dataset.helpTab;
-          document.querySelectorAll('[data-help-tab]').forEach(b=>b.classList.toggle('active', b === btn));
-          document.querySelectorAll('[data-help-page]').forEach(page=>{
-            page.classList.toggle('active', page.dataset.helpPage === target);
-          });
-        });
-      });
       updateNumericFieldState();
       updateDynamicLabels();
       updateStandardWarning();
