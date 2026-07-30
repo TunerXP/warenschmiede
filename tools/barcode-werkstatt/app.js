@@ -742,7 +742,7 @@
       $('typeHint').textContent = typeInfo[type].hint;
       $('inputHelp').textContent = typeInfo[type].help;
       $('inputExample').innerHTML = '<strong>Beispiel:</strong> ' + typeInfo[type].ex;
-      $('inputSummary').innerHTML = `<span>${typeInfo[type].label}</span><span>${modeInfo[currentMode].label}</span>`;
+      $('inputSummary').innerHTML = `<span class="ws-tool-chip ws-accent-blue">${typeInfo[type].label}</span><span class="ws-tool-chip ws-accent-orange">${modeInfo[currentMode].label}</span>`;
 
       updateNumericFieldState();
       updateDynamicLabels();
@@ -773,7 +773,7 @@
       updateDynamicLabels();
       updateStandardWarning();
       $('modeHint').textContent = modeInfo[mode].hint;
-      $('inputSummary').innerHTML = `<span>${typeInfo[currentType].label}</span><span>${modeInfo[mode].label}</span>`;
+      $('inputSummary').innerHTML = `<span class="ws-tool-chip ws-accent-blue">${typeInfo[currentType].label}</span><span class="ws-tool-chip ws-accent-orange">${modeInfo[mode].label}</span>`;
       buildList();
       generate();
       updateLoadedVersionLiveSoon();
@@ -1685,9 +1685,9 @@
               ${(!version.note && version.projectDescription) ? `<span>${escapeHtml(version.projectDescription).slice(0,120)}${String(version.projectDescription).length > 120 ? '…' : ''}</span>` : ''}
             </div>
             <div class="version-actions">
-              <button type="button" onclick="loadProjectVersion('${version.id}')">Laden</button>
-              <button class="csv-version" type="button" onclick="downloadVersionCsv('${version.id}')">CSV</button>
-              <button class="delete-version" type="button" onclick="deleteProjectVersion('${version.id}')">Löschen</button>
+              <button class="ws-tool-action ws-tool-action--compact ws-accent-steel" type="button" onclick="loadProjectVersion('${version.id}')">Laden</button>
+              <button class="csv-version ws-tool-action ws-tool-action--compact ws-accent-green" type="button" onclick="downloadVersionCsv('${version.id}')">CSV</button>
+              <button class="delete-version ws-tool-action ws-tool-action--compact ws-accent-red" type="button" onclick="deleteProjectVersion('${version.id}')">Löschen</button>
             </div>
           </div>
         `;
