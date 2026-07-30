@@ -1093,12 +1093,19 @@
       const pages = [...document.querySelectorAll('#sheetPages .sheet-page')];
       pages.forEach((page,index)=>page.hidden = index !== currentSheetPage);
       const count = pages.length;
+      const items = pages[currentSheetPage]?.querySelectorAll('.label-cell').length || 0;
+      const singlePage = count === 1;
       $('sheetNavigation').hidden = count === 0;
+      $('sheetPrev').hidden = singlePage;
+      $('sheetNext').hidden = singlePage;
       $('sheetPrev').disabled = currentSheetPage <= 0;
       $('sheetNext').disabled = currentSheetPage >= count - 1;
-      $('sheetPageInfo').textContent = `Seite ${currentSheetPage + 1} von ${count}`;
-      const items = pages[currentSheetPage]?.querySelectorAll('.label-cell').length || 0;
-      $('sheetPageItems').textContent = `${items} ${items === 1 ? 'Etikett' : 'Etiketten'} auf dieser Seite`;
+      $('sheetPageInfo').textContent = singlePage
+        ? `1 Seite · ${items} ${items === 1 ? 'Etikett' : 'Etiketten'}`
+        : `Seite ${currentSheetPage + 1} von ${count}`;
+      $('sheetPageItems').textContent = singlePage || count === 0
+        ? ''
+        : `${items} ${items === 1 ? 'Etikett' : 'Etiketten'} auf dieser Seite`;
     }
 
     function printSheet(){
