@@ -7,8 +7,19 @@
     let currentVersionId = null;
     let currentSheetPage = 0;
 
-    // Nominale, herstellerunabhängige Druckmaße in Millimetern. Format und
-    // Druckgröße bleiben getrennt; die Werte dienen ausschließlich dem A4-Packing.
+    const LABEL_SIZE_PRESETS = Object.freeze({
+      '38.1x21.2': Object.freeze({width:38.1, height:21.2, group:'Kompakt'}),
+      '48.3x25.4': Object.freeze({width:48.3, height:25.4, group:'Kompakt'}),
+      '52.5x29.7': Object.freeze({width:52.5, height:29.7, group:'Universal'}),
+      '64.6x33.8': Object.freeze({width:64.6, height:33.8, group:'Universal'}),
+      '70x36': Object.freeze({width:70, height:36, group:'Universal'}),
+      '99.1x38.1': Object.freeze({width:99.1, height:38.1, group:'Groß'}),
+      '105x48': Object.freeze({width:105, height:48, group:'Groß'}),
+      '105x57': Object.freeze({width:105, height:57, group:'Groß'})
+    });
+
+    // Die alten Format- und Skalierungswerte bleiben ausschließlich für die
+    // verlustfreie Migration bereits gespeicherter Arbeitsstände erhalten.
     const PRINT_LAYOUT = Object.freeze({
       pageWidthMm: 210,
       pageHeightMm: 297,
@@ -22,6 +33,31 @@
         sign: Object.freeze({width:72, height:50})
       })
     });
+
+    function populateLabelSizePresets(){
+      const select = $('labelSizePreset');
+      if(!select) return;
+      select.innerHTML = '';
+      [...new Set(Object.values(LABEL_SIZE_PRESETS).map(preset=>preset.group))].forEach(groupName=>{
+        const group = document.createElement('optgroup');
+        group.label = groupName;
+        Object.entries(LABEL_SIZE_PRESETS).filter(([, preset])=>preset.group === groupName).forEach(([key, preset])=>{
+          const option = document.createElement('option');
+          option.value = key;
+          option.textContent = `${formatMm(preset.width)} × ${formatMm(preset.height)} mm`;
+          group.appendChild(option);
+        });
+        select.appendChild(group);
+      });
+      const customGroup = document.createElement('optgroup');
+      customGroup.label = 'Individuell';
+      const custom = document.createElement('option');
+      custom.value = 'custom';
+      custom.textContent = 'Eigenes Maß';
+      customGroup.appendChild(custom);
+      select.appendChild(customGroup);
+      select.value = '70x36';
+    }
 
     const typeInfo = {
       CODE128:{label:'Code128',numericOnly:false,hint:'Code128 ist flexibel und eignet sich z. B. für interne Nummern, Lagerplätze, Aufträge und Werkstattetiketten.',help:'Code128 ist flexibel und eignet sich z. B. für interne Nummern, Lagerplätze, Aufträge und Werkstattetiketten.',ex:'Artikelnummer, Auftragsnummer, Lagerfach, interne Werkzeug-ID.',sample:'WS-2026-001'},
@@ -518,13 +554,12 @@
       document.documentElement.style.setProperty('--print-gap', gap + 'mm');
     }
 
-    function printLabelMetrics(design = labelDesign()){
-      if(getValue('labelScale') === 'custom'){
+    function printLabelMetrics(){
+      if(getValue('labelSizePreset') === 'custom'){
         return {width:parseGermanNumber(getValue('customLabelWidthMm')), height:parseGermanNumber(getValue('customLabelHeightMm'))};
       }
-      const format = PRINT_LAYOUT.format[design.labelFormat] || PRINT_LAYOUT.format.normal;
-      const scale = PRINT_LAYOUT.scale[getValue('labelScale')] || PRINT_LAYOUT.scale.medium;
-      return {width:format.width * scale, height:format.height * scale};
+      const preset = LABEL_SIZE_PRESETS[getValue('labelSizePreset')] || LABEL_SIZE_PRESETS['70x36'];
+      return {width:preset.width, height:preset.height};
     }
 
     function parseGermanNumber(value){
@@ -533,7 +568,7 @@
     }
 
     function customLabelValidation(){
-      const custom = getValue('labelScale') === 'custom';
+      const custom = getValue('labelSizePreset') === 'custom';
       const fields = $('customLabelSizeFields');
       if(fields) fields.hidden = !custom;
       const error = $('customLabelSizeError');
@@ -1043,13 +1078,16 @@
       updateSheetPageNavigation();
       const status = $('sheetLayoutStatus');
       if(status){
-        const size = getValue('labelScale') === 'custom' ? ` · Etikett ${formatMm(metrics.width)} × ${formatMm(metrics.height)} mm` : '';
-        status.textContent = `${packing.columns} × ${packing.rows} Etiketten pro Seite · ${packing.itemsPerPage} pro A4 · ${pageCount} ${pageCount === 1 ? 'Seite' : 'Seiten'}${size}`;
+        status.textContent = `${packing.columns} × ${packing.rows} Etiketten pro Seite · ${packing.itemsPerPage} pro A4 · ${pageCount} ${pageCount === 1 ? 'Seite' : 'Seiten'} · Etikett ${formatMm(metrics.width)} × ${formatMm(metrics.height)} mm`;
       }
       renderSingleLabelPreview();
     }
 
     function formatMm(value){ return Number(value).toLocaleString('de-DE', {maximumFractionDigits:1}); }
+
+    function formatMigratedMm(value){
+      return String(Number(value.toFixed(4))).replace('.', ',');
+    }
 
     function updateSheetPageNavigation(){
       const pages = [...document.querySelectorAll('#sheetPages .sheet-page')];
@@ -1067,9 +1105,19 @@
       const validation = customLabelValidation();
       if(!validation.ok) return;
       buildList();
-      document.querySelector('.print-accordion').open = true;
+      const printRoot = $('wsPrintRoot');
+      const pages = [...document.querySelectorAll('#sheetPages > .sheet-page')];
+      if(!printRoot || !pages.length) return;
+      printRoot.replaceChildren(...pages.map(page=>{
+        const clone = page.cloneNode(true);
+        clone.hidden = false;
+        clone.removeAttribute('hidden');
+        return clone;
+      }));
       window.print();
     }
+
+    function clearPrintRoot(){ $('wsPrintRoot')?.replaceChildren(); }
     function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
     function csvEscape(v){ return '"' + String(v ?? '').replace(/"/g,'""') + '"'; }
     function downloadCsv(){
@@ -1247,7 +1295,7 @@
         layout: {
           labelsPerRow: getValue('labelsPerRow'),
           copiesPerCode: getValue('copiesPerCode'),
-          labelScale: getValue('labelScale'),
+          labelSizePreset: getValue('labelSizePreset'),
           customLabelWidthMm: getValue('customLabelWidthMm'),
           customLabelHeightMm: getValue('customLabelHeightMm'),
           printMargin: getValue('printMargin'),
@@ -1293,7 +1341,7 @@
       snapshot.projectText.description = getValue('projectDescription') || '';
       return {
         schema: 'warenschmiede.barcodeWerkstatt.project',
-        schemaVersion: 4,
+        schemaVersion: 5,
         tool: 'Barcode-Werkstatt Plus',
         exportedAt: new Date().toISOString(),
         project: {
@@ -1348,9 +1396,25 @@
 
       setValue('labelsPerRow', state.layout?.labelsPerRow || 'auto');
       setValue('copiesPerCode', state.layout?.copiesPerCode || '1');
-      setValue('labelScale', state.layout?.labelScale || 'medium');
-      setValue('customLabelWidthMm', state.layout?.customLabelWidthMm || '70,0');
-      setValue('customLabelHeightMm', state.layout?.customLabelHeightMm || '35,0');
+      const savedPreset = state.layout?.labelSizePreset;
+      const legacyScale = state.layout?.labelScale;
+      let customWidth = state.layout?.customLabelWidthMm || '70,0';
+      let customHeight = state.layout?.customLabelHeightMm || '35,0';
+      if(savedPreset && (savedPreset === 'custom' || LABEL_SIZE_PRESETS[savedPreset])){
+        setValue('labelSizePreset', savedPreset);
+      } else if(legacyScale === 'custom'){
+        setValue('labelSizePreset', 'custom');
+      } else if(legacyScale && PRINT_LAYOUT.scale[legacyScale]){
+        const oldFormat = PRINT_LAYOUT.format[state.layout?.labelFormat] || PRINT_LAYOUT.format.normal;
+        const oldScale = PRINT_LAYOUT.scale[legacyScale];
+        customWidth = formatMigratedMm(oldFormat.width * oldScale);
+        customHeight = formatMigratedMm(oldFormat.height * oldScale);
+        setValue('labelSizePreset', 'custom');
+      } else {
+        setValue('labelSizePreset', '70x36');
+      }
+      setValue('customLabelWidthMm', customWidth);
+      setValue('customLabelHeightMm', customHeight);
       setValue('printMargin', state.layout?.printMargin || '12');
       setValue('labelGap', state.layout?.labelGap || '8');
       setValue('labelTemplate', state.layout?.labelTemplate || 'plain');
@@ -1791,6 +1855,7 @@
     }
 
     document.addEventListener('DOMContentLoaded',()=>{
+      populateLabelSizePresets();
       organizeWorkspace();
       $('toolMenuBtn').addEventListener('click',()=>window.WSToolMenu?.open());
       document.querySelectorAll('.type-btn').forEach(btn=>btn.addEventListener('click',()=>setType(btn.dataset.type)));
@@ -1818,7 +1883,7 @@
       $('btnPrintSheetBottom').addEventListener('click',printSheet);
       $('sheetPrev').addEventListener('click',()=>{ if(currentSheetPage > 0){ currentSheetPage--; updateSheetPageNavigation(); } });
       $('sheetNext').addEventListener('click',()=>{ const count=document.querySelectorAll('#sheetPages .sheet-page').length; if(currentSheetPage < count - 1){ currentSheetPage++; updateSheetPageNavigation(); } });
-      window.addEventListener('beforeprint',()=>{const section=document.querySelector('.print-accordion');if(section)section.open=true});
+      window.addEventListener('afterprint', clearPrintRoot);
       $('btnTheme').addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'});
       $('btnVersionSave')?.addEventListener('click',saveNewProjectVersion);
       $('btnProjectExport')?.addEventListener('click',downloadProjectJson);

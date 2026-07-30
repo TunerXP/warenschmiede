@@ -281,7 +281,7 @@ WS-B001</textarea>
                   <div class="row3">
                     <div class="field"><label for="labelsPerRow">Max. pro Reihe <button class="mini-help" type="button" data-help="labelsPerRow" data-title="Maximal pro Reihe" data-text="Automatisch nutzt den verfügbaren A4-Platz. Eine Zahl begrenzt nur die Anzahl pro Reihe; die Etikettengröße bleibt unverändert.">?</button></label><select id="labelsPerRow"><option value="auto" selected>Automatisch</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
                     <div class="field"><label for="copiesPerCode">Kopien pro Code</label><input id="copiesPerCode" type="number" min="1" max="99" value="1"></div>
-                    <div class="field"><label for="labelScale">Druckgröße</label><select id="labelScale"><option value="small">Klein</option><option value="medium" selected>Mittel</option><option value="large">Groß</option><option value="custom">Eigenes Maß</option></select></div>
+                    <div class="field"><label for="labelSizePreset">Etikettenmaß</label><select id="labelSizePreset" aria-describedby="labelSizeHelp"></select></div>
                   </div>
                   <div class="custom-size-fields" id="customLabelSizeFields" hidden>
                     <div class="field"><label for="customLabelWidthMm">Breite</label><div class="unit-input"><input id="customLabelWidthMm" inputmode="decimal" value="70,0" aria-describedby="customLabelSizeError"><span>mm</span></div></div>
@@ -292,7 +292,8 @@ WS-B001</textarea>
                     <div class="field"><label for="printMargin">A4-Rand <button class="mini-help" type="button" data-help="printMargin" data-title="A4-Rand" data-text="Drucker können nicht immer randlos drucken. Wenn etwas abgeschnitten wird, wähle kleinen, normalen oder großen Rand.">?</button></label><select id="printMargin"><option value="0">Ohne Rand</option><option value="6">Klein</option><option value="12" selected>Normal</option><option value="20">Groß</option></select></div>
                     <div class="field"><label for="labelGap">Etikettenabstand <button class="mini-help" type="button" data-help="labelGap" data-title="Etikettenabstand" data-text="Abstand zwischen den Etiketten auf dem Druckbogen. Größerer Abstand hilft beim Ausschneiden.">?</button></label><select id="labelGap"><option value="4">Eng</option><option value="8" selected>Normal</option><option value="14">Groß</option></select></div>
                   </div>
-                  <p class="field-note" style="margin-top:8px;">A4-Hinweis: Papierformat A4 und Skalierung 100 % prüfen. Für kleine Etiketten Barcode-Größe „Groß“ oder „Maximal“ testen.</p>
+                  <p class="field-note" id="labelSizeHelp" style="margin-top:8px;">Die Maßvorlagen verwenden reale Etikettenabmessungen. Die automatische A4-Anordnung ist herstellerunabhängig.</p>
+                  <p class="field-note">Für maßhaltigen Druck: A4 und Tatsächliche Größe / 100 % verwenden.</p>
                   <p class="sheet-layout-status" id="sheetLayoutStatus" aria-live="polite"></p>
                 </div>
               </div>
@@ -399,6 +400,8 @@ WS-B001</textarea>
       </aside>
     </main>
   </div>
+
+  <div id="wsPrintRoot" aria-hidden="true"></div>
 
   <dialog id="helpDialog" class="help-dialog">
     <div class="modal-head">
