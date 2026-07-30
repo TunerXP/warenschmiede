@@ -15,7 +15,11 @@
   const currentId = ()=>location.hash.slice(1) || 'start';
   const setCurrentChapter = id=>{
     selectChapter(id);
-    if(location.hash !== `#${id}`) history.replaceState(null, '', `#${id}`);
+    if(location.hash !== `#${id}`){
+      const url = new URL(location.href);
+      url.hash = id;
+      history.replaceState(null, '', url);
+    }
   };
   selectChapter(currentId());
   window.addEventListener('hashchange', ()=>selectChapter(currentId()));
