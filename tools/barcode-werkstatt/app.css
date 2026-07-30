@@ -91,11 +91,9 @@
     .sheet-preview{padding:var(--print-padding)}
     .label-grid{gap:var(--print-gap)}
     .sheet-layout-status{margin:7px 0 0;color:var(--muted);font-size:.78rem;line-height:1.4}
-    .project-actions{display:flex;flex-wrap:wrap;gap:10px}
     .project-meta{display:grid;gap:10px}
     .project-status{font-size:.82rem;color:var(--muted);line-height:1.4;padding:10px 12px;border-radius:14px;background:rgba(47,142,223,.08);border:1px solid rgba(47,142,223,.2)}
     .autosave-status{font-size:.78rem;color:var(--muted);line-height:1.4;padding:8px 10px;border-radius:12px;background:rgba(43,170,114,.08);border:1px solid rgba(43,170,114,.22)}
-    .clear-local{border-color:rgba(194,65,58,.32);color:#c2413a;background:rgba(194,65,58,.07)}
     .version-list{border:1px solid var(--line);border-radius:16px;overflow:auto;max-height:230px;background:color-mix(in srgb,var(--surface) 78%,transparent)}
     .version-row{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:center;padding:10px;border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent);font-size:.84rem}
     .version-row:last-child{border-bottom:0}
@@ -475,7 +473,7 @@
 
     /* Barcode-Werkstatt Plus 2.0: kompakter Hauptworkflow */
     html.dialog-open,html.dialog-open body{overflow:hidden}
-    .topbar{position:relative}
+    .topbar{position:sticky;top:0;z-index:100;align-self:start;box-shadow:0 8px 24px -22px rgba(15,23,42,.75)}
     .topbar-inner{max-width:1320px;padding:12px 20px 6px}
     .brand-copy p{margin:3px 0 0;color:var(--muted);font-size:.82rem}
     .tool-chips{max-width:1320px;margin:0 auto;padding:0 20px 10px;display:flex;gap:6px;flex-wrap:wrap}
@@ -524,8 +522,8 @@
       .contrast-note{grid-column:auto}
     }
     @media(max-width:600px){
-      .topbar-inner{align-items:flex-start;flex-direction:column}.top-actions{width:100%;flex-wrap:wrap;justify-content:flex-start}
-      .brand-copy p{display:none}.tool-logo{width:46px;height:46px}.tool-chips{display:none}
+      .topbar-inner{align-items:center;flex-direction:row;padding:8px 10px;gap:8px}.top-actions{width:auto;flex:0 0 auto;flex-wrap:nowrap;justify-content:flex-end}
+      .brand{flex:1 1 auto;min-width:0}.brand-copy p{display:none}.brand h1{font-size:clamp(.9rem,4.5vw,1.05rem);line-height:1.1;white-space:nowrap}.tool-logo{width:42px;height:42px}.tool-chips{display:none}
       .main{padding:10px}.type-grid,.mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
       .preview-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}
       .row,.row3{grid-template-columns:1fr}.panel-body{padding:13px}
