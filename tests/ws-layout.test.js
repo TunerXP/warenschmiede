@@ -4,6 +4,7 @@ const test = require('node:test');
 const vm = require('node:vm');
 
 const layoutSource = fs.readFileSync('assets/js/ws-layout.js', 'utf8');
+const globalStyles = fs.readFileSync('assets/css/styles.css', 'utf8');
 
 function renderLayout(pathname = '/') {
   const elements = {
@@ -47,4 +48,26 @@ test('desktop and mobile navigation render with an exact root start link', () =>
   assert.equal((header.match(/href="\/"/g) || []).length, 3);
   assert.doesNotMatch(header, /href="\/\/"/);
   assert.match(header, /href="\/downloads\.html"/);
+});
+
+test('global edge buttons use nested polygon layers and keep all accent variants', () => {
+  const buttonRules = globalStyles.slice(
+    globalStyles.indexOf(':is(.ws-edge-button,.edge-button,.mini-edge){'),
+    globalStyles.indexOf('.full-section{')
+  );
+
+  assert.match(buttonRules, /--btn-shape:polygon\(10px 0,100% 0,calc\(100% - 10px\) 100%,0 100%\)/);
+  assert.match(buttonRules, /background:linear-gradient\(115deg,var\(--btn-edge\)/);
+  assert.match(buttonRules, /::before\{[\s\S]*?inset:2px;[\s\S]*?background:var\(--btn-surface\);[\s\S]*?clip-path:var\(--btn-shape\)/);
+  assert.doesNotMatch(buttonRules, /skewX|mask-composite|border:[^;]*var\(--btn-edge\)/);
+  for (const accent of ['amber', 'orange', 'blue', 'violet', 'green', 'red', 'steel']) {
+    assert.match(buttonRules, new RegExp(`accent-${accent}`));
+  }
+});
+
+test('tools overview keeps its actions on the global mini-edge class', () => {
+  const toolsOverview = fs.readFileSync('tools/index.html', 'utf8');
+
+  assert.match(toolsOverview, /class="mini-edge accent-/);
+  assert.doesNotMatch(toolsOverview, /class="[^"]*tool-btn/);
 });
