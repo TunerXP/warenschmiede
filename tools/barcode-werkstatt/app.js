@@ -5,11 +5,14 @@
     let typeDrafts = {};
     let projectVersions = [];
     let currentVersionId = null;
+    let currentSheetPage = 0;
 
     // Nominale, herstellerunabhängige Druckmaße in Millimetern. Format und
     // Druckgröße bleiben getrennt; die Werte dienen ausschließlich dem A4-Packing.
     const PRINT_LAYOUT = Object.freeze({
       pageWidthMm: 210,
+      pageHeightMm: 297,
+      customLimits: Object.freeze({minWidth:10, maxWidth:190, minHeight:10, maxHeight:277}),
       scale: Object.freeze({small:.82, medium:1, large:1.22}),
       format: Object.freeze({
         compact: Object.freeze({width:50, height:22}),
@@ -516,9 +519,41 @@
     }
 
     function printLabelMetrics(design = labelDesign()){
+      if(getValue('labelScale') === 'custom'){
+        return {width:parseGermanNumber(getValue('customLabelWidthMm')), height:parseGermanNumber(getValue('customLabelHeightMm'))};
+      }
       const format = PRINT_LAYOUT.format[design.labelFormat] || PRINT_LAYOUT.format.normal;
       const scale = PRINT_LAYOUT.scale[getValue('labelScale')] || PRINT_LAYOUT.scale.medium;
       return {width:format.width * scale, height:format.height * scale};
+    }
+
+    function parseGermanNumber(value){
+      const normalized = String(value ?? '').trim().replace(/\s/g, '').replace(',', '.');
+      return /^\d+(?:\.\d+)?$/.test(normalized) ? Number(normalized) : NaN;
+    }
+
+    function customLabelValidation(){
+      const custom = getValue('labelScale') === 'custom';
+      const fields = $('customLabelSizeFields');
+      if(fields) fields.hidden = !custom;
+      const error = $('customLabelSizeError');
+      if(!custom){
+        if(error) error.hidden = true;
+        return {ok:true};
+      }
+      const width = parseGermanNumber(getValue('customLabelWidthMm'));
+      const height = parseGermanNumber(getValue('customLabelHeightMm'));
+      const limits = PRINT_LAYOUT.customLimits;
+      const margin = Number(getValue('printMargin') || 0);
+      const availableWidth = PRINT_LAYOUT.pageWidthMm - (2 * margin);
+      const availableHeight = PRINT_LAYOUT.pageHeightMm - (2 * margin);
+      let message = '';
+      if(!Number.isFinite(width) || !Number.isFinite(height)) message = 'Bitte Breite und Höhe als Zahl eingeben, zum Beispiel 70,0.';
+      else if(width < limits.minWidth || width > limits.maxWidth || height < limits.minHeight || height > limits.maxHeight) message = `Erlaubt sind ${limits.minWidth}–${limits.maxWidth} mm Breite und ${limits.minHeight}–${limits.maxHeight} mm Höhe.`;
+      else if(width > availableWidth || height > availableHeight) message = 'Dieses Etikettenmaß passt mit dem gewählten Rand nicht auf ein A4-Blatt.';
+      if(error){ error.textContent = message; error.hidden = !message; }
+      ['customLabelWidthMm','customLabelHeightMm'].forEach(id=>$(id)?.closest('.field')?.classList.toggle('invalid', !!message));
+      return {ok:!message, width, height, message};
     }
 
     function sheetColumnCount(labelWidth){
@@ -529,6 +564,15 @@
       const requested = getValue('labelsPerRow') || 'auto';
       const maximum = requested === 'auto' ? physical : Math.max(1, Number(requested) || physical);
       return {columns:Math.min(physical, maximum), physical, requested};
+    }
+
+    function sheetPacking(metrics){
+      const horizontal = sheetColumnCount(metrics.width);
+      const margin = Number(getValue('printMargin') || 12);
+      const gap = Number(getValue('labelGap') || 8);
+      const availableHeight = Math.max(0, PRINT_LAYOUT.pageHeightMm - (2 * margin));
+      const rows = Math.max(1, Math.floor((availableHeight + gap) / (metrics.height + gap)));
+      return {...horizontal, rows, itemsPerPage:horizontal.columns * rows, margin, gap, availableHeight};
     }
 
     function generate(){
@@ -946,32 +990,85 @@
       const codes = expandedCodes();
       $('sheetCount').textContent = `${codes.length} Etiketten`;
       const design = labelDesign();
-      const grid = $('labelGrid');
+      const pagesBox = $('sheetPages');
+      const empty = $('sheetEmpty');
+      const navigation = $('sheetNavigation');
+      const sizeValidation = customLabelValidation();
+      const printButtons = [$('btnPrintSheet'), $('btnPrintSheetBottom')];
+      printButtons.forEach(button=>{ if(button) button.disabled = !sizeValidation.ok || !codes.length; });
+      pagesBox.innerHTML = '';
+      if(!codes.length || !sizeValidation.ok){
+        empty.hidden = false;
+        empty.textContent = sizeValidation.ok ? 'Keine Etiketten für die Druckvorschau.' : sizeValidation.message;
+        navigation.hidden = true;
+        $('sheetPageItems').textContent = '';
+        return;
+      }
+      empty.hidden = true;
       const metrics = printLabelMetrics(design);
-      const packing = sheetColumnCount(metrics.width);
+      const packing = sheetPacking(metrics);
       const density = design.labelDensity || 'balanced';
-      grid.classList.remove('label-sheet-compact','label-sheet-comfortable','label-sheet-scan');
-      if(density === 'many') grid.classList.add('label-sheet-compact');
-      if(density === 'comfortable') grid.classList.add('label-sheet-comfortable');
-      if(density === 'scan') grid.classList.add('label-sheet-scan');
-      grid.style.setProperty('--label-print-width', metrics.width + 'mm');
-      grid.style.setProperty('--label-print-height', metrics.height + 'mm');
-      grid.style.gridTemplateColumns = `repeat(${packing.columns}, var(--label-print-width))`;
-      grid.innerHTML = '';
-      codes.forEach((item)=>{
-        const made = createLabelCell(item, design, false);
-        grid.appendChild(made.cell);
-        try { renderBarcodeToSvg(made.svg, item.value, true); } catch(e) { made.label.textContent = 'Fehler: ' + item.value; }
-      });
+      const pageCount = Math.ceil(codes.length / packing.itemsPerPage);
+      for(let pageIndex=0; pageIndex<pageCount; pageIndex++){
+        const page = document.createElement('section');
+        page.className = 'sheet-page';
+        page.setAttribute('aria-label', `A4-Seite ${pageIndex + 1} von ${pageCount}`);
+        const grid = document.createElement('div');
+        grid.className = 'sheet-page-grid';
+        if(density === 'many') grid.classList.add('label-sheet-compact');
+        if(density === 'comfortable') grid.classList.add('label-sheet-comfortable');
+        if(density === 'scan') grid.classList.add('label-sheet-scan');
+        grid.style.setProperty('--label-print-width', metrics.width + 'mm');
+        grid.style.setProperty('--label-print-height', metrics.height + 'mm');
+        grid.style.setProperty('--sheet-columns', packing.columns);
+        grid.style.setProperty('--sheet-rows', packing.rows);
+        grid.style.setProperty('--sheet-margin', packing.margin + 'mm');
+        grid.style.left = `${packing.margin / PRINT_LAYOUT.pageWidthMm * 100}%`;
+        grid.style.top = `${packing.margin / PRINT_LAYOUT.pageHeightMm * 100}%`;
+        grid.style.width = `${(packing.columns * metrics.width + (packing.columns - 1) * packing.gap) / PRINT_LAYOUT.pageWidthMm * 100}%`;
+        grid.style.height = `${(packing.rows * metrics.height + (packing.rows - 1) * packing.gap) / PRINT_LAYOUT.pageHeightMm * 100}%`;
+        grid.style.gridTemplateColumns = `repeat(${packing.columns}, ${metrics.width / (packing.columns * metrics.width + (packing.columns - 1) * packing.gap) * 100}%)`;
+        grid.style.gridTemplateRows = `repeat(${packing.rows}, ${metrics.height / (packing.rows * metrics.height + (packing.rows - 1) * packing.gap) * 100}%)`;
+        grid.style.columnGap = `${packing.gap / (packing.columns * metrics.width + (packing.columns - 1) * packing.gap) * 100}%`;
+        grid.style.rowGap = `${packing.gap / (packing.rows * metrics.height + (packing.rows - 1) * packing.gap) * 100}%`;
+        codes.slice(pageIndex * packing.itemsPerPage, (pageIndex + 1) * packing.itemsPerPage).forEach(item=>{
+          const made = createLabelCell(item, design, false);
+          grid.appendChild(made.cell);
+          try { renderBarcodeToSvg(made.svg, item.value, true); } catch(e) { made.label.textContent = 'Fehler: ' + item.value; }
+        });
+        page.appendChild(grid);
+        pagesBox.appendChild(page);
+      }
+      currentSheetPage = Math.min(currentSheetPage, pageCount - 1);
+      updateSheetPageNavigation();
       const status = $('sheetLayoutStatus');
       if(status){
-        status.textContent = packing.requested === 'auto'
-          ? `Automatisch: aktuell ${packing.columns} pro Reihe`
-          : packing.columns < Number(packing.requested)
-            ? `Aktuell passen ${packing.columns} pro Reihe`
-            : `Begrenzt auf ${packing.columns} pro Reihe`;
+        const size = getValue('labelScale') === 'custom' ? ` · Etikett ${formatMm(metrics.width)} × ${formatMm(metrics.height)} mm` : '';
+        status.textContent = `${packing.columns} × ${packing.rows} Etiketten pro Seite · ${packing.itemsPerPage} pro A4 · ${pageCount} ${pageCount === 1 ? 'Seite' : 'Seiten'}${size}`;
       }
       renderSingleLabelPreview();
+    }
+
+    function formatMm(value){ return Number(value).toLocaleString('de-DE', {maximumFractionDigits:1}); }
+
+    function updateSheetPageNavigation(){
+      const pages = [...document.querySelectorAll('#sheetPages .sheet-page')];
+      pages.forEach((page,index)=>page.hidden = index !== currentSheetPage);
+      const count = pages.length;
+      $('sheetNavigation').hidden = count === 0;
+      $('sheetPrev').disabled = currentSheetPage <= 0;
+      $('sheetNext').disabled = currentSheetPage >= count - 1;
+      $('sheetPageInfo').textContent = `Seite ${currentSheetPage + 1} von ${count}`;
+      const items = pages[currentSheetPage]?.querySelectorAll('.label-cell').length || 0;
+      $('sheetPageItems').textContent = `${items} ${items === 1 ? 'Etikett' : 'Etiketten'} auf dieser Seite`;
+    }
+
+    function printSheet(){
+      const validation = customLabelValidation();
+      if(!validation.ok) return;
+      buildList();
+      document.querySelector('.print-accordion').open = true;
+      window.print();
     }
     function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
     function csvEscape(v){ return '"' + String(v ?? '').replace(/"/g,'""') + '"'; }
@@ -1151,6 +1248,8 @@
           labelsPerRow: getValue('labelsPerRow'),
           copiesPerCode: getValue('copiesPerCode'),
           labelScale: getValue('labelScale'),
+          customLabelWidthMm: getValue('customLabelWidthMm'),
+          customLabelHeightMm: getValue('customLabelHeightMm'),
           printMargin: getValue('printMargin'),
           labelGap: getValue('labelGap'),
           labelTemplate: getValue('labelTemplate'),
@@ -1250,6 +1349,8 @@
       setValue('labelsPerRow', state.layout?.labelsPerRow || 'auto');
       setValue('copiesPerCode', state.layout?.copiesPerCode || '1');
       setValue('labelScale', state.layout?.labelScale || 'medium');
+      setValue('customLabelWidthMm', state.layout?.customLabelWidthMm || '70,0');
+      setValue('customLabelHeightMm', state.layout?.customLabelHeightMm || '35,0');
       setValue('printMargin', state.layout?.printMargin || '12');
       setValue('labelGap', state.layout?.labelGap || '8');
       setValue('labelTemplate', state.layout?.labelTemplate || 'plain');
@@ -1713,7 +1814,10 @@
       $('btnSvg').addEventListener('click',downloadSvg);
       $('btnPng').addEventListener('click',downloadPng);
       $('btnCopy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('payloadBox').textContent);toast('Barcode-Inhalt kopiert')}catch{toast('Kopieren nicht möglich')}});
-      $('btnPrintSheet').addEventListener('click',()=>{buildList();document.querySelector('.print-accordion').open=true;window.print();});
+      $('btnPrintSheet').addEventListener('click',printSheet);
+      $('btnPrintSheetBottom').addEventListener('click',printSheet);
+      $('sheetPrev').addEventListener('click',()=>{ if(currentSheetPage > 0){ currentSheetPage--; updateSheetPageNavigation(); } });
+      $('sheetNext').addEventListener('click',()=>{ const count=document.querySelectorAll('#sheetPages .sheet-page').length; if(currentSheetPage < count - 1){ currentSheetPage++; updateSheetPageNavigation(); } });
       window.addEventListener('beforeprint',()=>{const section=document.querySelector('.print-accordion');if(section)section.open=true});
       $('btnTheme').addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'});
       $('btnVersionSave')?.addEventListener('click',saveNewProjectVersion);
