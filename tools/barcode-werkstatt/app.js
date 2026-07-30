@@ -1879,7 +1879,8 @@
             items: [
               { label: 'Projekt speichern', description: 'Projekt als JSON-Datei sichern.', action: downloadProjectJson },
               { label: 'Projekt laden', description: 'Projekt aus einer JSON-Datei öffnen.', action: openProjectFile },
-              { label: 'Version speichern', description: 'Aktuellen Stand im Verlauf sichern.', action: saveNewProjectVersion }
+              { label: 'Version speichern', description: 'Aktuellen Stand im Versionsverlauf sichern.', action: saveNewProjectVersion },
+              { label: 'Lokalen Arbeitsstand löschen', description: 'Lokalen Browser-Arbeitsstand zurücksetzen.', tone: 'danger', action: clearLocalDraft }
             ]
           },
           {
@@ -1924,11 +1925,7 @@
       $('sheetPrev').addEventListener('click',()=>{ if(currentSheetPage > 0){ currentSheetPage--; updateSheetPageNavigation(); } });
       $('sheetNext').addEventListener('click',()=>{ const count=document.querySelectorAll('#sheetPages .sheet-page').length; if(currentSheetPage < count - 1){ currentSheetPage++; updateSheetPageNavigation(); } });
       window.addEventListener('afterprint', clearPrintRoot);
-      $('btnVersionSave')?.addEventListener('click',saveNewProjectVersion);
-      $('btnProjectExport')?.addEventListener('click',downloadProjectJson);
-      $('btnProjectImport')?.addEventListener('click',openProjectFile);
       $('projectFileInput')?.addEventListener('change',event=>readProjectFile(event.target.files?.[0]));
-      $('btnLocalClear')?.addEventListener('click',clearLocalDraft);
       const unlockHelpScroll = ()=>document.documentElement.classList.remove('dialog-open');
       $('helpClose').addEventListener('click',()=>$('helpDialog').close());
       helpDialog.addEventListener('close', unlockHelpScroll);

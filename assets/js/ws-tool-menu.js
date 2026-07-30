@@ -59,7 +59,8 @@
 
   function createItem(item) {
     const element = item.href ? document.createElement('a') : document.createElement('button');
-    element.className = `ws-tool-link${item.href ? '' : ' ws-tool-action'}`;
+    const toneClass = item.tone === 'danger' ? ' ws-tool-link--danger' : '';
+    element.className = `ws-tool-link${item.href ? '' : ' ws-tool-action'}${toneClass}`;
     if (item.href) element.href = link(item.href);
     else {
       element.type = 'button';
