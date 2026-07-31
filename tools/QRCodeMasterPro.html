@@ -36,7 +36,7 @@
       background:color-mix(in srgb,var(--surface) 82%,transparent); border-bottom:1px solid var(--line);
     }
     .topbar-inner{
-      width:100%; max-width:none; margin:0 auto; padding:10px clamp(16px,2.2vw,44px);
+      width:100%; max-width:1320px; margin:0 auto; padding:12px 20px 6px;
       display:flex; align-items:center; justify-content:space-between; gap:16px;
     }
     .brand{display:flex;align-items:center;gap:12px;min-width:0}
@@ -122,7 +122,8 @@
     #qr-output{width:min(300px,70vw);height:min(300px,70vw);display:grid;place-items:center}
     #qr-output svg,#qr-output canvas{max-width:100%;height:auto!important}
     .pill-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 0 14px}.pill{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:6px 10px;font-size:.76rem;font-weight:850}
-    .preview-buttons{display:grid;gap:10px;max-width:300px;margin:0 auto}
+    .preview-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-width:none;margin:0 auto;align-items:stretch}
+    .preview-buttons .btn{padding:9px 10px;font-size:.78rem;width:100%}
     .settings-grid{display:grid;gap:14px}.settings-card{padding:14px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--surface) 78%,transparent)}
     .settings-card h3{margin:0 0 10px}.color-row{display:grid;grid-template-columns:1fr 54px;gap:10px;align-items:end}input[type=color]{padding:0;min-height:43px;cursor:pointer}
     .switch-line{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}.switch-line:last-child{border-bottom:0}.switch-line span{color:var(--muted);font-size:.86rem;line-height:1.35}
@@ -328,9 +329,10 @@
 
     .hide-mobile{}
     @media(max-width:1180px){.main{grid-template-columns:1fr 1fr}.settings-panel{grid-column:1/-1;order:3}.preview-card{position:static}}
-    @media(max-width:760px){.topbar-inner{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}.main{grid-template-columns:1fr;padding:12px}.mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.row{grid-template-columns:1fr}.hide-mobile{display:none}.panel-body{padding:14px}.brand h1{white-space:normal}}
+    @media(max-width:760px){.topbar-inner{align-items:center;flex-direction:row;padding:8px 10px;gap:8px}.top-actions{justify-content:flex-end;flex:0 0 auto}.brand{flex:1 1 auto}.brand-copy p{display:none}.brand h1{font-size:clamp(.9rem,4.5vw,1.05rem);line-height:1.1;white-space:nowrap}.tool-logo{width:42px;height:42px}.main{grid-template-columns:1fr;padding:12px}.mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.row{grid-template-columns:1fr}.hide-mobile{display:none}.panel-body{padding:14px}.preview-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}.preview-buttons .ws-tool-action{width:calc(100% - 8px);margin-inline:4px}}
     @media print{.topbar,.editor-panel,.settings-panel,.hero-card,.preview-buttons,.pill-row,.payload-box{display:none!important}body{background:white}.main{display:block;padding:0}.panel{box-shadow:none;border:0}.preview-card{padding:0}.qr-frame{box-shadow:none;border:0}}
   </style>
+  <link rel="stylesheet" href="../assets/css/ws-tool-controls.css">
 </head>
 <body>
   <div class="app-shell">
@@ -565,11 +567,11 @@
         <div class="qr-frame"><div id="qr-output"></div></div>
         <div class="pill-row"><span class="pill" id="modePill">Link</span><span class="pill" id="lengthPill">0 Zeichen</span></div>
         <div class="preview-buttons">
-          <button class="btn btn-blue" id="btnGenerate" type="button">QR aktualisieren</button>
-          <button class="btn" id="btnPng" type="button">PNG herunterladen</button>
-          <button class="btn" id="btnSvg" type="button">SVG herunterladen</button>
-          <button class="btn" id="btnCopy" type="button">QR-Inhalt kopieren</button>
-          <button class="btn" onclick="window.print()" type="button">Drucken</button>
+          <button class="btn ws-tool-action ws-accent-blue" id="btnGenerate" type="button">QR aktualisieren</button>
+          <button class="btn ws-tool-action ws-accent-steel" id="btnPng" type="button">PNG herunterladen</button>
+          <button class="btn ws-tool-action ws-accent-steel" id="btnSvg" type="button">SVG herunterladen</button>
+          <button class="btn ws-tool-action ws-accent-steel" id="btnCopy" type="button">QR-Inhalt kopieren</button>
+          <button class="btn ws-tool-action ws-accent-green" onclick="window.print()" type="button">Drucken</button>
         </div>
         <p class="field-note" style="text-align:left;max-width:300px;margin:10px auto 6px;">Gespeicherter QR-Inhalt:</p><div class="payload-box" id="payloadBox"></div>
       </aside>
