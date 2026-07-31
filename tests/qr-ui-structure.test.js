@@ -15,8 +15,8 @@ test('QR workshop uses the shared action controls for all preview actions', () =
 });
 
 test('QR header and preview grid follow the Barcode workshop layout', () => {
-  assert.match(qrWorkshop, /\.topbar-inner\{\s*width:100%; max-width:none; margin:0 auto; padding:10px clamp\(16px,2\.2vw,44px\);/);
-  assert.match(qrWorkshop, /\.main\{\s*max-width:none; margin:0 auto; width:100%; padding:clamp\(14px,2vw,30px\) clamp\(16px,2\.2vw,44px\);/);
+  assert.match(qrWorkshop, /\.topbar-inner\{\s*width:100%; max-width:1320px; margin:0 auto; padding:12px 20px 6px;/);
+  assert.match(qrWorkshop, /\.main\{\s*width:100%; max-width:1320px; margin:0 auto; padding:18px 20px 34px;/);
   assert.match(qrWorkshop, /\.preview-buttons\{[^}]*grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
   assert.match(qrWorkshop, /@media\(max-width:760px\)[^{]*\{[\s\S]*?\.preview-buttons\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
 });
