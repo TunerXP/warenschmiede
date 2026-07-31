@@ -782,6 +782,32 @@
     };
     const labels = {url:'Link',text:'Text',wifi:'WLAN',vcard:'vCard',email:'E-Mail',phone:'Telefon',whatsapp:'WhatsApp',sms:'SMS',maps:'Standort',review:'Bewertung',sepa:'SEPA',paypal:'PayPal',paymentlink:'Zahlungslink',wero:'Wero',event:'Termin',app:'App-Link',crypto:'Crypto'};
 
+    const summaries = {
+      url:['Link','Webadresse'],
+      text:['Text','Freitext'],
+      maps:['Standort','Adresse / Ort'],
+      review:['Bewertung','Feedback-Link'],
+      vcard:['Kontakt','Name, Firma, Telefon, E-Mail'],
+      email:['E-Mail','Empfänger, Betreff, Text'],
+      phone:['Telefon','Nummer'],
+      whatsapp:['WhatsApp','Nummer + Nachricht'],
+      sms:['SMS','Nummer + Text'],
+      sepa:['SEPA','Empfänger, IBAN, Betrag, Zweck'],
+      paypal:['PayPal','PayPal-Link'],
+      paymentlink:['Zahlungslink','URL + Hinweis'],
+      wero:['Wero','Platzhalter / Link'],
+      crypto:['Crypto','Coin, Adresse, Betrag'],
+      wifi:['WLAN','SSID, Passwort, Typ'],
+      event:['Termin','Start, Ende, Ort'],
+      app:['App-Link','Store- oder App-Adresse']
+    };
+
+    function updateInputSummary(){
+      const box = $('inputSummary');
+      if(!box) return;
+      box.innerHTML = (summaries[currentMode] || [labels[currentMode] || currentMode]).map(value => `<span>${value}</span>`).join('');
+    }
+
     function escWifi(value){ return String(value || '').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/:/g,'\\:'); }
     function val(id){ return ($(id)?.value || '').trim(); }
 
@@ -929,6 +955,7 @@
       document.querySelectorAll('.mode-btn').forEach(item => item.classList.toggle('active', item === button));
       document.querySelectorAll('.form-section').forEach(section => section.classList.toggle('active', section.dataset.form === mode));
       $('modeHint').textContent = hints[mode] || '';
+      updateInputSummary();
     }
 
     function applyState(state){
@@ -1036,8 +1063,14 @@
 
     function resetToDefaults(){
       editableControls().forEach(control => {
-        if(control.type === 'checkbox') control.checked = control.defaultChecked;
-        else control.value = control.defaultValue;
+        if(control.type === 'checkbox') {
+          control.checked = control.defaultChecked;
+        } else if(control instanceof HTMLSelectElement) {
+          const defaultIndex = [...control.options].findIndex(option => option.defaultSelected);
+          control.selectedIndex = defaultIndex >= 0 ? defaultIndex : (control.options.length ? 0 : -1);
+        } else {
+          control.value = control.defaultValue;
+        }
       });
       selectMode('url');
       $('dotColor').value = $('dotColorText').value;
@@ -1062,7 +1095,7 @@
           { title: 'Projekt & Daten', items: [
             { label: 'Projekt speichern', description: 'QR-Projekt als JSON-Datei sichern.', action: downloadProject },
             { label: 'Projekt laden', description: 'QR-Projekt aus einer JSON-Datei öffnen.', action: openProjectFile },
-            { label: 'Version speichern', description: 'Aktuellen QR-Stand im Versionsverlauf sichern.', action: saveVersion },
+            { label: 'Version speichern', description: 'Snapshot im lokalen Projektverlauf und in der Projektdatei sichern.', action: saveVersion },
             { label: 'Lokalen Arbeitsstand löschen', description: 'Lokale QR-Daten und Versionen zurücksetzen.', tone: 'danger', action: clearLocalDraft }
           ]},
           { title: 'Hilfe', items: [
@@ -1071,7 +1104,8 @@
           { title: 'Warenschmiede', items: [
             { label: 'Zur Tool-Übersicht', href: '/tools/' },
             { label: 'Zur Homepage', href: 'https://www.warenschmiede.com/' },
-            { label: 'Impressum · Datenschutz', description: 'Rechtliche Hinweise und Datenschutz.', href: '/kontakt/impressum.html' }
+            { label: 'Impressum', href: '/kontakt/impressum.html' },
+            { label: 'Datenschutz', href: '/datenschutz.html' }
           ]}
         ]
       });
@@ -1079,39 +1113,9 @@
       $('projectFileInput').addEventListener('change', event => loadProjectFile(event.target.files?.[0]));
 
 
-      const summaries = {
-        url:['Link','Webadresse'],
-        text:['Text','Freitext'],
-        maps:['Standort','Adresse / Ort'],
-        review:['Bewertung','Feedback-Link'],
-        vcard:['Kontakt','Name, Firma, Telefon, E-Mail'],
-        email:['E-Mail','Empfänger, Betreff, Text'],
-        phone:['Telefon','Nummer'],
-        whatsapp:['WhatsApp','Nummer + Nachricht'],
-        sms:['SMS','Nummer + Text'],
-        sepa:['SEPA','Empfänger, IBAN, Betrag, Zweck'],
-        paypal:['PayPal','PayPal-Link'],
-        paymentlink:['Zahlungslink','URL + Hinweis'],
-        wero:['Wero','Platzhalter / Link'],
-        crypto:['Crypto','Coin, Adresse, Betrag'],
-        wifi:['WLAN','SSID, Passwort, Typ'],
-        event:['Termin','Start, Ende, Ort'],
-        app:['App-Link','Store- oder App-Adresse']
-      };
-      function updateInputSummary(){
-        const box = $('inputSummary');
-        if(!box) return;
-        box.innerHTML = (summaries[currentMode] || [labels[currentMode] || currentMode]).map(x => `<span>${x}</span>`).join('');
-      }
-
       document.querySelectorAll('.mode-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-          currentMode = btn.dataset.mode;
-          document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
-          btn.classList.add('active');
-          document.querySelectorAll('.form-section').forEach(s=>s.classList.toggle('active', s.dataset.form === currentMode));
-          $('modeHint').textContent = hints[currentMode] || '';
-          updateInputSummary();
+          selectMode(btn.dataset.mode);
           generate();
           saveLocalDraftSoon();
         });
@@ -1145,8 +1149,10 @@
         });
       });
 
-      if(!restoreLocalDraft()) generate();
-      updateInputSummary();
+      if(!restoreLocalDraft()) {
+        selectMode('url');
+        generate();
+      }
     });
   </script>
 </body>
