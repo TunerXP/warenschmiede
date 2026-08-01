@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#082a52">
+  <link rel="icon" href="/assets/img/branding/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/branding/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/branding/favicon-16x16.png">
+  <link rel="apple-touch-icon" href="/assets/img/branding/apple-touch-icon.png">
+  <title>DataMatrix-Werkstatt Plus · Warenschmiede Tools</title>
+  <meta name="description" content="Data-Matrix-Codes lokal erstellen, exportieren und als A4-Etiketten drucken.">
+  <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
+  <link rel="stylesheet" href="../assets/css/ws-tool-controls.css">
+  <link rel="stylesheet" href="datamatrix-werkstatt/app.css">
+  <script src="../assets/js/ws-tool-menu.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/bwip-js@4.5.1/dist/bwip-js-min.js" defer></script>
+  <script src="datamatrix-werkstatt/app.js" defer></script>
+</head>
+<body>
+ <div class="shell">
+  <header class="topbar"><div class="topbar-inner"><div class="brand"><span class="dm-logo" aria-hidden="true"></span><div><h1>DataMatrix-Werkstatt Plus</h1><p>Kompakte Codes für Inventar, Bauteile, Werkstatt und Industrie.</p></div></div><button id="toolMenuBtn" class="ws-tool-menu-btn ws-tool-menu-btn--label" type="button" aria-label="Tool-Menü öffnen"><span aria-hidden="true">☰</span> Tool-Menü</button></div></header>
+  <main class="workspace">
+   <section class="card choose"><header><span>1.</span><h2>Inhalt &amp; Arbeitsmodus</h2></header><div class="body">
+    <fieldset><legend>Inhaltsart</legend><div id="typeButtons" class="selector-grid">
+     <button data-type="text">Freier Text</button><button class="active" data-type="internal">Interne ID</button><button data-type="inventory">Inventarnummer</button><button data-type="serial">Seriennummer</button><button data-type="part">Bauteilnummer</button><button data-type="location">Lagerplatz</button><button data-type="url">URL</button>
+    </div></fieldset>
+    <fieldset><legend>Arbeitsmodus</legend><div id="modeButtons" class="selector-grid modes">
+     <button class="active" data-mode="single">Einzelcode</button><button data-mode="copies">Gleicher Code</button><button data-mode="series">Serie</button><button data-mode="manual">Manuelle Liste</button>
+    </div></fieldset>
+    <div class="notice">Zum Scannen wird ein 2D-Scanner oder eine App mit Data-Matrix-Unterstützung benötigt. Ein reiner QR- oder 1D-Scanner reicht nicht immer aus.</div>
+   </div></section>
+   <div class="middle">
+    <section class="card"><header><span>2a.</span><div><h2>Eingaben</h2><p id="selectionSummary">Interne ID · Einzelcode</p></div></header><div class="body">
+     <p id="typeHint" class="hint">Eine frei gewählte Kennung für den eigenen Arbeitsablauf.</p>
+     <div class="input-panel active" data-panel="single"><label for="singleValue" id="singleLabel">Interne ID</label><input id="singleValue" value="WS-DM-0001"><small id="singleExample">Beispiel: WS-2026-0147</small></div>
+     <div class="input-panel" data-panel="copies"><label for="copyValue">Wert</label><input id="copyValue" value="WS-DM-0001"><label for="copyCount">Kopienzahl</label><input id="copyCount" type="number" min="1" max="500" value="12"></div>
+     <div class="input-panel" data-panel="series"><div class="form-grid"><div><label for="seriesPrefix">Präfix</label><input id="seriesPrefix" value="INV-"></div><div><label for="seriesSuffix">Suffix (optional)</label><input id="seriesSuffix"></div><div><label for="seriesStart">Startnummer</label><input id="seriesStart" type="number" value="1"></div><div><label for="seriesCount">Anzahl</label><input id="seriesCount" type="number" min="1" max="500" value="10"></div><div><label for="seriesStep">Schrittweite</label><input id="seriesStep" type="number" value="1"></div><div><label for="seriesPad">Stellenzahl</label><input id="seriesPad" type="number" min="1" max="20" value="4"></div></div></div>
+     <div class="input-panel" data-panel="manual"><label for="manualList">Ein Wert pro Zeile</label><textarea id="manualList" rows="7">INV-0042
+
+BT-CNC-014</textarea><small id="manualCount">2 gültige Werte erkannt</small></div>
+     <div id="validation" class="validation" role="status" aria-live="polite">1 Code entsteht.</div>
+    </div></section>
+    <section class="card settings"><header><span>2b.</span><h2>Einstellungen</h2></header><div class="body">
+     <h3>Farben</h3><div class="form-grid"><div><label for="foregroundText">Data-Matrix-Farbe</label><div class="color"><input id="foregroundText" value="#102033"><input id="foreground" type="color" value="#102033" aria-label="Data-Matrix-Farbe auswählen"></div></div><div><label for="backgroundText">Hintergrundfarbe</label><div class="color"><input id="backgroundText" value="#ffffff"><input id="background" type="color" value="#ffffff" aria-label="Hintergrundfarbe auswählen"></div></div></div>
+     <div class="form-grid"><div><label for="size">Größe</label><select id="size"><option>160</option><option>240</option><option selected>320</option><option>480</option><option>640</option></select></div><div><label for="padding">Rand / Ruhezone</label><select id="padding"><option value="1">klein</option><option value="3" selected>normal</option><option value="6">großzügig</option></select></div></div>
+     <h3>Ausgabe</h3><label class="check"><input id="showText" type="checkbox" checked> Klartext unter dem Code anzeigen</label><label class="check"><input id="transparent" type="checkbox"> Transparenter Hintergrund</label><label class="check"><input id="autoUpdate" type="checkbox" checked> Automatisch bei Eingabe aktualisieren</label>
+     <details><summary>A4-Druckbogen</summary><div class="form-grid"><div><label for="orientation">Ausrichtung</label><select id="orientation"><option value="portrait">A4 Hochformat</option><option value="landscape">A4 Querformat</option></select></div><div><label for="labelWidth">Etikettenbreite (mm)</label><input id="labelWidth" type="number" min="10" value="45"></div><div><label for="labelHeight">Etikettenhöhe (mm)</label><input id="labelHeight" type="number" min="10" value="45"></div><div><label for="pageMargin">Seitenrand (mm)</label><input id="pageMargin" type="number" min="0" value="10"></div><div><label for="gapX">Horizontaler Abstand (mm)</label><input id="gapX" type="number" min="0" value="3"></div><div><label for="gapY">Vertikaler Abstand (mm)</label><input id="gapY" type="number" min="0" value="3"></div></div><label class="check"><input id="printText" type="checkbox" checked> Klartext drucken</label><label class="check"><input id="cutLines" type="checkbox"> Dezente Schnittlinien</label><p id="sheetStats"></p></details>
+    </div></section>
+   </div>
+   <section class="card preview-card"><header><span>3.</span><h2>Vorschau &amp; Ausgabe</h2></header><div class="body"><div id="previewStage"><canvas id="dmCanvas" aria-label="Data-Matrix-Vorschau"></canvas><p id="previewText"></p></div><dl><div><dt>Inhaltsart</dt><dd id="metaType">Interne ID</dd></div><div><dt>Zeichen</dt><dd id="metaChars">10</dd></div><div><dt>Codes</dt><dd id="metaCount">1</dd></div><div><dt>Gespeicherter Inhalt</dt><dd id="metaValue">WS-DM-0001</dd></div></dl><nav class="preview-nav" aria-label="Code-Navigation"><button id="prevCode" type="button">← Vorheriger</button><span id="position">1 von 1</span><button id="nextCode" type="button">Nächster →</button></nav><div class="actions"><button id="refresh" class="primary">Data Matrix aktualisieren</button><button id="downloadPng">PNG herunterladen</button><button id="downloadSvg">SVG herunterladen</button><button id="copyValue">Inhalt kopieren</button><button id="printSheet">Drucken</button></div><p class="test-note">Bitte mit dem später verwendeten Scanner und in echter Druckgröße testen.</p></div></section>
+  </main>
+ </div>
+ <dialog id="helpDialog" class="help-dialog"><div class="dialog-head"><div><small>DataMatrix-Werkstatt Plus</small><h2>Hilfe &amp; Anleitung</h2></div><div><button id="helpWindowOpen">↗ In eigenem Fenster öffnen</button><button id="helpClose" aria-label="Hilfe schließen">×</button></div></div><iframe id="helpFrame" src="/tools/datamatrix-werkstatt/hilfe.html?embed=1#start" title="Hilfe zur DataMatrix-Werkstatt Plus"></iframe></dialog>
+ <input id="projectFileInput" type="file" accept=".json,application/json" hidden>
+</body></html>
