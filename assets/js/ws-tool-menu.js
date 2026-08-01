@@ -37,9 +37,18 @@
   let returnFocus = null;
 
   const catalogTool = (toolId) => window.WSToolCatalog?.[toolId] || null;
+  const applyToolIcon = (image, toolId, source) => {
+    const tool = window.WSToolIdentity?.applyIcon(image, toolId);
+    if (!tool) {
+      image.src = link(source || defaultIcon);
+      image.style.setProperty('--ws-tool-icon-scale', '1');
+    }
+    return image;
+  };
   const withImageFallback = (image) => {
     image.addEventListener('error', () => {
       image.src = defaultIcon;
+      image.style.setProperty('--ws-tool-icon-scale', '1');
     }, { once: true });
     return image;
   };
@@ -98,12 +107,14 @@
       copy.append(description);
     }
     if (resolved.icon) {
+      const iconFrame = document.createElement('span');
+      iconFrame.className = 'ws-tool-identity-icon ws-tool-identity-icon--medium';
       const icon = withImageFallback(document.createElement('img'));
-      icon.className = 'ws-tool-link-icon';
-      icon.src = link(resolved.icon || defaultIcon);
+      applyToolIcon(icon, resolved.toolId, resolved.icon);
       icon.alt = '';
       icon.setAttribute('aria-hidden', 'true');
-      element.append(icon);
+      iconFrame.append(icon);
+      element.append(iconFrame);
     }
     element.append(copy);
     return element;
@@ -114,8 +125,10 @@
     if (!panel) return;
     const title = panel.querySelector('.ws-tool-title');
     title.replaceChildren();
+    const iconFrame = document.createElement('span');
+    iconFrame.className = 'ws-tool-identity-icon ws-tool-identity-icon--menu-head';
     const icon = withImageFallback(document.createElement('img'));
-    icon.src = link(config.toolIcon || defaultIcon);
+    applyToolIcon(icon, config.toolId, config.toolIcon);
     icon.alt = '';
     icon.setAttribute('aria-hidden', 'true');
     const copy = document.createElement('div');
@@ -124,7 +137,8 @@
     const description = document.createElement('span');
     description.textContent = config.toolDescription;
     copy.append(name, description);
-    title.append(icon, copy);
+    iconFrame.append(icon);
+    title.append(iconFrame, copy);
 
     const list = panel.querySelector('.ws-tool-list');
     list.replaceChildren();
@@ -168,6 +182,7 @@
       ? options[key]
       : (tool?.[catalogKey] || defaults[key]);
     config = {
+      toolId: options.toolId,
       toolName: value('toolName', 'name'),
       toolDescription: value('toolDescription', 'description'),
       toolIcon: value('toolIcon', 'icon'),
