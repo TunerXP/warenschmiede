@@ -53,7 +53,7 @@ test('Projektvalidierung akzeptiert nur vollständige eigene Projekte', () => {
   assert.throws(()=>logic.validateProject({...valid,type:'other'}),/Inhaltsart/);assert.throws(()=>logic.validateProject({...valid,mode:'other'}),/Arbeitsmodus/);assert.throws(()=>logic.validateProject({...valid,inputs:null}),/Eingaben/);assert.throws(()=>logic.validateProject({...valid,versions:{}}),/Versionsverlauf/);
 });
 test('lokaler Arbeitsstand wird bestätigt, zurückgesetzt und nicht sofort neu gespeichert', () => {
-  assert.match(app,/Lokalen DataMatrix-Arbeitsstand wirklich löschen/);assert.match(app,/function resetToDefaults/);assert.match(app,/singleValue:'WS-DM-0001'/);assert.match(app,/state=\{type:'internal',mode:'single'/);assert.match(app,/render\(\{save:false\}\)/);assert.match(app,/clearTimeout\(draftTimer\);localStorage\.removeItem/);
+  assert.match(app,/Lokalen DataMatrix-Arbeitsstand wirklich löschen/);assert.match(app,/function resetToDefaults/);assert.match(app,/singleValue:''/);assert.match(app,/state=\{type:'internal',mode:'single'/);assert.match(app,/render\(\{save:false\}\)/);assert.match(app,/clearTimeout\(draftTimer\);localStorage\.removeItem/);
 });
 test('Hilfe besitzt direkte und eingebettete Familienhülle', () => {
   assert.match(helpJs,/URLSearchParams/);assert.match(helpJs,/get\('embed'\)/);assert.match(help,/<header class="help-header">/);assert.match(help,/DataMatrix-Werkstatt Plus verstehen/);assert.match(help,/href="\/tools\/DataMatrixWerkstattPlus\.html"/);assert.match(helpJs,/IntersectionObserver/);assert.match(helpJs,/hashchange/);
@@ -102,7 +102,7 @@ test('A4-Etikettenwerkstatt teilt Seiten und nutzt zentrale Renderlogik', () => 
 });
 test('Projekt V1 wird vollständig und sicher auf V2 migriert',()=>{
  const oldKeys=['singleValue','copyValue','copyCount','seriesPrefix','seriesSuffix','seriesStart','seriesCount','seriesStep','seriesPad','manualList','foregroundText','backgroundText','size','padding','showText','transparent','autoUpdate','orientation','labelWidth','labelHeight','pageMargin','gapX','gapY','printText','cutLines'];
- const inputs=Object.fromEntries(oldKeys.map(key=>[key,logic.DEFAULT_INPUTS[key]]));const migrated=logic.migrateProject({schema:logic.PROJECT_SCHEMA,schemaVersion:1,type:'internal',mode:'single',inputs,versions:[]});assert.equal(migrated.schemaVersion,3);assert.equal(migrated.inputs.labelTitle,'Inventar');assert.equal(logic.validateProject(migrated),true);
+ const inputs=Object.fromEntries(oldKeys.map(key=>[key,logic.DEFAULT_INPUTS[key]]));const migrated=logic.migrateProject({schema:logic.PROJECT_SCHEMA,schemaVersion:1,type:'internal',mode:'single',inputs,versions:[]});assert.equal(migrated.schemaVersion,3);assert.equal(migrated.inputs.labelTitle,'');assert.equal(logic.validateProject(migrated),true);
 });
 test('Navigation und Übersicht binden DataMatrix ohne Bildattrappe ein',()=>{const nav=read('assets/js/ws-layout.js'),overview=read('tools/index.html');assert.match(nav,/DataMatrix-Werkstatt Plus/);assert.match(nav,/tools\/DataMatrixWerkstattPlus.html/);assert.match(overview,/datamatrix-art/);assert.match(overview,/datamatrix data matrix 2d code inventar/);assert.doesNotMatch(overview,/img[^>]+datamatrix/i);});
 
@@ -211,7 +211,7 @@ test('Etikettengeometrie und Auto-Fit verwenden stabile physische Einheiten',()=
  assert.deepEqual(logic.LABEL_GEOMETRY.fontPt,{small:7,normal:9,large:11});assert.equal(logic.LABEL_GEOMETRY.minFontPt,6);assert.equal(logic.LABEL_GEOMETRY.paddingMm,1.5);assert.equal(logic.LABEL_GEOMETRY.minCodeMm,8);assert.match(app,/--fitted-font-pt/);assert.doesNotMatch(app,/--fitted-font:[^p]/);assert.match(css,/padding:calc\(1\.5\/var\(--page-w\)\*100cqw\)/);assert.match(app,/padding:1\.5mm/);assert.match(css,/--base-font-pt:7/);assert.match(app,/--base-font-pt:7/);assert.doesNotMatch(css,/\.label-info[^}]*\bvw\b/);
 });
 test('fachliche Arbeitsinhalte werden vor Persistenz modusspezifisch geprüft',()=>{
- const base={type:'internal',inputs:{...logic.DEFAULT_INPUTS},labels:[]};assert.throws(()=>logic.validateWorkForPersistence({...base,mode:'single',inputs:{...base.inputs,singleValue:' '}}),/Einzelcode/);assert.throws(()=>logic.validateWorkForPersistence({...base,mode:'copies',inputs:{...base.inputs,copyCount:'0'}}),/Kopienzahl/);assert.throws(()=>logic.validateWorkForPersistence({...base,mode:'manual',inputs:{...base.inputs,manualList:'\n'}}),/mindestens/);assert.throws(()=>logic.validateWorkForPersistence({...base,type:'url',mode:'single',inputs:{...base.inputs,singleValue:'kein-url'}}),/gültige URL/);assert.match(app,/saveProject\(\)[\s\S]*validateWorkForPersistence\(project\)/);assert.match(app,/saveVersion\(\)[\s\S]*validateWorkForPersistence/);
+ const base={type:'internal',inputs:{...logic.DEFAULT_INPUTS,copyValue:'TEST'},labels:[]};assert.throws(()=>logic.validateWorkForPersistence({...base,mode:'single',inputs:{...base.inputs,singleValue:' '}}),/Einzelcode/);assert.throws(()=>logic.validateWorkForPersistence({...base,mode:'copies',inputs:{...base.inputs,copyCount:'0'}}),/Kopienzahl/);assert.throws(()=>logic.validateWorkForPersistence({...base,mode:'manual',inputs:{...base.inputs,manualList:'\n'}}),/mindestens/);assert.throws(()=>logic.validateWorkForPersistence({...base,type:'url',mode:'single',inputs:{...base.inputs,singleValue:'kein-url'}}),/gültige URL/);assert.match(app,/saveProject\(\)[\s\S]*validateWorkForPersistence\(project\)/);assert.match(app,/saveVersion\(\)[\s\S]*validateWorkForPersistence/);
 });
 test('selectedLabelId und Versionsraster werden vollständig geprüft',()=>{
  const label=logic.createIndividualLabel({id:'chosen',title:'Wahl',codeValue:'A'}),base={schema:logic.PROJECT_SCHEMA,schemaVersion:3,type:'internal',mode:'labels',inputs:{...logic.DEFAULT_INPUTS},labels:[label],selectedLabelId:'chosen',outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT},versions:[]};assert.equal(logic.validateProject(base),true);assert.throws(()=>logic.validateProject({...base,selectedLabelId:'missing'}),/ausgewählte Etiketten-ID/);const version={number:1,savedAt:'2026-08-01',type:'internal',mode:'labels',inputs:{...logic.DEFAULT_INPUTS,labelWidth:'90',labelHeight:'90',skipSlots:'6'},labels:[label],outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT,skipSlots:6}};assert.throws(()=>logic.validateVersion(version,0),/Druckraster/);const migrated=logic.migrateProject({schema:logic.PROJECT_SCHEMA,schemaVersion:2,type:'internal',mode:'single',inputs:{...logic.DEFAULT_INPUTS},selectedLabelId:'old',versions:[]});assert.equal(migrated.selectedLabelId,null);
@@ -223,3 +223,80 @@ test('deaktivierter leerer Entwurf lässt Einzel- und A4-Ausgabe getrennt',()=>{
 test('Etiketteneditor aktualisiert beim Tippen nur die Listenzusammenfassung',()=>{assert.match(app,/function renderLabelsList\(\)/);assert.match(app,/function loadSelectedLabelIntoEditor/);assert.match(app,/function updateSelectedLabelListSummary/);const update=app.match(/function updateSelectedLabel\(event\)\{[^}]+\}/)?.[0]||'';assert.match(update,/updateSelectedLabelListSummary\(label\)/);assert.doesNotMatch(update,/renderLabelsEditor|loadSelectedLabelIntoEditor|scrollIntoView/);assert.match(app,/if\(scroll\).*scrollIntoView/);});
 test('Mini-Dichteprüfung umfasst alle tatsächlich gedruckten Werte',()=>{const labels=[logic.createIndividualLabel({id:'short',title:'Station 1',codeValue:'kurz'}),logic.createIndividualLabel({id:'dense',title:'Station 2',codeValue:'sehr-lang'}),logic.createIndividualLabel({id:'off',title:'Aus',codeValue:'dicht-aus',enabled:false})],targets=logic.getDensityTargets('labels',labels,[]);assert.deepEqual(targets.map(target=>target.name),['Station 1','Station 2']);assert.throws(()=>logic.evaluateDensityTargets(targets,12,value=>value==='sehr-lang'?60:20),/Station 2/);assert.doesNotThrow(()=>logic.evaluateDensityTargets(logic.getDensityTargets('labels',[labels[2]],[]),12,()=>60));assert.equal(logic.getDensityTargets('copies',[],['A','A']).length,1);assert.equal(logic.getDensityTargets('series',[],['A','B','A']).length,2);assert.equal(logic.getDensityTargets('manual',[],['A','B']).length,2);});
 test('URL-Prüfung berücksichtigt nur aktive individuelle Etiketten',()=>{const bad=logic.createIndividualLabel({id:'url-3',title:'Etikett 3',codeValue:'keine-url'}),project={mode:'labels',type:'url',inputs:{...logic.DEFAULT_INPUTS},labels:[bad]};assert.throws(()=>logic.validateWorkForPersistence(project),/URL von „Etikett 3“/);bad.enabled=false;assert.doesNotThrow(()=>logic.validateWorkForPersistence(project));bad.enabled=true;assert.throws(()=>logic.validateWorkForPersistence(project),/https:\/\//);});
+
+
+test('Druckfenster wartet zentral auf Dokument, Schriften und Rendering',()=>{
+ assert.match(app,/async function prepareAndPrintWindow/);assert.match(app,/document\.fonts\?\.ready/);
+ assert.ok((app.match(/await nextAnimationFrame\(printWindow\)/g)||[]).length>=2);
+ assert.match(app,/await delay\(300\)/);assert.match(app,/printWindow\.focus\(\)[\s\S]*printWindow\.print\(\)/);
+ assert.match(app,/Druckansicht wird vorbereitet …/);assert.match(app,/Jetzt drucken/);
+ assert.equal((app.match(/prepareAndPrintWindow\(w\)/g)||[]).length,2);assert.doesNotMatch(app,/setTimeout\(\(\)=>print\(\),100\)|onload=\(\)=>print\(\)/);
+});
+test('Mini-Testbogen trennt Kartenfläche, Codegröße und druckstabile Beschriftung',()=>{
+ for(const size of [10,12,15,20])assert.match(app,new RegExp(`size-\\$\\{size\\}|size-${size}`));
+ assert.match(app,/class="test-card"/);assert.match(app,/width:36mm/);assert.match(app,/\.size-10\{width:10mm;height:10mm\}/);assert.match(app,/\.size-20\{width:20mm;height:20mm\}/);
+ assert.match(app,/break-inside:avoid/);assert.match(app,/page-break-inside:avoid/);assert.match(app,/overflow-wrap:normal/);assert.match(app,/word-break:normal/);assert.match(app,/hyphens:none/);
+ assert.equal(logic.createMiniTestSheet('TEST').length,16);assert.equal(logic.createMiniTestSheet('TEST').filter(item=>item.size===20).length,4);
+});
+test('neuer Produktionszustand ist leer, neutral und nur mit Platzhaltern versehen',()=>{
+ for(const key of ['singleValue','copyValue','seriesPrefix','manualList','labelTitle','labelInfo1','labelInfo2','miniArticleId','miniPrice','miniMaterial','miniDuration'])assert.equal(logic.DEFAULT_INPUTS[key],'');
+ assert.doesNotMatch(main,/id="insertBambuExample"|Bambu-Lab-Beispiel einsetzen/);assert.doesNotMatch(main,/value="(?:WS-DM-0001|WS-ART-0042|12,50 EUR|PLA|5,5 h)"/);
+ assert.match(main,/placeholder="z\. B\. WS-ART-0042"/);assert.match(main,/placeholder="z\. B\. 12,50 EUR"/);
+ assert.match(app,/function showEmptyState/);assert.match(app,/Bitte zuerst einen Inhalt eingeben\./);assert.match(app,/setSingleOutputAvailability\(false\);setPrintAvailability\(false\)/);
+ assert.match(help,/frei änderbar, werden nicht automatisch in das Tool eingesetzt/);
+});
+
+test('neutraler Leerzustand trennt Vorschau und A4-Blatt von Fehlerklassen',()=>{
+ assert.match(app,/function showNeutralPreview\(\)/);assert.match(app,/classList\.remove\('invalid'\)[\s\S]*classList\.add\('empty'\)/);
+ assert.match(app,/class="empty-sheet">Bitte zuerst einen Inhalt eingeben\./);assert.match(app,/a4Page'\)\.classList\.remove\('invalid'\)[\s\S]*a4Page'\)\.classList\.add\('empty'\)/);
+ assert.match(css,/#previewStage\.empty\{[^}]*background:#f7f9fb/);assert.match(css,/\.a4-page\.empty\{display:grid;place-items:center\}/);
+ assert.match(app,/function clearPreview\(\)[\s\S]*classList\.remove\('empty'\)[\s\S]*classList\.add\('invalid'\)/);
+ assert.match(app,/function invalidateSheet[\s\S]*classList\.remove\('empty'\)[\s\S]*invalid-sheet/);
+});
+test('Leerzustand räumt Navigation, Zähler, Seitenposition und Ausgaben vollständig auf',()=>{
+ assert.match(app,/function showEmptyState[\s\S]*state\.values=\[\];state\.index=0;state\.page=0/);
+ for(const id of ['codeNavigation','navigationHint','copiesPreviewSummary'])assert.match(app,new RegExp(`\\$\\('${id}'\\)\\.hidden=true`));
+ for(const id of ['prevCode','nextCode','prevSheet','nextSheet'])assert.match(app,new RegExp(`\\$\\('${id}'\\)\\.disabled=true`));
+ assert.match(app,/setSingleOutputAvailability\(false\);setPrintAvailability\(false\)/);assert.match(app,/metaChars'\)\.textContent='0'/);assert.match(app,/metaCount'\)\.textContent='0'/);
+ assert.match(app,/metaValue'\)\.textContent='Noch kein Data-Matrix-Inhalt'/);assert.match(app,/printQuantitySummary'\)\.textContent=`Druckmenge: 0 Etiketten/);assert.match(app,/sheetPosition'\)\.textContent='Seite – von –'/);
+ assert.match(app,/function resetToDefaults\(\)\{state=\{type:'internal',mode:'single',values:\[''\]/);assert.match(main,/Druckmenge: 0 Etiketten · Quelle: Einzelcode/);
+});
+test('alle bewusst leeren Arbeitsmodi bleiben neutral, ungültige Werte nicht',()=>{
+ const defaults={...logic.DEFAULT_INPUTS};
+ assert.equal(logic.isNeutralEmptyMode('single',defaults),true);
+ assert.equal(logic.isNeutralEmptyMode('copies',defaults),true);
+ assert.equal(logic.isNeutralEmptyMode('manual',defaults),true);
+ assert.equal(logic.isNeutralEmptyMode('series',defaults),true);
+ assert.equal(logic.isNeutralEmptyMode('labels',defaults,[]),true);
+ assert.equal(logic.isNeutralEmptyMode('labels',defaults,[logic.createIndividualLabel({enabled:false})]),true);
+ assert.equal(logic.isNeutralEmptyMode('copies',{...defaults,copyCount:'0'}),false);
+ assert.equal(logic.isNeutralEmptyMode('labels',defaults,[logic.createIndividualLabel({enabled:true})]),false);
+ assert.equal(logic.isNeutralEmptyMode('single',{...defaults,singleValue:'kein-url'}),false);
+});
+test('Serie startet ohne Codes und wird erst mit gültiger Anzahl erzeugt',()=>{
+ assert.equal(logic.DEFAULT_INPUTS.seriesCount,'');assert.match(main,/id="seriesCount"[^>]*placeholder="z\. B\. 10"/);assert.doesNotMatch(main,/id="seriesCount"[^>]*value="10"/);
+ assert.equal(logic.isNeutralEmptyMode('series',logic.DEFAULT_INPUTS),true);
+ assert.deepEqual(logic.generateSeries('INV-',1,2,1,4,''),['INV-0001','INV-0002']);
+});
+test('sichtbare Platzhalter bleiben herstellerneutral und werden nicht gespeichert',()=>{
+ assert.doesNotMatch(main,/placeholder="[^"]*Bambu Lab A1/);assert.match(main,/placeholder="z\. B\. Modellbezeichnung"/);
+ assert.doesNotMatch(main,/Bambu-Lab-Beispiel einsetzen|id="insertBambuExample"/);assert.equal(logic.DEFAULT_INPUTS.singleValue,'');assert.equal(logic.DEFAULT_INPUTS.miniPrice,'');
+});
+
+test('neutrales A4-Blatt erhält sichere Maße für beide Ausrichtungen',()=>{
+ assert.match(app,/const landscape=\$\('orientation'\)\.value==='landscape',pageWidth=landscape\?297:210,pageHeight=landscape\?210:297/);
+ assert.match(app,/a4Page'\)\.setAttribute\('style',`--page-w:\$\{pageWidth\};--page-h:\$\{pageHeight\}`\)/);
+ assert.match(css,/width:min\(100%,calc\(70vh \* var\(--page-w\) \/ var\(--page-h\)\)\)/);assert.match(css,/aspect-ratio:var\(--page-w\)\/var\(--page-h\)/);
+});
+test('leere Modi synchronisieren Hilfsanzeigen vollständig',()=>{
+ assert.match(app,/copiesShortcut'\)\.hidden=state\.mode!=='single'/);assert.match(app,/manualCount'\)\.textContent='0 gültige Werte erkannt'/);
+ assert.match(app,/copiesPreviewSummary'\)\.hidden=true/);assert.match(app,/navigationHint'\)\.hidden=true/);assert.match(app,/codeNavigation'\)\.hidden=true/);
+ assert.match(app,/Druckmenge: 0 Etiketten · Quelle: \$\{MODE_LABELS\[state\.mode\]\}/);
+});
+test('manueller Druck wird erst nach vollständiger Vorbereitung freigegeben',()=>{
+ assert.match(app,/id="manualPrint"[^>]*hidden disabled/);
+ const preparation=app.match(/async function prepareAndPrintWindow\(printWindow\)\{[\s\S]*?\n  \}/)?.[0]||'';
+ assert.match(preparation,/document\.fonts\?\.ready/);assert.equal((preparation.match(/await nextAnimationFrame\(printWindow\)/g)||[]).length,2);assert.match(preparation,/await delay\(300\)/);
+ assert.match(preparation,/printPreparation[^\n]*hidden[\s\S]*manualPrint\.hidden=false;manualPrint\.disabled=false;[\s\S]*printWindow\.focus\(\);[\s\S]*printWindow\.print\(\)/);
+ assert.match(app,/@media print\{\.manual-print,\.print-preparation\{display:none!important\}\}/);
+});
