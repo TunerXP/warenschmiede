@@ -30,6 +30,10 @@
       min-height:100vh;
     }
     a{color:inherit}
+    html.dialog-open,
+    html.dialog-open body {
+      overflow: hidden;
+    }
     .app-shell{min-height:100vh; display:grid; grid-template-rows:auto 1fr}
     .topbar{
       position:sticky; top:0; z-index:40; backdrop-filter:blur(18px);
@@ -800,7 +804,11 @@
       const helpFrame = $('helpFrame');
       const openHelp = (topic = 'start') => {
         helpFrame.src = `/tools/qr-werkstatt/hilfe.html?embed=1#${topic}`;
+        document.documentElement.classList.add('dialog-open');
         if(!helpDialog.open) helpDialog.showModal();
+      };
+      const unlockHelpScroll = () => {
+        document.documentElement.classList.remove('dialog-open');
       };
       const currentHelpTopic = () => {
         try { return helpFrame.contentWindow.location.hash.slice(1) || 'start'; } catch { return 'start'; }
@@ -821,7 +829,7 @@
           { title: 'Projekt & Daten', items: [
             { label: 'Projekt speichern', description: 'QR-Projekt als JSON-Datei sichern.', action: downloadProject },
             { label: 'Projekt laden', description: 'QR-Projekt aus einer JSON-Datei öffnen.', action: openProjectFile },
-            { label: 'Version speichern', description: 'Snapshot im lokalen Projektverlauf und in der Projektdatei sichern.', action: saveVersion },
+            { label: 'Version speichern', description: 'Snapshot lokal sichern. Beim nächsten Projekt-Export wird der Verlauf mitgespeichert.', action: saveVersion },
             { label: 'Lokalen Arbeitsstand löschen', description: 'Lokale QR-Daten und Versionen zurücksetzen.', tone: 'danger', action: clearLocalDraft }
           ]},
           { title: 'Hilfe', items: helpMenuItems },
@@ -865,6 +873,8 @@
       });
 
       $('helpClose').addEventListener('click', () => helpDialog.close());
+      helpDialog.addEventListener('close', unlockHelpScroll);
+      helpDialog.addEventListener('cancel', unlockHelpScroll);
       $('helpWindowOpen').addEventListener('click', () => openHelpWindow());
 
       if(!restoreLocalDraft()) {

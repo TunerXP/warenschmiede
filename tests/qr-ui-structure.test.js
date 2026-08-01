@@ -41,3 +41,20 @@ test('tool menus expose both help actions and sibling workshops', () => {
   assert.match(qrWorkshop, /title: 'Werkzeugfamilie'[\s\S]*?href: '\/tools\/BarcodeWerkstattPlus\.html'/);
   assert.match(barcodeApp, /title: 'Werkzeugfamilie'[\s\S]*?href: '\/tools\/QRCodeMasterPro\.html'/);
 });
+
+test('QR help locks background scrolling until dialog close or cancel', () => {
+  assert.match(qrWorkshop, /html\.dialog-open,\s*html\.dialog-open body\s*\{\s*overflow:\s*hidden;/);
+  const openHelp = qrWorkshop.match(/const openHelp = \(topic = 'start'\) => \{([\s\S]*?)\n      \};/)?.[1] || '';
+  assert.match(openHelp, /document\.documentElement\.classList\.add\('dialog-open'\)/);
+  assert.match(qrWorkshop, /const unlockHelpScroll = \(\) => \{\s*document\.documentElement\.classList\.remove\('dialog-open'\);\s*\};/);
+  assert.match(qrWorkshop, /helpDialog\.addEventListener\('close', unlockHelpScroll\)/);
+  assert.match(qrWorkshop, /helpDialog\.addEventListener\('cancel', unlockHelpScroll\)/);
+});
+
+test('QR version and payment guidance describe the actual behavior', () => {
+  const helpHtml = fs.readFileSync('tools/qr-werkstatt/hilfe.html', 'utf8');
+  assert.match(qrWorkshop, /label: 'Version speichern', description: 'Snapshot lokal sichern\. Beim nächsten Projekt-Export wird der Verlauf mitgespeichert\.'/);
+  assert.match(helpHtml, /<dt>Version speichern<\/dt><dd>Speichert einen Snapshot im lokalen Versionsverlauf\. Beim nächsten „Projekt speichern“ wird der Verlauf in die neu heruntergeladene JSON-Datei übernommen\.<\/dd>/);
+  assert.match(helpHtml, /<b>Zahlung & Service<\/b><p>Vorbereitete Zahlungsdaten oder Feedbackseiten ohne Abtippen öffnen\.<\/p>/);
+  assert.doesNotMatch(helpHtml, /Geprüfte Zahlungsdaten/);
+});
