@@ -72,3 +72,13 @@ test('tools overview keeps its actions on the global mini-edge class', () => {
   assert.match(toolsOverview, /class="mini-edge accent-/);
   assert.doesNotMatch(toolsOverview, /class="[^"]*tool-btn/);
 });
+
+test('mobile submenu category headings use a dark Warenschmiede orange', () => {
+  const mobileHeading = globalStyles.match(/\.mobile-sub h3\{([^}]*)\}/)?.[1] || '';
+  assert.match(mobileHeading, /color:#b45309/);
+  assert.match(mobileHeading, /font-weight:900/);
+  assert.match(mobileHeading, /font-size:\.7rem/);
+  assert.match(mobileHeading, /letter-spacing:\.11em/);
+  assert.match(mobileHeading, /text-transform:uppercase/);
+  assert.doesNotMatch(globalStyles, /\.mega-group h3\{[^}]*#b45309/);
+});

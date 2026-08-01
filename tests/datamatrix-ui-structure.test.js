@@ -69,6 +69,27 @@ test('Hilfe besitzt direkte und eingebettete Familienhülle', () => {
 test('Oberfläche verwendet die helle sticky Familienoptik', () => {
   assert.match(css,/\.topbar\{position:sticky/);assert.match(css,/background:rgba\(255,255,255/);assert.match(css,/\.topbar-inner\{width:min\(1560px/);assert.match(css,/\.workspace\{width:min\(1560px/);assert.doesNotMatch(css,/linear-gradient\(110deg,#092e58,#155c91\)/);
 });
+test('Mobile Oberfläche bleibt nach allen Tablet-Regeln einspaltig und breitenflexibel', () => {
+  assert.match(css, /@media\(min-width:721px\) and \(max-width:1200px\)\{\.workspace\{grid-template-columns:minmax\(300px,330px\) minmax\(500px,1fr\)/);
+  assert.doesNotMatch(css, /@media\(max-width:1200px\)\{\.workspace\{grid-template-columns:minmax\(300px,330px\) minmax\(500px,1fr\)/);
+  const mobileSafety = css.slice(css.indexOf('/* Mobile Breitenabsicherung'));
+  assert.match(mobileSafety, /@media\(max-width:720px\)/);
+  assert.match(mobileSafety, /\.workspace\{width:calc\(100% - 20px\);grid-template-columns:minmax\(0,1fr\)\}/);
+  assert.match(mobileSafety, /\.workspace>\*,\.middle,\.card,\.body,\.sheet-workshop-body,\.sheet-settings,\.sheet-preview\{min-width:0;max-width:100%\}/);
+  assert.match(mobileSafety, /\.middle,\.preview-card,\.sheet-workshop\{grid-column:auto\}/);
+  assert.match(mobileSafety, /\.sheet-workshop-body,\.labels-workspace\{grid-template-columns:minmax\(0,1fr\)\}/);
+  assert.match(mobileSafety, /input,select,textarea\{max-width:100%\}/);
+  assert.match(mobileSafety, /\.a4-stage,\.a4-page\{max-width:100%\}/);
+});
+test('DataMatrix-Menübutton verwendet die gemeinsamen Icon- und Label-Spans', () => {
+  const button = main.match(/<button id="toolMenuBtn"[\s\S]*?<\/button>/)?.[0] || '';
+  assert.match(button, /<span class="ws-tool-menu-icon" aria-hidden="true">☰<\/span>/);
+  assert.match(button, /<span class="ws-tool-menu-label">Tool-Menü<\/span>/);
+  assert.equal(button.replace(/<[^>]+>/g, '').replace(/\s+/g, ''), '☰Tool-Menü');
+  assert.match(read('assets/css/ws-tool-menu.css'), /@media \(max-width:420px\)[\s\S]*\.ws-tool-menu-btn--label \.ws-tool-menu-label/);
+  const mobileSafety = css.slice(css.indexOf('/* Mobile Breitenabsicherung'));
+  assert.match(mobileSafety, /\.brand,\.brand>div\{min-width:0\}/);
+});
 test('gültige Änderungen werden auch ohne automatische Vorschau entprellt gespeichert', () => {
   assert.match(app,/function saveDraftSoon\(\)\{const validDraft=JSON\.stringify\(snapshot\(\)\);clearTimeout\(draftTimer\);draftTimer=setTimeout/);
   assert.match(app,/function persistWithoutRender\(\)[\s\S]*readValues\(\);updateSheet\(\);saveDraftSoon\(\)/);
