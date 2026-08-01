@@ -282,3 +282,21 @@ test('sichtbare Platzhalter bleiben herstellerneutral und werden nicht gespeiche
  assert.doesNotMatch(main,/placeholder="[^"]*Bambu Lab A1/);assert.match(main,/placeholder="z\. B\. Modellbezeichnung"/);
  assert.doesNotMatch(main,/Bambu-Lab-Beispiel einsetzen|id="insertBambuExample"/);assert.equal(logic.DEFAULT_INPUTS.singleValue,'');assert.equal(logic.DEFAULT_INPUTS.miniPrice,'');
 });
+
+test('neutrales A4-Blatt erhält sichere Maße für beide Ausrichtungen',()=>{
+ assert.match(app,/const landscape=\$\('orientation'\)\.value==='landscape',pageWidth=landscape\?297:210,pageHeight=landscape\?210:297/);
+ assert.match(app,/a4Page'\)\.setAttribute\('style',`--page-w:\$\{pageWidth\};--page-h:\$\{pageHeight\}`\)/);
+ assert.match(css,/width:min\(100%,calc\(70vh \* var\(--page-w\) \/ var\(--page-h\)\)\)/);assert.match(css,/aspect-ratio:var\(--page-w\)\/var\(--page-h\)/);
+});
+test('leere Modi synchronisieren Hilfsanzeigen vollständig',()=>{
+ assert.match(app,/copiesShortcut'\)\.hidden=state\.mode!=='single'/);assert.match(app,/manualCount'\)\.textContent='0 gültige Werte erkannt'/);
+ assert.match(app,/copiesPreviewSummary'\)\.hidden=true/);assert.match(app,/navigationHint'\)\.hidden=true/);assert.match(app,/codeNavigation'\)\.hidden=true/);
+ assert.match(app,/Druckmenge: 0 Etiketten · Quelle: \$\{MODE_LABELS\[state\.mode\]\}/);
+});
+test('manueller Druck wird erst nach vollständiger Vorbereitung freigegeben',()=>{
+ assert.match(app,/id="manualPrint"[^>]*hidden disabled/);
+ const preparation=app.match(/async function prepareAndPrintWindow\(printWindow\)\{[\s\S]*?\n  \}/)?.[0]||'';
+ assert.match(preparation,/document\.fonts\?\.ready/);assert.equal((preparation.match(/await nextAnimationFrame\(printWindow\)/g)||[]).length,2);assert.match(preparation,/await delay\(300\)/);
+ assert.match(preparation,/printPreparation[^\n]*hidden[\s\S]*manualPrint\.hidden=false;manualPrint\.disabled=false;[\s\S]*printWindow\.focus\(\);[\s\S]*printWindow\.print\(\)/);
+ assert.match(app,/@media print\{\.manual-print,\.print-preparation\{display:none!important\}\}/);
+});
