@@ -1915,6 +1915,12 @@
             items: helpMenuItems
           },
           {
+            title: 'Werkzeugfamilie',
+            items: [
+              { label: 'Zur QR-Werkstatt Plus', description: 'Links, Kontakte, WLAN, Zahlungen und mehr als QR-Code erstellen.', href: '/tools/QRCodeMasterPro.html' }
+            ]
+          },
+          {
             title: 'Warenschmiede',
             items: [
               { label: 'Zur Tool-Übersicht', href: '/tools/' },

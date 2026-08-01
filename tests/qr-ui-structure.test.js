@@ -20,3 +20,41 @@ test('QR header and preview grid follow the Barcode workshop layout', () => {
   assert.match(qrWorkshop, /\.preview-buttons\{[^}]*grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
   assert.match(qrWorkshop, /@media\(max-width:760px\)[^{]*\{[\s\S]*?\.preview-buttons\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
 });
+
+test('QR help uses external, hash-addressable help files', () => {
+  const helpHtml = fs.readFileSync('tools/qr-werkstatt/hilfe.html', 'utf8');
+  assert.ok(fs.existsSync('tools/qr-werkstatt/hilfe.css'));
+  assert.ok(fs.existsSync('tools/qr-werkstatt/hilfe.js'));
+  assert.match(qrWorkshop, /<iframe id="helpFrame" src="\/tools\/qr-werkstatt\/hilfe\.html\?embed=1#start"/);
+  assert.doesNotMatch(qrWorkshop, /data-help-(?:tab|page)/);
+  assert.match(qrWorkshop, /id="helpWindowOpen"[^>]*>↗ In eigenem Fenster öffnen/);
+  for (const id of ['start', 'nutzen', 'grundlagen', 'code-oder-inhalt', 'welche-art', 'inhaltslaenge', 'allgemein', 'kontakt', 'zahlung', 'spezial', 'schnellstart', 'eingaben', 'optik', 'export', 'projekte', 'scanbarkeit', 'datenschutz', 'fehlerhilfe']) {
+    assert.match(helpHtml, new RegExp(`id="${id}"`));
+    assert.match(helpHtml, new RegExp(`href="#${id}"`));
+  }
+});
+
+test('tool menus expose both help actions and sibling workshops', () => {
+  const barcodeApp = fs.readFileSync('tools/barcode-werkstatt/app.js', 'utf8');
+  assert.match(qrWorkshop, /Hilfe & Anleitung/);
+  assert.match(qrWorkshop, /Anleitung in eigenem Fenster/);
+  assert.match(qrWorkshop, /title: 'Werkzeugfamilie'[\s\S]*?href: '\/tools\/BarcodeWerkstattPlus\.html'/);
+  assert.match(barcodeApp, /title: 'Werkzeugfamilie'[\s\S]*?href: '\/tools\/QRCodeMasterPro\.html'/);
+});
+
+test('QR help locks background scrolling until dialog close or cancel', () => {
+  assert.match(qrWorkshop, /html\.dialog-open,\s*html\.dialog-open body\s*\{\s*overflow:\s*hidden;/);
+  const openHelp = qrWorkshop.match(/const openHelp = \(topic = 'start'\) => \{([\s\S]*?)\n      \};/)?.[1] || '';
+  assert.match(openHelp, /document\.documentElement\.classList\.add\('dialog-open'\)/);
+  assert.match(qrWorkshop, /const unlockHelpScroll = \(\) => \{\s*document\.documentElement\.classList\.remove\('dialog-open'\);\s*\};/);
+  assert.match(qrWorkshop, /helpDialog\.addEventListener\('close', unlockHelpScroll\)/);
+  assert.match(qrWorkshop, /helpDialog\.addEventListener\('cancel', unlockHelpScroll\)/);
+});
+
+test('QR version and payment guidance describe the actual behavior', () => {
+  const helpHtml = fs.readFileSync('tools/qr-werkstatt/hilfe.html', 'utf8');
+  assert.match(qrWorkshop, /label: 'Version speichern', description: 'Snapshot lokal sichern\. Beim nächsten Projekt-Export wird der Verlauf mitgespeichert\.'/);
+  assert.match(helpHtml, /<dt>Version speichern<\/dt><dd>Speichert einen Snapshot im lokalen Versionsverlauf\. Beim nächsten „Projekt speichern“ wird der Verlauf in die neu heruntergeladene JSON-Datei übernommen\.<\/dd>/);
+  assert.match(helpHtml, /<b>Zahlung & Service<\/b><p>Vorbereitete Zahlungsdaten oder Feedbackseiten ohne Abtippen öffnen\.<\/p>/);
+  assert.doesNotMatch(helpHtml, /Geprüfte Zahlungsdaten/);
+});
