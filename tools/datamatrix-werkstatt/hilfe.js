@@ -1,0 +1,1 @@
+(() => { const links=[...document.querySelectorAll('nav a')]; const mark=()=>{const hash=location.hash||'#start';links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')===hash));}; addEventListener('hashchange',mark); mark(); })();

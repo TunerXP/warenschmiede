@@ -1917,7 +1917,8 @@
           {
             title: 'Werkzeugfamilie',
             items: [
-              { label: 'Zur QR-Werkstatt Plus', description: 'Links, Kontakte, WLAN, Zahlungen und mehr als QR-Code erstellen.', href: '/tools/QRCodeMasterPro.html' }
+              { label: 'Zur QR-Werkstatt Plus', description: 'Links, Kontakte, WLAN, Zahlungen und mehr als QR-Code erstellen.', href: '/tools/QRCodeMasterPro.html' },
+              { label: 'Zur DataMatrix-Werkstatt Plus', description: 'Kompakte Codes für Inventar, Bauteile und Werkstatt erstellen.', href: '/tools/DataMatrixWerkstattPlus.html' }
             ]
           },
           {
