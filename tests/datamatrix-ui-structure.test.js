@@ -305,7 +305,7 @@ test('Persistenz normalisiert Nur-Code und bewahrt Textetiketten',()=>{
  assert.match(app,/function projectInputs\(\)\{return currentInputs\(\);\}/);assert.match(app,/function snapshot\(\)\{const inputs=projectInputs\(\)/);assert.match(app,/saveDraftSoon\(\)\{const validDraft=JSON\.stringify\(snapshot\(\)\)/);assert.match(app,/inputs:project\.inputs/);
 });
 test('Textvorlagen-Select bleibt vom Nur-Code-Zustand getrennt',()=>{
- assert.equal(logic.DEFAULT_INPUTS.labelTemplate,'code-text');assert.match(app,/printType:'code-only'/);assert.ok((app.match(/id==='labelTemplate'&&value==='code-only'\?'code-text':value/g)||[]).length>=2);assert.match(app,/resetToDefaults[\s\S]*printType:'code-only'/);
+ assert.equal(logic.DEFAULT_INPUTS.labelTemplate,'code-text');assert.match(app,/printType:'code-only'/);assert.match(app,/inputsForDomAfterLoad\(applyOutputProfileToInputs/);assert.match(app,/resetToDefaults[\s\S]*printType:'code-only'/);
 });
 test('alte V3-Codegrößen werden gezielt und streng migriert',()=>{
  const project=inputs=>({schema:logic.PROJECT_SCHEMA,schemaVersion:3,type:'internal',mode:'single',inputs,labels:[],selectedLabelId:null,outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT},versions:[]});
@@ -331,3 +331,22 @@ test('A4-Zusammenfassung unterstützt eine und mehrere Folgeseiten',()=>{
  const layout={perPage:20};assert.equal(logic.summarizeSheet(20,layout,0,1),'20 Etiketten · 20 Plätze pro Seite · 1 Seite');assert.equal(logic.summarizeSheet(20,layout,4,2),'20 Etiketten · 16 freie Plätze auf Seite 1 · 4 weitere Etiketten auf 1 Folgeseite · insgesamt 2 Seiten');assert.equal(logic.summarizeSheet(50,layout,4,3),'50 Etiketten · 16 freie Plätze auf Seite 1 · 34 weitere Etiketten auf 2 Folgeseiten · insgesamt 3 Seiten');assert.equal(logic.summarizeSheet(10,layout,4,1),'10 Etiketten · beginnen auf Feld 5 · 1 Seite');assert.equal(logic.summarizeSheet(1,layout,4,1),'1 Etikett · beginnt auf Feld 5 · 1 Seite');
 });
 test('Produktionscode enthält keine Testgeräte oder verwaiste Dichtehelfer',()=>{assert.doesNotMatch(app,/Bambu|buildBambuExample|parseSvgModules|Mini-Code-Dichte|estimateMini/);});
+
+
+test('Code-only-Laden bewahrt Codegröße und setzt sichere Textetikettenwerte',()=>{
+ const stored={...logic.DEFAULT_INPUTS,labelTemplate:'code-only',codeSize:'12',labelWidth:'12',labelHeight:'12',labelBorder:'none',cutLines:false},dom=logic.inputsForDomAfterLoad(stored);
+ assert.equal(stored.codeSize,'12');assert.deepEqual({template:dom.labelTemplate,width:dom.labelWidth,height:dom.labelHeight,border:dom.labelBorder,corners:dom.labelCorners,cut:dom.cutLines,align:dom.labelTextAlign},{template:'code-text',width:'45',height:'45',border:'fine',corners:'square',cut:false,align:'left'});
+ const active=logic.normalizeInputsForPersistence({...dom,codeSize:stored.codeSize},'code-only');assert.deepEqual([active.labelWidth,active.labelHeight],['12','12']);
+ for(const size of ['12','15']){const loaded=logic.inputsForDomAfterLoad({...stored,codeSize:size});assert.equal(loaded.codeSize,size);assert.deepEqual([loaded.labelWidth,loaded.labelHeight],['45','45']);}
+});
+test('Rollback erfasst rohe DOM-Werte getrennt von Vorschau und Persistenz',()=>{
+ assert.match(app,/function rawInputsFromDom\(\)\{return Object\.fromEntries/);assert.match(app,/function currentInputs\(\)\{return normalizeInputsForPersistence\(rawInputsFromDom\(\),state\.printType\);\}/);assert.match(app,/function captureCurrentState\(\)\{return \{state:structuredClone\(state\),inputs:rawInputsFromDom\(\)/);
+ const raw={...logic.DEFAULT_INPUTS,labelTemplate:'info-landscape',labelWidth:'70',labelHeight:'30',labelBorder:'strong',cutLines:true,codeSize:'12'},normalized=logic.normalizeInputsForPersistence(raw,'code-only');assert.deepEqual([raw.labelWidth,raw.labelHeight,raw.labelBorder,raw.cutLines],['70','30','strong',true]);assert.deepEqual([normalized.labelWidth,normalized.labelHeight,normalized.labelBorder,normalized.cutLines],['12','12','none',false]);
+ assert.match(app,/catch\(error\)\{restoreCapturedState\(previous\);throw error;\}/);
+});
+test('V3 akzeptiert ausschließlich die vier bekannten Etikettenvorlagen',()=>{
+ const project=inputs=>({schema:logic.PROJECT_SCHEMA,schemaVersion:3,type:'internal',mode:'single',inputs,labels:[],selectedLabelId:null,outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT},versions:[]});
+ const missing={...logic.DEFAULT_INPUTS};delete missing.labelTemplate;assert.throws(()=>logic.migrateProject(project(missing)),/Etikettenvorlage/);assert.throws(()=>logic.migrateProject(project({...logic.DEFAULT_INPUTS,labelTemplate:'unbekannt'})),/Etikettenvorlage/);
+ for(const template of ['code-only','code-text','info-landscape','info-portrait'])assert.doesNotThrow(()=>logic.validateProject(project({...logic.DEFAULT_INPUTS,labelTemplate:template})));
+ const v2={schema:logic.PROJECT_SCHEMA,schemaVersion:2,type:'internal',mode:'single',inputs:{...logic.DEFAULT_INPUTS,labelTemplate:'unbekannt'},versions:[]};assert.equal(logic.migrateProject(v2).inputs.labelTemplate,'code-text');
+});
