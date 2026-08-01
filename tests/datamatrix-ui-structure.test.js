@@ -380,3 +380,18 @@ test('Pixelgröße und Hilfe entsprechen der Oberfläche',()=>{
  for(const phrase of ['nur als „Einzelcode“ oder „Mehrfach drucken“','Angebrochenen A4-Bogen fortsetzen','Lokaler Arbeitsstand','Projektdatei','Version speichern','PNG-/Vorschaugröße (Pixel)','Jetzt drucken'])assert.ok(help.includes(phrase),phrase);
  for(const removed of ['Mini-Preiscode','Mini-Code-Testbogen','Bambu-Beispieldaten','Rollenetiketten'])assert.doesNotMatch(help,new RegExp(removed));
 });
+
+
+test('Inhaltsartwechsel plant übernommene Kennungen als neutralen URL-Zustand',()=>{
+ assert.deepEqual(logic.contentTypeSwitchPlan('url','single','WS-ART-0042'),{type:'url',mode:'single',changedMode:false,pendingUrl:true});
+ assert.deepEqual(logic.contentTypeSwitchPlan('url','copies','INV-0042'),{type:'url',mode:'copies',changedMode:false,pendingUrl:true});
+ for(const mode of ['series','manual','labels'])assert.deepEqual(logic.contentTypeSwitchPlan('url',mode,'WS-ALT'),{type:'url',mode:'single',changedMode:true,pendingUrl:true});
+ assert.deepEqual(logic.contentTypeSwitchPlan('url','single','https://www.warenschmiede.com'),{type:'url',mode:'single',changedMode:false,pendingUrl:false});
+ assert.deepEqual(logic.contentTypeSwitchPlan('internal','single','WS-ART-0042'),{type:'internal',mode:'single',changedMode:false,pendingUrl:false});
+});
+test('neutraler URL-Zustand löscht Ausgaben ohne Fehlerdarstellung oder Eingabefelder',()=>{
+ const pending=app.match(/function showPendingUrlState[\s\S]*?\n  function switchContentType/)?.[0]||'';
+ assert.match(pending,/showEmptyState\(\{save:false\}\)/);assert.match(pending,/className='validation'/);assert.match(pending,/saveDraft\(\)/);assert.doesNotMatch(pending,/invalidateSheet|classList\.add\('invalid'\)|singleValue.*value=|copyValue.*value=/);
+ const switching=app.match(/function switchContentType[\s\S]*?\n  function render/)?.[0]||'';
+ assert.match(switching,/contentTypeSwitchPlan/);assert.match(switching,/if\(!plan\.pendingUrl\)return render\(\)/);assert.match(switching,/showPendingUrlState/);assert.doesNotMatch(switching,/seriesPrefix.*value=|manualList.*value=|state\.labels=/);
+});
