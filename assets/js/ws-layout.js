@@ -24,7 +24,8 @@
           { label: '3D-Druck Kostenrechner Plus', href: 'tools/ws_3d_print_kostenrechner.html', description: 'Angebot, Rechnung, Lieferschein und lokale Daten.' },
           { label: 'CNC Fräsen-Einrichtsblatt Plus', href: 'tools/cnc-fraesen-einrichtsblatt-plus/index.html', description: 'Einrichtblätter und Maschineninfos.' },
           { label: 'QR-Werkstatt Plus', href: 'tools/QRCodeMasterPro.html', description: 'QR-Codes, Links, WLAN und mehr.' },
-          { label: 'Barcode-Werkstatt Plus', href: 'tools/BarcodeWerkstattPlus.html', description: 'EAN, Code128, Code39 und ITF-14.' }
+          { label: 'Barcode-Werkstatt Plus', href: 'tools/BarcodeWerkstattPlus.html', description: 'EAN, Code128, Code39 und ITF-14.' },
+          { label: 'DataMatrix-Werkstatt Plus', href: 'tools/DataMatrixWerkstattPlus.html', description: 'Kompakte 2D-Codes für Inventar, Bauteile und Werkstatt.' }
         ] },
         { label: 'Arbeitszeit & Alltag', accent: 'blue', links: [
           { label: 'Zeiterfassung', href: 'tools/Zeiterfassung.html', description: 'Legacy-Version für bestehende Nutzer.', note: 'Legacy-Version' },
