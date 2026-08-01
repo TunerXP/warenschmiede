@@ -395,3 +395,18 @@ test('neutraler URL-Zustand löscht Ausgaben ohne Fehlerdarstellung oder Eingabe
  const switching=app.match(/function switchContentType[\s\S]*?\n  function render/)?.[0]||'';
  assert.match(switching,/contentTypeSwitchPlan/);assert.match(switching,/if\(!plan\.pendingUrl\)return render\(\)/);assert.match(switching,/showPendingUrlState/);assert.doesNotMatch(switching,/seriesPrefix.*value=|manualList.*value=|state\.labels=/);
 });
+
+test('lokale URL-Entwürfe dürfen unvollständig sein, Projekte und Versionen bleiben streng',()=>{
+ const draft=(mode,value,count='12')=>({schema:logic.PROJECT_SCHEMA,schemaVersion:3,modeRules:logic.MODE_RULES_VERSION,type:'url',mode,inputs:{...logic.DEFAULT_INPUTS,singleValue:mode==='single'?value:'',copyValue:mode==='copies'?value:'',copyCount:count},labels:[],outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT},versions:[]});
+ for(const project of [draft('single','WS-ART-0042'),draft('single',''),draft('copies','INV-0042')]){assert.equal(logic.validateProject(project,{allowIncompleteWork:true}),true);assert.throws(()=>logic.validateProject(project),/https:\/\/|leer/);}
+ assert.throws(()=>logic.validateProject(draft('copies','INV-0042','0'),{allowIncompleteWork:true}),/Kopienzahl/);
+ assert.throws(()=>logic.validateProject({...draft('single',''),mode:'series'},{allowIncompleteWork:true}),/nicht erlaubte Kombination/);
+ const invalidVersion={number:1,savedAt:'2026-08-01T00:00:00.000Z',type:'url',mode:'single',inputs:{...logic.DEFAULT_INPUTS,singleValue:'WS-ART-0042'},labels:[],outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT}};
+ assert.throws(()=>logic.validateProject({...draft('single',''),versions:[invalidVersion]},{allowIncompleteWork:true}),/https:\/\//);
+ assert.equal(logic.validateProject(draft('single','https://www.warenschmiede.com')),true);
+});
+test('Projektladen unterscheidet lokalen Entwurf von expliziter Projektdatei',()=>{
+ assert.match(app,/function applyProject\(project,\{source='project'\}=\{\}\)/);assert.match(app,/validateProject\(migrated,\{allowIncompleteWork:draft\}\)/);assert.match(app,/pendingDraft[\s\S]*showPendingUrlState\(\{save:false\}\)/);
+ assert.match(app,/applyProject\(p,\{source:'draft'\}\)/);assert.match(app,/const migrated=applyProject\(JSON\.parse\(reader\.result\)\)/);
+ assert.match(app,/catch\{localStorage\.removeItem\(LOCAL_DRAFT_KEY\);\}/);
+});
