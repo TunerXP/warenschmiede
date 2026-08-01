@@ -245,3 +245,40 @@ test('neuer Produktionszustand ist leer, neutral und nur mit Platzhaltern verseh
  assert.match(app,/function showEmptyState/);assert.match(app,/Bitte zuerst einen Inhalt eingeben\./);assert.match(app,/setSingleOutputAvailability\(false\);setPrintAvailability\(false\)/);
  assert.match(help,/frei änderbar, werden nicht automatisch in das Tool eingesetzt/);
 });
+
+test('neutraler Leerzustand trennt Vorschau und A4-Blatt von Fehlerklassen',()=>{
+ assert.match(app,/function showNeutralPreview\(\)/);assert.match(app,/classList\.remove\('invalid'\)[\s\S]*classList\.add\('empty'\)/);
+ assert.match(app,/class="empty-sheet">Bitte zuerst einen Inhalt eingeben\./);assert.match(app,/a4Page'\)\.classList\.remove\('invalid'\)[\s\S]*a4Page'\)\.classList\.add\('empty'\)/);
+ assert.match(css,/#previewStage\.empty\{[^}]*background:#f7f9fb/);assert.match(css,/\.a4-page\.empty\{display:grid;place-items:center\}/);
+ assert.match(app,/function clearPreview\(\)[\s\S]*classList\.remove\('empty'\)[\s\S]*classList\.add\('invalid'\)/);
+ assert.match(app,/function invalidateSheet[\s\S]*classList\.remove\('empty'\)[\s\S]*invalid-sheet/);
+});
+test('Leerzustand räumt Navigation, Zähler, Seitenposition und Ausgaben vollständig auf',()=>{
+ assert.match(app,/function showEmptyState[\s\S]*state\.values=\[\];state\.index=0;state\.page=0/);
+ for(const id of ['codeNavigation','navigationHint','copiesPreviewSummary'])assert.match(app,new RegExp(`\\$\\('${id}'\\)\\.hidden=true`));
+ for(const id of ['prevCode','nextCode','prevSheet','nextSheet'])assert.match(app,new RegExp(`\\$\\('${id}'\\)\\.disabled=true`));
+ assert.match(app,/setSingleOutputAvailability\(false\);setPrintAvailability\(false\)/);assert.match(app,/metaChars'\)\.textContent='0'/);assert.match(app,/metaCount'\)\.textContent='0'/);
+ assert.match(app,/metaValue'\)\.textContent='Noch kein Data-Matrix-Inhalt'/);assert.match(app,/printQuantitySummary'\)\.textContent=`Druckmenge: 0 Etiketten/);assert.match(app,/sheetPosition'\)\.textContent='Seite – von –'/);
+ assert.match(app,/function resetToDefaults\(\)\{state=\{type:'internal',mode:'single',values:\[''\]/);assert.match(main,/Druckmenge: 0 Etiketten · Quelle: Einzelcode/);
+});
+test('alle bewusst leeren Arbeitsmodi bleiben neutral, ungültige Werte nicht',()=>{
+ const defaults={...logic.DEFAULT_INPUTS};
+ assert.equal(logic.isNeutralEmptyMode('single',defaults),true);
+ assert.equal(logic.isNeutralEmptyMode('copies',defaults),true);
+ assert.equal(logic.isNeutralEmptyMode('manual',defaults),true);
+ assert.equal(logic.isNeutralEmptyMode('series',defaults),true);
+ assert.equal(logic.isNeutralEmptyMode('labels',defaults,[]),true);
+ assert.equal(logic.isNeutralEmptyMode('labels',defaults,[logic.createIndividualLabel({enabled:false})]),true);
+ assert.equal(logic.isNeutralEmptyMode('copies',{...defaults,copyCount:'0'}),false);
+ assert.equal(logic.isNeutralEmptyMode('labels',defaults,[logic.createIndividualLabel({enabled:true})]),false);
+ assert.equal(logic.isNeutralEmptyMode('single',{...defaults,singleValue:'kein-url'}),false);
+});
+test('Serie startet ohne Codes und wird erst mit gültiger Anzahl erzeugt',()=>{
+ assert.equal(logic.DEFAULT_INPUTS.seriesCount,'');assert.match(main,/id="seriesCount"[^>]*placeholder="z\. B\. 10"/);assert.doesNotMatch(main,/id="seriesCount"[^>]*value="10"/);
+ assert.equal(logic.isNeutralEmptyMode('series',logic.DEFAULT_INPUTS),true);
+ assert.deepEqual(logic.generateSeries('INV-',1,2,1,4,''),['INV-0001','INV-0002']);
+});
+test('sichtbare Platzhalter bleiben herstellerneutral und werden nicht gespeichert',()=>{
+ assert.doesNotMatch(main,/placeholder="[^"]*Bambu Lab A1/);assert.match(main,/placeholder="z\. B\. Modellbezeichnung"/);
+ assert.doesNotMatch(main,/Bambu-Lab-Beispiel einsetzen|id="insertBambuExample"/);assert.equal(logic.DEFAULT_INPUTS.singleValue,'');assert.equal(logic.DEFAULT_INPUTS.miniPrice,'');
+});
