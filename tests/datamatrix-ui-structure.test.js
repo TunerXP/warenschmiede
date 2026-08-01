@@ -206,7 +206,7 @@ test('ungültige A4-Eingaben räumen die veraltete Vorschau auf',()=>{assert.mat
 test('frühe Renderfehler invalidieren immer den alten A4-Bogen',()=>{assert.match(app,/catch\(error\)\{clearPreview\(\);setSingleOutputAvailability\(false\);invalidateSheet\(error\.message/);assert.match(app,/function invalidateSheet[\s\S]*setPrintAvailability\(false\)[\s\S]*A4-Vorschau ungültig[\s\S]*Seite – von –/);});
 test('deaktivierter leerer Entwurf lässt Einzel- und A4-Ausgabe getrennt',()=>{const draft=logic.createIndividualLabel({id:'draft-empty',title:'Entwurf',enabled:false}),active=logic.createIndividualLabel({id:'active',title:'Aktiv',codeValue:'A'});assert.equal(logic.getLabelsPrintState([draft,active]).ready,true);assert.deepEqual(logic.enabledLabels([draft,active]).map(label=>label.id),['active']);assert.doesNotThrow(()=>logic.validateWorkForPersistence({mode:'labels',type:'internal',inputs:{...logic.DEFAULT_INPUTS},labels:[draft,active]}));assert.match(app,/Dieser Entwurf besitzt noch keinen Data-Matrix-Inhalt/);assert.match(app,/function setSingleOutputAvailability/);assert.match(app,/function setPrintAvailability/);assert.match(app,/draftWithoutCode[\s\S]*setSingleOutputAvailability\(false\)[\s\S]*updateSheet\(\)/);});
 test('Etiketteneditor aktualisiert beim Tippen nur die Listenzusammenfassung',()=>{assert.match(app,/function renderLabelsList\(\)/);assert.match(app,/function loadSelectedLabelIntoEditor/);assert.match(app,/function updateSelectedLabelListSummary/);const update=app.match(/function updateSelectedLabel\(event\)\{[^}]+\}/)?.[0]||'';assert.match(update,/updateSelectedLabelListSummary\(label\)/);assert.doesNotMatch(update,/renderLabelsEditor|loadSelectedLabelIntoEditor|scrollIntoView/);assert.match(app,/if\(scroll\).*scrollIntoView/);});
-test('URL-Prüfung berücksichtigt nur aktive individuelle Etiketten',()=>{const bad=logic.createIndividualLabel({id:'url-3',title:'Etikett 3',codeValue:'keine-url'}),project={mode:'labels',type:'url',inputs:{...logic.DEFAULT_INPUTS},labels:[bad]};assert.throws(()=>logic.validateWorkForPersistence(project),/URL von „Etikett 3“/);bad.enabled=false;assert.doesNotThrow(()=>logic.validateWorkForPersistence(project));bad.enabled=true;assert.throws(()=>logic.validateWorkForPersistence(project),/https:\/\//);});
+test('Etikettenprüfung berücksichtigt nur aktive individuelle Etiketten',()=>{const bad=logic.createIndividualLabel({id:'label-3',title:'Etikett 3',codeValue:''}),project={mode:'labels',type:'text',inputs:{...logic.DEFAULT_INPUTS},labels:[bad]};assert.throws(()=>logic.validateWorkForPersistence(project),/Data-Matrix-Inhalt/);bad.enabled=false;assert.doesNotThrow(()=>logic.validateWorkForPersistence(project));});
 
 
 test('neutraler Leerzustand trennt Vorschau und A4-Blatt von Fehlerklassen',()=>{
@@ -349,4 +349,34 @@ test('V3 akzeptiert ausschließlich die vier bekannten Etikettenvorlagen',()=>{
  const missing={...logic.DEFAULT_INPUTS};delete missing.labelTemplate;assert.throws(()=>logic.migrateProject(project(missing)),/Etikettenvorlage/);assert.throws(()=>logic.migrateProject(project({...logic.DEFAULT_INPUTS,labelTemplate:'unbekannt'})),/Etikettenvorlage/);
  for(const template of ['code-only','code-text','info-landscape','info-portrait'])assert.doesNotThrow(()=>logic.validateProject(project({...logic.DEFAULT_INPUTS,labelTemplate:template})));
  const v2={schema:logic.PROJECT_SCHEMA,schemaVersion:2,type:'internal',mode:'single',inputs:{...logic.DEFAULT_INPUTS,labelTemplate:'unbekannt'},versions:[]};assert.equal(logic.migrateProject(v2).inputs.labelTemplate,'code-text');
+});
+
+
+test('zentrale Modusregel beschränkt Webadressen auf Einzelcode und Kopien',()=>{
+ const all=['single','copies','series','manual','labels'];
+ for(const type of ['text','internal','inventory','serial','part','location'])assert.deepEqual(logic.allowedModesForType(type),all);
+ assert.deepEqual(logic.allowedModesForType('url'),['single','copies']);
+ for(const mode of all)assert.equal(logic.isModeAllowedForType('url',mode),['single','copies'].includes(mode));
+});
+test('Webadressen-Modi werden semantisch ausgeblendet und nutzen ein lückenloses Raster',()=>{
+ assert.match(app,/b\.hidden=!isModeAllowedForType\(state\.type,b\.dataset\.mode\)/);
+ assert.match(app,/classList\.toggle\('url-modes',state\.type==='url'\)/);
+ assert.match(css,/#modeButtons\.url-modes\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
+ assert.match(css,/#modeButtons button\[hidden\]\{display:none\}/);
+});
+test('alte URL-Projekte und Versionen werden verlustfrei als Text migriert',()=>{
+ const inputs={...logic.DEFAULT_INPUTS,manualList:'https://a.example\nfreier Wert',seriesPrefix:'ALT-',labelTitle:'Bewahren'};
+ const version={number:1,savedAt:'2026-07-31T00:00:00.000Z',type:'url',mode:'manual',inputs:{...inputs},labels:[],outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT}};
+ for(const mode of ['series','manual','labels']){const old={schema:logic.PROJECT_SCHEMA,schemaVersion:3,type:'url',mode,inputs:{...inputs},labels:[],outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT},versions:[{...version,mode}]};const migrated=logic.migrateProject(old);assert.equal(migrated.type,'text');assert.equal(migrated.mode,mode);assert.deepEqual(migrated.inputs,inputs);assert.equal(migrated.versions[0].type,'text');assert.equal(migrated.versions[0].mode,mode);}
+});
+test('neue manipulierte URL-Projekte werden abgelehnt, gültige URLs akzeptiert',()=>{
+ const base={schema:logic.PROJECT_SCHEMA,schemaVersion:3,modeRules:logic.MODE_RULES_VERSION,type:'url',mode:'single',inputs:{...logic.DEFAULT_INPUTS,singleValue:'https://www.warenschmiede.com'},labels:[],outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT},versions:[]};
+ assert.equal(logic.validateProject(base),true);assert.equal(logic.validateProject({...base,mode:'copies',inputs:{...base.inputs,copyValue:'https://www.warenschmiede.com',copyCount:'2'}}),true);
+ assert.throws(()=>logic.validateProject({...base,mode:'series'}),/nicht erlaubte Kombination/);
+ for(const value of ['www.warenschmiede.com','http://www.warenschmiede.com'])assert.throws(()=>logic.validateProject({...base,inputs:{...base.inputs,singleValue:value}}),/https:\/\//);
+});
+test('Pixelgröße und Hilfe entsprechen der Oberfläche',()=>{
+ assert.match(main,/PNG-\/Vorschaugröße \(Pixel\)/);assert.match(main,/Pixelgröße betrifft die Einzelvorschau und den PNG-Export/);assert.match(main,/physische Druckgröße[^<]+Millimetern/);
+ for(const phrase of ['nur als „Einzelcode“ oder „Mehrfach drucken“','Angebrochenen A4-Bogen fortsetzen','Lokaler Arbeitsstand','Projektdatei','Version speichern','PNG-/Vorschaugröße (Pixel)','Jetzt drucken'])assert.ok(help.includes(phrase),phrase);
+ for(const removed of ['Mini-Preiscode','Mini-Code-Testbogen','Bambu-Beispieldaten','Rollenetiketten'])assert.doesNotMatch(help,new RegExp(removed));
 });
