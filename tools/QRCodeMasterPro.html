@@ -467,6 +467,7 @@
   <input id="projectFileInput" type="file" accept=".json,application/json" hidden>
   <div class="toast" id="toast">Erledigt</div>
 
+  <script defer src="../assets/js/ws-tool-catalog.js"></script>
   <script defer src="../assets/js/ws-tool-menu.js"></script>
   <script>
     const $ = (id) => document.getElementById(id);
@@ -822,9 +823,7 @@
       const helpMenuItems = [{ label: 'Hilfe & Anleitung', description: 'Lern- und Nachschlagebereich öffnen.', action: () => openHelp('start') }];
       if(window.matchMedia('(min-width: 761px)').matches) helpMenuItems.push({ label: 'Anleitung in eigenem Fenster', description: 'Hilfe separat öffnen und parallel nutzen.', action: () => openHelpWindow('start') });
       window.WSToolMenu?.configure({
-        toolName: 'QR-Werkstatt Plus',
-        toolDescription: 'QR-Codes erstellen, gestalten und drucken.',
-        toolIcon: '/assets/img/qrcode_logo.png',
+        toolId: 'qr',
         sections: [
           { title: 'Projekt & Daten', items: [
             { label: 'Projekt speichern', description: 'QR-Projekt als JSON-Datei sichern.', action: downloadProject },
@@ -834,8 +833,8 @@
           ]},
           { title: 'Hilfe', items: helpMenuItems },
           { title: 'Werkzeugfamilie', items: [
-            { label: 'Zur Barcode-Werkstatt Plus', description: 'Strichcodes, Serien, Etiketten und Druckbögen erstellen.', href: '/tools/BarcodeWerkstattPlus.html' },
-            { label: 'Zur DataMatrix-Werkstatt Plus', description: 'Kompakte Codes für Inventar, Bauteile und Werkstatt erstellen.', href: '/tools/DataMatrixWerkstattPlus.html' }
+            { toolId: 'barcode' },
+            { toolId: 'datamatrix' }
           ]},
           { title: 'Warenschmiede', items: [
             { label: 'Zur Tool-Übersicht', href: '/tools/' },
