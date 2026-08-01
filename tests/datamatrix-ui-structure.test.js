@@ -7,6 +7,8 @@ const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const main = read('tools/DataMatrixWerkstattPlus.html');
 const app = read('tools/datamatrix-werkstatt/app.js');
 const help = read('tools/datamatrix-werkstatt/hilfe.html');
+const helpJs = read('tools/datamatrix-werkstatt/hilfe.js');
+const css = read('tools/datamatrix-werkstatt/app.css');
 const logic = require('../tools/datamatrix-werkstatt/app.js');
 
 test('getrennte DataMatrix-Dateistruktur ist vollständig', () => {
@@ -32,3 +34,31 @@ test('Serie berücksichtigt Nullen und Schrittweite', () => assert.deepEqual(log
 test('manuelle Liste ignoriert Leerzeilen und behält Reihenfolge', () => assert.deepEqual(logic.parseManualList(' A\n\n B \n'),['A','B']));
 test('Dateinamen werden Windows-sicher und kurz', () => {const v=logic.sanitizeFilename('INV:<0042>/'+ 'x'.repeat(100));assert.doesNotMatch(v,/[<>:"/\\|?*]/);assert.ok(v.length<=70);});
 test('A4-Berechnung und unmögliche Maße', () => {const l=logic.calculateA4Layout({orientation:'portrait',labelWidth:45,labelHeight:45,margin:10,gapX:3,gapY:3});assert.deepEqual([l.columns,l.rows,l.perPage],[4,5,20]);assert.throws(()=>logic.calculateA4Layout({orientation:'portrait',labelWidth:300,labelHeight:45,margin:10,gapX:3,gapY:3}),/passt/);});
+test('PNG-Plan verwendet ganzzahligen Modulmaßstab und exakte Zielfläche', () => {
+  for(const target of [160,320,640]){const plan=logic.calculateIntegerScale(26,26,target);assert.equal(Number.isInteger(plan.scale),true);assert.ok(plan.width<=target);assert.equal(plan.targetWidth,target);assert.equal(plan.targetHeight,target);}
+  assert.match(app,/imageSmoothingEnabled=false/);assert.match(app,/canvas\.width=target;canvas\.height=target/);
+});
+test('bwip-Optionen behandeln Transparenz ohne Alpha-Hexwert', () => {
+  const transparent=logic.buildBwipOptions({value:'A',transparent:true});assert.equal(Object.hasOwn(transparent,'backgroundcolor'),false);
+  const solid=logic.buildBwipOptions({value:'A',transparent:false,background:'#ffffff'});assert.equal(solid.backgroundcolor,'FFFFFF');
+  assert.doesNotMatch(read('tools/datamatrix-werkstatt/app.js')+main,/FFFFFF00/);
+});
+test('Exporte und Kopieren brechen nach fehlgeschlagenem Rendering ab', () => {
+  assert.match(app,/function render\([^)]*\)[\s\S]*return true;[\s\S]*return false;/);
+  assert.match(app,/function png\(\)\{if\(!render\(\)\)return/);assert.match(app,/function svgDownload\(\)\{if\(!render\(\)\)return/);assert.match(app,/function printSheet\(\)\{if\(!render\(\)\)return/);
+  assert.match(app,/copyValue'[\s\S]*if\(!render\(\)\)return/);assert.match(app,/clearPreview/);assert.match(css,/#previewStage\.invalid/);
+});
+test('Projektvalidierung akzeptiert nur vollständige eigene Projekte', () => {
+  const valid={schema:logic.PROJECT_SCHEMA,schemaVersion:1,type:'internal',mode:'single',inputs:{singleValue:'WS-DM-0001'},versions:[]};assert.equal(logic.validateProject(valid),true);
+  assert.throws(()=>logic.validateProject({...valid,type:'other'}),/Inhaltsart/);assert.throws(()=>logic.validateProject({...valid,mode:'other'}),/Arbeitsmodus/);assert.throws(()=>logic.validateProject({...valid,inputs:null}),/Eingaben/);assert.throws(()=>logic.validateProject({...valid,versions:{}}),/Versionsverlauf/);
+});
+test('lokaler Arbeitsstand wird bestätigt, zurückgesetzt und nicht sofort neu gespeichert', () => {
+  assert.match(app,/Lokalen DataMatrix-Arbeitsstand wirklich löschen/);assert.match(app,/function resetToDefaults/);assert.match(app,/singleValue:'WS-DM-0001'/);assert.match(app,/state=\{type:'internal',mode:'single'/);assert.match(app,/render\(\{save:false\}\)/);
+});
+test('Hilfe besitzt direkte und eingebettete Familienhülle', () => {
+  assert.match(helpJs,/URLSearchParams/);assert.match(helpJs,/get\('embed'\)/);assert.match(help,/<header class="help-header">/);assert.match(help,/DataMatrix-Werkstatt Plus verstehen/);assert.match(help,/href="\/tools\/DataMatrixWerkstattPlus\.html"/);assert.match(helpJs,/IntersectionObserver/);assert.match(helpJs,/hashchange/);
+  assert.match(app,/Math\.min\(1200,root\.screen\.availWidth/);assert.match(app,/Math\.min\(850,root\.screen\.availHeight/);
+});
+test('Oberfläche verwendet die helle sticky Familienoptik', () => {
+  assert.match(css,/\.topbar\{position:sticky/);assert.match(css,/background:rgba\(255,255,255/);assert.match(css,/\.topbar-inner\{width:min\(1320px/);assert.match(css,/\.workspace\{width:min\(1320px/);assert.doesNotMatch(css,/linear-gradient\(110deg,#092e58,#155c91\)/);
+});
