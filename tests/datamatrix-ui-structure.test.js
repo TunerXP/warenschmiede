@@ -20,7 +20,7 @@ test('Menü, Familie, Hilfe und Aktionen sind vorhanden', () => {
   assert.match(main,/toolMenuBtn/); assert.match(app,/Werkzeugfamilie/); assert.match(app,/Barcode-Werkstatt Plus/); assert.match(app,/QR-Werkstatt Plus/);
   assert.match(read('tools/BarcodeWerkstattPlus.html')+read('tools/barcode-werkstatt/app.js'),/DataMatrixWerkstattPlus\.html/); assert.match(read('tools/QRCodeMasterPro.html'),/DataMatrixWerkstattPlus\.html/);
   assert.match(main,/<iframe/); assert.match(app,/wsDataMatrixHelp/); assert.match(app,/help-open/);
-  for(const id of ['downloadPng','downloadSvg','copyValue','printSheet']) assert.match(main,new RegExp(`id="${id}"`));
+  for(const id of ['downloadPng','downloadSvg','copyContent','printSheet']) assert.match(main,new RegExp(`id="${id}"`));
   for(const mode of ['single','copies','series','manual']) assert.match(main,new RegExp(`data-mode="${mode}"`));
 });
 test('Hilfe enthält alle zentralen Kapitel und keine fertige GS1-Funktion', () => {
@@ -46,7 +46,7 @@ test('bwip-Optionen behandeln Transparenz ohne Alpha-Hexwert', () => {
 test('Exporte und Kopieren brechen nach fehlgeschlagenem Rendering ab', () => {
   assert.match(app,/function render\([^)]*\)[\s\S]*return true;[\s\S]*return false;/);
   assert.match(app,/function png\(\)\{if\(!render\(\)\)return/);assert.match(app,/function svgDownload\(\)\{if\(!render\(\)\)return/);assert.match(app,/function printSheet\(\)\{if\(!render\(\)\)return/);
-  assert.match(app,/copyValue'[\s\S]*if\(!render\(\)\)return/);assert.match(app,/clearPreview/);assert.match(css,/#previewStage\.invalid/);
+  assert.match(app,/copyContent'[\s\S]*if\(!render\(\)\)return/);assert.match(app,/clearPreview/);assert.match(css,/#previewStage\.invalid/);
 });
 test('Projektvalidierung akzeptiert nur vollständige eigene Projekte', () => {
   const valid={schema:logic.PROJECT_SCHEMA,schemaVersion:1,type:'internal',mode:'single',inputs:{...logic.DEFAULT_INPUTS},versions:[]};assert.equal(logic.validateProject(valid),true);
@@ -96,7 +96,7 @@ test('A4-Etikettenwerkstatt teilt Seiten und nutzt zentrale Renderlogik', () => 
   for (const value of ['code-only','code-text','info-portrait','info-landscape']) assert.match(main,new RegExp(`value="${value}"`));
   const layout=logic.calculateA4Layout({orientation:'portrait',labelWidth:90,labelHeight:90,margin:10,gapX:0,gapY:0});
   assert.deepEqual(logic.paginateLabels(['A','B','C','D','E','F','G'],layout),[['A','B','C','D','E','F'],['G']]);
-  const model=logic.createLabelModel('CODED',{...logic.DEFAULT_INPUTS,labelTemplate:'info-portrait',labelInfo1:'nur sichtbar'},'<svg/>');
+  const model=logic.createLabelModel('CODED',{...logic.DEFAULT_INPUTS,labelTemplate:'info-portrait',labelInfo1:'nur sichtbar'},'<svg viewBox="0 0 10 10"></svg>');
   const markup=logic.createLabelMarkup(model,{cutLines:true});assert.match(markup,/CODED/);assert.match(markup,/nur sichtbar/);assert.match(markup,/cut-lines/);
   assert.doesNotMatch(model.value,/nur sichtbar/); assert.match(app,/createLabelMarkup\(createLabelModel/);
 });
@@ -107,7 +107,7 @@ test('Projekt V1 wird vollständig und sicher auf V2 migriert',()=>{
 test('Navigation und Übersicht binden DataMatrix ohne Bildattrappe ein',()=>{const nav=read('assets/js/ws-layout.js'),overview=read('tools/index.html');assert.match(nav,/DataMatrix-Werkstatt Plus/);assert.match(nav,/tools\/DataMatrixWerkstattPlus.html/);assert.match(overview,/datamatrix-art/);assert.match(overview,/datamatrix data matrix 2d code inventar/);assert.doesNotMatch(overview,/img[^>]+datamatrix/i);});
 
 test('Klartextschalter steuert nur den sichtbaren codierten Wert',()=>{
-  const markup=(layout,printText)=>logic.createLabelMarkup(logic.createLabelModel('ENCODED',{...logic.DEFAULT_INPUTS,labelTemplate:layout,printText,labelTitle:'Titel',labelInfo1:'Zusatz'},'<svg/>'));
+  const markup=(layout,printText)=>logic.createLabelMarkup(logic.createLabelModel('ENCODED',{...logic.DEFAULT_INPUTS,labelTemplate:layout,printText,labelTitle:'Titel',labelInfo1:'Zusatz'},'<svg viewBox="0 0 10 10"></svg>'));
   assert.match(markup('code-text',true),/ENCODED/);assert.doesNotMatch(markup('code-text',false),/ENCODED/);
   assert.doesNotMatch(markup('code-only',true),/ENCODED/);
   const info=markup('info-portrait',false);assert.match(info,/Titel/);assert.match(info,/Zusatz/);assert.doesNotMatch(info,/ENCODED/);
@@ -127,3 +127,25 @@ test('Textprüfung blockiert unbrauchbare Kombinationen, nicht Code pur',()=>{
  assert.doesNotThrow(()=>logic.validateLabelLayout({...small,labelTemplate:'code-only'},layout));
 });
 test('Seitennavigation begrenzt Seiten robust',()=>{assert.equal(logic.clampSheetPage(3,1),0);assert.equal(logic.clampSheetPage(3,4),3);assert.equal(logic.clampSheetPage(0,0),0);});
+
+test('Etiketten-SVG wird für Live-Vorschau und Druck robust normalisiert',()=>{
+  const svg=logic.normalizeLabelCodeSvg('<svg width="40" height="40" viewBox="0 0 40 40"><path d="M0 0h40v40z"/></svg>');
+  assert.match(svg,/class="label-code-svg"/);assert.match(svg,/width="100%"/);assert.match(svg,/height="100%"/);assert.match(svg,/preserveAspectRatio="xMidYMid meet"/);
+  assert.throws(()=>logic.normalizeLabelCodeSvg(''),/Codegrafik/);assert.throws(()=>logic.normalizeLabelCodeSvg('<div>kein Code</div>'),/Codegrafik/);
+  assert.match(css,/\.label-code-svg\{[^}]*width:100%!important;[^}]*height:100%!important/);
+  assert.match(app,/\.label-code-svg\{display:block;width:100%!important;height:100%!important/);
+});
+test('alle Etikettenvorlagen besitzen einen definierten Codebereich',()=>{
+  assert.match(css,/\.layout-code-only\{grid-template:/);assert.match(css,/\.layout-code-text\{grid-template-rows:minmax\(0,1fr\) auto/);
+  assert.match(css,/\.layout-info-portrait\{grid-template-rows:auto minmax\(/);assert.match(css,/\.layout-info-landscape\{grid-template-columns:minmax\(0,45%\) minmax\(0,1fr\)/);
+});
+test('Vorschaukarte bleibt statisch und die Druckbedienung erklärt Modi',()=>{
+  assert.match(css,/\.preview-card\{position:static\}/);assert.doesNotMatch(css,/\.preview-card\{position:sticky;top:108px/);
+  assert.match(main,/data-mode="copies">Mehrfach drucken/);assert.match(main,/Anzahl Etiketten \/ Kopien/);assert.match(main,/id="printQuantitySummary"/);assert.match(main,/id="setupCopies"/);assert.match(main,/id="printSheetA4"/);
+  assert.match(app,/\$\('printSheet'\)\.onclick=printSheet;\$\('printSheetA4'\)\.onclick=printSheet/);
+  assert.match(app,/state\.mode==='series'\|\|state\.mode==='manual'/);assert.match(app,/Code \$\{state\.index\+1\} von \$\{count\}/);
+});
+test('zwölf Kopien bleiben zwölf identische Druckwerte',()=>{
+  const values=Array(12).fill('WS-DM-0001');assert.equal(values.length,12);assert.equal(new Set(values).size,1);
+  assert.equal(logic.DEFAULT_INPUTS.copyCount,'12');
+});
