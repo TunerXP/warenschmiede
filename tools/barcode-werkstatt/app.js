@@ -1897,9 +1897,7 @@
         helpMenuItems.push({ label: 'Anleitung in eigenem Fenster', description: 'Hilfe separat öffnen und parallel nutzen.', action: ()=>openHelpWindow('start') });
       }
       window.WSToolMenu?.configure({
-        toolName: 'Barcode-Werkstatt Plus',
-        toolDescription: 'Barcodes erstellen, gestalten und drucken.',
-        toolIcon: '/assets/img/barcode_logo.svg',
+        toolId: 'barcode',
         sections: [
           {
             title: 'Projekt & Daten',
@@ -1917,8 +1915,8 @@
           {
             title: 'Werkzeugfamilie',
             items: [
-              { label: 'Zur QR-Werkstatt Plus', description: 'Links, Kontakte, WLAN, Zahlungen und mehr als QR-Code erstellen.', href: '/tools/QRCodeMasterPro.html' },
-              { label: 'Zur DataMatrix-Werkstatt Plus', description: 'Kompakte Codes für Inventar, Bauteile und Werkstatt erstellen.', href: '/tools/DataMatrixWerkstattPlus.html' }
+              { toolId: 'qr' },
+              { toolId: 'datamatrix' }
             ]
           },
           {

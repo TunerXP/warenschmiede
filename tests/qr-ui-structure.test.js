@@ -38,8 +38,8 @@ test('tool menus expose both help actions and sibling workshops', () => {
   const barcodeApp = fs.readFileSync('tools/barcode-werkstatt/app.js', 'utf8');
   assert.match(qrWorkshop, /Hilfe & Anleitung/);
   assert.match(qrWorkshop, /Anleitung in eigenem Fenster/);
-  assert.match(qrWorkshop, /title: 'Werkzeugfamilie'[\s\S]*?href: '\/tools\/BarcodeWerkstattPlus\.html'/);
-  assert.match(barcodeApp, /title: 'Werkzeugfamilie'[\s\S]*?href: '\/tools\/QRCodeMasterPro\.html'/);
+  assert.match(qrWorkshop, /title: 'Werkzeugfamilie'[\s\S]*?toolId: 'barcode'/);
+  assert.match(barcodeApp, /title: 'Werkzeugfamilie'[\s\S]*?toolId: 'qr'/);
 });
 
 test('QR help locks background scrolling until dialog close or cancel', () => {

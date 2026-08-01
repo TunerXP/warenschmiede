@@ -24,8 +24,8 @@ test('getrennte DataMatrix-Dateistruktur ist vollständig', () => {
   assert.doesNotMatch(main,/<style\b/); assert.doesNotMatch(main,/<script(?![^>]*src=)[^>]*>\s*\S/);
 });
 test('Menü, Familie, Hilfe und Aktionen sind vorhanden', () => {
-  assert.match(main,/toolMenuBtn/); assert.match(app,/Werkzeugfamilie/); assert.match(app,/Barcode-Werkstatt Plus/); assert.match(app,/QR-Werkstatt Plus/);
-  assert.match(read('tools/BarcodeWerkstattPlus.html')+read('tools/barcode-werkstatt/app.js'),/DataMatrixWerkstattPlus\.html/); assert.match(read('tools/QRCodeMasterPro.html'),/DataMatrixWerkstattPlus\.html/);
+  assert.match(main,/toolMenuBtn/); assert.match(app,/Werkzeugfamilie/); assert.match(app,/toolId:'barcode'/); assert.match(app,/toolId:'qr'/);
+  assert.match(read('tools/barcode-werkstatt/app.js'),/toolId: 'datamatrix'/); assert.match(read('tools/QRCodeMasterPro.html'),/toolId: 'datamatrix'/);
   assert.match(main,/<iframe/); assert.match(app,/wsDataMatrixHelp/); assert.match(app,/help-open/);
   for(const id of ['downloadPng','downloadSvg','copyContent','printSheet']) assert.match(main,new RegExp(`id="${id}"`));
   for(const mode of ['single','copies','series','manual']) assert.match(main,new RegExp(`data-mode="${mode}"`));
@@ -102,7 +102,7 @@ test('Projekt V1 wird vollständig und sicher auf V2 migriert',()=>{
  const oldKeys=['singleValue','copyValue','copyCount','seriesPrefix','seriesSuffix','seriesStart','seriesCount','seriesStep','seriesPad','manualList','foregroundText','backgroundText','size','padding','showText','transparent','autoUpdate','orientation','labelWidth','labelHeight','pageMargin','gapX','gapY','printText','cutLines'];
  const inputs=Object.fromEntries(oldKeys.map(key=>[key,logic.DEFAULT_INPUTS[key]]));const migrated=logic.migrateProject({schema:logic.PROJECT_SCHEMA,schemaVersion:1,type:'internal',mode:'single',inputs,versions:[]});assert.equal(migrated.schemaVersion,3);assert.equal(migrated.inputs.labelTitle,'');assert.equal(logic.validateProject(migrated),true);
 });
-test('Navigation und Übersicht binden DataMatrix ohne Bildattrappe ein',()=>{const nav=read('assets/js/ws-layout.js'),overview=read('tools/index.html');assert.match(nav,/DataMatrix-Werkstatt Plus/);assert.match(nav,/tools\/DataMatrixWerkstattPlus.html/);assert.match(overview,/datamatrix-art/);assert.match(overview,/datamatrix data matrix 2d code inventar/);assert.doesNotMatch(overview,/img[^>]+datamatrix/i);});
+test('Navigation und Übersicht binden DataMatrix mit dem bestehenden Kartenbild ein',()=>{const nav=read('assets/js/ws-layout.js'),overview=read('tools/index.html');assert.match(nav,/DataMatrix-Werkstatt Plus/);assert.match(nav,/tools\/DataMatrixWerkstattPlus.html/);assert.doesNotMatch(overview,/datamatrix-art/);assert.match(overview,/datamatrix data matrix 2d code inventar/);assert.match(overview,/img[^>]+datamatrix-werkstatt-card\.png/i);});
 
 test('Klartextschalter steuert nur den sichtbaren codierten Wert',()=>{
   const markup=(layout,printText)=>logic.createLabelMarkup(logic.createLabelModel('ENCODED',{...logic.DEFAULT_INPUTS,labelTemplate:layout,printText,labelTitle:'Titel',labelInfo1:'Zusatz'},'<svg viewBox="0 0 10 10"></svg>'));

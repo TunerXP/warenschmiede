@@ -36,6 +36,14 @@
   let config = defaults;
   let returnFocus = null;
 
+  const catalogTool = (toolId) => window.WSToolCatalog?.[toolId] || null;
+  const withImageFallback = (image) => {
+    image.addEventListener('error', () => {
+      image.src = defaultIcon;
+    }, { once: true });
+    return image;
+  };
+
   function closeMenu() {
     const panel = document.querySelector('.ws-tool-panel');
     panel?.classList.remove('open');
@@ -58,26 +66,46 @@
   }
 
   function createItem(item) {
-    const element = item.href ? document.createElement('a') : document.createElement('button');
-    const toneClass = item.tone === 'danger' ? ' ws-tool-link--danger' : '';
-    element.className = `ws-tool-link${item.href ? '' : ' ws-tool-menu-action'}${toneClass}`;
-    if (item.href) element.href = link(item.href);
+    const tool = catalogTool(item.toolId);
+    const resolved = tool ? {
+      label: tool.name,
+      description: tool.description,
+      href: tool.href,
+      icon: tool.icon,
+      ...item
+    } : item;
+    const element = resolved.href ? document.createElement('a') : document.createElement('button');
+    const toneClass = resolved.tone === 'danger' ? ' ws-tool-link--danger' : '';
+    const iconClass = resolved.icon ? ' ws-tool-link--with-icon' : '';
+    element.className = `ws-tool-link${resolved.href ? '' : ' ws-tool-menu-action'}${toneClass}${iconClass}`;
+    if (resolved.href) element.href = link(resolved.href);
     else {
       element.type = 'button';
       element.addEventListener('click', () => {
         closeMenu();
-        if (typeof item.action === 'function') item.action();
-        else if (item.event) document.dispatchEvent(new CustomEvent(item.event, { detail: item.detail }));
+        if (typeof resolved.action === 'function') resolved.action();
+        else if (resolved.event) document.dispatchEvent(new CustomEvent(resolved.event, { detail: resolved.detail }));
       });
     }
+    const copy = document.createElement('span');
+    copy.className = 'ws-tool-link-copy';
     const label = document.createElement('strong');
-    label.textContent = item.label || '';
-    element.append(label);
-    if (item.description) {
+    label.textContent = resolved.label || '';
+    copy.append(label);
+    if (resolved.description) {
       const description = document.createElement('span');
-      description.textContent = item.description;
-      element.append(description);
+      description.textContent = resolved.description;
+      copy.append(description);
     }
+    if (resolved.icon) {
+      const icon = withImageFallback(document.createElement('img'));
+      icon.className = 'ws-tool-link-icon';
+      icon.src = link(resolved.icon || defaultIcon);
+      icon.alt = '';
+      icon.setAttribute('aria-hidden', 'true');
+      element.append(icon);
+    }
+    element.append(copy);
     return element;
   }
 
@@ -86,7 +114,7 @@
     if (!panel) return;
     const title = panel.querySelector('.ws-tool-title');
     title.replaceChildren();
-    const icon = document.createElement('img');
+    const icon = withImageFallback(document.createElement('img'));
     icon.src = link(config.toolIcon || defaultIcon);
     icon.alt = '';
     icon.setAttribute('aria-hidden', 'true');
@@ -135,10 +163,14 @@
   }
 
   function configure(options = {}) {
+    const tool = catalogTool(options.toolId);
+    const value = (key, catalogKey) => Object.hasOwn(options, key)
+      ? options[key]
+      : (tool?.[catalogKey] || defaults[key]);
     config = {
-      toolName: options.toolName || defaults.toolName,
-      toolDescription: options.toolDescription || defaults.toolDescription,
-      toolIcon: options.toolIcon || defaults.toolIcon,
+      toolName: value('toolName', 'name'),
+      toolDescription: value('toolDescription', 'description'),
+      toolIcon: value('toolIcon', 'icon'),
       sections: Array.isArray(options.sections) ? options.sections : defaults.sections
     };
     build();
