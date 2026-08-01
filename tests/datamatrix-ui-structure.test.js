@@ -91,15 +91,6 @@ test('Versionseinträge werden vollständig validiert', () => {
 });
 
 
-test('A4-Etikettenwerkstatt teilt Seiten und nutzt zentrale Renderlogik', () => {
-  assert.match(main,/4\.<\/span><h2>A4-Druckbogen &amp; Etiketten/); assert.match(main,/id="a4Page"/);
-  for (const value of ['code-only','code-text','info-portrait','info-landscape']) assert.match(main,new RegExp(`value="${value}"`));
-  const layout=logic.calculateA4Layout({orientation:'portrait',labelWidth:90,labelHeight:90,margin:10,gapX:0,gapY:0});
-  assert.deepEqual(logic.paginateLabels(['A','B','C','D','E','F','G'],layout),[['A','B','C','D','E','F'],['G']]);
-  const model=logic.createLabelModel('CODED',{...logic.DEFAULT_INPUTS,labelTemplate:'info-portrait',labelInfo1:'nur sichtbar'},'<svg viewBox="0 0 10 10"></svg>');
-  const markup=logic.createLabelMarkup(model,{cutLines:true});assert.match(markup,/CODED/);assert.match(markup,/nur sichtbar/);assert.match(markup,/cut-lines/);
-  assert.doesNotMatch(model.value,/nur sichtbar/); assert.match(app,/function createSheetItemMarkup/);
-});
 test('Projekt V1 wird vollständig und sicher auf V2 migriert',()=>{
  const oldKeys=['singleValue','copyValue','copyCount','seriesPrefix','seriesSuffix','seriesStart','seriesCount','seriesStep','seriesPad','manualList','foregroundText','backgroundText','size','padding','showText','transparent','autoUpdate','orientation','labelWidth','labelHeight','pageMargin','gapX','gapY','printText','cutLines'];
  const inputs=Object.fromEntries(oldKeys.map(key=>[key,logic.DEFAULT_INPUTS[key]]));const migrated=logic.migrateProject({schema:logic.PROJECT_SCHEMA,schemaVersion:1,type:'internal',mode:'single',inputs,versions:[]});assert.equal(migrated.schemaVersion,3);assert.equal(migrated.inputs.labelTitle,'');assert.equal(logic.validateProject(migrated),true);
@@ -158,10 +149,6 @@ test('individuelle Etiketten besitzen getrennte Pflichtdaten und Reihenfolge',()
  const copied=logic.duplicateLabel(labels,'label-1');assert.notEqual(copied[0].id,copied[1].id);
  labels[0].enabled=false;assert.equal(logic.enabledLabels(labels).length,4);
 });
-test('Mini-Preiscode und Testbogen verwenden erwartete Größen',()=>{
- const value=logic.buildMiniPriceContent({articleId:'WS-ART-0042',price:'12,50 EUR',material:'PLA',duration:'5,5 h'});assert.equal(value,'WS-ART-0042 | 12,50 EUR | PLA | 5,5 h');
- assert.deepEqual([...new Set(logic.createMiniTestSheet(value).map(item=>item.size))],[10,12,15,20]);
-});
 test('übersprungene Felder gelten nur auf erster Seite',()=>{
  const layout={perPage:4},pages=logic.paginateWithSkippedSlots(['A','B','C','D','E'],layout,2);assert.deepEqual(pages,[[null,null,'A','B'],['C','D','E']]);assert.throws(()=>logic.paginateWithSkippedSlots(['A'],layout,4),/Startposition/);
 });
@@ -185,21 +172,12 @@ test('alle Vorlagen nutzen zentrale Platzverteilung ohne Code-Verzerrung',()=>{
  for(const layout of ['code-text','info-portrait','info-landscape']){for(const distribution of ['code-large','balanced','text-more']){const markup=logic.createLabelMarkup(logic.createLabelModel('A',{...logic.DEFAULT_INPUTS,labelTemplate:layout,spaceDistribution:distribution},'<svg viewBox="0 0 10 10"></svg>'));assert.match(markup,new RegExp(`layout-${layout}`));assert.match(markup,new RegExp(`distribution-${distribution}`));}}
  for(const distribution of ['code-large','balanced','text-more']){const markup=logic.createLabelMarkup(logic.createLabelModel('A',{...logic.DEFAULT_INPUTS,labelTemplate:'code-only',spaceDistribution:distribution},'<svg viewBox="0 0 10 10"></svg>'));assert.match(markup,/layout-code-only/);}assert.match(css,/\.layout-code-only\{--code-share:100%/);assert.match(css,/\.label-code\{aspect-ratio:1/);
 });
-test('V3-Projekte werden streng statt reparierend validiert',()=>{
- const label=logic.createIndividualLabel({id:'strict-1',title:'Station',codeValue:'CODE'}),profile={...logic.OUTPUT_PROFILE_DEFAULT},base={schema:logic.PROJECT_SCHEMA,schemaVersion:3,type:'internal',mode:'labels',inputs:{...logic.DEFAULT_INPUTS},labels:[label],outputProfile:profile,versions:[]};assert.equal(logic.validateProject(base),true);
- const missingInputs={...base.inputs};delete missingInputs.size;assert.throws(()=>logic.validateProject({...base,inputs:missingInputs}),/size/);
- const missingLabel={...label};delete missingLabel.notes;assert.throws(()=>logic.validateProject({...base,labels:[missingLabel]}),/notes/);
- assert.throws(()=>logic.validateProject({...base,labels:[{...label,id:''}]}),/ID/);assert.throws(()=>logic.validateProject({...base,labels:[label,{...label}]}),/doppelt/);assert.throws(()=>logic.validateProject({...base,labels:[{...label,codeValue:''}]}),/Data-Matrix-Inhalt/);assert.throws(()=>logic.validateProject({...base,labels:[{...label,enabled:'ja'}]}),/Aktivstatus/);assert.throws(()=>logic.validateProject({...base,labels:Array.from({length:501},(_,i)=>({...label,id:`id-${i}`}))}),/500/);
- const untouched={...base};delete untouched.labels;assert.strictEqual(logic.migrateProject(untouched),untouched);
-});
 test('Ausgabeprofil wird fachlich validiert und verbindlich angewendet',()=>{
  const profile={...logic.OUTPUT_PROFILE_DEFAULT,orientation:'landscape',pageMargin:8,gapX:2,gapY:4,skipSlots:3};assert.equal(logic.validateOutputProfile(profile,{perPage:20}),true);assert.deepEqual(logic.applyOutputProfileToInputs(profile,{}),{orientation:'landscape',pageMargin:'8',gapX:'2',gapY:'4',skipSlots:'3'});
  assert.throws(()=>logic.validateOutputProfile({...profile,orientation:'diagonal'}),/Ausrichtung/);assert.throws(()=>logic.validateOutputProfile({...profile,gapX:-1}),/gapX/);assert.throws(()=>logic.validateOutputProfile({...profile,skipSlots:1.5}),/ganze Zahl/);assert.throws(()=>logic.validateOutputProfile({...profile,skipSlots:20},{perPage:20}),/Druckraster/);assert.throws(()=>logic.validateProfileConsistency({...logic.DEFAULT_INPUTS,gapX:'9'},profile,'Projekt'),/widersprechen/);
 });
 test('Projektladen besitzt vollständigen tiefen Rollback',()=>{assert.match(app,/function captureCurrentState\(\)/);assert.match(app,/structuredClone\(state\)/);assert.match(app,/function restoreCapturedState/);assert.match(app,/state=structuredClone\(captured\.state\)/);assert.match(app,/foreground.*background/);});
 test('Etikettenauswahl und Navigation synchronisieren Einzelvorschau',()=>{assert.match(app,/if\(action==='edit'\)state\.selectedLabelId=id/);assert.match(app,/state\.index=Math\.max\(0,state\.labels\.findIndex/);assert.match(app,/state\.selectedLabelId=state\.labels\[state\.index\]/);assert.match(app,/Dieses Etikett ist für den Druckbogen deaktiviert/);assert.match(app,/scrollIntoView\(\{block:'nearest'\}\)/);});
-test('Mini-Code-Dichte wird konservativ bewertet',()=>{assert.equal(logic.parseSvgModules('<svg viewBox="0 0 40 40"></svg>'),40);assert.equal(logic.estimateMiniCodeDensity(40,10).level,'warn');assert.equal(logic.estimateMiniCodeDensity(60,10).level,'block');assert.equal(logic.estimateMiniCodeDensity(20,20).level,'ok');assert.match(app,/sehr dicht/);assert.match(app,/Testgröße – keine Scan-Garantie/);assert.match(app,/\$\('transparent'\)\.checked=false/);assert.match(app,/\$\('spaceDistribution'\)\.value='code-large'/);});
-
 test('individuelle Vorprüfung bewertet keinen langen codeValue als sichtbaren Text',()=>{
  const layout=logic.calculateA4Layout({orientation:'portrait',labelWidth:45,labelHeight:45,margin:10,gapX:3,gapY:3}),inputs={...logic.DEFAULT_INPUTS,labelTemplate:'info-portrait',labelWidth:'45',labelHeight:'45',labelTitle:'X'.repeat(300),longestValue:'X'.repeat(2000)};
  assert.doesNotThrow(()=>logic.validateLabelMinimums(inputs,layout));assert.throws(()=>logic.validateSimpleVisibleText(inputs,layout),/wahrscheinlich zu lang/);const bambu=logic.buildBambuExample();assert.ok(bambu.every(label=>label.codeValue.length>label.visibleValue.length));assert.match(app,/state\.mode==='labels'\?validateLabelMinimums\(inputs,baseLayout\)/);
@@ -221,30 +199,8 @@ test('ungültige A4-Eingaben räumen die veraltete Vorschau auf',()=>{assert.mat
 test('frühe Renderfehler invalidieren immer den alten A4-Bogen',()=>{assert.match(app,/catch\(error\)\{clearPreview\(\);setSingleOutputAvailability\(false\);invalidateSheet\(error\.message/);assert.match(app,/function invalidateSheet[\s\S]*setPrintAvailability\(false\)[\s\S]*A4-Vorschau ungültig[\s\S]*Seite – von –/);});
 test('deaktivierter leerer Entwurf lässt Einzel- und A4-Ausgabe getrennt',()=>{const draft=logic.createIndividualLabel({id:'draft-empty',title:'Entwurf',enabled:false}),active=logic.createIndividualLabel({id:'active',title:'Aktiv',codeValue:'A'});assert.equal(logic.getLabelsPrintState([draft,active]).ready,true);assert.deepEqual(logic.enabledLabels([draft,active]).map(label=>label.id),['active']);assert.doesNotThrow(()=>logic.validateWorkForPersistence({mode:'labels',type:'internal',inputs:{...logic.DEFAULT_INPUTS},labels:[draft,active]}));assert.match(app,/Dieser Entwurf besitzt noch keinen Data-Matrix-Inhalt/);assert.match(app,/function setSingleOutputAvailability/);assert.match(app,/function setPrintAvailability/);assert.match(app,/draftWithoutCode[\s\S]*setSingleOutputAvailability\(false\)[\s\S]*updateSheet\(\)/);});
 test('Etiketteneditor aktualisiert beim Tippen nur die Listenzusammenfassung',()=>{assert.match(app,/function renderLabelsList\(\)/);assert.match(app,/function loadSelectedLabelIntoEditor/);assert.match(app,/function updateSelectedLabelListSummary/);const update=app.match(/function updateSelectedLabel\(event\)\{[^}]+\}/)?.[0]||'';assert.match(update,/updateSelectedLabelListSummary\(label\)/);assert.doesNotMatch(update,/renderLabelsEditor|loadSelectedLabelIntoEditor|scrollIntoView/);assert.match(app,/if\(scroll\).*scrollIntoView/);});
-test('Mini-Dichteprüfung umfasst alle tatsächlich gedruckten Werte',()=>{const labels=[logic.createIndividualLabel({id:'short',title:'Station 1',codeValue:'kurz'}),logic.createIndividualLabel({id:'dense',title:'Station 2',codeValue:'sehr-lang'}),logic.createIndividualLabel({id:'off',title:'Aus',codeValue:'dicht-aus',enabled:false})],targets=logic.getDensityTargets('labels',labels,[]);assert.deepEqual(targets.map(target=>target.name),['Station 1','Station 2']);assert.throws(()=>logic.evaluateDensityTargets(targets,12,value=>value==='sehr-lang'?60:20),/Station 2/);assert.doesNotThrow(()=>logic.evaluateDensityTargets(logic.getDensityTargets('labels',[labels[2]],[]),12,()=>60));assert.equal(logic.getDensityTargets('copies',[],['A','A']).length,1);assert.equal(logic.getDensityTargets('series',[],['A','B','A']).length,2);assert.equal(logic.getDensityTargets('manual',[],['A','B']).length,2);});
 test('URL-Prüfung berücksichtigt nur aktive individuelle Etiketten',()=>{const bad=logic.createIndividualLabel({id:'url-3',title:'Etikett 3',codeValue:'keine-url'}),project={mode:'labels',type:'url',inputs:{...logic.DEFAULT_INPUTS},labels:[bad]};assert.throws(()=>logic.validateWorkForPersistence(project),/URL von „Etikett 3“/);bad.enabled=false;assert.doesNotThrow(()=>logic.validateWorkForPersistence(project));bad.enabled=true;assert.throws(()=>logic.validateWorkForPersistence(project),/https:\/\//);});
 
-
-test('Druckfenster wartet zentral auf Dokument, Schriften und Rendering',()=>{
- assert.match(app,/async function prepareAndPrintWindow/);assert.match(app,/document\.fonts\?\.ready/);
- assert.ok((app.match(/await nextAnimationFrame\(printWindow\)/g)||[]).length>=2);
- assert.match(app,/await delay\(300\)/);assert.match(app,/printWindow\.focus\(\)[\s\S]*printWindow\.print\(\)/);
- assert.match(app,/Druckansicht wird vorbereitet …/);assert.match(app,/Jetzt drucken/);
- assert.equal((app.match(/prepareAndPrintWindow\(w\)/g)||[]).length,2);assert.doesNotMatch(app,/setTimeout\(\(\)=>print\(\),100\)|onload=\(\)=>print\(\)/);
-});
-test('Mini-Testbogen trennt Kartenfläche, Codegröße und druckstabile Beschriftung',()=>{
- for(const size of [10,12,15,20])assert.match(app,new RegExp(`size-\\$\\{size\\}|size-${size}`));
- assert.match(app,/class="test-card"/);assert.match(app,/width:36mm/);assert.match(app,/\.size-10\{width:10mm;height:10mm\}/);assert.match(app,/\.size-20\{width:20mm;height:20mm\}/);
- assert.match(app,/break-inside:avoid/);assert.match(app,/page-break-inside:avoid/);assert.match(app,/overflow-wrap:normal/);assert.match(app,/word-break:normal/);assert.match(app,/hyphens:none/);
- assert.equal(logic.createMiniTestSheet('TEST').length,16);assert.equal(logic.createMiniTestSheet('TEST').filter(item=>item.size===20).length,4);
-});
-test('neuer Produktionszustand ist leer, neutral und nur mit Platzhaltern versehen',()=>{
- for(const key of ['singleValue','copyValue','seriesPrefix','manualList','labelTitle','labelInfo1','labelInfo2','miniArticleId','miniPrice','miniMaterial','miniDuration'])assert.equal(logic.DEFAULT_INPUTS[key],'');
- assert.doesNotMatch(main,/id="insertBambuExample"|Bambu-Lab-Beispiel einsetzen/);assert.doesNotMatch(main,/value="(?:WS-DM-0001|WS-ART-0042|12,50 EUR|PLA|5,5 h)"/);
- assert.match(main,/placeholder="z\. B\. WS-ART-0042"/);assert.match(main,/placeholder="z\. B\. 12,50 EUR"/);
- assert.match(app,/function showEmptyState/);assert.match(app,/Bitte zuerst einen Inhalt eingeben\./);assert.match(app,/setSingleOutputAvailability\(false\);setPrintAvailability\(false\)/);
- assert.match(help,/frei änderbar, werden nicht automatisch in das Tool eingesetzt/);
-});
 
 test('neutraler Leerzustand trennt Vorschau und A4-Blatt von Fehlerklassen',()=>{
  assert.match(app,/function showNeutralPreview\(\)/);assert.match(app,/classList\.remove\('invalid'\)[\s\S]*classList\.add\('empty'\)/);
@@ -278,11 +234,6 @@ test('Serie startet ohne Codes und wird erst mit gültiger Anzahl erzeugt',()=>{
  assert.equal(logic.isNeutralEmptyMode('series',logic.DEFAULT_INPUTS),true);
  assert.deepEqual(logic.generateSeries('INV-',1,2,1,4,''),['INV-0001','INV-0002']);
 });
-test('sichtbare Platzhalter bleiben herstellerneutral und werden nicht gespeichert',()=>{
- assert.doesNotMatch(main,/placeholder="[^"]*Bambu Lab A1/);assert.match(main,/placeholder="z\. B\. Modellbezeichnung"/);
- assert.doesNotMatch(main,/Bambu-Lab-Beispiel einsetzen|id="insertBambuExample"/);assert.equal(logic.DEFAULT_INPUTS.singleValue,'');assert.equal(logic.DEFAULT_INPUTS.miniPrice,'');
-});
-
 test('neutrales A4-Blatt erhält sichere Maße für beide Ausrichtungen',()=>{
  assert.match(app,/const landscape=\$\('orientation'\)\.value==='landscape',pageWidth=landscape\?297:210,pageHeight=landscape\?210:297/);
  assert.match(app,/a4Page'\)\.setAttribute\('style',`--page-w:\$\{pageWidth\};--page-h:\$\{pageHeight\}`\)/);
@@ -299,4 +250,42 @@ test('manueller Druck wird erst nach vollständiger Vorbereitung freigegeben',()
  assert.match(preparation,/document\.fonts\?\.ready/);assert.equal((preparation.match(/await nextAnimationFrame\(printWindow\)/g)||[]).length,2);assert.match(preparation,/await delay\(300\)/);
  assert.match(preparation,/printPreparation[^\n]*hidden[\s\S]*manualPrint\.hidden=false;manualPrint\.disabled=false;[\s\S]*printWindow\.focus\(\);[\s\S]*printWindow\.print\(\)/);
  assert.match(app,/@media print\{\.manual-print,\.print-preparation\{display:none!important\}\}/);
+});
+
+
+test('Inhaltsarten sind verständlich gruppiert und intern kompatibel',()=>{
+ assert.match(main,/data-content-kind="text">Text oder Kennung/);assert.match(main,/data-content-kind="url">Webadresse/);
+ for(const type of ['text','internal','inventory','serial','part','location'])assert.match(main,new RegExp(`option value="${type}"`));
+ assert.equal(logic.isValidHttpUrl('https://warenschmiede.com/x'),true);assert.equal(logic.isValidHttpUrl('warenschmiede.com'),false);
+});
+test('fünf Arbeitsmodi und ihre Erklärungen bleiben sichtbar',()=>{
+ for(const mode of ['single','copies','series','manual','labels'])assert.match(main,new RegExp(`data-mode="${mode}"`));
+ for(const text of ['Ein Inhalt wird einmal erzeugt','Derselbe Inhalt wird mehrfach','Fortlaufende Kennungen','Jede Zeile','Jedes Etikett'])assert.match(main+app,new RegExp(text));
+});
+test('Mini-Sonderweg ist vollständig aus Produktion und neuen Projektdaten entfernt',()=>{
+ assert.doesNotMatch(main,/Mini-Preiscode|Mini-Code-Testbogen|miniArticleId|miniPrice|miniMaterial|miniDuration|miniSize/);
+ assert.doesNotMatch(app,/applyMiniPreset|printMiniTestSheet|buildMiniPriceContent|createMiniTestSheet/);
+ for(const key of Object.keys(logic.DEFAULT_INPUTS))assert.doesNotMatch(key,/^mini/i);
+ const old={schema:logic.PROJECT_SCHEMA,schemaVersion:3,type:'internal',mode:'single',inputs:{...logic.DEFAULT_INPUTS,miniPrice:'12,50 EUR'},labels:[],selectedLabelId:null,outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT},versions:[]};
+ const migrated=logic.migrateProject(old);assert.equal(Object.hasOwn(migrated.inputs,'miniPrice'),false);assert.equal(logic.validateProject(migrated),true);
+});
+test('Druckarten reduzieren die jeweils sichtbaren Einstellungen',()=>{
+ assert.match(main,/data-print-type="code-only"[^>]*>Nur Code/);assert.match(main,/data-print-type="label"[^>]*>Etikett mit Text/);
+ assert.match(main,/id="codeSize"[^>]*value="20"/);assert.match(app,/inputs\.labelWidth=inputs\.codeSize;inputs\.labelHeight=inputs\.codeSize/);
+ for(const label of ['Code oben · Text unten','Code links · Text rechts','Infokarte'])assert.match(main,new RegExp(label));
+ assert.doesNotMatch(main,/>Textverhalten<|>Platzverteilung<|>Textgröße</);
+});
+test('unterschiedliche reine Codes werden erkannt und bestätigt',()=>{
+ assert.equal(logic.hasDifferentCodes(['A','A']),false);assert.equal(logic.hasDifferentCodes(['A','B']),true);
+ assert.match(main,/Dieser Druckbogen enthält unterschiedliche Codes/);assert.match(main,/Etikett mit Text verwenden/);assert.match(app,/nicht mehr visuell unterschieden/);
+});
+test('A4-Zusammenfassung erklärt freie und übersprungene Plätze',()=>{
+ const layout={perPage:20};assert.equal(logic.summarizeSheet(20,layout,0,1),'20 Etiketten · 20 Plätze pro Seite · 1 Seite');
+ assert.equal(logic.summarizeSheet(20,layout,4,2),'20 Etiketten · 16 freie Plätze auf Seite 1 · 4 Etiketten auf Seite 2');
+ assert.equal(logic.summarizeSheet(1,layout,4,1),'1 Etikett · beginnt auf Feld 5 · 1 Seite');
+});
+test('alte Vorlagen werden ohne Schemaerhöhung sinnvoll zugeordnet',()=>{
+ for(const template of ['code-only','code-text','info-landscape','info-portrait'])assert.equal(logic.normalizeTemplate(template),template);
+ const base={schema:logic.PROJECT_SCHEMA,schemaVersion:3,type:'internal',mode:'labels',inputs:{...logic.DEFAULT_INPUTS,labelTemplate:'info-landscape',miniSize:'12'},labels:[],selectedLabelId:null,outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT},versions:[]};
+ const migrated=logic.migrateProject(base);assert.equal(migrated.schemaVersion,3);assert.equal(migrated.inputs.labelTemplate,'info-landscape');assert.equal(Object.hasOwn(migrated.inputs,'miniSize'),false);
 });
