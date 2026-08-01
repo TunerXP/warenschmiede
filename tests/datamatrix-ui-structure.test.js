@@ -206,7 +206,7 @@ test('ungültige A4-Eingaben räumen die veraltete Vorschau auf',()=>{assert.mat
 test('frühe Renderfehler invalidieren immer den alten A4-Bogen',()=>{assert.match(app,/catch\(error\)\{clearPreview\(\);setSingleOutputAvailability\(false\);invalidateSheet\(error\.message/);assert.match(app,/function invalidateSheet[\s\S]*setPrintAvailability\(false\)[\s\S]*A4-Vorschau ungültig[\s\S]*Seite – von –/);});
 test('deaktivierter leerer Entwurf lässt Einzel- und A4-Ausgabe getrennt',()=>{const draft=logic.createIndividualLabel({id:'draft-empty',title:'Entwurf',enabled:false}),active=logic.createIndividualLabel({id:'active',title:'Aktiv',codeValue:'A'});assert.equal(logic.getLabelsPrintState([draft,active]).ready,true);assert.deepEqual(logic.enabledLabels([draft,active]).map(label=>label.id),['active']);assert.doesNotThrow(()=>logic.validateWorkForPersistence({mode:'labels',type:'internal',inputs:{...logic.DEFAULT_INPUTS},labels:[draft,active]}));assert.match(app,/Dieser Entwurf besitzt noch keinen Data-Matrix-Inhalt/);assert.match(app,/function setSingleOutputAvailability/);assert.match(app,/function setPrintAvailability/);assert.match(app,/draftWithoutCode[\s\S]*setSingleOutputAvailability\(false\)[\s\S]*updateSheet\(\)/);});
 test('Etiketteneditor aktualisiert beim Tippen nur die Listenzusammenfassung',()=>{assert.match(app,/function renderLabelsList\(\)/);assert.match(app,/function loadSelectedLabelIntoEditor/);assert.match(app,/function updateSelectedLabelListSummary/);const update=app.match(/function updateSelectedLabel\(event\)\{[^}]+\}/)?.[0]||'';assert.match(update,/updateSelectedLabelListSummary\(label\)/);assert.doesNotMatch(update,/renderLabelsEditor|loadSelectedLabelIntoEditor|scrollIntoView/);assert.match(app,/if\(scroll\).*scrollIntoView/);});
-test('URL-Prüfung berücksichtigt nur aktive individuelle Etiketten',()=>{const bad=logic.createIndividualLabel({id:'url-3',title:'Etikett 3',codeValue:'keine-url'}),project={mode:'labels',type:'url',inputs:{...logic.DEFAULT_INPUTS},labels:[bad]};assert.throws(()=>logic.validateWorkForPersistence(project),/URL von „Etikett 3“/);bad.enabled=false;assert.doesNotThrow(()=>logic.validateWorkForPersistence(project));bad.enabled=true;assert.throws(()=>logic.validateWorkForPersistence(project),/https:\/\//);});
+test('Etikettenprüfung berücksichtigt nur aktive individuelle Etiketten',()=>{const bad=logic.createIndividualLabel({id:'label-3',title:'Etikett 3',codeValue:''}),project={mode:'labels',type:'text',inputs:{...logic.DEFAULT_INPUTS},labels:[bad]};assert.throws(()=>logic.validateWorkForPersistence(project),/Data-Matrix-Inhalt/);bad.enabled=false;assert.doesNotThrow(()=>logic.validateWorkForPersistence(project));});
 
 
 test('neutraler Leerzustand trennt Vorschau und A4-Blatt von Fehlerklassen',()=>{
@@ -349,4 +349,72 @@ test('V3 akzeptiert ausschließlich die vier bekannten Etikettenvorlagen',()=>{
  const missing={...logic.DEFAULT_INPUTS};delete missing.labelTemplate;assert.throws(()=>logic.migrateProject(project(missing)),/Etikettenvorlage/);assert.throws(()=>logic.migrateProject(project({...logic.DEFAULT_INPUTS,labelTemplate:'unbekannt'})),/Etikettenvorlage/);
  for(const template of ['code-only','code-text','info-landscape','info-portrait'])assert.doesNotThrow(()=>logic.validateProject(project({...logic.DEFAULT_INPUTS,labelTemplate:template})));
  const v2={schema:logic.PROJECT_SCHEMA,schemaVersion:2,type:'internal',mode:'single',inputs:{...logic.DEFAULT_INPUTS,labelTemplate:'unbekannt'},versions:[]};assert.equal(logic.migrateProject(v2).inputs.labelTemplate,'code-text');
+});
+
+
+test('zentrale Modusregel beschränkt Webadressen auf Einzelcode und Kopien',()=>{
+ const all=['single','copies','series','manual','labels'];
+ for(const type of ['text','internal','inventory','serial','part','location'])assert.deepEqual(logic.allowedModesForType(type),all);
+ assert.deepEqual(logic.allowedModesForType('url'),['single','copies']);
+ for(const mode of all)assert.equal(logic.isModeAllowedForType('url',mode),['single','copies'].includes(mode));
+});
+test('Webadressen-Modi werden semantisch ausgeblendet und nutzen ein lückenloses Raster',()=>{
+ assert.match(app,/b\.hidden=!isModeAllowedForType\(state\.type,b\.dataset\.mode\)/);
+ assert.match(app,/classList\.toggle\('url-modes',state\.type==='url'\)/);
+ assert.match(css,/#modeButtons\.url-modes\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
+ assert.match(css,/#modeButtons button\[hidden\]\{display:none\}/);
+});
+test('alte URL-Projekte und Versionen werden verlustfrei als Text migriert',()=>{
+ const inputs={...logic.DEFAULT_INPUTS,manualList:'https://a.example\nfreier Wert',seriesPrefix:'ALT-',labelTitle:'Bewahren'};
+ const version={number:1,savedAt:'2026-07-31T00:00:00.000Z',type:'url',mode:'manual',inputs:{...inputs},labels:[],outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT}};
+ for(const mode of ['series','manual','labels']){const old={schema:logic.PROJECT_SCHEMA,schemaVersion:3,type:'url',mode,inputs:{...inputs},labels:[],outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT},versions:[{...version,mode}]};const migrated=logic.migrateProject(old);assert.equal(migrated.type,'text');assert.equal(migrated.mode,mode);assert.deepEqual(migrated.inputs,inputs);assert.equal(migrated.versions[0].type,'text');assert.equal(migrated.versions[0].mode,mode);}
+});
+test('neue manipulierte URL-Projekte werden abgelehnt, gültige URLs akzeptiert',()=>{
+ const base={schema:logic.PROJECT_SCHEMA,schemaVersion:3,modeRules:logic.MODE_RULES_VERSION,type:'url',mode:'single',inputs:{...logic.DEFAULT_INPUTS,singleValue:'https://www.warenschmiede.com'},labels:[],outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT},versions:[]};
+ assert.equal(logic.validateProject(base),true);assert.equal(logic.validateProject({...base,mode:'copies',inputs:{...base.inputs,copyValue:'https://www.warenschmiede.com',copyCount:'2'}}),true);
+ assert.throws(()=>logic.validateProject({...base,mode:'series'}),/nicht erlaubte Kombination/);
+ for(const value of ['www.warenschmiede.com','http://www.warenschmiede.com'])assert.throws(()=>logic.validateProject({...base,inputs:{...base.inputs,singleValue:value}}),/https:\/\//);
+});
+test('Pixelgröße und Hilfe entsprechen der Oberfläche',()=>{
+ assert.match(main,/PNG-\/Vorschaugröße \(Pixel\)/);assert.match(main,/Pixelgröße betrifft die Einzelvorschau und den PNG-Export/);assert.match(main,/physische Druckgröße[^<]+Millimetern/);
+ for(const phrase of ['nur als „Einzelcode“ oder „Mehrfach drucken“','Angebrochenen A4-Bogen fortsetzen','Lokaler Arbeitsstand','Projektdatei','Version speichern','PNG-/Vorschaugröße (Pixel)','Jetzt drucken'])assert.ok(help.includes(phrase),phrase);
+ for(const removed of ['Mini-Preiscode','Mini-Code-Testbogen','Bambu-Beispieldaten','Rollenetiketten'])assert.doesNotMatch(help,new RegExp(removed));
+});
+
+
+test('Inhaltsartwechsel plant übernommene Kennungen als neutralen URL-Zustand',()=>{
+ assert.deepEqual(logic.contentTypeSwitchPlan('url','single','WS-ART-0042'),{type:'url',mode:'single',changedMode:false,pendingUrl:true});
+ assert.deepEqual(logic.contentTypeSwitchPlan('url','copies','INV-0042'),{type:'url',mode:'copies',changedMode:false,pendingUrl:true});
+ for(const mode of ['series','manual','labels'])assert.deepEqual(logic.contentTypeSwitchPlan('url',mode,'WS-ALT'),{type:'url',mode:'single',changedMode:true,pendingUrl:true});
+ assert.deepEqual(logic.contentTypeSwitchPlan('url','single','https://www.warenschmiede.com'),{type:'url',mode:'single',changedMode:false,pendingUrl:false});
+ assert.deepEqual(logic.contentTypeSwitchPlan('internal','single','WS-ART-0042'),{type:'internal',mode:'single',changedMode:false,pendingUrl:false});
+});
+test('neutraler URL-Zustand löscht Ausgaben ohne Fehlerdarstellung oder Eingabefelder',()=>{
+ const pending=app.match(/function showPendingUrlState[\s\S]*?\n  function switchContentType/)?.[0]||'';
+ assert.match(pending,/showEmptyState\(\{save:false\}\)/);assert.match(pending,/className='validation'/);assert.match(pending,/saveDraft\(\)/);assert.doesNotMatch(pending,/invalidateSheet|classList\.add\('invalid'\)|singleValue.*value=|copyValue.*value=/);
+ const switching=app.match(/function switchContentType[\s\S]*?\n  function render/)?.[0]||'';
+ assert.match(switching,/contentTypeSwitchPlan/);assert.match(switching,/if\(!plan\.pendingUrl\)return render\(\)/);assert.match(switching,/showPendingUrlState/);assert.doesNotMatch(switching,/seriesPrefix.*value=|manualList.*value=|state\.labels=/);
+});
+
+test('lokale URL-Entwürfe dürfen unvollständig sein, Projekte und Versionen bleiben streng',()=>{
+ const draft=(mode,value,count='12')=>({schema:logic.PROJECT_SCHEMA,schemaVersion:3,modeRules:logic.MODE_RULES_VERSION,type:'url',mode,inputs:{...logic.DEFAULT_INPUTS,singleValue:mode==='single'?value:'',copyValue:mode==='copies'?value:'',copyCount:count},labels:[],outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT},versions:[]});
+ for(const project of [draft('single','WS-ART-0042'),draft('single',''),draft('copies','INV-0042')]){assert.equal(logic.validateProject(project,{allowIncompleteWork:true}),true);assert.throws(()=>logic.validateProject(project),/https:\/\/|leer/);}
+ assert.throws(()=>logic.validateProject(draft('copies','INV-0042','0'),{allowIncompleteWork:true}),/Kopienzahl/);
+ assert.throws(()=>logic.validateProject({...draft('single',''),mode:'series'},{allowIncompleteWork:true}),/nicht erlaubte Kombination/);
+ const invalidVersion={number:1,savedAt:'2026-08-01T00:00:00.000Z',type:'url',mode:'single',inputs:{...logic.DEFAULT_INPUTS,singleValue:'WS-ART-0042'},labels:[],outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT}};
+ assert.throws(()=>logic.validateProject({...draft('single',''),versions:[invalidVersion]},{allowIncompleteWork:true}),/https:\/\//);
+ assert.equal(logic.validateProject(draft('single','https://www.warenschmiede.com')),true);
+});
+test('Projektladen unterscheidet lokalen Entwurf von expliziter Projektdatei',()=>{
+ assert.match(app,/function applyProject\(project,\{source='project'\}=\{\}\)/);assert.match(app,/validateProject\(migrated,\{allowIncompleteWork:draft\}\)/);assert.match(app,/pendingDraft[\s\S]*showPendingUrlState\(\{save:false\}\)/);
+ assert.match(app,/applyProject\(p,\{source:'draft'\}\)/);assert.match(app,/const migrated=applyProject\(JSON\.parse\(reader\.result\)\)/);
+ assert.match(app,/catch\{localStorage\.removeItem\(LOCAL_DRAFT_KEY\);\}/);
+});
+
+
+test('Startablauf rendert einen geladenen lokalen Entwurf nicht erneut',()=>{
+ assert.match(app,/let startupStateApplied=false,localMigrationNotice=false/);
+ assert.match(app,/if\(p\)\{localMigrationNotice=applyProject\(p,\{source:'draft'\}\);startupStateApplied=true;\}/);
+ assert.match(app,/syncSelectors\(\);configureMenu\(\);if\(!startupStateApplied\)render\(\)/);
+ assert.match(app,/catch\{localStorage\.removeItem\(LOCAL_DRAFT_KEY\);\}/);
 });
