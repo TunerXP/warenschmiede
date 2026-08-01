@@ -49,11 +49,11 @@ test('Exporte und Kopieren brechen nach fehlgeschlagenem Rendering ab', () => {
   assert.match(app,/copyValue'[\s\S]*if\(!render\(\)\)return/);assert.match(app,/clearPreview/);assert.match(css,/#previewStage\.invalid/);
 });
 test('Projektvalidierung akzeptiert nur vollständige eigene Projekte', () => {
-  const valid={schema:logic.PROJECT_SCHEMA,schemaVersion:1,type:'internal',mode:'single',inputs:{singleValue:'WS-DM-0001'},versions:[]};assert.equal(logic.validateProject(valid),true);
+  const valid={schema:logic.PROJECT_SCHEMA,schemaVersion:1,type:'internal',mode:'single',inputs:{...logic.DEFAULT_INPUTS},versions:[]};assert.equal(logic.validateProject(valid),true);
   assert.throws(()=>logic.validateProject({...valid,type:'other'}),/Inhaltsart/);assert.throws(()=>logic.validateProject({...valid,mode:'other'}),/Arbeitsmodus/);assert.throws(()=>logic.validateProject({...valid,inputs:null}),/Eingaben/);assert.throws(()=>logic.validateProject({...valid,versions:{}}),/Versionsverlauf/);
 });
 test('lokaler Arbeitsstand wird bestätigt, zurückgesetzt und nicht sofort neu gespeichert', () => {
-  assert.match(app,/Lokalen DataMatrix-Arbeitsstand wirklich löschen/);assert.match(app,/function resetToDefaults/);assert.match(app,/singleValue:'WS-DM-0001'/);assert.match(app,/state=\{type:'internal',mode:'single'/);assert.match(app,/render\(\{save:false\}\)/);
+  assert.match(app,/Lokalen DataMatrix-Arbeitsstand wirklich löschen/);assert.match(app,/function resetToDefaults/);assert.match(app,/singleValue:'WS-DM-0001'/);assert.match(app,/state=\{type:'internal',mode:'single'/);assert.match(app,/render\(\{save:false\}\)/);assert.match(app,/clearTimeout\(draftTimer\);localStorage\.removeItem/);
 });
 test('Hilfe besitzt direkte und eingebettete Familienhülle', () => {
   assert.match(helpJs,/URLSearchParams/);assert.match(helpJs,/get\('embed'\)/);assert.match(help,/<header class="help-header">/);assert.match(help,/DataMatrix-Werkstatt Plus verstehen/);assert.match(help,/href="\/tools\/DataMatrixWerkstattPlus\.html"/);assert.match(helpJs,/IntersectionObserver/);assert.match(helpJs,/hashchange/);
@@ -61,4 +61,31 @@ test('Hilfe besitzt direkte und eingebettete Familienhülle', () => {
 });
 test('Oberfläche verwendet die helle sticky Familienoptik', () => {
   assert.match(css,/\.topbar\{position:sticky/);assert.match(css,/background:rgba\(255,255,255/);assert.match(css,/\.topbar-inner\{width:min\(1320px/);assert.match(css,/\.workspace\{width:min\(1320px/);assert.doesNotMatch(css,/linear-gradient\(110deg,#092e58,#155c91\)/);
+});
+test('gültige Änderungen werden auch ohne automatische Vorschau entprellt gespeichert', () => {
+  assert.match(app,/function saveDraftSoon\(\)\{const validDraft=JSON\.stringify\(snapshot\(\)\);clearTimeout\(draftTimer\);draftTimer=setTimeout/);
+  assert.match(app,/function persistWithoutRender\(\)[\s\S]*readValues\(\);updateSheet\(\);saveDraftSoon\(\)/);
+  assert.match(app,/function handleCurrentInput\(\)\{if\(\$\('autoUpdate'\)\.checked\)return render\(\);return persistWithoutRender\(\)/);
+});
+test('Projekt und Version werden nur nach erfolgreichem aktuellem Rendering gespeichert', () => {
+  assert.match(app,/function saveProject\(\)\{if\(!render\(\)\)return;/);
+  assert.match(app,/function saveVersion\(\)\{if\(!render\(\)\)return;/);
+  assert.match(app,/if\(state\.type==='url'/);assert.match(app,/step===0/);
+});
+test('V1-Projekte verlangen alle vollständigen Eingabefelder', () => {
+  const valid={schema:logic.PROJECT_SCHEMA,schemaVersion:1,type:'internal',mode:'single',inputs:{...logic.DEFAULT_INPUTS},versions:[]};
+  assert.equal(logic.validateProject(valid),true);
+  for(const key of ['singleValue','size','orientation']){const inputs={...valid.inputs};delete inputs[key];assert.throws(()=>logic.validateProject({...valid,inputs}),new RegExp(key));}
+  assert.throws(()=>logic.validateProject({...valid,inputs:{...valid.inputs,size:320}}),/Datentyp/);
+  assert.match(app,/const previous=snapshot\(\)/);assert.match(app,/catch\(error\)[\s\S]*previous\.inputs/);
+});
+test('Versionslimit und robuste nächste Versionsnummer sind konsistent', () => {
+  const base={number:1,savedAt:'2026-08-01T00:00:00.000Z',type:'internal',mode:'single',inputs:{...logic.DEFAULT_INPUTS}};
+  const project={schema:logic.PROJECT_SCHEMA,schemaVersion:1,type:'internal',mode:'single',inputs:{...logic.DEFAULT_INPUTS},versions:Array.from({length:100},(_,i)=>({...base,number:i+1}))};
+  assert.equal(logic.MAX_VERSIONS,100);assert.equal(logic.validateProject(project),true);assert.throws(()=>logic.validateProject({...project,versions:[...project.versions,{...base,number:101}]}),/100/);
+  assert.match(app,/state\.versions\.length>=MAX_VERSIONS/);assert.match(app,/reduce\(\(highest,version\)=>Math\.max\(highest,version\.number\),0\)\+1/);
+});
+test('Versionseinträge werden vollständig validiert', () => {
+  const version={number:7,savedAt:'2026-08-01T00:00:00.000Z',type:'internal',mode:'single',inputs:{...logic.DEFAULT_INPUTS}};assert.equal(logic.validateVersion(version,0),true);
+  assert.throws(()=>logic.validateVersion({...version,type:'other'},0),/Inhaltsart/);assert.throws(()=>logic.validateVersion({...version,mode:'other'},0),/Arbeitsmodus/);assert.throws(()=>logic.validateVersion({...version,inputs:{}},0),/fehlt/);assert.throws(()=>logic.validateVersion({...version,number:0},0),/Versionsnummer/);
 });

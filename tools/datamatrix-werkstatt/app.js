@@ -5,6 +5,7 @@
   const PROJECT_VERSION = 1;
   const LOCAL_DRAFT_KEY = 'warenschmiede.datamatrixWerkstatt.localDraft.v1';
   const MAX_CODES = 500;
+  const MAX_VERSIONS = 100;
   const TYPES = {
     text:['Freier Text','Text','Werkzeug geprüft','Beliebiger Text wird unverändert gespeichert.'],
     internal:['Interne ID','Interne ID','WS-2026-0147','Eine frei gewählte Kennung für den eigenen Arbeitsablauf.'],
@@ -44,25 +45,42 @@
     if(!transparent) result.backgroundcolor=clean(background);
     return result;
   }
+  const isPlainObject=value=>value!==null&&typeof value==='object'&&!Array.isArray(value)&&Object.getPrototypeOf(value)===Object.prototype;
+  function validateInputs(inputs,label='Projekt'){
+    if(!isPlainObject(inputs)) throw new Error(`${label} enthält keine gültigen Eingaben.`);
+    for(const [key,expected] of Object.entries(DEFAULT_INPUTS)){
+      if(!Object.hasOwn(inputs,key)) throw new Error(`${label}: Der erforderliche Eingabewert „${key}“ fehlt.`);
+      const value=inputs[key];
+      if(typeof value!==typeof expected||!Number.isFinite(typeof value==='number'?value:0)) throw new Error(`${label}: Der Eingabewert „${key}“ besitzt den falschen Datentyp.`);
+    }
+    for(const [key,value] of Object.entries(inputs)) if(!['string','number','boolean'].includes(typeof value)||!Number.isFinite(typeof value==='number'?value:0)) throw new Error(`${label}: Der Eingabewert „${key}“ ist ungültig.`);
+    return true;
+  }
+  function validateVersion(version,index){
+    const label=`Version ${index+1}`;
+    if(!isPlainObject(version)) throw new Error(`${label} ist kein gültiges Versionsobjekt.`);
+    if(!Number.isInteger(version.number)||version.number<1) throw new Error(`${label} besitzt keine gültige Versionsnummer.`);
+    if(typeof version.savedAt!=='string') throw new Error(`${label} besitzt keinen gültigen Speicherzeitpunkt.`);
+    if(!Object.hasOwn(TYPES,version.type)) throw new Error(`${label} enthält eine unbekannte Inhaltsart.`);
+    if(!Object.hasOwn(MODE_LABELS,version.mode)) throw new Error(`${label} enthält einen unbekannten Arbeitsmodus.`);
+    validateInputs(version.inputs,label);
+    return true;
+  }
   function validateProject(project){
-    const plain=value=>value!==null&&typeof value==='object'&&!Array.isArray(value)&&Object.getPrototypeOf(value)===Object.prototype;
-    if(!plain(project)) throw new Error('Die Projektdatei enthält kein gültiges Projektobjekt.');
+    if(!isPlainObject(project)) throw new Error('Die Projektdatei enthält kein gültiges Projektobjekt.');
     if(project.schema!==PROJECT_SCHEMA||project.schemaVersion!==PROJECT_VERSION) throw new Error('Diese Datei ist kein gültiges DataMatrix-Werkstatt-Projekt.');
     if(!Object.hasOwn(TYPES,project.type)) throw new Error('Die Projektdatei enthält eine unbekannte Inhaltsart.');
     if(!Object.hasOwn(MODE_LABELS,project.mode)) throw new Error('Die Projektdatei enthält einen unbekannten Arbeitsmodus.');
-    if(!plain(project.inputs)) throw new Error('Die Projektdatei enthält keine gültigen Eingaben.');
-    if(project.versions!==undefined&&(!Array.isArray(project.versions)||project.versions.length>100)) throw new Error('Der Versionsverlauf der Projektdatei ist ungültig oder zu groß.');
-    for(const [key,value] of Object.entries(project.inputs)){
-      if(!['string','number','boolean'].includes(typeof value)||!Number.isFinite(typeof value==='number'?value:0)) throw new Error(`Der Eingabewert „${key}“ ist ungültig.`);
-      if(Object.hasOwn(DEFAULT_INPUTS,key)&&typeof value!==typeof DEFAULT_INPUTS[key]) throw new Error(`Der Eingabewert „${key}“ besitzt den falschen Datentyp.`);
-    }
+    validateInputs(project.inputs,'Die Projektdatei');
+    if(project.versions!==undefined&&(!Array.isArray(project.versions)||project.versions.length>MAX_VERSIONS)) throw new Error(`Der Versionsverlauf darf höchstens ${MAX_VERSIONS} Einträge enthalten.`);
+    (project.versions||[]).forEach(validateVersion);
     return true;
   }
   const DEFAULT_INPUTS={singleValue:'WS-DM-0001',copyValue:'WS-DM-0001',copyCount:'12',seriesPrefix:'INV-',seriesSuffix:'',seriesStart:'1',seriesCount:'10',seriesStep:'1',seriesPad:'4',manualList:'INV-0042\n\nBT-CNC-014',foregroundText:'#102033',backgroundText:'#ffffff',size:'320',padding:'3',showText:true,transparent:false,autoUpdate:true,orientation:'portrait',labelWidth:'45',labelHeight:'45',pageMargin:'10',gapX:'3',gapY:'3',printText:true,cutLines:false};
-  const api={generateSeries,parseManualList,sanitizeFilename,calculateA4Layout,calculateIntegerScale,buildBwipOptions,validateProject,PROJECT_SCHEMA,LOCAL_DRAFT_KEY};
+  const api={generateSeries,parseManualList,sanitizeFilename,calculateA4Layout,calculateIntegerScale,buildBwipOptions,validateInputs,validateVersion,validateProject,DEFAULT_INPUTS,MAX_VERSIONS,PROJECT_SCHEMA,LOCAL_DRAFT_KEY};
   if(typeof module!=='undefined'&&module.exports) module.exports=api;
   if(typeof document==='undefined') return;
-  const $=id=>document.getElementById(id); let state={type:'internal',mode:'single',values:['WS-DM-0001'],index:0,versions:[]}; let lastFocus;
+  const $=id=>document.getElementById(id); let state={type:'internal',mode:'single',values:['WS-DM-0001'],index:0,versions:[]}; let lastFocus,draftTimer;
   const fields=['singleValue','copyValue','copyCount','seriesPrefix','seriesSuffix','seriesStart','seriesCount','seriesStep','seriesPad','manualList','foregroundText','backgroundText','size','padding','showText','transparent','autoUpdate','orientation','labelWidth','labelHeight','pageMargin','gapX','gapY','printText','cutLines'];
   function message(text,tone=''){const el=$('validation');el.textContent=text;el.className=`validation ${tone}`;}
   function readValues(){
@@ -100,12 +118,15 @@
   function escapeHtml(v){const d=document.createElement('div');d.textContent=v;return d.innerHTML;}
   function snapshot(){return {schema:PROJECT_SCHEMA,schemaVersion:PROJECT_VERSION,tool:'DataMatrix-Werkstatt Plus',savedAt:new Date().toISOString(),type:state.type,mode:state.mode,inputs:Object.fromEntries(fields.filter(id=>$(id)).map(id=>[id,$(id).type==='checkbox'?$(id).checked:$(id).value])),versions:state.versions};}
   function saveDraft(){try{localStorage.setItem(LOCAL_DRAFT_KEY,JSON.stringify(snapshot()));}catch{/* Speicher kann deaktiviert sein. */}}
+  function saveDraftSoon(){const validDraft=JSON.stringify(snapshot());clearTimeout(draftTimer);draftTimer=setTimeout(()=>{try{localStorage.setItem(LOCAL_DRAFT_KEY,validDraft);}catch{/* Speicher kann deaktiviert sein. */}},250);}
+  function persistWithoutRender(){try{readValues();updateSheet();saveDraftSoon();return true;}catch(error){message(error.message||'Die Eingaben sind ungültig.','error');return false;}}
+  function handleCurrentInput(){if($('autoUpdate').checked)return render();return persistWithoutRender();}
   function applyProject(p){validateProject(p);const previous=snapshot(),nextInputs={...p.inputs};try{state.type=p.type;state.mode=p.mode;state.versions=p.versions?[...p.versions]:[];Object.entries(nextInputs).forEach(([id,v])=>{if($(id))$(id).type==='checkbox'?$(id).checked=Boolean(v):$(id).value=String(v);});syncSelectors();if(!render())throw new Error('Die Projektdatei enthält fachlich ungültige Eingaben.');}catch(error){state.type=previous.type;state.mode=previous.mode;state.versions=previous.versions;Object.entries(previous.inputs).forEach(([id,v])=>{$(id).type==='checkbox'?$(id).checked=v:$(id).value=v;});syncSelectors();render();throw error;}}
-  function saveProject(){download(new Blob([JSON.stringify(snapshot(),null,2)],{type:'application/json'}),`datamatrix-projekt-${new Date().toISOString().slice(0,10)}.json`);message('Projektdatei gespeichert.');}
+  function saveProject(){if(!render())return;download(new Blob([JSON.stringify(snapshot(),null,2)],{type:'application/json'}),`datamatrix-projekt-${new Date().toISOString().slice(0,10)}.json`);message('Projektdatei gespeichert.');}
   function loadProject(file){if(!file)return;if(file.size>2_000_000)return message('Projektdatei ist größer als 2 MB.','error');const reader=new FileReader();reader.onerror=()=>message('Projektdatei konnte nicht gelesen werden.','error');reader.onload=()=>{try{applyProject(JSON.parse(reader.result));message('Projekt geladen.');}catch(e){message(e.message||'Ungültige Projektdatei.','error');}};reader.readAsText(file);}
-  function saveVersion(){state.versions.push({number:state.versions.length+1,savedAt:new Date().toISOString(),type:state.type,mode:state.mode,inputs:snapshot().inputs});saveDraft();message(`Version ${state.versions.length} lokal gespeichert.`);}
+  function saveVersion(){if(!render())return;if(state.versions.length>=MAX_VERSIONS)return message(`Es können höchstens ${MAX_VERSIONS} lokale Versionen gespeichert werden. Bitte das Projekt exportieren oder den lokalen Arbeitsstand zurücksetzen.`,'warn');const number=state.versions.reduce((highest,version)=>Math.max(highest,version.number),0)+1;state.versions.push({number,savedAt:new Date().toISOString(),type:state.type,mode:state.mode,inputs:snapshot().inputs});saveDraft();message(`Version ${number} lokal gespeichert.`);}
   function resetToDefaults(){state={type:'internal',mode:'single',values:['WS-DM-0001'],index:0,versions:[]};Object.entries(DEFAULT_INPUTS).forEach(([id,value])=>{$(id).type==='checkbox'?$(id).checked=value:$(id).value=value;});$('foreground').value='#102033';$('background').value='#ffffff';syncSelectors();render({save:false});}
-  function clearLocalDraft(){const warning='Lokalen DataMatrix-Arbeitsstand wirklich löschen?\n\nAlle lokal gespeicherten Eingaben und Versionen werden entfernt.\nDiese Aktion kann nicht rückgängig gemacht werden.';if(!root.confirm(warning))return;localStorage.removeItem(LOCAL_DRAFT_KEY);resetToDefaults();message('Lokaler DataMatrix-Arbeitsstand wurde vollständig gelöscht.');}
+  function clearLocalDraft(){const warning='Lokalen DataMatrix-Arbeitsstand wirklich löschen?\n\nAlle lokal gespeicherten Eingaben und Versionen werden entfernt.\nDiese Aktion kann nicht rückgängig gemacht werden.';if(!root.confirm(warning))return;clearTimeout(draftTimer);localStorage.removeItem(LOCAL_DRAFT_KEY);resetToDefaults();message('Lokaler DataMatrix-Arbeitsstand wurde vollständig gelöscht.');}
   function syncSelectors(){document.querySelectorAll('[data-type]').forEach(b=>b.classList.toggle('active',b.dataset.type===state.type));document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode));document.querySelectorAll('[data-panel]').forEach(p=>p.classList.toggle('active',p.dataset.panel===state.mode));const t=TYPES[state.type];$('singleLabel').textContent=t[1];$('singleExample').textContent=`Beispiel: ${t[2]}`;$('typeHint').textContent=t[3];$('selectionSummary').textContent=`${t[0]} · ${MODE_LABELS[state.mode]}`;}
   function openHelp(topic='start'){lastFocus=document.activeElement;$('helpFrame').src=`/tools/datamatrix-werkstatt/hilfe.html?embed=1#${topic}`;$('helpDialog').showModal();document.documentElement.classList.add('help-open');document.body.classList.add('help-open');}
   function unlockHelpScroll(){document.documentElement.classList.remove('help-open');document.body.classList.remove('help-open');}
@@ -115,8 +136,8 @@
   document.addEventListener('DOMContentLoaded',()=>{
     try{const p=JSON.parse(localStorage.getItem(LOCAL_DRAFT_KEY));if(p)applyProject(p);}catch{localStorage.removeItem(LOCAL_DRAFT_KEY);}
     document.querySelectorAll('[data-type]').forEach(b=>b.addEventListener('click',()=>{state.type=b.dataset.type;syncSelectors();render();}));document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{state.mode=b.dataset.mode;state.index=0;syncSelectors();render();}));
-    fields.forEach(id=>$(id)?.addEventListener('input',()=>{if(id==='foreground'||id==='background')return;if($('autoUpdate').checked)render();else{try{readValues();updateSheet();}catch(e){message(e.message,'error');}}}));
-    [['foreground','foregroundText'],['background','backgroundText']].forEach(([c,t])=>{$(c).addEventListener('input',()=>{$(t).value=$(c).value;render();});$(t).addEventListener('change',()=>{if(/^#[0-9a-f]{6}$/i.test($(t).value)){$(c).value=$(t).value;render();}else message('Bitte einen Hexwert wie #102033 eingeben.','error');});});
+    fields.forEach(id=>$(id)?.addEventListener('input',handleCurrentInput));
+    [['foreground','foregroundText'],['background','backgroundText']].forEach(([c,t])=>{$(c).addEventListener('input',()=>{$(t).value=$(c).value;handleCurrentInput();});$(t).addEventListener('change',()=>{if(/^#[0-9a-f]{6}$/i.test($(t).value)){$(c).value=$(t).value;handleCurrentInput();}else message('Bitte einen Hexwert wie #102033 eingeben.','error');});});
     $('refresh').onclick=render;$('prevCode').onclick=()=>{state.index--;render();};$('nextCode').onclick=()=>{state.index++;render();};$('downloadPng').onclick=png;$('downloadSvg').onclick=svgDownload;$('copyValue').onclick=async()=>{if(!render())return;try{await navigator.clipboard.writeText(state.values[state.index]);message('Inhalt kopiert.');}catch{message('Zwischenablage ist nicht verfügbar.','error');}};$('printSheet').onclick=printSheet;
     $('projectFileInput').onchange=e=>{loadProject(e.target.files[0]);e.target.value='';};$('helpClose').onclick=closeHelp;$('helpDialog').addEventListener('close',()=>{unlockHelpScroll();lastFocus?.focus();});$('helpDialog').addEventListener('cancel',unlockHelpScroll);$('helpWindowOpen').onclick=helpWindow;$('toolMenuBtn').onclick=()=>root.WSToolMenu?.open();syncSelectors();configureMenu();render();
   });
