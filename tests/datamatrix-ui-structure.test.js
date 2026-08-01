@@ -86,7 +86,7 @@ test('Versionslimit und robuste nächste Versionsnummer sind konsistent', () => 
   assert.match(app,/state\.versions\.length>=MAX_VERSIONS/);assert.match(app,/reduce\(\(highest,version\)=>Math\.max\(highest,version\.number\),0\)\+1/);
 });
 test('Versionseinträge werden vollständig validiert', () => {
-  const version={number:7,savedAt:'2026-08-01T00:00:00.000Z',type:'internal',mode:'single',inputs:{...logic.DEFAULT_INPUTS}};assert.equal(logic.validateVersion(version,0),true);
+  const version={number:7,savedAt:'2026-08-01T00:00:00.000Z',type:'internal',mode:'single',inputs:{...logic.DEFAULT_INPUTS},labels:[],outputProfile:{...logic.OUTPUT_PROFILE_DEFAULT}};assert.equal(logic.validateVersion(version,0),true);
   assert.throws(()=>logic.validateVersion({...version,type:'other'},0),/Inhaltsart/);assert.throws(()=>logic.validateVersion({...version,mode:'other'},0),/Arbeitsmodus/);assert.throws(()=>logic.validateVersion({...version,inputs:{}},0),/fehlt/);assert.throws(()=>logic.validateVersion({...version,number:0},0),/Versionsnummer/);
 });
 
@@ -98,11 +98,11 @@ test('A4-Etikettenwerkstatt teilt Seiten und nutzt zentrale Renderlogik', () => 
   assert.deepEqual(logic.paginateLabels(['A','B','C','D','E','F','G'],layout),[['A','B','C','D','E','F'],['G']]);
   const model=logic.createLabelModel('CODED',{...logic.DEFAULT_INPUTS,labelTemplate:'info-portrait',labelInfo1:'nur sichtbar'},'<svg viewBox="0 0 10 10"></svg>');
   const markup=logic.createLabelMarkup(model,{cutLines:true});assert.match(markup,/CODED/);assert.match(markup,/nur sichtbar/);assert.match(markup,/cut-lines/);
-  assert.doesNotMatch(model.value,/nur sichtbar/); assert.match(app,/createLabelMarkup\(createLabelModel/);
+  assert.doesNotMatch(model.value,/nur sichtbar/); assert.match(app,/createLabelMarkup\(state\.mode==='labels'\?labelToModel/);
 });
 test('Projekt V1 wird vollständig und sicher auf V2 migriert',()=>{
  const oldKeys=['singleValue','copyValue','copyCount','seriesPrefix','seriesSuffix','seriesStart','seriesCount','seriesStep','seriesPad','manualList','foregroundText','backgroundText','size','padding','showText','transparent','autoUpdate','orientation','labelWidth','labelHeight','pageMargin','gapX','gapY','printText','cutLines'];
- const inputs=Object.fromEntries(oldKeys.map(key=>[key,logic.DEFAULT_INPUTS[key]]));const migrated=logic.migrateProject({schema:logic.PROJECT_SCHEMA,schemaVersion:1,type:'internal',mode:'single',inputs,versions:[]});assert.equal(migrated.schemaVersion,2);assert.equal(migrated.inputs.labelTitle,'Inventar');assert.equal(logic.validateProject(migrated),true);
+ const inputs=Object.fromEntries(oldKeys.map(key=>[key,logic.DEFAULT_INPUTS[key]]));const migrated=logic.migrateProject({schema:logic.PROJECT_SCHEMA,schemaVersion:1,type:'internal',mode:'single',inputs,versions:[]});assert.equal(migrated.schemaVersion,3);assert.equal(migrated.inputs.labelTitle,'Inventar');assert.equal(logic.validateProject(migrated),true);
 });
 test('Navigation und Übersicht binden DataMatrix ohne Bildattrappe ein',()=>{const nav=read('assets/js/ws-layout.js'),overview=read('tools/index.html');assert.match(nav,/DataMatrix-Werkstatt Plus/);assert.match(nav,/tools\/DataMatrixWerkstattPlus.html/);assert.match(overview,/datamatrix-art/);assert.match(overview,/datamatrix data matrix 2d code inventar/);assert.doesNotMatch(overview,/img[^>]+datamatrix/i);});
 
@@ -148,4 +148,27 @@ test('Vorschaukarte bleibt statisch und die Druckbedienung erklärt Modi',()=>{
 test('zwölf Kopien bleiben zwölf identische Druckwerte',()=>{
   const values=Array(12).fill('WS-DM-0001');assert.equal(values.length,12);assert.equal(new Set(values).size,1);
   assert.equal(logic.DEFAULT_INPUTS.copyCount,'12');
+});
+
+test('individuelle Etiketten besitzen getrennte Pflichtdaten und Reihenfolge',()=>{
+ const labels=logic.buildBambuExample();assert.equal(labels.length,5);labels.forEach(label=>logic.validateLabel(label));
+ assert.deepEqual(labels.map(label=>label.title),['Station 1','Station 2','Station 3','Station 4','Station 5']);
+ assert.ok(labels.every(label=>label.codeValue.includes('Gerät:')));assert.ok(!labels[0].codeValue.includes(labels[0].info1));
+ const moved=logic.moveLabel(labels,'label-2',-1);assert.equal(moved[0].id,'label-2');
+ const copied=logic.duplicateLabel(labels,'label-1');assert.notEqual(copied[0].id,copied[1].id);
+ labels[0].enabled=false;assert.equal(logic.enabledLabels(labels).length,4);
+});
+test('Mini-Preiscode und Testbogen verwenden erwartete Größen',()=>{
+ const value=logic.buildMiniPriceContent({articleId:'WS-ART-0042',price:'12,50 EUR',material:'PLA',duration:'5,5 h'});assert.equal(value,'WS-ART-0042 | 12,50 EUR | PLA | 5,5 h');
+ assert.deepEqual([...new Set(logic.createMiniTestSheet(value).map(item=>item.size))],[10,12,15,20]);
+});
+test('übersprungene Felder gelten nur auf erster Seite',()=>{
+ const layout={perPage:4},pages=logic.paginateWithSkippedSlots(['A','B','C','D','E'],layout,2);assert.deepEqual(pages,[[null,null,'A','B'],['C','D','E']]);assert.throws(()=>logic.paginateWithSkippedSlots(['A'],layout,4),/Startposition/);
+});
+test('V2 migriert vollständig auf Projekt V3',()=>{
+ const v2={schema:logic.PROJECT_SCHEMA,schemaVersion:2,type:'internal',mode:'manual',inputs:{...logic.DEFAULT_INPUTS},versions:[]};const v3=logic.migrateProject(v2);assert.equal(v3.schemaVersion,3);assert.deepEqual(v3.labels,[]);assert.equal(v3.outputProfile.type,'a4-sheet');assert.equal(logic.validateProject(v3),true);
+});
+test('Textanpassung respektiert Mindestgröße und Platzverteilungen',()=>{
+ assert.deepEqual(logic.calculateTextFit({scrollWidth:100,clientWidth:100,scrollHeight:20,clientHeight:20}),{fits:true,fontSize:9});const fit=logic.calculateTextFit({scrollWidth:300,clientWidth:100,scrollHeight:60,clientHeight:20});assert.equal(fit.fontSize,6);assert.equal(fit.fits,false);assert.equal(logic.calculateTextFit({scrollWidth:300,clientWidth:100,scrollHeight:60,clientHeight:20,behavior:'block'}).fits,false);
+ for(const key of ['code-large','balanced','text-more'])assert.ok(logic.codeShare(key)>0);
 });
