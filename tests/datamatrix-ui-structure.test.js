@@ -410,3 +410,11 @@ test('Projektladen unterscheidet lokalen Entwurf von expliziter Projektdatei',()
  assert.match(app,/applyProject\(p,\{source:'draft'\}\)/);assert.match(app,/const migrated=applyProject\(JSON\.parse\(reader\.result\)\)/);
  assert.match(app,/catch\{localStorage\.removeItem\(LOCAL_DRAFT_KEY\);\}/);
 });
+
+
+test('Startablauf rendert einen geladenen lokalen Entwurf nicht erneut',()=>{
+ assert.match(app,/let startupStateApplied=false,localMigrationNotice=false/);
+ assert.match(app,/if\(p\)\{localMigrationNotice=applyProject\(p,\{source:'draft'\}\);startupStateApplied=true;\}/);
+ assert.match(app,/syncSelectors\(\);configureMenu\(\);if\(!startupStateApplied\)render\(\)/);
+ assert.match(app,/catch\{localStorage\.removeItem\(LOCAL_DRAFT_KEY\);\}/);
+});
