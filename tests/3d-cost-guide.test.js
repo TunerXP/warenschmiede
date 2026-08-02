@@ -33,7 +33,7 @@ test('guide is light, wide, readable, responsive and printable', () => {
 });
 
 test('guide states current version and current workflows', () => {
-  assert.match(html, /Tool-Version 1\.9\.4/);
+  assert.match(html, /Tool-Version 1\.9\.5/);
   assert.doesNotMatch(html, /Tool-Version 1\.9\.2|Anleitung 1\.0\.0/);
   for (const term of ['Tool-Menü', 'Merken', 'History', 'Projekt speichern', 'Projekt laden', 'Dokument prüfen', 'Einstellungen', 'PDF/Druck', 'Kompakt', 'Nur Artikel', 'Trenngriff']) assert.match(html, new RegExp(term));
   for (const tab of ['Firma', 'Logo &amp; Design', 'Zahlung', 'Steuer', 'Presets', 'QR-Code', 'Ausgabe', 'Daten']) assert.match(html, new RegExp(tab));

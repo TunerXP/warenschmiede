@@ -133,8 +133,8 @@ test('settings dialog has stable desktop and responsive inner scrolling', () => 
   for (const className of ['cost-settings-dialog', 'cost-settings-head', 'cost-settings-layout', 'cost-settings-nav', 'cost-settings-content']) {
     assert.match(html, new RegExp(className));
   }
-  assert.match(appCss, /width:min\(1120px, calc\(100vw - 32px\)\)/);
-  assert.match(appCss, /height:min\(860px, calc\(100dvh - 32px\)\)/);
+  assert.match(appCss, /width:min\(1280px, calc\(100vw - 24px\)\)/);
+  assert.match(appCss, /height:min\(900px, calc\(100dvh - 24px\)\)/);
   assert.match(appCss, /grid-template-rows:auto minmax\(0,1fr\)/);
   assert.match(appCss, /\.cost-settings-dialog[\s\S]*?overflow:hidden/);
   assert.match(appCss, /\.cost-settings-nav[\s\S]*?overflow-y:auto/);
