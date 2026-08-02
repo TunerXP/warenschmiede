@@ -121,5 +121,21 @@ test('Oberfläche und Hilfe bieten nur aktuelle QR-Arten', () => {
   const html=fs.readFileSync('tools/QRCodeMasterPro.html','utf8'); const help=fs.readFileSync('tools/qr-werkstatt/hilfe.html','utf8');
   assert.doesNotMatch(html,/data-mode="(?:wero|crypto)"|data-form="(?:wero|crypto)"/);
   assert.doesNotMatch(help,/Wero|Crypto|Wallet|Seed-Phrasen/i);
-  assert.match(html,/App-\/Download-Link/); assert.match(help,/SEPA[\s\S]*Banking-App/);
+  assert.match(html,/App-\/Download-Link/); assert.match(help,/SEPA \/ GiroCode[\s\S]*Banking-App/);
+});
+
+test('SEPA / GiroCode erklärt den Scanweg einheitlich, ohne den technischen Modus umzubenennen', () => {
+  const html=fs.readFileSync('tools/QRCodeMasterPro.html','utf8');
+  const help=fs.readFileSync('tools/qr-werkstatt/hilfe.html','utf8');
+  assert.match(html, /data-mode="sepa"[^>]*>[\s\S]*?SEPA \/ GiroCode/);
+  assert.match(html, /sepa:'SEPA \/ GiroCode'/);
+  assert.match(html, /sepa:\['SEPA \/ GiroCode','Empfänger, IBAN, Betrag, Verwendungszweck'\]/);
+  for(const term of ['Banking-App','Fotoüberweisung','GiroCode','QR-Code','Scan2Bank','BCD-Rohdaten','Empfänger','IBAN','Betrag','Verwendungszweck']) {
+    assert.match(html, new RegExp(term));
+    assert.match(help, new RegExp(term));
+  }
+  assert.match(html, /normaler Kamera- oder QR-Scanner[\s\S]*Das ist kein Fehler/);
+  assert.match(html, /nicht mit dem normalen Kamera-Scanner/);
+  assert.match(help, /normaler QR-Scanner[\s\S]*nicht[^.]*fehlerhaft/);
+  assert.doesNotMatch(`${html}\n${help}`, /VR Banking App|Volksbank/i);
 });

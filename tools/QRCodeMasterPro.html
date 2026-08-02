@@ -188,6 +188,19 @@
       border:1px solid rgba(241,145,62,.22);
       margin:0;
     }
+    .sepa-instructions{
+      margin-top:4px;
+      padding:14px 16px;
+      border:1px solid color-mix(in srgb,var(--blue) 24%,var(--line));
+      border-radius:16px;
+      background:color-mix(in srgb,var(--blue) 9%,var(--surface));
+      color:var(--muted);
+      line-height:1.5;
+    }
+    .sepa-instructions h3{color:var(--text);margin:0 0 8px}
+    .sepa-instructions p{margin:7px 0}
+    .sepa-security-note{margin:0;color:var(--muted);font-size:.86rem;line-height:1.5}
+    .sepa-preview-note{max-width:300px;margin:12px auto 4px;color:var(--muted);font-size:.84rem;line-height:1.45;text-align:left}
     .form-section .form-example{
       color:var(--muted);
       line-height:1.45;
@@ -252,7 +265,7 @@
             <button class="mode-btn" data-mode="sms"><span>💌</span><span>SMS</span></button>
 
             <div class="mode-category-title">Zahlung</div>
-            <button class="mode-btn" data-mode="sepa"><span>🏦</span><span>SEPA</span></button>
+            <button class="mode-btn" data-mode="sepa"><span>🏦</span><span>SEPA / GiroCode</span></button>
             <button class="mode-btn" data-mode="paypal"><span>💶</span><span>PayPal</span></button>
             <button class="mode-btn" data-mode="paymentlink"><span>💳</span><span>Zahlungslink</span></button>
 
@@ -342,7 +355,13 @@
                   <div class="field"><label for="sepaBic">BIC optional</label><input id="sepaBic" placeholder="GENODE..."></div>
                 </div>
                 <div class="field"><label for="sepaPurpose">Verwendungszweck</label><input id="sepaPurpose" placeholder="Rechnung 2026-001"></div>
-                <p class="form-example"><strong>Wichtig:</strong> Der QR-Code füllt Überweisungsdaten vor. Die Zahlung muss in der Banking-App geprüft und bestätigt werden. Nicht jede Banking-App unterstützt EPC-QR.</p>
+                <aside class="sepa-instructions">
+                  <h3>So verwendest du den GiroCode</h3>
+                  <p>Öffne in deiner Banking-App die Funktion „Fotoüberweisung“, „GiroCode“, „QR-Code“ oder „Scan2Bank“ und scanne den Code dort.</p>
+                  <p>Ein normaler Kamera- oder QR-Scanner zeigt nur die technischen BCD-Rohdaten an. Das ist kein Fehler.</p>
+                  <p>Prüfe vor dem Bestätigen immer Empfänger, IBAN, Betrag und Verwendungszweck.</p>
+                </aside>
+                <p class="sepa-security-note"><strong>Sicherheitshinweis:</strong> Die Zahlung wird nur vorbereitet. Sie wird erst ausgeführt, wenn du sie in deiner Banking-App ausdrücklich bestätigst.</p>
               </section>
 
               <section class="form-section" data-form="paypal">
@@ -434,6 +453,7 @@
           <button class="btn ws-tool-action ws-accent-steel" id="btnCopy" type="button">QR-Inhalt kopieren</button>
           <button class="btn ws-tool-action ws-accent-green" id="btnPrint" type="button">Drucken</button>
         </div>
+        <p class="sepa-preview-note" id="sepaPreviewNote" hidden>Zum Bezahlen in einer Banking-App scannen – nicht mit dem normalen Kamera-Scanner.</p>
         <p class="field-note" style="text-align:left;max-width:300px;margin:10px auto 6px;">Gespeicherter QR-Inhalt:</p><div class="payload-box" id="payloadBox"></div>
       </aside>
     </main>
@@ -466,16 +486,16 @@
       maps:'Öffnet den eingegebenen Suchbegriff in Google Maps.', review:'Öffnet deinen Bewertungs- oder Feedback-Link.',
       vcard:'Erstellt einen Kontakt als vCard 3.0.', email:'Bereitet eine E-Mail vor; nichts wird automatisch versendet.',
       phone:'Öffnet die Telefonfunktion; der Anruf wird nicht automatisch gestartet.', whatsapp:'Bereitet einen WhatsApp-Chat vor; nichts wird automatisch versendet.',
-      sms:'Bereitet eine SMS vor; nichts wird automatisch versendet.', sepa:'Füllt SEPA-Überweisungsdaten vor; in der Banking-App prüfen und bestätigen.',
+      sms:'Bereitet eine SMS vor; nichts wird automatisch versendet.', sepa:'In der Banking-App über Fotoüberweisung, GiroCode, QR-Code oder Scan2Bank einlesen und alle Zahlungsdaten prüfen.',
       paypal:'Öffnet einen offiziellen PayPal-Zahlungslink.', paymentlink:'Öffnet einen HTTPS-Zahlungslink; der QR-Code bestätigt keine Zahlung.',
       wifi:'Erstellt einen WLAN-Zugangscode. Das Passwort ist im QR-Inhalt lesbar.', event:'Erstellt einen Kalendertermin im iCalendar-Format.',
       app:'Das Ziel kann je nach Gerät und installiertem App-Store unterschiedlich reagieren.'
     };
-    const labels = {url:'Link',text:'Text',maps:'Standort',review:'Bewertung',vcard:'vCard',email:'E-Mail',phone:'Telefon',whatsapp:'WhatsApp',sms:'SMS',sepa:'SEPA',paypal:'PayPal',paymentlink:'Zahlungslink',wifi:'WLAN',event:'Termin',app:'App-/Download-Link'};
+    const labels = {url:'Link',text:'Text',maps:'Standort',review:'Bewertung',vcard:'vCard',email:'E-Mail',phone:'Telefon',whatsapp:'WhatsApp',sms:'SMS',sepa:'SEPA / GiroCode',paypal:'PayPal',paymentlink:'Zahlungslink',wifi:'WLAN',event:'Termin',app:'App-/Download-Link'};
     const summaries = {
       url:['Link','Webadresse'], text:['Text','Freitext'], maps:['Standort','Adresse / Ort'], review:['Bewertung','Feedback-Link'],
       vcard:['Kontakt','Name, Firma, Telefon, E-Mail'], email:['E-Mail','Empfänger, Betreff, Text'], phone:['Telefon','Nummer'],
-      whatsapp:['WhatsApp','Nummer + Nachricht'], sms:['SMS','Nummer + Text'], sepa:['SEPA','Empfänger, IBAN, Betrag, Zweck'],
+      whatsapp:['WhatsApp','Nummer + Nachricht'], sms:['SMS','Nummer + Text'], sepa:['SEPA / GiroCode','Empfänger, IBAN, Betrag, Verwendungszweck'],
       paypal:['PayPal','PayPal-Link'], paymentlink:['Zahlungslink','HTTPS-Adresse'], wifi:['WLAN','SSID, Passwort, Typ'],
       event:['Termin','Start, Ende, Ort'], app:['App-/Download-Link','Store- oder Download-Adresse']
     };
@@ -564,6 +584,8 @@
       document.querySelectorAll('.mode-btn').forEach(item => item.classList.toggle('active', item === button));
       document.querySelectorAll('.form-section').forEach(section => section.classList.toggle('active', section.dataset.form === mode));
       $('modeHint').textContent = hints[mode] || '';
+      const sepaPreviewNote = $('sepaPreviewNote');
+      if(sepaPreviewNote) sepaPreviewNote.hidden = mode !== 'sepa';
       updateInputSummary();
     }
 
