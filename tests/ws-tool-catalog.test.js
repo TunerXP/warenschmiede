@@ -15,9 +15,9 @@ function loadCatalog() {
 
 test('central tool catalog contains complete, immutable code-tool identities', () => {
   const catalog = loadCatalog().WSToolCatalog;
-  assert.deepEqual(Object.keys(catalog), ['barcode', 'qr', 'datamatrix']);
+  assert.deepEqual(Object.keys(catalog), ['3d-cost', 'barcode', 'qr', 'datamatrix']);
   assert.equal(Object.isFrozen(catalog), true);
-  assert.equal(new Set(Object.values(catalog).map(tool => tool.id)).size, 3);
+  assert.equal(new Set(Object.values(catalog).map(tool => tool.id)).size, 4);
   for (const [id, tool] of Object.entries(catalog)) {
     assert.equal(tool.id, id);
     assert.equal(Object.isFrozen(tool), true);

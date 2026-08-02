@@ -28,6 +28,13 @@
 }
 .ws-tool-menu-icon { font-size:1.2rem; line-height:1; color:#1668b2; }
 
+/* Keep tool artwork inside the shared identity frames, even on pages that do
+   not otherwise load the full tool-controls stylesheet. */
+.ws-tool-identity-icon { display:grid; place-items:center; flex:none; overflow:hidden; background:transparent; }
+.ws-tool-identity-icon img { display:block; width:100%; height:100%; object-fit:contain; transform:scale(var(--ws-tool-icon-scale,1)); transform-origin:center; }
+.ws-tool-identity-icon--menu-head { width:54px; height:54px; }
+.ws-tool-identity-icon--medium { width:34px; height:34px; }
+
 .ws-tool-scrim {
   position:fixed; inset:0; background:rgba(15,23,42,.44); backdrop-filter:blur(4px);
   opacity:0; pointer-events:none; transition:.18s ease; z-index:8998;
