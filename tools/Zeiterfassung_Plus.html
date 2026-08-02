@@ -10,14 +10,14 @@
   <meta name="theme-color" content="#2563eb" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <title>Zeiterfassung Plus v1.3 | Warenschmiede</title>
+  <title>Zeiterfassung Plus v1.4 | Warenschmiede</title>
   <meta name="description" content="Lokale Zeiterfassung für Handy und PC mit Monatsübersicht, Backup, CSV und sauberem PDF-/Druckexport." />
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
   <link rel="stylesheet" href="zeiterfassung-plus/app.css">
 </head>
 <body>
   <header class="app-header no-print">
-    <div class="header-inner"><div class="brand"><span class="ws-tool-identity-icon ws-tool-identity-icon--large"><img data-ws-tool-icon="time" src="../assets/img/tools/zeiterfassung-plus.png" alt="" aria-hidden="true"></span><div><h1>Zeiterfassung Plus <span class="web-version">Web-Version · v1.3</span></h1><small>Arbeitszeiten lokal erfassen · sichern · ausgeben</small></div></div><button id="toolMenuBtn" class="ws-tool-menu-btn ws-tool-menu-btn--label" type="button" aria-label="Tool-Menü und Einstellungen öffnen" onclick="window.WSToolMenu?.open()"><span class="menu-icon" aria-hidden="true">☰</span><span class="menu-label">Menü &amp; Einstellungen</span></button></div>
+    <div class="header-inner"><div class="brand"><span class="ws-tool-identity-icon ws-tool-identity-icon--large"><img data-ws-tool-icon="time" src="../assets/img/tools/zeiterfassung-plus.png" alt="" aria-hidden="true"></span><div><h1>Zeiterfassung Plus <span class="web-version">Web-Version · v1.4</span></h1><small>Arbeitszeiten lokal erfassen · sichern · ausgeben</small></div></div><button id="toolMenuBtn" class="ws-tool-menu-btn ws-tool-menu-btn--label" type="button" aria-label="Tool-Menü und Einstellungen öffnen" onclick="window.WSToolMenu?.open()"><span class="menu-icon" aria-hidden="true">☰</span><span class="menu-label">Menü &amp; Einstellungen</span></button></div>
   </header>
 
   <main class="wrap no-print">
@@ -51,9 +51,12 @@
     </section>
 
     <section class="card">
-      <div class="section-title">
-        <h2>Einträge</h2>
-        <span class="muted tiny" id="entryHint">aktueller Monat</span>
+      <div class="section-title entry-section-title">
+        <div><h2>Einträge</h2><span class="muted tiny" id="entryHint">aktueller Monat</span></div>
+        <div id="entryViewSwitch" class="entry-view-switch" role="group" aria-label="Ansicht der Einträge">
+          <button id="entryDetailButton" type="button" aria-pressed="true" onclick="setCompactMode(false)"><span aria-hidden="true">✓</span> Details</button>
+          <button id="entryCompactButton" type="button" aria-pressed="false" onclick="setCompactMode(true)"><span aria-hidden="true">✓</span> Kompakt</button>
+        </div>
       </div>
       <div id="emptyMonthNotice" class="empty-month-notice hidden" role="status"></div>
       <div class="entry-list" id="entryList"></div>
@@ -106,7 +109,7 @@
         <section class="settings-section hidden" data-settings-panel="overview"><h3>Übersicht</h3><p class="muted">Optionale Wochenwerte werden nur aus vorhandenen Arbeitszeiten berechnet.</p><label class="check-row"><input id="setShowWeekOverview" type="checkbox"> Wochenübersicht anzeigen</label><label class="check-row"><input id="setUseWeeklyTarget" type="checkbox" onchange="syncUiOptionVisibility()"> Wochen-Sollzeit verwenden</label><div class="field weekly-target-field"><label for="setWeeklyTargetHours">Wochen-Sollzeit in Stunden</label><input id="setWeeklyTargetHours" type="number" min="0" max="168" step="0.25"></div><div class="section-actions"><button class="btn btn-green" onclick="saveUiSettings()">Übersicht speichern</button></div></section>
         <section class="settings-section hidden" data-settings-panel="appearance"><h3>Darstellung</h3><label class="check-row"><input id="setCompactMode" type="checkbox"> Kompakte Darstellung</label><label class="check-row"><input id="setLargeText" type="checkbox"> Größere Schrift</label><label class="check-row"><input id="setShowQuickToday" type="checkbox"> Schnellbutton „Heute Standardzeit“ anzeigen</label><div class="section-actions"><button class="btn btn-green" onclick="saveUiSettings()">Darstellung speichern</button><button class="btn btn-light" onclick="resetUiSettings()">Wochen- und Darstellungsoptionen zurücksetzen</button></div></section>
         <section class="settings-section hidden" data-settings-panel="data"><h3>Daten &amp; Sicherheit</h3><div class="notice"><strong>Arbeitszeiten liegen ausschließlich in diesem Browser.</strong><br>Vor Gerätewechsel, Browserlöschung oder Neuinstallation bitte ein Backup sichern.</div><div class="settings-action-grid"><button class="btn btn-light" onclick="exportCSV()">CSV exportieren</button><button class="btn btn-light" onclick="downloadBackup()">Backup sichern</button><button class="btn btn-light" onclick="backupFile.click()">Backup laden</button><button class="btn btn-dark" onclick="prepareAndPrint()">PDF / Drucken</button></div></section>
-        <section class="settings-section hidden" data-settings-panel="info"><h3>Info &amp; Android</h3><p><strong>Zeiterfassung Plus Web-Version 1.3</strong><br><span class="muted">Lokal im Browser · ohne Konto</span></p><div class="settings-link-list"><a class="btn btn-light" href="/downloads.html#zeiterfassung-plus">Android-App &amp; Installation</a><a class="btn btn-light" href="/dateien/zeiterfassung-plus/Zeiterfassung_Plus.apk">APK direkt herunterladen</a><a class="btn btn-light" href="/">Warenschmiede Homepage</a><a class="btn btn-light" href="/tools/">Tool-Übersicht</a></div><p class="notice">Web-Version und Android-App speichern ihre Daten jeweils lokal und synchronisieren nicht automatisch miteinander.</p></section>
+        <section class="settings-section hidden" data-settings-panel="info"><h3>Info &amp; Android</h3><p><strong>Zeiterfassung Plus Web-Version 1.4</strong><br><span class="muted">Lokal im Browser · ohne Konto</span></p><div class="settings-link-list"><a class="btn btn-light" href="/downloads.html#zeiterfassung-plus">Android-App &amp; Installation</a><a class="btn btn-light" href="/dateien/zeiterfassung-plus/Zeiterfassung_Plus.apk">APK direkt herunterladen</a><a class="btn btn-light" href="/">Warenschmiede Homepage</a><a class="btn btn-light" href="/tools/">Tool-Übersicht</a></div><p class="notice">Web-Version und Android-App speichern ihre Daten jeweils lokal und synchronisieren nicht automatisch miteinander.</p></section>
       </div>
     </div>
   </div>
@@ -135,12 +138,12 @@
 
   <section class="print-page" id="printPage">
     <div class="print-header">
-      <div>
-        <h1>Stundennachweis</h1>
-        <p id="printMonth">Monat</p>
+      <div class="print-brand">
+        <img src="/assets/img/tools/zeiterfassung-plus.png" alt="" aria-hidden="true">
+        <div><h1>Stundennachweis</h1><p id="printMonth">Monat</p></div>
       </div>
       <div style="text-align:right;">
-        <strong>Zeiterfassung Plus v1.3</strong><br />
+        <strong>Zeiterfassung Plus Web v1.4</strong><br />
         <span>Erstellt: <span id="printCreated"></span></span>
       </div>
     </div>
@@ -148,6 +151,7 @@
       <div><strong>Name</strong><br /><span id="printName">-</span></div>
       <div><strong>Firma / Bereich</strong><br /><span id="printCompany">-</span></div>
       <div><strong>Gesamtzeit</strong><br /><span id="printTotal">00:00 h</span></div>
+      <div><strong>Arbeitstage</strong><br /><span id="printDays">0</span></div>
     </div>
     <table class="print-table">
       <thead>

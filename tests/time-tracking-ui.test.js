@@ -40,12 +40,24 @@ test('Katalog und Website-Menü lösen Zeiterfassung Plus sicher auf', () => {
   assert.match(layout, /toolId: 'time', fallback: \{ label: 'Zeiterfassung Plus', href: 'tools\/Zeiterfassung_Plus\.html'/);
 });
 
-test('Version 1.3, Komfortbereiche und gemeinsame Monats-/Wochenflächen sind vorhanden', () => {
-  assert.doesNotMatch(html, /v1\.2/);
-  assert.match(html, /Zeiterfassung Plus v1\.3/);
+test('Version 1.4, Komfortbereiche und gemeinsame Monats-/Wochenflächen sind vorhanden', () => {
+  assert.doesNotMatch(html, /v1\.[23]/);
+  assert.match(html, /Zeiterfassung Plus v1\.4/);
   for (const id of ['quickTodayButton','weekOverviewCard','weekOverviewList','emptyMonthNotice','setShowWeekOverview','setUseWeeklyTarget','setWeeklyTargetHours','setCompactMode','setLargeText','setShowQuickToday']) assert.match(html, new RegExp(`id="${id}"`));
   for (const section of ['person','overview','appearance','data','info']) assert.match(html, new RegExp(`data-settings-section="${section}"`));
   assert.match(html, /role="status"/);
+});
+
+test('Ansichtsumschalter und vollständiger Druckkopf sind strukturell vorhanden', () => {
+  for (const id of ['entryViewSwitch','entryDetailButton','entryCompactButton','printDays']) assert.match(html, new RegExp(`id="${id}"`));
+  assert.match(html, /entryDetailButton[^>]+aria-pressed="true"/);
+  assert.match(html, /entryCompactButton[^>]+aria-pressed="false"/);
+  assert.match(html, /src="\/assets\/img\/tools\/zeiterfassung-plus\.png"/);
+  assert.match(html, /Zeiterfassung Plus Web v1\.4/);
+  assert.match(js, /function setCompactMode\(enabled\)/);
+  assert.match(js, /\$\('printDays'\)\.textContent = new Set/);
+  const printPage = html.slice(html.indexOf('id="printPage"'));
+  assert.doesNotMatch(printPage, /Wochenübersicht|Wochen-Sollzeit|Differenz/);
 });
 
 test('Tool-Menü vermeidet doppelte Rechtlinks und behält Schnellaktion', () => {

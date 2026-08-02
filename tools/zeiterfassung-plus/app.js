@@ -114,8 +114,26 @@
       if ($('setUseWeeklyTarget')) $('setUseWeeklyTarget').checked = uiSettings.useWeeklyTarget;
       if ($('setWeeklyTargetHours')) $('setWeeklyTargetHours').value = uiSettings.weeklyTargetMinutes / 60;
       if ($('setCompactMode')) $('setCompactMode').checked = uiSettings.compactMode;
+      const detailButton = $('entryDetailButton');
+      const compactButton = $('entryCompactButton');
+      if (detailButton) {
+        detailButton.setAttribute('aria-pressed', String(!uiSettings.compactMode));
+        detailButton.classList.toggle('is-active', !uiSettings.compactMode);
+      }
+      if (compactButton) {
+        compactButton.setAttribute('aria-pressed', String(uiSettings.compactMode));
+        compactButton.classList.toggle('is-active', uiSettings.compactMode);
+      }
       if ($('setLargeText')) $('setLargeText').checked = uiSettings.largeText;
       syncUiOptionVisibility();
+    }
+
+    function setCompactMode(enabled) {
+      uiSettings.compactMode = !!enabled;
+      localStorage.setItem(UI_SETTINGS_KEY, JSON.stringify(uiSettings));
+      applyUiSettings();
+      render();
+      toast(uiSettings.compactMode ? 'Kompakte Ansicht aktiv.' : 'Detailansicht aktiv.');
     }
 
     function saveUiSettings() {
@@ -472,6 +490,7 @@
       $('printName').textContent = settings.name || '-';
       $('printCompany').textContent = settings.company || '-';
       $('printTotal').textContent = formatMinutes(total) + ' h';
+      $('printDays').textContent = new Set(filtered.map(entry => entry.date)).size;
       const rows = $('printRows');
       rows.innerHTML = '';
       filtered.forEach(e => {

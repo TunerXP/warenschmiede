@@ -6,7 +6,7 @@ const path = require('node:path');
 
 const source = fs.readFileSync(path.join(__dirname, '../tools/zeiterfassung-plus/app.js'), 'utf8');
 function context(storage = {}) {
-  const elements = new Proxy({}, { get: (map, id) => map[id] ||= { value: '', checked: false, classList: { add(){}, remove(){}, toggle(){}, contains(){ return true; } }, addEventListener(){}, focus(){}, textContent: '', innerHTML: '', appendChild(){} } });
+  const elements = new Proxy({}, { get: (map, id) => map[id] ||= { value: '', checked: false, attributes: {}, classList: { add(){}, remove(){}, toggle(){}, contains(){ return true; } }, setAttribute(name,value){ this.attributes[name]=String(value); }, getAttribute(name){ return this.attributes[name]; }, addEventListener(){}, focus(){}, textContent: '', innerHTML: '', appendChild(){} } });
   const localStorage = { getItem: key => Object.hasOwn(storage, key) ? storage[key] : null, setItem: (key, value) => storage[key] = value };
   const document = { getElementById: id => elements[id], querySelectorAll: () => [], addEventListener(){}, createElement: () => ({ classList:{}, style:{}, setAttribute(){}, appendChild(){}, click(){}, remove(){} }), body: { appendChild(){}, classList: { toggle(){} } }, activeElement: null };
   const sandbox = { console, document, localStorage, window: { addEventListener(){}, WSToolMenu: null }, Date, Math, JSON, Number, String, Set, Blob, URL: { createObjectURL(){}, revokeObjectURL(){} }, setTimeout(){}, confirm:()=>true, alert(){}, FileReader:function(){} };
@@ -89,4 +89,44 @@ test('Backup bleibt Version 1 und enthält ausschließlich das alte Schema', () 
   assert.deepEqual(Object.keys(backup), ['app','version','created','settings','entries']);
   assert.equal(backup.version, 1);
   assert.equal('uiSettings' in backup, false);
+});
+
+test('direkter Ansichtswechsel schreibt nur UI-Komfortdaten und mutiert keine Einträge', () => {
+  const originalEntries = '[{"id":1,"date":"2026-08-01","start":"08:00","end":"12:00","pause":15,"note":"Test","duration":225}]';
+  const originalSettings = '{"name":"Max"}';
+  const originalOld = '[{"legacy":true}]';
+  const storage = { ws_time_entries_plus_v1: originalEntries, ws_time_settings_plus_v1: originalSettings, workTimeEntries_v2: originalOld };
+  const { sandbox, elements } = context(storage);
+  const writes = [];
+  sandbox.localStorage.setItem = (key, value) => { writes.push(key); storage[key] = value; };
+  elements.monthPicker.value = '2026-08';
+  sandbox.loadData();
+  const before = vm.runInContext('JSON.stringify(entries)', sandbox);
+  sandbox.setCompactMode(true);
+  assert.deepEqual(writes, ['ws_time_ui_plus_v1']);
+  assert.equal(elements.setCompactMode.checked, true);
+  assert.equal(elements.entryCompactButton.getAttribute('aria-pressed'), 'true');
+  assert.equal(elements.entryDetailButton.getAttribute('aria-pressed'), 'false');
+  sandbox.setCompactMode(false);
+  assert.deepEqual(writes, ['ws_time_ui_plus_v1', 'ws_time_ui_plus_v1']);
+  assert.equal(elements.setCompactMode.checked, false);
+  assert.equal(elements.entryCompactButton.getAttribute('aria-pressed'), 'false');
+  assert.equal(elements.entryDetailButton.getAttribute('aria-pressed'), 'true');
+  assert.equal(vm.runInContext('JSON.stringify(entries)', sandbox), before);
+  assert.equal(storage.ws_time_entries_plus_v1, originalEntries);
+  assert.equal(storage.ws_time_settings_plus_v1, originalSettings);
+  assert.equal(storage.workTimeEntries_v2, originalOld);
+});
+
+test('Druck zählt unterschiedliche Arbeitstage unabhängig vom Darstellungsmodus', () => {
+  const { sandbox, elements } = context();
+  elements.monthPicker.value = '2026-08';
+  vm.runInContext("entries = [{id:1,date:'2026-08-01',start:'08:00',end:'10:00',pause:0,note:'A',duration:120},{id:2,date:'2026-08-01',start:'11:00',end:'12:00',pause:0,note:'B',duration:60},{id:3,date:'2026-08-02',start:'08:00',end:'09:00',pause:0,note:'C',duration:60}]", sandbox);
+  sandbox.preparePrint();
+  assert.equal(elements.printDays.textContent, 2);
+  const detailRows = elements.printRows.innerHTML;
+  vm.runInContext('uiSettings.compactMode = true', sandbox);
+  sandbox.preparePrint();
+  assert.equal(elements.printDays.textContent, 2);
+  assert.equal(elements.printRows.innerHTML, detailRows);
 });
