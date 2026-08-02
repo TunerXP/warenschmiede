@@ -44,7 +44,7 @@
           { label: 'Bilder Konverter / Editor', href: 'tools/bild-konverter.html', description: 'Bilder lokal umwandeln und vorbereiten.' }
         ] },
         { label: '3D-Druck & Büro', accent: 'steel', links: [
-          { toolId: '3d-cost' },
+          { toolId: '3d-cost', fallback: { label: '3D-Druck Kostenrechner Plus', href: 'tools/ws_3d_print_kostenrechner.html', description: 'Kalkulation, Angebot, Rechnung und Lieferschein.' } },
           { label: 'CNC Fräsen-Einrichtsblatt Plus', href: 'tools/cnc-fraesen-einrichtsblatt-plus/index.html', description: 'Einrichtblätter und Maschineninfos.' },
           { toolId: 'qr', fallback: { label: 'QR-Werkstatt Plus', href: 'tools/QRCodeMasterPro.html', description: 'QR-Codes, Links, WLAN und mehr.' } },
           { toolId: 'barcode', fallback: { label: 'Barcode-Werkstatt Plus', href: 'tools/BarcodeWerkstattPlus.html', description: 'EAN, Code128, Code39 und ITF-14.' } },
