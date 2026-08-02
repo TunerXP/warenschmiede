@@ -55,7 +55,10 @@
     const observer = new IntersectionObserver(entries => {
       const visible = entries.filter(entry => entry.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
       if (!visible) return;
-      byId.forEach((link, id) => link.toggleAttribute('aria-current', id === visible.target.id));
+      byId.forEach((link, id) => {
+        if (id === visible.target.id) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
     }, { rootMargin: '-12% 0px -68% 0px', threshold: [0, .15] });
     byId.forEach((_, id) => { const target = document.getElementById(id); if (target) observer.observe(target); });
   };

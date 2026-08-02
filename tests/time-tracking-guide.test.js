@@ -26,6 +26,12 @@ test('Anleitung ist vollständig und von Anwendungsdaten getrennt', () => {
   for (const statement of ['JSON ist die Wiederherstellungssicherung', 'PDF und CSV ersetzen kein vollständiges Backup', 'Backup laden ersetzt aktuelle Einträge', 'Web und Android synchronisieren nicht automatisch']) assert.ok(guide.includes(statement), statement);
 });
 
+test('Inhaltsverzeichnis markiert genau den sichtbaren Abschnitt mit ARIA-Semantik', () => {
+  assert.match(guideJs, /setAttribute\('aria-current', 'location'\)/);
+  assert.match(guideJs, /removeAttribute\('aria-current'\)/);
+  assert.doesNotMatch(guideJs, /toggleAttribute\('aria-current'/);
+});
+
 test('Anleitungslinks und unveränderliche Kompatibilitätswerte bleiben vorhanden', () => {
   assert.match(js, /title: 'Hilfe'[\s\S]*label: 'Anleitung öffnen'[\s\S]*Zeiterfassung_Plus_Anleitung\.html/);
   assert.match(html, /data-settings-panel="info"[\s\S]*Zeiterfassung_Plus_Anleitung\.html/);
