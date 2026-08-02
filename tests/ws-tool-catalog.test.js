@@ -10,11 +10,11 @@ const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 function loadCatalog() {
   const window = {};
   vm.runInNewContext(read('assets/js/ws-tool-catalog.js'), { window });
-  return window.WSToolCatalog;
+  return window;
 }
 
 test('central tool catalog contains complete, immutable code-tool identities', () => {
-  const catalog = loadCatalog();
+  const catalog = loadCatalog().WSToolCatalog;
   assert.deepEqual(Object.keys(catalog), ['barcode', 'qr', 'datamatrix']);
   assert.equal(Object.isFrozen(catalog), true);
   assert.equal(new Set(Object.values(catalog).map(tool => tool.id)).size, 3);
@@ -22,10 +22,26 @@ test('central tool catalog contains complete, immutable code-tool identities', (
     assert.equal(tool.id, id);
     assert.equal(Object.isFrozen(tool), true);
     for (const key of ['name', 'description', 'href', 'icon']) assert.ok(tool[key], `${id}.${key}`);
+    assert.equal(Number.isFinite(tool.iconScale) && tool.iconScale > 0, true, `${id}.iconScale`);
     for (const key of ['href', 'icon']) assert.match(tool[key], /^\//, `${id}.${key}`);
   }
   assert.equal(catalog.datamatrix.icon, '/tools/datamatrix-werkstatt/datamatrix-werkstatt-icon.png');
   assert.equal(catalog.datamatrix.cardImage, '/tools/datamatrix-werkstatt/datamatrix-werkstatt-card.png');
+  assert.equal(catalog.barcode.iconScale, 1);
+  assert.equal(catalog.qr.iconScale, 1);
+  assert.ok(catalog.datamatrix.iconScale > 2);
+  assert.ok(catalog.datamatrix.iconScale < 3);
+});
+
+test('identity API resolves tools, applies central icons and tolerates unknown IDs', () => {
+  const window = loadCatalog();
+  const values = {};
+  const image = { src: 'fallback.png', style: { setProperty(name, value) { values[name] = value; } } };
+  for (const id of ['barcode', 'qr', 'datamatrix']) assert.equal(window.WSToolIdentity.get(id).id, id);
+  window.WSToolIdentity.applyIcon(image, 'datamatrix');
+  assert.equal(image.src, window.WSToolCatalog.datamatrix.icon);
+  assert.equal(values['--ws-tool-icon-scale'], '2.45');
+  assert.doesNotThrow(() => window.WSToolIdentity.applyIcon(image, 'unknown'));
 });
 
 test('three code tools load the catalog before the deferred shared menu', () => {
@@ -50,6 +66,7 @@ test('menu resolves catalog identities while retaining overrides and regular act
 });
 
 test('tool-family links use IDs and menu icons stay within existing entry layout', () => {
+  const menu = read('assets/js/ws-tool-menu.js');
   const barcode = read('tools/barcode-werkstatt/app.js');
   const qr = read('tools/QRCodeMasterPro.html');
   const datamatrix = read('tools/datamatrix-werkstatt/app.js');
@@ -62,9 +79,24 @@ test('tool-family links use IDs and menu icons stay within existing entry layout
 
   const css = read('assets/css/ws-tool-menu.css');
   assert.match(css, /grid-template-columns:34px minmax\(0,1fr\)/);
-  assert.match(css, /\.ws-tool-link-icon \{[^}]*width:34px; height:34px; object-fit:contain/);
+  const controls = read('assets/css/ws-tool-controls.css');
+  assert.match(controls, /\.ws-tool-identity-icon--medium\{width:34px;height:34px\}/);
+  assert.match(menu, /ws-tool-identity-icon ws-tool-identity-icon--menu-head/);
+  assert.match(menu, /ws-tool-identity-icon ws-tool-identity-icon--medium/);
+  assert.match(menu, /--ws-tool-icon-scale', '1'/);
   assert.doesNotMatch(css, /\.ws-tool-link--with-icon[^}]*min-height/);
   assert.match(css, /\.ws-tool-panel \{[^}]*width:min\(390px, calc\(100vw - 24px\)\)/);
+});
+
+test('all code-tool headers use the shared large identity frame', () => {
+  const headers = {
+    barcode: read('tools/BarcodeWerkstattPlus.html'),
+    qr: read('tools/QRCodeMasterPro.html'),
+    datamatrix: read('tools/DataMatrixWerkstattPlus.html')
+  };
+  for (const [id, html] of Object.entries(headers)) {
+    assert.match(html, new RegExp(`ws-tool-identity-icon ws-tool-identity-icon--large[^>]*><img data-ws-tool-icon="${id}"`));
+  }
 });
 
 test('DataMatrix uses its existing artwork files and removes CSS placeholders', () => {

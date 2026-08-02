@@ -7,6 +7,29 @@
     return '/' + path.replace(/^\.\//, '');
   };
 
+  function ensureToolCatalog(onReady) {
+    if (window.WSToolCatalog) {
+      onReady?.(true);
+      return;
+    }
+    if (!document.createElement || !document.head) {
+      onReady?.(false);
+      return;
+    }
+    const existing = document.querySelector?.('script[data-ws-tool-catalog]');
+    if (existing) {
+      existing.addEventListener('load', () => onReady?.(true), { once: true });
+      existing.addEventListener('error', () => onReady?.(false), { once: true });
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = '/assets/js/ws-tool-catalog.js';
+    script.dataset.wsToolCatalog = 'loading';
+    script.addEventListener('load', () => onReady?.(true), { once: true });
+    script.addEventListener('error', () => onReady?.(false), { once: true });
+    document.head.append(script);
+  }
+
   const NAVIGATION = [
     { key: 'start', label: 'Start', href: '/', start: true },
     { key: 'downloads', label: 'Downloads', href: 'downloads.html' },
@@ -23,9 +46,9 @@
         { label: '3D-Druck & Büro', accent: 'steel', links: [
           { label: '3D-Druck Kostenrechner Plus', href: 'tools/ws_3d_print_kostenrechner.html', description: 'Angebot, Rechnung, Lieferschein und lokale Daten.' },
           { label: 'CNC Fräsen-Einrichtsblatt Plus', href: 'tools/cnc-fraesen-einrichtsblatt-plus/index.html', description: 'Einrichtblätter und Maschineninfos.' },
-          { label: 'QR-Werkstatt Plus', href: 'tools/QRCodeMasterPro.html', description: 'QR-Codes, Links, WLAN und mehr.' },
-          { label: 'Barcode-Werkstatt Plus', href: 'tools/BarcodeWerkstattPlus.html', description: 'EAN, Code128, Code39 und ITF-14.' },
-          { label: 'DataMatrix-Werkstatt Plus', href: 'tools/DataMatrixWerkstattPlus.html', description: 'Kompakte 2D-Codes für Inventar, Bauteile und Werkstatt.' }
+          { toolId: 'qr', fallback: { label: 'QR-Werkstatt Plus', href: 'tools/QRCodeMasterPro.html', description: 'QR-Codes, Links, WLAN und mehr.' } },
+          { toolId: 'barcode', fallback: { label: 'Barcode-Werkstatt Plus', href: 'tools/BarcodeWerkstattPlus.html', description: 'EAN, Code128, Code39 und ITF-14.' } },
+          { toolId: 'datamatrix', fallback: { label: 'DataMatrix-Werkstatt Plus', href: 'tools/DataMatrixWerkstattPlus.html', description: 'Kompakte 2D-Codes für Inventar, Bauteile und Werkstatt.' } }
         ] },
         { label: 'Arbeitszeit & Alltag', accent: 'blue', links: [
           { label: 'Zeiterfassung', href: 'tools/Zeiterfassung.html', description: 'Legacy-Version für bestehende Nutzer.', note: 'Legacy-Version' },
@@ -97,10 +120,26 @@
     return 'start';
   })();
 
+  const catalogItem = (item) => {
+    const tool = item.toolId && window.WSToolCatalog?.[item.toolId];
+    return tool
+      ? { ...tool, label: tool.name, ...item, fallback: undefined }
+      : { ...item.fallback, ...item, fallback: undefined };
+  };
+  const iconMarkup = item => item.icon
+    ? `<span class="ws-nav-tool-icon ws-tool-identity-icon ws-tool-identity-icon--medium"><img data-ws-tool-icon="${item.toolId}" src="${link(item.icon)}" alt="" aria-hidden="true" style="--ws-tool-icon-scale:${item.iconScale || 1}"></span>`
+    : '';
   const isCurrentPage = (href) => new URL(link(href), window.location.origin).pathname.toLowerCase() === currentPath;
   const currentAttribute = (href) => isCurrentPage(href) ? ' aria-current="page"' : '';
   const renderDesktopLink = (item) => `<a class="nav-link${item.start ? ' nav-start' : ''}${item.key === activeKey ? ' is-active' : ''}"${currentAttribute(item.href)} href="${link(item.href)}">${item.label}</a>`;
-  const renderMegaLink = (item) => `<a class="mega-link" href="${link(item.href)}"${currentAttribute(item.href)}><strong>${item.label}</strong><span>${item.description}</span></a>`;
+  const renderMegaLink = source => {
+    const item = catalogItem(source);
+    return `<a data-tool-id="${item.toolId || ''}" class="mega-link${item.icon ? ' mega-link--with-icon' : ''}" href="${link(item.href)}"${currentAttribute(item.href)}>${iconMarkup(item)}<span class="ws-nav-tool-copy"><strong>${item.label}</strong><span>${item.description}</span></span></a>`;
+  };
+  const renderMobileLink = source => {
+    const item = catalogItem(source);
+    return `<a data-tool-id="${item.toolId || ''}"${item.icon ? ' class="mobile-tool-link"' : ''} href="${link(item.href)}"${currentAttribute(item.href)}>${iconMarkup(item)}<span>${item.label}${item.note ? ` <span class="ws-deprecation-note">${item.note}</span>` : ''}</span></a>`;
+  };
 
   const renderDesktopItem = (item) => {
     if (!item.type) return renderDesktopLink(item);
@@ -117,7 +156,7 @@
   const renderMobileItem = (item) => {
     if (!item.type) return `<a class="mobile-main${item.key === activeKey ? ' is-active' : ''}" href="${link(item.href)}"${currentAttribute(item.href)}>${item.label}</a>`;
     const panelId = `mobile-menu-${item.key}`;
-    const sections = item.sections.map(section => `${section.label ? `<h3>${section.label}</h3>` : ''}${section.links.map(child => `<a href="${link(child.href)}"${currentAttribute(child.href)}>${child.label}${child.note ? ` <span class="ws-deprecation-note">${child.note}</span>` : ''}</a>`).join('')}`).join('');
+    const sections = item.sections.map(section => `${section.label ? `<h3>${section.label}</h3>` : ''}${section.links.map(renderMobileLink).join('')}`).join('');
     return `<button aria-controls="${panelId}" aria-expanded="false" class="mobile-section${item.key === activeKey ? ' is-active' : ''}" type="button">${item.label}<span aria-hidden="true">▾</span></button><div class="mobile-sub" id="${panelId}">${sections}</div>`;
   };
 
@@ -135,6 +174,19 @@
   const footerTarget = document.getElementById('ws-footer');
   if (headerTarget) headerTarget.innerHTML = header;
   if (footerTarget) footerTarget.innerHTML = footer;
+  ensureToolCatalog(loaded => {
+    if (!loaded) return;
+    document.querySelectorAll?.('[data-tool-id]').forEach(anchor => {
+      const item = catalogItem({ toolId: anchor.dataset.toolId });
+      if (!item.icon) return;
+      anchor.classList.add(anchor.closest?.('.mobile-sub') ? 'mobile-tool-link' : 'mega-link--with-icon');
+      anchor.href = link(item.href);
+      anchor.innerHTML = anchor.closest?.('.mobile-sub')
+        ? `${iconMarkup(item)}<span>${item.label}</span>`
+        : `${iconMarkup(item)}<span class="ws-nav-tool-copy"><strong>${item.label}</strong><span>${item.description}</span></span>`;
+      window.WSToolIdentity?.applyIcon(anchor.querySelector('img'), item.toolId);
+    });
+  });
   const year = document.getElementById('copyright-year');
   if (year) year.textContent = new Date().getFullYear();
 

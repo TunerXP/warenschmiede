@@ -82,3 +82,25 @@ test('mobile submenu category headings use a dark Warenschmiede orange', () => {
   assert.match(mobileHeading, /text-transform:uppercase/);
   assert.doesNotMatch(globalStyles, /\.mega-group h3\{[^}]*#b45309/);
 });
+
+test('global tool navigation is catalog-driven and uses the shared medium icon size', () => {
+  for (const id of ['qr', 'barcode', 'datamatrix']) {
+    assert.match(layoutSource, new RegExp(`toolId: '${id}'`));
+  }
+  assert.match(layoutSource, /WSToolCatalog\?\.\[item\.toolId\]/);
+  assert.match(layoutSource, /ws-nav-tool-icon ws-tool-identity-icon ws-tool-identity-icon--medium/);
+  assert.match(globalStyles, /\.mega-link--with-icon\{display:grid;grid-template-columns:34px minmax\(0,1fr\)/);
+  assert.match(globalStyles, /\.mobile-sub \.mobile-tool-link\{display:grid;grid-template-columns:34px minmax\(0,1fr\)/);
+  assert.doesNotMatch(globalStyles, /\.mobile-sub a\{[^}]*grid-template-columns:34px/);
+});
+
+test('layout loads the catalog once and retains text fallback navigation', () => {
+  assert.match(layoutSource, /if \(window\.WSToolCatalog\)/);
+  assert.match(layoutSource, /querySelector\?\.\('script\[data-ws-tool-catalog\]'\)/);
+  assert.match(layoutSource, /script\.src = '\/assets\/js\/ws-tool-catalog\.js'/);
+  assert.match(layoutSource, /addEventListener\('error', \(\) => onReady\?\.\(false\)/);
+  const { header } = renderLayout();
+  for (const label of ['QR-Werkstatt Plus', 'Barcode-Werkstatt Plus', 'DataMatrix-Werkstatt Plus']) {
+    assert.match(header, new RegExp(label));
+  }
+});
