@@ -8,7 +8,7 @@ const source = fs.readFileSync(path.join(__dirname, '../tools/zeiterfassung-plus
 function context(storage = {}) {
   const elements = new Proxy({}, { get: (map, id) => map[id] ||= { value: '', checked: false, classList: { add(){}, remove(){}, toggle(){}, contains(){ return true; } }, addEventListener(){}, focus(){}, textContent: '', innerHTML: '', appendChild(){} } });
   const localStorage = { getItem: key => Object.hasOwn(storage, key) ? storage[key] : null, setItem: (key, value) => storage[key] = value };
-  const document = { getElementById: id => elements[id], querySelectorAll: () => [], addEventListener(){}, createElement: () => ({ classList:{}, style:{}, setAttribute(){}, appendChild(){}, click(){}, remove(){} }), body: { appendChild(){} }, activeElement: null };
+  const document = { getElementById: id => elements[id], querySelectorAll: () => [], addEventListener(){}, createElement: () => ({ classList:{}, style:{}, setAttribute(){}, appendChild(){}, click(){}, remove(){} }), body: { appendChild(){}, classList: { toggle(){} } }, activeElement: null };
   const sandbox = { console, document, localStorage, window: { addEventListener(){}, WSToolMenu: null }, Date, Math, JSON, Number, String, Set, Blob, URL: { createObjectURL(){}, revokeObjectURL(){} }, setTimeout(){}, confirm:()=>true, alert(){}, FileReader:function(){} };
   vm.createContext(sandbox); vm.runInContext(source, sandbox); return { sandbox, storage, elements };
 }
@@ -45,4 +45,48 @@ test('Settings- und Backup-Schemata bleiben unverändert', () => {
   assert.match(source, /name: '',\s*company: '',\s*useDefaults: false,\s*useNote: false,\s*start: '07:00',\s*end: '16:00',\s*pause: 30,\s*note: ''/s);
   assert.match(source, /app: 'Zeiterfassung Plus',\s*version: 1,\s*created: new Date\(\)\.toISOString\(\),\s*settings,\s*entries/s);
   assert.match(source, /const importedEntries = Array\.isArray\(data\) \? data : data\.entries/);
+});
+
+test('UI-Einstellungen sind getrennt und sichere Standards schreiben beim Laden nichts', () => {
+  const writes = [];
+  const { sandbox, storage, elements } = context();
+  sandbox.localStorage.setItem = (key, value) => { writes.push(key); storage[key] = value; };
+  sandbox.loadUiSettings();
+  assert.deepEqual(JSON.parse(JSON.stringify(vm.runInContext('uiSettings', sandbox))), {
+    showQuickToday:true, showWeekOverview:false, useWeeklyTarget:false, weeklyTargetMinutes:2400, compactMode:false, largeText:false
+  });
+  assert.deepEqual(writes, []);
+  storage.ws_time_ui_plus_v1 = '{kaputt';
+  sandbox.loadUiSettings();
+  assert.equal(vm.runInContext('uiSettings.weeklyTargetMinutes', sandbox), 2400);
+  elements.setWeeklyTargetHours.value = '37.5';
+  elements.setShowQuickToday.checked = false;
+  sandbox.saveUiSettings();
+  assert.deepEqual(writes, ['ws_time_ui_plus_v1']);
+  assert.equal(JSON.parse(storage.ws_time_ui_plus_v1).weeklyTargetMinutes, 2250);
+});
+
+test('Bestandsdaten und acht Personeneinstellungen bleiben beim Speichern unverändert getrennt', () => {
+  const july = [{id:1,date:'2026-07-01',start:'07:00',end:'16:00',pause:30,note:'',duration:510}];
+  const storage = { ws_time_entries_plus_v1: JSON.stringify(july) };
+  const { sandbox, elements } = context(storage);
+  sandbox.loadData();
+  elements.monthPicker.value = '2026-08';
+  sandbox.initMonth = () => {};
+  assert.deepEqual(JSON.parse(JSON.stringify(vm.runInContext('entries', sandbox))), july);
+  for (const [id,value] of Object.entries({setName:'Max',setCompany:'WS',setStart:'07:00',setEnd:'16:00',setPause:'30',setNote:'X'})) elements[id].value=value;
+  sandbox.saveSettings();
+  assert.deepEqual(Object.keys(JSON.parse(storage.ws_time_settings_plus_v1)), ['name','company','useDefaults','useNote','start','end','pause','note']);
+  assert.deepEqual(JSON.parse(storage.ws_time_entries_plus_v1), july);
+});
+
+test('Backup bleibt Version 1 und enthält ausschließlich das alte Schema', () => {
+  const { sandbox } = context();
+  let text;
+  sandbox.downloadText = (_name, value) => { text = value; };
+  sandbox.downloadBackup();
+  const backup = JSON.parse(text);
+  assert.deepEqual(Object.keys(backup), ['app','version','created','settings','entries']);
+  assert.equal(backup.version, 1);
+  assert.equal('uiSettings' in backup, false);
 });
