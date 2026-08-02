@@ -252,13 +252,11 @@
             <button class="mode-btn" data-mode="sepa"><span>🏦</span><span>SEPA</span></button>
             <button class="mode-btn" data-mode="paypal"><span>💶</span><span>PayPal</span></button>
             <button class="mode-btn" data-mode="paymentlink"><span>💳</span><span>Zahlungslink</span></button>
-            <button class="mode-btn" data-mode="wero"><span>EU</span><span>Wero</span></button>
-            <button class="mode-btn" data-mode="crypto"><span>₿</span><span>Crypto</span></button>
 
             <div class="mode-category-title">Alltag & Spezial</div>
             <button class="mode-btn" data-mode="wifi"><span>📶</span><span>WLAN</span></button>
             <button class="mode-btn" data-mode="event"><span>📅</span><span>Termin</span></button>
-            <button class="mode-btn" data-mode="app"><span>📲</span><span>App-Link</span></button>
+            <button class="mode-btn" data-mode="app"><span>📲</span><span>App-/Download-Link</span></button>
           </div>
           <div class="content-picker-note" id="modeHint">Scan öffnet eine Webseite. Kurze Links ergeben stabilere QR-Codes.</div>
         </div>
@@ -276,7 +274,7 @@
             <div id="forms">
               <section class="form-section active" data-form="url">
                 <p class="form-help">Für Webseiten, Dateien, Formulare, Downloads oder Tool-Links. Der QR-Code öffnet die eingetragene Adresse.</p>
-                <div class="field"><label for="urlValue">Webadresse</label><input id="urlValue" type="url" value="https://www.warenschmiede.com/" placeholder="https://www.warenschmiede.com/"><p class="field-note">Tipp: Immer mit https:// eintragen.</p></div>
+                <div class="field"><label for="urlValue">Webadresse</label><input id="urlValue" type="url" placeholder="https://www.warenschmiede.com/"><p class="field-note">Tipp: Immer mit https:// eintragen.</p></div>
                 <p class="form-example"><strong>Beispiel:</strong> Link zu einer Anleitung, einem Download, einem Kontaktformular oder einer Produktseite.</p>
               </section>
 
@@ -333,7 +331,7 @@
               </section>
 
               <section class="form-section" data-form="sepa">
-                <p class="form-help">Erstellt einen SEPA-/GiroCode für Überweisungen. Viele Banking-Apps können Empfänger, IBAN, Betrag und Zweck übernehmen.</p>
+                <p class="form-help">Erstellt einen EPC-QR für SEPA-Überweisungen.</p>
                 <div class="field"><label for="sepaName">Empfänger</label><input id="sepaName" placeholder="Max Mustermann"></div>
                 <div class="field"><label for="sepaIban">IBAN</label><input id="sepaIban" placeholder="DE00 0000 0000 0000 0000 00"></div>
                 <div class="row">
@@ -341,7 +339,7 @@
                   <div class="field"><label for="sepaBic">BIC optional</label><input id="sepaBic" placeholder="GENODE..."></div>
                 </div>
                 <div class="field"><label for="sepaPurpose">Verwendungszweck</label><input id="sepaPurpose" placeholder="Rechnung 2026-001"></div>
-                <p class="form-example"><strong>Wichtig:</strong> Zahlungsdaten immer prüfen. Das Tool erleichtert die Eingabe, ersetzt aber keine Kontrolle.</p>
+                <p class="form-example"><strong>Wichtig:</strong> Der QR-Code füllt Überweisungsdaten vor. Die Zahlung muss in der Banking-App geprüft und bestätigt werden. Nicht jede Banking-App unterstützt EPC-QR.</p>
               </section>
 
               <section class="form-section" data-form="paypal">
@@ -358,22 +356,6 @@
                 </div>
               </section>
 
-              <section class="form-section" data-form="wero">
-                <p class="form-help">Wero ist vorgemerkt, aber noch nicht als fertige QR-Funktion aktiv. Bis ein stabiler Standard klar ist, kannst du hier optional einen normalen Zahlungslink hinterlegen.</p>
-                <div class="field"><label for="weroFallbackUrl">Optionaler Zahlungslink als Übergang</label><input id="weroFallbackUrl" type="url" placeholder="https://..."></div>
-                <p class="form-example"><strong>Ehrlich:</strong> Das erzeugt aktuell keinen echten Wero-Spezialcode, sondern nur einen normalen Link-QR-Code.</p>
-              </section>
-
-              <section class="form-section" data-form="crypto">
-                <p class="form-help">Erstellt einen einfachen Krypto-Zahlungslink. Wallet-Adresse und Betrag müssen sehr genau geprüft werden.</p>
-                <div class="row">
-                  <div class="field"><label for="cryptoType">Coin</label><select id="cryptoType"><option value="bitcoin">Bitcoin</option><option value="ethereum">Ethereum</option><option value="litecoin">Litecoin</option></select></div>
-                  <div class="field"><label for="cryptoAmount">Betrag optional</label><input id="cryptoAmount" placeholder="0.001"></div>
-                </div>
-                <div class="field"><label for="cryptoAddress">Adresse</label><input id="cryptoAddress" placeholder="Wallet-Adresse"></div>
-                <div class="field"><label for="cryptoLabel">Label optional</label><input id="cryptoLabel" placeholder="Warenschmiede"></div>
-              </section>
-
               <section class="form-section" data-form="wifi">
                 <p class="form-help">Erstellt einen QR-Code für einen WLAN-Zugang. Gut für Gäste-WLAN oder interne Aushänge.</p>
                 <div class="field"><label for="wifiSsid">WLAN-Name / SSID</label><input id="wifiSsid" placeholder="Mein WLAN"></div>
@@ -387,7 +369,7 @@
 
               <section class="form-section" data-form="event">
                 <p class="form-help">Erstellt einen Kalendertermin im iCalendar-Format.</p>
-                <div class="field"><label for="eventTitle">Titel</label><input id="eventTitle" placeholder="Termin"></div>
+                <input id="eventUid" type="hidden"><div class="field"><label for="eventTitle">Titel</label><input id="eventTitle" placeholder="Termin"></div>
                 <div class="row">
                   <div class="field"><label for="eventStart">Start</label><input id="eventStart" type="datetime-local"></div>
                   <div class="field"><label for="eventEnd">Ende</label><input id="eventEnd" type="datetime-local"></div>
@@ -397,8 +379,8 @@
               </section>
 
               <section class="form-section" data-form="app">
-                <p class="form-help">Für App-Store-Links, Downloadseiten oder interne App-Links.</p>
-                <div class="field"><label for="appUrl">App- oder Store-Link</label><input id="appUrl" type="url" placeholder="https://..."></div>
+                <p class="form-help">Das Ziel kann je nach Gerät und installiertem App-Store unterschiedlich reagieren.</p>
+                <div class="field"><label for="appUrl">App- oder Download-Link</label><input id="appUrl" placeholder="https://... oder market://..."></div>
               </section>
             </div>
           </div>
@@ -447,7 +429,7 @@
           <button class="btn ws-tool-action ws-accent-steel" id="btnPng" type="button">PNG herunterladen</button>
           <button class="btn ws-tool-action ws-accent-steel" id="btnSvg" type="button">SVG herunterladen</button>
           <button class="btn ws-tool-action ws-accent-steel" id="btnCopy" type="button">QR-Inhalt kopieren</button>
-          <button class="btn ws-tool-action ws-accent-green" onclick="window.print()" type="button">Drucken</button>
+          <button class="btn ws-tool-action ws-accent-green" id="btnPrint" type="button">Drucken</button>
         </div>
         <p class="field-note" style="text-align:left;max-width:300px;margin:10px auto 6px;">Gespeicherter QR-Inhalt:</p><div class="payload-box" id="payloadBox"></div>
       </aside>
@@ -467,6 +449,7 @@
   <input id="projectFileInput" type="file" accept=".json,application/json" hidden>
   <div class="toast" id="toast">Erledigt</div>
 
+  <script src="qr-werkstatt/payloads.js"></script>
   <script defer src="../assets/js/ws-tool-catalog.js"></script>
   <script defer src="../assets/js/ws-tool-menu.js"></script>
   <script>
@@ -476,139 +459,39 @@
     let qr;
 
     const hints = {
-      url:'Scan öffnet eine Webseite. Kurze Links ergeben stabilere QR-Codes.',
-      text:'Freier Text wird direkt im QR-Code gespeichert.',
-      wifi:'Erstellt einen WLAN-Zugangscode. Passwort nur verwenden, wenn du es wirklich teilen willst.',
-      vcard:'Erstellt einen Kontakt als vCard.',
-      email:'Öffnet eine neue E-Mail mit Empfänger, Betreff und Text.',
-      phone:'Startet einen Telefonanruf.',
-      whatsapp:'Öffnet einen WhatsApp-Chat mit Nummer und optionaler Nachricht.',
-      sms:'Öffnet eine SMS an die Nummer.',
-      maps:'Öffnet eine Suche/Route in Google Maps.',
-      review:'Öffnet einen Bewertungs- oder Feedback-Link.',
-      sepa:'Erstellt einen SEPA-Überweisungs-QR. Daten vor Nutzung genau prüfen.',
-      paypal:'Öffnet einen PayPal-Link.',
-      paymentlink:'Öffnet einen allgemeinen Zahlungslink, z. B. Shop, SumUp, Stripe oder Rechnung.',
-      wero:'Wero ist vorbereitet, aber noch nicht als echte QR-Funktion aktiv.',
-      event:'Erstellt einen Kalendertermin im iCalendar-Format.',
-      app:'Öffnet einen App- oder Store-Link.',
-      crypto:'Erstellt einen einfachen Crypto-Payment-Link.'
+      url:'Scan öffnet eine vollständige HTTPS-Webadresse.', text:'Freier Text wird direkt im QR-Code gespeichert.',
+      maps:'Öffnet den eingegebenen Suchbegriff in Google Maps.', review:'Öffnet deinen Bewertungs- oder Feedback-Link.',
+      vcard:'Erstellt einen Kontakt als vCard 3.0.', email:'Bereitet eine E-Mail vor; nichts wird automatisch versendet.',
+      phone:'Öffnet die Telefonfunktion; der Anruf wird nicht automatisch gestartet.', whatsapp:'Bereitet einen WhatsApp-Chat vor; nichts wird automatisch versendet.',
+      sms:'Bereitet eine SMS vor; nichts wird automatisch versendet.', sepa:'Füllt SEPA-Überweisungsdaten vor; in der Banking-App prüfen und bestätigen.',
+      paypal:'Öffnet einen offiziellen PayPal-Zahlungslink.', paymentlink:'Öffnet einen HTTPS-Zahlungslink; der QR-Code bestätigt keine Zahlung.',
+      wifi:'Erstellt einen WLAN-Zugangscode. Das Passwort ist im QR-Inhalt lesbar.', event:'Erstellt einen Kalendertermin im iCalendar-Format.',
+      app:'Das Ziel kann je nach Gerät und installiertem App-Store unterschiedlich reagieren.'
     };
-    const labels = {url:'Link',text:'Text',wifi:'WLAN',vcard:'vCard',email:'E-Mail',phone:'Telefon',whatsapp:'WhatsApp',sms:'SMS',maps:'Standort',review:'Bewertung',sepa:'SEPA',paypal:'PayPal',paymentlink:'Zahlungslink',wero:'Wero',event:'Termin',app:'App-Link',crypto:'Crypto'};
-
+    const labels = {url:'Link',text:'Text',maps:'Standort',review:'Bewertung',vcard:'vCard',email:'E-Mail',phone:'Telefon',whatsapp:'WhatsApp',sms:'SMS',sepa:'SEPA',paypal:'PayPal',paymentlink:'Zahlungslink',wifi:'WLAN',event:'Termin',app:'App-/Download-Link'};
     const summaries = {
-      url:['Link','Webadresse'],
-      text:['Text','Freitext'],
-      maps:['Standort','Adresse / Ort'],
-      review:['Bewertung','Feedback-Link'],
-      vcard:['Kontakt','Name, Firma, Telefon, E-Mail'],
-      email:['E-Mail','Empfänger, Betreff, Text'],
-      phone:['Telefon','Nummer'],
-      whatsapp:['WhatsApp','Nummer + Nachricht'],
-      sms:['SMS','Nummer + Text'],
-      sepa:['SEPA','Empfänger, IBAN, Betrag, Zweck'],
-      paypal:['PayPal','PayPal-Link'],
-      paymentlink:['Zahlungslink','URL + Hinweis'],
-      wero:['Wero','Platzhalter / Link'],
-      crypto:['Crypto','Coin, Adresse, Betrag'],
-      wifi:['WLAN','SSID, Passwort, Typ'],
-      event:['Termin','Start, Ende, Ort'],
-      app:['App-Link','Store- oder App-Adresse']
+      url:['Link','Webadresse'], text:['Text','Freitext'], maps:['Standort','Adresse / Ort'], review:['Bewertung','Feedback-Link'],
+      vcard:['Kontakt','Name, Firma, Telefon, E-Mail'], email:['E-Mail','Empfänger, Betreff, Text'], phone:['Telefon','Nummer'],
+      whatsapp:['WhatsApp','Nummer + Nachricht'], sms:['SMS','Nummer + Text'], sepa:['SEPA','Empfänger, IBAN, Betrag, Zweck'],
+      paypal:['PayPal','PayPal-Link'], paymentlink:['Zahlungslink','HTTPS-Adresse'], wifi:['WLAN','SSID, Passwort, Typ'],
+      event:['Termin','Start, Ende, Ort'], app:['App-/Download-Link','Store- oder Download-Adresse']
     };
 
     function updateInputSummary(){
       const box = $('inputSummary');
-      if(!box) return;
-      box.innerHTML = (summaries[currentMode] || [labels[currentMode] || currentMode]).map(value => `<span>${value}</span>`).join('');
+      if(box) box.innerHTML = (summaries[currentMode] || [labels[currentMode] || currentMode]).map(value => `<span>${value}</span>`).join('');
     }
-
-    function escWifi(value){ return String(value || '').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/:/g,'\\:'); }
     function val(id){ return ($(id)?.value || '').trim(); }
-
-    function dateToIcs(value){
-      if(!value) return '';
-      const d = new Date(value);
-      if(Number.isNaN(d.getTime())) return '';
-      return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
+    function ensureEventUid(force = false){
+      const field = $('eventUid');
+      if(!field || (field.value && !force)) return field?.value || '';
+      field.value = globalThis.crypto?.randomUUID?.() || `qr-event-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      return field.value;
     }
-    function buildPayload(){
-      switch(currentMode){
-        case 'url': return val('urlValue') || 'https://www.warenschmiede.com/';
-        case 'text': return val('textValue') || 'Warenschmiede';
-        case 'wifi': {
-          const ssid = escWifi(val('wifiSsid'));
-          const pass = escWifi(val('wifiPass'));
-          const type = val('wifiType');
-          const hidden = val('wifiHidden') === 'true';
-          return `WIFI:T:${type};S:${ssid};P:${pass};H:${hidden};`;
-        }
-        case 'vcard':
-          return [
-            'BEGIN:VCARD','VERSION:3.0',
-            `N:${val('vcLast')};${val('vcFirst')};;;`,
-            `FN:${[val('vcFirst'),val('vcLast')].filter(Boolean).join(' ')}`,
-            val('vcOrg') ? `ORG:${val('vcOrg')}` : '',
-            val('vcPhone') ? `TEL:${val('vcPhone')}` : '',
-            val('vcEmail') ? `EMAIL:${val('vcEmail')}` : '',
-            val('vcUrl') ? `URL:${val('vcUrl')}` : '',
-            val('vcAddress') ? `ADR:;;${val('vcAddress')};;;;` : '',
-            'END:VCARD'
-          ].filter(Boolean).join('\\n');
-        case 'email': return `mailto:${val('emailTo')}?subject=${encodeURIComponent(val('emailSubject'))}&body=${encodeURIComponent(val('emailBody'))}`;
-        case 'phone': return `tel:${val('phoneValue')}`;
-        case 'whatsapp': return `https://wa.me/${val('waPhone').replace(/\\D/g,'')}?text=${encodeURIComponent(val('waText'))}`;
-        case 'sms': return `SMSTO:${val('smsPhone')}:${val('smsText')}`;
-        case 'maps': return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(val('mapsQuery'))}`;
-        case 'review': return val('reviewUrl') || 'https://www.warenschmiede.com/kontakt/kontakt.html';
-        case 'sepa': {
-          const name = val('sepaName');
-          const iban = val('sepaIban').replace(/\s+/g,'');
-          const bic = val('sepaBic');
-          const amount = val('sepaAmount').replace(',', '.');
-          const purpose = val('sepaPurpose');
-          return [
-            'BCD','002','1','SCT',
-            bic,
-            name,
-            iban,
-            amount ? `EUR${amount}` : '',
-            '',
-            '',
-            purpose
-          ].join('\n');
-        }
-        case 'paypal': return val('paypalUrl') || 'https://paypal.me/';
-        case 'paymentlink': return val('paymentUrl') || 'https://www.warenschmiede.com/kontakt/kontakt.html';
-        case 'wero': return val('weroFallbackUrl') || 'https://www.warenschmiede.com/kontakt/kontakt.html';
-        case 'event': {
-          const start = dateToIcs(val('eventStart'));
-          const end = dateToIcs(val('eventEnd')) || start;
-          return [
-            'BEGIN:VCALENDAR',
-            'VERSION:2.0',
-            'BEGIN:VEVENT',
-            `SUMMARY:${val('eventTitle') || 'Termin'}`,
-            start ? `DTSTART:${start}` : '',
-            end ? `DTEND:${end}` : '',
-            val('eventLocation') ? `LOCATION:${val('eventLocation')}` : '',
-            val('eventDesc') ? `DESCRIPTION:${val('eventDesc')}` : '',
-            'END:VEVENT',
-            'END:VCALENDAR'
-          ].filter(Boolean).join('\n');
-        }
-        case 'app': return val('appUrl') || 'https://www.warenschmiede.com/';
-        case 'crypto': {
-          const type = val('cryptoType') || 'bitcoin';
-          const address = val('cryptoAddress');
-          const params = new URLSearchParams();
-          if(val('cryptoAmount')) params.set('amount', val('cryptoAmount'));
-          if(val('cryptoLabel')) params.set('label', val('cryptoLabel'));
-          const qs = params.toString();
-          return `${type}:${address}${qs ? '?' + qs : ''}`;
-        }
-        default: return 'Warenschmiede';
-      }
+    function inputValues(){
+      return Object.fromEntries(editableControls().map(control => [control.id, control.type === 'checkbox' ? control.checked : control.value]));
     }
+    function buildPayload(){ return window.WSQRPayloads.build(currentMode, inputValues(), { uid: ensureEventUid() }); }
 
     function makeOptions(payload){
       const size = Number(val('qrSize') || 300);
@@ -623,15 +506,22 @@
       };
     }
 
+    function setOutputEnabled(enabled){
+      ['btnPng','btnSvg','btnCopy','btnPrint'].forEach(id => { if($(id)) $(id).disabled = !enabled; });
+    }
+
     function generate(){
-      currentPayload = buildPayload();
-      $('payloadBox').textContent = currentPayload;
+      const built = buildPayload();
+      currentPayload = built.status === 'valid' ? built.payload : '';
+      $('payloadBox').textContent = built.status === 'valid' ? currentPayload : 'Noch kein QR-Inhalt.';
       $('modePill').textContent = labels[currentMode] || currentMode;
       $('lengthPill').textContent = `${currentPayload.length} Zeichen`;
-      const out = $('qr-output');
-      out.innerHTML = '';
-      qr = new QRCodeStyling(makeOptions(currentPayload));
-      qr.append(out);
+      const out = $('qr-output'); out.innerHTML = ''; qr = null;
+      out.textContent = built.status === 'valid' ? '' : built.message;
+      out.dataset.status = built.status;
+      setOutputEnabled(built.status === 'valid');
+      if(built.status === 'valid'){ qr = new QRCodeStyling(makeOptions(currentPayload)); qr.append(out); }
+      return built;
     }
 
     function syncColors(source, target){
@@ -645,8 +535,10 @@
     }
 
     const PROJECT_SCHEMA = 'warenschmiede.qrWerkstatt.project';
-    const PROJECT_SCHEMA_VERSION = 1;
+    const PROJECT_SCHEMA_VERSION = 2;
     const LOCAL_DRAFT_KEY = 'warenschmiede.qrWerkstatt.localDraft.v1';
+    const SCHEMA_MIGRATION_MESSAGE = 'Das ältere QR-Projekt wurde auf die aktuelle Werkzeugversion aktualisiert.';
+    const REMOVED_MODE_MIGRATION_MESSAGE = 'Das ältere QR-Projekt wurde aktualisiert. Nicht mehr angebotene Wero- oder Crypto-Inhalte blieben als Zahlungslink beziehungsweise normaler Text erhalten.';
     let projectVersions = [];
     let localSaveTimer;
 
@@ -673,7 +565,7 @@
     }
 
     function applyState(state){
-      if(!state || typeof state !== 'object' || !labels[state.mode] || !state.values || typeof state.values !== 'object') {
+      if(!state || typeof state !== 'object' || !window.WSQRPayloads.SUPPORTED_MODES.includes(state.mode) || !state.values || typeof state.values !== 'object') {
         throw new Error('Ungültiger QR-Arbeitsstand');
       }
       selectMode(state.mode);
@@ -712,10 +604,15 @@
       try {
         const raw = localStorage.getItem(LOCAL_DRAFT_KEY);
         if(!raw) return false;
-        const data = JSON.parse(raw);
-        validateProject(data);
+        const migratedProject = migrateProject(JSON.parse(raw));
+        const data = validateProject(migratedProject.data);
         projectVersions = data.versions || [];
         applyState(data.state);
+        if(migratedProject.schemaMigrated) {
+          saveLocalDraft();
+          const message = migratedProject.removedModeMigrated ? REMOVED_MODE_MIGRATION_MESSAGE : SCHEMA_MIGRATION_MESSAGE;
+          setTimeout(() => toast(message), 0);
+        }
         return true;
       } catch {
         localStorage.removeItem(LOCAL_DRAFT_KEY);
@@ -723,14 +620,31 @@
       }
     }
 
+    function migrateProject(data){
+      if(!data || data.schema !== PROJECT_SCHEMA || ![1, 2].includes(data.schemaVersion) || !data.state) throw new Error('Keine gültige QR-Projektdatei');
+      if(data.schemaVersion === PROJECT_SCHEMA_VERSION) return { data, schemaMigrated:false, removedModeMigrated:false };
+      const versions = data.versions === undefined ? [] : data.versions;
+      if(!Array.isArray(versions)) throw new Error('Ungültiger Versionsverlauf');
+      const removedModes = ['wero', 'crypto'];
+      const removedModeMigrated = removedModes.includes(data.state.mode) || versions.some(version => removedModes.includes(version?.state?.mode));
+      const copy = { ...data, schemaVersion: PROJECT_SCHEMA_VERSION, state: window.WSQRPayloads.migrateLegacyState(data.state) };
+      copy.versions = versions.map(version => ({ ...version, state: window.WSQRPayloads.migrateLegacyState(version.state) }));
+      return { data: copy, schemaMigrated:true, removedModeMigrated };
+    }
+
+    function validateProjectState(state, context){
+      if(!state || typeof state !== 'object' || !window.WSQRPayloads.SUPPORTED_MODES.includes(state.mode) || !state.values || typeof state.values !== 'object' || Array.isArray(state.values)) {
+        throw new Error(`${context} enthält eine unbekannte oder unvollständige QR-Art`);
+      }
+    }
+
     function validateProject(data){
       if(!data || data.schema !== PROJECT_SCHEMA || data.schemaVersion !== PROJECT_SCHEMA_VERSION || !data.state) {
         throw new Error('Keine gültige QR-Projektdatei');
       }
-      if(!labels[data.state.mode] || !data.state.values || typeof data.state.values !== 'object') {
-        throw new Error('QR-Projektdaten sind unvollständig');
-      }
+      validateProjectState(data.state, 'QR-Projekt');
       if(data.versions !== undefined && !Array.isArray(data.versions)) throw new Error('Ungültiger Versionsverlauf');
+      (data.versions || []).forEach((version, index) => validateProjectState(version?.state, `Version ${index + 1}`));
       return data;
     }
 
@@ -751,11 +665,14 @@
       if(!file) return;
       try {
         if(file.size > 2 * 1024 * 1024) throw new Error('Projektdatei ist zu groß');
-        const data = validateProject(JSON.parse(await file.text()));
-        projectVersions = data.versions || [];
+        const migratedProject = migrateProject(JSON.parse(await file.text()));
+        const data = validateProject(migratedProject.data);
         applyState(data.state);
+        projectVersions = data.versions || [];
         saveLocalDraft();
-        toast('QR-Projekt geladen');
+        toast(migratedProject.schemaMigrated
+          ? (migratedProject.removedModeMigrated ? REMOVED_MODE_MIGRATION_MESSAGE : SCHEMA_MIGRATION_MESSAGE)
+          : 'QR-Projekt geladen');
       } catch(error) {
         toast(error instanceof SyntaxError ? 'Ungültige JSON-Datei' : error.message);
       } finally {
@@ -786,6 +703,7 @@
           control.value = control.defaultValue;
         }
       });
+      ensureEventUid(true);
       selectMode('url');
       $('dotColor').value = $('dotColorText').value;
       $('bgColor').value = $('bgColorText').value;
@@ -867,7 +785,9 @@
       $('btnGenerate').addEventListener('click', generate);
       $('btnPng').addEventListener('click', () => qr?.download({name:'qr-werkstatt-plus', extension:'png'}));
       $('btnSvg').addEventListener('click', () => qr?.download({name:'qr-werkstatt-plus', extension:'svg'}));
+      $('btnPrint').addEventListener('click', () => { if(currentPayload) window.print(); });
       $('btnCopy').addEventListener('click', async () => {
+        if(!currentPayload) return;
         try { await navigator.clipboard.writeText(currentPayload); toast('QR-Inhalt kopiert'); }
         catch { toast('Kopieren nicht möglich'); }
       });
@@ -877,6 +797,7 @@
       helpDialog.addEventListener('cancel', unlockHelpScroll);
       $('helpWindowOpen').addEventListener('click', () => openHelpWindow());
 
+      ensureEventUid();
       if(!restoreLocalDraft()) {
         selectMode('url');
         generate();

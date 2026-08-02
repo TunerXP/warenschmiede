@@ -28,6 +28,8 @@ class MockControl {
 class HTMLSelectElement extends MockControl {}
 global.HTMLSelectElement = HTMLSelectElement;
 global.CSS = { escape: value => value };
+global.window = { WSQRPayloads: require('../tools/qr-werkstatt/payloads.js') };
+global.crypto = require('node:crypto').webcrypto;
 
 global.QRCodeStyling = class {
   append() {}
@@ -39,11 +41,13 @@ function loadQrApp() {
   const source = html.match(/<script>\n([\s\S]*?)<\/script>/)[1];
   const controls = [
     new MockControl('urlValue', 'https://www.warenschmiede.com/'),
+    new MockControl('textValue', ''),
+    new MockControl('paymentUrl', ''),
     new MockControl('wifiSsid', ''),
     new MockControl('wifiPass', ''),
     new MockControl('wifiType', 'WPA', [['WPA'], ['WEP'], ['nopass']]),
     new MockControl('wifiHidden', 'false', [['false'], ['true']]),
-    new MockControl('cryptoType', 'bitcoin', [['bitcoin'], ['ethereum'], ['litecoin']]),
+    new MockControl('eventUid', ''),
     new MockControl('qrSize', '300', [['240'], ['300', true], ['420'], ['600']]),
     new MockControl('dotType', 'rounded', [['rounded', true], ['square'], ['dots'], ['classy']]),
     new MockControl('dotColorText', '#102033'),
@@ -61,9 +65,9 @@ function loadQrApp() {
 
   const byId = Object.fromEntries(controls.map(control => [control.id, control]));
   for (const id of ['modeHint', 'inputSummary', 'payloadBox', 'modePill', 'lengthPill', 'qr-output', 'toast', 'projectFileInput']) {
-    byId[id] = { id, textContent: '', innerHTML: '', classList: { add() {}, remove() {} } };
+    byId[id] = { id, textContent: '', innerHTML: '', dataset: {}, classList: { add() {}, remove() {} } };
   }
-  const modes = ['url', 'wifi', 'crypto'].map(mode => ({
+  const modes = ['url', 'wifi', 'text', 'paymentlink', 'event'].map(mode => ({
     dataset: { mode },
     classList: { toggle(_name, active) { this.active = active; } }
   }));
@@ -93,7 +97,7 @@ function loadQrApp() {
     }
   };
 
-  const api = new Function(`${source}\nreturn { captureState, applyState, selectMode, resetToDefaults, clearLocalDraft, saveLocalDraft, restoreLocalDraft, projectDocument, loadProjectFile, getMode: () => currentMode };`)();
+  const api = new Function(`${source}\nreturn { captureState, applyState, selectMode, resetToDefaults, clearLocalDraft, saveLocalDraft, restoreLocalDraft, projectDocument, loadProjectFile, saveVersion, migrateProject, validateProject, getMode: () => currentMode, getVersions: () => projectVersions };`)();
   return { api, byId, controls, storage, setConfirm: value => { confirmResult = value; }, domReady: () => domReady };
 }
 
@@ -129,7 +133,6 @@ test('local restore works and clearing can be cancelled or reset every select', 
   api.selectMode('wifi');
   byId.wifiType.value = 'WEP';
   byId.wifiHidden.value = 'true';
-  byId.cryptoType.value = 'ethereum';
   byId.qrSize.value = '600';
   byId.dotType.value = 'square';
   api.saveLocalDraft();
@@ -153,6 +156,53 @@ test('local restore works and clearing can be cancelled or reset every select', 
   assert.equal(byId.dotType.value, 'rounded');
   assert.equal(byId.wifiType.value, 'WPA');
   assert.equal(byId.wifiHidden.value, 'false');
-  assert.equal(byId.cryptoType.value, 'bitcoin');
-  assert.ok([byId.qrSize, byId.dotType, byId.wifiType, byId.wifiHidden, byId.cryptoType].every(select => select.selectedIndex >= 0));
+  assert.ok([byId.qrSize, byId.dotType, byId.wifiType, byId.wifiHidden].every(select => select.selectedIndex >= 0));
+});
+
+function project(schemaVersion, mode, values = {}, versions = []) {
+  return { schema:'warenschmiede.qrWerkstatt.project', schemaVersion, state:{mode, values}, versions };
+}
+
+test('V2-Projekte und Versionszustände akzeptieren ausschließlich zentrale Modi', () => {
+  const { api } = loadQrApp();
+  for (const mode of ['wero', 'crypto', 'unbekannt']) {
+    const migrated = api.migrateProject(project(2, mode));
+    assert.equal(migrated.data.state.mode, mode);
+    assert.equal(migrated.schemaMigrated, false);
+    assert.throws(() => api.validateProject(migrated.data), /unbekannte oder unvollständige QR-Art/);
+  }
+  assert.throws(() => api.validateProject(project(2, 'url', {}, [{state:{mode:'unbekannt',values:{}}}])), /Version 1/);
+});
+
+test('nur V1 migriert Hauptzustand und Versionen mit passender Meldungsart', () => {
+  const { api } = loadQrApp();
+  const legacy = project(1, 'url', {urlValue:'https://example.de'}, [
+    {number:1,state:{mode:'wero',values:{weroFallbackUrl:'https://pay.example'}}},
+    {number:2,state:{mode:'crypto',values:{cryptoType:'bitcoin',cryptoAddress:'abc'}}}
+  ]);
+  const migrated = api.migrateProject(legacy);
+  assert.equal(migrated.schemaMigrated, true);
+  assert.equal(migrated.removedModeMigrated, true);
+  assert.equal(migrated.data.state.mode, 'url');
+  assert.equal(migrated.data.state.values.urlValue, 'https://example.de');
+  assert.equal(migrated.data.versions[0].state.mode, 'paymentlink');
+  assert.equal(migrated.data.versions[1].state.mode, 'text');
+  const normal = api.migrateProject(project(1, 'wifi', {wifiSsid:'Gast'}));
+  assert.equal(normal.schemaMigrated, true);
+  assert.equal(normal.removedModeMigrated, false);
+  assert.deepEqual(normal.data.state, {mode:'wifi',values:{wifiSsid:'Gast'}});
+});
+
+test('ungültige V2-Datei lässt Zustand und Versionsverlauf vollständig bestehen', async () => {
+  const { api, byId } = loadQrApp();
+  api.selectMode('wifi');
+  byId.wifiSsid.value = 'Bestehend';
+  api.saveVersion();
+  const beforeState = structuredClone(api.captureState());
+  const beforeVersions = structuredClone(api.getVersions());
+  const invalid = JSON.stringify(project(2, 'wero', {paymentUrl:'https://evil.example'}));
+  await api.loadProjectFile({size:invalid.length, text:async () => invalid});
+  assert.deepEqual(api.captureState(), beforeState);
+  assert.deepEqual(api.getVersions(), beforeVersions);
+  assert.match(byId.toast.textContent, /unbekannte oder unvollständige QR-Art/);
 });
