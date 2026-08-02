@@ -9,6 +9,15 @@
       iconScale: 2.55,
       cardImage: '/assets/img/tools/3d-druck-kostenrechner-plus.png'
     },
+    time: {
+      id: 'time',
+      name: 'Zeiterfassung Plus',
+      description: 'Arbeitszeiten lokal erfassen, sichern und ausgeben.',
+      href: '/tools/Zeiterfassung_Plus.html',
+      icon: '/assets/img/tools/zeiterfassung-plus.png',
+      iconScale: 1,
+      cardImage: '/assets/img/tools/zeiterfassung-plus.png'
+    },
     barcode: {
       id: 'barcode',
       name: 'Barcode-Werkstatt Plus',
