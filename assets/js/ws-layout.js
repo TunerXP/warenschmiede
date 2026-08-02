@@ -52,7 +52,7 @@
         ] },
         { label: 'Arbeitszeit & Alltag', accent: 'blue', links: [
           { label: 'Zeiterfassung', href: 'tools/Zeiterfassung.html', description: 'Legacy-Version für bestehende Nutzer.', note: 'Legacy-Version' },
-          { label: 'Zeiterfassung Plus', href: 'tools/Zeiterfassung_Plus.html', description: 'Aktuelle Online-Version für Arbeitszeiten.' },
+          { toolId: 'time', fallback: { label: 'Zeiterfassung Plus', href: 'tools/Zeiterfassung_Plus.html', description: 'Arbeitszeiten lokal erfassen, sichern und ausgeben.' } },
           { label: 'Quittungs-Werkstatt', href: 'tools/ReceiptWriterPro.html', description: 'Quittungen direkt im Browser erstellen.' }
         ] }
       ]

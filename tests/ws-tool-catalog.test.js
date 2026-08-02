@@ -15,9 +15,9 @@ function loadCatalog() {
 
 test('central tool catalog contains complete, immutable code-tool identities', () => {
   const catalog = loadCatalog().WSToolCatalog;
-  assert.deepEqual(Object.keys(catalog), ['3d-cost', 'barcode', 'qr', 'datamatrix']);
+  assert.deepEqual(Object.keys(catalog), ['3d-cost', 'time', 'barcode', 'qr', 'datamatrix']);
   assert.equal(Object.isFrozen(catalog), true);
-  assert.equal(new Set(Object.values(catalog).map(tool => tool.id)).size, 4);
+  assert.equal(new Set(Object.values(catalog).map(tool => tool.id)).size, 5);
   for (const [id, tool] of Object.entries(catalog)) {
     assert.equal(tool.id, id);
     assert.equal(Object.isFrozen(tool), true);
@@ -37,7 +37,7 @@ test('identity API resolves tools, applies central icons and tolerates unknown I
   const window = loadCatalog();
   const values = {};
   const image = { src: 'fallback.png', style: { setProperty(name, value) { values[name] = value; } } };
-  for (const id of ['barcode', 'qr', 'datamatrix']) assert.equal(window.WSToolIdentity.get(id).id, id);
+  for (const id of ['time', 'barcode', 'qr', 'datamatrix']) assert.equal(window.WSToolIdentity.get(id).id, id);
   window.WSToolIdentity.applyIcon(image, 'datamatrix');
   assert.equal(image.src, window.WSToolCatalog.datamatrix.icon);
   assert.equal(values['--ws-tool-icon-scale'], '2.45');
