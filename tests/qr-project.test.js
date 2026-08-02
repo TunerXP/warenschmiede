@@ -28,6 +28,8 @@ class MockControl {
 class HTMLSelectElement extends MockControl {}
 global.HTMLSelectElement = HTMLSelectElement;
 global.CSS = { escape: value => value };
+global.window = { WSQRPayloads: require('../tools/qr-werkstatt/payloads.js') };
+global.crypto = require('node:crypto').webcrypto;
 
 global.QRCodeStyling = class {
   append() {}
@@ -43,7 +45,7 @@ function loadQrApp() {
     new MockControl('wifiPass', ''),
     new MockControl('wifiType', 'WPA', [['WPA'], ['WEP'], ['nopass']]),
     new MockControl('wifiHidden', 'false', [['false'], ['true']]),
-    new MockControl('cryptoType', 'bitcoin', [['bitcoin'], ['ethereum'], ['litecoin']]),
+    new MockControl('eventUid', ''),
     new MockControl('qrSize', '300', [['240'], ['300', true], ['420'], ['600']]),
     new MockControl('dotType', 'rounded', [['rounded', true], ['square'], ['dots'], ['classy']]),
     new MockControl('dotColorText', '#102033'),
@@ -61,9 +63,9 @@ function loadQrApp() {
 
   const byId = Object.fromEntries(controls.map(control => [control.id, control]));
   for (const id of ['modeHint', 'inputSummary', 'payloadBox', 'modePill', 'lengthPill', 'qr-output', 'toast', 'projectFileInput']) {
-    byId[id] = { id, textContent: '', innerHTML: '', classList: { add() {}, remove() {} } };
+    byId[id] = { id, textContent: '', innerHTML: '', dataset: {}, classList: { add() {}, remove() {} } };
   }
-  const modes = ['url', 'wifi', 'crypto'].map(mode => ({
+  const modes = ['url', 'wifi', 'text', 'paymentlink', 'event'].map(mode => ({
     dataset: { mode },
     classList: { toggle(_name, active) { this.active = active; } }
   }));
@@ -129,7 +131,6 @@ test('local restore works and clearing can be cancelled or reset every select', 
   api.selectMode('wifi');
   byId.wifiType.value = 'WEP';
   byId.wifiHidden.value = 'true';
-  byId.cryptoType.value = 'ethereum';
   byId.qrSize.value = '600';
   byId.dotType.value = 'square';
   api.saveLocalDraft();
@@ -153,6 +154,5 @@ test('local restore works and clearing can be cancelled or reset every select', 
   assert.equal(byId.dotType.value, 'rounded');
   assert.equal(byId.wifiType.value, 'WPA');
   assert.equal(byId.wifiHidden.value, 'false');
-  assert.equal(byId.cryptoType.value, 'bitcoin');
-  assert.ok([byId.qrSize, byId.dotType, byId.wifiType, byId.wifiHidden, byId.cryptoType].every(select => select.selectedIndex >= 0));
+  assert.ok([byId.qrSize, byId.dotType, byId.wifiType, byId.wifiHidden].every(select => select.selectedIndex >= 0));
 });

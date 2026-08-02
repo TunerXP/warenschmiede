@@ -1,0 +1,77 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const P = require('../tools/qr-werkstatt/payloads.js');
+const build = (mode, values, options) => P.build(mode, values, options);
+
+test('leere und ungültige URL-Zustände bleiben sicher', () => {
+  assert.equal(build('url', {}).status, 'empty');
+  for (const value of ['example.de', 'http://example.de', 'javascript:alert(1)', 'data:text/plain,x', 'https://exam ple.de']) assert.equal(build('url', { urlValue: value }).status, 'invalid');
+  assert.deepEqual(build('url', { urlValue: 'https://example.de/a' }), { status:'valid', payload:'https://example.de/a', message:'' });
+  for (const [mode,id] of [['review','reviewUrl'],['paypal','paypalUrl'],['paymentlink','paymentUrl']]) assert.equal(build(mode, {[id]:'https://example.de'}).status, 'valid');
+});
+
+test('vCard nutzt echte CRLF, TYPE-Angaben und maskierte Sonderzeichen', () => {
+  const result = build('vcard', { vcFirst:'Jörg', vcLast:'Müller, Test; \\', vcOrg:'Ähre', vcPhone:'+49 (151) 413-82732', vcEmail:'mail@example.de', vcUrl:'https://example.de', vcAddress:'Straße 1, Ort' });
+  assert.equal(result.status, 'valid');
+  assert.match(result.payload, /BEGIN:VCARD\r\nVERSION:3\.0\r\n/);
+  assert.doesNotMatch(result.payload, /\\nVERSION/);
+  assert.match(result.payload, /Müller\\, Test\\; \\\\/);
+  assert.match(result.payload, /TEL;TYPE=CELL:\+4915141382732/);
+  assert.match(result.payload, /EMAIL;TYPE=INTERNET:mail@example.de/);
+  assert.match(result.payload, /URL:https:\/\/example.de/);
+  assert.doesNotMatch(build('vcard', {vcOrg:'Firma'}).payload, /TEL|EMAIL|URL|ADR/);
+});
+
+test('Kommunikations-URIs werden normalisiert und encodiert', () => {
+  assert.equal(build('email',{emailTo:'a@example.de',emailSubject:'Grüße & Test',emailBody:'Zeile 1\nZeile 2'}).payload, 'mailto:a@example.de?subject=Gr%C3%BC%C3%9Fe%20%26%20Test&body=Zeile%201%0D%0AZeile%202');
+  assert.equal(build('phone',{phoneValue:'+49 (151) 413-82732'}).payload, 'tel:+4915141382732');
+  assert.equal(build('whatsapp',{waPhone:'+49 151 41382732',waText:'Hallo Marco'}).payload, 'https://wa.me/4915141382732?text=Hallo%20Marco');
+  assert.equal(build('sms',{smsPhone:'+49 151 41382732',smsText:'Hallo Marco'}).payload, 'sms:+4915141382732?body=Hallo%20Marco');
+});
+
+test('WLAN behandelt Pflichten, nopass, Sonderzeichen und Abschluss', () => {
+  assert.equal(build('wifi',{}).status, 'empty');
+  assert.equal(build('wifi',{wifiSsid:'Gast',wifiType:'WPA'}).status, 'invalid');
+  assert.equal(build('wifi',{wifiSsid:'Werkstatt;Gast, A:B"\\',wifiType:'WPA',wifiPass:'Test,Netz',wifiHidden:'true'}).payload, 'WIFI:T:WPA;S:Werkstatt\\;Gast\\, A\\:B\\"\\\\;P:Test\\,Netz;H:true;;');
+  assert.equal(build('wifi',{wifiSsid:'Gast',wifiType:'nopass'}).payload, 'WIFI:T:nopass;S:Gast;H:false;;');
+});
+
+test('Termin ist stabiles, UTC-basiertes iCalendar mit CRLF', () => {
+  const values={eventUid:'stabil@example',eventTitle:'Prüfung, A;B',eventStart:'2026-08-02T10:00:00Z',eventEnd:'2026-08-02T11:00:00Z',eventLocation:'Ort',eventDesc:'Ä\nB'};
+  const result=build('event',values,{now:'2026-08-01T09:00:00Z'});
+  assert.equal(result.status,'valid'); assert.match(result.payload,/VERSION:2\.0\r\nPRODID:-\/\/Warenschmiede/);
+  assert.match(result.payload,/UID:stabil@example/); assert.match(result.payload,/DTSTAMP:20260801T090000Z/); assert.match(result.payload,/DTSTART:20260802T100000Z/); assert.match(result.payload,/DTEND:20260802T110000Z/); assert.match(result.payload,/SUMMARY:Prüfung\\, A\\;B/);
+  assert.equal(build('event',{...values,eventEnd:'2026-08-02T09:00:00Z'}).status,'invalid');
+});
+
+test('SEPA erzeugt exakt zwölf LF-Felder und validiert EPC-Daten', () => {
+  const base={sepaName:'Max Mustermann',sepaIban:'DE89 3704 0044 0532 0130 00',sepaPurpose:'Rechnung 1'};
+  const result=build('sepa',{...base,sepaBic:'COBADEFF',sepaAmount:'12,5'});
+  assert.equal(result.status,'valid'); assert.equal(result.payload.split('\n').length,12); assert.equal(result.payload.split('\n')[7],'EUR12.50'); assert.doesNotMatch(result.payload,/\r/);
+  assert.equal(build('sepa',{...base,sepaIban:'DE88 3704 0044 0532 0130 00'}).status,'invalid');
+  assert.equal(build('sepa',{...base,sepaBic:'DEUTDEFF500'}).status,'valid');
+  assert.equal(build('sepa',{...base,sepaAmount:'1.234'}).status,'invalid');
+  assert.equal(build('sepa',{...base,sepaPurpose:'ä'.repeat(141)}).status,'invalid');
+});
+
+test('App- und Kartenlinks erlauben nur definierte Strukturen', () => {
+  for(const url of ['https://example.de','market://details?id=x','itms-apps://apps.apple.com/app/x','ms-windows-store://pdp/?id=x']) assert.equal(build('app',{appUrl:url}).status,'valid');
+  assert.equal(build('app',{appUrl:'file:///tmp/a'}).status,'invalid');
+  assert.equal(build('maps',{}).status,'empty');
+  assert.equal(build('maps',{mapsQuery:'Straße & Ort'}).payload,'https://www.google.com/maps/search/?api=1&query=Stra%C3%9Fe%20%26%20Ort');
+});
+
+test('V1-Migration erhält Zahlungslink und Crypto-URI als normalen Text', () => {
+  const w=P.migrateLegacyState({mode:'wero',values:{weroFallbackUrl:'https://pay.example'}});
+  assert.equal(w.mode,'paymentlink'); assert.equal(w.values.paymentUrl,'https://pay.example');
+  const c=P.migrateLegacyState({mode:'crypto',values:{cryptoType:'bitcoin',cryptoAddress:'abc',cryptoAmount:'1.2',cryptoLabel:'Alt'}});
+  assert.equal(c.mode,'text'); assert.equal(c.values.textValue,'bitcoin:abc?amount=1.2&label=Alt');
+});
+
+test('Oberfläche und Hilfe bieten nur aktuelle QR-Arten', () => {
+  const html=fs.readFileSync('tools/QRCodeMasterPro.html','utf8'); const help=fs.readFileSync('tools/qr-werkstatt/hilfe.html','utf8');
+  assert.doesNotMatch(html,/data-mode="(?:wero|crypto)"|data-form="(?:wero|crypto)"/);
+  assert.doesNotMatch(help,/Wero|Crypto|Wallet|Seed-Phrasen/i);
+  assert.match(html,/App-\/Download-Link/); assert.match(help,/SEPA[\s\S]*Banking-App/);
+});
