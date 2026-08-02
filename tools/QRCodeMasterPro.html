@@ -537,7 +537,8 @@
     const PROJECT_SCHEMA = 'warenschmiede.qrWerkstatt.project';
     const PROJECT_SCHEMA_VERSION = 2;
     const LOCAL_DRAFT_KEY = 'warenschmiede.qrWerkstatt.localDraft.v1';
-    const MIGRATION_MESSAGE = 'Das ältere QR-Projekt wurde an die aktuelle Werkzeugversion angepasst. Nicht mehr angebotene Wero- oder Crypto-Inhalte wurden als normaler Zahlungslink beziehungsweise Text erhalten.';
+    const SCHEMA_MIGRATION_MESSAGE = 'Das ältere QR-Projekt wurde auf die aktuelle Werkzeugversion aktualisiert.';
+    const REMOVED_MODE_MIGRATION_MESSAGE = 'Das ältere QR-Projekt wurde aktualisiert. Nicht mehr angebotene Wero- oder Crypto-Inhalte blieben als Zahlungslink beziehungsweise normaler Text erhalten.';
     let projectVersions = [];
     let localSaveTimer;
 
@@ -564,7 +565,7 @@
     }
 
     function applyState(state){
-      if(!state || typeof state !== 'object' || !labels[state.mode] || !state.values || typeof state.values !== 'object') {
+      if(!state || typeof state !== 'object' || !window.WSQRPayloads.SUPPORTED_MODES.includes(state.mode) || !state.values || typeof state.values !== 'object') {
         throw new Error('Ungültiger QR-Arbeitsstand');
       }
       selectMode(state.mode);
@@ -607,7 +608,11 @@
         const data = validateProject(migratedProject.data);
         projectVersions = data.versions || [];
         applyState(data.state);
-        if(migratedProject.migrated) { saveLocalDraft(); setTimeout(() => toast(MIGRATION_MESSAGE), 0); }
+        if(migratedProject.schemaMigrated) {
+          saveLocalDraft();
+          const message = migratedProject.removedModeMigrated ? REMOVED_MODE_MIGRATION_MESSAGE : SCHEMA_MIGRATION_MESSAGE;
+          setTimeout(() => toast(message), 0);
+        }
         return true;
       } catch {
         localStorage.removeItem(LOCAL_DRAFT_KEY);
@@ -617,20 +622,29 @@
 
     function migrateProject(data){
       if(!data || data.schema !== PROJECT_SCHEMA || ![1, 2].includes(data.schemaVersion) || !data.state) throw new Error('Keine gültige QR-Projektdatei');
-      const migrated = data.schemaVersion === 1;
+      if(data.schemaVersion === PROJECT_SCHEMA_VERSION) return { data, schemaMigrated:false, removedModeMigrated:false };
+      const versions = data.versions === undefined ? [] : data.versions;
+      if(!Array.isArray(versions)) throw new Error('Ungültiger Versionsverlauf');
+      const removedModes = ['wero', 'crypto'];
+      const removedModeMigrated = removedModes.includes(data.state.mode) || versions.some(version => removedModes.includes(version?.state?.mode));
       const copy = { ...data, schemaVersion: PROJECT_SCHEMA_VERSION, state: window.WSQRPayloads.migrateLegacyState(data.state) };
-      copy.versions = (data.versions || []).map(version => ({ ...version, state: window.WSQRPayloads.migrateLegacyState(version.state) }));
-      return { data: copy, migrated };
+      copy.versions = versions.map(version => ({ ...version, state: window.WSQRPayloads.migrateLegacyState(version.state) }));
+      return { data: copy, schemaMigrated:true, removedModeMigrated };
+    }
+
+    function validateProjectState(state, context){
+      if(!state || typeof state !== 'object' || !window.WSQRPayloads.SUPPORTED_MODES.includes(state.mode) || !state.values || typeof state.values !== 'object' || Array.isArray(state.values)) {
+        throw new Error(`${context} enthält eine unbekannte oder unvollständige QR-Art`);
+      }
     }
 
     function validateProject(data){
       if(!data || data.schema !== PROJECT_SCHEMA || data.schemaVersion !== PROJECT_SCHEMA_VERSION || !data.state) {
         throw new Error('Keine gültige QR-Projektdatei');
       }
-      if(!labels[data.state.mode] || !data.state.values || typeof data.state.values !== 'object') {
-        throw new Error('QR-Projektdaten sind unvollständig');
-      }
+      validateProjectState(data.state, 'QR-Projekt');
       if(data.versions !== undefined && !Array.isArray(data.versions)) throw new Error('Ungültiger Versionsverlauf');
+      (data.versions || []).forEach((version, index) => validateProjectState(version?.state, `Version ${index + 1}`));
       return data;
     }
 
@@ -656,7 +670,9 @@
         applyState(data.state);
         projectVersions = data.versions || [];
         saveLocalDraft();
-        toast(migratedProject.migrated ? MIGRATION_MESSAGE : 'QR-Projekt geladen');
+        toast(migratedProject.schemaMigrated
+          ? (migratedProject.removedModeMigrated ? REMOVED_MODE_MIGRATION_MESSAGE : SCHEMA_MIGRATION_MESSAGE)
+          : 'QR-Projekt geladen');
       } catch(error) {
         toast(error instanceof SyntaxError ? 'Ungültige JSON-Datei' : error.message);
       } finally {

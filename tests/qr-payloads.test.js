@@ -8,7 +8,22 @@ test('leere und ungültige URL-Zustände bleiben sicher', () => {
   assert.equal(build('url', {}).status, 'empty');
   for (const value of ['example.de', 'http://example.de', 'javascript:alert(1)', 'data:text/plain,x', 'https://exam ple.de']) assert.equal(build('url', { urlValue: value }).status, 'invalid');
   assert.deepEqual(build('url', { urlValue: 'https://example.de/a' }), { status:'valid', payload:'https://example.de/a', message:'' });
-  for (const [mode,id] of [['review','reviewUrl'],['paypal','paypalUrl'],['paymentlink','paymentUrl']]) assert.equal(build(mode, {[id]:'https://example.de'}).status, 'valid');
+  for (const [mode,id] of [['review','reviewUrl'],['paymentlink','paymentUrl']]) assert.equal(build(mode, {[id]:'https://example.de'}).status, 'valid');
+});
+
+test('HTTPS- und PayPal-Links lehnen Zugangsdaten und fremde Hosts ab', () => {
+  assert.equal(P.validateHttpsUrl('https://example.de'), true);
+  assert.equal(P.validateHttpsUrl('https://name:pass@example.de'), false);
+  assert.equal(P.validateHttpsUrl('https://paypal.com@evil.example'), false);
+  for (const url of ['https://paypal.me/test', 'https://www.paypal.com/paypalme/test', 'https://www.paypal.com/checkoutnow?token=test']) {
+    assert.equal(P.validatePaypalUrl(url), true);
+    assert.equal(build('paypal', {paypalUrl:url}).status, 'valid');
+  }
+  for (const url of ['https://example.de', 'http://paypal.me/test', 'https://evilpaypal.com/test', 'https://paypal.com.evil.example/test', 'https://paypal.com@evil.example/test']) {
+    assert.equal(P.validatePaypalUrl(url), false);
+    assert.equal(build('paypal', {paypalUrl:url}).status, 'invalid');
+  }
+  assert.equal(build('paymentlink', {paymentUrl:'https://example.de'}).status, 'valid');
 });
 
 test('vCard nutzt echte CRLF, TYPE-Angaben und maskierte Sonderzeichen', () => {
@@ -28,6 +43,17 @@ test('Kommunikations-URIs werden normalisiert und encodiert', () => {
   assert.equal(build('phone',{phoneValue:'+49 (151) 413-82732'}).payload, 'tel:+4915141382732');
   assert.equal(build('whatsapp',{waPhone:'+49 151 41382732',waText:'Hallo Marco'}).payload, 'https://wa.me/4915141382732?text=Hallo%20Marco');
   assert.equal(build('sms',{smsPhone:'+49 151 41382732',smsText:'Hallo Marco'}).payload, 'sms:+4915141382732?body=Hallo%20Marco');
+});
+
+test('WhatsApp verlangt eine internationale Nummer ohne führende Null', () => {
+  for (const value of ['+49 151 41382732', '+49 (151) 413-82732', '4915141382732']) {
+    assert.equal(P.normalizeWhatsAppPhone(value), '4915141382732');
+    assert.equal(build('whatsapp', {waPhone:value}).payload, 'https://wa.me/4915141382732');
+  }
+  for (const value of ['015141382732', '004915141382732', '+012345678', '123', 'abc', 'https://wa.me/49']) {
+    assert.equal(P.normalizeWhatsAppPhone(value), '');
+    assert.equal(build('whatsapp', {waPhone:value}).status, 'invalid');
+  }
 });
 
 test('WLAN behandelt Pflichten, nopass, Sonderzeichen und Abschluss', () => {
@@ -67,6 +93,12 @@ test('V1-Migration erhält Zahlungslink und Crypto-URI als normalen Text', () =>
   assert.equal(w.mode,'paymentlink'); assert.equal(w.values.paymentUrl,'https://pay.example');
   const c=P.migrateLegacyState({mode:'crypto',values:{cryptoType:'bitcoin',cryptoAddress:'abc',cryptoAmount:'1.2',cryptoLabel:'Alt'}});
   assert.equal(c.mode,'text'); assert.equal(c.values.textValue,'bitcoin:abc?amount=1.2&label=Alt');
+});
+
+test('unterstützte Modi sind zentral unveränderlich und entfernte Modi ungültig', () => {
+  assert.equal(Object.isFrozen(P.SUPPORTED_MODES), true);
+  assert.deepEqual(P.SUPPORTED_MODES, ['url','text','maps','review','vcard','email','phone','whatsapp','sms','sepa','paypal','paymentlink','wifi','event','app']);
+  for (const mode of ['wero', 'crypto', 'unbekannt']) assert.equal(build(mode, {}).status, 'invalid');
 });
 
 test('Oberfläche und Hilfe bieten nur aktuelle QR-Arten', () => {

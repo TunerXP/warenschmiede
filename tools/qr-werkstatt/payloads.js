@@ -6,6 +6,7 @@
   'use strict';
 
   const result = (status, payload = '', message = '') => ({ status, payload, message });
+  const SUPPORTED_MODES = Object.freeze(['url', 'text', 'maps', 'review', 'vcard', 'email', 'phone', 'whatsapp', 'sms', 'sepa', 'paypal', 'paymentlink', 'wifi', 'event', 'app']);
   const empty = () => result('empty', '', 'Bitte zuerst die benötigten Daten eingeben.');
   const invalid = message => result('invalid', '', message);
   const valid = payload => result('valid', payload, '');
@@ -19,13 +20,26 @@
     return /^\+?\d{6,15}$/.test(normalized) ? normalized : '';
   }
 
+  function normalizeWhatsAppPhone(value) {
+    const input = clean(value);
+    if (!input || !/^\+?[\d\s()\-]+$/.test(input) || input.startsWith('00')) return '';
+    const digits = input.replace(/\D/g, '');
+    return /^[1-9]\d{6,14}$/.test(digits) ? digits : '';
+  }
+
   function validateHttpsUrl(value) {
     const input = clean(value);
     if (!input || /\s/.test(input)) return false;
     try {
       const parsed = new URL(input);
-      return parsed.protocol === 'https:' && Boolean(parsed.hostname);
+      return parsed.protocol === 'https:' && Boolean(parsed.hostname) && !parsed.username && !parsed.password;
     } catch { return false; }
+  }
+
+  function validatePaypalUrl(value) {
+    if (!validateHttpsUrl(value)) return false;
+    const hostname = new URL(clean(value)).hostname.toLowerCase();
+    return hostname === 'paypal.me' || hostname === 'www.paypal.me' || hostname === 'paypal.com' || hostname.endsWith('.paypal.com');
   }
 
   function escapeVCardText(value) {
@@ -73,12 +87,18 @@
   }
 
   function build(mode, values = {}, options = {}) {
+    if (!SUPPORTED_MODES.includes(mode)) return invalid('Diese QR-Art wird nicht unterstützt.');
     const v = id => clean(values[id]);
-    const httpsModes = { url: 'urlValue', review: 'reviewUrl', paypal: 'paypalUrl', paymentlink: 'paymentUrl' };
+    const httpsModes = { url: 'urlValue', review: 'reviewUrl', paymentlink: 'paymentUrl' };
     if (httpsModes[mode]) {
       const value = v(httpsModes[mode]);
       if (!value) return empty();
       return validateHttpsUrl(value) ? valid(value) : invalid('Bitte eine vollständige Webadresse mit https:// eingeben.');
+    }
+    if (mode === 'paypal') {
+      const value = v('paypalUrl');
+      if (!value) return empty();
+      return validatePaypalUrl(value) ? valid(value) : invalid('Bitte einen vollständigen offiziellen PayPal-Link eingeben.');
     }
     if (mode === 'text') return v('textValue') ? valid(v('textValue')) : empty();
     if (mode === 'maps') return v('mapsQuery') ? valid(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v('mapsQuery'))}`) : empty();
@@ -118,10 +138,11 @@
     if (['phone', 'whatsapp', 'sms'].includes(mode)) {
       const id = mode === 'phone' ? 'phoneValue' : mode === 'whatsapp' ? 'waPhone' : 'smsPhone';
       if (!v(id)) return empty();
-      const phone = normalizePhone(v(id));
+      const phone = mode === 'whatsapp' ? normalizeWhatsAppPhone(v(id)) : normalizePhone(v(id));
+      if (mode === 'whatsapp' && !phone) return invalid('Bitte die WhatsApp-Nummer international mit Ländervorwahl eingeben, zum Beispiel +49 …');
       if (!phone) return invalid('Bitte eine gültige internationale Telefonnummer eingeben.');
       if (mode === 'phone') return valid(`tel:${phone}`);
-      if (mode === 'whatsapp') return valid(`https://wa.me/${phone.replace(/^\+/, '')}${v('waText') ? `?text=${encodeURIComponent(v('waText'))}` : ''}`);
+      if (mode === 'whatsapp') return valid(`https://wa.me/${phone}${v('waText') ? `?text=${encodeURIComponent(v('waText'))}` : ''}`);
       return valid(`sms:${phone}${v('smsText') ? `?body=${encodeURIComponent(v('smsText'))}` : ''}`);
     }
     if (mode === 'wifi') {
@@ -184,5 +205,5 @@
     return migrated;
   }
 
-  return { build, normalizePhone, validateHttpsUrl, escapeVCardText, escapeICalText, escapeWifiValue, validateIban, normalizeSepaAmount, migrateLegacyState };
+  return { SUPPORTED_MODES, build, normalizePhone, normalizeWhatsAppPhone, validateHttpsUrl, validatePaypalUrl, escapeVCardText, escapeICalText, escapeWifiValue, validateIban, normalizeSepaAmount, migrateLegacyState };
 });
