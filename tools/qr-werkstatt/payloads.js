@@ -179,7 +179,9 @@
       if (amount === null) return invalid('Bitte einen positiven Betrag mit höchstens zwei Nachkommastellen eingeben.');
       if (v('sepaName').length > 70) return invalid('Der Empfängername darf höchstens 70 Zeichen lang sein.');
       if (/\r|\n/.test(values.sepaPurpose || '') || v('sepaPurpose').length > 140) return invalid('Der Verwendungszweck darf höchstens 140 Zeichen und keine Zeilenumbrüche enthalten.');
-      const payload = ['BCD', '002', '1', 'SCT', bic, v('sepaName'), iban, amount, '', '', v('sepaPurpose'), ''].join('\n');
+      const fields = ['BCD', '002', '1', 'SCT', bic, v('sepaName'), iban, amount, '', '', v('sepaPurpose'), ''];
+      while (fields.length && fields[fields.length - 1] === '') fields.pop();
+      const payload = fields.join('\n');
       if (utf8Length(payload) > 331) return invalid('Die SEPA-Daten überschreiten die zulässige Gesamtlänge.');
       return valid(payload);
     }
