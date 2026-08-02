@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 BASE_URL = "https://www.warenschmiede.com"
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 INCLUDED_SITEMAP_PATHS = {
-    "tools/3D_Druck_kostenrechner.html",
+    "tools/ws_3d_print_kostenrechner.html",
     "tools/index.html",
     "tools/Zeiterfassung_Plus.html",
 }

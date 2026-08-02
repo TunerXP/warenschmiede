@@ -2,6 +2,7 @@
   const link = (path) => /^(https?:|mailto:|tel:|#|\/)/.test(path) ? path : '/' + path.replace(/^\.\//, '');
   const defaultIcon = link('assets/img/w-tools-menu.png');
   const defaults = {
+    side: 'right',
     toolName: 'Warenschmiede Tools',
     toolDescription: 'Kleine Navigation für Rechner und Generatoren.',
     toolIcon: defaultIcon,
@@ -153,13 +154,18 @@
   }
 
   function build() {
-    if (document.querySelector('.ws-tool-panel')) return;
+    const existingPanel = document.querySelector('.ws-tool-panel');
+    if (existingPanel) {
+      existingPanel.dataset.side = config.side;
+      return;
+    }
     const scrim = document.createElement('div');
     scrim.className = 'ws-tool-scrim';
     scrim.addEventListener('click', closeMenu);
 
     const panel = document.createElement('aside');
     panel.className = 'ws-tool-panel';
+    panel.dataset.side = config.side;
     panel.setAttribute('aria-label', 'Warenschmiede Tool-Menü');
     panel.setAttribute('aria-hidden', 'true');
     panel.inert = true;
@@ -182,6 +188,7 @@
       ? options[key]
       : (tool?.[catalogKey] || defaults[key]);
     config = {
+      side: options.side === 'left' ? 'left' : 'right',
       toolId: options.toolId,
       toolName: value('toolName', 'name'),
       toolDescription: value('toolDescription', 'description'),
@@ -189,6 +196,7 @@
       sections: Array.isArray(options.sections) ? options.sections : defaults.sections
     };
     build();
+    document.querySelector('.ws-tool-panel')?.setAttribute('data-side', config.side);
     render();
   }
 

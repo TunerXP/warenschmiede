@@ -6,7 +6,7 @@ const vm = require('node:vm');
 const layoutSource = fs.readFileSync('assets/js/ws-layout.js', 'utf8');
 const globalStyles = fs.readFileSync('assets/css/styles.css', 'utf8');
 
-function renderLayout(pathname = '/') {
+function renderLayout(pathname = '/', catalog) {
   const elements = {
     'ws-header': { innerHTML: '' },
     'ws-footer': { innerHTML: '' },
@@ -21,7 +21,7 @@ function renderLayout(pathname = '/') {
   const context = {
     document,
     URL,
-    window: { location: { origin: 'https://www.warenschmiede.com', pathname } }
+    window: { location: { origin: 'https://www.warenschmiede.com', pathname }, WSToolCatalog: catalog }
   };
   const testableSource = layoutSource.replace('const link = (path) => {', 'const link = globalThis.__link = (path) => {');
   vm.runInNewContext(testableSource, context);
@@ -100,7 +100,28 @@ test('layout loads the catalog once and retains text fallback navigation', () =>
   assert.match(layoutSource, /script\.src = '\/assets\/js\/ws-tool-catalog\.js'/);
   assert.match(layoutSource, /addEventListener\('error', \(\) => onReady\?\.\(false\)/);
   const { header } = renderLayout();
-  for (const label of ['QR-Werkstatt Plus', 'Barcode-Werkstatt Plus', 'DataMatrix-Werkstatt Plus']) {
+  for (const label of ['3D-Druck Kostenrechner Plus', 'QR-Werkstatt Plus', 'Barcode-Werkstatt Plus', 'DataMatrix-Werkstatt Plus']) {
     assert.match(header, new RegExp(label));
   }
+  assert.equal((header.match(/data-tool-id="3d-cost"/g) || []).length, 2);
+  assert.equal((header.match(/href="\/tools\/ws_3d_print_kostenrechner\.html"/g) || []).length, 2);
+  assert.match(layoutSource, /toolId: '3d-cost', fallback: \{ label: '3D-Druck Kostenrechner Plus', href: 'tools\/ws_3d_print_kostenrechner\.html', description: 'Kalkulation, Angebot, Rechnung und Lieferschein\.' \}/);
+  assert.doesNotMatch(header, /undefined/);
+});
+
+test('catalog enriches the 3D cost fallback with its central logo and scale', () => {
+  const tool = {
+    id: '3d-cost',
+    name: '3D-Druck Kostenrechner Plus',
+    description: 'Kalkulation, Angebot, Rechnung und Lieferschein.',
+    href: '/tools/ws_3d_print_kostenrechner.html',
+    icon: '/assets/img/tools/3d-druck-kostenrechner-plus/3d-druck-kostenrechner-plus-logo.png',
+    iconScale: 2.55
+  };
+  const { header } = renderLayout('/', { '3d-cost': tool });
+  assert.equal((header.match(/data-tool-id="3d-cost"/g) || []).length, 2);
+  assert.equal((header.match(/3d-druck-kostenrechner-plus-logo\.png/g) || []).length, 2);
+  assert.equal((header.match(/--ws-tool-icon-scale:2\.55/g) || []).length, 2);
+  assert.equal((header.match(/href="\/tools\/ws_3d_print_kostenrechner\.html"/g) || []).length, 2);
+  assert.doesNotMatch(header, /undefined/);
 });

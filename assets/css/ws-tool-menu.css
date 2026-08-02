@@ -34,6 +34,7 @@
 .ws-tool-identity-icon img { display:block; width:100%; height:100%; object-fit:contain; transform:scale(var(--ws-tool-icon-scale,1)); transform-origin:center; }
 .ws-tool-identity-icon--menu-head { width:54px; height:54px; }
 .ws-tool-identity-icon--medium { width:34px; height:34px; }
+.ws-tool-identity-icon--large { width:58px; height:58px; }
 
 .ws-tool-scrim {
   position:fixed; inset:0; background:rgba(15,23,42,.44); backdrop-filter:blur(4px);
@@ -42,7 +43,7 @@
 .ws-tool-scrim.open { opacity:1; pointer-events:auto; }
 
 .ws-tool-panel {
-  position:fixed; top:0; right:0; height:100vh; width:min(390px, calc(100vw - 24px));
+  position:fixed; top:0; right:0; left:auto; height:100vh; width:min(390px, calc(100vw - 24px));
   padding:18px; z-index:8999; transform:translateX(104%); transition:transform .22s ease;
   display:grid; grid-template-rows:auto 1fr auto; gap:14px;
   background:
@@ -52,6 +53,11 @@
   box-shadow:-28px 0 70px -44px rgba(15,23,42,.55);
   color:#102033;
 }
+.ws-tool-panel[data-side="left"] {
+  left:0; right:auto; transform:translateX(-104%);
+  border-left:0; border-right:1px solid rgba(90,118,144,.25);
+  box-shadow:28px 0 70px -44px rgba(15,23,42,.55);
+}
 .ws-tool-panel,
 .ws-tool-panel * { box-sizing:border-box; }
 html[data-theme="dark"] .ws-tool-panel {
@@ -60,6 +66,10 @@ html[data-theme="dark"] .ws-tool-panel {
     linear-gradient(145deg, rgba(17,24,39,.98), rgba(11,17,32,.98));
   color:#e5eefb;
   border-left-color:rgba(148,163,184,.25);
+}
+html[data-theme="dark"] .ws-tool-panel[data-side="left"] {
+  border-left-color:transparent;
+  border-right-color:rgba(148,163,184,.25);
 }
 .ws-tool-panel.open { transform:translateX(0); }
 
@@ -118,6 +128,7 @@ html[data-theme="dark"] .ws-tool-link--danger strong { color:#f29a95; }
 html[data-theme="dark"] .ws-tool-foot { color:#9aa9bd; }
 @media (max-width:760px){
   .ws-tool-menu-btn:not(.ws-tool-menu-btn--label){width:50px;height:50px;border-radius:16px;}
+  .ws-tool-identity-icon--large{width:48px;height:48px;}
 }
 @media (max-width:420px){
   .ws-tool-menu-btn--label{width:42px;height:42px;padding:0;justify-content:center;flex:0 0 42px;}
