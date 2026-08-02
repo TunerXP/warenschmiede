@@ -49,6 +49,31 @@ test('guide distinguishes storage and structured e-invoices', () => {
   assert.match(html, /PDF ist hier keine strukturierte E-Rechnung/);
 });
 
+test('guide explains surcharge terminology and calculation order exactly', () => {
+  assert.match(html, /<th>Aufschlag<\/th>/);
+  assert.doesNotMatch(html, /Aufschlag \/ Marge|Gewinnmarge|marginPercent[^\n]*(?:Marge|marge)/);
+  assert.match(html, /10,00&nbsp;€ Selbstkosten \+ 35&nbsp;% Aufschlag = 13,50&nbsp;€ Netto-Stückpreis/);
+  assert.match(html, /Aufschlag ist nicht dasselbe wie eine Zielmarge/);
+  assert.match(html, /Material \+ Energie \+ Maschinenkosten \+ Arbeitszeit \+ Fixkosten/);
+  assert.match(html, /Auf die direkten Kosten wird der eingestellte Ausschuss-Prozentsatz gerechnet/);
+  assert.match(html, /Direkte Kosten \+ Ausschuss/);
+  assert.match(html, /Selbstkosten × Aufschlag-Prozent \/ 100/);
+  assert.match(html, /Netto-Stückpreis<\/dt><dd>Selbstkosten \+ Aufschlag/);
+  assert.match(html, /Technische Berechnung ansehen/);
+});
+
+test('settings assign checks to output and only local history actions to data', () => {
+  const output = html.match(/<article id="ausgabe">[\s\S]*?<\/article>/)?.[0] || '';
+  const data = html.match(/<article id="daten">[\s\S]*?<\/article>/)?.[0] || '';
+  assert.match(output, /Prüfmodus/);
+  assert.match(output, /Dokument prüfen/);
+  assert.match(data, /History-Backup speichern oder laden/);
+  assert.match(data, /History leeren/);
+  assert.match(data, /lokalen Daten zurücksetzen/);
+  assert.match(data, /lokale Browserdaten/);
+  assert.doesNotMatch(data, /Projekt (?:speichern|laden)|Dokument prüfen/);
+});
+
 test('tool menu and accessible navigation are configured', () => {
   assert.match(js, /toolId: '3d-cost', side: 'left'/);
   for (const term of ['Kostenrechner öffnen', 'Passende Werkzeuge', 'Materialwissen', 'Wartung & Reinigung', 'Fehler & Troubleshooting', 'Warenschmiede']) assert.match(js, new RegExp(term.replace('&', '&')));

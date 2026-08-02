@@ -98,10 +98,35 @@
       </section>
 
       <section class="card" id="kostenbestandteile"><h2>Kostenbestandteile verständlich lesen</h2>
-        <p>Der Verkaufspreis entsteht aus den Eingaben der Position und dem gewählten Profil. Die folgende Übersicht beschreibt die Code-Logik, ohne eine vereinfachte Ersatzformel zu behaupten.</p>
+        <p>Der Verkaufspreis entsteht aus den Eingaben der Position und dem gewählten Profil. Das Tool bleibt dabei bewusst verständlich und kompakt: Es deckt die wichtigsten Kostenbestandteile ab, setzt aber realistisch gepflegte eigene Werte und Presets voraus.</p>
         <div class="table-wrap"><table><thead><tr><th>Feld</th><th>Bedeutung</th><th>Typische Datenquelle</th><th>Auswirkung</th></tr></thead><tbody>
-          <tr><th>Material</th><td>Gewicht und Preis je Kilogramm</td><td>Slicer, Einkauf</td><td>Materialkosten</td></tr><tr><th>Energie</th><td>Leistung, Last, Laufzeit und Strompreis</td><td>Druckerdaten, Stromtarif</td><td>Stromkosten</td></tr><tr><th>Maschinenkosten</th><td>Laufzeit mal Maschinenkostensatz</td><td>Eigene Kalkulation</td><td>Verschleiß und Nutzung</td></tr><tr><th>Arbeitszeit</th><td>Minuten und Stundenlohn</td><td>Eigene Zeiterfassung</td><td>Personalkosten</td></tr><tr><th>Fixkosten</th><td>Fester Betrag je Position</td><td>Eigene Kalkulation</td><td>Erhöht die Kostenbasis</td></tr><tr><th>Ausschuss</th><td>Prozentualer Zuschlag auf die Kostenbasis</td><td>Erfahrungswert</td><td>Berücksichtigt Fehldruckrisiko</td></tr><tr><th>Aufschlag / Marge</th><td>Prozentualer Aufschlag auf die Selbstkosten</td><td>Kalkulationsprofil</td><td>Ergibt mit den Selbstkosten den Verkaufspreis</td></tr>
+          <tr><th>Material</th><td>Gewicht und Preis je Kilogramm</td><td>Slicer, Einkauf</td><td>Materialkosten</td></tr><tr><th>Energie</th><td>Leistung, Last, Laufzeit und Strompreis</td><td>Druckerdaten, Stromtarif</td><td>Stromkosten</td></tr><tr><th>Maschinenkosten</th><td>Laufzeit mal Maschinenkostensatz</td><td>Eigene Kalkulation</td><td>Verschleiß und Nutzung</td></tr><tr><th>Arbeitszeit</th><td>Minuten und Stundenlohn</td><td>Eigene Zeiterfassung</td><td>Personalkosten</td></tr><tr><th>Fixkosten</th><td>Fester Betrag je Position</td><td>Eigene Kalkulation</td><td>Erhöht die Kostenbasis</td></tr><tr><th>Ausschuss</th><td>Prozentualer Zuschlag auf die Kostenbasis</td><td>Erfahrungswert</td><td>Berücksichtigt Fehldruckrisiko</td></tr><tr><th>Aufschlag</th><td>Prozentualer Aufschlag auf die Selbstkosten</td><td>Kalkulationsprofil</td><td>Ergibt mit den Selbstkosten den Netto-Stückpreis</td></tr>
         </tbody></table></div>
+        <div class="calculation-flow" aria-labelledby="rechenablauf-titel">
+          <h3 id="rechenablauf-titel">So rechnet das Tool</h3>
+          <ol>
+            <li><strong>Direkte Kosten</strong><span>Material + Energie + Maschinenkosten + Arbeitszeit + Fixkosten</span></li>
+            <li><strong>Ausschussrisiko</strong><span>Auf die direkten Kosten wird der eingestellte Ausschuss-Prozentsatz gerechnet.</span></li>
+            <li><strong>Selbstkosten</strong><span>Direkte Kosten + Ausschuss</span></li>
+            <li><strong>Verkaufspreis netto</strong><span>Selbstkosten + eingestellter Aufschlag</span></li>
+          </ol>
+          <p class="calculation-example"><strong>Kurzes Beispiel:</strong> 10,00&nbsp;€ Selbstkosten + 35&nbsp;% Aufschlag = 13,50&nbsp;€ Netto-Stückpreis.</p>
+          <p><strong>Der Aufschlag ist nicht dasselbe wie eine Zielmarge als Anteil am späteren Verkaufspreis.</strong></p>
+          <details class="technical-calculation">
+            <summary>Technische Berechnung ansehen</summary>
+            <dl>
+              <div><dt>Material</dt><dd>Gewicht / 1000 × Materialpreis je kg</dd></div>
+              <div><dt>Energie</dt><dd>Watt × Lastfaktor / 100 / 1000 × Druckzeit × Strompreis</dd></div>
+              <div><dt>Maschine</dt><dd>Druckzeit × Maschinenkosten je Stunde</dd></div>
+              <div><dt>Arbeit</dt><dd>Arbeitsminuten / 60 × Stundenlohn</dd></div>
+              <div><dt>Direkte Kostenbasis</dt><dd>Material + Energie + Maschine + Arbeit + Fixkosten</dd></div>
+              <div><dt>Ausschuss</dt><dd>Kostenbasis × Ausschuss-Prozent / 100</dd></div>
+              <div><dt>Selbstkosten</dt><dd>Kostenbasis + Ausschuss</dd></div>
+              <div><dt>Aufschlag</dt><dd>Selbstkosten × Aufschlag-Prozent / 100</dd></div>
+              <div><dt>Netto-Stückpreis</dt><dd>Selbstkosten + Aufschlag</dd></div>
+            </dl>
+          </details>
+        </div>
         <aside class="notice important"><strong>! Wichtig</strong><p>Beispielwerte sind nur Ausgangspunkte. Kontrolliere, ob sie zu deinem Drucker, Material und Arbeitsablauf passen.</p></aside>
       </section>
 
@@ -136,8 +161,8 @@
           <article id="steuer"><h3>Steuer</h3><p>Umsatzsteuer ein oder aus, Steuersatz und Kleinunternehmer- beziehungsweise eigener Steuertext.</p></article>
           <article id="einstellungen-presets"><h3>Presets</h3><p>Materialien, Drucker und Kalkulationsprofile bearbeiten, ergänzen oder entfernen.</p></article>
           <article id="einstellungen-qr"><h3>QR-Code</h3><p>Aktivieren, Typ, Inhalt und Beschriftung festlegen.</p></article>
-          <article id="ausgabe"><h3>Ausgabe</h3><p>Kompaktmodus, Nur Artikel und Speicherhinweise steuern.</p></article>
-          <article id="daten"><h3>Daten</h3><p>Aktuellen Stand merken, Projekt laden/speichern, Dokument prüfen, History anzeigen, History-Backup speichern/laden, History leeren und alle lokalen Daten zurücksetzen.</p></article>
+          <article id="ausgabe"><h3>Ausgabe</h3><p>Kompaktmodus, Nur Artikel und Speicherhinweise steuern. Der Prüfmodus kontrolliert typische Stolperstellen vor PDF und Druck. Du erreichst Dokument prüfen außerdem über Tool-Menü → Prüfen &amp; Einstellungen.</p></article>
+          <article id="daten"><h3>Daten</h3><p>Den aktuellen Stand in der History merken, History anzeigen, History-Backup speichern oder laden, History leeren und alle lokalen Daten zurücksetzen. Diese Funktionen betreffen lokale Browserdaten.</p></article>
         </div>
         <aside class="notice important"><strong>! Verantwortung</strong><p>Du bist für Firmendaten, Steuertext, Bankdaten und Dokumentinhalt verantwortlich. Prüfe das fertige Dokument vor dem Versand. Das Tool ersetzt keine Steuer- oder Rechtsberatung.</p></aside>
       </section>
