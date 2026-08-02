@@ -27,6 +27,9 @@ test('header and shared menu expose the new navigation structure', () => {
   for (const section of ['Projekt & Daten', 'Prüfen & Einstellungen', 'Hilfe', 'Passende Werkzeuge', '3D-Druck & Wissen', 'Warenschmiede']) assert.match(html, new RegExp(section));
   assert.match(html, /\{ toolId: 'qr' \}/);
   for (const action of ['remember', 'history', 'check', 'save', 'load', 'settings']) assert.match(html, new RegExp(`WSCostCalculatorActions\\.${action}`));
+  assert.match(html, /init\(\)\{ window\.WSCostCalculatorInstance=this;/);
+  assert.match(html, /calculator = \(\) => window\.WSCostCalculatorInstance \|\| null/);
+  assert.doesNotMatch(html, /_x_dataStack/);
 });
 
 test('fixed output area keeps print and accessible compact controls', () => {
@@ -35,6 +38,10 @@ test('fixed output area keeps print and accessible compact controls', () => {
   for (const removed of ['>Merken<', '>History<', '>Prüfen<', '>Speichern<', '>Laden<']) assert.doesNotMatch(footer, new RegExp(removed));
   assert.match(footer, /x-model="output\.compactPdf"/);
   assert.match(footer, /x-model="output\.compactForceArticle"/);
+  assert.match(footer, /x-show="output\.compactPdf" x-transition class="cost-compact-option"/);
+  assert.match(footer, />Nur Artikel<\/span>/);
+  assert.match(footer, /title="Blendet Kalkulationsdetails im Kompaktmodus aus und zeigt in der Ausgabe nur die Artikelpositionen\."/);
+  assert.match(footer, /aria-label="Im Kompaktmodus nur Artikel anzeigen"/);
   assert.equal((footer.match(/aria-label=/g) || []).length >= 2, true);
   assert.equal((footer.match(/title=/g) || []).length >= 2, true);
   assert.match(footer, /role="tooltip"/);
@@ -51,4 +58,55 @@ test('sidebar is responsive, persisted, and keyboard resizable', () => {
   assert.match(html, /ArrowLeft.*ArrowRight/);
   assert.match(html, /addEventListener\('dblclick'/);
   assert.match(html, /@media \(max-width: 1100px\)[\s\S]*\.cost-resizer \{ display: none; \}/);
+});
+
+test('preferred sidebar width survives a narrow and wide resize cycle', () => {
+  const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)]
+    .map(match => match[1]).filter(source => source.includes('const STORAGE_KEY'));
+  assert.equal(scripts.length, 1);
+
+  const handleListeners = new Map();
+  const windowListeners = new Map();
+  const domListeners = new Map();
+  const attributes = new Map();
+  const styles = new Map();
+  const storage = new Map([['warenschmiede.costcalc.sidebarWidth.v1', '700']]);
+  const add = (map, type, listener) => map.set(type, listener);
+  const handle = {
+    addEventListener(type, listener) { add(handleListeners, type, listener); },
+    removeEventListener(type, listener) { if (handleListeners.get(type) === listener) handleListeners.delete(type); },
+    setAttribute(name, value) { attributes.set(name, value); },
+    setPointerCapture() {}
+  };
+  const document = {
+    body: { classList: { add() {}, remove() {} } },
+    documentElement: { style: { setProperty(name, value) { styles.set(name, value); } } },
+    getElementById(id) { return id === 'costResizer' ? handle : null; },
+    addEventListener(type, listener) { add(domListeners, type, listener); }
+  };
+  const window = {
+    innerWidth: 1400,
+    WSToolMenu: { configure() {} },
+    addEventListener(type, listener) { add(windowListeners, type, listener); },
+    alert() {}, open() { return null; }, location: {}
+  };
+  const localStorage = {
+    getItem(key) { return storage.get(key) ?? null; },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  vm.runInNewContext(scripts[0], { window, document, localStorage, Math, Number, Object });
+  domListeners.get('DOMContentLoaded')();
+  assert.equal(styles.get('--cost-sidebar-width'), '700px');
+  assert.equal(attributes.get('aria-valuenow'), '700');
+
+  window.innerWidth = 1000;
+  windowListeners.get('resize')();
+  assert.equal(styles.get('--cost-sidebar-width'), '550px');
+  assert.equal(storage.get('warenschmiede.costcalc.sidebarWidth.v1'), '700');
+
+  window.innerWidth = 1400;
+  windowListeners.get('resize')();
+  assert.equal(styles.get('--cost-sidebar-width'), '700px');
+  assert.equal(attributes.get('aria-valuenow'), '700');
 });

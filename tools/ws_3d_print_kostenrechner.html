@@ -336,10 +336,10 @@
             <span class="toggle" :class="output.compactPdf?'on':''" aria-hidden="true"></span><span>Kompakt</span>
             <span class="cost-tooltip" role="tooltip">Verdichtet Abstände, Schriftgrößen und QR-Code für PDF und Druck.</span>
           </label>
-          <label class="cost-compact-option" title="Blendet Kalkulationsdetails im Kompaktmodus nur in der Ausgabe aus." aria-label="In der Kompakt-Ausgabe nur Artikel anzeigen">
+          <label x-show="output.compactPdf" x-transition class="cost-compact-option" title="Blendet Kalkulationsdetails im Kompaktmodus aus und zeigt in der Ausgabe nur die Artikelpositionen." aria-label="Im Kompaktmodus nur Artikel anzeigen">
             <input type="checkbox" x-model="output.compactForceArticle">
-            <span class="toggle" :class="output.compactForceArticle?'on':''" aria-hidden="true"></span><span>Details</span>
-            <span class="cost-tooltip" role="tooltip">Blendet Kalkulationsdetails im Kompaktmodus nur in der Ausgabe aus; intern bleiben sie erhalten.</span>
+            <span class="toggle" :class="output.compactForceArticle?'on':''" aria-hidden="true"></span><span>Nur Artikel</span>
+            <span class="cost-tooltip" role="tooltip">Blendet Kalkulationsdetails im Kompaktmodus aus und zeigt in der Ausgabe nur die Artikelpositionen.</span>
           </label>
           <button class="btn btn-primary" @click="printDoc()">PDF/Druck</button>
           <input id="costProjectFileInput" type="file" accept=".json" class="hidden" @change="importFile">
@@ -749,10 +749,11 @@
   const MIN_WIDTH = 460;
   const ABSOLUTE_MAX_WIDTH = 760;
   const desktopMaximum = () => Math.max(MIN_WIDTH, Math.min(ABSOLUTE_MAX_WIDTH, Math.floor(window.innerWidth * .55)));
-  const calculator = () => document.body?._x_dataStack?.[0] || null;
+  const calculator = () => window.WSCostCalculatorInstance || null;
   const withCalculator = action => {
     const instance = calculator();
     if (instance) action(instance);
+    else window.alert('Der Kostenrechner wird noch geladen. Bitte kurz erneut versuchen.');
   };
   const openHelpWindow = () => {
     const popup = window.open(HELP_URL, 'wsCostCalculatorHelp', 'popup=yes,resizable=yes,scrollbars=yes,width=980,height=800');
@@ -809,43 +810,54 @@
   const setupResizer = () => {
     const handle = document.getElementById('costResizer');
     if (!handle) return;
-    let width = DEFAULT_WIDTH;
-    const apply = value => {
-      width = Math.round(Math.max(MIN_WIDTH, Math.min(desktopMaximum(), value)));
-      document.documentElement.style.setProperty('--cost-sidebar-width', width + 'px');
-      handle.setAttribute('aria-valuenow', String(width));
+    let preferredWidth = DEFAULT_WIDTH;
+    let appliedWidth = DEFAULT_WIDTH;
+    const normalizePreferred = value => Math.round(Math.max(MIN_WIDTH, Math.min(ABSOLUTE_MAX_WIDTH, value)));
+    const applyPreferredWidth = () => {
+      appliedWidth = Math.max(MIN_WIDTH, Math.min(preferredWidth, desktopMaximum()));
+      document.documentElement.style.setProperty('--cost-sidebar-width', appliedWidth + 'px');
+      handle.setAttribute('aria-valuenow', String(appliedWidth));
       handle.setAttribute('aria-valuemax', String(desktopMaximum()));
     };
-    const persist = () => { try { localStorage.setItem(STORAGE_KEY, String(width)); } catch (_) {} };
+    const setPreferredWidth = value => {
+      preferredWidth = normalizePreferred(value);
+      applyPreferredWidth();
+    };
+    const persist = () => { try { localStorage.setItem(STORAGE_KEY, String(preferredWidth)); } catch (_) {} };
     try {
       const saved = Number(localStorage.getItem(STORAGE_KEY));
-      apply(Number.isFinite(saved) && saved >= MIN_WIDTH && saved <= ABSOLUTE_MAX_WIDTH ? saved : DEFAULT_WIDTH);
-    } catch (_) { apply(DEFAULT_WIDTH); }
+      preferredWidth = Number.isFinite(saved) && saved >= MIN_WIDTH && saved <= ABSOLUTE_MAX_WIDTH ? normalizePreferred(saved) : DEFAULT_WIDTH;
+      applyPreferredWidth();
+    } catch (_) { preferredWidth = DEFAULT_WIDTH; applyPreferredWidth(); }
     handle.addEventListener('pointerdown', event => {
       if (window.innerWidth <= 1100) return;
       event.preventDefault();
       handle.setPointerCapture(event.pointerId);
       document.body.classList.add('cost-resizing');
       const startX = event.clientX;
-      const startWidth = width;
-      const move = moveEvent => apply(startWidth + moveEvent.clientX - startX);
-      const stop = () => {
+      const startWidth = appliedWidth;
+      const move = moveEvent => setPreferredWidth(startWidth + moveEvent.clientX - startX);
+      const cleanup = () => {
         document.body.classList.remove('cost-resizing');
         handle.removeEventListener('pointermove', move);
+        handle.removeEventListener('pointerup', cleanup);
+        handle.removeEventListener('pointercancel', cleanup);
+        handle.removeEventListener('lostpointercapture', cleanup);
         persist();
       };
       handle.addEventListener('pointermove', move);
-      handle.addEventListener('pointerup', stop, { once: true });
-      handle.addEventListener('pointercancel', stop, { once: true });
+      handle.addEventListener('pointerup', cleanup);
+      handle.addEventListener('pointercancel', cleanup);
+      handle.addEventListener('lostpointercapture', cleanup);
     });
     handle.addEventListener('keydown', event => {
       if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
       event.preventDefault();
-      apply(width + (event.key === 'ArrowRight' ? 1 : -1) * (event.shiftKey ? 50 : 10));
+      setPreferredWidth(appliedWidth + (event.key === 'ArrowRight' ? 1 : -1) * (event.shiftKey ? 50 : 10));
       persist();
     });
-    handle.addEventListener('dblclick', () => { apply(DEFAULT_WIDTH); persist(); });
-    window.addEventListener('resize', () => apply(width));
+    handle.addEventListener('dblclick', () => { setPreferredWidth(DEFAULT_WIDTH); persist(); });
+    window.addEventListener('resize', applyPreferredWidth);
   };
 
   document.addEventListener('DOMContentLoaded', () => { configureMenu(); setupResizer(); });
@@ -889,7 +901,7 @@ function app(){ return {
     document.addEventListener('keydown', e=>{ if(e.key==='Escape') hide(); });
   },
   escapeHtml(s){ return String(s??'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m] || m)); },
-  init(){ this.setupMiniHelp(); const hist=localStorage.getItem('ws3d-plus-history'); if(hist){ try{ this.history=JSON.parse(hist)||[]; }catch(e){ this.history=[]; } } const saved=localStorage.getItem('ws3d-plus'); if(saved){ try{ this.applySnapshot(JSON.parse(saved)); }catch(e){} } else { this.seed(); this.addJob(); } if(!this.theme) this.theme={color:'#2563eb',textColor:'#ffffff'}; if(!this.theme.textColor) this.theme.textColor='#ffffff'; this.$watch('$data',()=>{ localStorage.setItem('ws3d-plus', JSON.stringify(this.snapshot())); this.$nextTick(()=>this.renderQr()); },{deep:true}); this.$nextTick(()=>this.renderQr()); },
+  init(){ window.WSCostCalculatorInstance=this; this.setupMiniHelp(); const hist=localStorage.getItem('ws3d-plus-history'); if(hist){ try{ this.history=JSON.parse(hist)||[]; }catch(e){ this.history=[]; } } const saved=localStorage.getItem('ws3d-plus'); if(saved){ try{ this.applySnapshot(JSON.parse(saved)); }catch(e){} } else { this.seed(); this.addJob(); } if(!this.theme) this.theme={color:'#2563eb',textColor:'#ffffff'}; if(!this.theme.textColor) this.theme.textColor='#ffffff'; this.$watch('$data',()=>{ localStorage.setItem('ws3d-plus', JSON.stringify(this.snapshot())); this.$nextTick(()=>this.renderQr()); },{deep:true}); this.$nextTick(()=>this.renderQr()); },
   applySnapshot(data){ if(!data) return; const keepHistory=this.history; const keepOpen=this.historyOpen; const keepNotice=this.historyNotice; Object.assign(this, data); if(!this.output) this.output={compactPdf:false,compactForceArticle:false,showStorageInfo:true}; if(this.output.compactForceArticle===undefined) this.output.compactForceArticle=false; this.history=keepHistory; this.historyOpen=keepOpen; this.historyNotice=keepNotice; },
   seed(){ this.presets.materials=[{id:'pla',name:'PLA Standard',priceKg:20,co2:2.5},{id:'pla_plus',name:'PLA+',priceKg:25,co2:2.6},{id:'petg',name:'PETG',priceKg:25,co2:3.5},{id:'asa',name:'ASA',priceKg:35,co2:4.2},{id:'tpu',name:'TPU',priceKg:38,co2:3.2},{id:'custom',name:'Eigenes Material',priceKg:25,co2:0}]; this.presets.printers=[{id:'a1',name:'Bambu Lab A1 / ähnlich',watts:180,machineHourly:1.5,loadFactor:70},{id:'x1c',name:'Bambu Lab X1C / ähnlich',watts:250,machineHourly:2.5,loadFactor:75},{id:'custom',name:'Eigener Drucker',watts:200,machineHourly:2,loadFactor:70}]; this.presets.profiles=[{id:'standard',name:'Standard Verkauf',marginPercent:35,laborMinutes:10,hourlyRate:50,failRate:5},{id:'hobby',name:'Selbstkosten / Hobby',marginPercent:10,laborMinutes:5,hourlyRate:25,failRate:3},{id:'business',name:'Gewerblich sauber',marginPercent:60,laborMinutes:15,hourlyRate:60,failRate:8},{id:'express',name:'Express / Einzelstück',marginPercent:85,laborMinutes:20,hourlyRate:70,failRate:10}]; },
   softColor(hex){ const h=hex.replace('#',''); const r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16); return `rgba(${r},${g},${b},.13)`; },
