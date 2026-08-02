@@ -29,7 +29,8 @@ test('central tool catalog contains complete, immutable code-tool identities', (
   assert.equal(catalog.datamatrix.cardImage, '/tools/datamatrix-werkstatt/datamatrix-werkstatt-card.png');
   assert.equal(catalog.barcode.iconScale, 1);
   assert.equal(catalog.qr.iconScale, 1);
-  assert.ok(catalog.datamatrix.iconScale > 1);
+  assert.ok(catalog.datamatrix.iconScale > 2);
+  assert.ok(catalog.datamatrix.iconScale < 3);
 });
 
 test('identity API resolves tools, applies central icons and tolerates unknown IDs', () => {
@@ -39,7 +40,7 @@ test('identity API resolves tools, applies central icons and tolerates unknown I
   for (const id of ['barcode', 'qr', 'datamatrix']) assert.equal(window.WSToolIdentity.get(id).id, id);
   window.WSToolIdentity.applyIcon(image, 'datamatrix');
   assert.equal(image.src, window.WSToolCatalog.datamatrix.icon);
-  assert.equal(values['--ws-tool-icon-scale'], '3.6');
+  assert.equal(values['--ws-tool-icon-scale'], '2.45');
   assert.doesNotThrow(() => window.WSToolIdentity.applyIcon(image, 'unknown'));
 });
 

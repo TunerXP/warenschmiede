@@ -22,7 +22,7 @@
       description: 'Kompakte Codes für Inventar, Bauteile und Werkstatt.',
       href: '/tools/DataMatrixWerkstattPlus.html',
       icon: '/tools/datamatrix-werkstatt/datamatrix-werkstatt-icon.png',
-      iconScale: 3.6,
+      iconScale: 2.45,
       cardImage: '/tools/datamatrix-werkstatt/datamatrix-werkstatt-card.png'
     }
   };
