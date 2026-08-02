@@ -13,6 +13,7 @@
   <meta name="description" content="Neutraler 3D-Druck Kostenrechner für Angebote, Rechnungen und Lieferscheine. Mit Presets, Logo, QR-Code, Steuertexten und lokaler Speicherung." />
   <meta name="robots" content="index, follow" />
   <link rel="stylesheet" href="../assets/css/ws-tool-menu.css">
+  <script defer src="../assets/js/ws-tool-catalog.js"></script>
   <script defer src="../assets/js/ws-tool-menu.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -21,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root { --accent: #2563eb; --accent-soft: #dbeafe; --ink: #0f172a; }
+    :root { --accent: #2563eb; --accent-soft: #dbeafe; --ink: #0f172a; --cost-sidebar-width: 580px; }
     * { box-sizing: border-box; }
     body { font-family: Inter, sans-serif; background: #0f172a; color: #1e293b; }
     .sidebar-head { background: linear-gradient(135deg,#e8f1fb,#f8fbff); border-bottom: 1px solid #cbd5e1; }
@@ -69,6 +70,19 @@
     details summary { list-style: none; }
     details summary::-webkit-details-marker { display: none; }
     [x-cloak] { display: none !important; }
+    .cost-sidebar { width: var(--cost-sidebar-width, 580px); flex: 0 0 var(--cost-sidebar-width, 580px); }
+    .cost-resizer { width: 8px; flex: 0 0 8px; position: relative; z-index: 25; cursor: col-resize; background: transparent; }
+    .cost-resizer::after { content: ''; position: absolute; inset: 0 2px; background: #b8c9d8; opacity: .42; transition: opacity .16s, background .16s; }
+    .cost-resizer:hover::after, .cost-resizer:focus-visible::after { background: var(--accent); opacity: 1; }
+    .cost-resizer:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: -2px; }
+    body.cost-resizing { cursor: col-resize; user-select: none; }
+    .cost-output-actions { display:flex; align-items:center; justify-content:flex-end; gap:.55rem; flex-wrap:wrap; }
+    .cost-compact-option { position:relative; display:inline-flex; align-items:center; gap:.35rem; cursor:pointer; border:1px solid #cbd5e1; background:#fff; border-radius:.7rem; padding:.42rem .55rem; color:#475569; font-size:.72rem; font-weight:800; }
+    .cost-compact-option:focus-within { outline:3px solid var(--accent-soft); border-color:var(--accent); }
+    .cost-compact-option input { position:absolute; opacity:0; }
+    .cost-compact-option .toggle { transform:scale(.78); margin:-2px -4px; }
+    .cost-compact-option .cost-tooltip { position:absolute; z-index:80; right:0; bottom:calc(100% + 8px); width:250px; padding:.55rem .65rem; border-radius:.65rem; background:#0f172a; color:#fff; font-size:.7rem; line-height:1.4; font-weight:600; opacity:0; pointer-events:none; transform:translateY(4px); transition:.15s; }
+    .cost-compact-option:hover .cost-tooltip, .cost-compact-option:focus-within .cost-tooltip { opacity:1; transform:none; }
 
 
     /* Warenschmiede – optischer Feinschliff für die Tool-Fläche.
@@ -136,6 +150,8 @@
       body { overflow: auto !important; }
       .shell { height: auto !important; display: block !important; }
       aside { width: 100% !important; height: auto !important; position: relative !important; }
+      .cost-sidebar { flex-basis: auto !important; }
+      .cost-resizer { display: none; }
       main { height: auto !important; overflow: visible !important; padding: 1rem !important; }
       .a4 { transform-origin: top center; transform: scale(.58); margin-bottom: -118mm; }
     }
@@ -151,18 +167,17 @@
 </head>
 <body x-data="app()" x-init="init()" :style="`--accent:${theme.color};--accent-soft:${softColor(theme.color)};--accent-text:${theme.textColor || '#ffffff'}`" class="h-screen overflow-hidden">
   <div class="shell h-screen flex">
-    <aside class="no-print w-[520px] h-full bg-slate-50 border-r border-slate-300 shadow-2xl flex flex-col z-20">
+    <aside id="costSidebar" class="cost-sidebar no-print h-full bg-slate-50 border-r border-slate-300 shadow-2xl flex flex-col z-20">
       <header class="sidebar-head p-4 space-y-3">
-        <div class="flex items-start justify-between gap-3">
-          <div>
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-bold">
-              <button type="button" class="text-slate-500 hover:text-[var(--accent)] font-extrabold" onclick="window.WSToolMenu?.open()">☰ Warenschmiede Tools</button>
-              <a href="ws_3d_print_kostenrechner_anleitung.html" class="text-slate-500 hover:text-[var(--accent)]">Anleitung öffnen</a>
-            </div>
-            <h1 class="text-xl font-extrabold text-slate-900 mt-2 leading-tight">Warenschmiede <br><span class="text-[var(--accent)]">3D-Druck Kostenrechner Plus</span></h1>
-            <p class="text-xs text-slate-500 mt-1">Kalkulieren · Angebot · Rechnung · Lieferschein</p>
+        <div class="flex items-start gap-3">
+          <button class="ws-tool-menu-btn ws-tool-menu-btn--label shrink-0" type="button" id="toolMenuBtn" aria-label="Tool-Menü öffnen" onclick="window.WSToolMenu?.open()">
+            <span class="ws-tool-menu-icon" aria-hidden="true">☰</span>
+            <span class="ws-tool-menu-label">Tool-Menü</span>
+          </button>
+          <div class="min-w-0 pt-0.5">
+            <h1 class="text-xl font-extrabold text-slate-900 leading-tight"><span class="text-[var(--accent)]">3D-Druck Kostenrechner Plus</span></h1>
+            <p class="text-xs text-slate-500 mt-1">Kalkulation · Angebot · Rechnung · Lieferschein</p>
           </div>
-          <button class="btn btn-soft" @click="settingsOpen=true">⚙ Einstellungen</button>
         </div>
         <div class="grid grid-cols-3 gap-2 bg-slate-100 rounded-xl p-1">
           <button class="btn !py-2" :class="doc.type==='angebot'?'btn-primary':'btn-muted'" @click="setDocType('angebot')">Angebot</button>
@@ -315,28 +330,26 @@
           <div class="bg-slate-50 rounded-xl p-2"><div class="text-[10px] font-bold text-slate-400 uppercase">Steuer</div><div class="mono font-extrabold" x-text="money(vat())"></div></div>
           <div class="bg-[var(--accent-soft)] rounded-xl p-2"><div class="text-[10px] font-bold text-[var(--accent)] uppercase">Gesamt</div><div class="mono font-extrabold text-[var(--accent)]" x-text="money(total())"></div></div>
         </div>
-        <div class="grid grid-cols-6 gap-2">
-          <button class="btn btn-muted" @click="rememberHistory('Manuell gemerkt')">Merken</button>
-          <button class="btn btn-muted" @click="historyOpen=true">History</button>
-          <button class="btn btn-muted" @click="openPreflight()">Prüfen</button>
-          <button class="btn btn-muted" @click="exportFile()">Speichern</button>
-          <label class="btn btn-muted cursor-pointer">Laden<input type="file" accept=".json" class="hidden" @change="importFile"></label>
+        <div class="cost-output-actions">
+          <label class="cost-compact-option" title="Verdichtet Abstände, Schriftgrößen und QR-Code für PDF und Druck." aria-label="Kompaktmodus für PDF und Druck">
+            <input type="checkbox" x-model="output.compactPdf">
+            <span class="toggle" :class="output.compactPdf?'on':''" aria-hidden="true"></span><span>Kompakt</span>
+            <span class="cost-tooltip" role="tooltip">Verdichtet Abstände, Schriftgrößen und QR-Code für PDF und Druck.</span>
+          </label>
+          <label class="cost-compact-option" title="Blendet Kalkulationsdetails im Kompaktmodus nur in der Ausgabe aus." aria-label="In der Kompakt-Ausgabe nur Artikel anzeigen">
+            <input type="checkbox" x-model="output.compactForceArticle">
+            <span class="toggle" :class="output.compactForceArticle?'on':''" aria-hidden="true"></span><span>Details</span>
+            <span class="cost-tooltip" role="tooltip">Blendet Kalkulationsdetails im Kompaktmodus nur in der Ausgabe aus; intern bleiben sie erhalten.</span>
+          </label>
           <button class="btn btn-primary" @click="printDoc()">PDF/Druck</button>
-        </div>
-        <div class="space-y-2">
-          <label class="flex items-center justify-between gap-3 text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-xl p-2 cursor-pointer" @click="output.compactPdf=!output.compactPdf">
-            <span><strong>Kompaktmodus PDF</strong> · mehr Positionen pro Seite, weniger Weißraum</span>
-            <span class="toggle" :class="output.compactPdf?'on':''"></span>
-          </label>
-          <label x-show="output.compactPdf" x-transition class="flex items-center justify-between gap-3 text-xs text-slate-600 bg-amber-50 border border-amber-200 rounded-xl p-2 cursor-pointer" @click="output.compactForceArticle=!output.compactForceArticle">
-            <span><strong>Kompakt-Ausgabe</strong> · Kalkulationsdetails im PDF automatisch ausblenden und nur Artikel zeigen</span>
-            <span class="toggle" :class="output.compactForceArticle?'on':''"></span>
-          </label>
+          <input id="costProjectFileInput" type="file" accept=".json" class="hidden" @change="importFile">
         </div>
         <div x-show="historyNotice" x-transition class="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-xl p-2" x-text="historyNotice"></div>
         <div x-show="output.showStorageInfo" class="text-[11px] text-slate-500 leading-snug bg-slate-50 border border-slate-200 rounded-xl p-2">PDF = fertiges Dokument · JSON = bearbeitbare Projektdatei · History = lokaler Schnellverlauf im Browser.</div>
       </footer>
     </aside>
+
+    <div id="costResizer" class="cost-resizer no-print" role="separator" aria-orientation="vertical" aria-label="Breite der Arbeitsfläche ändern" aria-controls="costSidebar" aria-valuemin="460" aria-valuemax="760" aria-valuenow="580" tabindex="0" title="Ziehen oder Pfeiltasten verwenden; Doppelklick setzt die Breite zurück"></div>
 
     <main class="flex-1 h-full overflow-auto p-8 bg-slate-900">
       <div class="page-stack">
@@ -727,6 +740,117 @@
   </div>
   <div id="calcHelpPop" class="help-pop"></div>
 
+
+<script>
+(() => {
+  const HELP_URL = '/tools/ws_3d_print_kostenrechner_anleitung.html';
+  const STORAGE_KEY = 'warenschmiede.costcalc.sidebarWidth.v1';
+  const DEFAULT_WIDTH = 580;
+  const MIN_WIDTH = 460;
+  const ABSOLUTE_MAX_WIDTH = 760;
+  const desktopMaximum = () => Math.max(MIN_WIDTH, Math.min(ABSOLUTE_MAX_WIDTH, Math.floor(window.innerWidth * .55)));
+  const calculator = () => document.body?._x_dataStack?.[0] || null;
+  const withCalculator = action => {
+    const instance = calculator();
+    if (instance) action(instance);
+  };
+  const openHelpWindow = () => {
+    const popup = window.open(HELP_URL, 'wsCostCalculatorHelp', 'popup=yes,resizable=yes,scrollbars=yes,width=980,height=800');
+    if (!popup) window.alert('Die Anleitung konnte nicht geöffnet werden. Bitte erlauben Sie Pop-ups für diese Seite.');
+    else popup.focus();
+  };
+
+  window.WSCostCalculatorActions = Object.freeze({
+    remember: () => withCalculator(app => app.rememberHistory('Manuell gemerkt')),
+    history: () => withCalculator(app => { app.historyOpen = true; }),
+    check: () => withCalculator(app => app.openPreflight()),
+    save: () => withCalculator(app => app.exportFile()),
+    load: () => document.getElementById('costProjectFileInput')?.click(),
+    settings: () => withCalculator(app => { app.settingsOpen = true; }),
+    help: () => { window.location.href = HELP_URL; },
+    openHelpWindow
+  });
+
+  const configureMenu = () => window.WSToolMenu?.configure({
+    toolId: '3d-cost',
+    sections: [
+      { title: 'Projekt & Daten', items: [
+        { label: 'Merken', description: 'Aktuellen Stand in der lokalen History merken.', action: window.WSCostCalculatorActions.remember },
+        { label: 'History', description: 'Gespeicherte Arbeitsstände anzeigen.', action: window.WSCostCalculatorActions.history },
+        { label: 'Projekt speichern', description: 'Bearbeitbare Projektdatei als JSON sichern.', action: window.WSCostCalculatorActions.save },
+        { label: 'Projekt laden', description: 'Vorhandene JSON-Projektdatei öffnen.', action: window.WSCostCalculatorActions.load }
+      ]},
+      { title: 'Prüfen & Einstellungen', items: [
+        { label: 'Dokument prüfen', description: 'Vor PDF und Druck auf typische Stolperstellen prüfen.', action: window.WSCostCalculatorActions.check },
+        { label: 'Einstellungen', description: 'Firma, Design, Zahlung, Presets und Ausgabe verwalten.', action: window.WSCostCalculatorActions.settings }
+      ]},
+      { title: 'Hilfe', items: [
+        { label: 'Hilfe & Anleitung', description: 'Die Anleitung in diesem Fenster öffnen.', action: window.WSCostCalculatorActions.help },
+        { label: 'Anleitung in neuem Fenster', description: 'Die Anleitung separat und skalierbar öffnen.', action: window.WSCostCalculatorActions.openHelpWindow }
+      ]},
+      { title: 'Passende Werkzeuge', items: [
+        { toolId: 'qr' },
+        { label: 'Quittungs-Werkstatt', description: 'Quittungen direkt im Browser erstellen.', href: '/tools/ReceiptWriterPro.html' }
+      ]},
+      { title: '3D-Druck & Wissen', items: [
+        { label: '3D-Druck Wissen', description: 'FAQ, Materialien, Fehlerhilfe und Drucktipps.', href: '/3d_druck/3ddruck-faq.html' },
+        { label: 'Wartung & Reinigung', description: 'Drucker zuverlässig pflegen und reinigen.', href: '/3d_druck/wartung-reinigung.html' }
+      ]},
+      { title: 'Warenschmiede', items: [
+        { label: 'Zur Tool-Übersicht', href: '/tools/' },
+        { label: 'Zur Homepage', href: '/' },
+        { label: 'Kontakt', href: '/kontakt/kontakt.html' },
+        { label: 'Impressum', href: '/kontakt/impressum.html' },
+        { label: 'Datenschutz', href: '/datenschutz.html' }
+      ]}
+    ]
+  });
+
+  const setupResizer = () => {
+    const handle = document.getElementById('costResizer');
+    if (!handle) return;
+    let width = DEFAULT_WIDTH;
+    const apply = value => {
+      width = Math.round(Math.max(MIN_WIDTH, Math.min(desktopMaximum(), value)));
+      document.documentElement.style.setProperty('--cost-sidebar-width', width + 'px');
+      handle.setAttribute('aria-valuenow', String(width));
+      handle.setAttribute('aria-valuemax', String(desktopMaximum()));
+    };
+    const persist = () => { try { localStorage.setItem(STORAGE_KEY, String(width)); } catch (_) {} };
+    try {
+      const saved = Number(localStorage.getItem(STORAGE_KEY));
+      apply(Number.isFinite(saved) && saved >= MIN_WIDTH && saved <= ABSOLUTE_MAX_WIDTH ? saved : DEFAULT_WIDTH);
+    } catch (_) { apply(DEFAULT_WIDTH); }
+    handle.addEventListener('pointerdown', event => {
+      if (window.innerWidth <= 1100) return;
+      event.preventDefault();
+      handle.setPointerCapture(event.pointerId);
+      document.body.classList.add('cost-resizing');
+      const startX = event.clientX;
+      const startWidth = width;
+      const move = moveEvent => apply(startWidth + moveEvent.clientX - startX);
+      const stop = () => {
+        document.body.classList.remove('cost-resizing');
+        handle.removeEventListener('pointermove', move);
+        persist();
+      };
+      handle.addEventListener('pointermove', move);
+      handle.addEventListener('pointerup', stop, { once: true });
+      handle.addEventListener('pointercancel', stop, { once: true });
+    });
+    handle.addEventListener('keydown', event => {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      event.preventDefault();
+      apply(width + (event.key === 'ArrowRight' ? 1 : -1) * (event.shiftKey ? 50 : 10));
+      persist();
+    });
+    handle.addEventListener('dblclick', () => { apply(DEFAULT_WIDTH); persist(); });
+    window.addEventListener('resize', () => apply(width));
+  };
+
+  document.addEventListener('DOMContentLoaded', () => { configureMenu(); setupResizer(); });
+})();
+</script>
 
 <script>
 function app(){ return {

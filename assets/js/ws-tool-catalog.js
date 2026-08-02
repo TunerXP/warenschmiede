@@ -1,5 +1,13 @@
 (() => {
   const tools = {
+    '3d-cost': {
+      id: '3d-cost',
+      name: '3D-Druck Kostenrechner Plus',
+      description: 'Kalkulation, Angebot, Rechnung und Lieferschein.',
+      href: '/tools/ws_3d_print_kostenrechner.html',
+      icon: '/assets/img/w-tools-menu.png',
+      iconScale: 1
+    },
     barcode: {
       id: 'barcode',
       name: 'Barcode-Werkstatt Plus',
