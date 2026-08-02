@@ -12,7 +12,16 @@
     else window.alert('Der Kostenrechner wird noch geladen. Bitte kurz erneut versuchen.');
   };
   const openHelpWindow = () => {
-    const popup = window.open(HELP_URL, 'wsCostCalculatorHelp', 'popup=yes,resizable=yes,scrollbars=yes,width=980,height=800');
+    const availableWidth = Number(screen.availWidth) || Number(window.outerWidth) || 1380;
+    const availableHeight = Number(screen.availHeight) || Number(window.outerHeight) || 900;
+    const availableLeft = Number.isFinite(Number(screen.availLeft)) ? Number(screen.availLeft) : (Number(window.screenX) || 0);
+    const availableTop = Number.isFinite(Number(screen.availTop)) ? Number(screen.availTop) : (Number(window.screenY) || 0);
+    const width = Math.min(1380, Math.max(760, availableWidth - 80), availableWidth);
+    const height = Math.min(900, Math.max(640, availableHeight - 80), availableHeight);
+    const left = Math.round(availableLeft + Math.max(0, (availableWidth - width) / 2));
+    const top = Math.round(availableTop + Math.max(0, (availableHeight - height) / 2));
+    const features = `popup=yes,resizable=yes,scrollbars=yes,width=${width},height=${height},left=${left},top=${top}`;
+    const popup = window.open(HELP_URL, 'wsCostCalculatorHelp', features);
     if (!popup) window.alert('Die Anleitung konnte nicht geöffnet werden. Bitte erlauben Sie Pop-ups für diese Seite.');
     else popup.focus();
   };
