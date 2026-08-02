@@ -5,8 +5,9 @@
       name: '3D-Druck Kostenrechner Plus',
       description: 'Kalkulation, Angebot, Rechnung und Lieferschein.',
       href: '/tools/ws_3d_print_kostenrechner.html',
-      icon: '/assets/img/w-tools-menu.png',
-      iconScale: 1
+      icon: '/assets/img/tools/3d-druck-kostenrechner-plus/3d-druck-kostenrechner-plus-logo.png',
+      iconScale: 2.55,
+      cardImage: '/assets/img/tools/3d-druck-kostenrechner-plus.png'
     },
     barcode: {
       id: 'barcode',

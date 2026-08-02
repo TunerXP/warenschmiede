@@ -4,6 +4,8 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 
 const html = fs.readFileSync('tools/ws_3d_print_kostenrechner.html', 'utf8');
+const appCss = fs.readFileSync('tools/3d-druck-kostenrechner-plus/app.css', 'utf8');
+const appJs = fs.readFileSync('tools/3d-druck-kostenrechner-plus/app.js', 'utf8');
 
 test('3D cost calculator is a frozen catalog tool', () => {
   const source = fs.readFileSync('assets/js/ws-tool-catalog.js', 'utf8');
@@ -13,7 +15,11 @@ test('3D cost calculator is a frozen catalog tool', () => {
   assert.equal(tool.name, '3D-Druck Kostenrechner Plus');
   assert.equal(tool.description, 'Kalkulation, Angebot, Rechnung und Lieferschein.');
   assert.equal(tool.href, '/tools/ws_3d_print_kostenrechner.html');
-  assert.ok(tool.icon);
+  assert.equal(tool.icon, '/assets/img/tools/3d-druck-kostenrechner-plus/3d-druck-kostenrechner-plus-logo.png');
+  assert.equal(tool.iconScale, 2.55);
+  assert.ok(tool.iconScale > 2 && tool.iconScale < 3);
+  assert.equal(tool.cardImage, '/assets/img/tools/3d-druck-kostenrechner-plus.png');
+  assert.equal(fs.existsSync('.' + tool.icon), true);
   assert.equal(Object.isFrozen(tool), true);
 });
 
@@ -23,13 +29,16 @@ test('header and shared menu expose the new navigation structure', () => {
   assert.match(html, /Kalkulation · Angebot · Rechnung · Lieferschein/);
   const header = html.match(/<header class=\"sidebar-head[\s\S]*?<\/header>/)?.[0] || '';
   assert.doesNotMatch(header, /☰ Warenschmiede Tools|Anleitung öffnen|Einstellungen/);
-  assert.match(html, /toolId: '3d-cost'/);
-  for (const section of ['Projekt & Daten', 'Prüfen & Einstellungen', 'Hilfe', 'Passende Werkzeuge', '3D-Druck & Wissen', 'Warenschmiede']) assert.match(html, new RegExp(section));
-  assert.match(html, /\{ toolId: 'qr' \}/);
-  for (const action of ['remember', 'history', 'check', 'save', 'load', 'settings']) assert.match(html, new RegExp(`WSCostCalculatorActions\\.${action}`));
-  assert.match(html, /init\(\)\{ window\.WSCostCalculatorInstance=this;/);
-  assert.match(html, /calculator = \(\) => window\.WSCostCalculatorInstance \|\| null/);
-  assert.doesNotMatch(html, /_x_dataStack/);
+  assert.match(header, /ws-tool-menu-btn[\s\S]*data-ws-tool-icon="3d-cost"[\s\S]*<h1/);
+  assert.match(header, /ws-tool-identity-icon--large/);
+  assert.match(appJs, /toolId: '3d-cost'/);
+  assert.match(appJs, /side: 'left'/);
+  for (const section of ['Projekt & Daten', 'Prüfen & Einstellungen', 'Hilfe', 'Passende Werkzeuge', '3D-Druck & Wissen', 'Warenschmiede']) assert.match(appJs, new RegExp(section));
+  assert.match(appJs, /\{ toolId: 'qr' \}/);
+  for (const action of ['remember', 'history', 'check', 'save', 'load', 'settings']) assert.match(appJs, new RegExp(`WSCostCalculatorActions\\.${action}`));
+  assert.match(appJs, /init\(\)\{ window\.WSCostCalculatorInstance=this;/);
+  assert.match(appJs, /calculator = \(\) => window\.WSCostCalculatorInstance \|\| null/);
+  assert.doesNotMatch(appJs, /_x_dataStack/);
 });
 
 test('fixed output area keeps print and accessible compact controls', () => {
@@ -48,21 +57,20 @@ test('fixed output area keeps print and accessible compact controls', () => {
 });
 
 test('sidebar is responsive, persisted, and keyboard resizable', () => {
-  assert.match(html, /--cost-sidebar-width: 580px/);
-  assert.match(html, /var\(--cost-sidebar-width, 580px\)/);
-  assert.match(html, /MIN_WIDTH = 460/);
-  assert.match(html, /ABSOLUTE_MAX_WIDTH = 760/);
-  assert.match(html, /window\.innerWidth \* \.55/);
-  assert.match(html, /warenschmiede\.costcalc\.sidebarWidth\.v1/);
+  assert.match(appCss, /--cost-sidebar-width: 580px/);
+  assert.match(appCss, /var\(--cost-sidebar-width, 580px\)/);
+  assert.match(appJs, /MIN_WIDTH = 460/);
+  assert.match(appJs, /ABSOLUTE_MAX_WIDTH = 760/);
+  assert.match(appJs, /window\.innerWidth \* \.55/);
+  assert.match(appJs, /warenschmiede\.costcalc\.sidebarWidth\.v1/);
   assert.match(html, /role="separator"[^>]*aria-orientation="vertical"[^>]*tabindex="0"/);
-  assert.match(html, /ArrowLeft.*ArrowRight/);
-  assert.match(html, /addEventListener\('dblclick'/);
-  assert.match(html, /@media \(max-width: 1100px\)[\s\S]*\.cost-resizer \{ display: none; \}/);
+  assert.match(appJs, /ArrowLeft.*ArrowRight/);
+  assert.match(appJs, /addEventListener\('dblclick'/);
+  assert.match(appCss, /@media \(max-width: 1100px\)[\s\S]*\.cost-resizer \{ display: none; \}/);
 });
 
 test('preferred sidebar width survives a narrow and wide resize cycle', () => {
-  const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)]
-    .map(match => match[1]).filter(source => source.includes('const STORAGE_KEY'));
+  const scripts = [appJs].filter(source => source.includes('const STORAGE_KEY'));
   assert.equal(scripts.length, 1);
 
   const handleListeners = new Map();
@@ -109,4 +117,38 @@ test('preferred sidebar width survives a narrow and wide resize cycle', () => {
   windowListeners.get('resize')();
   assert.equal(styles.get('--cost-sidebar-width'), '700px');
   assert.equal(attributes.get('aria-valuenow'), '700');
+});
+
+test('calculator source is split without losing critical application methods', () => {
+  assert.match(html, /href="3d-druck-kostenrechner-plus\/app\.css"/);
+  assert.match(html, /defer src="3d-druck-kostenrechner-plus\/app\.js"/);
+  assert.doesNotMatch(html, /<style[>\s]/);
+  assert.doesNotMatch(html, /function app\(/);
+  for (const method of ['init', 'snapshot', 'applySnapshot', 'subtotal', 'vat', 'total', 'documentLines', 'getPages', 'exportFile', 'importFile', 'printDoc', 'renderQr', 'rememberHistory', 'openPreflight']) {
+    assert.match(appJs, new RegExp(`\\b${method}\\s*\\(`));
+  }
+});
+
+test('settings dialog has stable desktop and responsive inner scrolling', () => {
+  for (const className of ['cost-settings-dialog', 'cost-settings-head', 'cost-settings-layout', 'cost-settings-nav', 'cost-settings-content']) {
+    assert.match(html, new RegExp(className));
+  }
+  assert.match(appCss, /width:min\(1120px, calc\(100vw - 32px\)\)/);
+  assert.match(appCss, /height:min\(860px, calc\(100dvh - 32px\)\)/);
+  assert.match(appCss, /grid-template-rows:auto minmax\(0,1fr\)/);
+  assert.match(appCss, /\.cost-settings-dialog[\s\S]*?overflow:hidden/);
+  assert.match(appCss, /\.cost-settings-nav[\s\S]*?overflow-y:auto/);
+  assert.match(appCss, /\.cost-settings-content[\s\S]*?overflow-x:hidden[\s\S]*?overflow-y:auto/);
+});
+
+test('shared menu supports left panels while retaining right as the default', () => {
+  const menuJs = fs.readFileSync('assets/js/ws-tool-menu.js', 'utf8');
+  const menuCss = fs.readFileSync('assets/css/ws-tool-menu.css', 'utf8');
+  assert.match(menuJs, /side: 'right'/);
+  assert.match(menuJs, /options\.side === 'left' \? 'left' : 'right'/);
+  assert.match(menuJs, /panel\.dataset\.side = config\.side/);
+  assert.match(menuJs, /setAttribute\('data-side', config\.side\)/);
+  assert.match(menuCss, /\.ws-tool-panel[\s\S]*transform:translateX\(104%\)/);
+  assert.match(menuCss, /\.ws-tool-panel\[data-side="left"\][\s\S]*transform:translateX\(-104%\)/);
+  assert.match(menuCss, /\.ws-tool-panel\.open \{ transform:translateX\(0\); \}/);
 });
