@@ -1,6 +1,15 @@
     const ENTRY_KEY = 'ws_time_entries_plus_v1';
     const SETTINGS_KEY = 'ws_time_settings_plus_v1';
     const OLD_KEY = 'workTimeEntries_v2';
+    const UI_SETTINGS_KEY = 'ws_time_ui_plus_v1';
+    const DEFAULT_UI_SETTINGS = Object.freeze({
+      showQuickToday: true,
+      showWeekOverview: false,
+      useWeeklyTarget: false,
+      weeklyTargetMinutes: 2400,
+      compactMode: false,
+      largeText: false
+    });
 
     let entries = [];
     let settingsReturnFocus = null;
@@ -14,11 +23,14 @@
       pause: 30,
       note: ''
     };
+    let uiSettings = { ...DEFAULT_UI_SETTINGS };
 
     const $ = (id) => document.getElementById(id);
 
     window.addEventListener('load', () => {
       loadData();
+      loadUiSettings();
+      applyUiSettings();
       initMonth();
       bindLiveDuration();
       render();
@@ -75,6 +87,60 @@
 
     function saveEntries() {
       localStorage.setItem(ENTRY_KEY, JSON.stringify(entries));
+    }
+
+    function loadUiSettings() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(UI_SETTINGS_KEY) || 'null');
+        if (!stored || typeof stored !== 'object' || Array.isArray(stored)) throw new Error('Ungültige Einstellungen');
+        uiSettings = {
+          showQuickToday: typeof stored.showQuickToday === 'boolean' ? stored.showQuickToday : DEFAULT_UI_SETTINGS.showQuickToday,
+          showWeekOverview: typeof stored.showWeekOverview === 'boolean' ? stored.showWeekOverview : DEFAULT_UI_SETTINGS.showWeekOverview,
+          useWeeklyTarget: typeof stored.useWeeklyTarget === 'boolean' ? stored.useWeeklyTarget : DEFAULT_UI_SETTINGS.useWeeklyTarget,
+          weeklyTargetMinutes: Number.isFinite(stored.weeklyTargetMinutes) && stored.weeklyTargetMinutes >= 0 && stored.weeklyTargetMinutes <= 10080 ? Math.round(stored.weeklyTargetMinutes) : DEFAULT_UI_SETTINGS.weeklyTargetMinutes,
+          compactMode: typeof stored.compactMode === 'boolean' ? stored.compactMode : DEFAULT_UI_SETTINGS.compactMode,
+          largeText: typeof stored.largeText === 'boolean' ? stored.largeText : DEFAULT_UI_SETTINGS.largeText
+        };
+      } catch (_) { uiSettings = { ...DEFAULT_UI_SETTINGS }; }
+    }
+
+    function applyUiSettings() {
+      document.body.classList.toggle('time-compact', uiSettings.compactMode);
+      document.body.classList.toggle('time-large-text', uiSettings.largeText);
+      $('quickTodayButton')?.classList.toggle('hidden', !uiSettings.showQuickToday);
+      $('weekOverviewCard')?.classList.toggle('hidden', !uiSettings.showWeekOverview);
+      if ($('setShowQuickToday')) $('setShowQuickToday').checked = uiSettings.showQuickToday;
+      if ($('setShowWeekOverview')) $('setShowWeekOverview').checked = uiSettings.showWeekOverview;
+      if ($('setUseWeeklyTarget')) $('setUseWeeklyTarget').checked = uiSettings.useWeeklyTarget;
+      if ($('setWeeklyTargetHours')) $('setWeeklyTargetHours').value = uiSettings.weeklyTargetMinutes / 60;
+      if ($('setCompactMode')) $('setCompactMode').checked = uiSettings.compactMode;
+      if ($('setLargeText')) $('setLargeText').checked = uiSettings.largeText;
+      syncUiOptionVisibility();
+    }
+
+    function saveUiSettings() {
+      const hours = Number($('setWeeklyTargetHours').value);
+      uiSettings = {
+        showQuickToday: $('setShowQuickToday').checked,
+        showWeekOverview: $('setShowWeekOverview').checked,
+        useWeeklyTarget: $('setUseWeeklyTarget').checked,
+        weeklyTargetMinutes: Number.isFinite(hours) && hours >= 0 && hours <= 168 ? Math.round(hours * 60) : uiSettings.weeklyTargetMinutes,
+        compactMode: $('setCompactMode').checked,
+        largeText: $('setLargeText').checked
+      };
+      localStorage.setItem(UI_SETTINGS_KEY, JSON.stringify(uiSettings));
+      applyUiSettings();
+      render();
+      toast('Übersicht und Darstellung wurden gespeichert.');
+    }
+
+    function resetUiSettings() {
+      if (!confirm('Wochen- und Darstellungsoptionen zurücksetzen?\nArbeitszeiten und Personendaten bleiben unverändert.')) return;
+      uiSettings = { ...DEFAULT_UI_SETTINGS };
+      localStorage.setItem(UI_SETTINGS_KEY, JSON.stringify(uiSettings));
+      applyUiSettings();
+      render();
+      toast('Wochen- und Darstellungsoptionen wurden zurückgesetzt.');
     }
 
     function saveSettings() {
@@ -134,8 +200,94 @@
       $('statAverage').textContent = formatMinutes(avg) + ' h';
       $('statEntries').textContent = filtered.length;
 
+      renderEmptyMonthNotice(filtered, month, monthLabel);
+      renderWeekOverview(month);
       renderMobile(filtered);
       renderTable(filtered, total);
+    }
+
+    function validDateIso(value) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value))) return false;
+      const date = new Date(`${value}T12:00:00Z`);
+      return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+    }
+
+    function findNearbyPopulatedMonth(allEntries, selectedMonth) {
+      if (!/^\d{4}-\d{2}$/.test(String(selectedMonth))) return null;
+      const counts = new Map();
+      allEntries.forEach(entry => { if (validDateIso(entry?.date)) counts.set(entry.date.slice(0, 7), (counts.get(entry.date.slice(0, 7)) || 0) + 1); });
+      const months = [...counts.keys()].filter(month => month !== selectedMonth).sort();
+      const before = months.filter(month => month < selectedMonth).pop();
+      const month = before || months.find(value => value > selectedMonth);
+      return month ? { month, count: counts.get(month) } : null;
+    }
+
+    function monthName(month) {
+      return new Date(`${month}-01T12:00:00Z`).toLocaleDateString('de-DE', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+    }
+
+    function renderEmptyMonthNotice(filtered, month, monthLabel) {
+      const notice = $('emptyMonthNotice');
+      notice.innerHTML = '';
+      notice.classList.toggle('hidden', filtered.length > 0);
+      if (filtered.length) return;
+      const nearby = findNearbyPopulatedMonth(entries, month);
+      const text = document.createElement('p');
+      text.textContent = nearby ? `Im ${monthLabel} sind noch keine Arbeitszeiten eingetragen. Im ${monthName(nearby.month)} sind ${nearby.count} Einträge vorhanden.` : 'Für diesen Monat sind noch keine Arbeitszeiten eingetragen.';
+      notice.appendChild(text);
+      if (nearby) {
+        const button = document.createElement('button');
+        button.type = 'button'; button.className = 'btn btn-light'; button.textContent = `${monthName(nearby.month)} anzeigen`;
+        button.onclick = () => { $('monthPicker').value = nearby.month; render(); };
+        notice.appendChild(button);
+      }
+    }
+
+    function getIsoWeekInfo(dateIso) {
+      if (!validDateIso(dateIso)) return null;
+      const date = new Date(`${dateIso}T12:00:00Z`);
+      const day = date.getUTCDay() || 7;
+      date.setUTCDate(date.getUTCDate() + 4 - day);
+      const year = date.getUTCFullYear();
+      const yearStart = new Date(Date.UTC(year, 0, 1, 12));
+      return { year, week: Math.ceil((((date - yearStart) / 86400000) + 1) / 7) };
+    }
+
+    function getIsoWeekRange(year, week) {
+      const fourth = new Date(Date.UTC(year, 0, 4, 12));
+      const monday = new Date(fourth);
+      monday.setUTCDate(fourth.getUTCDate() - ((fourth.getUTCDay() || 7) - 1) + (week - 1) * 7);
+      const sunday = new Date(monday); sunday.setUTCDate(monday.getUTCDate() + 6);
+      return { start: monday.toISOString().slice(0, 10), end: sunday.toISOString().slice(0, 10) };
+    }
+
+    function buildWeekSummaries(allEntries, selectedMonth) {
+      if (!/^\d{4}-\d{2}$/.test(String(selectedMonth))) return [];
+      const first = `${selectedMonth}-01`;
+      const lastDate = new Date(`${first}T12:00:00Z`); lastDate.setUTCMonth(lastDate.getUTCMonth() + 1); lastDate.setUTCDate(0);
+      const last = lastDate.toISOString().slice(0, 10);
+      const firstInfo = getIsoWeekInfo(first); const lastInfo = getIsoWeekInfo(last);
+      const range = getIsoWeekRange(firstInfo.year, firstInfo.week); const summaries = [];
+      for (let start = new Date(`${range.start}T12:00:00Z`); start.toISOString().slice(0, 10) <= getIsoWeekRange(lastInfo.year, lastInfo.week).start; start.setUTCDate(start.getUTCDate() + 7)) {
+        const startIso = start.toISOString().slice(0, 10); const info = getIsoWeekInfo(startIso); const weekRange = getIsoWeekRange(info.year, info.week);
+        const actualMinutes = allEntries.reduce((sum, entry) => validDateIso(entry?.date) && entry.date >= weekRange.start && entry.date <= weekRange.end ? sum + (Number(entry.duration) || 0) : sum, 0);
+        summaries.push({ ...info, ...weekRange, actualMinutes });
+      }
+      return summaries;
+    }
+
+    function formatShortDate(iso) { return `${iso.slice(8, 10)}.${iso.slice(5, 7)}.`; }
+    function formatDifference(minutes) { const value = Math.round(Number(minutes) || 0); return `${value > 0 ? '+' : value < 0 ? '−' : '±'}${formatMinutes(Math.abs(value))} h`; }
+    function renderWeekOverview(month) {
+      const list = $('weekOverviewList');
+      if (!list) return;
+      list.innerHTML = '';
+      buildWeekSummaries(entries, month).forEach(week => {
+        const card = document.createElement('article'); card.className = 'week-item';
+        const target = uiSettings.weeklyTargetMinutes;
+        card.innerHTML = `<strong>KW ${week.week} · ${formatShortDate(week.start)}–${formatShortDate(week.end)}</strong><span>Ist: ${formatMinutes(week.actualMinutes)} h</span>${uiSettings.useWeeklyTarget ? `<span>Soll: ${formatMinutes(target)} h</span><span>Differenz: ${formatDifference(week.actualMinutes - target)}</span>` : ''}`;
+        list.appendChild(card);
+      });
     }
 
     function renderMobile(filtered) {
@@ -414,11 +566,23 @@
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
-    function openSettingsModal() {
+    function setSettingsSection(section) {
+      const valid = ['person', 'overview', 'appearance', 'data', 'info'];
+      const selected = valid.includes(section) ? section : 'person';
+      document.querySelectorAll('[data-settings-section]').forEach(button => {
+        const active = button.dataset.settingsSection === selected;
+        button.setAttribute('aria-selected', String(active));
+      });
+      document.querySelectorAll('[data-settings-panel]').forEach(panel => panel.classList.toggle('hidden', panel.dataset.settingsPanel !== selected));
+    }
+
+    function openSettingsModal(section = 'person') {
       settingsReturnFocus = document.activeElement;
       syncOptionVisibility();
+      applyUiSettings();
+      setSettingsSection(section);
       $('settingsModal').classList.remove('hidden');
-      setTimeout(() => $('setName').focus(), 60);
+      setTimeout(() => document.querySelector(`[data-settings-section="${['person', 'overview', 'appearance', 'data', 'info'].includes(section) ? section : 'person'}"]`)?.focus(), 60);
     }
 
     function closeSettingsModal() {
@@ -454,7 +618,7 @@
           ] },
           { title: 'Warenschmiede', items: [
             { label: 'Zur Tool-Übersicht', href: '/tools/' }, { label: 'Zur Homepage', href: '/' },
-            { label: 'Kontakt', href: '/kontakt/kontakt.html' }, { label: 'Impressum', href: '/kontakt/impressum.html' }, { label: 'Datenschutz', href: '/datenschutz.html' }
+            { label: 'Kontakt', href: '/kontakt/kontakt.html' }
           ] }
         ]
       });
@@ -473,6 +637,12 @@
       parts.push(useDefaults ? 'Standardzeiten aktiv' : 'Zeiten manuell');
       parts.push(useNote ? 'Standardnotiz aktiv' : 'Notizen je Tag möglich');
       if ($('settingsSummary')) $('settingsSummary').textContent = parts.join(' · ');
+    }
+
+    function syncUiOptionVisibility() {
+      const enabled = !!$('setUseWeeklyTarget')?.checked;
+      if ($('setWeeklyTargetHours')) $('setWeeklyTargetHours').disabled = !enabled;
+      document.querySelectorAll('.weekly-target-field').forEach(el => el.classList.toggle('is-disabled', !enabled));
     }
 
     function escapeHTML(value) {

@@ -39,3 +39,19 @@ test('Katalog und Website-Menü lösen Zeiterfassung Plus sicher auf', () => {
   assert.match(catalog, /Object\.values\(tools\)\.forEach\(Object\.freeze\)/);
   assert.match(layout, /toolId: 'time', fallback: \{ label: 'Zeiterfassung Plus', href: 'tools\/Zeiterfassung_Plus\.html'/);
 });
+
+test('Version 1.3, Komfortbereiche und gemeinsame Monats-/Wochenflächen sind vorhanden', () => {
+  assert.doesNotMatch(html, /v1\.2/);
+  assert.match(html, /Zeiterfassung Plus v1\.3/);
+  for (const id of ['quickTodayButton','weekOverviewCard','weekOverviewList','emptyMonthNotice','setShowWeekOverview','setUseWeeklyTarget','setWeeklyTargetHours','setCompactMode','setLargeText','setShowQuickToday']) assert.match(html, new RegExp(`id="${id}"`));
+  for (const section of ['person','overview','appearance','data','info']) assert.match(html, new RegExp(`data-settings-section="${section}"`));
+  assert.match(html, /role="status"/);
+});
+
+test('Tool-Menü vermeidet doppelte Rechtlinks und behält Schnellaktion', () => {
+  const menu = js.slice(js.indexOf('function configureToolMenu'));
+  assert.match(menu, /label: 'Heute Standardzeit'/);
+  assert.doesNotMatch(menu, /label: 'Impressum'/);
+  assert.doesNotMatch(menu, /label: 'Datenschutz'/);
+  assert.match(menu, /label: 'Kontakt'/);
+});
