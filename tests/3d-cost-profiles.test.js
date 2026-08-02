@@ -7,7 +7,16 @@ const source = fs.readFileSync('tools/3d-druck-kostenrechner-plus/app.js', 'utf8
 const html = fs.readFileSync('tools/ws_3d_print_kostenrechner.html', 'utf8');
 const css = fs.readFileSync('tools/3d-druck-kostenrechner-plus/app.css', 'utf8');
 const application = source.slice(source.indexOf('const DEFAULT_CALCULATION_PROFILES')) + '\n;globalThis.testExports={DEFAULT_CALCULATION_PROFILES,cloneDefaultProfiles,app};';
-const context = { console, setTimeout, clearTimeout, confirm: () => true, document: {}, window: {} };
+let nextTimerId = 0;
+const timers = new Map();
+const context = {
+  console,
+  setTimeout(callback) { const id=++nextTimerId; timers.set(id,callback); return id; },
+  clearTimeout(id) { timers.delete(id); },
+  confirm: () => true,
+  document: {},
+  window: {}
+};
 vm.runInNewContext(application, context);
 const { DEFAULT_CALCULATION_PROFILES, cloneDefaultProfiles, app } = context.testExports;
 const fresh = () => Object.assign(app(), { $nextTick(callback) { callback(); } });
@@ -52,6 +61,30 @@ test('single reset restores only its built-in and never changes jobs', () => {
   assert.deepEqual(JSON.parse(JSON.stringify(standard)), JSON.parse(JSON.stringify(DEFAULT_CALCULATION_PROFILES[0])));
   assert.equal(hobby.marginPercent, 12);
   assert.equal(state.jobs[0].marginPercent, 88);
+  assert.match(state.settingsNotice, /wurde zurückgesetzt/);
+});
+
+test('position feedback is scoped, replaces its timer and handles missing profiles', () => {
+  timers.clear();
+  const state = fresh(); state.seed();
+  const jobA={id:'a',profileId:'standard',weight:123,time:4,marginPercent:0,laborMinutes:0,hourlyRate:0,failRate:0};
+  const jobB={id:'b',profileId:'standard',marginPercent:9};
+  state.jobs=[jobA,jobB];
+  state.reapplyProfile(jobA);
+  assert.equal(state.positionNoticeJobId, jobA.id);
+  assert.match(state.positionNoticeText, /in diese Position/);
+  assert.equal(state.settingsNotice, '');
+  assert.equal(timers.size, 1);
+  state.reapplyProfile(jobB);
+  assert.equal(state.positionNoticeJobId, jobB.id);
+  assert.equal(timers.size, 1);
+  const before={...jobA};
+  jobA.profileId='missing';
+  state.reapplyProfile(jobA);
+  assert.equal(state.positionNoticeJobId, jobA.id);
+  assert.equal(state.positionNoticeText, 'Das ausgewählte Profil wurde nicht gefunden.');
+  assert.deepEqual({...jobA,profileId:before.profileId}, before);
+  assert.equal(timers.size, 1);
 });
 
 test('profile UI provides statuses, safe actions, direct navigation and unit fields', () => {
@@ -65,7 +98,15 @@ test('profile UI provides statuses, safe actions, direct navigation and unit fie
   assert.match(source, /highlightedProfileId/);
   assert.match(source, /element\.querySelector\('input'\)\?\.focus/);
   assert.equal((html.match(/unit-input__suffix" aria-hidden="true"/g) || []).length >= 21, true);
-  assert.match(css, /\.unit-input__control \{ padding-right:5\.5rem/);
+  assert.match(css, /\.unit-input \{ display:grid; grid-template-columns:minmax\(0,1fr\) auto/);
+  assert.match(css, /\.unit-input__control \{[^}]*border:0[^}]*padding-right:\.65rem/);
+  assert.match(css, /\.unit-input__suffix \{ position:static; transform:none; display:flex/);
+  assert.doesNotMatch(css, /padding-right:5\.5rem|\.unit-input__suffix \{ position:absolute/);
+  assert.match(css, /\.unit-input__suffix[^}]*white-space:nowrap/);
+  assert.match(html, /minmax\(165px,185px\)[^\n]*kg CO₂\/kg/);
+  assert.match(css, /@container \(max-width: 500px\)[\s\S]*cost-position-unit-grid/);
+  assert.match(html, /positionNoticeText && positionNoticeJobId === job\.id/);
+  assert.equal((html.match(/x-show="settingsNotice"/g)||[]).length, 1);
   assert.match(html, /x-model\.number="job\.weight"/);
   assert.match(html, /x-model\.number="p\.marginPercent"/);
 });
