@@ -71,14 +71,30 @@ test('Termin ist stabiles, UTC-basiertes iCalendar mit CRLF', () => {
   assert.equal(build('event',{...values,eventEnd:'2026-08-02T09:00:00Z'}).status,'invalid');
 });
 
-test('SEPA erzeugt exakt zwölf LF-Felder und validiert EPC-Daten', () => {
+test('SEPA erhält interne Leerfelder, entfernt leere Endfelder und validiert EPC-Daten', () => {
   const base={sepaName:'Max Mustermann',sepaIban:'DE89 3704 0044 0532 0130 00',sepaPurpose:'Rechnung 1'};
   const result=build('sepa',{...base,sepaBic:'COBADEFF',sepaAmount:'12,5'});
-  assert.equal(result.status,'valid'); assert.equal(result.payload.split('\n').length,12); assert.equal(result.payload.split('\n')[7],'EUR12.50'); assert.doesNotMatch(result.payload,/\r/);
+  const fields=result.payload.split('\n');
+  assert.equal(result.status,'valid'); assert.match(result.payload,/^BCD\n002\n1\nSCT\n/); assert.equal(fields[7],'EUR12.50');
+  assert.equal(fields[8],''); assert.equal(fields[9],''); assert.equal(fields[10],'Rechnung 1');
+  assert.equal(result.payload.endsWith('Rechnung 1'),true); assert.doesNotMatch(result.payload,/[\r\n]$/);
+  const withoutPurpose=build('sepa',{...base,sepaPurpose:'',sepaBic:'',sepaAmount:''});
+  assert.equal(withoutPurpose.status,'valid'); assert.equal(withoutPurpose.payload.endsWith('DE89370400440532013000'),true); assert.doesNotMatch(withoutPurpose.payload,/[\r\n]$/);
   assert.equal(build('sepa',{...base,sepaIban:'DE88 3704 0044 0532 0130 00'}).status,'invalid');
   assert.equal(build('sepa',{...base,sepaBic:'DEUTDEFF500'}).status,'valid');
   assert.equal(build('sepa',{...base,sepaAmount:'1.234'}).status,'invalid');
   assert.equal(build('sepa',{...base,sepaPurpose:'ä'.repeat(141)}).status,'invalid');
+});
+
+test('Terminzeiten belegen untereinander die Kartenbreite', () => {
+  const html=fs.readFileSync('tools/QRCodeMasterPro.html','utf8');
+  const eventForm=html.match(/<section class="form-section" data-form="event">([\s\S]*?)<\/section>/)[1];
+  assert.match(eventForm,/<div class="row event-time-row">\s*<div class="field">[^<]*<label for="eventStart">[\s\S]*?id="eventStart"[\s\S]*?<div class="field">[^<]*<label for="eventEnd">[\s\S]*?id="eventEnd"[\s\S]*?<\/div>\s*<\/div>/);
+  assert.equal((html.match(/class="row event-time-row"/g) || []).length,1);
+  assert.match(html,/\.event-time-row\{grid-template-columns:minmax\(0,1fr\)\}/);
+  assert.match(html,/\.event-time-row > \.field\{min-width:0\}/);
+  assert.match(html,/\.event-time-row input\[type="datetime-local"\]\{width:100%;min-width:0;max-width:100%;box-sizing:border-box\}/);
+  assert.match(html,/\.row\{display:grid;grid-template-columns:1fr 1fr;gap:10px\}/);
 });
 
 test('App- und Kartenlinks erlauben nur definierte Strukturen', () => {

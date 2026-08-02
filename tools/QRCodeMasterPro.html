@@ -78,6 +78,9 @@
     h2,h3{margin:0;line-height:1.15}
     .panel h2{font-size:1.18rem;letter-spacing:-.02em}.panel h3{font-size:1rem}
     .panel-body{padding:18px}.grid{display:grid;gap:12px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .event-time-row{grid-template-columns:minmax(0,1fr)}
+    .event-time-row > .field{min-width:0}
+    .event-time-row input[type="datetime-local"]{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
     label{font-size:.78rem;font-weight:850;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
     input,textarea,select{
       width:100%;border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:var(--surface);color:var(--text);
@@ -370,7 +373,7 @@
               <section class="form-section" data-form="event">
                 <p class="form-help">Erstellt einen Kalendertermin im iCalendar-Format.</p>
                 <input id="eventUid" type="hidden"><div class="field"><label for="eventTitle">Titel</label><input id="eventTitle" placeholder="Termin"></div>
-                <div class="row">
+                <div class="row event-time-row">
                   <div class="field"><label for="eventStart">Start</label><input id="eventStart" type="datetime-local"></div>
                   <div class="field"><label for="eventEnd">Ende</label><input id="eventEnd" type="datetime-local"></div>
                 </div>
