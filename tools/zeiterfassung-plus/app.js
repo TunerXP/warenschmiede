@@ -631,6 +631,9 @@
             { label: 'Backup sichern', action: actions.downloadBackup },
             { label: 'Backup laden', action: actions.restoreBackup }
           ] },
+          { title: 'Hilfe', items: [
+            { label: 'Anleitung öffnen', href: '/tools/Zeiterfassung_Plus_Anleitung.html', description: 'Arbeitszeiten, Einstellungen, Backup, CSV und PDF erklärt.' }
+          ] },
           { title: 'Android-App', items: [
             { label: '🤖 Android-App & Installation', href: '/downloads.html#zeiterfassung-plus', description: 'Aktuelle APK, Installationshilfe und Update-Hinweise.' },
             { label: 'APK direkt herunterladen', href: '/dateien/zeiterfassung-plus/Zeiterfassung_Plus.apk', description: 'Aktuelle Android-App direkt von warenschmiede.com.' }
