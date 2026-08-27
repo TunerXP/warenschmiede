@@ -1,862 +1,231 @@
 <!DOCTYPE html>
-
 <html class="ki-page" lang="de">
 <head>
   <link rel="icon" href="/assets/img/branding/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/branding/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/branding/favicon-16x16.png">
   <link rel="apple-touch-icon" href="/assets/img/branding/apple-touch-icon.png">
-<meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1" name="viewport"/>
-<meta content="#eef4fa" name="theme-color"/>
-<title>KI-Tools Übersicht: Chat, Bild, Video &amp; Büro | Warenschmiede</title>
-<meta content="Interaktives Dashboard wichtiger KI-Tools für Chat, Bild, Video, Audio und Büroarbeit." name="description"/>
-<!-- Page Specific Styles for Dashboard Layout -->
-<style>
-    /* Filter Navigation - Sticky & Clean */
-    .tool-filter-nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: var(--bg-body, #fff);
-      padding: 1rem 0;
-      border-bottom: 1px solid var(--border-color, #eee);
-      margin-bottom: 2rem;
-      backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-      transition: background-color 0.3s ease;
-    }
-
-    .filter-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      justify-content: center;
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .filter-btn {
-      background: var(--bg-surface, #f5f5f5);
-      border: 1px solid var(--border-color, #ddd);
-      border-radius: 50px; /* Pill shape */
-      padding: 0.6rem 1.2rem;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      color: var(--text-main, #333);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      white-space: nowrap;
-    }
-
-    .filter-btn:hover {
-      background: var(--primary-color, #0056b3);
-      color: white;
-      border-color: var(--primary-color, #0056b3);
-      transform: translateY(-2px);
-    }
-
-    .filter-btn.active {
-      background: var(--primary-color, #0056b3);
-      color: white;
-      border-color: var(--primary-color, #0056b3);
-      box-shadow: 0 4px 10px rgba(0, 86, 179, 0.3);
-    }
-
-    /* Grid Adjustments */
-    .ki-tool-card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1rem;
-    }
-
-    /* Categories Visibility Control - THE MAGIC PART */
-    .ki-tools-category {
-      display: none; /* Hidden by default */
-      animation: fadeIn 0.4s ease-out;
-    }
-
-    .ki-tools-category.active-category {
-      display: block; /* Only show active */
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Card Compact Style Improvements */
-    .ki-tool-card {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      transition: transform 0.2s, box-shadow 0.2s;
-      border: 1px solid var(--border-color, #eee);
-      border-radius: 12px;
-      overflow: hidden;
-      background: var(--bg-surface, #fff);
-    }
-
-    .ki-tool-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
-    }
-    
-    .ki-tool-card__head {
-      padding: 1.5rem;
-      border-bottom: 1px solid var(--border-color, #eee);
-      background: var(--bg-subtle, #f9f9f9);
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-    }
-
-    .ki-tool-card__body {
-      flex-grow: 1;
-      padding: 1.5rem;
-    }
-    
-    .ki-tool-card__icon {
-      font-size: 2rem;
-      line-height: 1;
-    }
-
-    /* Hide TOC in dashboard mode as we have tabs */
-    .ki-tools-toc {
-      display: none;
-    }
-
-    .dashboard-intro {
-      text-align: center;
-      margin-bottom: 0.5rem;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-      color: var(--text-muted);
-    }
-    
-    /* Used Card Special Style */
-    .ws-card-used {
-      border-left: 4px solid var(--primary-color, #0056b3);
-    }
-  </style>
-<link href="/assets/css/styles.css" rel="stylesheet"/>
-<link href="/assets/css/ki-content.css" rel="stylesheet"/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#eef4fa">
+  <title>Aktuelle KI-Chats im Überblick | Warenschmiede</title>
+  <meta name="description" content="ChatGPT, Gemini, Claude, Microsoft Copilot und Perplexity verständlich verglichen: Stärken, besondere Funktionen und passende Einsatzbereiche.">
+  <meta name="robots" content="index,follow">
+  <meta name="color-scheme" content="light">
+  <link rel="canonical" href="https://www.warenschmiede.com/ki/tools.html">
+  <meta property="og:title" content="Aktuelle KI-Chats im Überblick | Warenschmiede">
+  <meta property="og:description" content="Die großen KI-Assistenten 2026 verständlich einordnen – ohne Hype und ohne Siegerliste.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.warenschmiede.com/ki/tools.html">
+  <meta property="og:image" content="/assets/img/warenschmiede-logo-main.png">
+  <meta property="og:site_name" content="Warenschmiede">
+  <meta property="og:locale" content="de_DE">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Aktuelle KI-Chats im Überblick | Warenschmiede">
+  <meta name="twitter:description" content="ChatGPT, Gemini, Claude, Copilot und Perplexity kurz und verständlich eingeordnet.">
+  <meta name="twitter:url" content="https://www.warenschmiede.com/ki/tools.html">
+  <meta name="twitter:image" content="/assets/img/warenschmiede-logo-main.png">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <link rel="stylesheet" href="/assets/css/ki-content.css">
+  <link rel="stylesheet" href="/assets/css/ki-chats.css">
 </head>
-<body class="ki-page theme-light">
-<div id="ws-header"></div>
-<nav aria-label="Brotkrumen" class="breadcrumbs">
-<div class="container breadcrumbs__container">
-<ol class="breadcrumbs__list">
-<li class="breadcrumbs__item"><a href="/index.html">Start</a></li>
-<li class="breadcrumbs__item"><a href="/ki/index.html">Über KI</a></li>
-<li aria-current="page" class="breadcrumbs__item">KI-Werkzeuge</li>
-</ol>
-</div>
-</nav>
-<main class="site-main ki-tools-main" id="ki-tools" tabindex="-1">
-<section aria-labelledby="ki-tools-heading" class="section ki-tools-hero" style="padding-bottom: 1rem;">
-<div class="container ki-wide ki-tools-hero__inner">
-<div class="ki-hero-center">
-<p class="section-eyebrow">Werkzeuge &amp; Orientierung</p>
-<h1 id="ki-tools-heading">Moderne KI-Tools im Überblick</h1>
-<p class="ki-hero__lede dashboard-intro">Alles auf einen Blick: Klicke auf eine Kategorie, um die passenden Werkzeuge zu öffnen.</p>
-<p class="dashboard-intro"><strong>Stand: April 2026</strong></p>
-<p class="dashboard-intro">Hinweis: KI-Tools, Funktionen und Preise ändern sich schnell. Diese Übersicht wird unregelmäßig aktualisiert und ist als persönliche, praxisnahe Momentaufnahme gedacht.</p>
-<section aria-labelledby="ki-tools-aktuell-heading" class="ki-disclaimer-card" style="margin-top:1.25rem;text-align:left;">
-<h2 id="ki-tools-aktuell-heading">Was ich aktuell selbst nutze</h2>
-<p>Ich nutze mehrere KI-Tools bewusst parallel, weil jedes Werkzeug andere Stärken hat. ChatGPT verwende ich vor allem für Planung, Struktur, Texte, Code-Unterstützung und kreatives Sparring. Gemini nutze ich zusätzlich für Bildideen, visuelle Prompts und Gegenchecks. Perplexity ist für mich stark bei Recherche, Quellenprüfung und als kritischer zweiter Blick. Suno nutze ich für KI-Musikproduktion, Songs, Albumideen und kreative Audioprojekte.</p>
-</section>
-</div>
-</div>
-</section>
-<!-- Sticky Filter Navigation -->
-<div class="tool-filter-nav">
-<div class="container ki-wide">
-<ul class="filter-list" role="tablist">
-<!-- Buttons zum Umschalten -->
-<li><button aria-selected="true" class="filter-btn active" data-target="ki-wissen" role="tab">💬 Chat &amp; Wissen</button></li>
-<li><button aria-selected="false" class="filter-btn" data-target="ki-coding" role="tab">💻 Coding</button></li>
-<li><button aria-selected="false" class="filter-btn" data-target="ki-bild" role="tab">🎨 Bild</button></li>
-<li><button aria-selected="false" class="filter-btn" data-target="ki-video" role="tab">🎬 Video</button></li>
-<li><button aria-selected="false" class="filter-btn" data-target="ki-audio" role="tab">🎧 Audio</button></li>
-<li><button aria-selected="false" class="filter-btn" data-target="ki-buero" role="tab">🧰 Büro &amp; Tools</button></li>
-</ul>
-</div>
-</div>
-<!-- Content Sections (Default: Wissen visible via 'active-category') -->
-<!-- 1. WISSEN -->
-<section aria-labelledby="ki-wissen-heading" class="section ki-tools-category active-category" id="ki-wissen">
-<div class="container ki-wide">
-<header class="ki-category-header">
-<div aria-hidden="true" class="ki-category-icon">🤝</div>
-<div>
-<p class="section-eyebrow">Recherche &amp; Analyse</p>
-<h2 id="ki-wissen-heading">Wissen &amp; Forschung</h2>
-<p class="ki-section-intro">Recherche, Analyse und Deep Dives – Tools, um Informationen zu verstehen und Quellen zu prüfen.</p>
-</div>
-</header>
-<div class="ki-tool-card-grid">
-<article aria-labelledby="tool-notebooklm" class="ki-tool-card ws-card-used">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">📓</div>
-<div>
-<h3 id="tool-notebooklm"><a href="https://notebooklm.google.com" rel="noopener noreferrer" target="_blank">Google NotebookLM</a></h3>
-<p class="ki-tool-card__lede">Der KI-Forschungsassistent für eigene Dokumente.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>PDFs, Webseiten oder Notizen hochladen und befragen.</li>
-<li>Audio Overview: Generiere einen Podcast aus deinen Quellen.</li>
-<li>Zitate und Fakten direkt im Text verifizieren.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Ideal für Studium, Recherche und komplexe Projekte.</div>
-</article>
-<article aria-labelledby="tool-chatgpt" class="ki-tool-card ws-card-used">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🧠</div>
-<div>
-<h3 id="tool-chatgpt"><a href="https://chatgpt.com" rel="noopener noreferrer" target="_blank">ChatGPT</a></h3>
-<p class="ki-tool-card__lede">Planung, Schreiben, Struktur, Coding-Hilfe, Ideensammlung und kreative Entwicklung.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Blog- oder E-Mail-Entwürfe, Stil anpassen.</li>
-<li>Code erklären, kleine Skripte erstellen.</li>
-<li>Dateien zusammenfassen oder in Listen bringen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Gute Wahl für einen breiten Einstieg.</div>
-</article>
-<article aria-labelledby="tool-gemini" class="ki-tool-card ws-card-used">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🔎</div>
-<div>
-<h3 id="tool-gemini"><a href="https://gemini.google.com" rel="noopener noreferrer" target="_blank">Gemini</a></h3>
-<p class="ki-tool-card__lede">Bildideen, visuelle Prompts, kreative Varianten und zusätzlicher Gegencheck.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Aktuelle Infos recherchieren, Quellen prüfen.</li>
-<li>Docs, Sheets oder Gmail mit Vorschlägen ergänzen.</li>
-<li>PDFs, Bilder oder Screenshots analysieren.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Passend für alle, die ohnehin mit Google-Workspace arbeiten.</div>
-</article>
-<article aria-labelledby="tool-claude" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">📚</div>
-<div>
-<h3 id="tool-claude"><a href="https://claude.ai" rel="noopener noreferrer" target="_blank">Claude</a></h3>
-<p class="ki-tool-card__lede">Sehr stark bei langen Dokumenten und klaren Zusammenfassungen.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Verträge, Handbücher oder Skripte strukturieren.</li>
-<li>Tonalität an Zielgruppen anpassen.</li>
-<li>Fragen zu umfangreichen PDF-Anhängen beantworten.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Geeignet für Wissensarbeit und Dokumentation.</div>
-</article>
-<article aria-labelledby="tool-perplexity" class="ki-tool-card ws-card-used">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🌐</div>
-<div>
-<h3 id="tool-perplexity"><a href="https://www.perplexity.ai" rel="noopener noreferrer" target="_blank">Perplexity</a></h3>
-<p class="ki-tool-card__lede">Recherche, Quellenprüfung, aktueller Überblick und kritischer zweiter Blick.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Schnell recherchieren und Quellen verlinken.</li>
-<li>Vergleiche oder Schritt-für-Schritt-Anleitungen erstellen.</li>
-<li>Weitere Fragen stellen, ohne neuen Tab zu öffnen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Hilfreich für News, Studien und Faktenchecks.</div>
-</article>
-<article aria-labelledby="tool-mistral" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🇪🇺</div>
-<div>
-<h3 id="tool-mistral"><a href="https://chat.mistral.ai" rel="noopener noreferrer" target="_blank">Mistral / Le Chat</a></h3>
-<p class="ki-tool-card__lede">Moderner europäischer Anbieter mit schnellen Open-Modellen.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Datensparsame Chats in EU-Rechenzentren.</li>
-<li>Fragen zu langen Texten ohne viel Vorarbeit.</li>
-<li>Eigene Projekte mit Open-Source-Modellen starten.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Gut, wenn EU-Hosting und Offenheit wichtig sind.</div>
-</article>
-</div>
-</div>
-</section>
-<!-- 2. CODING -->
-<section aria-labelledby="ki-coding-heading" class="section ki-tools-category" id="ki-coding">
-<div class="container ki-wide">
-<header class="ki-category-header">
-<div aria-hidden="true" class="ki-category-icon">💻</div>
-<div>
-<p class="section-eyebrow">Softwareentwicklung</p>
-<h2 id="ki-coding-heading">Coding &amp; Entwicklung</h2>
-<p class="ki-section-intro">Moderne IDEs und Agenten für effizienteres Coden, Debuggen und Deployment.</p>
-</div>
-</header>
-<div class="ki-tool-card-grid">
-<article aria-labelledby="tool-openai-codex" class="ki-tool-card ws-card-used">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🧠</div>
-<div>
-<h3 id="tool-openai-codex"><a href="https://openai.com/codex/" rel="noopener noreferrer" target="_blank">OpenAI Codex</a></h3>
-<p class="ki-tool-card__lede">Agent für Code-Aufgaben, Projektänderungen, Pull Requests und Arbeiten direkt am Repository.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Code ändern und Refactorings umsetzen.</li>
-<li>GitHub-Issues oder Aufgaben in Branches/PRs bearbeiten.</li>
-<li>Fehler suchen, Tests ergänzen und Dokumentation aktualisieren.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Stark für strukturierte Aufgaben im Repository und Arbeiten im ChatGPT-/GitHub-Workflow.</div>
-</article>
-<article aria-labelledby="tool-claude-code" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🛠️</div>
-<div>
-<h3 id="tool-claude-code"><a href="https://claude.ai/code" rel="noopener noreferrer" target="_blank">Claude Code</a></h3>
-<p class="ki-tool-card__lede">Agentisches Coding-Tool für komplexere Codebasen, Terminal-Workflows und größere Umbauten.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Größere Codebasen analysieren.</li>
-<li>Mehrstufige Änderungen planen und umsetzen.</li>
-<li>Refactoring, Debugging und technische Erklärungen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Stark bei komplexen Projekten und längeren technischen Zusammenhängen.</div>
-</article>
-<article aria-labelledby="tool-cursor" class="ki-tool-card ws-card-used">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🖱️</div>
-<div>
-<h3 id="tool-cursor"><a href="https://cursor.com" rel="noopener noreferrer" target="_blank">Cursor</a></h3>
-<p class="ki-tool-card__lede">KI-gestützte Entwicklungsumgebung mit Agentenmodus und direkter Arbeit in Projekten.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Codebase-weite Änderungen per Chat steuern.</li>
-<li>Intelligente Autocomplete- und Refactoring-Vorschläge.</li>
-<li>Nahtloser Import von VS Code Extensions.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Gute Wahl, wenn man direkt in einer KI-gestützten Entwicklungsumgebung arbeiten möchte.</div>
-</article>
-<article aria-labelledby="tool-github-copilot" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">✈️</div>
-<div>
-<h3 id="tool-github-copilot"><a href="https://github.com/features/copilot" rel="noopener noreferrer" target="_blank">GitHub Copilot</a></h3>
-<p class="ki-tool-card__lede">IDE-Assistent für Schreiben, Vervollständigen und Erklären von Code direkt im Editor.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Schnelle Code-Vervollständigung im Editor.</li>
-<li>Unit-Tests und Docs generieren.</li>
-<li>Chat im Editor für Erklärungen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Solide Unterstützung beim Schreiben, Vervollständigen und Erklären von Code direkt im Editor.</div>
-</article>
-<article aria-labelledby="tool-jules" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🤖</div>
-<div>
-<h3 id="tool-jules"><a href="https://jules.google" rel="noopener noreferrer" target="_blank">Google Jules</a></h3>
-<p class="ki-tool-card__lede">Der autonome Coding-Agent für Repo-Management.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>PRs erstellen, Reviews durchführen.</li>
-<li>Bugs autonom finden und fixen.</li>
-<li>Wartung und Updates im Hintergrund erledigen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Praktisch für autonome Repo-Aufgaben und Hintergrundarbeit an Issues oder Wartung.</div>
-</article>
-</div>
-</div>
-</section>
-<!-- 3. BILD -->
-<section aria-labelledby="ki-bild-heading" class="section ki-tools-category" id="ki-bild">
-<div class="container ki-wide">
-<header class="ki-category-header">
-<div aria-hidden="true" class="ki-category-icon">🎨</div>
-<div>
-<p class="section-eyebrow">Bilder &amp; Grafiken</p>
-<h2 id="ki-bild-heading">Bild-KI</h2>
-<p class="ki-section-intro">Aus Text werden Illustrationen, Produktbilder oder Social-Grafiken. Gut für Ideenfindung und schnelle Visuals.</p>
-</div>
-</header>
-<div class="ki-tool-card-grid">
-<article aria-labelledby="tool-ideogram" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🔤</div>
-<div>
-<h3 id="tool-ideogram"><a href="https://ideogram.ai" rel="noopener noreferrer" target="_blank">Ideogram</a></h3>
-<p class="ki-tool-card__lede">Bild-KI mit besonderer Stärke bei Text, Schriftzügen, Logos und typografischen Motiven.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Poster, Logos oder Grafiken mit lesbarer Schrift testen.</li>
-<li>Social-Media-Motive mit Text erzeugen.</li>
-<li>Schnelle Varianten für Titelbilder und visuelle Ideen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Sehr interessant, wenn Text im Bild wichtig ist.</div>
-</article>
-<article aria-labelledby="tool-flux" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">📸</div>
-<div>
-<h3 id="tool-flux"><a href="https://blackforestlabs.ai/" rel="noopener noreferrer" target="_blank">Flux.1</a></h3>
-<p class="ki-tool-card__lede">Top-Empfehlung für Fotorealismus und Open Source.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Fotorealistische Porträts und Szenen.</li>
-<li>Lokal nutzbar für maximale Kontrolle.</li>
-<li>Hohe Texttreue und Detailgenauigkeit.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Aktueller Qualitätsführer im Open-Source-Bereich.</div>
-</article>
-<article aria-labelledby="tool-midjourney" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🌅</div>
-<div>
-<h3 id="tool-midjourney"><a href="https://www.midjourney.com" rel="noopener noreferrer" target="_blank">Midjourney v7</a></h3>
-<p class="ki-tool-card__lede">Stilvielfalt und präziser Text im Bild – die Referenz für Ästhetik.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Artwork, Poster und Kampagnenmotive.</li>
-<li>Charakter-Design und Concept Art.</li>
-<li>Perfekt integrierte Schriften und Logos.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Gut für Kreative, die einen markanten Stil suchen.</div>
-</article>
-<article aria-labelledby="tool-dalle" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🖼️</div>
-<div>
-<h3 id="tool-dalle"><a href="https://openai.com/index/dall-e-3" rel="noopener noreferrer" target="_blank">DALL·E 3</a></h3>
-<p class="ki-tool-card__lede">Gut für schnelle Bildideen direkt im Chat und einfache visuelle Varianten.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Social-Posts und Präsentationen bebildern.</li>
-<li>Bildvarianten und Hintergründe austesten.</li>
-<li>Ideen schnell als Skizze visualisieren.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Praktisch für schnelle Ergebnisse.</div>
-</article>
-<article aria-labelledby="tool-firefly" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🪄</div>
-<div>
-<h3 id="tool-firefly"><a href="https://www.adobe.com/de/products/firefly.html" rel="noopener noreferrer" target="_blank">Adobe Firefly</a></h3>
-<p class="ki-tool-card__lede">Nahtlos in Creative Cloud integriert, kommerziell sicher.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Generative Füllungen in Photoshop.</li>
-<li>Marketing-Assets und Templates anpassen.</li>
-<li>Texteffekte oder Vektorvarianten testen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Empfehlung für Adobe-Nutzer.</div>
-</article>
-</div>
-</div>
-</section>
-<!-- 4. VIDEO -->
-<section aria-labelledby="ki-video-heading" class="section ki-tools-category" id="ki-video">
-<div class="container ki-wide">
-<header class="ki-category-header">
-<div aria-hidden="true" class="ki-category-icon">🎬</div>
-<div>
-<p class="section-eyebrow">Bewegtbild</p>
-<h2 id="ki-video-heading">Video-KI</h2>
-<p class="ki-section-intro">Clips, Effekte oder komplette Szenen aus Text und Bildern.</p>
-</div>
-</header>
-<div class="ki-tool-card-grid">
-<article aria-labelledby="tool-runway" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🚀</div>
-<div>
-<h3 id="tool-runway"><a href="https://runwayml.com" rel="noopener noreferrer" target="_blank">Runway Gen-3</a></h3>
-<p class="ki-tool-card__lede">Video-Workflows mit Fokus auf Kontrolle, Editing und kreative Produktion.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Präzise Steuerung von Kamera und Bewegung.</li>
-<li>Stil-Konsistenz über mehrere Clips.</li>
-<li>Lip-Sync und fortgeschrittene Editing-Tools.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Stark für kontrollierbare Video-Workflows, Editing und kreative Produktion.</div>
-</article>
-<article aria-labelledby="tool-sora" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🔭</div>
-<div>
-<h3 id="tool-sora"><a href="https://sora.com" rel="noopener noreferrer" target="_blank">OpenAI Sora</a></h3>
-<p class="ki-tool-card__lede">Text-zu-Video für komplexere Szenen, filmische Ideen und visuelle Konzepte.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Komplexere Szenen aus Textbeschreibungen visualisieren.</li>
-<li>Filmische Ideen und Storyboards als Video testen.</li>
-<li>Visuelle Konzepte für Pitches und Prototypen aufbereiten.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Spannend für hochwertige Konzeptvideos, je nach Verfügbarkeit und Zugang.</div>
-</article>
-<article aria-labelledby="tool-veo" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🎥</div>
-<div>
-<h3 id="tool-veo"><a href="https://deepmind.google/models/veo/" rel="noopener noreferrer" target="_blank">Google Veo</a></h3>
-<p class="ki-tool-card__lede">KI-Video für realistische Szenen, Kameraarbeit und hochwertige Bewegtbilder.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Kurze realistische Clips erzeugen.</li>
-<li>Szenen mit Kamerabewegung testen.</li>
-<li>Ideen für Produkt- oder Konzeptvideos visualisieren.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Stark für realistische Videoqualität und moderne Text-zu-Video-Workflows.</div>
-</article>
-<article aria-labelledby="tool-kling" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">📱</div>
-<div>
-<h3 id="tool-kling"><a href="https://klingai.com/" rel="noopener noreferrer" target="_blank">Kling</a></h3>
-<p class="ki-tool-card__lede">Video-KI mit starkem Fokus auf Bewegung, realistische Clips und Social-Media-Formate.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Kurze Clips und Reels erzeugen.</li>
-<li>Bewegungen und Szenenvarianten testen.</li>
-<li>Visuelle Ideen schnell als Video ausprobieren.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Interessant für schnelle visuelle Experimente und Social-Video-Ideen.</div>
-</article>
-<article aria-labelledby="tool-pika" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">✨</div>
-<div>
-<h3 id="tool-pika"><a href="https://pika.art" rel="noopener noreferrer" target="_blank">Pika</a></h3>
-<p class="ki-tool-card__lede">Kreatives Video-Tool für kurze Clips, Effekte und schnelle Social-Media-Videos.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Kurze Effektclips erstellen.</li>
-<li>Bilder animieren.</li>
-<li>Varianten für Reels, Shorts oder Teaser testen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Gut für schnelle kreative Clips und Social-Media-Experimente.</div>
-</article>
-</div>
-</div>
-</section>
-<!-- 5. AUDIO -->
-<section aria-labelledby="ki-audio-heading" class="section ki-tools-category" id="ki-audio">
-<div class="container ki-wide">
-<header class="ki-category-header">
-<div aria-hidden="true" class="ki-category-icon">🎧</div>
-<div>
-<p class="section-eyebrow">Stimmen &amp; Musik</p>
-<h2 id="ki-audio-heading">Audio- &amp; Musik-KI</h2>
-<p class="ki-section-intro">Von Voiceover über Hörtexte bis zu generierter Musik.</p>
-</div>
-</header>
-<div class="ki-tool-card-grid">
-<article aria-labelledby="tool-elevenlabs" class="ki-tool-card ws-card-used">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🗣️</div>
-<div>
-<h3 id="tool-elevenlabs"><a href="https://elevenlabs.io" rel="noopener noreferrer" target="_blank">ElevenLabs</a></h3>
-<p class="ki-tool-card__lede">Voice- und Audio-Tool für natürlich klingende Stimmen in vielen Sprachen.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Voiceover für Videos oder Erklärungen.</li>
-<li>Hörbücher, E-Learning oder Podcasts.</li>
-<li>Mehrsprachige Audio-Varianten erstellen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Sehr stark für Stimmen, Voiceover, Erklärungen, Hörtexte und mehrsprachige Sprachvarianten.</div>
-</article>
-<article aria-labelledby="tool-suno" class="ki-tool-card ws-card-used">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🎵</div>
-<div>
-<h3 id="tool-suno"><a href="https://suno.com" rel="noopener noreferrer" target="_blank">Suno</a></h3>
-<p class="ki-tool-card__lede">KI-Musikproduktion: Songs, Lyrics, Stilideen, Albumkonzepte und kreative Audioprojekte.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Songideen und Demos erzeugen.</li>
-<li>Lyrics und Stilrichtungen testen.</li>
-<li>Albumkonzepte musikalisch ausprobieren.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Stark für komplette Songideen und kreative Musikprojekte.</div>
-</article>
-<article aria-labelledby="tool-udio" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🎶</div>
-<div>
-<h3 id="tool-udio"><a href="https://www.udio.com" rel="noopener noreferrer" target="_blank">Udio</a></h3>
-<p class="ki-tool-card__lede">KI-Musiktool für Songideen, Stilexperimente und musikalische Varianten.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Musikalische Demos erzeugen.</li>
-<li>Alternative Stile ausprobieren.</li>
-<li>Songskizzen und Ideen vergleichen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Gut als zweiter Blick neben Suno für Musikvarianten.</div>
-</article>
-</div>
-</div>
-</section>
-<!-- 6. BUERO -->
-<section aria-labelledby="ki-buero-heading" class="section ki-tools-category" id="ki-buero">
-<div class="container ki-wide">
-<header class="ki-category-header">
-<div aria-hidden="true" class="ki-category-icon">🧰</div>
-<div>
-<p class="section-eyebrow">Alltag &amp; Zusammenarbeit</p>
-<h2 id="ki-buero-heading">Büro- &amp; Spezial-Tools</h2>
-<p class="ki-section-intro">KI unterstützt Notizen, Präsentationen, Content-Produktion und Meetings.</p>
-</div>
-</header>
-<div class="ki-tool-card-grid">
-<article aria-labelledby="tool-notion" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🧭</div>
-<div>
-<h3 id="tool-notion"><a href="https://www.notion.so/product/ai" rel="noopener noreferrer" target="_blank">Notion AI</a></h3>
-<p class="ki-tool-card__lede">Hilft beim Strukturieren von Notizen, Projekten und Wikis.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Meeting-Notizen zusammenfassen.</li>
-<li>Aufgabenlisten und Roadmaps erzeugen.</li>
-<li>Vorlagen für Wissensdatenbanken erstellen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Praktisch für Notion-Teams.</div>
-</article>
-<article aria-labelledby="tool-canva" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🖌️</div>
-<div>
-<h3 id="tool-canva"><a href="https://www.canva.com/ai/" rel="noopener noreferrer" target="_blank">Canva AI</a></h3>
-<p class="ki-tool-card__lede">Magic Write &amp; Design-Assistent in einem Tool.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Slides, Social Posts und Flyer beschleunigen.</li>
-<li>Hintergründe entfernen oder Texte kürzen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Für schnelles Marketing-Design.</div>
-</article>
-<article aria-labelledby="tool-descript" class="ki-tool-card">
-<div class="ki-tool-card__head">
-<div aria-hidden="true" class="ki-tool-card__icon">🎙️</div>
-<div>
-<h3 id="tool-descript"><a href="https://www.descript.com" rel="noopener noreferrer" target="_blank">Descript</a></h3>
-<p class="ki-tool-card__lede">Video- und Audiobearbeitung per Text.</p>
-</div>
-</div>
-<div class="ki-tool-card__body">
-<div>
-<h4>Typische Nutzung</h4>
-<ul>
-<li>Interviews und Podcasts schneiden wie ein Word-Dokument.</li>
-<li>"Ähm" und Pausen automatisch entfernen.</li>
-</ul>
-</div>
-</div>
-<div class="ki-tool-card__tag">Genial für Podcaster.</div>
-</article>
-</div>
-</div>
-</section>
-<section aria-labelledby="ki-disclaimer-heading" class="section ki-tools-disclaimer">
-<div class="container ki-wide">
-<div class="ki-disclaimer-card">
-<h2 id="ki-disclaimer-heading">Transparenz- &amp; Rechtshinweis</h2>
-<p>Diese Übersicht ist eine Momentaufnahme. KI-Tools, Funktionen, Preise und Verfügbarkeit ändern sich laufend.</p>
-<p>Keine Werbung, keine Affiliate-Links. Alle Marken gehören den jeweiligen Anbietern.</p>
-<p>Die genannten Tools sind keine bezahlte Werbung. Ich nenne sie, weil ich sie selbst nutze oder für bestimmte Aufgaben sinnvoll finde.</p>
-<p>Angaben zu Funktionen und möglichen Kosten sind ohne Gewähr. Prüfe immer selbst die aktuellen AGB, Datenschutz-Hinweise und Preise direkt beim Anbieter.</p>
-</div>
-</div>
-</section>
-</main>
-<div id="ws-footer"></div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const buttons = document.querySelectorAll('.filter-btn');
-    const sections = document.querySelectorAll('.ki-tools-category');
+<body class="ki-page theme-light ki-chats-page">
+  <div id="ws-header"></div>
 
-    buttons.forEach((button) => {
-      button.addEventListener('click', () => {
-        buttons.forEach((item) => {
-          item.classList.remove('active');
-          item.setAttribute('aria-selected', 'false');
-        });
+  <nav class="breadcrumbs" aria-label="Brotkrumen">
+    <div class="container breadcrumbs__container">
+      <ol class="breadcrumbs__list">
+        <li class="breadcrumbs__item"><a href="/index.html">Start</a></li>
+        <li class="breadcrumbs__item"><a href="/ki/index.html">Über KI</a></li>
+        <li class="breadcrumbs__item" aria-current="page">Aktuelle KI-Chats</li>
+      </ol>
+    </div>
+  </nav>
 
-        button.classList.add('active');
-        button.setAttribute('aria-selected', 'true');
-        sections.forEach((section) => section.classList.remove('active-category'));
+  <main class="site-main" id="aktuelle-ki-chats" tabindex="-1">
+    <section class="container ki-chat-hero" aria-labelledby="ki-chat-heading">
+      <div class="ki-chat-hero__copy">
+        <p class="section-eyebrow">Orientierung statt Tool-Dschungel</p>
+        <h1 id="ki-chat-heading">Aktuelle KI-Chats im Überblick</h1>
+        <p class="ki-chat-lede">Die großen KI-Assistenten können heute weit mehr als nur Fragen beantworten. Sie recherchieren, arbeiten mit Dateien, programmieren, verbinden sich mit anderen Diensten und übernehmen zunehmend längere Aufgaben. Aber nicht jede KI setzt dieselben Schwerpunkte.</p>
+      </div>
+      <aside class="ki-chat-date" aria-label="Stand der Übersicht">
+        <span>Stand</span>
+        <strong>28. August 2026</strong>
+        <p>Funktionen, Tarife, Regionen und Rollouts ändern sich schnell. Deshalb ist diese Seite eine aktuelle Momentaufnahme – keine ewige Rangliste.</p>
+      </aside>
+    </section>
 
-        const targetId = button.getAttribute('data-target');
-        const targetSection = document.getElementById(targetId);
-        if (targetSection) {
-          targetSection.classList.add('active-category');
-        }
-      });
-    });
-  });
-</script>
-<script defer src="/assets/js/ws-layout.js"></script>
+    <section class="ki-chat-intro" aria-labelledby="vergleich-heading">
+      <div class="container">
+        <div class="ki-chat-intro__grid">
+          <div>
+            <p class="section-eyebrow">Wichtig vor dem Vergleich</p>
+            <h2 id="vergleich-heading">Es gibt nicht die eine „beste KI“</h2>
+          </div>
+          <p>Welche KI gut passt, hängt davon ab, was du vorhast: schnelle Hilfe im Gespräch, lange Dokumente, Recherche mit Quellen, Microsoft-365-Arbeit oder agentische Aufgaben. Die Übersicht zeigt deshalb Stärken und Besonderheiten – nicht Platz 1 bis 5.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="ki-chat-list" aria-label="Fünf aktuelle KI-Assistenten">
+      <div class="container">
+        <article class="ki-chat-profile" style="--chat-accent:#171717">
+          <div class="ki-chat-profile__identity">
+            <span class="ki-chat-mark" aria-hidden="true">C</span>
+            <div>
+              <p class="ki-chat-kicker">Allrounder · Agenten · Coding</p>
+              <h2>ChatGPT</h2>
+              <p>Breiter KI-Assistent von OpenAI – vom normalen Gespräch bis zu längeren Arbeitsaufgaben.</p>
+            </div>
+          </div>
+          <div class="ki-chat-profile__body">
+            <ul class="ki-chat-features">
+              <li><strong>Chat</strong> für Fragen, Schreiben, Bilder, Dateien und schnelle Hilfe.</li>
+              <li><strong>Work</strong> für längere, mehrstufige Aufgaben und fertige Ergebnisse.</li>
+              <li><strong>Deep Research</strong> für umfangreiche Recherche mit Quellen.</li>
+              <li><strong>Plugins &amp; Apps</strong> verbinden externe Daten und Aktionen.</li>
+              <li><strong>Codex</strong> ist auf Softwareentwicklung und Repository-Arbeit ausgerichtet.</li>
+            </ul>
+            <p class="ki-chat-fit"><strong>Interessant für:</strong> Menschen, die einen vielseitigen Assistenten suchen und zwischen Gespräch, Recherche, Dateien und längerer Arbeit wechseln.</p>
+            <div class="ki-chat-actions">
+              <a class="ki-chat-primary" href="/ki/chats/chatgpt.html">Mehr über ChatGPT →</a>
+              <a class="ki-chat-secondary" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">ChatGPT öffnen ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="ki-chat-profile" style="--chat-accent:#4285f4">
+          <div class="ki-chat-profile__identity">
+            <span class="ki-chat-mark" aria-hidden="true">G</span>
+            <div>
+              <p class="ki-chat-kicker">Google · Multimodal · Agentisch</p>
+              <h2>Gemini</h2>
+              <p>Googles KI-Assistent mit enger Verzahnung zum Google-Ökosystem und starkem Fokus auf multimodale und agentische Funktionen.</p>
+            </div>
+          </div>
+          <div class="ki-chat-profile__body">
+            <ul class="ki-chat-features">
+              <li>Arbeitet mit Text, Bildern und weiteren Medien.</li>
+              <li><strong>Gemini 3.5</strong> zielt auf komplexe agentische Workflows.</li>
+              <li><strong>Gemini 3.5 Flash</strong> verbindet hohe Geschwindigkeit mit Agenten-Funktionen.</li>
+              <li><strong>Gemini Spark</strong> steht für Googles Richtung zu proaktiver, länger laufender Unterstützung.</li>
+              <li>Besonders naheliegend, wenn Google-Dienste ohnehin zum Alltag gehören.</li>
+            </ul>
+            <p class="ki-chat-fit"><strong>Interessant für:</strong> Google-Nutzer, multimodale Aufgaben und alle, die Googles aktuelle Agenten-Entwicklung ausprobieren möchten.</p>
+            <div class="ki-chat-actions">
+              <a class="ki-chat-primary" href="/ki/chats/gemini.html">Mehr über Gemini →</a>
+              <a class="ki-chat-secondary" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Gemini öffnen ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="ki-chat-profile" style="--chat-accent:#b76e4b">
+          <div class="ki-chat-profile__identity">
+            <span class="ki-chat-mark" aria-hidden="true">A</span>
+            <div>
+              <p class="ki-chat-kicker">Texte · Wissensarbeit · Coding</p>
+              <h2>Claude</h2>
+              <p>Anthropics Assistent ist besonders bei langen Aufgaben, Textarbeit, Coding und professioneller Wissensarbeit interessant.</p>
+            </div>
+          </div>
+          <div class="ki-chat-profile__body">
+            <ul class="ki-chat-features">
+              <li><strong>Sonnet 5</strong> ist stark auf agentische Arbeit, Coding und Tool-Nutzung ausgerichtet.</li>
+              <li><strong>Opus 5</strong> legt den Schwerpunkt auf anspruchsvolle Coding- und Wissensarbeit.</li>
+              <li><strong>Claude Code</strong> ist Anthropics eigener Coding-Agent.</li>
+              <li>Gut geeignet für längere Texte, Dokumente und strukturierte Analyse.</li>
+              <li>Agentische Arbeit kann über längere Aufgaben hinweg Tools und Kontext einbeziehen.</li>
+            </ul>
+            <p class="ki-chat-fit"><strong>Interessant für:</strong> Schreiben, umfangreiche Dokumente, Wissensarbeit und Softwareentwicklung.</p>
+            <div class="ki-chat-actions">
+              <a class="ki-chat-primary" href="/ki/chats/claude.html">Mehr über Claude →</a>
+              <a class="ki-chat-secondary" href="https://claude.ai/" target="_blank" rel="noopener noreferrer">Claude öffnen ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="ki-chat-profile" style="--chat-accent:#7356bf">
+          <div class="ki-chat-profile__identity">
+            <span class="ki-chat-mark" aria-hidden="true">M</span>
+            <div>
+              <p class="ki-chat-kicker">Microsoft 365 · Arbeit · Agenten</p>
+              <h2>Microsoft Copilot</h2>
+              <p>Copilot sitzt besonders nah an Word, Excel, PowerPoint, Outlook, Teams und den Daten einer Microsoft-365-Arbeitsumgebung.</p>
+            </div>
+          </div>
+          <div class="ki-chat-profile__body">
+            <ul class="ki-chat-features">
+              <li>Direkter Arbeitskontext in Microsoft 365.</li>
+              <li><strong>Researcher</strong> für umfangreiche, belegte Recherche.</li>
+              <li><strong>Copilot Cowork</strong> übernimmt länger laufende, mehrstufige Aufgaben.</li>
+              <li><strong>Work IQ</strong> soll Aufgaben mit dem Kontext der Organisation verbinden.</li>
+              <li>Connectors und Plugins können zusätzliche Unternehmensdaten einbinden.</li>
+            </ul>
+            <p class="ki-chat-fit"><strong>Interessant für:</strong> Unternehmen und Nutzer, deren tägliche Arbeit bereits stark in Microsoft 365 stattfindet.</p>
+            <div class="ki-chat-actions">
+              <a class="ki-chat-primary" href="/ki/chats/copilot.html">Mehr über Copilot →</a>
+              <a class="ki-chat-secondary" href="https://www.microsoft.com/microsoft-365/copilot" target="_blank" rel="noopener noreferrer">Copilot ansehen ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="ki-chat-profile" style="--chat-accent:#149b92">
+          <div class="ki-chat-profile__identity">
+            <span class="ki-chat-mark" aria-hidden="true">P</span>
+            <div>
+              <p class="ki-chat-kicker">Recherche · Quellen · Computer</p>
+              <h2>Perplexity</h2>
+              <p>Perplexity kommt stark aus der Recherche und entwickelt sich inzwischen ebenfalls zu einer Arbeits- und Agentenplattform.</p>
+            </div>
+          </div>
+          <div class="ki-chat-profile__body">
+            <ul class="ki-chat-features">
+              <li>Recherche mit sichtbaren Quellen und direktem Webbezug.</li>
+              <li><strong>Projects</strong> bündeln Gespräche, Dateien, Aufgaben und Kontext dauerhaft.</li>
+              <li><strong>Perplexity Computer</strong> übernimmt agentische Aufgaben über mehrere Schritte.</li>
+              <li>Neue Local-/Portable-Computer-Ansätze zielen auf mehr lokale Verarbeitung.</li>
+              <li>Besonders praktisch, wenn Recherche und Quellen im Mittelpunkt stehen.</li>
+            </ul>
+            <p class="ki-chat-fit"><strong>Interessant für:</strong> Recherche, Quellenarbeit und Nutzer, die Perplexitys Entwicklung Richtung Computer-Agenten verfolgen.</p>
+            <div class="ki-chat-actions">
+              <a class="ki-chat-primary" href="/ki/chats/perplexity.html">Mehr über Perplexity →</a>
+              <a class="ki-chat-secondary" href="https://www.perplexity.ai/" target="_blank" rel="noopener noreferrer">Perplexity öffnen ↗</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="ki-chat-chooser" aria-labelledby="wahl-heading">
+      <div class="container">
+        <header class="ki-chat-section-heading">
+          <p class="section-eyebrow">Schnelle Orientierung</p>
+          <h2 id="wahl-heading">Was passt eher zu deiner Aufgabe?</h2>
+        </header>
+        <div class="ki-chat-chooser__grid">
+          <div><strong>Vielseitig anfangen</strong><span>ChatGPT oder Gemini</span></div>
+          <div><strong>Lange Texte &amp; Coding</strong><span>Claude</span></div>
+          <div><strong>Microsoft-365-Arbeit</strong><span>Microsoft Copilot</span></div>
+          <div><strong>Recherche mit Quellen</strong><span>Perplexity</span></div>
+        </div>
+        <p class="ki-chat-note">Das ist keine technische Siegerliste. Die Systeme überschneiden sich stark, und neue Funktionen können die Einordnung jederzeit verändern.</p>
+      </div>
+    </section>
+
+    <section class="ki-chat-next" aria-labelledby="spezial-heading">
+      <div class="container ki-chat-next__inner">
+        <div>
+          <p class="section-eyebrow">Nicht alles ist ein Chat</p>
+          <h2 id="spezial-heading">Spezial-KI bekommt ihren eigenen Platz</h2>
+          <p>Musik, Bilder oder Video haben andere Arbeitsweisen als ein allgemeiner KI-Assistent. Deshalb behandeln wir solche Werkzeuge getrennt – als erstes Suno für KI-Musik.</p>
+        </div>
+        <a class="ki-chat-primary" href="/ki/musik/suno.html">KI-Musik mit Suno →</a>
+      </div>
+    </section>
+  </main>
+
+  <div id="ws-footer"></div>
+  <script defer src="/assets/js/ws-layout.js"></script>
 </body>
 </html>
