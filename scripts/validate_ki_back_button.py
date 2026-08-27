@@ -5,6 +5,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 CSS = ROOT / "assets/css/ki-content.css"
+MIN_DESKTOP_TOP_PX = 138
 
 
 def main():
@@ -20,8 +21,16 @@ def main():
         errors.append(".ki-detail-back muss position: fixed verwenden")
     if re.search(r"position\s*:\s*sticky\s*;", block):
         errors.append(".ki-detail-back darf nicht mehr position: sticky verwenden")
-    if not re.search(r"top\s*:", block):
-        errors.append(".ki-detail-back braucht einen festen Abstand nach oben")
+
+    top_match = re.search(r"top\s*:\s*(\d+)px\s*;", block)
+    if not top_match:
+        errors.append(".ki-detail-back braucht einen festen Pixel-Abstand nach oben")
+    elif int(top_match.group(1)) < MIN_DESKTOP_TOP_PX:
+        errors.append(
+            f".ki-detail-back muss unterhalb von Kopfzeile und Breadcrumbs beginnen "
+            f"(mindestens {MIN_DESKTOP_TOP_PX}px)"
+        )
+
     if not re.search(r"left\s*:", block):
         errors.append(".ki-detail-back braucht eine feste horizontale Position")
 
