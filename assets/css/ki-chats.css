@@ -1,0 +1,211 @@
+/* Aktuelle KI-Chats + Detailseiten. Globaler Rahmen bleibt in styles.css/ki-content.css. */
+.ki-chats-page {
+  --ki-chat-line: rgba(55, 82, 108, .18);
+  --ki-chat-surface: rgba(255,255,255,.82);
+  --ki-chat-blue: #2d7eff;
+  --ki-chat-blue-dark: #1e5f9f;
+}
+
+.ki-chats-page .ki-chat-hero {
+  display: grid;
+  grid-template-columns: minmax(0,1.35fr) minmax(280px,.65fr);
+  gap: clamp(28px,5vw,64px);
+  align-items: center;
+  padding-top: clamp(34px,5vw,68px);
+  padding-bottom: clamp(32px,5vw,62px);
+}
+.ki-chats-page .ki-chat-hero h1,
+.ki-chats-page .ki-chat-detail-hero h1 {
+  margin: .15rem 0 1rem;
+  font-size: clamp(2.45rem,5vw,4.9rem);
+  line-height: 1.02;
+  letter-spacing: -.045em;
+}
+.ki-chats-page .ki-chat-lede {
+  margin: 0;
+  max-width: 72ch;
+  color: var(--text-muted,#607083);
+  font-size: clamp(1.08rem,1.8vw,1.28rem);
+  line-height: 1.68;
+}
+.ki-chats-page .ki-chat-date {
+  border-left: 5px solid var(--ki-chat-blue);
+  padding: 22px 24px;
+  background: linear-gradient(135deg,rgba(255,255,255,.92),rgba(236,245,255,.8));
+  box-shadow: 0 14px 36px rgba(31,58,85,.08);
+}
+.ki-chats-page .ki-chat-date span {
+  display:block;
+  color: var(--text-muted,#607083);
+  font-size:.82rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.09em;
+}
+.ki-chats-page .ki-chat-date strong {
+  display:block;
+  margin:.25rem 0 .65rem;
+  font-size:1.35rem;
+}
+.ki-chats-page .ki-chat-date p { margin:0; color:var(--text-muted,#607083); }
+
+.ki-chats-page .ki-chat-intro,
+.ki-chats-page .ki-chat-chooser,
+.ki-chats-page .ki-chat-next,
+.ki-chats-page .ki-chat-detail-section {
+  padding: clamp(38px,6vw,72px) 0;
+  border-top: 1px solid rgba(55,82,108,.10);
+}
+.ki-chats-page .ki-chat-intro__grid,
+.ki-chats-page .ki-chat-next__inner {
+  display:grid;
+  grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr);
+  gap:clamp(24px,5vw,58px);
+  align-items:center;
+}
+.ki-chats-page .ki-chat-intro h2,
+.ki-chats-page .ki-chat-section-heading h2,
+.ki-chats-page .ki-chat-next h2,
+.ki-chats-page .ki-chat-detail-section h2 {
+  margin:.15rem 0 .7rem;
+  font-size:clamp(1.8rem,3.5vw,2.9rem);
+  letter-spacing:-.03em;
+}
+.ki-chats-page .ki-chat-intro p,
+.ki-chats-page .ki-chat-next p { margin:0; color:var(--text-muted,#607083); line-height:1.7; }
+
+.ki-chats-page .ki-chat-list { padding: 0 0 clamp(44px,7vw,84px); }
+.ki-chats-page .ki-chat-profile {
+  display:grid;
+  grid-template-columns:minmax(260px,.7fr) minmax(0,1.3fr);
+  gap:clamp(24px,4vw,52px);
+  padding:clamp(28px,4vw,46px) 0;
+  border-top:1px solid var(--ki-chat-line);
+}
+.ki-chats-page .ki-chat-profile:first-child { border-top:0; }
+.ki-chats-page .ki-chat-profile__identity {
+  display:grid;
+  grid-template-columns:64px minmax(0,1fr);
+  gap:18px;
+  align-items:start;
+}
+.ki-chats-page .ki-chat-mark {
+  display:grid;
+  place-items:center;
+  width:58px;
+  height:58px;
+  border:2px solid var(--chat-accent);
+  background:color-mix(in srgb,var(--chat-accent) 8%,white);
+  font-size:1.45rem;
+  font-weight:900;
+  color:var(--chat-accent);
+}
+.ki-chats-page .ki-chat-kicker {
+  margin:0 0 .35rem;
+  color:var(--chat-accent);
+  font-size:.78rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.ki-chats-page .ki-chat-profile h2 { margin:0 0 .45rem; font-size:clamp(1.65rem,3vw,2.35rem); }
+.ki-chats-page .ki-chat-profile__identity p:last-child { margin:0; color:var(--text-muted,#607083); line-height:1.55; }
+.ki-chats-page .ki-chat-profile__body { min-width:0; }
+.ki-chats-page .ki-chat-features { margin:0; padding-left:1.2rem; }
+.ki-chats-page .ki-chat-features li + li { margin-top:.55rem; }
+.ki-chats-page .ki-chat-fit { margin:1.2rem 0 0; padding:14px 16px; border-left:4px solid var(--chat-accent); background:rgba(255,255,255,.62); color:var(--text-muted,#607083); }
+.ki-chats-page .ki-chat-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+.ki-chats-page .ki-chat-primary,
+.ki-chats-page .ki-chat-secondary {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  padding:10px 14px;
+  font-weight:800;
+  text-decoration:none;
+}
+.ki-chats-page .ki-chat-primary { background:var(--ki-chat-blue); color:#fff; border:1px solid var(--ki-chat-blue-dark); }
+.ki-chats-page .ki-chat-secondary { background:rgba(255,255,255,.78); color:var(--text,#162333); border:1px solid var(--ki-chat-line); }
+.ki-chats-page .ki-chat-primary:hover,
+.ki-chats-page .ki-chat-primary:focus-visible { background:var(--ki-chat-blue-dark); outline:3px solid rgba(45,126,255,.16); outline-offset:2px; }
+.ki-chats-page .ki-chat-secondary:hover,
+.ki-chats-page .ki-chat-secondary:focus-visible { border-color:var(--ki-chat-blue); outline:3px solid rgba(45,126,255,.12); outline-offset:2px; }
+
+.ki-chats-page .ki-chat-section-heading { max-width:780px; margin-bottom:24px; }
+.ki-chats-page .ki-chat-chooser__grid {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  border-top:1px solid var(--ki-chat-line);
+  border-bottom:1px solid var(--ki-chat-line);
+}
+.ki-chats-page .ki-chat-chooser__grid > div { padding:20px; border-left:1px solid var(--ki-chat-line); }
+.ki-chats-page .ki-chat-chooser__grid > div:first-child { border-left:0; }
+.ki-chats-page .ki-chat-chooser__grid strong,
+.ki-chats-page .ki-chat-chooser__grid span { display:block; }
+.ki-chats-page .ki-chat-chooser__grid span { margin-top:.4rem; color:var(--text-muted,#607083); }
+.ki-chats-page .ki-chat-note { margin:18px 0 0; color:var(--text-muted,#607083); font-size:.95rem; }
+.ki-chats-page .ki-chat-next__inner { padding:clamp(24px,4vw,38px); border-left:5px solid #b456c0; background:linear-gradient(120deg,rgba(255,255,255,.88),rgba(250,239,252,.72)); }
+
+.ki-chats-page .ki-chat-detail-hero {
+  padding-top:clamp(34px,5vw,68px);
+  padding-bottom:clamp(30px,5vw,56px);
+}
+.ki-chats-page .ki-chat-detail-hero__grid {
+  display:grid;
+  grid-template-columns:minmax(0,1.28fr) minmax(280px,.72fr);
+  gap:clamp(28px,5vw,58px);
+  align-items:end;
+}
+.ki-chats-page .ki-chat-detail-summary {
+  padding:22px;
+  border-top:4px solid var(--detail-accent,var(--ki-chat-blue));
+  background:var(--ki-chat-surface);
+  box-shadow:0 14px 36px rgba(31,58,85,.08);
+}
+.ki-chats-page .ki-chat-detail-summary h2 { margin:0 0 .7rem; font-size:1.25rem; }
+.ki-chats-page .ki-chat-detail-summary p { margin:0; color:var(--text-muted,#607083); }
+.ki-chats-page .ki-chat-detail-grid {
+  display:grid;
+  grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
+  gap:clamp(24px,5vw,54px);
+}
+.ki-chats-page .ki-chat-detail-grid p { color:var(--text-muted,#607083); line-height:1.7; }
+.ki-chats-page .ki-chat-mode-list { display:grid; gap:14px; }
+.ki-chats-page .ki-chat-mode {
+  padding:18px 20px;
+  border-left:4px solid var(--detail-accent,var(--ki-chat-blue));
+  background:rgba(255,255,255,.68);
+}
+.ki-chats-page .ki-chat-mode h3 { margin:0 0 .35rem; font-size:1.15rem; }
+.ki-chats-page .ki-chat-mode p { margin:0; color:var(--text-muted,#607083); }
+.ki-chats-page .ki-chat-caution {
+  padding:clamp(22px,4vw,34px);
+  border-left:5px solid #c97912;
+  background:rgba(255,248,235,.8);
+}
+.ki-chats-page .ki-chat-caution h2 { margin-top:0; }
+.ki-chats-page .ki-chat-source-links { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+.ki-chats-page .ki-chat-source-links a { color:var(--ki-chat-blue-dark); font-weight:800; }
+
+@media (max-width: 900px) {
+  .ki-chats-page .ki-chat-hero,
+  .ki-chats-page .ki-chat-profile,
+  .ki-chats-page .ki-chat-intro__grid,
+  .ki-chats-page .ki-chat-next__inner,
+  .ki-chats-page .ki-chat-detail-hero__grid,
+  .ki-chats-page .ki-chat-detail-grid { grid-template-columns:1fr; }
+  .ki-chats-page .ki-chat-chooser__grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .ki-chats-page .ki-chat-chooser__grid > div:nth-child(3) { border-left:0; border-top:1px solid var(--ki-chat-line); }
+  .ki-chats-page .ki-chat-chooser__grid > div:nth-child(4) { border-top:1px solid var(--ki-chat-line); }
+}
+@media (max-width: 620px) {
+  .ki-chats-page .ki-chat-hero h1,
+  .ki-chats-page .ki-chat-detail-hero h1 { font-size:clamp(2.15rem,11vw,3.35rem); }
+  .ki-chats-page .ki-chat-profile__identity { grid-template-columns:52px minmax(0,1fr); }
+  .ki-chats-page .ki-chat-mark { width:48px; height:48px; font-size:1.2rem; }
+  .ki-chats-page .ki-chat-chooser__grid { grid-template-columns:1fr; }
+  .ki-chats-page .ki-chat-chooser__grid > div { border-left:0; border-top:1px solid var(--ki-chat-line); }
+  .ki-chats-page .ki-chat-chooser__grid > div:first-child { border-top:0; }
+  .ki-chats-page .ki-chat-actions { flex-direction:column; align-items:stretch; }
+}
