@@ -71,8 +71,9 @@
           { label: 'KI-Lexikon', href: 'ki/lexikon.html', description: 'Begriffe einfach erklärt.' }
         ] },
         { label: 'Arbeiten mit KI', accent: 'blue', links: [
-          { label: 'Prompts für den Alltag', href: 'ki/prompts.html', description: 'Bessere Eingaben für bessere Ergebnisse.' },
-          { label: 'KI-Werkzeuge', href: 'ki/tools.html', description: 'Chat, Bild, Video, Audio und Büro-Tools.' }
+          { label: 'KI im Alltag', href: 'ki/prompts.html', description: 'Natürlich fragen, Bilder nutzen und gemeinsam zum Ergebnis kommen.' },
+          { label: 'Aktuelle KI-Chats', href: 'ki/tools.html', description: 'ChatGPT, Gemini, Claude & Co. – Unterschiede und besondere Funktionen.' },
+          { label: 'KI-Musik mit Suno', href: 'ki/musik/suno.html', description: 'Songs erstellen, Ideen entwickeln und KI-Musik verstehen.' }
         ] },
         { label: 'Sicherheit & Einordnung', accent: 'green', links: [
           { label: 'KI: Chancen & Risiken', href: 'ki/chancen-und-risiken.html', description: 'Nutzen, Grenzen und Stolperfallen.' },
