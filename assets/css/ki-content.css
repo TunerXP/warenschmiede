@@ -89,7 +89,6 @@ body.ki-page .btn-outline{border:1px solid var(--border);color:var(--text);backg
   text-decoration: underline;
 }
 
-
 .ki-section__inner {
   display: flex;
   flex-direction: column;
@@ -100,7 +99,7 @@ body.ki-page .btn-outline{border:1px solid var(--border);color:var(--text);backg
 .ki-section__inner > p {
   margin: 0;
   color: var(--text-muted);
-  }
+}
 
 .ki-section__inner > p + p {
   margin-top: 0.5rem;
@@ -145,7 +144,6 @@ body.ki-page .btn-outline{border:1px solid var(--border);color:var(--text);backg
 .ki-uses li {
   color: var(--text-muted);
 }
-
 
 .ki-uses li + li {
   margin-top: 0.4rem;
@@ -511,15 +509,17 @@ body.ki-page .btn-outline{border:1px solid var(--border);color:var(--text);backg
 
 /* Mitlaufender Rücksprung für KI-Detailseiten */
 body.ki-page .ki-detail-back {
-  position: sticky;
-  top: 92px;
-  z-index: 80;
+  position: fixed;
+  top: 94px;
+  left: max(16px, calc((100vw - 1320px) / 2 + 24px));
+  z-index: 70;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: max-content;
+  max-width: calc(100vw - 32px);
   min-height: 42px;
-  margin: 12px 0 0 max(16px, calc((100vw - 1320px) / 2 + 24px));
+  margin: 0;
   padding: 9px 13px;
   border: 1px solid rgba(45,126,255,.35);
   background: rgba(255,255,255,.96);
@@ -540,8 +540,11 @@ body.ki-page .ki-detail-back:focus-visible {
 
 @media (max-width: 720px) {
   body.ki-page .ki-detail-back {
-    top: 78px;
-    margin-left: 14px;
+    top: auto;
+    right: auto;
+    bottom: 14px;
+    left: 14px;
+    max-width: calc(100vw - 28px);
     font-size: .92rem;
   }
 }
