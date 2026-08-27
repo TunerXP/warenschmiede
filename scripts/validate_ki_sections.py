@@ -12,16 +12,16 @@ MENU_EXPECTED = {
 }
 
 DETAILS = {
-    "ChatGPT": "ki/chats/chatgpt.html",
-    "Gemini": "ki/chats/gemini.html",
-    "Claude": "ki/chats/claude.html",
-    "Microsoft Copilot": "ki/chats/copilot.html",
-    "Perplexity": "ki/chats/perplexity.html",
+    "ChatGPT": ("ki/chats/chatgpt.html", "chatgpt"),
+    "Gemini": ("ki/chats/gemini.html", "gemini"),
+    "Claude": ("ki/chats/claude.html", "claude"),
+    "Microsoft Copilot": ("ki/chats/copilot.html", "copilot"),
+    "Perplexity": ("ki/chats/perplexity.html", "perplexity"),
 }
 
 HTML_PAGES = [
     "ki/tools.html",
-    *DETAILS.values(),
+    *(path for path, _ in DETAILS.values()),
     "ki/musik/suno.html",
 ]
 
@@ -50,11 +50,15 @@ def main():
     if overview is None:
         errors.append("ki/tools.html fehlt")
     else:
-        for name, href in DETAILS.items():
+        for name, (href, anchor) in DETAILS.items():
             if name not in overview:
                 errors.append(f"Übersicht nennt {name} nicht")
             if f"/{href}" not in overview and href not in overview:
                 errors.append(f"Übersicht verlinkt {href} nicht")
+            if f'id="{anchor}"' not in overview:
+                errors.append(f"Übersicht: Sprungziel #{anchor} fehlt")
+        if 'id="suno"' not in overview:
+            errors.append("Übersicht: Sprungziel #suno fehlt")
 
     for page in HTML_PAGES:
         html = read(page)
@@ -72,6 +76,14 @@ def main():
         if "/assets/js/ws-layout.js" not in html:
             errors.append(f"{page}: ws-layout.js fehlt")
 
+    for name, (page, anchor) in DETAILS.items():
+        html = read(page)
+        if html:
+            if 'class="ki-detail-back"' not in html:
+                errors.append(f"{name}: mitlaufender Zurück-Button fehlt")
+            if f'href="/ki/tools.html#{anchor}"' not in html:
+                errors.append(f"{name}: Rücksprung zu #{anchor} fehlt")
+
     chatgpt = read("ki/chats/chatgpt.html")
     if chatgpt:
         for term in ("Work", "Deep Research", "Plugins", "Codex"):
@@ -83,6 +95,20 @@ def main():
         for term in ("v5.5", "Studio 2.0", "MIDI", "Chat Bar", "Stem"):
             if term not in suno:
                 errors.append(f"Suno-Seite: {term} fehlt")
+        if 'class="ki-detail-back"' not in suno:
+            errors.append("Suno: mitlaufender Zurück-Button fehlt")
+        if 'href="/ki/tools.html#suno"' not in suno:
+            errors.append("Suno: Rücksprung zu #suno fehlt")
+
+    ki_css = read("assets/css/ki-content.css")
+    if ki_css is None or ".ki-detail-back" not in ki_css:
+        errors.append("ki-content.css: Stil für .ki-detail-back fehlt")
+    elif "position: sticky" not in ki_css:
+        errors.append("ki-content.css: Zurück-Button ist nicht sticky")
+
+    chat_css = read("assets/css/ki-chats.css")
+    if chat_css is None or "scroll-margin-top" not in chat_css:
+        errors.append("ki-chats.css: scroll-margin-top für Rücksprung fehlt")
 
     if errors:
         print("KI-Strukturprüfung: FEHLER")
@@ -94,6 +120,7 @@ def main():
     print(f"- Navigation: {len(MENU_EXPECTED)} Einträge")
     print(f"- Chat-KIs: {len(DETAILS)} Detailseiten")
     print(f"- HTML-Seiten geprüft: {len(HTML_PAGES)}")
+    print("- Rücksprung-Navigation: Chat-KIs + Suno")
     return 0
 
 
