@@ -1,0 +1,15 @@
+name: Deploy KI Music Verify
+
+on:
+  push:
+    branches:
+      - fix/deploy-ki-musik
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+      - name: Deploy-Allowlist prüfen
+        run: python scripts/validate_deploy_ki_music.py
