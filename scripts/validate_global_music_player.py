@@ -6,7 +6,7 @@ ROOT = Path(__file__).resolve().parents[1]
 LAYOUT = ROOT / "assets/js/ws-layout.js"
 GLOBAL_PLAYER = ROOT / "assets/js/ws-global-music-player.js"
 LOCAL_PLAYER = ROOT / "assets/js/ki-music-player.js"
-GLOBAL_CSS = ROOT / "assets/css/styles.css"
+GLOBAL_CSS = ROOT / "assets/css/ws-global-music-player.css"
 SUNO = ROOT / "ki/musik/suno.html"
 
 AUDIO = "/media/ki-musik/the-things-that-stay/audio/08-running-back-to-you.mp3"
@@ -29,6 +29,7 @@ def main():
         'data-ws-global-player',
         'data-ws-global-play',
         'data-ws-global-stop',
+        '/assets/css/ws-global-music-player.css',
         '/assets/js/ws-global-music-player.js',
     ):
         if needle not in layout:
@@ -36,6 +37,8 @@ def main():
 
     if not GLOBAL_PLAYER.exists():
         errors.append("assets/js/ws-global-music-player.js fehlt")
+    if not GLOBAL_CSS.exists():
+        errors.append("assets/css/ws-global-music-player.css fehlt")
 
     for needle in (
         STATE_KEY,
