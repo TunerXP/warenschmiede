@@ -1,0 +1,22 @@
+name: Global Music Player Verify
+
+on:
+  push:
+    branches:
+      - feature/global-music-player
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+      - name: Globalen Musikplayer prüfen
+        run: python scripts/validate_global_music_player.py
+      - name: Bestehenden KI-Musik-Bereich prüfen
+        run: python scripts/validate_ki_music_area.py
+      - name: JavaScript-Syntax prüfen
+        run: |
+          node --check assets/js/ws-layout.js
+          node --check assets/js/ki-music-player.js
+          if [ -f assets/js/ws-global-music-player.js ]; then node --check assets/js/ws-global-music-player.js; fi
