@@ -1,803 +1,107 @@
 <!DOCTYPE html>
-
-<html lang="de">
+<html class="ki-page" lang="de">
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#eef4fa">
+  <meta name="color-scheme" content="light">
+  <meta name="robots" content="index,follow">
+  <title>KI kennenlernen – interaktiver Lern-Chat | Warenschmiede</title>
+  <meta name="description" content="KI praktisch kennenlernen: interaktive Lern-Chats zeigen Einsteigern, wie man mit Texten, Screenshots, PDFs, Sicherheit und Recherche arbeitet.">
+  <link rel="canonical" href="https://www.warenschmiede.com/ki/chat.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Warenschmiede">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:title" content="KI kennenlernen – interaktiver Lern-Chat | Warenschmiede">
+  <meta property="og:description" content="Kurze Praxisgespräche zeigen dir, wie moderne KI im Alltag benutzt wird – ohne echte Daten zu übertragen.">
+  <meta property="og:url" content="https://www.warenschmiede.com/ki/chat.html">
+  <meta property="og:image" content="/assets/img/warenschmiede-logo-main.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="KI kennenlernen – interaktiver Lern-Chat | Warenschmiede">
+  <meta name="twitter:description" content="Kurze Praxisgespräche zeigen dir, wie moderne KI im Alltag benutzt wird.">
+  <meta name="twitter:image" content="/assets/img/warenschmiede-logo-main.png">
   <link rel="icon" href="/assets/img/branding/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/branding/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/branding/favicon-16x16.png">
   <link rel="apple-touch-icon" href="/assets/img/branding/apple-touch-icon.png">
-<meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1" name="viewport"/>
-<meta content="#ffffff" name="theme-color"/>
-<title>KI-Versteher: Adaptiver Chat-Simulator - Warenschmiede</title>
-<meta content="../ws.png" property="og:image"/>
-<meta content="Simulierter KI-Chat, der sich an dich anpasst. Erklärungen für Einsteiger, Berufstätige, Schüler und Skeptiker." name="description"/>
-<style>
-    /* Chat Specific Styles */
-    .chat-container {
-        max-width: 600px;
-        width: 100%;
-        margin: 0 auto;
-        background: #efeae2;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        overflow: hidden;
-        border: 1px solid #ddd;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        height: 75vh;
-        max-height: 800px;
-        min-height: 500px;
-        position: relative;
-    }
-
-    /* WhatsApp Background Pattern simulation */
-    .chat-body {
-        flex: 1;
-        overflow-y: auto;
-        padding: 20px 15px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        background-color: #efeae2;
-        background-image: radial-gradient(#d4d0c8 1px, transparent 1px);
-        background-size: 20px 20px;
-        scroll-behavior: smooth;
-    }
-
-    .chat-header {
-        background: #008069;
-        color: white;
-        padding: 10px 15px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.15);
-    }
-
-    .chat-header-avatar {
-        width: 42px;
-        height: 42px;
-        border-radius: 50%;
-        background: #fff;
-        overflow: hidden;
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-    }
-    
-    .chat-header-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .chat-header-info {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .chat-header-name {
-        font-weight: 600;
-        font-size: 1.05rem;
-        line-height: 1.2;
-    }
-
-    .chat-header-status {
-        font-size: 0.8rem;
-        opacity: 0.85;
-        line-height: 1.2;
-    }
-    
-    .status-dot {
-        height: 8px;
-        width: 8px;
-        background-color: #25D366; /* WhatsApp Green bright */
-        border-radius: 50%;
-        display: inline-block;
-        margin-left: 5px;
-        box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
-        animation: pulse-green 2s infinite;
-    }
-    
-    @keyframes pulse-green {
-        0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
-        70% { box-shadow: 0 0 0 6px rgba(37, 211, 102, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-    }
-
-    .message {
-        max-width: 85%;
-        padding: 8px 12px;
-        border-radius: 7.5px;
-        position: relative;
-        font-size: 0.95rem;
-        line-height: 1.4;
-        box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
-        opacity: 0;
-        transform: translateY(10px);
-        animation: messageAppear 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        word-wrap: break-word;
-    }
-
-    @keyframes messageAppear {
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .message.host { /* Marco */
-        align-self: flex-start;
-        background: #ffffff;
-        border-top-left-radius: 0;
-        color: #111b21;
-    }
-
-    .message.guest { /* User */
-        align-self: flex-end;
-        background: #d9fdd3;
-        border-top-right-radius: 0;
-        color: #111b21;
-    }
-
-    .message a {
-        color: #027eb5;
-        text-decoration: none;
-        font-weight: 500;
-    }
-    .message a:hover {
-        text-decoration: underline;
-    }
-
-    /* Typing Indicator */
-    .typing-indicator {
-        background: #ffffff;
-        padding: 10px 15px;
-        border-radius: 18px;
-        border-top-left-radius: 0;
-        display: none; /* Hidden by default */
-        align-items: center;
-        gap: 4px;
-        align-self: flex-start;
-        margin-left: 15px;
-        margin-bottom: 10px;
-        box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
-        width: fit-content;
-    }
-
-    .typing-indicator.visible {
-        display: inline-flex;
-    }
-
-    .dot {
-        width: 6px;
-        height: 6px;
-        background: #b0b0b0;
-        border-radius: 50%;
-        animation: typingBounce 1.4s infinite ease-in-out both;
-    }
-    .dot:nth-child(1) { animation-delay: -0.32s; }
-    .dot:nth-child(2) { animation-delay: -0.16s; }
-
-    @keyframes typingBounce {
-        0%, 80%, 100% { transform: scale(0); }
-        40% { transform: scale(1); }
-    }
-
-    /* Controls & Overlay */
-    .chat-controls {
-        background: #f0f2f5;
-        padding: 10px;
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        border-top: 1px solid #ddd;
-        flex-wrap: wrap;
-    }
-
-    .chat-btn {
-        background: #fff;
-        border: 1px solid #ccc;
-        border-radius: 24px;
-        padding: 8px 16px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        color: #111b21;
-        transition: all 0.2s;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .chat-btn:hover { background: #e9edef; }
-
-    /* Persona Overlay */
-    .persona-overlay {
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(255,255,255,0.95);
-        z-index: 20;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        text-align: center;
-        backdrop-filter: blur(5px);
-    }
-
-    .persona-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        width: 100%;
-        max-width: 400px;
-        margin-top: 20px;
-    }
-
-    .persona-card {
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 12px;
-        padding: 15px;
-        cursor: pointer;
-        transition: all 0.2s;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    }
-    .persona-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-        border-color: #008069;
-    }
-    .persona-icon { font-size: 2rem; display: block; margin-bottom: 5px; }
-    .persona-title { font-weight: bold; font-size: 0.9rem; color: #111b21; }
-    .persona-desc { font-size: 0.75rem; color: #54656f; }
-
-  </style>
-<link href="/assets/css/styles.css" rel="stylesheet"/>
-<link href="/assets/css/ki-content.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <link rel="stylesheet" href="/assets/css/ki-content.css">
+  <link rel="stylesheet" href="/assets/css/ki-learning-chat.css">
 </head>
-<body class="ki-page theme-light">
-<div id="ws-header"></div>
-<nav aria-label="Brotkrumen" class="breadcrumbs">
-<div class="container breadcrumbs__container">
-<ol class="breadcrumbs__list">
-<li class="breadcrumbs__item"><a href="/index.html">Start</a></li>
-<li class="breadcrumbs__item"><a href="/ki/index.html">Über KI</a></li>
-<li aria-current="page" class="breadcrumbs__item">KI-Versteher</li>
-</ol>
-</div>
-</nav>
-<main class="site-main">
-<div class="container">
-<div class="ws-section" style="text-align: center;">
-<h1 class="ws-page-title">KI-Versteher</h1>
-<p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
-                Wähle deinen Modus und entdecke, was Künstliche Intelligenz für dich bedeutet.
-            </p>
-</div>
-<div class="chat-container">
-<div class="chat-header">
-<div class="chat-header-avatar">
-<img alt="Marco" onerror="this.src='/assets/img/avatar-placeholder.svg'" src="/assets/img/marco.jpg"/>
-</div>
-<div class="chat-header-info">
-<div class="chat-header-name">Marco (KI-Guide)</div>
-<div class="chat-header-status">Online</div>
-</div>
-</div>
-<div class="chat-body" id="chat-body">
-</div>
-<div class="typing-indicator" id="typing-indicator">
-<div class="dot"></div><div class="dot"></div><div class="dot"></div>
-</div>
-<div class="persona-overlay" id="persona-overlay">
-<h3>KI einfach erklärt.<br/>Wer fragt gerade?</h3>
-<div class="persona-grid">
-<div class="persona-card" onclick="selectPersona('senior')">
-<span class="persona-icon">👴</span>
-<div class="persona-title">Senior / Einsteiger</div>
-<div class="persona-desc">Einfach &amp; Sicher</div>
-</div>
-<div class="persona-card" onclick="selectPersona('adult')">
-<span class="persona-icon">👨‍💼</span>
-<div class="persona-title">Beruf &amp; Alltag</div>
-<div class="persona-desc">Effizient &amp; Praxis</div>
-</div>
-<div class="persona-card" onclick="selectPersona('youth')">
-<span class="persona-icon">🎮</span>
-<div class="persona-title">Jugend &amp; Schule</div>
-<div class="persona-desc">Locker &amp; Future</div>
-</div>
-<div class="persona-card" onclick="selectPersona('skeptic')">
-<span class="persona-icon">🤨</span>
-<div class="persona-title">Skeptiker</div>
-<div class="persona-desc">Kritisch &amp; Fakten</div>
-</div>
-</div>
-</div>
-<div class="chat-controls">
-<button class="chat-btn" onclick="restartChat()">🔄 Neustart / Wechseln</button>
-</div>
-</div>
-<div style="text-align: center; margin-top: 2rem; margin-bottom: 4rem;">
-<p style="color: var(--text-muted); font-size: 0.9rem;">
-                Hinweis: Dies ist ein simulierter Chat. Alle Links öffnen in einem neuen Tab.
-            </p>
-<a class="btn btn-primary" href="/ki/tools.html">Alle KI-Tools ansehen</a>
-</div>
-</div>
-</main>
-<script>
-    // --- KONFIGURATION & DATEN ---
-    
-    const PERSONAS = {
-        senior: {
-            name: "Senior",
-            greeting: [
-                { sender: 'marco', text: 'Hallo! 👋 Schön, dass Sie sich trauen. Keine Sorge, wir gehen das ganz entspannt an.' },
-                { sender: 'marco', text: 'Stellen Sie sich KI wie einen sehr belesenen **Bibliothekar** vor. 📚' },
-                { sender: 'marco', text: 'Er hat alle Bücher der Welt gelesen, aber er "versteht" den Inhalt nicht wie ein Mensch. Er rät statistisch, welches Wort als nächstes kommt.' },
-                { sender: 'marco', text: 'Was liegt Ihnen auf dem Herzen?' },
-                { type: 'options', options: [
-                    { label: 'Wie bediene ich das?', value: 'basics' },
-                    { label: 'Reisen & Sprachen', value: 'travel' },
-                    { label: 'Damals & Heute 🕰️', value: 'history' },
-                    { label: 'Geschenk-Ideen 🎁', value: 'gifts' },
-                    { label: 'Ist das sicher (Enkeltrick)?', value: 'risks' },
-                    { label: 'Gesundheit (Vorsicht)', value: 'health' },
-                    { label: 'Zeig mir Programme', value: 'tools' },
-                    { label: 'Sprechen & Übersetzen', value: 'voice_translator' }
-                ]}
-            ],
-            topics: {
-                voice_translator: {
-                    messages: [
-                        { sender: 'marco', text: 'Tippen ist mühsam. Wussten Sie, dass Sie mit dem Handy sprechen können wie mit einem Menschen?' },
-                        { sender: 'marco', text: 'Im Urlaub ist das Gold wert: Handy auf den Tisch legen, "Dolmetscher-Modus" an.' },
-                        { sender: 'marco', text: 'Sie sprechen Deutsch, das Handy spricht Italienisch. Der Kellner antwortet Italienisch, das Handy sagt es Ihnen auf Deutsch. Live!' }
-                    ]
-                },
-                basics: {
-                    messages: [
-                        { sender: 'gast', text: 'Muss ich programmieren lernen?' },
-                        { sender: 'marco', text: 'Nein! Sie steuern diese Programme mit ganz normaler Sprache.' },
-                        { sender: 'marco', text: 'Schreiben Sie wie in einem Brief oder einer WhatsApp an die Familie.' },
-                        { sender: 'marco', text: 'Beispiel: "Schreibe ein Gedicht für den 80. Geburtstag meiner Schwester Helga, sie mag Gartenarbeit."' }
-                    ]
-                },
-                travel: {
-                    messages: [
-                        { sender: 'gast', text: 'Kann mir das im Urlaub helfen?' },
-                        { sender: 'marco', text: 'Oh ja! Installieren Sie ChatGPT oder Google Translate auf dem Handy.' },
-                        { sender: 'marco', text: 'Sie können deutsch hineinsprechen, und das Handy spricht den Satz sofort in Spanisch oder Italienisch aus.' },
-                        { sender: 'marco', text: 'Soll ich ein Beispiel simulieren?' },
-                        { type: 'options', options: [
-                            { label: 'Ja, gerne!', value: 'travel_demo' },
-                            { label: 'Nein, weiter.', value: 'restart_topics' }
-                        ]}
-                    ]
-                },
-                history: {
-                    messages: [
-                        { sender: 'marco', text: 'Schwelgen Sie gerne in Erinnerungen? Fragen Sie: "Was waren die Top-Schlager im Jahr 1965?" oder "Was kostete Brot 1970?".' },
-                        { sender: 'marco', text: 'Das ist wie eine Zeitreise auf Knopfdruck.' }
-                    ]
-                },
-                gifts: {
-                    messages: [
-                        { sender: 'marco', text: 'Keine Idee für die Enkel? Beschreiben Sie das Enkelkind (Alter, Hobbys) und die KI liefert 10 perfekte Ideen.' }
-                    ]
-                },
-                travel_demo: {
-                    messages: [
-                        { sender: 'marco', text: 'Okay, stellen Sie sich vor, Sie sind in Spanien in der Apotheke.' },
-                        { sender: 'marco', text: 'Sie sagen: "Wo ist die nächste Apotheke?"' },
-                        { sender: 'marco', text: 'Das Handy sagt laut: **"¿Dónde está la farmacia más cercana?"**' },
-                        { sender: 'marco', text: 'Das nimmt die Angst vor fremden Sprachen!' }
-                    ]
-                },
-                health: {
-                    messages: [
-                        { sender: 'gast', text: 'Kann ich die KI nach Medizin fragen?' },
-                        { sender: 'marco', text: '⚠️ Bitte seien Sie da sehr vorsichtig!' },
-                        { sender: 'marco', text: 'KI ist kein Arzt. Sie kann allgemeine Tipps geben ("Was hilft bei Wadenkrampf?"), aber sie erfindet manchmal Fakten.' },
-                        { sender: 'marco', text: 'Vertrauen Sie bei Gesundheit immer echten Menschen und Ärzten, nicht dem Chatbot.' }
-                    ]
-                },
-                risks: {
-                    messages: [
-                        { sender: 'gast', text: 'Man hört so viel vom Enkeltrick.' },
-                        { sender: 'marco', text: 'Wichtiges Thema! Betrüger können Stimmen mit KI klonen.' },
-                        { sender: 'marco', text: 'Wenn ein Anruf kommt ("Oma, ich brauche Geld"), legen Sie auf und rufen Sie den Enkel unter der Nummer an, die SIE gespeichert haben.' }
-                    ]
-                },
-                tools: {
-                    messages: [
-                        { sender: 'gast', text: 'Wo finde ich das?' },
-                        { sender: 'marco', text: 'Die meisten Basis-Versionen sind kostenlos.' },
-                        { sender: 'marco', text: 'Ich habe eine Liste erstellt: <a href="/ki/tools.html" target="_blank">Zu meiner Werkzeug-Übersicht</a>.' }
-                    ]
-                }
-            }
-        },
-        adult: {
-            name: "Berufstätig",
-            greeting: [
-                { sender: 'marco', text: 'Hi! Willkommen im Update für dein Arbeitsleben. 🚀' },
-                { sender: 'marco', text: 'Denk bei KI an einen hochintelligenten **Assistenten**, der 24/7 wach ist.' },
-                { sender: 'marco', text: 'Lass uns keine Zeit verschwenden. Was bringt dich weiter?' },
-                { type: 'options', options: [
-                    { label: 'Excel & Office', value: 'office' },
-                    { label: 'Bewerbung & Karriere', value: 'career' },
-                    { label: 'Kochen & Reste 🍳', value: 'cooking' },
-                    { label: 'Reise-Planung ✈️', value: 'travel_pro' },
-                    { label: 'Werde ich ersetzt?', value: 'jobs' },
-                    { label: 'Tools für den Job', value: 'tools' },
-                    { label: 'KI kann sehen? (Vision)', value: 'vision_help' }
-                ]}
-            ],
-            topics: {
-                vision_help: {
-                    messages: [
-                        { sender: 'marco', text: 'Das wissen die wenigsten: Du kannst der KI Fotos zeigen!' },
-                        { sender: 'marco', text: 'Beispiel 1: Dein Kaktus wird braun? Foto machen -> "Was fehlt ihm?" -> Diagnose.' },
-                        { sender: 'marco', text: 'Beispiel 2: Foto vom Sicherungskasten -> "Welcher Schalter ist für den Herd?".' },
-                        { sender: 'marco', text: 'Das Feature heißt "Vision" und ist in GPT-4o oder Google Lens drin.' }
-                    ]
-                },
-                office: {
-                    messages: [
-                        { sender: 'gast', text: 'Ich kämpfe oft mit Excel-Formeln...' },
-                        { sender: 'marco', text: 'Das ist der perfekte Einsatzzweck!' },
-                        { sender: 'marco', text: 'Kopiere einfach deine Spaltennamen in die KI und schreib: "Erstelle eine Formel, die Spalte A mit B vergleicht und Rot markiert, wenn..."' },
-                        { sender: 'marco', text: 'Das spart Stunden an Arbeit.' }
-                    ]
-                },
-                career: {
-                    messages: [
-                        { sender: 'gast', text: 'Kann die KI meinen Lebenslauf schreiben?' },
-                        { sender: 'marco', text: 'Sie kann ihn extrem verbessern.' },
-                        { sender: 'marco', text: 'Kopiere deinen alten Lebenslauf rein und sag: "Optimiere das für eine Stelle als Projektmanager. Mach es prägnanter."' },
-                        { sender: 'marco', text: 'Aber: Das Foto und die persönlichen Daten machst du bitte selbst! 😉' }
-                    ]
-                },
-                cooking: {
-                    messages: [
-                        { sender: 'marco', text: 'Das nutze ich ständig! Mach ein Foto von deinem offenen Kühlschrank (oder schreib, was drin ist).' },
-                        { sender: 'marco', text: 'Sag: "Was kann ich daraus kochen?". Du kriegst sofort Rezepte. Nie wieder Lebensmittel wegwerfen!' }
-                    ]
-                },
-                travel_pro: {
-                    messages: [
-                        { sender: 'marco', text: 'Planst du einen Trip? Sag: "Erstelle eine 7-Tage-Route für Japan, Fokus auf Tech und Essen. Budget mittel".' },
-                        { sender: 'marco', text: 'Die KI liefert dir Hotels, Züge und Sehenswürdigkeiten.' }
-                    ]
-                },
-                jobs: {
-                    messages: [
-                        { sender: 'gast', text: 'Kostet mich das meinen Job?' },
-                        { sender: 'marco', text: 'Der Spruch der Branche ist: **"KI ersetzt keine Menschen. Aber Menschen mit KI ersetzen Menschen ohne KI."**' },
-                        { sender: 'marco', text: 'Wer lernt, die Tools zu nutzen, wird produktiver und wertvoller. Wer sich verweigert, wird es schwer haben.' }
-                    ]
-                },
-                tools: {
-                    messages: [
-                        { sender: 'gast', text: 'Welche Tools sind "Enterprise Ready"?' },
-                        { sender: 'marco', text: 'Microsoft Copilot ist oft schon in Office drin. Für Recherche ist Perplexity top.' },
-                        { sender: 'marco', text: 'Hier ist meine Liste: <a href="/ki/tools.html" target="_blank">Zur Tool-Übersicht</a>.' }
-                    ]
-                }
-            }
-        },
-        youth: {
-            name: "Jugend & Schule",
-            greeting: [
-                { sender: 'marco', text: 'Yo! ✌️ KI ist wie ein **NPC**, der plötzlich alles weiß.' },
-                { sender: 'marco', text: 'Was ist dein Thema?' },
-                { type: 'options', options: [
-                    { label: 'Schule & Hausaufgaben', value: 'school' },
-                    { label: 'Gaming & Coding', value: 'gaming' },
-                    { label: 'Dating & Rizz 💘', value: 'love_rizz' },
-                    { label: 'Gym & Fitness 💪', value: 'fitness' },
-                    { label: 'Fake Influencer', value: 'fakes' },
-                    { label: 'Krasse Tools', value: 'tools' },
-                    { label: 'Bilder generieren', value: 'gen_images' }
-                ]}
-            ],
-            topics: {
-                gen_images: {
-                    messages: [
-                        { sender: 'marco', text: 'Vergiss Google Bilder. Du kannst dir Bilder *bauen* lassen.' },
-                        { sender: 'marco', text: 'Prompt: "Ein Astronaut reitet auf einem T-Rex im Weltraum, Cyberpunk Style". Zack, hast du ein Unikat.' },
-                        { sender: 'marco', text: 'Tools dafür: Midjourney (Discord), DALL-E (in ChatGPT) oder Flux (gratis).' }
-                    ]
-                },
-                school: {
-                    messages: [
-                        { sender: 'gast', text: 'Kann ich damit Hausaufgaben machen? 😅' },
-                        { sender: 'marco', text: 'Klar KANNST du. Aber Lehrer checken das inzwischen.' },
-                        { sender: 'marco', text: 'Der Hack ist: Lass die Hausaufgaben nicht SCHREIBEN, sondern ERKLÄREN.' },
-                        { sender: 'marco', text: 'Prompt: "Erkläre mir Photosynthese mit Minecraft-Vergleichen." – Das bleibt im Kopf!' }
-                    ]
-                },
-                gaming: {
-                    messages: [
-                        { sender: 'gast', text: 'Was geht bei Gaming?' },
-                        { sender: 'marco', text: 'Willst du ein Spiel bauen?' },
-                        { type: 'options', options: [
-                            { label: 'Ja, programmieren!', value: 'coding_deep' },
-                            { label: 'Nein, nur zocken.', value: 'gaming_general' }
-                        ]}
-                    ]
-                },
-                love_rizz: {
-                    messages: [
-                        { sender: 'marco', text: 'Okay, Romeo. 😄 KI kann dir helfen, coole Opener zu schreiben.' },
-                        { sender: 'marco', text: 'Aber warnung: Kopier es nicht blind. Wenn du klingst wie ein Dichter aus dem 18. Jahrhundert, kriegst du einen Korb.' },
-                        { sender: 'marco', text: 'Besser: "Schreib eine lustige Nachricht an jemanden, der gerne Anime mag".' }
-                    ]
-                },
-                fitness: {
-                    messages: [
-                        { sender: 'marco', text: 'Dein Personal Trainer! Sag der KI: "Ich bin 1,80m, wiege 70kg und will Muskeln aufbauen. Mach mir einen 3-Tages-Plan für Zuhause".' }
-                    ]
-                },
-                coding_deep: {
-                    messages: [
-                        { sender: 'marco', text: 'Nice! Dann hol dir **Cursor** oder nutze ChatGPT.' },
-                        { sender: 'marco', text: 'Sag einfach: "Schreib mir ein Snake-Spiel in Python". Die KI gibt dir den Code und erklärt, wie du ihn startest.' }
-                    ]
-                },
-                gaming_general: {
-                    messages: [
-                        { sender: 'marco', text: 'Auch gut. In Zukunft werden NPCs in Games viel schlauer sein und echte Gespräche mit dir führen, dank KI.' }
-                    ]
-                },
-                fakes: {
-                    messages: [
-                        { sender: 'gast', text: 'Ist auf Social Media alles fake?' },
-                        { sender: 'marco', text: 'Vieles. Es gibt Influencer, die nur Pixel sind.' },
-                        { sender: 'marco', text: 'Glaube keinem Bild und keiner Stimme mehr blind. Check immer die Quelle.' }
-                    ]
-                },
-                tools: {
-                    messages: [
-                        { sender: 'gast', text: 'Was gibt es Cooles?' },
-                        { sender: 'marco', text: 'Bilder (Midjourney), Musik (Suno)... check meine Liste: <a href="/ki/tools.html" target="_blank">Zu den KI-Tools</a>' }
-                    ]
-                }
-            }
-        },
-        skeptic: {
-            name: "Skeptiker",
-            greeting: [
-                { sender: 'marco', text: 'Guten Tag. Gut, dass Sie kritisch bleiben.' },
-                { sender: 'marco', text: 'KI ist **Statistik, keine Magie**. Ein Wahrscheinlichkeits-Rechner für Worte.' },
-                { sender: 'marco', text: 'Lassen Sie uns Fakten diskutieren.' },
-                { type: 'options', options: [
-                    { label: 'Halluzinationen (Lügen)', value: 'hallucinations' },
-                    { label: 'Hat KI Vorurteile? ⚖️', value: 'bias' },
-                    { label: 'Urheberrecht & Klauen', value: 'privacy' },
-                    { label: 'Energie & Umwelt', value: 'energy' },
-                    { label: 'Lokale KI (Datenschutz)', value: 'local_ai' }
-                ]}
-            ],
-            topics: {
-                hallucinations: {
-                    messages: [
-                        { sender: 'gast', text: 'Das Ding erzählt doch oft Unsinn.' },
-                        { sender: 'marco', text: 'Korrekt. Man nennt es "Halluzinieren".' },
-                        { sender: 'marco', text: 'Nutzen Sie KI nie als Lexikon ("Wann wurde X geboren?"), sondern als Sprach-Motor ("Formuliere diesen Text um").' }
-                    ]
-                },
-                bias: {
-                    messages: [
-                        { sender: 'marco', text: 'Exzellente Frage. Ja, hat sie.' },
-                        { sender: 'marco', text: 'Die KI lernt aus dem Internet. Und im Internet gibt es Vorurteile. Wenn die Daten "biased" sind, ist es die KI auch.' },
-                        { sender: 'marco', text: 'Firmen arbeiten hart an "Filtern", aber man muss sich dessen bewusst sein.' }
-                    ]
-                },
-                privacy: {
-                    messages: [
-                        { sender: 'gast', text: 'Die klauen doch Bilder von Künstlern.' },
-                        { sender: 'marco', text: 'Ein heißes Eisen. Ja, die Modelle wurden mit Daten aus dem Internet trainiert.' },
-                        { sender: 'marco', text: 'Es gibt Tools wie "Glaze", mit denen Künstler ihre Werke vor KI schützen können.' }
-                    ]
-                },
-                local_ai: {
-                    messages: [
-                        { sender: 'marco', text: 'Dann schauen Sie sich unbedingt **LM Studio** an.' },
-                        { sender: 'marco', text: 'Damit laden Sie die "Gehirne" (Modelle) herunter und lassen sie komplett offline auf Ihrem eigenen PC laufen. Kein Internet nötig, keine Daten verlassen das Haus.' },
-                        { type: 'options', options: [
-                            { label: 'Brauche ich einen Super-Computer?', value: 'local_ai_hardware' },
-                            { label: 'Klingt gut. Wo gibt\'s das?', value: 'local_ai_link' }
-                        ]}
-                    ]
-                },
-                local_ai_hardware: {
-                    messages: [
-                        { sender: 'marco', text: 'Jein. Ein normaler Gaming-PC (mit Nvidia Grafikkarte) ist optimal.' },
-                        { sender: 'marco', text: 'Aber moderne MacBooks (M1/M2/M3) sind auch fantastisch dafür.' },
-                        { sender: 'marco', text: 'Für reine Text-KI reicht sogar ein guter Mittelklasse-Laptop. Es läuft dann nur etwas langsamer.' },
-                        { type: 'options', options: [
-                            { label: 'Okay, wo finde ich das?', value: 'local_ai_link' }
-                        ]}
-                    ]
-                },
-                local_ai_link: {
-                    messages: [
-                        { sender: 'marco', text: 'Das Tool ist kostenlos. Sie können es hier herunterladen: <a href="https://lmstudio.ai/" target="_blank">LM Studio Website</a>.' },
-                        { sender: 'marco', text: 'Tipp: Suchen Sie dort nach "Llama 3" oder "Mistral". Das sind tolle Einsteiger-Modelle.' },
-                        { type: 'options', options: [
-                            { label: 'Danke, schau ich mir an.', value: 'end' },
-                            { label: 'Zurück zur Auswahl', value: 'restart_topics' }
-                        ]}
-                    ]
-                },
-                energy: {
-                    messages: [
-                        { sender: 'gast', text: 'Und der Stromverbrauch?' },
-                        { sender: 'marco', text: 'Riesig. Ein KI-Bild kostet so viel Strom wie eine Handy-Ladung.' },
-                        { sender: 'marco', text: 'Man sollte es bewusst nutzen, nicht für jeden Quatsch.' }
-                    ]
-                }
-            }
-        }
-    };
+<body class="ki-page theme-light learning-chat-page">
+  <div id="ws-header"></div>
 
-    // --- LOGIK (ENGINE) ---
-    
-    let activePersona = null;
-    let messageQueue = [];
-    let isProcessing = false;
-    let currentTimeout = null;
+  <nav aria-label="Brotkrumen" class="breadcrumbs">
+    <div class="container breadcrumbs__container">
+      <ol class="breadcrumbs__list">
+        <li class="breadcrumbs__item"><a href="/index.html">Start</a></li>
+        <li class="breadcrumbs__item"><a href="/ki/index.html">Über KI</a></li>
+        <li aria-current="page" class="breadcrumbs__item">KI kennenlernen</li>
+      </ol>
+    </div>
+  </nav>
 
-    const overlay = document.getElementById('persona-overlay');
-    const chatBody = document.getElementById('chat-body');
-    const typingIndicator = document.getElementById('typing-indicator');
+  <main class="learning-chat-main" id="main-content" tabindex="-1">
+    <section class="learning-chat-intro" aria-labelledby="learning-chat-page-title">
+      <div class="learning-chat-intro__copy">
+        <p class="section-eyebrow">KI kennenlernen</p>
+        <h1 id="learning-chat-page-title">KI kennenlernen – direkt im Gespräch</h1>
+        <p>Schau dir kurze Praxisgespräche an und lerne dabei, wie moderne KI im Alltag benutzt wird. Du kannst links zwischen verschiedenen Lern-Chats wechseln und dich Stück für Stück durcharbeiten.</p>
+      </div>
+      <p class="learning-chat-simulation-note"><strong>Interaktive Lernsimulation</strong><span aria-hidden="true"> · </span>Es werden keine echten Daten übertragen.</p>
+    </section>
 
-    // 1. Start: Persona auswählen
-    function selectPersona(type) {
-        activePersona = PERSONAS[type];
-        
-        // UI anpassen
-        overlay.style.display = 'none'; // Overlay ausblenden
-        document.querySelector('.chat-header-name').innerHTML = 'Marco (Guide) für: ' + activePersona.name + ' <span class="status-dot"></span>';
+    <section class="learning-chat-layout" aria-label="Interaktiver KI-Lern-Chat">
+      <aside class="learning-chat-sidebar" id="learning-chat-sidebar" aria-label="Lern-Chats">
+        <div class="learning-chat-sidebar__head">
+          <div>
+            <span class="learning-chat-sidebar__eyebrow">Dein Rundgang</span>
+            <strong>Lern-Chats</strong>
+          </div>
+          <button class="learning-chat-sidebar__close" type="button" id="learning-chat-sidebar-close" aria-label="Lern-Chats schließen">×</button>
+        </div>
+        <nav id="learning-chat-nav" aria-label="Lern-Chats"></nav>
+        <div class="learning-chat-sidebar__footer">
+          <p>✓ markiert Chats, die du in dieser Browsersitzung vollständig angesehen hast.</p>
+        </div>
+      </aside>
 
-        // Begrüßung laden
-        // Wir klonen das Array, damit wir das Original nicht verändern
-        messageQueue = [...activePersona.greeting];
-        processQueue();
-    }
+      <div class="learning-chat-panel">
+        <header class="learning-chat-panel__head">
+          <button class="learning-chat-sidebar-toggle" type="button" id="learning-chat-sidebar-toggle" aria-controls="learning-chat-sidebar" aria-expanded="false">☰ Lern-Chats</button>
+          <div class="learning-chat-panel__title-wrap">
+            <p class="learning-chat-panel__eyebrow">Warenschmiede Lern-Chat</p>
+            <h2 id="learning-chat-title">KI kennenlernen</h2>
+            <p id="learning-chat-description"></p>
+          </div>
+          <span class="learning-chat-status" id="learning-chat-status" aria-live="polite">Bereit</span>
+        </header>
 
-    // 2. Queue abarbeiten (Nachricht für Nachricht)
-    function processQueue() {
-        if (messageQueue.length === 0) {
-            isProcessing = false;
-            return;
-        }
+        <div class="learning-chat-stream" id="learning-chat-stream" aria-live="polite" aria-relevant="additions"></div>
 
-        isProcessing = true;
-        const item = messageQueue.shift(); // Erstes Element holen
+        <div class="learning-chat-controls" aria-label="Simulation steuern">
+          <button type="button" id="learning-chat-pause">⏸ Pause</button>
+          <button type="button" id="learning-chat-next">▶ Weiter</button>
+          <button type="button" id="learning-chat-restart">↻ Neu starten</button>
+        </div>
 
-        if (item.type === 'options') {
-            // Wenn es Buttons sind -> Anzeigen und warten
-            showOptions(item.options);
-            isProcessing = false; 
-            return;
-        }
+        <div class="learning-chat-composer-wrap" aria-label="Simuliertes Eingabefeld">
+          <div class="learning-chat-attachment-slot" id="learning-chat-attachment-slot"></div>
+          <div class="learning-chat-composer-row">
+            <span aria-hidden="true" class="learning-chat-plus">＋</span>
+            <textarea id="learning-chat-composer" rows="1" readonly aria-label="Simulierte Eingabe" placeholder="Hier erscheint die Beispiel-Eingabe …"></textarea>
+            <span aria-hidden="true" class="learning-chat-send">↑</span>
+          </div>
+          <p class="learning-chat-composer-note">Nur Demo – hier kann nichts wirklich gesendet oder hochgeladen werden.</p>
+        </div>
+      </div>
+    </section>
+  </main>
 
-        // Wenn es eine Text-Nachricht ist -> Anzeigen mit Verzögerung
-        showTyping();
-        
-        // Berechne Lesegeschwindigkeit (längerer Text = längere Pause)
-        let delay = 600 + (item.text.length * 15);
-        if (item.sender === 'gast') delay = 500; // Gast tippt schneller
+  <div id="ws-footer"></div>
 
-        currentTimeout = setTimeout(() => {
-            hideTyping();
-            addMessageToChat(item);
-            
-            // Kleine Pause nach der Nachricht, dann weiter in der Queue
-            currentTimeout = setTimeout(processQueue, 400); 
-        }, delay);
-    }
-
-    // 3. Nachricht ins HTML einfügen
-    function addMessageToChat(msg) {
-        const div = document.createElement('div');
-        div.className = `message ${msg.sender === 'marco' ? 'host' : 'guest'}`;
-        // Markdown Bold zu HTML Bold
-        let txt = msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        div.innerHTML = txt; 
-        chatBody.appendChild(div);
-        scrollToBottom();
-    }
-
-    // 4. Buttons anzeigen
-    function showOptions(options) {
-        const div = document.createElement('div');
-        div.className = 'chat-controls';
-        
-        options.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = 'chat-btn';
-            btn.innerText = opt.label;
-            btn.onclick = () => handleOptionClick(opt.value, opt.label, div);
-            div.appendChild(btn);
-        });
-
-        chatBody.appendChild(div);
-        scrollToBottom();
-    }
-
-    // 5. Klick auf eine Option
-    function handleOptionClick(value, label, controlsDiv) {
-        // Buttons entfernen/deaktivieren (damit man nicht nochmal klickt)
-        controlsDiv.remove();
-        
-        // Anzeigen was der User geklickt hat (als Gast-Nachricht)
-        addMessageToChat({ sender: 'gast', text: label });
-
-        // Spezialfall: Neustart der Themen
-        if (value === 'restart_topics') {
-            // Suche das Greeting-Option-Objekt wieder raus
-            const greetingOptions = activePersona.greeting.find(m => m.type === 'options');
-            if (greetingOptions) {
-                messageQueue = [greetingOptions];
-                processQueue();
-            }
-            return;
-        }
-
-        // Normalfall: Thema laden
-        if (activePersona.topics[value]) {
-            const topicData = activePersona.topics[value];
-            
-            // Falls das Topic 'messages' hat (neues Format)
-            if (topicData.messages) {
-                 messageQueue = [...topicData.messages];
-            } else {
-                // Fallback
-                messageQueue = [...topicData];
-            }
-            
-            // Check ob am Ende Options kommen, sonst "Alles klar" anhängen
-            const lastMsg = messageQueue[messageQueue.length - 1];
-            if (!lastMsg || lastMsg.type !== 'options') {
-                 messageQueue.push({ type: 'options', options: [
-                    { label: 'Anderes Thema', value: 'restart_topics' }
-                 ]});
-            }
-            
-            processQueue();
-        }
-    }
-
-    // Hilfsfunktionen
-    function showTyping() {
-        typingIndicator.classList.add('visible');
-        scrollToBottom();
-    }
-
-    function hideTyping() {
-        typingIndicator.classList.remove('visible');
-    }
-
-    function scrollToBottom() {
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }
-    
-    // Neustart (Reload Page)
-    function restartChat() {
-        location.reload();
-    }
-  </script>
-<div id="ws-footer"></div>
-<script defer src="/assets/js/ws-layout.js"></script>
+  <script defer src="/assets/js/ki-learning-chat-data.js"></script>
+  <script defer src="/assets/js/ki-learning-chat.js"></script>
+  <script defer src="/assets/js/ws-layout.js"></script>
 </body>
 </html>
