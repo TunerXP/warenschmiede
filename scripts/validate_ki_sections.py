@@ -103,8 +103,8 @@ def main():
     ki_css = read("assets/css/ki-content.css")
     if ki_css is None or ".ki-detail-back" not in ki_css:
         errors.append("ki-content.css: Stil für .ki-detail-back fehlt")
-    elif "position: sticky" not in ki_css:
-        errors.append("ki-content.css: Zurück-Button ist nicht sticky")
+    elif "position: fixed" not in ki_css:
+        errors.append("ki-content.css: Zurück-Button ist nicht fixed")
 
     chat_css = read("assets/css/ki-chats.css")
     if chat_css is None or "scroll-margin-top" not in chat_css:
