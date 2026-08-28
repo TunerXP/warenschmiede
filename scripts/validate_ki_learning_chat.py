@@ -56,6 +56,17 @@ def main():
         for step_type in ("compose", "attachment", "send", "working", "assistant", "lesson", "link", "checkpoint"):
             if f'type: "{step_type}"' not in data and f"type: '{step_type}'" not in data:
                 errors.append(f"Schritttyp fehlt in Daten: {step_type}")
+        for needle in (
+            'defaultChatId: "intro"',
+            'group: "pinned"',
+            'group: "practice"',
+            'kind: "image"',
+            'kind: "pdf"',
+            "/ki/tutorials/screenshots-windows.html",
+            "/ki/faq.html",
+        ):
+            if needle not in data:
+                errors.append(f"Datenmodell: fehlt {needle}")
 
     if engine is None:
         errors.append("ki-learning-chat.js fehlt")
