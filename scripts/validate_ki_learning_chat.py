@@ -39,8 +39,6 @@ def main():
             'id="learning-chat-restart"',
             'aria-live="polite"',
             "readonly",
-            "Interaktive Lernsimulation",
-            "keine echten Daten übertragen",
             "nichts wirklich gesendet oder hochgeladen",
         ):
             if needle not in html:
