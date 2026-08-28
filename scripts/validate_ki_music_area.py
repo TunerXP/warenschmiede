@@ -7,6 +7,7 @@ LAYOUT = ROOT / "assets/js/ws-layout.js"
 OVERVIEW = ROOT / "ki-musik/index.html"
 SUNO = ROOT / "ki/musik/suno.html"
 PLAYER_JS = ROOT / "assets/js/ki-music-player.js"
+GLOBAL_PLAYER_JS = ROOT / "assets/js/ws-global-music-player.js"
 MUSIC_CSS = ROOT / "assets/css/ki-music-area.css"
 SITEMAP = ROOT / "sitemap.xml"
 
@@ -25,6 +26,7 @@ def main():
     overview = read(OVERVIEW)
     suno = read(SUNO)
     player = read(PLAYER_JS)
+    global_player = read(GLOBAL_PLAYER_JS)
     sitemap = read(SITEMAP)
 
     if "label: 'KI-Musik'" not in layout:
@@ -66,9 +68,12 @@ def main():
         if needle not in suno:
             errors.append(f"Player-Markup fehlt: {needle}")
 
+    if "window.WSGlobalMusicPlayer" not in player:
+        errors.append("Suno-Player ist nicht an den globalen Audiokanal angebunden")
+
     for needle in ("audio.play()", "audio.pause()", "loadedmetadata", "timeupdate", "volume"):
-        if needle not in player:
-            errors.append(f"Player-JS fehlt: {needle}")
+        if needle not in global_player:
+            errors.append(f"Globaler Player-JS fehlt: {needle}")
 
     for needle in (
         "https://help.suno.com/en/articles/9601665",
