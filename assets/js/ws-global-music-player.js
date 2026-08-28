@@ -23,7 +23,7 @@
   });
 
   let state = blankState();
-  let pendingPosition = 0;
+  let pendingPosition = null;
   let lastSavedSecond = -1;
 
   const readStoredState = () => {
@@ -93,12 +93,16 @@
   };
 
   const applyPendingPosition = () => {
-    if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
+    if (pendingPosition === null) return false;
+    if (!Number.isFinite(audio.duration) || audio.duration <= 0) return false;
     const target = Math.min(Math.max(0, pendingPosition), Math.max(0, audio.duration - 0.05));
     try {
       audio.currentTime = target;
+      pendingPosition = null;
+      return true;
     } catch (error) {
       // Manche Browser erlauben das Setzen erst etwas später. Der nächste Metadata-/Canplay-Lauf versucht es erneut.
+      return false;
     }
   };
 
@@ -180,7 +184,7 @@
     }
     audio.removeAttribute('src');
     audio.load();
-    pendingPosition = 0;
+    pendingPosition = null;
     lastSavedSecond = -1;
     state = blankState();
     sessionStorage.removeItem(STATE_KEY);
@@ -193,7 +197,12 @@
     const target = Math.max(0, Number(seconds) || 0);
     pendingPosition = target;
     if (Number.isFinite(audio.duration) && audio.duration > 0) {
-      audio.currentTime = Math.min(target, audio.duration);
+      try {
+        audio.currentTime = Math.min(target, audio.duration);
+        pendingPosition = null;
+      } catch (error) {
+        // Falls das Medium noch nicht seekbar ist, bleibt die Position für canplay/metadata vorgemerkt.
+      }
     }
     state.position = target;
     saveState();
@@ -253,7 +262,7 @@
   });
   audio.addEventListener('ended', () => {
     state.position = 0;
-    pendingPosition = 0;
+    pendingPosition = null;
     state.playing = false;
     state.resumeWanted = false;
     saveState();
