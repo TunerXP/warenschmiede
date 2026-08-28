@@ -97,8 +97,8 @@ def main():
                 errors.append(f"Suno-Seite: {term} fehlt")
         if 'class="ki-detail-back"' not in suno:
             errors.append("Suno: mitlaufender Zurück-Button fehlt")
-        if 'href="/ki/tools.html#suno"' not in suno:
-            errors.append("Suno: Rücksprung zu #suno fehlt")
+        if 'href="/ki-musik/"' not in suno:
+            errors.append("Suno: Rücksprung zur KI-Musik-Übersicht fehlt")
 
     ki_css = read("assets/css/ki-content.css")
     if ki_css is None or ".ki-detail-back" not in ki_css:

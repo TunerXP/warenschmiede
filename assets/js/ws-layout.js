@@ -72,12 +72,29 @@
         ] },
         { label: 'Arbeiten mit KI', accent: 'blue', links: [
           { label: 'KI im Alltag', href: 'ki/prompts.html', description: 'Natürlich fragen, Bilder nutzen und gemeinsam zum Ergebnis kommen.' },
-          { label: 'Aktuelle KI-Chats', href: 'ki/tools.html', description: 'ChatGPT, Gemini, Claude & Co. – Unterschiede und besondere Funktionen.' },
-          { label: 'KI-Musik mit Suno', href: 'ki/musik/suno.html', description: 'Songs erstellen, Ideen entwickeln und KI-Musik verstehen.' }
+          { label: 'Aktuelle KI-Chats', href: 'ki/tools.html', description: 'ChatGPT, Gemini, Claude & Co. – Unterschiede und besondere Funktionen.' }
         ] },
         { label: 'Sicherheit & Einordnung', accent: 'green', links: [
           { label: 'KI: Chancen & Risiken', href: 'ki/chancen-und-risiken.html', description: 'Nutzen, Grenzen und Stolperfallen.' },
           { label: 'KI-FAQ & Sicherheit', href: 'ki/faq.html', description: 'Häufige Fragen und Datenschutz-Gedanken.' }
+        ] }
+      ]
+    },
+    {
+      key: 'ki-musik', label: 'KI-Musik', type: 'mega',
+      description: 'KI-Musik verstehen, Suno kennenlernen und ein echtes Warenschmiede-Hörbeispiel ansehen.',
+      sections: [
+        { label: 'Entdecken', accent: 'violet', links: [
+          { label: 'KI-Musik im Überblick', href: 'ki-musik/', description: 'Vom Gedanken zum fertigen Song – Workflow, Beispiel und Einordnung.' },
+          { label: 'Hörbeispiel: Running Back To You', href: 'ki/musik/suno.html#hoerbeispiel', description: 'Song anhören und den dokumentierten Aufbau nachvollziehen.' }
+        ] },
+        { label: 'Mit Suno arbeiten', accent: 'blue', links: [
+          { label: 'KI-Musik mit Suno', href: 'ki/musik/suno.html', description: 'Suno, Studio 2.0 und die wichtigsten Funktionen praxisnah erklärt.' },
+          { label: 'Mein Suno-Profil', href: 'https://suno.com/@tunerxp', description: 'Öffentliches TunerXP-Profil bei Suno.' }
+        ] },
+        { label: 'Einordnung', accent: 'green', links: [
+          { label: 'Nutzung & Transparenz', href: 'ki-musik/#rechte', description: 'Paid-Plan-Rechte, Urheberrecht und offizielle Quellen.' },
+          { label: 'Meine Musik', href: 'ki-musik/#meine-musik', description: 'The Things That Stay als Vorgeschmack auf den späteren TunerXP-Musikbereich.' }
         ] }
       ]
     },
@@ -114,6 +131,7 @@
   const activeKey = (() => {
     if (currentPath.includes('/leistungen/')) return 'leistungen';
     if (currentPath.includes('/3d_druck/')) return '3d';
+    if (currentPath.includes('/ki-musik/') || currentPath.includes('/ki/musik/')) return 'ki-musik';
     if (currentPath.includes('/ki/')) return 'ki';
     if (currentPath.includes('/kontakt/') || currentPath.endsWith('/datenschutz.html')) return 'kontakt';
     if (currentPath.endsWith('/downloads.html')) return 'downloads';
