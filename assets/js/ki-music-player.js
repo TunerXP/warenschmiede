@@ -12,69 +12,91 @@
 
   if (!audio || !play || !progress || !current || !duration || !volume || !status) return;
 
-  /* Native Controls bleiben im HTML als No-JavaScript-Fallback erhalten.
-     Sobald dieser eigene Player läuft, übernimmt die Warenschmiede-Steuerung. */
-  audio.controls = false;
+  const TRACK = {
+    src: '/media/ki-musik/the-things-that-stay/audio/08-running-back-to-you.mp3',
+    title: 'Running Back To You',
+    album: 'The Things That Stay',
+  };
 
   const formatTime = seconds => {
-    if (!Number.isFinite(seconds)) return '–:––';
+    if (!Number.isFinite(seconds) || seconds < 0) return '–:––';
     const minutes = Math.floor(seconds / 60);
     const rest = Math.floor(seconds % 60).toString().padStart(2, '0');
     return `${minutes}:${rest}`;
   };
 
-  const syncPlayState = () => {
-    const playing = !audio.paused && !audio.ended;
-    play.textContent = playing ? '❚❚ Pause' : '▶ Abspielen';
+  const isThisTrack = state => state?.src === TRACK.src;
+
+  const render = state => {
+    const active = isThisTrack(state);
+    const total = active && Number.isFinite(state.duration) ? state.duration : 0;
+    const position = active && Number.isFinite(state.position) ? state.position : 0;
+    const playing = active && Boolean(state.actualPlaying);
+
+    current.textContent = formatTime(position);
+    duration.textContent = total > 0 ? formatTime(total) : '–:––';
+    progress.disabled = !active || total <= 0;
+    progress.value = total > 0 ? String((position / total) * 100) : '0';
+    if (active && Number.isFinite(state.volume)) volume.value = String(state.volume);
+
+    play.textContent = playing ? '❚❚ Pause' : active && state.resumeWanted ? '▶ Weiterhören' : '▶ Abspielen';
     play.setAttribute('aria-label', playing ? 'Running Back To You pausieren' : 'Running Back To You abspielen');
-  };
 
-  const syncMetadata = () => {
-    duration.textContent = formatTime(audio.duration);
-    progress.disabled = !Number.isFinite(audio.duration) || audio.duration <= 0;
-  };
-
-  const clearStatus = () => {
-    status.textContent = '';
-  };
-
-  play.addEventListener('click', async () => {
-    clearStatus();
-    try {
-      if (audio.paused || audio.ended) await audio.play();
-      else audio.pause();
-    } catch (error) {
-      status.textContent = 'Die Audiodatei konnte nicht gestartet werden. Der MP3-Download bleibt verfügbar.';
+    if (active && state.resumeWanted && !playing) {
+      status.textContent = 'Falls der Browser das automatische Fortsetzen blockiert: einfach hier oder oben im Menü auf Weiterhören klicken.';
+    } else {
+      status.textContent = '';
     }
-    syncPlayState();
-  });
+  };
 
-  audio.addEventListener('loadedmetadata', syncMetadata);
+  const bindGlobalPlayer = () => {
+    const player = window.WSGlobalMusicPlayer;
+    if (!player || root.dataset.globalPlayerBound === 'true') return;
+    root.dataset.globalPlayerBound = 'true';
 
-  audio.addEventListener('timeupdate', () => {
-    current.textContent = formatTime(audio.currentTime);
-    progress.value = audio.duration ? String((audio.currentTime / audio.duration) * 100) : '0';
-  });
+    /* Das lokale Audio-Element bleibt im HTML als No-JavaScript-Fallback erhalten.
+       Mit JavaScript übernimmt der globale Warenschmiede-Player den einzigen Audiokanal. */
+    audio.pause();
+    audio.controls = false;
 
-  progress.addEventListener('input', () => {
-    if (!audio.duration) return;
-    audio.currentTime = (Number(progress.value) / 100) * audio.duration;
-  });
+    play.addEventListener('click', async () => {
+      const state = player.getState();
+      if (isThisTrack(state) && state.actualPlaying) {
+        player.pause();
+        return;
+      }
 
-  volume.addEventListener('input', () => {
-    audio.volume = Number(volume.value);
-  });
+      if (!isThisTrack(state)) {
+        player.loadTrack(TRACK, { volume: Number(volume.value) });
+      }
 
-  audio.addEventListener('play', syncPlayState);
-  audio.addEventListener('pause', syncPlayState);
-  audio.addEventListener('ended', syncPlayState);
-  audio.addEventListener('canplay', clearStatus);
-  audio.addEventListener('error', () => {
-    status.textContent = 'Die Audiodatei ist gerade nicht erreichbar. Du kannst es später erneut versuchen oder den Downloadlink verwenden.';
-    syncPlayState();
-  });
+      const started = await player.play();
+      if (!started) {
+        status.textContent = 'Der Browser hat das Starten blockiert. Bitte noch einmal auf Weiterhören klicken.';
+      }
+    });
 
-  progress.disabled = true;
-  if (audio.readyState >= 1) syncMetadata();
-  syncPlayState();
+    progress.addEventListener('input', () => {
+      const state = player.getState();
+      if (!isThisTrack(state) || !state.duration) return;
+      player.seek((Number(progress.value) / 100) * state.duration);
+    });
+
+    volume.addEventListener('input', () => {
+      player.setVolume(Number(volume.value));
+    });
+
+    render(player.getState());
+  };
+
+  document.addEventListener('ws:music-state', event => render(event.detail));
+  document.addEventListener('ws:global-player-ready', bindGlobalPlayer, { once: true });
+
+  if (window.WSGlobalMusicPlayer) bindGlobalPlayer();
+  else {
+    progress.disabled = true;
+    play.addEventListener('click', () => {
+      if (!window.WSGlobalMusicPlayer) status.textContent = 'Der globale Musikplayer wird noch geladen …';
+    }, { once: true });
+  }
 })();
