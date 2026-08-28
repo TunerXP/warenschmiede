@@ -29,6 +29,11 @@
     play.setAttribute('aria-label', playing ? 'Running Back To You pausieren' : 'Running Back To You abspielen');
   };
 
+  const syncMetadata = () => {
+    duration.textContent = formatTime(audio.duration);
+    progress.disabled = !Number.isFinite(audio.duration) || audio.duration <= 0;
+  };
+
   const clearStatus = () => {
     status.textContent = '';
   };
@@ -44,10 +49,7 @@
     syncPlayState();
   });
 
-  audio.addEventListener('loadedmetadata', () => {
-    duration.textContent = formatTime(audio.duration);
-    progress.disabled = !Number.isFinite(audio.duration) || audio.duration <= 0;
-  });
+  audio.addEventListener('loadedmetadata', syncMetadata);
 
   audio.addEventListener('timeupdate', () => {
     current.textContent = formatTime(audio.currentTime);
@@ -73,5 +75,6 @@
   });
 
   progress.disabled = true;
+  if (audio.readyState >= 1) syncMetadata();
   syncPlayState();
 })();
