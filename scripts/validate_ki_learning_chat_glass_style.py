@@ -4,12 +4,14 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-CSS = ROOT / "assets/css/ki-learning-chat.css"
+BASE_CSS = ROOT / "assets/css/ki-learning-chat.css"
+GLASS_CSS = ROOT / "assets/css/ki-learning-chat-glass.css"
+CHAT_HTML = ROOT / "ki/chat.html"
 
 
 def block(css: str, selector: str):
-    match = re.search(re.escape(selector) + r"\s*\{(?P<body>.*?)\}", css, re.S)
-    return match.group("body") if match else None
+    matches = list(re.finditer(re.escape(selector) + r"\s*\{(?P<body>.*?)\}", css, re.S))
+    return matches[-1].group("body") if matches else None
 
 
 def has_radius(body: str | None, minimum: int):
@@ -20,8 +22,20 @@ def has_radius(body: str | None, minimum: int):
 
 
 def main():
-    css = CSS.read_text(encoding="utf-8")
     errors = []
+
+    if not GLASS_CSS.exists():
+        print("KI-Lern-Chat-Glasstil: FEHLER")
+        print("- assets/css/ki-learning-chat-glass.css fehlt")
+        return 1
+
+    html = CHAT_HTML.read_text(encoding="utf-8")
+    if "/assets/css/ki-learning-chat-glass.css" not in html:
+        errors.append("chat.html bindet die Glasstil-Schicht nicht ein")
+
+    base_css = BASE_CSS.read_text(encoding="utf-8")
+    glass_css = GLASS_CSS.read_text(encoding="utf-8")
+    css = base_css + "\n" + glass_css
 
     layout = block(css, ".learning-chat-layout")
     sidebar = block(css, ".learning-chat-sidebar")
@@ -61,7 +75,7 @@ def main():
         errors.append("Simuliertes Eingabefeld soll weich gerundet sein")
 
     # Scroll-Verhalten aus PR #463 darf beim Styling nicht verloren gehen.
-    if layout is None or not re.search(r"height\s*:\s*clamp\(", layout):
+    if layout is None or not re.search(r"height\s*:\s*clamp\(", base_css):
         errors.append("Feste viewportabhängige Chat-Höhe fehlt")
     if stream is None or not re.search(r"overflow-y\s*:\s*auto", stream):
         errors.append("Innerer Scrollbereich des Nachrichtenverlaufs fehlt")
