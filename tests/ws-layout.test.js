@@ -50,6 +50,16 @@ test('desktop and mobile navigation render with an exact root start link', () =>
   assert.match(header, /href="\/downloads\.html"/);
 });
 
+test('KI navigation offers the overview as the first entry point', () => {
+  const { header } = renderLayout('/ki/chat.html');
+  const kiMenu = header.match(/<div class="mega-panel" id="desktop-menu-ki">[\s\S]*?<\/section><\/div><\/div><\/div>/)?.[0] || '';
+
+  assert.match(kiMenu, /<strong>KI-Übersicht<\/strong><span>Der klare Einstieg: verstehen, sicher nutzen und den passenden Bereich finden\.<\/span>/);
+  assert.match(kiMenu, /href="\/ki\/"/);
+  assert.ok(kiMenu.indexOf('KI-Übersicht') < kiMenu.indexOf('KI kennenlernen'));
+  assert.match(header, /mobile-menu-ki[\s\S]*?href="\/ki\/"[\s\S]*?<span>KI-Übersicht<\/span>/);
+});
+
 test('global edge buttons use a rounded skewed surface and keep all accent variants', () => {
   const buttonRules = globalStyles.slice(
     globalStyles.indexOf(':is(.ws-edge-button,.edge-button,.mini-edge){'),
