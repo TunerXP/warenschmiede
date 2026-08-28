@@ -85,6 +85,7 @@
       description: 'Praxisnah erklären, ohne Hype — kurze Einstiege, klare Wege.',
       sections: [
         { label: 'Einsteigen', accent: 'violet', links: [
+          { label: 'KI-Übersicht', href: 'ki/', description: 'Der klare Einstieg: verstehen, sicher nutzen und den passenden Bereich finden.' },
           { label: 'KI kennenlernen', href: 'ki/chat.html', description: 'Ein interaktiver Lern-Chat zeigt dir KI in der Praxis.' },
           { label: 'Erste Schritte & Tutorials', href: 'ki/tutorials/', description: 'Screenshots, Dateien und praktische Grundlagen Schritt für Schritt.' }
         ] },
