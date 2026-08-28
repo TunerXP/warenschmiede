@@ -53,7 +53,7 @@
   display: grid;
   grid-template-columns: minmax(230px, 290px) minmax(0, 1fr);
   width: 100%;
-  min-height: clamp(640px, calc(100vh - 210px), 900px);
+  height: clamp(640px, calc(100vh - 210px), 900px);
   border: 1px solid rgba(15,23,42,.12);
   background: #fff;
   box-shadow: 0 18px 50px rgba(31,58,85,.10);
@@ -196,8 +196,10 @@
 
 .learning-chat-panel {
   min-width: 0;
+  min-height: 0;
   display: grid;
   grid-template-rows: auto minmax(0,1fr) auto auto;
+  overflow: hidden;
   background:
     radial-gradient(circle at 85% 5%, rgba(45,126,255,.055), transparent 280px),
     #fff;
@@ -243,8 +245,9 @@
 }
 
 .learning-chat-stream {
-  min-height: 360px;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: clamp(20px, 3vw, 42px) clamp(16px, 4vw, 58px);
   scroll-behavior: smooth;
 }
