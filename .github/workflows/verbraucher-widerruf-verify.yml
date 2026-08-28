@@ -1,0 +1,15 @@
+name: Verbraucher Widerruf Verify
+
+on:
+  push:
+    branches:
+      - legal/verbraucher-widerruf
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+      - name: Verbraucherinfos prüfen
+        run: python scripts/validate_verbraucher_widerruf.py
