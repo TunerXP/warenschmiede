@@ -16,6 +16,7 @@ $websiteDirectories = @(
     'download',
     'druck',
     'ki',
+    'ki-musik',
     'kontakt',
     'leistungen',
     'tools',

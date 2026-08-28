@@ -17,6 +17,11 @@ Das Build-Skript arbeitet mit einer festen Allowlist, entfernt Entwicklungs- und
 Reportdateien und validiert verbotene Ordner. Es stellt keine Serververbindung
 her und enthält keine Zugangsdaten.
 
+Der öffentliche Website-Bereich `/ki-musik/` gehört zur Deploy-Allowlist und wird
+bei jedem Build nach `_deploy/ki-musik/` übernommen. Die großen Musikdateien unter
+`/media/ki-musik/` werden dagegen separat auf IONOS verwaltet und sind nicht Teil
+des Repository-Deploys.
+
 ## Automatisches Deploy-Inventar
 
 Nach Kopieren, Bereinigen und Validieren erstellt `build_deploy.ps1` das
