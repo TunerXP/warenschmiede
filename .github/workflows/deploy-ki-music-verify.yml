@@ -13,3 +13,12 @@ jobs:
         uses: actions/checkout@v4
       - name: Deploy-Allowlist prüfen
         run: python scripts/validate_deploy_ki_music.py
+      - name: Deploy-Paket bauen
+        shell: pwsh
+        run: ./build_deploy.ps1
+      - name: KI-Musik im Deploy-Paket prüfen
+        shell: pwsh
+        run: |
+          if (-not (Test-Path -LiteralPath '_deploy/ki-musik/index.html' -PathType Leaf)) {
+            throw 'Die Datei _deploy/ki-musik/index.html fehlt im erzeugten Deploy-Paket.'
+          }
