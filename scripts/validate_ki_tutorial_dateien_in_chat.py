@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,13 +35,15 @@ def main():
             "Dateien in einen KI-Chat einfügen",
             "Drag & Drop",
             "Keine Passwörter",
-            "vertrauliche Firmenunterlagen",
             "personenbezogenen Daten",
             "Alle KI-Tutorials",
         ]
         for text in required_text:
             if text not in page:
                 errors.append(f"Tutorialseite enthält Pflichttext nicht: {text}")
+
+        if not re.search(r"vertraulich\w*\s+Firmenunterlagen", page, re.IGNORECASE):
+            errors.append("Tutorialseite braucht einen Hinweis zu vertraulichen Firmenunterlagen")
 
         if page.count('class="tutorial-step"') < 6:
             errors.append("Tutorialseite braucht mindestens sechs nummerierte Schritte")
