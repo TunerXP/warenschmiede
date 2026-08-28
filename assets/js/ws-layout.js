@@ -90,7 +90,7 @@
         ] },
         { label: 'Mit Suno arbeiten', accent: 'blue', links: [
           { label: 'KI-Musik mit Suno', href: 'ki/musik/suno.html', description: 'Suno, Studio 2.0 und die wichtigsten Funktionen praxisnah erklärt.' },
-          { label: 'Mein Suno-Profil', href: 'https://suno.com/@tunerxp', description: 'Öffentliches TunerXP-Profil bei Suno.' }
+          { label: 'Mein Suno-Profil', href: 'https://suno.com/@tunerxp', newTab: true, description: 'Öffentliches TunerXP-Profil bei Suno.' }
         ] },
         { label: 'Einordnung', accent: 'green', links: [
           { label: 'Nutzung & Transparenz', href: 'ki-musik/#rechte', description: 'Paid-Plan-Rechte, Urheberrecht und offizielle Quellen.' },
@@ -150,14 +150,15 @@
     : '';
   const isCurrentPage = (href) => new URL(link(href), window.location.origin).pathname.toLowerCase() === currentPath;
   const currentAttribute = (href) => isCurrentPage(href) ? ' aria-current="page"' : '';
+  const newTabAttribute = item => item.newTab ? ' target="_blank" rel="noopener noreferrer"' : '';
   const renderDesktopLink = (item) => `<a class="nav-link${item.start ? ' nav-start' : ''}${item.key === activeKey ? ' is-active' : ''}"${currentAttribute(item.href)} href="${link(item.href)}">${item.label}</a>`;
   const renderMegaLink = source => {
     const item = catalogItem(source);
-    return `<a data-tool-id="${item.toolId || ''}" class="mega-link${item.icon ? ' mega-link--with-icon' : ''}" href="${link(item.href)}"${currentAttribute(item.href)}>${iconMarkup(item)}<span class="ws-nav-tool-copy"><strong>${item.label}</strong><span>${item.description}</span></span></a>`;
+    return `<a data-tool-id="${item.toolId || ''}" class="mega-link${item.icon ? ' mega-link--with-icon' : ''}" href="${link(item.href)}"${currentAttribute(item.href)}${newTabAttribute(item)}>${iconMarkup(item)}<span class="ws-nav-tool-copy"><strong>${item.label}</strong><span>${item.description}</span></span></a>`;
   };
   const renderMobileLink = source => {
     const item = catalogItem(source);
-    return `<a data-tool-id="${item.toolId || ''}"${item.icon ? ' class="mobile-tool-link"' : ''} href="${link(item.href)}"${currentAttribute(item.href)}>${iconMarkup(item)}<span>${item.label}${item.note ? ` <span class="ws-deprecation-note">${item.note}</span>` : ''}</span></a>`;
+    return `<a data-tool-id="${item.toolId || ''}"${item.icon ? ' class="mobile-tool-link"' : ''} href="${link(item.href)}"${currentAttribute(item.href)}${newTabAttribute(item)}>${iconMarkup(item)}<span>${item.label}${item.note ? ` <span class="ws-deprecation-note">${item.note}</span>` : ''}</span></a>`;
   };
 
   const renderDesktopItem = (item) => {

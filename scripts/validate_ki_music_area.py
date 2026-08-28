@@ -35,6 +35,10 @@ def main():
         errors.append("Suno hängt noch im Über-KI-Menü")
     if "currentPath.includes('/ki-musik/')" not in layout or "currentPath.includes('/ki/musik/')" not in layout:
         errors.append("Aktivzustand für beide Musik-Pfade fehlt")
+    if "{ label: 'Mein Suno-Profil', href: 'https://suno.com/@tunerxp', newTab: true" not in layout:
+        errors.append("Suno-Profil ist nicht als neuer Tab markiert")
+    if "item.newTab ? ' target=\"_blank\" rel=\"noopener noreferrer\"' : ''" not in layout:
+        errors.append("Navigation rendert neue Tabs nicht sicher")
 
     if not OVERVIEW.exists():
         errors.append("ki-musik/index.html fehlt")
