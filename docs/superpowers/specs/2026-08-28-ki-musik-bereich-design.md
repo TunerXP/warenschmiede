@@ -55,6 +55,17 @@ Bestehende Seite bleibt erhalten:
 
 Dadurch bleiben bestehende Links auf die Suno-Seite gültig. Es wird keine Weiterleitung und keine Umbenennung der bestehenden Suno-Datei benötigt.
 
+## Heimat der Suno-Seite
+
+Die Suno-Seite gehört nach dem Umbau sichtbar zum neuen Bereich **KI-Musik**:
+
+- Breadcrumb: **Start → KI-Musik → KI-Musik mit Suno**
+- fester Button **← Zur Übersicht** führt auf `/ki-musik/`
+- `KI-Musik` ist im globalen Menü aktiv
+- die bestehende Suno-Karte bzw. der Querverweis unter **Aktuelle KI-Chats** darf erhalten bleiben, ist aber nicht mehr die primäre Übersichtsseite für Suno
+
+Damit gibt es trotz bestehender Querverweise nur ein klares „Zuhause“ für die Suno-Seite.
+
 ## Neue Seite `/ki-musik/`
 
 Die Seite ist eine ruhige, moderne Einstiegsseite und kein Albumarchiv.
@@ -281,6 +292,8 @@ Neue automatisierbare Prüfungen sollen mindestens sicherstellen:
 - Suno-Link wurde aus `Über KI` entfernt
 - `/ki-musik/` existiert
 - Suno-Seite enthält `#hoerbeispiel`
+- Suno-Breadcrumb verweist auf den neuen KI-Musik-Bereich
+- Suno-Button **← Zur Übersicht** führt auf `/ki-musik/`
 - alle drei erwarteten Medienpfade sind im Markup korrekt referenziert
 - Rechte-Links sind vorhanden
 - Sitemap enthält `/ki-musik/`
