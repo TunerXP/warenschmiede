@@ -30,6 +30,24 @@
     document.head.append(script);
   }
 
+  function ensureGlobalMusicPlayerAssets() {
+    if (!document.createElement || !document.head) return;
+
+    if (!document.querySelector('link[data-ws-global-music-player]')) {
+      const stylesheet = document.createElement('link');
+      stylesheet.rel = 'stylesheet';
+      stylesheet.href = '/assets/css/ws-global-music-player.css';
+      stylesheet.dataset.wsGlobalMusicPlayer = 'style';
+      document.head.append(stylesheet);
+    }
+
+    if (window.WSGlobalMusicPlayer || document.querySelector('script[data-ws-global-music-player]')) return;
+    const script = document.createElement('script');
+    script.src = '/assets/js/ws-global-music-player.js';
+    script.dataset.wsGlobalMusicPlayer = 'script';
+    document.head.append(script);
+  }
+
   const NAVIGATION = [
     { key: 'start', label: 'Start', href: '/', start: true },
     { key: 'downloads', label: 'Downloads', href: 'downloads.html' },
@@ -183,6 +201,13 @@
   const header = `<header class="topbar" id="top">
     <a aria-label="Warenschmiede Start" class="brand brand-wide-transparent" href="/"><img alt="Warenschmiede Logo" class="brand-wide-transparent-logo" src="${link('assets/img/warenschmiede-logo-wide-clean-900.png')}"></a>
     <nav aria-label="Hauptnavigation" class="desktop-nav">${NAVIGATION.map(renderDesktopItem).join('')}</nav>
+    <div class="ws-global-player" data-ws-global-player hidden role="group" aria-label="Musikwiedergabe">
+      <div class="ws-global-player__copy"><span class="ws-global-player__title" data-ws-global-title>Musik</span><span class="ws-global-player__status" data-ws-global-status aria-live="polite"></span></div>
+      <div class="ws-global-player__controls">
+        <button class="ws-global-player__control" data-ws-global-play type="button" aria-label="Musik abspielen">▶</button>
+        <button class="ws-global-player__control ws-global-player__control--stop" data-ws-global-stop type="button" aria-label="Musik stoppen">■</button>
+      </div>
+    </div>
     <button aria-controls="mobile" aria-expanded="false" aria-label="Menü öffnen" class="burger" id="burger" type="button">☰</button>
   </header>
   <aside aria-label="Mobile Navigation" aria-hidden="true" class="mobile" id="mobile"><div class="mobile-head"><b>Warenschmiede</b><button aria-label="Menü schließen" id="close" type="button">×</button></div>${NAVIGATION.map(renderMobileItem).join('')}</aside>
@@ -192,7 +217,10 @@
 
   const headerTarget = document.getElementById('ws-header');
   const footerTarget = document.getElementById('ws-footer');
-  if (headerTarget) headerTarget.innerHTML = header;
+  if (headerTarget) {
+    headerTarget.innerHTML = header;
+    ensureGlobalMusicPlayerAssets();
+  }
   if (footerTarget) footerTarget.innerHTML = footer;
   ensureToolCatalog(loaded => {
     if (!loaded) return;
