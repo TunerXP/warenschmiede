@@ -19,4 +19,21 @@ jobs:
         run: |
           node --check assets/js/ws-layout.js
           node --check assets/js/ki-music-player.js
-          if [ -f assets/js/ws-global-music-player.js ]; then node --check assets/js/ws-global-music-player.js; fi
+          node --check assets/js/ws-global-music-player.js
+      - name: Deploy-Paket bauen
+        shell: pwsh
+        run: ./build_deploy.ps1
+      - name: Globale Player-Dateien im Deploy prüfen
+        shell: pwsh
+        run: |
+          $required = @(
+            '_deploy/assets/js/ws-global-music-player.js',
+            '_deploy/assets/css/ws-global-music-player.css',
+            '_deploy/assets/js/ws-layout.js',
+            '_deploy/assets/js/ki-music-player.js'
+          )
+          foreach ($path in $required) {
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+              throw "Deploy-Datei fehlt: $path"
+            }
+          }
