@@ -19,6 +19,8 @@ Auf breiten Bildschirmen besteht die Oberfläche aus zwei Bereichen:
 
 Beim Verkleinern des Browserfensters passt sich das Layout fließend an. Auf kleinen Displays verschwindet die linke Spalte hinter einem kompakten „Lern-Chats“-Schalter und der Chat nutzt die volle Breite.
 
+Beim ersten Öffnen ist **„Einstieg – Was kann KI eigentlich?“** vorausgewählt und beginnt nach einer kurzen, unaufdringlichen Startpause automatisch. Der Besucher kann jederzeit pausieren, fortsetzen oder einen anderen Lern-Chat auswählen.
+
 Oben bleibt die normale Warenschmiede-Navigation erhalten. Direkt im Lern-Chat steht sichtbar, aber dezent:
 
 > Interaktive Lernsimulation · Es werden keine echten Daten übertragen.
@@ -109,6 +111,8 @@ Im Chat stehen folgende Steuerungen bereit:
 
 Beim Wechsel zu einem anderen Lern-Chat startet dessen Ablauf von vorn.
 
+Die Eingabezeile sieht bewusst wie ein moderner KI-Composer aus, ist in Version 1 aber **keine echte freie Texteingabe**. Text und Anhänge werden ausschließlich durch die Lernsimulation erzeugt. So kann niemand versehentlich glauben, dort echte Dateien oder vertrauliche Inhalte an eine KI zu senden.
+
 Bereits vollständig angesehene Lern-Chats erhalten in der linken Navigation ein kleines `✓`.
 
 Der Fortschritt wird nur mit `sessionStorage` für die aktuelle Browsersitzung gespeichert. Es gibt keine Datenbank, kein Nutzerkonto und keine dauerhafte Speicherung.
@@ -147,7 +151,7 @@ Jeder Lern-Chat besitzt mindestens:
 - kurze Beschreibung
 - geordnete Liste von Schritten
 
-Ein Schritt enthält einen Typ und die dafür nötigen Daten, zum Beispiel Text, Anhangerkennung, Dateiname, optionale Vorschau, Lernhinweis oder Ziel-Link.
+Ein Schritt enthält einen Typ und die dafür nötigen Daten, zum Beispiel Text, Anhangsart, Dateiname, optionale Vorschau, Lernhinweis oder Ziel-Link.
 
 Der Chat-Motor kennt nur die unterstützten Schritttypen. Inhalte werden nicht fest in den Motor programmiert.
 
