@@ -1,0 +1,19 @@
+name: KI Music Verify
+
+on:
+  push:
+    branches:
+      - feature/ki-musik-bereich
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+      - name: KI-Musik und bestehende KI-Bereiche prüfen
+        run: |
+          python scripts/validate_ki_music_area.py
+          python scripts/validate_ki_sections.py
+          python scripts/validate_ki_learning_chat.py
+          python scripts/validate_ki_tutorial_pdf_verstehen.py
