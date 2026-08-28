@@ -1,0 +1,15 @@
+name: Rechtliches 2026 Verify
+
+on:
+  push:
+    branches:
+      - legal/rechtliches-2026
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+      - name: Rechtliches 2026 prüfen
+        run: python scripts/validate_rechtliches_2026.py
