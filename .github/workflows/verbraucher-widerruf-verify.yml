@@ -16,7 +16,8 @@ jobs:
       - name: Bestehende Rechtliches-Prüfung
         run: python scripts/validate_rechtliches_2026.py
       - name: Sitemap als XML prüfen
-        run: python -c "import xml.etree.ElementTree as ET; ET.parse('sitemap.xml'); print('sitemap.xml: OK')"
+        run: |
+          python -c "import xml.etree.ElementTree as ET; ET.parse('sitemap.xml'); print('sitemap.xml OK')"
       - name: Deploy-Paket bauen
         shell: pwsh
         run: ./build_deploy.ps1
