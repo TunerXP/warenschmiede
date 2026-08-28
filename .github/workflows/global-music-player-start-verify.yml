@@ -1,0 +1,15 @@
+name: Global Music Player Start Verify
+
+on:
+  push:
+    branches:
+      - fix/global-music-player-start
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+      - name: Runtime-Regression prüfen
+        run: node scripts/test_global_music_player_runtime.js
