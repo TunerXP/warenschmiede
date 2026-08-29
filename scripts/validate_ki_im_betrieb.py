@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import re
 import sys
 
 
@@ -35,14 +36,18 @@ def main():
             errors.append(f"Pflichtinhalt fehlt: {required}")
     if html.count("<h1") != 1:
         errors.append("Seite braucht genau eine H1")
-    if html.count("<ol class=\"ki-workplace-rules\">") != 1 or html.count("<li>") < 18:
-        errors.append("Druckvorlage enthält nicht genau die erwartete Regeln-Struktur")
+    rules_match = re.search(r'<ol class="ki-workplace-rules">(.*?)</ol>', html, re.DOTALL)
+    rules = re.findall(r'<li>(.*?)</li>', rules_match.group(1), re.DOTALL) if rules_match else []
+    if len(rules) != 10:
+        errors.append("Druckvorlage enthält nicht genau zehn Regeln")
     for forbidden in ("WESTA", "rechtssicher", "zertifiziert", "Compliance-Garantie"):
         if forbidden.lower() in html.lower():
             errors.append(f"Nicht neutrale Aussage gefunden: {forbidden}")
     css = (ROOT / "assets" / "css" / "ki-workplace.css").read_text(encoding="utf-8")
     if "@media print" not in css or ".ki-workplace-print" not in css:
         errors.append("Druckstil fehlt")
+    if ".site-main > :not(.ki-workplace-print)" not in css:
+        errors.append("Druckansicht blendet nicht alle Nicht-Vorlagenbereiche aus")
 
     if errors:
         print("KI im Betrieb: FEHLER")
