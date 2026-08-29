@@ -96,7 +96,7 @@
         ] },
         { label: 'Sicherheit & Einordnung', accent: 'green', links: [
           { label: 'KI: Chancen & Risiken', href: 'ki/chancen-und-risiken.html', description: 'Nutzen, Grenzen und Stolperfallen.' },
-          { label: 'KI-FAQ & Sicherheit', href: 'ki/faq.html', description: 'Häufige Fragen und Datenschutz-Gedanken.' }
+          { label: 'KI sicher nutzen', href: 'ki/faq.html', description: 'Datenschutz, Ergebnisse und Arbeit ehrlich einordnen.' }
         ] }
       ]
     },

@@ -554,3 +554,32 @@ body.ki-page .ki-detail-back:focus-visible {
 .ki-praxis-step{height:100%;display:list-item;padding:var(--space-4);border-left:4px solid var(--accent);background:var(--card);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
 .ki-praxis-step h3,.ki-praxis-step p,.ki-praxis-card h3,.ki-praxis-card p{margin:0}
 .ki-content-status{margin:0;color:var(--text-muted);font-size:.9rem}
+
+/* KI-Lexikon und sichere Nutzung */
+.ki-term{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:clamp(1.25rem,4vw,4rem);align-items:center;padding-block:clamp(1.5rem,4vw,3.5rem);border-top:1px solid var(--border)}
+.ki-term--reverse .ki-term__visual{order:2}
+.ki-term__visual{margin:0;overflow:hidden;background:var(--surface);border:1px solid var(--border);box-shadow:0 18px 40px -30px rgba(15,23,42,.45)}
+.ki-term__visual img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.ki-term__content{max-width:64ch}
+.ki-term__content h2{margin:.1rem 0 .8rem;font-size:clamp(1.75rem,4vw,2.65rem);line-height:1.14}
+.ki-term__content p{margin:.65rem 0;color:var(--text-muted)}
+.ki-term__content strong{color:var(--text)}
+.ki-term-teaser-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-4)}
+.ki-term-teaser{position:relative;display:block;overflow:hidden;border:1px solid var(--border);background:var(--surface);color:var(--text);text-decoration:none;box-shadow:0 12px 26px -24px rgba(15,23,42,.55)}
+.ki-term-teaser img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;transition:transform .22s ease}
+.ki-term-teaser span{display:block;padding:.8rem 1rem;font-weight:800;font-size:1.05rem}
+.ki-term-teaser:hover img,.ki-term-teaser:focus-visible img{transform:scale(1.035)}
+.ki-term-teaser:focus-visible{outline:3px solid rgba(209,42,42,.28);outline-offset:3px}
+.ki-safety-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.ki-safety-card{height:100%}
+.ki-safety-card h3{margin:.1rem 0 .6rem;font-size:1.12rem}
+.ki-safety-card p{margin:0;color:var(--text-muted)}
+.ki-answer-lede{margin:0;max-width:74ch;font-size:1.18rem;line-height:1.65;color:var(--text)}
+.ki-work-shift{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--border);background:var(--surface)}
+.ki-work-shift__item{padding:clamp(1rem,3vw,1.6rem);border-right:1px solid var(--border)}
+.ki-work-shift__item:last-child{border-right:0}
+.ki-work-shift__item h3{margin:0 0 .55rem;font-size:1.1rem}
+.ki-work-shift__item p{margin:0;color:var(--text-muted)}
+.ki-source-note{margin:0;font-size:.92rem;color:var(--text-muted)}
+.ki-source-note a{color:var(--accent);font-weight:700}
+@media(max-width:760px){.ki-term{grid-template-columns:1fr}.ki-term--reverse .ki-term__visual{order:0}.ki-term-teaser-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ki-work-shift{grid-template-columns:1fr}.ki-work-shift__item{border-right:0;border-bottom:1px solid var(--border)}.ki-work-shift__item:last-child{border-bottom:0}}
