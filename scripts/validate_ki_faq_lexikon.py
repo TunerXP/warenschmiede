@@ -48,13 +48,27 @@ def main() -> int:
     term_cards = re.findall(r'<article class="ki-term(?: ki-term--reverse)?"', lexicon)
     if len(term_cards) != 10:
         errors.append(f"KI-Lexikon: genau zehn Top-Begriff-Karten erwartet (gefunden: {len(term_cards)})")
-    image_sources = re.findall(r'src="(/assets/img/ki/begriffe/[^\"]+\.png)"', lexicon)
+    image_sources = re.findall(r'src="(/assets/img/ki/begriffe/(?:0[1-9]|10)-[^\"]+\.png)"', lexicon)
     expected_images = {f"/assets/img/ki/begriffe/{number:02d}-{name}.png" for number, name in (
         (1, "prompt"), (2, "generative-ki"), (3, "ki-modell"), (4, "halluzination"), (5, "kontext"),
         (6, "multimodale-ki"), (7, "ki-agent"), (8, "rag"), (9, "vibe-coding"), (10, "datenschutz"),
     )}
     if set(image_sources) != expected_images:
         errors.append("KI-Lexikon: alle zehn bereitgestellten Begriffsbilder müssen genau einmal eingebunden sein")
+
+    require(lexicon, ('id="ki-weitere-begriffe"', 'Maschinelles Lernen', 'API / Schnittstelle', 'Open-Source-Modell', 'KI-Modelle lernen vor allem Muster; sie sind kein nachschlagbares Lexikon.'), "KI-Lexikon", errors)
+    advanced_cards = re.findall(r'<article class="ki-term ki-advanced-term(?: ki-term--reverse)?"', lexicon)
+    if len(advanced_cards) != 6:
+        errors.append(f"KI-Lexikon: genau sechs bebilderte Vertiefungsbegriffe erwartet (gefunden: {len(advanced_cards)})")
+    advanced_sources = re.findall(r'src="(/assets/img/ki/begriffe/(?:11|12|13|14|15|16)-[^\"]+\.png)"', lexicon)
+    expected_advanced_images = [f"/assets/img/ki/begriffe/{number:02d}-{name}.png" for number, name in (
+        (11, "trainingsdaten"), (12, "tokens"), (13, "bias-verzerrung"),
+        (14, "maschinelles-lernen"), (15, "api-schnittstelle"), (16, "open-source-modell"),
+    )]
+    if advanced_sources != expected_advanced_images:
+        errors.append("KI-Lexikon: alle sechs Vertiefungsbilder müssen genau einmal und in der vorgesehenen Reihenfolge eingebunden sein")
+    if '<div class="ki-card-grid"><article class="card"><h3>Trainingsdaten</h3>' in lexicon:
+        errors.append("KI-Lexikon: der alte kleine Vertiefungs-Kachelblock darf nicht mehr enthalten sein")
 
     require(overview, ('id="ki-begriffe-heading"', 'ki-term-teaser', 'href="/ki/lexikon.html"'), "KI-Übersicht", errors)
     if len(re.findall(r'class="ki-term-teaser"', overview)) != 4:
@@ -66,7 +80,7 @@ def main() -> int:
         if 'href="/ki/faq.html"' in referrer_html and "KI-FAQ" in referrer_html:
             errors.append(f"{referrer.relative_to(ROOT)}: alter Linktext KI-FAQ muss umbenannt werden")
 
-    for selector in (".ki-term", ".ki-term--reverse", ".ki-work-shift", ".ki-work-shift__item", ".ki-term-teaser"):
+    for selector in (".ki-term", ".ki-term--reverse", ".ki-advanced-term", ".ki-work-shift", ".ki-work-shift__item", ".ki-term-teaser"):
         if selector not in css:
             errors.append(f"KI-Stil fehlt: {selector}")
     for fragment in (
