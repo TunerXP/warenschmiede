@@ -90,6 +90,7 @@
           { label: 'Erste Schritte & Tutorials', href: 'ki/tutorials/', description: 'Screenshots, Dateien und praktische Grundlagen Schritt für Schritt.' }
         ] },
         { label: 'Arbeiten mit KI', accent: 'blue', links: [
+          { label: 'KI im Betrieb', href: 'ki/im-betrieb.html', description: 'Orientierung für einen sicheren und verantwortungsvollen KI-Einsatz im Arbeitsalltag.' },
           { label: 'KI im Alltag', href: 'ki/prompts.html', description: 'Natürlich fragen, Bilder nutzen und gemeinsam zum Ergebnis kommen.' },
           { label: 'Aktuelle KI-Chats', href: 'ki/tools.html', description: 'ChatGPT, Gemini, Claude & Co. – Unterschiede und besondere Funktionen.' }
         ] },
