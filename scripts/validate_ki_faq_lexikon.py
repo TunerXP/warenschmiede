@@ -69,6 +69,13 @@ def main() -> int:
     for selector in (".ki-term", ".ki-term--reverse", ".ki-work-shift", ".ki-work-shift__item", ".ki-term-teaser"):
         if selector not in css:
             errors.append(f"KI-Stil fehlt: {selector}")
+    for fragment in (
+        ".ki-term-teaser-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))",
+        ".ki-term-teaser img{display:block;width:100%;height:clamp(220px,23vw,330px)",
+        "@media(max-width:760px){.ki-term{grid-template-columns:1fr}.ki-term--reverse .ki-term__visual{order:0}.ki-term-teaser-grid{grid-template-columns:1fr}",
+    ):
+        if fragment not in css:
+            errors.append(f"KI-Übersicht: Querformat-Layout fehlt: {fragment}")
 
     for page, html in (("KI sicher nutzen", faq), ("KI-Lexikon", lexicon), ("KI-Übersicht", overview)):
         if len(re.findall(r"<h1(?:\s|>)", html, flags=re.IGNORECASE)) != 1:
