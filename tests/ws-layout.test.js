@@ -50,6 +50,14 @@ test('desktop and mobile navigation render with an exact root start link', () =>
   assert.match(header, /href="\/downloads\.html"/);
 });
 
+test('KI navigation links to workplace guidance', () => {
+  const { header } = renderLayout('/ki/im-betrieb.html');
+
+  assert.match(header, /href="\/ki\/im-betrieb\.html"/);
+  assert.match(header, /<strong>KI im Betrieb<\/strong>/);
+  assert.match(header, /mobile-menu-ki[\s\S]*?KI im Betrieb/);
+});
+
 test('KI navigation offers the overview as the first entry point', () => {
   const { header } = renderLayout('/ki/chat.html');
   const kiMenu = header.match(/<div class="mega-panel" id="desktop-menu-ki">[\s\S]*?<\/section><\/div><\/div><\/div>/)?.[0] || '';
