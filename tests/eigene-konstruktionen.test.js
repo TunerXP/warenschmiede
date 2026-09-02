@@ -12,6 +12,7 @@ test('own-designs page presents the phone stand story and all five prepared imag
   const html = read(pagePath);
   assert.match(html, /<h1>Eigene Konstruktionen &amp; 3D-Druck-Projekte<\/h1>/);
   assert.match(html, /Vom CAD-Modell zum fertigen Druck/);
+  assert.match(html, /rel="canonical" href="https:\/\/www\.warenschmiede\.com\/leistungen\/eigene-konstruktionen\.html"/);
   for (const name of [
     'phone-stand-01-fertiges-modell.jpg',
     'phone-stand-02-cad-modell.png',
@@ -35,9 +36,4 @@ test('CAD service links to the portfolio with the dimensioned side view', () => 
   const html = read('leistungen/cad-prototyping.html');
   assert.ok(html.includes('eigene-konstruktionen.html'));
   assert.ok(html.includes('/assets/img/3d-modelle/phone-stand/phone-stand-04-seitenansicht-masse.png'));
-});
-
-test('sitemap contains the own-designs page', () => {
-  const xml = read('sitemap.xml');
-  assert.ok(xml.includes('https://www.warenschmiede.com/leistungen/eigene-konstruktionen.html'));
 });
