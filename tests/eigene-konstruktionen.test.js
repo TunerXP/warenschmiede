@@ -36,6 +36,17 @@ test('own-designs hero uses the real print with compact CAD overlays instead of 
   assert.doesNotMatch(html, /page-hero--cad design-project-hero/);
 });
 
+test('own-designs hero gives the text enough width and stays compact', () => {
+  const html = read(pagePath);
+  assert.match(html, /\.design-project-hero\{[^}]*grid-template-columns:minmax\(0,\.9fr\) minmax\(0,1\.1fr\)/);
+  assert.match(html, /\.design-project-hero\{[^}]*min-height:0/);
+  assert.match(html, /\.design-project-hero \.page-hero__content\{[^}]*width:100%/);
+  assert.match(html, /\.design-project-hero \.page-hero__content\{[^}]*padding:0/);
+  assert.match(html, /\.design-project-hero h1\{[^}]*max-width:none/);
+  assert.match(html, /\.design-project-hero h1\{[^}]*font-size:clamp\(2\.1rem,2\.55vw,2\.8rem\)/);
+  assert.match(html, /\.design-project-visual\{[^}]*width:min\(100%,620px\)/);
+});
+
 test('own-designs story is easier to read and the construction gallery stays compact', () => {
   const html = read(pagePath);
   assert.match(html, /\.design-story\{[^}]*font-size:1\.08rem/);
