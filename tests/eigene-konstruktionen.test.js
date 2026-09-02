@@ -14,7 +14,7 @@ test('own-designs page presents the phone stand story and all five prepared imag
   assert.match(html, /Vom CAD-Modell zum fertigen Druck/);
   assert.match(html, /rel="canonical" href="https:\/\/www\.warenschmiede\.com\/leistungen\/eigene-konstruktionen\.html"/);
   for (const name of [
-    'phone-stand-01-fertiges-modell.jpg',
+    'phone-stand-01-fertiges-modell-freigestellt.png',
     'phone-stand-02-cad-modell.png',
     'phone-stand-03-cad-drahtansicht.png',
     'phone-stand-04-seitenansicht-masse.png',
@@ -26,13 +26,14 @@ test('own-designs page presents the phone stand story and all five prepared imag
   assert.match(html, /MakerWorld/i);
 });
 
-test('own-designs hero uses the real print with compact CAD overlays instead of a generic background', () => {
+test('own-designs hero uses the cut-out real print with compact CAD overlays', () => {
   const html = read(pagePath);
   assert.match(html, /class="design-project-visual"/);
-  assert.match(html, /class="design-project-visual__main"[^>]*phone-stand-01-fertiges-modell\.jpg/);
+  assert.match(html, /class="design-project-visual__main"[^>]*phone-stand-01-fertiges-modell-freigestellt\.png/);
   assert.match(html, /class="design-project-visual__overlay design-project-visual__overlay--top"[^>]*phone-stand-02-cad-modell\.png/);
   assert.match(html, /class="design-project-visual__overlay design-project-visual__overlay--bottom"[^>]*phone-stand-04-seitenansicht-masse\.png/);
-  assert.equal((html.match(/phone-stand-01-fertiges-modell\.jpg/g) || []).length, 1, 'fertiges Modell soll auf der Projektseite nur einmal dominant erscheinen');
+  assert.equal((html.match(/phone-stand-01-fertiges-modell-freigestellt\.png/g) || []).length, 1, 'freigestelltes Modell soll im Hero nur einmal dominant erscheinen');
+  assert.match(html, /\.design-project-visual__main\{[^}]*object-fit:contain/);
   assert.doesNotMatch(html, /page-hero--cad design-project-hero/);
 });
 
