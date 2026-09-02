@@ -26,6 +26,23 @@ test('own-designs page presents the phone stand story and all five prepared imag
   assert.match(html, /MakerWorld/i);
 });
 
+test('own-designs hero uses the real print with compact CAD overlays instead of a generic background', () => {
+  const html = read(pagePath);
+  assert.match(html, /class="design-project-visual"/);
+  assert.match(html, /class="design-project-visual__main"[^>]*phone-stand-01-fertiges-modell\.jpg/);
+  assert.match(html, /class="design-project-visual__overlay design-project-visual__overlay--top"[^>]*phone-stand-02-cad-modell\.png/);
+  assert.match(html, /class="design-project-visual__overlay design-project-visual__overlay--bottom"[^>]*phone-stand-04-seitenansicht-masse\.png/);
+  assert.equal((html.match(/phone-stand-01-fertiges-modell\.jpg/g) || []).length, 1, 'fertiges Modell soll auf der Projektseite nur einmal dominant erscheinen');
+  assert.doesNotMatch(html, /page-hero--cad design-project-hero/);
+});
+
+test('own-designs story is easier to read and the construction gallery stays compact', () => {
+  const html = read(pagePath);
+  assert.match(html, /\.design-story\{[^}]*font-size:1\.08rem/);
+  assert.match(html, /\.design-gallery\{[^}]*max-width:900px/);
+  assert.doesNotMatch(html, /<figcaption><strong>Fertiger 3D-Druck\./);
+});
+
 test('3D-print service links to the portfolio with the finished print image', () => {
   const html = read('leistungen/3d-druck.html');
   assert.ok(html.includes('eigene-konstruktionen.html'));
